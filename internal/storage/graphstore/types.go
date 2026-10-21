@@ -135,8 +135,13 @@ type DependencyRequest struct {
 	TypeURL                string
 	SourcePath             string
 	TargetPath             string
-	Path                   string
-	Actor                  string
+	// Native IDs are set only by the familiar positional bd link form for
+	// bare operands. They resolve inside the dependency write transaction;
+	// explicit graph paths remain exact.
+	SourceNativeID string
+	TargetNativeID string
+	Path           string
+	Actor          string
 }
 
 // LinkRecord projects an authoritative specialized Dependency or generic Link.
@@ -159,6 +164,7 @@ type LinkRecord struct {
 type DependencyResult struct {
 	Link    LinkRecord  `json:"link"`
 	Source  IssueRecord `json:"source"`
+	Target  IssueRecord `json:"-"`
 	Changed bool        `json:"changed"`
 }
 
