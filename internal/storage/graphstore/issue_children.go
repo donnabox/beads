@@ -164,14 +164,17 @@ func (s *Store) ListChildrenLegacy(ctx context.Context, parentPath string) ([]*t
 	return children, err
 }
 
-// ListIssueDependencies reads only the installed blocking Dependency Type,
-// checking the anchor as a native Issue in the same transaction as its Links.
-func (s *Store) ListIssueDependencies(ctx context.Context, issuePath, direction string) ([]LinkRecord, error) {
+// ListIssueDependencies reads native Dependency Links, checking the anchor as
+// an Issue in the same transaction. An empty kind selects every native kind.
+func (s *Store) ListIssueDependencies(ctx context.Context, issuePath, direction, kind string) ([]LinkRecord, error) {
 	if err := validatePath(issuePath); err != nil {
 		return nil, err
 	}
 	if direction != "in" && direction != "out" {
 		return nil, fmt.Errorf("%w: dependency direction must be in or out", ErrCapabilityUnavailable)
+	}
+	if kind != "" && !types.DependencyType(kind).IsValid() {
+		return nil, fmt.Errorf("%w: invalid dependency kind", ErrCapabilityUnavailable)
 	}
 	var links []LinkRecord
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
@@ -182,20 +185,18 @@ func (s *Store) ListIssueDependencies(ctx context.Context, issuePath, direction 
 		if err != nil {
 			return err
 		}
-		blockingType, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), issue.Type, types.DepBlocks)
+		dependencyType, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), issue.Type, types.DepBlocks)
 		if !ok {
-			return fmt.Errorf("%w: Issue has no installed blocking Type", ErrInvalidStore)
+			return fmt.Errorf("%w: Issue has no installed Dependency Type", ErrInvalidStore)
 		}
 		incident, err := s.incidentLinksInTx(ctx, tx, LinksRequest{
-			BeadPath: issuePath, Direction: direction, TypeURL: blockingType,
+			BeadPath: issuePath, Direction: direction, TypeURL: dependencyType,
 		}, "")
 		if err != nil {
 			return err
 		}
-		// One nominal Type now carries every dependency kind. Preserve the
-		// familiar dep list view's blocks-only contract.
 		for _, link := range incident {
-			if link.Properties["dep_type"] == string(types.DepBlocks) {
+			if kind == "" || link.Properties["dep_type"] == kind {
 				links = append(links, link)
 			}
 		}
