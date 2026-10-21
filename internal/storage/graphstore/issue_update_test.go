@@ -119,7 +119,14 @@ func TestIssueUpdateStatusInCheckedTransaction(t *testing.T) {
 				t.Fatalf("stale status: %v", err)
 			}
 			open := types.StatusOpen
-			reopened, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: got.Issue.Revision, Status: &open})
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: got.Issue.Revision, ExpectedStatus: &open, Status: &closed}); !errors.Is(err, storage.ErrStatusMismatch) {
+				t.Fatalf("stale status guard on a no-op: %v", err)
+			}
+			invalid := types.Status("not-configured")
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: got.Issue.Revision, ExpectedStatus: &invalid, Status: &open}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("invalid status guard: %v", err)
+			}
+			reopened, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: got.Issue.Revision, ExpectedStatus: &closed, Status: &open})
 			if err != nil || !reopened.Changed || reopened.Issue.Properties.Status != open || reopened.Issue.Properties.ClosedAt != nil {
 				t.Fatalf("reopen: %+v %v", reopened, err)
 			}
