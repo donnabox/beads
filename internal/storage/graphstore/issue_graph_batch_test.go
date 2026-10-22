@@ -388,9 +388,37 @@ func TestApplyNewIssueGraphAddsExistingPairWithNewNodeAtomically(t *testing.T) {
 				request.Items[1],
 			}}
 			before = workflowState(t, ctx, s)
-			refused, err := s.ApplyNewIssueGraph(ctx, repeat)
+			repeated, err := s.ApplyNewIssueGraph(ctx, repeat)
+			if err != nil || repeated["another"].ID == "" {
+				t.Fatalf("change-free pair re-add: result=%v err=%v", repeated, err)
+			}
+			unchanged, err := s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/source"})
+			if err != nil || unchanged.Revision != current.Revision || !reflect.DeepEqual(unchanged.Owned, current.Owned) {
+				t.Fatalf("change-free pair re-add changed source: %+v err=%v", unchanged, err)
+			}
+			assertIssueEditCounts(t, ctx, s, source.Properties.ID, 2)
+			mixed := publicops.ApplyBatchRequest{Actor: "batch-author", Items: []publicops.ApplyItem{
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "mixed", Issue: plainIssue("Mixed target").Issue}},
+				request.Items[1],
+				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{ID: source.Properties.ID}, Target: publicops.Ref{Key: "mixed"}, Type: types.DepBlocks}},
+			}}
+			mixedResult, err := s.ApplyNewIssueGraph(ctx, mixed)
+			if err != nil || mixedResult["mixed"].ID == "" {
+				t.Fatalf("mixed change-free and new edges: result=%v err=%v", mixedResult, err)
+			}
+			withNewEdge, err := s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/source"})
+			if err != nil || len(withNewEdge.Owned) != 2 || withNewEdge.Revision == unchanged.Revision {
+				t.Fatalf("mixed plan source: %+v err=%v", withNewEdge, err)
+			}
+			assertIssueEditCounts(t, ctx, s, source.Properties.ID, 3)
+			conflicting := publicops.ApplyBatchRequest{Actor: "batch-author", Items: []publicops.ApplyItem{
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "conflict", Issue: plainIssue("Must not exist").Issue}},
+				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{ID: source.Properties.ID}, Target: publicops.Ref{ID: target.Properties.ID}, Type: types.DepRelated}},
+			}}
+			before = workflowState(t, ctx, s)
+			refused, err := s.ApplyNewIssueGraph(ctx, conflicting)
 			if !errors.Is(err, ErrCapabilityUnavailable) || refused != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("re-add of existing pair was not a no-write refusal: result=%v err=%v", refused, err)
+				t.Fatalf("re-add with a different kind was not a no-write refusal: result=%v err=%v", refused, err)
 			}
 		})
 	}
