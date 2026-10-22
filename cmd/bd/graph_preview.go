@@ -741,6 +741,13 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	var beadSelector graphstore.IssueSelector
+	if strings.HasPrefix(path, "beads/") {
+		beadSelector, err = graphPreviewIssueSelector(ref.Identity)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+	}
 	version, _ := cmd.Flags().GetString("version")
 	versioned := cmd.Flags().Changed("version")
 	if ref.Explicit {
@@ -766,6 +773,8 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		var err error
 		if versioned {
 			r, err = s.ReadVersion(ctx, path, version)
+		} else if strings.HasPrefix(path, "beads/") {
+			r, err = s.ReadBeadSelected(ctx, beadSelector)
 		} else {
 			r, err = s.Read(ctx, path)
 		}
@@ -776,14 +785,17 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		if shortMode && shownIssue && !versioned && format == "" {
 			legacyShort = true
 			issue := *r.(graphstore.IssueRecord).Properties
-			issue.ID = path
+			issue.ID, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, r.(graphstore.IssueRecord).ID)
+			if err != nil {
+				return nil, "", err
+			}
 			return r, formatShortIssue(&issue), nil
 		}
 		if shownIssue && jsonOutput && format == "" && !versioned {
 			includeDependents, _ := cmd.Flags().GetBool("include-dependents")
 			includeComments, _ := cmd.Flags().GetBool("include-comments")
 			briefDeps, _ := cmd.Flags().GetBool("brief-deps")
-			details, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
+			details, err := s.ShowIssueDetailsSelected(ctx, beadSelector, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
 			if err != nil {
 				return nil, "", err
 			}
@@ -791,7 +803,7 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return []*types.IssueDetails{details}, "", nil
 		}
 		if shownIssue && !jsonOutput && format == "" && !versioned {
-			details, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
+			details, err := s.ShowIssueDetailsSelected(ctx, beadSelector, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
 			if err != nil {
 				return nil, "", err
 			}

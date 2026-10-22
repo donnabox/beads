@@ -188,3 +188,45 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewShowNativeAbbreviation(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			initArgs := []string{"init", "--graph-mode", "link", "--prefix", "show", "--scope-url", "https://example.invalid/show/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for shared-server show qualification")
+				}
+				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", initArgs...)
+			created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Selected Issue", "--id", "beads/source-path", "--json"))
+			nativeID := created.Properties.ID
+			if !strings.HasPrefix(nativeID, "show-") || len(nativeID) < len("show-")+3 {
+				t.Fatalf("fixture lacks a native Issue hash: %q", nativeID)
+			}
+			hash := strings.TrimPrefix(nativeID, "show-")
+			abbreviated := hash[:len(hash)-1]
+			var details []types.IssueDetails
+			shown := graphPolicyCLI(t, bd, work, home, nil, "", "show", abbreviated, "--json")
+			if err := json.Unmarshal([]byte(shown), &details); err != nil || len(details) != 1 || details[0].ID != "beads/source-path" || details[0].Title != "Selected Issue" {
+				t.Fatalf("bare abbreviation did not select the Issue detail: %v\n%s", err, shown)
+			}
+			if record := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", abbreviated, "--format", "graph-json", "--json")); record.ID != created.ID {
+				t.Fatalf("canonical show selected a different Issue: %+v", record)
+			}
+			short := graphPolicyCLI(t, bd, work, home, nil, "", "show", abbreviated, "--short")
+			if !strings.Contains(short, "beads/source-path") || !strings.Contains(short, "Selected Issue") {
+				t.Fatalf("short show lost the resolved graph identity: %s", short)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Colliding Memory", "--id", "beads/"+abbreviated, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "show", abbreviated, "--json")
+			if memory := graphMixedResult[graphstore.Record](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/"+abbreviated, "--json")); memory.Properties.Title != "Colliding Memory" {
+				t.Fatalf("explicit graph Memory path was not exact: %+v", memory)
+			}
+		})
+	}
+}
