@@ -95,6 +95,10 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 			if err != nil || detail == nil || detail.ID != "beads/source" || detail.Revision != created.Revision || detail.Title != created.Properties.Title {
 				t.Fatalf("abbreviated detail read selected wrong Issue: %+v %v", detail, err)
 			}
+			combined, combinedDetail, err := s.ReadBeadWithIssueDetailsSelected(ctx, selector, workapi.DetailOptions{})
+			if err != nil || !reflect.DeepEqual(combined, created) || !reflect.DeepEqual(combinedDetail, detail) {
+				t.Fatalf("combined abbreviated read changed either projection: %+v %+v %v", combined, combinedDetail, err)
+			}
 			memory, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Notes"})
 			if err != nil {
 				t.Fatal(err)
@@ -105,6 +109,10 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 			}
 			if _, err := s.ShowIssueDetailsSelected(ctx, IssueSelector{Path: "beads/notes"}, workapi.DetailOptions{}); !errors.Is(err, ErrCapabilityUnavailable) {
 				t.Fatalf("explicit Memory detail read should refuse as non-Issue: %v", err)
+			}
+			combined, combinedDetail, err = s.ReadBeadWithIssueDetailsSelected(ctx, IssueSelector{Path: "beads/notes", NativeID: "notes"}, workapi.DetailOptions{})
+			if err != nil || !reflect.DeepEqual(combined, memory) || combinedDetail != nil {
+				t.Fatalf("combined Memory read fabricated Issue details: %+v %+v %v", combined, combinedDetail, err)
 			}
 			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector})
 			if err != nil || !reflect.DeepEqual(paths, []string{"beads/source"}) {
@@ -136,6 +144,9 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 			}
 			if _, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("bare detail read hid an Issue/Memory collision: %v", err)
+			}
+			if _, _, err := s.ReadBeadWithIssueDetailsSelected(ctx, selector, workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("combined read hid an Issue/Memory collision: %v", err)
 			}
 			explicit, err := s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/source"})
 			if err != nil || explicit.ID != created.ID || explicit.Properties.Title != title {
