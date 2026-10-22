@@ -31,22 +31,23 @@ as corrected passes.
 
 | Check | Result and scope |
 | --- | --- |
-| Installed CLI, embedded and released Dolt2.2 server | PASS: all22 accepted read scenarios, staged recurrence/exclusions, direct subjects and original four-read workflow; race enabled. The final full composition before the writer-only guard/diagnostic successor passed92 test/subtest nodes with no skips in153.25s, including all four installed workflow families on both providers. Its exact source is `096ec1fc41537ae619ee1ad24557c04a6978a9b2` in `final-cli-both-engines-r2.json`. Owned server/workspace cleanup verified. All read/common/metadata source hashes are unchanged in the final runtime; `final-read-source-continuity.json` records the comparison. |
-| Final read affected Bazel | PASS: the92-pass composition also recorded121 affected command XML cases:117 passed and4 optional server skips; the separate real-server run covers all four skipped provider workflows. Native nogo passed. `final-cli-bazel-r2.log` and its cases index retain the exact selection. Earlier nonverbose receipts are not assigned case counts. |
-| Final writer delta on composed runtime | PASS:19 tests/subtests, embedded and released Dolt2.2 server, race enabled, no skips; 79.29s. `final-writer-delta.json` binds exact runtime `19af7b56a50476928a5427be69a630630bf806fd`; cleanup and source hashes verified. |
-| Final affected Bazel and platform lint | PASS: 122 recorded command cases, 118 passed, 4 optional server skips,0 failed. Native/Windows/Darwin nogo passed84s. `final-cli-bazel-r3.log`, its case index, and `final-platform-lint-r3.log`. |
+| Installed CLI, embedded and released Dolt 2.2 server | PASS: all 22 accepted read scenarios, staged recurrence/exclusions, direct subjects and original four-read workflow; race enabled. The final full composition before the writer-only guard/diagnostic successor passed 92 test/subtest nodes with no skips in153.25s, including all four installed workflow families on both providers. Its exact source is `096ec1fc41537ae619ee1ad24557c04a6978a9b2` in `final-cli-both-engines-r2.json`. Owned server/workspace cleanup verified. All read/common/metadata source hashes are unchanged in the final runtime; `final-read-source-continuity.json` records the comparison. |
+| Final read affected Bazel | PASS: the 92-pass composition also recorded 121 affected command XML cases:117 passed and 4 optional server skips; the separate real-server run covers all four skipped provider workflows. Native nogo passed. `final-cli-bazel-r2.log` and its cases index retain the exact selection. Earlier nonverbose receipts are not assigned case counts. |
+| Final writer delta on composed runtime | PASS: 19 tests/subtests, embedded and released Dolt 2.2 server, race enabled, no skips; 79.29s. `final-writer-delta.json` binds exact runtime `19af7b56a50476928a5427be69a630630bf806fd`; cleanup and source hashes verified. |
+| Final affected Bazel and platform lint | PASS: 122 recorded command cases, 118 passed, 4 optional server skips, 0 failed. Native/Windows/Darwin nogo passed in 84s. `final-cli-bazel-r3.log`, its case index, and `final-platform-lint-r3.log`. |
 | Actual formatting guard | PASS: `//scripts/repochecks:fmt_test`. Formatting-library tests are not this guard. |
 | Dependency-query compatibility | PASS: four targeted cases preserve existing duplicate-title overwrite behavior. This is narrower than whole-product compatibility. |
 | Documentation | PASS: pinned generated CLI reference, freshness, and docsync after moving unreleased candidate guidance out of the published tree. No navigation/release-pin edits. |
-| Normal author hooks | PASS: eight-read and staged-read code commits. Source-only initial pushes explicitly skipped inherited broad pre-push qualification; see below. |
+| Normal author hooks | PASS: read, discovery-correction, five-facade and final-help commits. Source-only initial pushes explicitly skipped inherited broad pre-push qualification; see below. |
 
 ## Reviews and corrections
 
-Actual Claude first-four review returned14 findings/context items. Supported
+Actual Claude first-four review returned 14 findings/context items. Supported
 corrections included failure framing, output budget accounting, JSON encoding,
 quiet-mode handling, help/flag accuracy and snapshot binding. Native follow-up
-found no additional concrete defects. Native staged/direct review was clean;
-actual staged Claude findings were processed, including shared quiet/machine scope validation and phase membership/metadata controls.
+found no additional concrete defects. Native staged/direct review was clean; actual staged Claude findings were
+processed, including shared quiet/machine scope validation and phase
+membership/metadata controls.
 
 The five-facade actual Claude review and narrow follow-up were processed,
 including canonical predecessor projection, invalid-selector framing, named
@@ -76,7 +77,7 @@ The source-only input branches and PR217 source publications used an explicit
 Bazel CI suite, including inherited parent qualification already owned by Janet.
 The initial source-only branches compared their whole ancestry against main. Normal author hooks and the
 targeted checks above passed. That exception does not replace full assembled
-qualification. See7759 and the PR body for the standing gate.
+qualification. See 7759 and the PR body for the standing gate.
 
 BDP/BTS language work stays held. Assessment/conformance operations, implicit
 applicability, historical traversal, remember/recall/memories/forget, native
