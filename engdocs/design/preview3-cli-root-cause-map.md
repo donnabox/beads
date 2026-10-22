@@ -73,6 +73,19 @@ behavior. This is a storage capability proof first; the shipping JSON field
 surface and output envelope can follow after the plan and rollback invariants
 pass on both engines.
 
+A local-only proof at `cb7da57c5` extends the graph batch adapter to keep an
+edge from a later item to an earlier item with an explicit native ID inside
+the existing transaction. A staged Link-retention failure rolls back the
+native Issues, catalog, retained state and coordination. Focused storage
+tests pass on embedded and disposable real shared-server Dolt. The Markdown
+parser does not expose explicit IDs, reverse same-batch edges still refuse,
+and this has not been opened as a PR. It is a substrate check, not
+shipping graph-JSON plan parity. Contributor
+[upstream #5648](https://github.com/gastownhall/beads/pull/5648)
+addresses dependency-type alias normalization in ordinary `bd link`, `bd batch`
+and create forms; its tests and attribution should be preserved when a CLI
+plan route is added.
+
 The native `Deleter` already supplies a bounded, transactional deletion plan
 ([`issueops/deleter.go`](../../issueops/deleter.go)): without `--force` or
 `--cascade`, dependents outside the named set cause a whole-request refusal;
