@@ -54,6 +54,10 @@ func TestGraphPreviewIssueDescriptionSources(t *testing.T) {
 				t.Fatal("create changed stdin contents")
 			}
 			refuse(2, []byte("should not be consumed"), "create", "Duplicate source", "--id", "beads/duplicate", "--properties", `{"description":"Property"}`, "--stdin")
+			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, nil, "update", "beads/file", "--properties", `{"description":"Property"}`, "--stdin", "--if-revision", created.Revision, "--json")
+			if code != 2 || stdout != "" || !strings.Contains(stderr, "supplied by both --properties and a shorthand flag") {
+				t.Fatalf("duplicate update description source: code=%d stdout=%q stderr=%q", code, stdout, stderr)
+			}
 			refuse(2, []byte{}, "create", "Empty source", "--id", "beads/empty", "--stdin")
 			refuse(2, []byte{}, "update", "beads/file", "--stdin")
 			if got := graphMixedResult[graphstore.IssueRecord](t, run(nil, "show", "beads/file", "--format", "graph-json")); got.Revision != created.Revision || got.Properties.Description != created.Properties.Description {

@@ -84,6 +84,27 @@ func TestGraphPreviewIssuePropertyMerge(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewIssuePropertyInputRejectsDescriptionSourceBeforeReading(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+	}{
+		{"inline-description-and-stdin", []string{`--properties={"description":"Property"}`, "--stdin"}},
+		{"shared-stdin", []string{"--properties=-", "--description=-"}},
+		{"shared-file-alias", []string{"--properties=-", "--body-file=-"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := issueTextCommand(t, tc.args...)
+			input := strings.NewReader("must remain unread")
+			cmd.SetIn(input)
+			_, err := graphPreviewIssuePropertyValues(cmd)
+			if err == nil || input.Len() != len("must remain unread") {
+				t.Fatalf("conflicting input was consumed: remaining=%d, error=%v", input.Len(), err)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewIssueNotesInput(t *testing.T) {
 	for _, tc := range []struct {
 		name       string
