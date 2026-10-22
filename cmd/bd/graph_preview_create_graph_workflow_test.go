@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
@@ -67,6 +69,27 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			}
 			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", "batch-later")); len(got) != 1 || got[0].Target != parent.ID {
 				t.Fatalf("existing-target batch did not publish its Link: %+v", got)
+			}
+			writePlan(`{"nodes":[{"key":"fields","id":"batch-fields","title":"Fields","description":"first line","design":"  design — 雪  ","acceptance_criteria":"accept café","notes":"initial note","spec_id":"spec-7","external_ref":"external-7","assignee":"agent","owner":"team","estimated_minutes":45,"due_at":"2030-01-02T03:04:05Z","labels":["urgent","review"]}],"edges":[{"from_key":"fields","to_id":"` + parent.Properties.ID + `"}]}`)
+			var fields GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &fields); err != nil {
+				t.Fatal(err)
+			}
+			created := graphMixedResult[graphstore.IssueRecord](t, call("show", fields.IDs["fields"], "--format", "graph-json"))
+			wantDue, err := time.Parse(time.RFC3339, "2030-01-02T03:04:05Z")
+			if err != nil {
+				t.Fatal(err)
+			}
+			p := created.Properties
+			if p == nil || p.ID != "batch-fields" || p.Description != "first line" || p.Design != "  design — 雪  " ||
+				p.AcceptanceCriteria != "accept café" || p.Notes != "initial note" || p.SpecID != "spec-7" ||
+				p.ExternalRef == nil || *p.ExternalRef != "external-7" || p.Assignee != "agent" || p.Owner != "team" ||
+				p.EstimatedMinutes == nil || *p.EstimatedMinutes != 45 || p.DueAt == nil || !p.DueAt.Equal(wantDue) ||
+				!reflect.DeepEqual(p.Labels, []string{"review", "urgent"}) {
+				t.Fatalf("atomic graph create lost initial Issue fields: %+v", p)
+			}
+			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", "batch-fields")); len(got) != 1 || got[0].Target != parent.ID {
+				t.Fatalf("initial fields broke canonical Link publication: %+v", got)
 			}
 			writePlan(`{"nodes":[{"key":"dupe","title":"Must not exist","id":"batch-dupe"}],"edges":[{"from_key":"dupe","to_id":"` + result.IDs["parent"] + `"},{"from_key":"dupe","to_id":"beads/` + result.IDs["parent"] + `"}]}`)
 			refuse("invalid_properties", "create", "--graph", path)

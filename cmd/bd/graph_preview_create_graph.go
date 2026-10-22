@@ -42,7 +42,18 @@ func runGraphPreviewCreateGraph(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_properties", "graph plan requires at least one node", 2)
 	}
 	for _, node := range plan.Nodes {
-		allowed := GraphApplyNode{Key: node.Key, ID: node.ID, Title: node.Title, Type: node.Type, Description: node.Description, Priority: node.Priority}
+		// These initial values already have lossless native Issue create and
+		// graph-read representations. Keep relationship, lifecycle, metadata,
+		// and storage-class options behind their separate capability proofs.
+		allowed := GraphApplyNode{
+			Key: node.Key, ID: node.ID, Title: node.Title, Type: node.Type,
+			Description: node.Description, Design: node.Design,
+			AcceptanceCriteria: node.AcceptanceCriteria, Notes: node.Notes,
+			SpecID: node.SpecID, ExternalRef: node.ExternalRef,
+			Assignee: node.Assignee, Owner: node.Owner, Priority: node.Priority,
+			EstimatedMinutes: node.EstimatedMinutes, DueAt: node.DueAt,
+			Labels: node.Labels,
+		}
 		if node.Status == "open" {
 			allowed.Status = node.Status
 		}
