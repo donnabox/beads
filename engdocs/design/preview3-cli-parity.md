@@ -556,17 +556,22 @@ locally; current-head hosted CI remains pending.
   explicit Memory detail request refuses as non-Issue instead of surfacing a
   null-scan error. Focused selector and Issue-read workflows passed embedded
   and real shared-server Dolt (six passing test/subtest events, no skips or
-  failures; `/tmp/cleo-detail-memory-workflow.jsonl`). Current-head hosted CI
-  and review are pending. This remains a storage capability until a command
+  failures; `/tmp/cleo-detail-memory-workflow.jsonl`). Four current-head
+  hosted checks passed; review is pending. This remains a storage capability until a command
   consumes it.
-  Stacked draft [#253](https://github.com/donnabox/beads/pull/253) at
-  `bb2dda309` returns the Bead record and optional familiar Issue details
+  Stacked draft [#253](https://github.com/donnabox/beads/pull/253) now at
+  `d500cfb75` returns the Bead record and optional familiar Issue details
   from one checked read snapshot. The earlier local `bd show` assembly read
   them in separate transactions. Its focused selector, read-budget and
   existing Issue-read regression group passed embedded and real shared-server
   Dolt (22 passing test/subtest events, no skips or failures;
-  `/tmp/cleo-combined-show-regression.jsonl`). Four current-head hosted checks
-  passed; review is pending. #253 is storage-only and unmerged.
+  `/tmp/cleo-combined-show-regression.jsonl`). Its rebase onto #252's explicit
+  Memory refusal preserves both selector regression assertions. The focused
+  selector and Issue-read workflows passed again on embedded and real
+  shared-server Dolt (nine passing test/subtest events, no skips or failures;
+  `/tmp/cleo-combined-rebase-workflow.jsonl`). Four checks passed at the prior
+  head; current-head hosted CI and review are pending. #253 is storage-only
+  and unmerged.
   A disposable local assembly at `712f0f5ec` combines selected #151 with
   #251–#252 and routes single, multi-ID, related and watch current `bd show`
   through those checked readers. Three installed workflows covering native
