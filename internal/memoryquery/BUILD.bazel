@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "memoryquery",
-    srcs = ["requires.go"],
+    srcs = [
+        "current_family.go",
+        "requires.go",
+    ],
     importpath = "github.com/steveyegge/beads/internal/memoryquery",
     visibility = ["//:__subpackages__"],
     deps = ["//graphops"],
@@ -10,7 +13,10 @@ go_library(
 
 go_test(
     name = "memoryquery_test",
-    srcs = ["requires_test.go"],
+    srcs = [
+        "current_family_test.go",
+        "requires_test.go",
+    ],
     deps = [
         ":memoryquery",
         "//graphops",
