@@ -249,23 +249,27 @@ func (s *Store) ReadBeadSelected(ctx context.Context, selector IssueSelector) (a
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		if selector.NativeID != "" {
-			_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
-			switch {
-			case err == nil:
-				result = issue
-				return nil
-			case errors.Is(err, ErrNotFound), errors.Is(err, errNonIssueSelector):
-				// Bare Memory names retain their existing read spelling.
-			default:
-				return err
-			}
-		}
 		var err error
-		result, err = s.readCurrentVerifiedInTx(ctx, tx, selector.Path)
+		_, result, err = s.readBeadSelectedInTx(ctx, tx, selector)
 		return err
 	})
 	return result, err
+}
+
+func (s *Store) readBeadSelectedInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, any, error) {
+	if selector.NativeID != "" {
+		path, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		switch {
+		case err == nil:
+			return path, issue, nil
+		case errors.Is(err, ErrNotFound), errors.Is(err, errNonIssueSelector):
+			// Bare Memory names retain their existing read spelling.
+		default:
+			return "", nil, err
+		}
+	}
+	result, err := s.readCurrentVerifiedInTx(ctx, tx, selector.Path)
+	return selector.Path, result, err
 }
 
 func (s *Store) readCurrentVerifiedInTx(ctx context.Context, tx *sql.Tx, path string) (any, error) {
