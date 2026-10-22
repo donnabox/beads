@@ -168,7 +168,7 @@ locally; current-head hosted CI remains pending.
 
 | Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
-| `dep` | Single local add/remove and blocking views work. | Default list silently omits nonblocking kinds (P1); tree/graph are blocking-only; depth-1 tree falsely says there are no dependencies (P2); abbreviated add operands, list/tree/cycles JSON, file bulk add, relate/unrelate and other forms refuse at the pinned commit. #165 fixes the default human list, #179 fixes the depth-1 answer, and draft #247 restores checked local abbreviation resolution for `dep add`; all are unmerged. | Candidates/open #165, #179, #247 |
+| `dep` | Single local add/remove and blocking views work. | Default list silently omits nonblocking kinds (P1); tree/graph are blocking-only; depth-1 tree falsely says there are no dependencies (P2); abbreviated add/remove operands, list/tree/cycles JSON, file bulk add, relate/unrelate and other forms refuse at the pinned commit. #165 fixes the default human list, #179 fixes the depth-1 answer, and drafts #247–#248 restore checked local abbreviation resolution for `dep add`/`--blocks` and `dep remove`; all are unmerged. | Candidates/open #165, #179, #247–#248 |
 | `duplicate` | Explicit refusal. | Atomic duplicate edge and close is unavailable. | Gap; no repair PR |
 | `duplicates` | Explicit refusal. | Exact-content grouping and optional merge are unavailable. | Gap; no repair PR |
 | `epic` | Status, close-eligible dry run and actual close work in tested flows. | Multiple-epic partial failures were not live-probed. | As-built; multi-epic path unqualified |
@@ -500,7 +500,16 @@ locally; current-head hosted CI remains pending.
   graph paths remain exact. Its installed positional Link plus dep-add workflow
   passed embedded and real shared-server Dolt (three test/subtest passes, no
   skips; `/tmp/cleo-dep-forms-partial-server.jsonl`). Docsync and diff
-  checks passed. Hosted CI and review are pending; it is an unmerged candidate.
+  checks passed. Four current-head hosted checks passed, with two expected
+  skips; review is pending. It is an unmerged candidate.
+  Draft [#248](https://github.com/donnabox/beads/pull/248) at `846bfc42e`
+  replaces `dep remove`'s duplicate exact-ID resolver with the same checked
+  in-transaction abbreviation resolver. Abbreviated pair removal, absent-pair
+  no-op, ambiguity rollback, graph-path collision refusal and explicit-path
+  removal passed on embedded and real shared-server Dolt (seven server
+  test/subtest passes, no skips; `/tmp/cleo-dep-remove-partial-server.jsonl`).
+  The broader embedded pair-removal group passed; hosted CI and review are
+  pending. It is an unmerged candidate.
 - Draft [#209](https://github.com/donnabox/beads/pull/209)–[#210](https://github.com/donnabox/beads/pull/210) and stacked [#212](https://github.com/donnabox/beads/pull/212)
   provide a checked single-Issue linked-delete path: unforced preview refuses
   surviving native dependents; `--force` tombstones incident canonical Links
