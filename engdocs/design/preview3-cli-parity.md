@@ -649,11 +649,14 @@ locally; current-head hosted CI remains pending.
   passed installed set, single-Issue and Memory deletion workflows on embedded
   and real shared-server Dolt: 32 test/subtest passes, no skips. A broader
   embedded `TestGraphPreview` sweep passed 256 top-level tests, one expected
-  server-only skip, and zero failures. It also preserves #163's single-ID
+  server-only skip, and zero failures. A fresh exact-head embedded pure-Go
+  `TestGraphPreview` run passed 150 top-level tests (931 test/subtest results)
+  with no skips or failures (`/tmp/cleo-delete-set-230-broad-20261022.jsonl`);
+  it does not qualify the full shared-server command suite. It also preserves #163's single-ID
   `--dry-run` behavior, including `--force --dry-run --readonly`, and credits
   that prior work. Generated CLI docs, docsync, doc flags/freshness, managed
-  Go source lists, and diff checks passed. #230 is an unmerged candidate with
-  hosted CI and review pending. Dotted native Issue IDs still refuse until
+  Go source lists, and diff checks passed. #230 has four current-head hosted
+  successes, with review pending; it remains unmerged. Dotted native Issue IDs still refuse until
   upstream contributor
   [#7377](https://github.com/gastownhall/beads/pull/7377) is integrated.
   A separate assembly `23d96d24a` combines #230 with #250's

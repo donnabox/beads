@@ -266,7 +266,11 @@ Stacked draft [#230](https://github.com/donnabox/beads/pull/230) admits
 multi-ID, cascade, and file-selected Issue sets through that composer;
 its installed deletion workflows passed both engines without skips, and its
 broader embedded graph CLI sweep passed 256 top-level tests with one server-only
-skip. These PRs remain unmerged candidates. Dotted native IDs explicitly refuse
+skip. A fresh exact-head embedded pure-Go `TestGraphPreview` run passed 150
+top-level tests (931 test/subtest results) without skips or failures
+(`/tmp/cleo-delete-set-230-broad-20261022.jsonl`); the full shared-server
+command suite remains unqualified. #230 has four current-head hosted checks
+green and review pending. These PRs remain unmerged candidates. Dotted native IDs explicitly refuse
 until [upstream #7377](https://github.com/gastownhall/beads/pull/7377)
 fixes citation rewriting, preserving that contributor's work.
 
