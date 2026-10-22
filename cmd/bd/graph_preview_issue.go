@@ -40,7 +40,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "type", "status", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties", "deps"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "type", "status", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "defer", "metadata", "properties", "deps"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
@@ -155,14 +155,21 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	labels, _ := cmd.Flags().GetStringSlice("labels")
 	aliasLabels, _ := cmd.Flags().GetStringSlice("label")
 	initialStatus, _ := cmd.Flags().GetString("status")
+	deferUntil, err := graphPreviewIssueDeferInput(cmd)
+	if err != nil {
+		return err
+	}
 	if initialStatus == "" {
 		initialStatus = string(types.StatusOpen)
+		if deferUntil != nil && deferUntil.After(time.Now()) {
+			initialStatus = string(types.StatusDeferred)
+		}
 	}
 	creator := getActorWithGit()
 	forceIDPrefix, _ := cmd.Flags().GetBool("force")
 	request := publicops.CreateRequest{Actor: creator, ForceIDPrefix: forceIDPrefix, Issue: &types.Issue{
 		CreatedBy: creator, Owner: getOwner(),
-		Title: title, Description: description, Status: types.Status(initialStatus),
+		Title: title, Description: description, Status: types.Status(initialStatus), DeferUntil: deferUntil,
 		Priority: priority, IssueType: issueType, Labels: utils.NormalizeLabels(append(labels, aliasLabels...)),
 	}}
 	if cmd.Flags().Changed("id") {

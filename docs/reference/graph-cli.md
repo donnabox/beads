@@ -91,8 +91,12 @@ example, a generated `mp-53` Issue is `beads/mp-53` locally. A bare explicit
 `--id mp-work` names both the native Issue ID and `beads/mp-work`; it must use
 the configured prefix unless `--force` is supplied. A graph-qualified
 `--id beads/work` names the canonical path independently. `--status` sets the
-initial Issue status and defaults to `open`; the native Issue writer validates
-built-in and configured custom statuses. Generated Memory IDs
+initial Issue status; without it, a future `--defer DATE` makes the Issue
+`deferred`, otherwise creation defaults to `open`. An explicit `--status`
+wins over `--defer`, while retaining the timestamp. The native Issue writer
+validates built-in and configured custom statuses. A graph JSON node may
+specify `defer_until` as an RFC3339 timestamp for the same initial deferral.
+Generated Memory IDs
 remain random `beads/` paths; generated Link IDs remain under `links/`.
 
 For an ordinary Issue create, `--deps` accepts local Issue targets with the

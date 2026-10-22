@@ -102,6 +102,19 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if !foundForward || !foundExisting {
 				t.Fatalf("inline dependencies lost their target or type: %+v", inlineLinks)
 			}
+			writePlan(`{"nodes":[{"key":"deferred-by-date","id":"batch-deferred-by-date","title":"Deferred by date","defer_until":"2099-01-02T03:04:05Z","deps":[{"target":"` + inline.IDs["inline-target"] + `"}]}]}`)
+			var deferredByDate GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &deferredByDate); err != nil {
+				t.Fatal(err)
+			}
+			deferredRecord := graphMixedResult[graphstore.IssueRecord](t, call("show", deferredByDate.IDs["deferred-by-date"], "--format", "graph-json"))
+			wantDefer, err := time.Parse(time.RFC3339, "2099-01-02T03:04:05Z")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if deferredRecord.Properties.Status != "deferred" || deferredRecord.Properties.DeferUntil == nil || !deferredRecord.Properties.DeferUntil.Equal(wantDefer) || len(deferredRecord.Owned) != 1 {
+				t.Fatalf("graph plan lost initial deferral or local Link: %+v", deferredRecord)
+			}
 			_, kind, inlineVersions, _ := graphVersionsListed(t, call("versions", inline.IDs["inline-source"]))
 			if kind != "issue" || len(inlineVersions) != 1 {
 				t.Fatalf("inline dependencies must be part of one canonical inception version: %+v", inlineVersions)

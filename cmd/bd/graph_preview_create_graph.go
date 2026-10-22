@@ -58,12 +58,13 @@ func runGraphPreviewCreateGraph(cmd *cobra.Command, args []string) error {
 			Assignee: node.Assignee, AssignAfterCreate: node.AssignAfterCreate,
 			Owner: node.Owner, Priority: node.Priority,
 			EstimatedMinutes: node.EstimatedMinutes, DueAt: node.DueAt,
-			Labels: node.Labels, Metadata: node.Metadata,
+			DeferUntil: node.DeferUntil,
+			Labels:     node.Labels, Metadata: node.Metadata,
 			MetadataRefs: node.MetadataRefs,
 			Parent:       node.Parent, ParentKey: node.ParentKey,
 			ParentID: node.ParentID, Deps: node.Deps,
 		}
-		if node.Status == "open" {
+		if node.Status == "open" || node.Status == "deferred" {
 			allowed.Status = node.Status
 		}
 		if !reflect.DeepEqual(node, allowed) {
