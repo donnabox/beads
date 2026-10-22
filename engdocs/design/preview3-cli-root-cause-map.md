@@ -45,6 +45,12 @@ other outcomes individually. It does not require a new transaction engine.
 Draft [#226](https://github.com/donnabox/beads/pull/226)–[#227](https://github.com/donnabox/beads/pull/227)
 prove and route this narrower rule on embedded and real shared-server Dolt;
 they remain unmerged candidates and do not change the pinned integration.
+A disposable merge of #227 onto the selected five-PR integration candidate
+`a4e6fe596` at local-only `codex/cleo-close-preflight-assembly-20261022`
+had no conflicts. The checked-selector storage test and installed close/reopen
+and claim-next workflows passed on both embedded and real shared-server Dolt
+without skips. This qualifies the focused composition, not its broad CI or
+release behavior; #226–#227 remain outside the five-PR landing request.
 
 **Canary interpretation:** ordinary `bd batch` is a control for native
 transaction plumbing and rollback, not a graph-mode release canary. Its narrow
@@ -344,6 +350,17 @@ the same transaction as its guard, incident-Link check and native/graph
 deletion; a CLI read followed by delete would reintroduce a race. A disposable
 assembly of the selector and delete/show stacks can prove integration before
 any branch is rebased or selected.
+
+The selected five-PR candidate `a4e6fe596` and the full #250 selector-stack
+ancestry now have a disposable local merge at `67edc2bb6`, with no push or
+landing request. Five textual conflicts in create/update/Link routing, tests,
+and the draft command table were resolved to retain both admitted forms.
+Focused description-source, no-read input-refusal, positional partial-Link,
+deferral and Issue-create workflows passed on embedded and real shared-server
+Dolt without server skips. The Go package compiled, Bazel source-list and
+docsync checks passed, and generated CLI docs stayed fresh. This is an overlap
+proof for those forms, not broad selector qualification or selection of #250
+for the first landing slice.
 
 Draft #249 head `402a494aa` preserves the established non-Issue refusal for
 explicit Memory paths in Issue reads without changing dependency writer

@@ -132,6 +132,14 @@ the incident-Link listing form.
    the input-source unit regression ran locally. Bazel source sync, docsync,
    generated CLI docs and diff checks passed. This does not replace
    current-head hosted checks or a landed comparison.
+   The selected five-PR composition is open as
+   [#256](https://github.com/donnabox/beads/pull/256). Its initial Bazel
+   Dolt-server lane found that #151's new current-Issue and multi-show source
+   files were absent from `cmd/bd/BUILD.bazel`'s `go_library` list. #151 head
+   `e4d87ee9a` now lists both; the recomposed #256 head `215b87d05` includes
+   that exact fix and awaits new-head CI. Local package compilation, a complete
+   source-list comparison for `cmd/bd`, Bazel managed-list check and diff check
+   passed. The failed prior head does not qualify the new head.
 
 Other misleading answers found during flag qualification: `bd dep tree ID
 --max-depth 1` reports “has no dependencies” for a root with a direct blocking
