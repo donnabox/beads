@@ -78,6 +78,28 @@ func assertCurrentFamilyError(t *testing.T, r CurrentFamilyRead, err, want error
 	}
 }
 
+func assertCurrentOwned(t *testing.T, owned []json.RawMessage, include, exclude []string) {
+	t.Helper()
+	ids := map[string]bool{}
+	for _, raw := range owned {
+		var l LinkRecord
+		if err := json.Unmarshal(raw, &l); err != nil {
+			t.Fatal(err)
+		}
+		ids[l.ID] = true
+	}
+	for _, id := range include {
+		if !ids[id] {
+			t.Fatalf("missing owned Link %s: %v", id, ids)
+		}
+	}
+	for _, id := range exclude {
+		if ids[id] {
+			t.Fatalf("non-owned incidence became ownership: %s", id)
+		}
+	}
+}
+
 func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 	s := currentFamilyStore(t)
 	for _, name := range []string{"a", "b", "c", "d", "e", "f"} {
@@ -116,6 +138,12 @@ func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 	if got.WriterToken == "" || len(got.Types) != len(FreshTypeNames()) || len(got.OwnedLinkTypes) == 0 {
 		t.Fatal("lost checked context")
 	}
+	both := currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: "beads/c", Depth: 1})
+	both.Direction = graph.DirectionBoth
+	bothRead, e := s.ReadCurrentFamily(currentFamilyContext(t), both)
+	if e != nil || !reflect.DeepEqual(bothRead.Graph.Views[0].Nodes, []string{"beads/a", "beads/b", "beads/c", "beads/d"}) || !reflect.DeepEqual(bothRead.Graph.Views[0].Links, []string{"links/ab", "links/ac", "links/ba", "links/bc", "links/bd", "links/cd", "links/parallel"}) || !reflect.DeepEqual(bothRead.Graph.Views[0].Frontier, []string{"beads/a", "beads/b"}) {
+		t.Fatal(bothRead, e)
+	}
 	req = currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: "beads/i1", Depth: 4})
 	got, err = s.ReadCurrentFamily(currentFamilyContext(t), req)
 	if err != nil {
@@ -134,15 +162,36 @@ func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 	for _, raw := range got.Records {
 		switch r := raw.(type) {
 		case IssueRecord:
+			if r.Attribution.Actor != "family-author" || r.Attribution.Status != "claimed" || r.Attribution.RecordedAt == "" {
+				t.Fatal("lost native attribution", r.Attribution)
+			}
+			if r.ID == s.ScopeURL()+"beads/i1" {
+				assertCurrentOwned(t, r.Owned, []string{s.ScopeURL() + "links/native"}, []string{s.ScopeURL() + "links/i1a"})
+			}
+			if r.ID == s.ScopeURL()+"beads/i2" {
+				assertCurrentOwned(t, r.Owned, []string{s.ScopeURL() + "links/subject"}, []string{s.ScopeURL() + "links/ai2", s.ScopeURL() + "links/i2b"})
+			}
 			issues++
 			if r.Type != IssueTypeURL(s.ScopeURL()) || len(r.Properties.Labels) != 2 {
 				t.Fatal("lost native Issue shape", r)
 			}
 		case Record:
+			if r.Attribution.Actor != "family-author" || r.Attribution.Status != "claimed" || r.Attribution.RecordedAt == "" {
+				t.Fatal("lost Memory attribution", r.Attribution)
+			}
+			if r.ID == s.ScopeURL()+"beads/e" {
+				assertCurrentOwned(t, r.Owned, []string{s.ScopeURL() + "links/defines"}, []string{s.ScopeURL() + "links/subject"})
+			}
+			if r.ID == s.ScopeURL()+"beads/a" {
+				assertCurrentOwned(t, r.Owned, nil, []string{s.ScopeURL() + "links/i1a", s.ScopeURL() + "links/ab"})
+			}
 			if string(r.Metadata) != `{"keep":"bead"}` {
 				t.Fatal(r)
 			}
 		case LinkRecord:
+			if r.Attribution.Actor != "family-author" || r.Attribution.Status != "claimed" || r.Attribution.RecordedAt == "" {
+				t.Fatal("lost Link attribution", r.Attribution)
+			}
 			if r.ID == s.ScopeURL()+"links/defines" && r.Type != s.ScopeURL()+"types/defines" {
 				t.Fatal("family erased declared Type")
 			}
@@ -276,13 +325,14 @@ func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 		if _, err := s.db.ExecContext(currentFamilyContext(t), `UPDATE graph_preview_links SET properties='{"body":"tampered"}' WHERE path='links/i1a'`); err != nil {
 			t.Fatal(err)
 		}
+		defer func() {
+			if _, err := s.db.ExecContext(currentFamilyContext(t), `UPDATE graph_preview_links SET properties=? WHERE path='links/i1a'`, old); err != nil {
+				t.Error(err)
+			}
+		}()
 		r := currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: "beads/a", Depth: 1})
-		r.Direction = graph.DirectionIn
 		read, e := s.ReadCurrentFamily(currentFamilyContext(t), r)
 		assertCurrentFamilyError(t, read, e, ErrInvalidStore)
-		if _, err := s.db.ExecContext(currentFamilyContext(t), `UPDATE graph_preview_links SET properties=? WHERE path='links/i1a'`, old); err != nil {
-			t.Fatal(err)
-		}
 	})
 	t.Run("native_wisp_refused_before_hydration", func(t *testing.T) {
 		var key string
@@ -292,11 +342,13 @@ func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 		if _, err := s.db.ExecContext(currentFamilyContext(t), `INSERT INTO wisps (id,title) VALUES (?, 'alternative authority')`, key); err != nil {
 			t.Fatal(err)
 		}
+		defer func() {
+			if _, err := s.db.ExecContext(currentFamilyContext(t), `DELETE FROM wisps WHERE id=?`, key); err != nil {
+				t.Error(err)
+			}
+		}()
 		read, e := s.ReadCurrentFamily(currentFamilyContext(t), currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: "beads/i1", Depth: 0}))
 		assertCurrentFamilyError(t, read, e, ErrInvalidStore)
-		if _, err := s.db.ExecContext(currentFamilyContext(t), `DELETE FROM wisps WHERE id=?`, key); err != nil {
-			t.Fatal(err)
-		}
 	})
 
 }
@@ -343,6 +395,56 @@ func TestMemoryCurrentFamilySuccessionPinsAndScope(t *testing.T) {
 	r.Roots[0].Depth = 0
 	got, err = s.ReadCurrentFamily(currentFamilyContext(t), r)
 	assertCurrentFamilyError(t, got, err, ErrCapabilityUnavailable)
+	source2 := currentFamilyCreate(t, s, "source2", "memory")
+	currentFamilyCreate(t, s, "target2", "memory")
+	if _, err := s.AddInformationalLink(currentFamilyContext(t), LinkCreateRequest{Path: "links/source-pin", SourcePath: "beads/source2", TargetPath: "beads/target2", SourcePin: EndpointPin{Revision: source2.Revision}}); err != nil {
+		t.Fatal(err)
+	}
+	sourceReq := currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: "beads/source2", Depth: 1})
+	sourceRead, e := s.ReadCurrentFamily(currentFamilyContext(t), sourceReq)
+	if e != nil || sourceRead.Graph.Links[0].Source().Pin() != source2.Revision {
+		t.Fatal(sourceRead, e)
+	}
+	if _, err := s.PatchMemory(currentFamilyContext(t), MemoryPatchRequest{Path: "beads/source2", Body: &body, ExpectedRevision: source2.Revision}); err != nil {
+		t.Fatal(err)
+	}
+	sourceRead, e = s.ReadCurrentFamily(currentFamilyContext(t), sourceReq)
+	assertCurrentFamilyError(t, sourceRead, e, ErrCapabilityUnavailable)
+	retired := currentFamilyCreate(t, s, "retired", "memory")
+	if _, err := s.DeleteMemory(currentFamilyContext(t), MemoryDeleteRequest{Path: "beads/retired", ExpectedRevision: retired.Revision, Actor: "family-author"}); err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		path string
+		want error
+	}{{"beads/missing", ErrNotFound}, {"beads/retired", ErrGone}} {
+		read, e := s.ReadCurrentFamily(currentFamilyContext(t), currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: tc.path, Depth: 1}))
+		assertCurrentFamilyError(t, read, e, tc.want)
+	}
+	for _, which := range []string{"zero_bytes", "over_bytes", "no_roots", "revisioned_family", "nodes_cap", "links_cap", "work_cap", "direction"} {
+		invalid := currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: "beads/source2", Depth: 1})
+		switch which {
+		case "zero_bytes":
+			invalid.MaxBytes = 0
+		case "over_bytes":
+			invalid.MaxBytes = PreviewCurrentReadByteLimit + 1
+		case "no_roots":
+			invalid.Roots = nil
+		case "revisioned_family":
+			invalid.Family.Revision = "revision"
+		case "nodes_cap":
+			invalid.Limits.MaxNodes = PreviewSnapshotLimit + 1
+		case "links_cap":
+			invalid.Limits.MaxLinks = PreviewSnapshotLimit + 1
+		case "work_cap":
+			invalid.Limits.MaxInspected = 1000001
+		case "direction":
+			invalid.Direction = 255
+		}
+		read, e := s.ReadCurrentFamily(currentFamilyContext(t), invalid)
+		assertCurrentFamilyError(t, read, e, graph.ErrValidation)
+	}
+
 	// Unsupported pins are not silently stripped from a root spelling either.
 	r.Roots[0].Path = source.ID + "@" + source.Revision
 	got, err = s.ReadCurrentFamily(currentFamilyContext(t), r)
