@@ -157,6 +157,10 @@ func TestGraphPreviewPositionalLinkPreservesShippingKinds(t *testing.T) {
 					if repeated := call("link", source, target, "--type", tc.kind); repeated != added {
 						t.Fatalf("repeated positional Link changed feedback: %s", repeated)
 					}
+					fromID, toID := sourceIssue.Properties.ID, targetIssue.Properties.ID
+					if partial := call("link", fromID[:len(fromID)-1], toID[:len(toID)-1], "--type", tc.kind); partial != added {
+						t.Fatalf("abbreviated positional Link changed feedback or kind: %s", partial)
+					}
 					if after := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", source)); !reflect.DeepEqual(after, links) {
 						t.Fatal("repeated positional Link changed its stored Link")
 					}
