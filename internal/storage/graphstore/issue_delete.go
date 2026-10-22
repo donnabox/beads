@@ -16,14 +16,18 @@ import (
 type IssueDeleteRequest struct {
 	Path, Actor, ExpectedRevision string
 	Unconditional, Preview        bool
+	// RemoveIncidentLinks is an explicit graph storage operation. Callers must
+	// choose a command-level deletion policy before enabling it.
+	RemoveIncidentLinks bool
 }
 
 // IssueDeleteResult separates the final live Issue from graph deletion evidence.
 type IssueDeleteResult struct {
-	Issue    IssueRecord        `json:"issue"`
-	Terminal *BeadTerminalState `json:"terminal,omitempty"`
-	Preview  bool               `json:"preview"`
-	Deleted  bool               `json:"deleted"`
+	Issue           IssueRecord        `json:"issue"`
+	Terminal        *BeadTerminalState `json:"terminal,omitempty"`
+	Preview         bool               `json:"preview"`
+	Deleted         bool               `json:"deleted"`
+	IncidentLinkIDs []string           `json:"incident_link_ids,omitempty"`
 }
 
 func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (IssueDeleteResult, error) {
@@ -63,16 +67,34 @@ func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (Is
 		if err != nil {
 			return err
 		}
-		if len(links) != 0 {
-			ids := make([]string, len(links))
-			for i, link := range links {
-				ids[i] = link.ID
-			}
+		ids := make([]string, len(links))
+		for i, link := range links {
+			ids[i] = link.ID
+		}
+		if len(links) != 0 && !request.RemoveIncidentLinks {
 			return fmt.Errorf("%w: %s has incident Links %s; unlink explicitly before retrying", ErrIncidentLinkConstraint, request.Path, strings.Join(ids, ", "))
 		}
-		result = IssueDeleteResult{Issue: current, Preview: request.Preview}
+		result = IssueDeleteResult{Issue: current, Preview: request.Preview, IncidentLinkIDs: ids}
 		if request.Preview {
 			return nil
+		}
+		for _, link := range links {
+			path := strings.TrimPrefix(link.ID, s.ScopeURL())
+			if _, err := s.unlinkInTx(ctx, tx, LinkDeleteRequest{
+				Path: path, Actor: request.Actor, ExpectedRevision: link.Revision,
+				UnconditionalSource: true,
+			}); err != nil {
+				return err
+			}
+		}
+		if len(links) != 0 {
+			// Unlinking a dependency can version its source Issue. The deletion
+			// terminal must refer to that final live head, not the pre-plan head.
+			current, err = s.showIssueInTx(ctx, tx, request.Path)
+			if err != nil {
+				return err
+			}
+			result.Issue = current
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err

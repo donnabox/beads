@@ -139,3 +139,143 @@ func TestIssueDeleteRefusesBlockingLinksWithoutNativeCascade(t *testing.T) {
 		})
 	}
 }
+
+func TestIssueDeleteComposesDependencyUnlinksInOneTransaction(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			f := setupDependencyUnlink(t, backend, 2)
+			request := IssueDeleteRequest{
+				Path: "beads/source", Actor: "deleter", ExpectedRevision: f.source.Revision,
+				RemoveIncidentLinks: true,
+			}
+			before := workflowState(t, f.ctx, f.store)
+			stale := request
+			stale.ExpectedRevision = "stale"
+			if got, err := f.store.DeleteIssue(f.ctx, stale); !errors.Is(err, ErrConflict) ||
+				!reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
+				t.Fatalf("stale linked deletion: %+v %v", got, err)
+			}
+			preview, err := f.store.DeleteIssue(f.ctx, IssueDeleteRequest{
+				Path: request.Path, ExpectedRevision: request.ExpectedRevision,
+				RemoveIncidentLinks: true, Preview: true,
+			})
+			if err != nil || !preview.Preview || preview.Deleted || len(preview.IncidentLinkIDs) != 2 ||
+				preview.IncidentLinkIDs[0] != f.links[0].ID || preview.IncidentLinkIDs[1] != f.links[1].ID ||
+				!reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
+				t.Fatalf("checked preview: %+v %v", preview, err)
+			}
+			for _, stage := range []string{"dependency-remove", "link-catalog", "link-retained", "issue-delete-native", "issue-delete-retained"} {
+				fault := errors.New("injected composed delete failure")
+				f.store.afterWrite = func(at string) error {
+					if at == stage {
+						return fault
+					}
+					return nil
+				}
+				got, err := f.store.DeleteIssue(f.ctx, request)
+				f.store.afterWrite = nil
+				if !errors.Is(err, fault) || !reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
+					t.Fatalf("%s rollback: %+v %v", stage, got, err)
+				}
+			}
+			deleted, err := f.store.DeleteIssue(f.ctx, request)
+			if err != nil || !deleted.Deleted || deleted.Terminal == nil || len(deleted.IncidentLinkIDs) != 2 ||
+				deleted.Issue.Revision == f.source.Revision || deleted.Terminal.PreviousVersion != deleted.Issue.Revision {
+				t.Fatalf("composed deletion: %+v %v", deleted, err)
+			}
+			if _, err := f.store.ShowIssue(f.ctx, "beads/source"); !errors.Is(err, ErrGone) {
+				t.Fatalf("deleted Issue still live: %v", err)
+			}
+			for i, link := range f.links {
+				path := strings.TrimPrefix(link.ID, f.store.ScopeURL())
+				if _, err := f.store.ShowLink(f.ctx, path); !errors.Is(err, ErrGone) {
+					t.Fatalf("deleted Link %d still live: %v", i, err)
+				}
+				kind, versions, err := f.store.Versions(f.ctx, path)
+				if err != nil || kind != KindLink || len(versions) != 2 || !versions[0].Removed {
+					t.Fatalf("Link %d tombstone: %s %+v %v", i, kind, versions, err)
+				}
+			}
+			for i, target := range f.targets {
+				got, err := f.store.ShowIssue(f.ctx, strings.TrimPrefix(target.ID, f.store.ScopeURL()))
+				if err != nil || !reflect.DeepEqual(got, target) {
+					t.Fatalf("target %d changed: %+v %v", i, got, err)
+				}
+			}
+		})
+	}
+}
+
+func TestIssueDeleteComposesIncomingDependencyUnlink(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			f := setupDependencyUnlink(t, backend, 1)
+			deleted, err := f.store.DeleteIssue(f.ctx, IssueDeleteRequest{
+				Path: "beads/first", Actor: "deleter", ExpectedRevision: f.targets[0].Revision,
+				RemoveIncidentLinks: true,
+			})
+			if err != nil || !deleted.Deleted || deleted.Terminal == nil ||
+				deleted.Terminal.PreviousVersion != f.targets[0].Revision {
+				t.Fatalf("incoming dependency delete: %+v %v", deleted, err)
+			}
+			source, err := f.store.ShowIssue(f.ctx, "beads/source")
+			if err != nil || source.Revision == f.source.Revision || len(source.Owned) != 0 {
+				t.Fatalf("surviving dependent: %+v %v", source, err)
+			}
+			if _, err := f.store.ShowLink(f.ctx, "links/first"); !errors.Is(err, ErrGone) {
+				t.Fatalf("incoming Link still live: %v", err)
+			}
+		})
+	}
+}
+
+func TestIssueDeleteComposesInformationalLinkUnlink(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, backend)
+			issue, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			memory, err := s.Create(ctx, CreateRequest{Path: "beads/context", Title: "Context"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{
+				Path: "links/context", SourcePath: "beads/context", TargetPath: "beads/work",
+				Actor: "author", ExpectedSourceRevision: memory.Revision,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			request := IssueDeleteRequest{Path: "beads/work", Actor: "deleter", ExpectedRevision: issue.Revision, RemoveIncidentLinks: true}
+			before := workflowState(t, ctx, s)
+			for _, stage := range []string{"link-payload", "link-retained", "issue-delete-native"} {
+				fault := errors.New("injected owner delete failure")
+				s.afterWrite = func(at string) error {
+					if at == stage {
+						return fault
+					}
+					return nil
+				}
+				got, err := s.DeleteIssue(ctx, request)
+				s.afterWrite = nil
+				if !errors.Is(err, fault) || !reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("%s rollback: %+v %v", stage, got, err)
+				}
+			}
+			deleted, err := s.DeleteIssue(ctx, request)
+			if err != nil || !deleted.Deleted || len(deleted.IncidentLinkIDs) != 1 || deleted.IncidentLinkIDs[0] != added.Link.ID {
+				t.Fatalf("delete with Memory owner: %+v %v", deleted, err)
+			}
+			current, err := s.Read(ctx, "beads/context")
+			memoryAfter, ok := current.(Record)
+			if err != nil || !ok || memoryAfter.Revision != memory.Revision || len(memoryAfter.Owned) != 0 {
+				t.Fatalf("unowned Memory source after unlink: %+v %v", current, err)
+			}
+			if _, err := s.ShowLink(ctx, "links/context"); !errors.Is(err, ErrGone) {
+				t.Fatalf("incident Link still live: %v", err)
+			}
+		})
+	}
+}
