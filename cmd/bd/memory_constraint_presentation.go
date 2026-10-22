@@ -199,9 +199,10 @@ func renderMemoryConstraintCapture(read graphstore.CurrentFamilyRead, scope stri
 
 // Direct subjects is fixed incoming Subject To, not a tunable traversal. Every
 // captured root remains visible even when there are no direct declarations.
-// The caller supplies the capture from ReadCurrentSubjects, not another family.
+// The caller supplies the capture from ReadCurrentSubjects, not another family,
+// and the Scope of that same read context. These private values do not self-describe it.
 func renderMemorySubjectsGraph(read graphstore.CurrentFamilyRead, scope string, maxBytes int) (string, error) {
-	return renderMemoryConstraintCapture(read, scope, maxBytes, func(c *memoryConstraintCapture, r graphGenericResult, v memoryquery.CurrentView, _ int, w *graphExportWriter, remaining int) error {
+	return renderMemoryConstraintCapture(read, scope, maxBytes, func(_ *memoryConstraintCapture, r graphGenericResult, v memoryquery.CurrentView, _ int, w *graphExportWriter, remaining int) error {
 		if v.Root.Depth != 1 || len(v.Frontier) != 0 {
 			return invalidMemoryConstraintCapture()
 		}
@@ -247,6 +248,7 @@ func renderMemorySubjectsGraph(read graphstore.CurrentFamilyRead, scope string, 
 // Phase1 is one original-subject occurrence; only phase2 expands Requires.
 // Separate trees per slot/phase implement (slot,phase,identity), without making
 // synthetic resource IDs or reconstructing either phase from the union graph.
+// Scope is the same immutable store-context value used by the caller for this read.
 func renderMemoryConstraintsGraph(read graphstore.CurrentConstraintsRead, scope string, maxBytes int) (string, error) {
 	return renderMemoryConstraintCapture(read.CurrentFamilyRead, scope, maxBytes, func(c *memoryConstraintCapture, r graphGenericResult, v memoryquery.CurrentView, slot int, w *graphExportWriter, remaining int) error {
 		if len(read.Stages) != len(read.Graph.Views) {
@@ -344,9 +346,6 @@ func renderMemoryConstraintsGraph(read graphstore.CurrentConstraintsRead, scope 
 			return err
 		}
 		t.placeLinks(anchors)
-		// When absent from phase2 this is display-only phase1 data. Parent
-		// selection is already settled; an existing phase2 occurrence can expand.
-		t.nodes[r.Root] = c.nodes[v.Root.Path]
 		t.println(first.nodeLabel(r.Root))
 		rows := []graphTreeLine{}
 		entered = map[string]bool{}
