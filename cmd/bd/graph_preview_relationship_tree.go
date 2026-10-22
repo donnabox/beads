@@ -35,6 +35,12 @@ type graphTreeLine struct {
 }
 
 func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, limit int) error {
+	return renderGraphRelationshipTreePart(w, r, limit, true)
+}
+
+// A captured Memory root supplies its own frontier and aggregate framing.
+// The generic graph wrapper retains its existing summary and forest behavior.
+func renderGraphRelationshipTreePart(w *graphExportWriter, r graphGenericResult, limit int, summary bool) error {
 	t := graphRelationshipTree{result: r, nodes: map[string]graphGenericNode{}, adjacent: map[string][]graphGenericLink{}, outgoing: map[string][]string{}, treeEdges: map[string]string{}, owners: map[string]string{}, expanded: map[string]bool{}, emitted: map[string]bool{}, w: w, limit: limit, remaining: limit}
 	invalid := func() error {
 		return fmt.Errorf("%w: incomplete or duplicate selected graph", graphstore.ErrInvalidStore)
@@ -103,6 +109,9 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, lim
 	sort.Strings(ids)
 	roots = append(roots, ids...)
 	roots = t.chooseExpansion(roots)
+	if !summary && len(roots) != 1 {
+		return invalid()
+	}
 	t.placeLinks(roots)
 	first := true
 	for _, id := range roots {
@@ -121,16 +130,18 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, lim
 			t.writeLines(t.expand(id), "")
 		}
 	}
-	if !first {
-		t.println("")
-	}
-	t.println(fmt.Sprintf("%d Beads, %d Links", len(t.nodes), len(links)))
-	t.println(fmt.Sprintf("Complete: %t; direction: %s; depth: %d; frontier: %d", r.Complete, r.Direction, r.Depth, len(r.Frontier)))
-	for _, id := range r.Frontier {
-		if t.stopped() {
-			break
+	if summary {
+		if !first {
+			t.println("")
 		}
-		t.println(fmt.Sprintf("More relationships beyond depth %d: %s", r.Depth, t.label(id)))
+		t.println(fmt.Sprintf("%d Beads, %d Links", len(t.nodes), len(links)))
+		t.println(fmt.Sprintf("Complete: %t; direction: %s; depth: %d; frontier: %d", r.Complete, r.Direction, r.Depth, len(r.Frontier)))
+		for _, id := range r.Frontier {
+			if t.stopped() {
+				break
+			}
+			t.println(fmt.Sprintf("More relationships beyond depth %d: %s", r.Depth, t.label(id)))
+		}
 	}
 	if t.err != nil {
 		return t.err
