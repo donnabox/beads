@@ -13,6 +13,72 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
+func TestApplyNewIssueGraphDefersAssignmentAtomically(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			request := publicops.ApplyBatchRequest{Actor: "test-author", Items: []publicops.ApplyItem{
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "deferred", Issue: plainIssue("Deferred").Issue}},
+				{Kind: publicops.ItemUpdate, Update: &publicops.UpdateItem{
+					Target: publicops.Ref{Key: "deferred"},
+					Patch:  publicops.IssuePatch{Assignee: publicops.Field[string]{Set: true, Value: "agent"}},
+				}},
+			}}
+			before := workflowState(t, ctx, s)
+			unsupported := request
+			unsupported.Items = append([]publicops.ApplyItem(nil), request.Items...)
+			mixedUpdate := *request.Items[1].Update
+			mixedUpdate.Patch.Title = publicops.Field[string]{Set: true, Value: "Changed too"}
+			unsupported.Items[1].Update = &mixedUpdate
+			refused, err := s.ApplyNewIssueGraph(ctx, unsupported)
+			if !errors.Is(err, ErrCapabilityUnavailable) || refused != nil {
+				t.Fatalf("arbitrary update was admitted: result=%v err=%v", refused, err)
+			}
+			if after := workflowState(t, ctx, s); !reflect.DeepEqual(before, after) {
+				t.Fatal("refused arbitrary update left native or graph state")
+			}
+			fault := errors.New("mapping deferred assignment failed")
+			s.afterWrite = func(stage string) error {
+				if stage == "issue" {
+					return fault
+				}
+				return nil
+			}
+			failed, err := s.ApplyNewIssueGraph(ctx, request)
+			s.afterWrite = nil
+			if !errors.Is(err, fault) || failed != nil {
+				t.Fatalf("deferred assignment fault: result=%v err=%v", failed, err)
+			}
+			if after := workflowState(t, ctx, s); !reflect.DeepEqual(before, after) {
+				t.Fatal("failed deferred assignment left native or graph state")
+			}
+			records, err := s.ApplyNewIssueGraph(ctx, request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			record := records["deferred"]
+			if record.Properties == nil || record.Properties.Assignee != "agent" {
+				t.Fatalf("deferred assignment was not retained: %+v", record)
+			}
+			var nativeVersions, mappedVersions int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM issue_versions WHERE issue_id=?`, record.Properties.ID).Scan(&nativeVersions); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?`, strings.TrimPrefix(record.ID, options.Binding.ScopeURL)).Scan(&mappedVersions); err != nil {
+				t.Fatal(err)
+			}
+			if nativeVersions != 2 || mappedVersions != 1 {
+				t.Fatalf("deferred assignment versions=%d native/%d canonical, want 2/1", nativeVersions, mappedVersions)
+			}
+		})
+	}
+}
+
 func TestApplyNewIssueGraphBindsForwardKeyAndRollsBackAfterNativeEdge(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {

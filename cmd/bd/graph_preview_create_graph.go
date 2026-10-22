@@ -50,7 +50,8 @@ func runGraphPreviewCreateGraph(cmd *cobra.Command, args []string) error {
 			Description: node.Description, Design: node.Design,
 			AcceptanceCriteria: node.AcceptanceCriteria, Notes: node.Notes,
 			SpecID: node.SpecID, ExternalRef: node.ExternalRef,
-			Assignee: node.Assignee, Owner: node.Owner, Priority: node.Priority,
+			Assignee: node.Assignee, AssignAfterCreate: node.AssignAfterCreate,
+			Owner: node.Owner, Priority: node.Priority,
 			EstimatedMinutes: node.EstimatedMinutes, DueAt: node.DueAt,
 			Labels: node.Labels,
 		}

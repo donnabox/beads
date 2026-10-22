@@ -91,6 +91,19 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", "batch-fields")); len(got) != 1 || got[0].Target != parent.ID {
 				t.Fatalf("initial fields broke canonical Link publication: %+v", got)
 			}
+			writePlan(`{"nodes":[{"key":"deferred","id":"batch-deferred","title":"Deferred","assignee":"agent","assign_after_create":true}],"edges":[{"from_key":"deferred","to_id":"` + parent.Properties.ID + `"}]}`)
+			var deferred GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &deferred); err != nil {
+				t.Fatal(err)
+			}
+			assigned := graphMixedResult[graphstore.IssueRecord](t, call("show", deferred.IDs["deferred"], "--format", "graph-json"))
+			if assigned.Properties == nil || assigned.Properties.Assignee != "agent" || len(assigned.Owned) != 1 {
+				t.Fatalf("deferred assignment lost final Issue or Link: %+v", assigned)
+			}
+			_, kind, deferredVersions, _ := graphVersionsListed(t, call("versions", deferred.IDs["deferred"]))
+			if kind != "issue" || len(deferredVersions) != 1 {
+				t.Fatalf("deferred assignment must have one canonical inception version: %+v", deferredVersions)
+			}
 			call("create", "Existing source", "--id", "batch-existing-source")
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-existing-source", "--format", "graph-json"))
 			writePlan(`{"nodes":[{"key":"new-target","id":"batch-new-target","title":"New target"}],"edges":[{"from_id":"batch-existing-source","to_key":"new-target"}]}`)
