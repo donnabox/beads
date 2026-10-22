@@ -63,99 +63,9 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	if request.Actor == "" || !utf8.ValidString(request.Actor) {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires a nonempty UTF-8 actor", storage.ErrValidation)
 	}
-	patch := publicops.IssuePatch{}
-	count := 0
-	for _, field := range []struct {
-		name  string
-		value *string
-		dest  *publicops.Field[string]
-	}{
-		{"title", request.Title, &patch.Title},
-		{"assignee", request.Assignee, &patch.Assignee},
-		{"description", request.Description, &patch.Description},
-		{"design", request.Design, &patch.Design},
-		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
-		{"notes", request.Notes, &patch.Notes},
-		{"append_notes", request.AppendNotes, &patch.AppendNotes},
-	} {
-		if field.value == nil {
-			continue
-		}
-		if !utf8.ValidString(*field.value) {
-			return IssueMutationResult{}, fmt.Errorf("%w: Issue %s must be UTF-8", storage.ErrValidation, field.name)
-		}
-		*field.dest = publicops.Field[string]{Set: true, Value: *field.value}
-		count++
-	}
-	if patch.Assignee.Set {
-		if err := types.CheckFieldLen("assignee", patch.Assignee.Value); err != nil {
-			return IssueMutationResult{}, fmt.Errorf("%w: Issue assignee: %w", storage.ErrValidation, err)
-		}
-	}
-	if request.Priority != nil {
-		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
-		count++
-	}
-	if request.EstimatedMinutes != nil && request.ClearEstimatedMinutes {
-		return IssueMutationResult{}, fmt.Errorf("%w: Issue estimate cannot be set and cleared together", storage.ErrValidation)
-	}
-	if request.EstimatedMinutes != nil {
-		value := *request.EstimatedMinutes
-		// The existing Issue column is a signed SQL INT on both backends. Reject
-		// unrepresentable input before SQL so strict and coercing engines agree.
-		if err := validateIssueEstimateStorage(&value); err != nil {
-			return IssueMutationResult{}, err
-		}
-		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
-		count++
-	} else if request.ClearEstimatedMinutes {
-		patch.EstimatedMinutes = publicops.Field[*int]{Set: true}
-		count++
-	}
-	// These limits describe the existing VARCHAR columns, not reference syntax.
-	// Validate before SQL so strict and coercing engines both refuse data loss.
-	for _, field := range []struct {
-		name  string
-		value *string
-	}{
-		{"external_ref", request.ExternalRef},
-		{"spec_id", request.SpecID},
-	} {
-		if field.value == nil {
-			continue
-		}
-		value := *field.value
-		if err := validateIssueReferenceStorage(field.name, value); err != nil {
-			return IssueMutationResult{}, err
-		}
-		if field.name == "external_ref" {
-			patch.ExternalRef = publicops.Field[*string]{Set: true}
-			if value != "" {
-				patch.ExternalRef.Value = &value
-			}
-		} else {
-			patch.SpecID = publicops.Field[string]{Set: true, Value: value}
-		}
-		count++
-	}
-	if request.DueAt.Set {
-		value, err := normalizeIssueDue(request.DueAt.Value)
-		if err != nil {
-			return IssueMutationResult{}, err
-		}
-		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
-		count++
-	}
-	scalarCount := count
-	if len(request.PropertiesPatch) > 0 && (request.FromRevision == "" || scalarCount > 0) {
-		return IssueMutationResult{}, fmt.Errorf("%w: native property operations require a historical source and cannot combine with scalar setters", storage.ErrValidation)
-	}
-	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
+	patch, count, err := prepareIssueUpdatePatch(request)
+	if err != nil {
 		return IssueMutationResult{}, err
-	}
-	if request.Metadata.Replace.Set || request.Metadata.Merge.Set || len(request.Metadata.Set) > 0 || len(request.Metadata.Unset) > 0 {
-		patch.Metadata = request.Metadata
-		count++
 	}
 	if count == 0 && !request.PropertiesProvided && request.FromRevision == "" {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
@@ -170,7 +80,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 	}
 	var result IssueMutationResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -294,27 +204,8 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if !updated.Changed {
 			return fmt.Errorf("%w: Issue update unexpectedly became a no-op", ErrInvalidStore)
 		}
-		// Non-strict SQL may coerce an oversized Go integer into the column's
-		// range without returning an error. The shared writer hydrates the actual
-		// stored result; never publish or retain an estimate different from the
-		// accepted intent. Refusal rolls back sibling edits and audit effects too.
-		if patch.EstimatedMinutes.Set {
-			if updated.Issue == nil || (patch.EstimatedMinutes.Value == nil) != (updated.Issue.EstimatedMinutes == nil) ||
-				(patch.EstimatedMinutes.Value != nil && *updated.Issue.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
-				return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
-			}
-		}
-		if patch.ExternalRef.Set {
-			if updated.Issue == nil || (patch.ExternalRef.Value == nil) != (updated.Issue.ExternalRef == nil) ||
-				(patch.ExternalRef.Value != nil && *patch.ExternalRef.Value != *updated.Issue.ExternalRef) {
-				return fmt.Errorf("%w: Issue external reference cannot be represented exactly by storage", storage.ErrValidation)
-			}
-		}
-		if patch.SpecID.Set && (updated.Issue == nil || updated.Issue.SpecID != patch.SpecID.Value) {
-			return fmt.Errorf("%w: Issue spec ID cannot be represented exactly by storage", storage.ErrValidation)
-		}
-		if patch.DueAt.Set && (updated.Issue == nil || !sameIssueDue(patch.DueAt.Value, updated.Issue.DueAt)) {
-			return fmt.Errorf("%w: Issue due date cannot be represented exactly by storage", storage.ErrValidation)
+		if err := checkIssueScalarStoredIntent(patch, updated.Issue); err != nil {
+			return err
 		}
 		if err := s.afterStage("issue-update"); err != nil {
 			return err
@@ -348,4 +239,132 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		return IssueMutationResult{}, err
 	}
 	return result, nil
+}
+
+// prepareIssueUpdatePatch is shared by scalar Issue updates and checked
+// parent replacements so both routes enforce the same native field admission.
+func prepareIssueUpdatePatch(request UpdateIssueRequest) (publicops.IssuePatch, int, error) {
+	patch := publicops.IssuePatch{}
+	count := 0
+	for _, field := range []struct {
+		name  string
+		value *string
+		dest  *publicops.Field[string]
+	}{
+		{"title", request.Title, &patch.Title},
+		{"assignee", request.Assignee, &patch.Assignee},
+		{"description", request.Description, &patch.Description},
+		{"design", request.Design, &patch.Design},
+		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
+		{"notes", request.Notes, &patch.Notes},
+		{"append_notes", request.AppendNotes, &patch.AppendNotes},
+	} {
+		if field.value == nil {
+			continue
+		}
+		if !utf8.ValidString(*field.value) {
+			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: Issue %s must be UTF-8", storage.ErrValidation, field.name)
+		}
+		*field.dest = publicops.Field[string]{Set: true, Value: *field.value}
+		count++
+	}
+	if patch.Assignee.Set {
+		if err := types.CheckFieldLen("assignee", patch.Assignee.Value); err != nil {
+			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: Issue assignee: %w", storage.ErrValidation, err)
+		}
+	}
+	if request.Priority != nil {
+		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
+		count++
+	}
+	if request.EstimatedMinutes != nil && request.ClearEstimatedMinutes {
+		return publicops.IssuePatch{}, 0, fmt.Errorf("%w: Issue estimate cannot be set and cleared together", storage.ErrValidation)
+	}
+	if request.EstimatedMinutes != nil {
+		value := *request.EstimatedMinutes
+		// The existing Issue column is a signed SQL INT on both backends. Reject
+		// unrepresentable input before SQL so strict and coercing engines agree.
+		if err := validateIssueEstimateStorage(&value); err != nil {
+			return publicops.IssuePatch{}, 0, err
+		}
+		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
+		count++
+	} else if request.ClearEstimatedMinutes {
+		patch.EstimatedMinutes = publicops.Field[*int]{Set: true}
+		count++
+	}
+	// These limits describe the existing VARCHAR columns, not reference syntax.
+	// Validate before SQL so strict and coercing engines both refuse data loss.
+	for _, field := range []struct {
+		name  string
+		value *string
+	}{
+		{"external_ref", request.ExternalRef},
+		{"spec_id", request.SpecID},
+	} {
+		if field.value == nil {
+			continue
+		}
+		value := *field.value
+		if err := validateIssueReferenceStorage(field.name, value); err != nil {
+			return publicops.IssuePatch{}, 0, err
+		}
+		if field.name == "external_ref" {
+			patch.ExternalRef = publicops.Field[*string]{Set: true}
+			if value != "" {
+				patch.ExternalRef.Value = &value
+			}
+		} else {
+			patch.SpecID = publicops.Field[string]{Set: true, Value: value}
+		}
+		count++
+	}
+	if request.DueAt.Set {
+		value, err := normalizeIssueDue(request.DueAt.Value)
+		if err != nil {
+			return publicops.IssuePatch{}, 0, err
+		}
+		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
+		count++
+	}
+	scalarCount := count
+	if len(request.PropertiesPatch) > 0 && (request.FromRevision == "" || scalarCount > 0) {
+		return publicops.IssuePatch{}, 0, fmt.Errorf("%w: native property operations require a historical source and cannot combine with scalar setters", storage.ErrValidation)
+	}
+	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
+		return publicops.IssuePatch{}, 0, err
+	}
+	if request.Metadata.Replace.Set || request.Metadata.Merge.Set || len(request.Metadata.Set) > 0 || len(request.Metadata.Unset) > 0 {
+		patch.Metadata = request.Metadata
+		count++
+	}
+	return patch, count, nil
+}
+
+// checkIssueScalarStoredIntent refuses storage coercion before graph state
+// or retained versions can publish a value different from the typed edit.
+func checkIssueScalarStoredIntent(patch publicops.IssuePatch, updated *types.Issue) error {
+	// Non-strict SQL may coerce an oversized Go integer into the column's
+	// range without returning an error. The shared writer hydrates the actual
+	// stored result; never publish or retain an estimate different from the
+	// accepted intent. Refusal rolls back sibling edits and audit effects too.
+	if patch.EstimatedMinutes.Set {
+		if updated == nil || (patch.EstimatedMinutes.Value == nil) != (updated.EstimatedMinutes == nil) ||
+			(patch.EstimatedMinutes.Value != nil && *updated.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
+			return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
+		}
+	}
+	if patch.ExternalRef.Set {
+		if updated == nil || (patch.ExternalRef.Value == nil) != (updated.ExternalRef == nil) ||
+			(patch.ExternalRef.Value != nil && *patch.ExternalRef.Value != *updated.ExternalRef) {
+			return fmt.Errorf("%w: Issue external reference cannot be represented exactly by storage", storage.ErrValidation)
+		}
+	}
+	if patch.SpecID.Set && (updated == nil || updated.SpecID != patch.SpecID.Value) {
+		return fmt.Errorf("%w: Issue spec ID cannot be represented exactly by storage", storage.ErrValidation)
+	}
+	if patch.DueAt.Set && (updated == nil || !sameIssueDue(patch.DueAt.Value, updated.DueAt)) {
+		return fmt.Errorf("%w: Issue due date cannot be represented exactly by storage", storage.ErrValidation)
+	}
+	return nil
 }
