@@ -465,16 +465,17 @@ bd delete scratch --force
 # Or, for another unreferenced Memory:
 bd remember 'Another temporary note' --id other-scratch
 bd forget other-scratch
-# An unreferenced Issue follows the same preview and apply shape:
+# An Issue follows the same preview and apply shape:
 bd create 'Temporary task' --id temp-work
 bd delete temp-work
 bd delete temp-work --force
 ```
 
 Deletion removes current Bead state but reserves its ID and retains prior live
-snapshots. The terminal deletion revision is separate from citable Resource
-versions; deletion does not promise erasure or restore. Native Issue deletion
-records its ordinary delete journal event.
+snapshots plus a distinct graph terminal deletion revision. That terminal is
+separate from citable Resource versions; deletion does not promise erasure or
+restore. Native Issue deletion records its ordinary delete journal event;
+removed incident Links retain their own terminal revisions.
 
 Use `bd defer ID...` to set Issues aside and `bd undefer ID...` to return
 deferred Issues to open. An undated defer stays in the icebox until undeferred.
