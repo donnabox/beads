@@ -14,7 +14,7 @@ import (
 )
 
 // CurrentFamilyRequest selects current local roots with independent hop depths.
-// The first slice admits References and Superseded By, including refinements,
+// Admitted families are References, Superseded By, Requires and Defines,
 // in either direction. It is not a historical selector or a public CLI schema.
 // MaxBytes and Limits accumulate across all roots, including validation feeds.
 // MaxInspected independently caps accumulated acquisition rows and accumulated
@@ -54,32 +54,21 @@ func (s *Store) ReadCurrentFamily(ctx context.Context, req CurrentFamilyRequest)
 	if ctx == nil {
 		return CurrentFamilyRead{}, errors.New("graph operation requires a context")
 	}
-	if len(req.Roots) == 0 || len(req.Roots) > PreviewSnapshotLimit || !req.Direction.Valid() || req.MaxBytes == 0 || req.MaxBytes > PreviewCurrentReadByteLimit || req.Limits.MaxNodes < 1 || req.Limits.MaxNodes > PreviewSnapshotLimit || req.Limits.MaxLinks < 0 || req.Limits.MaxLinks > PreviewSnapshotLimit || req.Limits.MaxInspected < 0 || req.Limits.MaxInspected > 1000000 || req.Family.Revision != "" {
-		return CurrentFamilyRead{}, fmt.Errorf("%w: invalid current family read", graph.ErrValidation)
-	}
-	for _, root := range req.Roots {
-		if validatePath(root.Path) != nil || root.Depth < 0 || root.Depth > PreviewSnapshotLimit {
-			return CurrentFamilyRead{}, fmt.Errorf("%w: invalid current family root", graph.ErrValidation)
-		}
+	if err := validateCurrentFamilyRequest(req); err != nil {
+		return CurrentFamilyRead{}, err
 	}
 	var result CurrentFamilyRead
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
-		if err := checkBinding(ctx, tx, s.options); err != nil {
-			return err
-		}
-		catalog, err := s.selectedTypes()
+		r, err := s.newCurrentFamilyReader(ctx, tx, req)
 		if err != nil {
 			return err
 		}
-		refs := catalog.projectionBinding(memorycatalog.References)
+		catalog := r.catalog
 		successors := catalog.projectionBinding(memorycatalog.SupersededBy)
-		if req.Family.URI != refs && req.Family.URI != successors {
-			return fmt.Errorf("%w: current family slice admits References/succession", ErrCapabilityUnavailable)
+		requires, defines := catalog.projectionBinding(memorycatalog.Requires), catalog.projectionBinding(memorycatalog.Defines)
+		if req.Family.URI != catalog.projectionBinding(memorycatalog.References) && req.Family.URI != successors && req.Family.URI != requires && req.Family.URI != defines {
+			return fmt.Errorf("%w: current family read does not admit selected family", ErrCapabilityUnavailable)
 		}
-		r := &currentFamilyReader{store: s, tx: tx, catalog: catalog, request: req, allocations: map[string]currentFamilyAllocation{}, links: map[string]LinkRecord{}, feeds: map[string][]graph.Link{}}
-		// Reuse the established SQL-side cumulative byte/row charger, not the exact
-		// Requires resolver or its ownership-only Outgoing interface.
-		r.budget = &memoryQueryReader{tx: tx, request: MemoryRequiresRequest{MaxBytes: req.MaxBytes, Limits: req.Limits}}
 		for _, root := range req.Roots {
 			n, err := r.Current(ctx, root.Path)
 			if err != nil {
@@ -88,42 +77,36 @@ func (s *Store) ReadCurrentFamily(ctx context.Context, req CurrentFamilyRequest)
 			if req.Family.URI == successors && !catalog.memoryType(n.TypeURL) {
 				return fmt.Errorf("%w: succession root must be Memory", graph.ErrValidation)
 			}
+			if (req.Family.URI == requires || req.Family.URI == defines) && !r.isConstraint(n.TypeURL) {
+				return fmt.Errorf("%w: Requires/Defines root must be Constraint", graph.ErrValidation)
+			}
 		}
-		result.Graph, err = memoryquery.CurrentFamily(ctx, r, r.matches, req.Roots, req.Direction, req.Limits)
+		g, err := memoryquery.CurrentFamily(ctx, r, r.matches, req.Roots, req.Direction, req.Limits)
 		if err != nil {
 			return err
 		}
-		result.Records = make([]any, 0, len(result.Graph.Nodes)+len(result.Graph.Links))
-		for _, node := range result.Graph.Nodes {
-			record, err := r.hydrate(ctx, node.Path)
-			if err != nil {
-				return err
-			}
-			result.Records = append(result.Records, record)
-		}
-		for _, link := range result.Graph.Links {
-			record, ok := r.links[link.Path()]
-			if !ok {
-				return fmt.Errorf("%w: missing selected current Link", ErrInvalidStore)
-			}
-			result.Records = append(result.Records, record)
-		}
-		result.Types, err = installedPreviewTypes(ctx, tx, s.ScopeURL())
-		if err != nil {
-			return err
-		}
-		result.OwnedLinkTypes = map[string][]string{}
-		for _, descriptor := range result.Types {
-			if descriptor.Describes() == graph.KindBead {
-				owned, err := s.SelectedOwnedLinkTypes(descriptor.ID())
-				if err != nil {
-					return err
-				}
-				result.OwnedLinkTypes[descriptor.ID()] = owned
-			}
-		}
-		return tx.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&result.WriterToken)
+		result, err = r.materialize(ctx, g)
+		return err
 	})
+	err = currentReadError(ctx, err)
+	if err != nil {
+		return CurrentFamilyRead{}, err
+	}
+	return result, nil
+}
+
+func validateCurrentFamilyRequest(req CurrentFamilyRequest) error {
+	if len(req.Roots) == 0 || len(req.Roots) > PreviewSnapshotLimit || !req.Direction.Valid() || req.MaxBytes == 0 || req.MaxBytes > PreviewCurrentReadByteLimit || req.Limits.MaxNodes < 1 || req.Limits.MaxNodes > PreviewSnapshotLimit || req.Limits.MaxLinks < 0 || req.Limits.MaxLinks > PreviewSnapshotLimit || req.Limits.MaxInspected < 0 || req.Limits.MaxInspected > 1000000 || req.Family.Revision != "" {
+		return fmt.Errorf("%w: invalid current family read", graph.ErrValidation)
+	}
+	for _, root := range req.Roots {
+		if validatePath(root.Path) != nil || root.Depth < 0 || root.Depth > PreviewSnapshotLimit {
+			return fmt.Errorf("%w: invalid current family root", graph.ErrValidation)
+		}
+	}
+	return nil
+}
+func currentReadError(ctx context.Context, err error) error {
 	if errors.Is(err, memoryquery.ErrLimitExceeded) {
 		err = errors.Join(ErrLimitExceeded, err)
 	}
@@ -131,10 +114,57 @@ func (s *Store) ReadCurrentFamily(ctx context.Context, req CurrentFamilyRequest)
 		err = errors.Join(ErrCapabilityUnavailable, err)
 	}
 	err = errors.Join(err, ctx.Err())
+	return err
+}
+func (s *Store) newCurrentFamilyReader(ctx context.Context, tx *sql.Tx, req CurrentFamilyRequest) (*currentFamilyReader, error) {
+	if err := checkBinding(ctx, tx, s.options); err != nil {
+		return nil, err
+	}
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return nil, err
+	}
+	r := &currentFamilyReader{store: s, tx: tx, catalog: catalog, request: req, allocations: map[string]currentFamilyAllocation{}, links: map[string]LinkRecord{}, feeds: map[string][]graph.Link{}}
+	// Share only the SQL-side byte/row charger, never the historical solver.
+	r.budget = &memoryQueryReader{tx: tx, request: MemoryRequiresRequest{MaxBytes: req.MaxBytes, Limits: req.Limits}}
+	return r, nil
+}
+func (r *currentFamilyReader) materialize(ctx context.Context, g memoryquery.CurrentGraph) (CurrentFamilyRead, error) {
+	out := CurrentFamilyRead{Graph: g}
+	var err error
+	out.Records = make([]any, 0, len(g.Nodes)+len(g.Links))
+	for _, node := range g.Nodes {
+		record, err := r.hydrate(ctx, node.Path)
+		if err != nil {
+			return CurrentFamilyRead{}, err
+		}
+		out.Records = append(out.Records, record)
+	}
+	for _, link := range g.Links {
+		record, ok := r.links[link.Path()]
+		if !ok {
+			return CurrentFamilyRead{}, fmt.Errorf("%w: missing selected current Link", ErrInvalidStore)
+		}
+		out.Records = append(out.Records, record)
+	}
+	out.Types, err = installedPreviewTypes(ctx, r.tx, r.store.ScopeURL())
 	if err != nil {
 		return CurrentFamilyRead{}, err
 	}
-	return result, nil
+	out.OwnedLinkTypes = map[string][]string{}
+	for _, descriptor := range out.Types {
+		if descriptor.Describes() == graph.KindBead {
+			owned, err := r.store.SelectedOwnedLinkTypes(descriptor.ID())
+			if err != nil {
+				return CurrentFamilyRead{}, err
+			}
+			out.OwnedLinkTypes[descriptor.ID()] = owned
+		}
+	}
+	if err := r.tx.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&out.WriterToken); err != nil {
+		return CurrentFamilyRead{}, err
+	}
+	return out, nil
 }
 
 type currentFamilyAllocation struct {
@@ -152,12 +182,21 @@ type currentFamilyReader struct {
 	feeds       map[string][]graph.Link
 }
 
-func (r *currentFamilyReader) matches(_ context.Context, id string) (bool, error) {
-	d, ok := r.catalog.types.Definition(id)
-	if !ok || d.Kind != graph.KindLink {
-		return false, fmt.Errorf("%w: unknown current Link Type", ErrInvalidStore)
+func (r *currentFamilyReader) matches(ctx context.Context, id string) (bool, error) {
+	return r.family(r.request.Family)(ctx, id)
+}
+func (r *currentFamilyReader) family(family typecatalog.Reference) func(context.Context, string) (bool, error) {
+	return func(_ context.Context, id string) (bool, error) {
+		d, ok := r.catalog.types.Definition(id)
+		if !ok || d.Kind != graph.KindLink {
+			return false, fmt.Errorf("%w: unknown current Link Type", ErrInvalidStore)
+		}
+		return r.catalog.types.Conforms(d.Identity, family), nil
 	}
-	return r.catalog.types.Conforms(d.Identity, r.request.Family), nil
+}
+func (r *currentFamilyReader) isConstraint(id string) bool {
+	d, ok := r.catalog.types.Definition(id)
+	return ok && d.Kind == graph.KindBead && r.catalog.types.Conforms(d.Identity, typecatalog.Reference{URI: r.catalog.projectionBinding(memorycatalog.Constraint)})
 }
 
 func (r *currentFamilyReader) Current(ctx context.Context, path string) (memoryquery.CurrentNode, error) {

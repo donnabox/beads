@@ -452,7 +452,9 @@ func TestMemoryCurrentFamilySuccessionPinsAndScope(t *testing.T) {
 	r.Roots[0].Path = "beads/source"
 	r.Family = typecatalog.Reference{URI: s.ScopeURL() + "types/requires"}
 	got, err = s.ReadCurrentFamily(currentFamilyContext(t), r)
-	assertCurrentFamilyError(t, got, err, ErrCapabilityUnavailable)
+	// Requires is admitted by the Constraint successor, but this Memory root
+	// does not conform to Constraint and must still return zero state.
+	assertCurrentFamilyError(t, got, err, graph.ErrValidation)
 }
 
 func TestMemoryCurrentFamilyScopedBytesAndIntegrity(t *testing.T) {
