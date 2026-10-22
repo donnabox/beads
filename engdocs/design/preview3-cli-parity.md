@@ -395,7 +395,16 @@ locally; current-head hosted CI remains pending.
   storage and installed CLI workflows passed six results without skips
   (`/tmp/cleo-parity-through225-focused-20261022.jsonl`,
   `/tmp/cleo-parity-through225-server-20261022.jsonl`). This is local assembly
-  evidence, not a PR merge or full CRUD+ qualification.
+  evidence, not a PR merge or full CRUD+ qualification. A later disposable
+  assembly at local-only `8ce4e86f9` retained the newer update fields during
+  the #224–#225 cherry-pick and kept the combined parent-plus-status/type/label
+  and conditional edits as explicit refusals. Its reparent storage and installed
+  CLI workflows passed on embedded and real shared-server Dolt without skips
+  (`/tmp/cleo-integrated-reparent-server-test.jsonl`); the exact assembled
+  branch's broad embedded graph CLI sweep passed 274 top-level tests with one
+  expected server-only skip and no failures
+  (`/tmp/cleo-integrated-reparent-broad.jsonl`). These results qualify the
+  local composition only; they do not select or merge either PR.
 - Stacked [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198)
   admit local Issue `create --deps` through one transaction. #197 creates the
   native Issue and dependency edges, canonical Links and source-owned History;
