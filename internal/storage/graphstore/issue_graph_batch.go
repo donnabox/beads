@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -38,10 +39,16 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 	}
 	var edges []edge
 	creates := make(map[string]*publicops.CreateItem)
+	deferredAssignees := make(map[string]string)
+	deferredIndexes := make(map[string]int)
+	deferredPhase := false
 	seen := make(map[string]bool)
 	for index, item := range plan.Items {
 		switch item.Kind {
 		case publicops.ItemCreate:
+			if deferredPhase {
+				return nil, fmt.Errorf("%w: graph batch creates must precede deferred assignments", ErrCapabilityUnavailable)
+			}
 			if item.Create.Key == "" || len(item.Create.MetadataRefs) != 0 {
 				return nil, fmt.Errorf("%w: graph batch item %d requires a key and cannot carry metadata refs", ErrCapabilityUnavailable, index)
 			}
@@ -50,6 +57,9 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			}
 			creates[item.Create.Key] = item.Create
 		case publicops.ItemDepAdd:
+			if deferredPhase {
+				return nil, fmt.Errorf("%w: graph batch edges must precede deferred assignments", ErrCapabilityUnavailable)
+			}
 			dep := item.DepAdd
 			if (dep.Source.Key == "") == (dep.Source.ID == "") || (dep.Target.Key == "") == (dep.Target.ID == "") ||
 				dep.Metadata != "" || dep.ThreadID != "" || dep.HasSpawner {
@@ -65,12 +75,32 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			}
 			seen[pair] = true
 			edges = append(edges, edge{index: index, sourceKey: dep.Source.Key, sourceID: dep.Source.ID, targetKey: dep.Target.Key, targetID: dep.Target.ID, dependency: resolvedIssueCreateDependency{nativeType: nativeType}})
+		case publicops.ItemUpdate:
+			deferredPhase = true
+			update := item.Update
+			if update.Target.Key == "" || update.Target.ID != "" || update.Patch.Assignee.Value == "" ||
+				!reflect.DeepEqual(*update, publicops.UpdateItem{
+					Target: publicops.Ref{Key: update.Target.Key},
+					Patch:  publicops.IssuePatch{Assignee: publicops.Field[string]{Set: true, Value: update.Patch.Assignee.Value}},
+				}) {
+				return nil, fmt.Errorf("%w: graph batch update must be a new node's deferred assignee", ErrCapabilityUnavailable)
+			}
+			if _, exists := deferredAssignees[update.Target.Key]; exists {
+				return nil, fmt.Errorf("%w: graph batch node has multiple deferred assignments", ErrCapabilityUnavailable)
+			}
+			deferredAssignees[update.Target.Key] = update.Patch.Assignee.Value
+			deferredIndexes[update.Target.Key] = index
 		default:
-			return nil, fmt.Errorf("%w: graph batch item %d is not a new Issue or local Dependency", ErrCapabilityUnavailable, index)
+			return nil, fmt.Errorf("%w: graph batch item %d is not a new Issue, local Dependency or deferred assignee", ErrCapabilityUnavailable, index)
 		}
 	}
 	if len(creates) == 0 {
 		return nil, fmt.Errorf("%w: graph batch requires a new Issue", storage.ErrValidation)
+	}
+	for key := range deferredAssignees {
+		if creates[key] == nil {
+			return nil, fmt.Errorf("%w: deferred assignee must target a new keyed Issue", ErrCapabilityUnavailable)
+		}
 	}
 	for _, item := range edges {
 		if (item.sourceKey != "" && creates[item.sourceKey] == nil) || (item.targetKey != "" && creates[item.targetKey] == nil) {
@@ -229,6 +259,12 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			}
 			if !sameIssueCreateFields(create.Issue, issue, plan.Actor) || issueops.IsWisp(issue) {
 				return fmt.Errorf("%w: graph batch Issue %q cannot be represented exactly", storage.ErrValidation, key)
+			}
+			if assignee, ok := deferredAssignees[key]; ok {
+				result := applied.Items[deferredIndexes[key]]
+				if result.Kind != publicops.ItemUpdate || !result.Changed || result.IssueID != id || result.Issue == nil || result.Issue.Assignee != assignee {
+					return fmt.Errorf("%w: graph batch deferred assignee did not update Issue %q", ErrInvalidStore, key)
+				}
 			}
 			path, err := generatedIssuePath(ctx, tx, id)
 			if err != nil {
