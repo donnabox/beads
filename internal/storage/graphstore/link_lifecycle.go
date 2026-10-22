@@ -225,99 +225,106 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 	}
 	var result LinkDeleteResult
 	err := s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
-		if err := checkBinding(ctx, tx, s.options); err != nil {
-			return err
-		}
-		if request.TypeURL != "" {
-			if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
-				return err
-			}
-		}
-		path, err := s.selectUnlinkPathInTx(ctx, tx, request)
-		if err != nil {
-			return err
-		}
-		link, err := s.showLinkInTx(ctx, tx, path)
-		if err != nil {
-			return err
-		}
-		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
-		if err != nil {
-			return err
-		}
-		if isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) {
-			result, err = s.unlinkDependencyInTx(ctx, tx, path, link, request)
-			return err
-		}
-		if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
-			return fmt.Errorf("%w: native relationship Link unlink is not admitted in this preview", ErrCapabilityUnavailable)
-		}
-		// Only informational Links reach this point. Resolve the CLI default
-		// here, after transactional selection, without a whole-workspace read.
-		if request.DefaultInformationalSource {
-			request.UnconditionalSource = true
-		}
-		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
-			return err
-		}
-		sourcePath := strings.TrimPrefix(link.Source, s.options.Binding.ScopeURL)
-		source, revision, err := s.beadEndpointInTx(ctx, tx, sourcePath)
-		if err != nil {
-			return err
-		}
-		owned, err := s.ownsLink(source, link.Type)
-		if err != nil {
-			return err
-		}
-		if err := checkRevisionGuard(request.ExpectedSourceRevision, request.UnconditionalSource, revision, owned, "source"); err != nil {
-			return err
-		}
-		if err := s.touchCoordination(ctx, tx); err != nil {
-			return err
-		}
-		deletionRevision, err := freshToken()
-		if err != nil {
-			return err
-		}
-		tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: deletionRevision, Version: deletionRevision, State: "deleted", PreviousVersion: link.Version, Attribution: writeAttribution(request.Actor)}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=? WHERE path=?`, deletionRevision, path); err != nil {
-			return err
-		}
-		if err := s.afterStage("link-catalog"); err != nil {
-			return err
-		}
-		if _, err := tx.ExecContext(ctx, `DELETE FROM graph_preview_links WHERE path=?`, path); err != nil {
-			return err
-		}
-		if err := s.afterStage("link-payload"); err != nil {
-			return err
-		}
-		snapshot, err := canonicalJSON(tombstone)
-		if err != nil {
-			return err
-		}
-		if err := insertPreviewVersionInTx(ctx, tx, path, deletionRevision, snapshot, request.Actor); err != nil {
-			return err
-		}
-		if err := s.afterStage("link-retained"); err != nil {
-			return err
-		}
-		replacedSource := replacedMemory(source, request.UnconditionalSource)
-		if owned {
-			source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, request.Actor, source)
-		} else {
-			replacedSource = nil
-		}
-		if err != nil {
-			return err
-		}
-		result = LinkDeleteResult{Link: tombstone, Source: source, Changed: true, ReplacedSource: replacedSource}
-		return nil
+		var err error
+		result, err = s.unlinkInTx(ctx, tx, request)
+		return err
 	})
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
 	return result, nil
+}
+
+// unlinkInTx performs the canonical Link deletion inside its caller's checked
+// transaction. Keep the public Unlink and composed Issue mutations on this
+// single path so native edges, graph tombstones, owners, and History agree.
+func (s *Store) unlinkInTx(ctx context.Context, tx *sql.Tx, request LinkDeleteRequest) (LinkDeleteResult, error) {
+	if err := checkBinding(ctx, tx, s.options); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if request.TypeURL != "" {
+		if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
+			return LinkDeleteResult{}, err
+		}
+	}
+	path, err := s.selectUnlinkPathInTx(ctx, tx, request)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	link, err := s.showLinkInTx(ctx, tx, path)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) {
+		return s.unlinkDependencyInTx(ctx, tx, path, link, request)
+	}
+	if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
+		return LinkDeleteResult{}, fmt.Errorf("%w: native relationship Link unlink is not admitted in this preview", ErrCapabilityUnavailable)
+	}
+	// Only informational Links reach this point. Resolve the CLI default
+	// here, after transactional selection, without a whole-workspace read.
+	if request.DefaultInformationalSource {
+		request.UnconditionalSource = true
+	}
+	if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	sourcePath := strings.TrimPrefix(link.Source, s.options.Binding.ScopeURL)
+	source, revision, err := s.beadEndpointInTx(ctx, tx, sourcePath)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	owned, err := s.ownsLink(source, link.Type)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if err := checkRevisionGuard(request.ExpectedSourceRevision, request.UnconditionalSource, revision, owned, "source"); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if err := s.touchCoordination(ctx, tx); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	deletionRevision, err := freshToken()
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: deletionRevision, Version: deletionRevision, State: "deleted", PreviousVersion: link.Version, Attribution: writeAttribution(request.Actor)}
+	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=? WHERE path=?`, deletionRevision, path); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if err := s.afterStage("link-catalog"); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if _, err := tx.ExecContext(ctx, `DELETE FROM graph_preview_links WHERE path=?`, path); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if err := s.afterStage("link-payload"); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	snapshot, err := canonicalJSON(tombstone)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if err := insertPreviewVersionInTx(ctx, tx, path, deletionRevision, snapshot, request.Actor); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if err := s.afterStage("link-retained"); err != nil {
+		return LinkDeleteResult{}, err
+	}
+	replacedSource := replacedMemory(source, request.UnconditionalSource)
+	if owned {
+		source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, request.Actor, source)
+	} else {
+		replacedSource = nil
+	}
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	return LinkDeleteResult{Link: tombstone, Source: source, Changed: true, ReplacedSource: replacedSource}, nil
 }
 
 func (s *Store) selectUnlinkPathInTx(ctx context.Context, tx *sql.Tx, request LinkDeleteRequest) (string, error) {
