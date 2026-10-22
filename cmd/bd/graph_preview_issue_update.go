@@ -182,15 +182,44 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 // The JSON object names native Issue properties, while the existing Issue
 // writer keeps ownership of validation, no-ops, History and assignment fences.
 func graphPreviewIssuePropertyMerge(cmd *cobra.Command, request *graphstore.UpdateIssueRequest) error {
-	if !cmd.Flags().Changed("properties") {
-		return nil
-	}
-	input, _ := cmd.Flags().GetString("properties")
-	values, err := graphPreviewProperties(input, cmd.InOrStdin())
-	if err != nil {
-		return graphFailure("invalid_properties", err.Error(), 2)
+	values, err := graphPreviewIssuePropertyValues(cmd)
+	if err != nil || values == nil {
+		return err
 	}
 	return graphPreviewApplyIssueProperties(cmd, request, values)
+}
+
+func graphPreviewIssuePropertyValues(cmd *cobra.Command) (map[string]any, error) {
+	if !cmd.Flags().Changed("properties") {
+		return nil, nil
+	}
+	input, _ := cmd.Flags().GetString("properties")
+	if input == "-" && graphPreviewDescriptionUsesStdin(cmd) {
+		return nil, graphFailure("invalid_properties", "--properties - and a description source cannot both read stdin", 2)
+	}
+	values, err := graphPreviewProperties(input, cmd.InOrStdin())
+	if err != nil {
+		return nil, graphFailure("invalid_properties", err.Error(), 2)
+	}
+	if _, ok := values["description"]; ok && graphPreviewDescriptionFlagsChanged(cmd) {
+		return nil, graphFailure("invalid_properties", "Issue description was supplied by both --properties and a shorthand flag", 2)
+	}
+	return values, nil
+}
+
+func graphPreviewDescriptionUsesStdin(cmd *cobra.Command) bool {
+	if stdin, _ := cmd.Flags().GetBool("stdin"); stdin {
+		return true
+	}
+	for _, name := range []string{"description", "body", "message", "body-file", "description-file"} {
+		if cmd.Flags().Changed(name) {
+			value, _ := cmd.Flags().GetString(name)
+			if value == "-" {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.UpdateIssueRequest, values map[string]any) error {
@@ -300,12 +329,20 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 }
 
 func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
+	// Resolve the structured input and its source conflicts before a description
+	// flag can consume stdin or open a file.
+	values, err := graphPreviewIssuePropertyValues(cmd)
+	if err != nil {
+		return err
+	}
 	request, err := graphPreviewIssueEditRequest(cmd, path)
 	if err != nil {
 		return err
 	}
-	if err := graphPreviewIssuePropertyMerge(cmd, &request); err != nil {
-		return err
+	if values != nil {
+		if err := graphPreviewApplyIssueProperties(cmd, &request, values); err != nil {
+			return err
+		}
 	}
 	request.Actor = getActorWithGit()
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {

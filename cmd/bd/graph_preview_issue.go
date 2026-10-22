@@ -59,6 +59,12 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 			return err
 		}
 	}
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		if input == "-" && graphPreviewDescriptionUsesStdin(cmd) {
+			return graphFailure("invalid_properties", "--properties - and a description source cannot both read stdin", 2)
+		}
+	}
 	properties, err := graphPreviewCreateProperties(cmd)
 	if err != nil {
 		return err
