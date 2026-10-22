@@ -43,11 +43,11 @@ func TestGraphPreviewIssueReparentWorkflow(t *testing.T) {
 			call("revision_conflict", "update", child.Properties.ID, "--parent", newParent.Properties.ID,
 				"--if-revision", "00000000000000000000000000000000", "--json")
 			call("capability_unavailable", "update", child.Properties.ID, "--parent=", "--json")
-			call("capability_unavailable", "update", child.Properties.ID, "--parent", newParent.Properties.ID,
-				"--title", "Split update", "--json")
 			result := graphMixedResult[graphstore.IssueMutationResult](t, call("", "update", child.Properties.ID,
-				"--parent", newParent.Properties.ID, "--if-revision", child.Revision, "--json"))
-			if !result.Changed || result.Issue.Revision == child.Revision || len(result.Issue.Owned) != 1 {
+				"--parent", newParent.Properties.ID, "--title", "Moved child", "--priority", "P1",
+				"--if-revision", child.Revision, "--json"))
+			if !result.Changed || result.Issue.Revision == child.Revision || len(result.Issue.Owned) != 1 ||
+				result.Issue.Properties.Title != "Moved child" || result.Issue.Properties.Priority != 1 {
 				t.Fatalf("reparent did not update Issue and owned Link: %+v", result)
 			}
 			var newLink graphstore.LinkRecord
@@ -70,6 +70,16 @@ func TestGraphPreviewIssueReparentWorkflow(t *testing.T) {
 				"--parent", newParent.Properties.ID, "--if-revision", result.Issue.Revision, "--json"))
 			if noOp.Changed || noOp.Issue.Revision != result.Issue.Revision {
 				t.Fatalf("same-parent retry was not a no-op: %+v", noOp)
+			}
+			sameParentEdit := graphMixedResult[graphstore.IssueMutationResult](t, call("", "update", child.Properties.ID,
+				"--parent", newParent.Properties.ID, "--description", "Edited in place", "--if-revision", result.Issue.Revision, "--json"))
+			if !sameParentEdit.Changed || sameParentEdit.Issue.Properties.Description != "Edited in place" ||
+				len(sameParentEdit.Issue.Owned) != 1 {
+				t.Fatalf("same-parent scalar edit failed: %+v", sameParentEdit)
+			}
+			var stableLink graphstore.LinkRecord
+			if err := json.Unmarshal(sameParentEdit.Issue.Owned[0], &stableLink); err != nil || stableLink.ID != newLink.ID {
+				t.Fatalf("same-parent scalar edit replaced Link: %+v %v", stableLink, err)
 			}
 		})
 	}
