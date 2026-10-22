@@ -538,7 +538,9 @@ locally; current-head hosted CI remains pending.
   assignee-policy refusal still has a per-item outcome. Focused graphstore
   and installed CLI workflows passed on embedded and real shared-server
   Dolt, with no skips; docs link, generated CLI docs, freshness and diff
-  checks passed. Hosted current-head CI and review are pending. #64's
+  checks passed. #226 has 119 current-head hosted successes and eight
+  expected skips; #227 has four successes and two expected skips. Both
+  reviews remain pending. #64's
   Preview 2 partial-missing example is superseded only for this selected
   Preview 3 rule; these PRs do not replace its other batch behavior.
 - Draft [#228](https://github.com/donnabox/beads/pull/228)–[#229](https://github.com/donnabox/beads/pull/229)
