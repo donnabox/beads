@@ -429,8 +429,8 @@ locally; current-head hosted CI remains pending.
   passes, no skips per engine; `/tmp/cleo-multi-update-embedded-r2-20261022.jsonl`,
   `/tmp/cleo-multi-update-server-20261022.jsonl`). Its exact-head pure-Go graph
   CLI sweep passed 929 test/subtest results with no skips or failures
-  (`/tmp/cleo-multi-update-graph-sweep-r2-20261022.jsonl`). Hosted CI and
-  review are pending. This PR is stacked on #225 and is not in the pinned
+  (`/tmp/cleo-multi-update-graph-sweep-r2-20261022.jsonl`). Four current-head
+  hosted checks passed; review is pending. This PR is stacked on #225 and is not in the pinned
   integration; its graph JSON array of successful mutations still needs a
   later shipping output-shape comparison. A separate disposable assembly at
   local-only `fa224fc4e` combines #250's shared Issue selector, #222–#225's
