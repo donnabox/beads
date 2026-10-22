@@ -179,7 +179,7 @@ to new keyed Issues. The native post-create metadata splice, deferred
 assignment, canonical Link and one final Issue inception snapshot pass
 focused embedded and real shared-server Dolt workflows with fault rollback.
 Its broader embedded graph-batch selection passed with seven server-only
-skips; hosted CI and review are pending. Stacked draft
+skips; four current-head hosted checks passed and review is pending. Stacked draft
 [#242](https://github.com/donnabox/beads/pull/242) at `f31916996`
 admits graph-plan `parent_key`, `parent` and exact existing `parent_id`
 through the already checked parent-child Link path. Its installed workflow

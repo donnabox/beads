@@ -615,7 +615,8 @@ locally; current-head hosted CI remains pending.
   writes back; focused storage and installed CLI workflows passed embedded
   and real shared-server Dolt without skips. A broader embedded graph-batch
   selection passed 14 test/subtest results with seven expected server-only
-  skips. Hosted CI and review are pending. Stacked draft
+  skips. #241's four current-head hosted checks passed; review is pending.
+  Stacked draft
   [#242](https://github.com/donnabox/beads/pull/242) at `f31916996`
   admits graph-plan `parent_key`, its `parent` alias and exact existing
   `parent_id` through the already checked parent-child Link batch path.
