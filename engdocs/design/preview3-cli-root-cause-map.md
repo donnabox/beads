@@ -17,15 +17,16 @@ The transaction primitive exists. Ordinary `bd batch` executes its narrow script
 
 Atomic *commit* is distinct from all-or-nothing *item policy*. `BatchCloser` intentionally skips per-item refusals and commits successful siblings together ([`issueops/batchcloser.go`](../../issueops/batchcloser.go)). Graph `close --claim-next` uses one graph transaction with that policy ([`internal/storage/graphstore/issue_close_batch.go`](../../internal/storage/graphstore/issue_close_batch.go)); ordinary multi-ID graph `close` loops over separate single-Issue transactions ([`cmd/bd/graph_preview_workflow.go`](../../cmd/bd/graph_preview_workflow.go)). Shipping v1.3.1 direct `bd close A MISSING` pre-resolves both arguments and changes nothing, while its ordinary proxied path has per-item outcomes. Matching the tested direct behavior for a missing selector is narrower than changing all close refusals to rollback.
 
-This is a policy decision as well as a transaction-composition gap. Draft
+This is a selected policy as well as a transaction-composition gap. Draft
 [#64](https://github.com/donnabox/beads/pull/64) deliberately introduced
 Preview 2 multi-Issue close with partial success: `bd close A MISSING` leaves
 `A` closed, reports the missing ID, and exits nonzero. Its tests and design
-must be preserved or explicitly superseded with attribution. Donna is deciding
-whether Preview 3 should retain that policy or match the direct shipping
-pre-resolution behavior for missing IDs. Neither choice requires a new
-transaction engine; the existing graph batch writer can preflight selectors
-inside its write transaction if that is the selected contract.
+must be preserved or explicitly superseded with attribution. Donna selected
+the direct shipping behavior for Preview 3: if any requested Issue ID is
+missing, `bd close A MISSING` changes no Issue. Resolve all named selectors
+inside one write transaction before closing any item. This decision covers
+missing IDs, not every per-item policy refusal; `BatchCloser` may still report
+other outcomes individually. It does not require a new transaction engine.
 
 **Canary interpretation:** ordinary `bd batch` is a control for native
 transaction plumbing and rollback, not a graph-mode release canary. Its narrow
