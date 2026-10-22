@@ -102,11 +102,11 @@ func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, se
 	return path, issue, err
 }
 
-// The familiar positional bd link accepts shipping Issue abbreviations. Keep
-// selection in the writer's transaction: a CLI lookup followed by AddDependency
-// could link a different Issue if the live catalog changed between calls.
+// Native dependency operands accept shipping Issue abbreviations. Keep
+// selection in the writer's transaction: a CLI lookup followed by a write
+// could use a different Issue if the live catalog changed between calls.
 // Explicit beads/PATH selectors never reach this fallback.
-func (s *Store) resolvePositionalIssueInTx(ctx context.Context, tx *sql.Tx, path, nativeID string) (string, IssueRecord, error) {
+func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, path, nativeID string) (string, IssueRecord, error) {
 	if nativeID == "" {
 		issue, err := s.requireIssueInTx(ctx, tx, path)
 		return path, issue, err

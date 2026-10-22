@@ -83,14 +83,14 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 				return err
 			}
 		}
-		sourcePath, source, err := s.resolvePositionalIssueInTx(ctx, tx, request.SourcePath, request.SourceNativeID)
+		sourcePath, source, err := s.resolveDependencyOperandInTx(ctx, tx, request.SourcePath, request.SourceNativeID)
 		if err != nil {
 			return err
 		}
 		if request.ExpectedSourceRevision != "" && request.ExpectedSourceRevision != source.Revision {
 			return fmt.Errorf("%w: source revision changed (current %s)", ErrConflict, source.Revision)
 		}
-		targetPath, target, err := s.resolvePositionalIssueInTx(ctx, tx, request.TargetPath, request.TargetNativeID)
+		targetPath, target, err := s.resolveDependencyOperandInTx(ctx, tx, request.TargetPath, request.TargetNativeID)
 		if err != nil {
 			return err
 		}
