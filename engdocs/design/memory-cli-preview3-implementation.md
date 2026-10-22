@@ -9,7 +9,7 @@ This docs branch starts from `donnabox/beads:codex/preview3-integration` at `b6d
 ## Existing work to build on
 
 - [PR173](https://github.com/donnabox/beads/pull/173) adds the private `internal/memoryquery` Requires operation and `ReadMemoryRequires` store adapter. Its read context is an exact-root, outward Requires-family context, not a generic incident-Link interface. It does not establish incoming traversal, native Issue roots, multi-root reads, Subject To stages or a public CLI. Follow its actual successor head and hosted qualification before using it as an integration dependency.
-- [PR176](https://github.com/donnabox/beads/pull/176) extends the existing generic graph projection with Link-family selection and induced result Links. Its current acquisition is globally bounded `CurrentSnapshot`, and its text view is the flat candidate renderer. It does not implement the accepted compact relationship tree or scoped multi-root acquisition. Preserve its actual tests and qualification history while adapting its projection/presentation work.
+- [PR176](https://github.com/donnabox/beads/pull/176) extends the existing generic graph projection with Link-family selection and induced result Links. Its current acquisition is globally bounded `CurrentSnapshot`, and its text view is the flat candidate renderer. It does not implement the accepted compact relationship tree or scoped multi-root acquisition. Preserve its projection, family-selection and induced-Link tests and qualification history. Replace flat-text presentation assertions with the accepted relationship-tree assertions, explain that intentional change on the PR and preserve contributor attribution; do not retain contradictory flat-output expectations.
 - Trish owns selected Type validation and the default-off assessment gate. Keep definitions, recognition, validation, history and ordinary reads/cleanup; refuse gated assessment authoring. Gate qualification is separate from a prose scope statement.
 - Cleo owns shared ID allocation, canonical selection/output infrastructure and remaining generic CRUD output. Donna/Melinda own graph/Memory layout. Reuse the shared writer and output contract.
 - Janet owns actual integration conflict coordination and the release ledger. Authors own their implementation, tests, review and direct draft publication. No automatic main merge/release or runtime/spec pin movement follows this plan.
@@ -28,7 +28,7 @@ Acquisition work/bytes, selected nodes/Links and serialized output must be bound
 
 ## Slice 2: shared compact relationship presenter
 
-Adapt the graph presentation at a seam that accepts validated operation results; don't manufacture Issue objects for Memory. Use actual Type labels and authored arrow direction. Expand records finitely. A repeated reference earns a cycle label only if it
+Adapt the graph presentation at a seam that accepts validated operation results; don't manufacture Issue objects for Memory. Use actual Type labels and authored arrow direction. Render a separate tree for every requested root, with a per-root expansion and emitted-Link set. Shared records may appear in multiple root views without transferring depth or obligations; aggregate counts deduplicate identities. Choose each root's expansion tree using admitted directions/stages first; only tree Links expand nodes. Emit remaining selected Links once per root as references, including forward references when needed, preserving authored arrows; per-root frontiers must remain attributed. Expand records finitely. A repeated reference earns a cycle label only if it
 closes an actual directed cycle; incoming/both-direction traversal or ancestor
 indentation alone is insufficient. Use already-shown references otherwise,
 including parallel same-direction edges and mixed-direction walks in a DAG. Every selected parallel/cross Link remains represented. Every requested root remains identifiable even if it was already reached from another root.
@@ -41,7 +41,7 @@ Keep the canonical complete-record output and selected graph edges distinct from
 
 Expose `requirements`, `required-by`, `definition`, and `defined-by` through the same bounded reads and presenter. Forward reads use the accepted depth-1000 bound; reverse defaults are one hop. Requires includes Defines, while definition selects the Defines family alone. Keep actual edge Types visible; proposed human ordering puts defining children before other requirements at each expanded parent.
 
-Respect Type structural restrictions at shared authoring, not through query-time deletion of invalid evidence. Requires may cycle; Defines has at most one defining parent and forbids its own cycles. Closure is not satisfaction. The subject of a query remains its explicit root; the result does not establish new applicability.
+Respect Type structural restrictions at shared authoring, not through query-time deletion of invalid evidence. Requires-family cycles may mix Requires and Defines. Only all-Defines-family cycles are forbidden; Defines also permits at most one defining parent. The frozen Type specification separately states the Requires Cycles and Defines Tree structure rules. Closure is not satisfaction. The subject of a query remains its explicit root; the result does not establish new applicability.
 
 ## Slice 4: Subject To stages and authoring facades
 
@@ -63,3 +63,7 @@ Test real provider acquisition limits, cancellation and malformed/read-inconsist
 Run the repository's required affected Bazel/nogo, formatting, docs and installed/provider qualification, then actual source review. Report missing/failed lanes honestly; exact CI and assembled-source checks are required before qualification. Use review evidence and exact source links, not authored expectation files, as execution receipts.
 
 No broad public query-language rewrite, BDP/BTS language/IR restart, new backend, assessment evaluator, namespace migration, general Type registration CLI, cleanup of others' branches or release action is authorized by this implementation plan.
+
+### Documentation publication precondition
+
+Before docs publication, run affected docs gates and inspect their scope rather than treating success as proof of installed CLI support. Actual `make check-docs` passed on this draft: Bazel docsync/doc-freshness plus `scripts/check-doc-flags.sh` against the existing v1.2.2 pin. Source inspection shows the script checks selected removed/init references, generated top-level command coverage/freshness and the plugin pointer policy. It does not validate every invocation or flag in the deeply nested Memory facade. No new allowlist or gate exclusion was added. The implementation-pending title/status and source review therefore remain necessary; installed command/help/flag scenarios are separate implementation acceptance work. The [review record](memory-cli-preview3-review.md) gives the actual checked-source boundary and results. No release pin changes.

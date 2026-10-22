@@ -2,7 +2,7 @@
   "status": "authored semantic acceptance cases; not executed product tests",
   "date": "2026-10-21",
   "scope": "Preview 3 Memory facade target; stored Type semantics are defined elsewhere",
-  "representation": "Logical fixture IDs and Type names only. This is not a BDP wire/import format or a new public query IR.",
+  "representation": "Logical fixture IDs and Type names only. This is not a BDP wire/import format or a new public query IR. Expected blocks describe logical operation results for review, not serialized field names. Multi-root membership/frontier context stays internal until reconciled with the common output contract.",
   "fixtures": {
     "succession": {
       "beads": [
@@ -421,6 +421,56 @@
           "target": "a"
         }
       ]
+    },
+    "second-parent": {
+      "beads": [
+        {
+          "id": "spec",
+          "type": "specification"
+        },
+        {
+          "id": "req",
+          "type": "requirement"
+        },
+        {
+          "id": "privacy",
+          "type": "policy"
+        }
+      ],
+      "links": [
+        {
+          "id": "spec-req",
+          "type": "defines",
+          "source": "spec",
+          "target": "req"
+        }
+      ]
+    },
+    "mixed-requires-cycle": {
+      "beads": [
+        {
+          "id": "spec",
+          "type": "specification"
+        },
+        {
+          "id": "req",
+          "type": "requirement"
+        }
+      ],
+      "links": [
+        {
+          "id": "defines-child",
+          "type": "defines",
+          "source": "spec",
+          "target": "req"
+        },
+        {
+          "id": "requires-parent",
+          "type": "requires",
+          "source": "req",
+          "target": "spec"
+        }
+      ]
     }
   },
   "readCases": [
@@ -816,7 +866,6 @@
           "spec-req",
           "req-privacy"
         ],
-        "frontier": [],
         "rootMembership": {
           "work": [
             "work",
@@ -828,6 +877,10 @@
             "other",
             "privacy"
           ]
+        },
+        "frontierByRoot": {
+          "work": [],
+          "other": []
         }
       },
       "note": "Privacy is one Bead with separate witnesses. Do not make other subject to spec or req."
@@ -904,15 +957,6 @@
     {
       "id": "both-parallel-is-not-directed-cycle",
       "fixture": "parallel-no-cycle",
-      "command": [
-        "bd",
-        "graph",
-        "a",
-        "--link-type",
-        "References",
-        "--direction",
-        "both"
-      ],
       "expected": {
         "selectedBeads": [
           "a",
@@ -924,20 +968,17 @@
         ],
         "frontier": []
       },
-      "note": "A both-direction display may encounter an ancestor via a second parallel Link, but these two same-direction Links are not a directed cycle. Use an already-shown reference, never a cycle label."
+      "note": "A both-direction display may encounter an ancestor via a second parallel Link, but these two same-direction Links are not a directed cycle. Use an already-shown reference, never a cycle label.",
+      "operation": {
+        "root": "a",
+        "family": "references",
+        "direction": "both",
+        "depth": 1000
+      }
     },
     {
       "id": "both-mixed-directions-is-not-directed-cycle",
       "fixture": "mixed-direction-dag",
-      "command": [
-        "bd",
-        "graph",
-        "a",
-        "--link-type",
-        "References",
-        "--direction",
-        "both"
-      ],
       "expected": {
         "selectedBeads": [
           "a",
@@ -951,7 +992,35 @@
         ],
         "frontier": []
       },
-      "note": "A display walk a\u2192b\u2190c\u2192a returns to a but the authored graph is acyclic. Indentation/backtracking is not evidence of a directed cycle."
+      "note": "A display walk a→b←c→a returns to a but the authored graph is acyclic. Indentation/backtracking is not evidence of a directed cycle.",
+      "operation": {
+        "root": "a",
+        "family": "references",
+        "direction": "both",
+        "depth": 1000
+      }
+    },
+    {
+      "id": "requires-mixed-defines-cycle",
+      "fixture": "mixed-requires-cycle",
+      "command": [
+        "bd",
+        "memory",
+        "requirements",
+        "spec"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "spec",
+          "req"
+        ],
+        "selectedLinks": [
+          "defines-child",
+          "requires-parent"
+        ],
+        "frontier": []
+      },
+      "note": "Mixed Requires-family cycles are permitted; this is not an all-Defines cycle. Terminate without claiming satisfaction."
     }
   ],
   "authoringCases": [
@@ -998,7 +1067,7 @@
     },
     {
       "id": "defines-second-parent",
-      "fixture": "constraints",
+      "fixture": "second-parent",
       "command": [
         "bd",
         "memory",
@@ -1007,7 +1076,8 @@
         "--to",
         "req"
       ],
-      "expected": "refuse second defining parent atomically"
+      "expected": "refuse second defining parent atomically",
+      "note": "Only the child single-parent rule is violated; no reverse Requires path confounds the refusal."
     },
     {
       "id": "duplicate-property-input",
@@ -1035,6 +1105,6 @@
     "Preserve actual authored pins/canonical records; no history coalescing or fabricated Link identity.",
     "Default-off assessment gate is Trish-owned and must be combined explicitly.",
     "Native dependency-mode CLI regression uses actual legacy cases, including known query quirks.",
-    "Presentation must preserve every selected cross/parallel/cycle Link exactly once per selected witness, without expanding records infinitely."
+    "Presentation preserves every selected cross/parallel/cycle Link once per root view, with finite per-root expansion and aggregate counts deduplicated by identity."
   ]
 }
