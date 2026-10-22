@@ -192,12 +192,14 @@ targets before opening storage. Installed Link, inception-History and
 refusal/rollback checks passed embedded and real shared-server Dolt; its four
 current-head hosted checks passed and review is pending. Stacked drafts
 [#244](https://github.com/donnabox/beads/pull/244) at `7475ce31d` and
-[#245](https://github.com/donnabox/beads/pull/245) at `ce1e700ed` address a
+[#245](https://github.com/donnabox/beads/pull/245) at `1b714c699` address a
 shared initial-defer representation gap: the graph Issue adapter now retains
 the native UTC/second-precision `defer_until` across single, child, Markdown
 and symbolic batch creates, and the CLI admits ordinary `--defer` and graph
 JSON `defer_until`. Focused storage and installed CLI workflows passed embedded
-and real shared-server Dolt; hosted CI and reviews are pending. None of
+and real shared-server Dolt; the new #245 head also removes two obsolete
+defer-refusal test expectations and passed focused create workflows. #245's
+current-head hosted checks passed; reviews remain pending. None of
 #237–#245 is merged;
 arbitrary update and close items are not part of shipping `create --graph`'s
 schema.
@@ -305,7 +307,7 @@ the graph plan must preserve that rule for every admitted native kind.
 | --- | --- | --- | --- |
 | **Graph transaction composition**: native Issue writes and canonical graph projection must land together. | `create --deps`, parent/dependency batches, graph-JSON symbolic batches, linked `delete`, `update --parent`, `duplicate`, `supersede`, `set-state`; potentially multi-Issue update/delete. | `graphstore.withTx`; #197–#202 prove local create/dependency and Markdown batches can be atomic. Draft #231 proves new-Issue symbolic edges and canonical Link retention on both engines; #232 wires that bounded `bd create --graph` form; #233 adds an exact existing local target and #234–#235 admit initial fields and one existing-source edge. #236 pins new-source inception History; #237 maps multiple existing-source edge revisions with their intermediate canonical owned-Link sets; #238 admits new existing-to-existing edges, #239 admits a checked change-free re-add, #240 admits deferred assignment, #241 admits symbolic metadata references, #242 admits parent-child Links, and #243 admits inline local dependencies, still inside one transaction. #244–#245 close the shared initial-defer representation seam for four create paths and two CLI forms. Draft #209 proves single-Issue linked deletion; #228–#229 prove bounded named-set and cascade storage composition, and #230 wires those set forms in the CLI. Draft #222–#223 prove a checked parent-only move; stacked #224–#225 prove parent-plus-scalar composition through one native Issue writer, old/new canonical Links and installed CLI on both engines. Empty detach remains a policy gap. | Continue typed, transaction-scoped Issue and Link composition. Keep validation, native edge changes, graph catalog, retained versions and source-owned History in one transaction. Prove rollback after each stage on embedded and shared-server Dolt. Do not infer no-write from native `ItemResult.Changed=false`: a metadata refresh can still mint a source version. Avoid exporting a raw transaction to CLI callers or assuming native `BatchApplier` alone maintains graph invariants. |
 | **Batch outcome policy and command routing**, separate from the transaction engine. | Multi-ID `close` mismatch; multi-ID `reopen`, `update`, `delete`; `--claim-next` coupling and JSON result reporting. | Native `BatchCloser` commits survivors as one act; graph `CloseIssues` uses it. Draft #226–#227 preflight all close selectors in that transaction and route ordinary multi-ID close through it; `bd batch` remains outside the graph-mode route. | Keep a per-command contract table: preflight failures, per-item policy refusals, commit grouping, History and output. Qualify #226–#227 at current head, then add typed multi-resource operations only where a selected command contract calls for them. |
-| **One Issue selector model**: native ID, abbreviated ID and canonical graph path are different identities. | Explicit-ID children, positional `link`, `dep` operands, `create --deps` targets, parent filters/updates, list/show/update/delete selectors. | `IssueSelector` resolves exact bare native IDs and exact graph paths inside a transaction; #180 aligns bare flat create identity, #193–#194 add positional abbreviated IDs in the write transaction. A local-only assembly at `9f92ab4aa` first reused that resolver for `create --deps`; draft #246 now converges #193–#194 with the create stack, #247 applies it to `dep add` and `dep --blocks`, and #248 replaces `dep remove`'s duplicate exact-ID resolver while preserving its absent-pair no-op. Draft #249 makes selected Issue reads, updates, filters and quick actions use the same checked abbreviation rule, while graph JSON batch references remain exact. Draft #250 routes scalar ordinary `bd update` through that writer and records the resolved last-touched path. Focused installed and storage workflows passed embedded and real-server Dolt without skips. | Keep selection in the caller's transaction. Property-patch, historical, metadata-only and Type update branches still pre-read literal paths; route each safely without CLI read-then-write lookup. Preserve explicit-path exactness, ambiguity and deleted/non-Issue rules. Reuse the selector across commands instead of reimplementing partial-ID rules. |
+| **One Issue selector model**: native ID, abbreviated ID and canonical graph path are different identities. | Explicit-ID children, positional `link`, `dep` operands, `create --deps` targets, parent filters/updates, list/show/update/delete selectors. | `IssueSelector` resolves exact bare native IDs and exact graph paths inside a transaction; #180 aligns bare flat create identity, #193–#194 add positional abbreviated IDs in the write transaction. A local-only assembly at `9f92ab4aa` first reused that resolver for `create --deps`; draft #246 now converges #193–#194 with the create stack, #247 applies it to `dep add` and `dep --blocks`, and #248 replaces `dep remove`'s duplicate exact-ID resolver while preserving its absent-pair no-op. Draft #249 makes selected Issue reads, updates, filters and quick actions use the same checked abbreviation rule, while graph JSON batch references remain exact. Draft #250 routes scalar ordinary `bd update` through that writer and records the resolved last-touched path. Drafts #251–#253 add selected mixed Bead reads, familiar Issue detail projection and a combined Bead/detail read from one snapshot. A local assembly wires selected current-Issue `bd show`; focused workflows passed both engines. | Keep selection in the caller's transaction. Property-patch, historical, metadata-only and Type update branches still pre-read literal paths; route each safely without CLI read-then-write lookup. Preserve explicit-path exactness, ambiguity and deleted/non-Issue rules. Reuse the selector across commands instead of reimplementing partial-ID rules. |
 
 The next selector integration must account for existing owners: selected #151
 changes the `show` CLI, while draft #209 and #230 own single and set deletion.
@@ -319,6 +321,51 @@ the same transaction as its guard, incident-Link check and native/graph
 deletion; a CLI read followed by delete would reintroduce a race. A disposable
 assembly of the selector and delete/show stacks can prove integration before
 any branch is rebased or selected.
+
+Draft #249 head `402a494aa` preserves the established non-Issue refusal for
+explicit Memory paths in Issue reads without changing dependency writer
+diagnostics. Its selector and installed state/lease workflows passed embedded
+and real shared-server Dolt. Four current-head hosted checks passed; review
+remains pending.
+
+Draft #251 head `9d766779b` adds `ReadBeadSelected` on top of #249. Its
+selector and fallback read share one checked read transaction. The focused
+selector, read-budget and existing Issue-read regression group passed embedded
+and real shared-server Dolt (22 passing events, no skips or failures;
+`/tmp/cleo-read-selector-regression.jsonl`). This is a storage capability
+proof, not `bd show` CLI parity; four current-head hosted checks passed and
+review remains pending.
+
+Draft #252 head `67e864489` builds familiar Issue details after resolving a
+bare native Issue ID or abbreviation in the same checked transaction. The
+focused selector, read-budget and existing Issue-read tests passed embedded
+and real shared-server Dolt (22 passing events, no skips or failures;
+`/tmp/cleo-detail-selector-fixed-regression.jsonl`). The CLI remains
+unchanged; four current-head hosted checks passed and review is pending.
+
+Draft #253 head `bb2dda309` closes a remaining snapshot split in the local
+`bd show` assembly: the Bead record and familiar Issue details now come from
+one checked read transaction. Its selector, read-budget and existing Issue
+read regression group passed embedded and real shared-server Dolt (22 passing
+events, no skips or failures; `/tmp/cleo-combined-show-regression.jsonl`). It
+is a storage capability; four current-head hosted checks passed and review is
+pending.
+
+A disposable local assembly at `712f0f5ec` combines selected #151 with
+#251–#252 and uses the checked readers for single, multi-ID, related and watch
+current `bd show`. Three installed workflows cover abbreviations, short/JSON
+identity, Memory collisions, explicit Memory paths, multi-ID, related views
+and a live watch. They passed embedded and real shared-server Dolt (ten
+passing events, no skips or failures;
+`/tmp/cleo-show-selector-all-workflows.jsonl`). It has no PR and does not
+qualify every historical or output form.
+
+Local follow-up `f721497ca` adds #253 to the same assembly and uses the
+combined read for familiar single, multi-ID and related Issue output. The
+installed legacy-JSON, native-abbreviation and watch workflows passed
+embedded and real shared-server Dolt (nine passing test/subtest events, no
+skips or failures; `/tmp/cleo-show-snapshot-workflows.jsonl`). This follow-up
+is unpushed with no PR and is not a full assembled CLI gate.
 
 The disposable local assembly at `b3f30c732` merges #230 and #250 with one
 documentation-only conflict; no code conflict or PR merge occurred. Focused
@@ -345,9 +392,38 @@ ambiguous or stale members leave the complete set unchanged; conflicting
 revision guards on two aliases refuse. Focused set-storage and installed
 multi-ID delete workflows passed embedded and real shared-server Dolt with no
 skips (`/tmp/cleo-delete-set-selector-cli.jsonl` and
-`/tmp/cleo-delete-set-selector-final.jsonl`). This remains an unpushed local
-assembly of #230 and #250, not a selected or merged Preview 3 capability.
-Reconcile the two branch bases before opening a reviewable integration slice.
+`/tmp/cleo-delete-set-selector-final.jsonl`). The `23d96d24a` assembly is on
+`codex/cleo-selector-delete-integration` with no PR. Follow-up local commit
+`317f205fd` routes bare single-Issue `bd delete` through the same checked
+selector and falls back to Memory deletion only after a typed non-Issue
+refusal. Installed single-Issue, Memory and set-delete workflows passed on
+both engines without skips (`/tmp/cleo-single-delete-selector.jsonl`). Neither
+commit is selected or merged. Reconcile the #230/#250 branch bases before
+opening a reviewable integration slice. A partial broad combined-branch run
+recorded 806 passes before stopping at three older create/state expectation
+failures outside deletion; see `/tmp/cleo-selector-delete-broad.jsonl`. It is
+not a completed broad gate. The two obsolete defer refusals were removed on
+#245 head `524b90cba`; the explicit-Memory state refusal was restored on
+#249 head `402a494aa`. Focused tests passed. The local candidate assembly at
+`053d2da29` passed those three former failure groups and 1,076 test/subtest
+results in a second partial broad run. That run exposed one more obsolete C0
+defer-refusal assertion, now corrected and focused-tested on #245, and two
+fresh-workspace server initialization deadlines after the disposable Dolt
+process accumulated over 1,300 connections. It was stopped before completion;
+`/tmp/cleo-selector-delete-broad-fixed.jsonl` is not a green gate. Both
+timed-out workflows passed against a fresh shared server and embedded Dolt:
+six test/subtest passes, no skips (`/tmp/cleo-selector-server-retry.jsonl`).
+A separate local `290d7e4ff` assembly adds selected #151/#152/#156/#175 and
+the C0 correction;
+seven focused installed workflows passed both engines without skips
+(`/tmp/cleo-selected-candidate-workflows.jsonl`). Three further installed
+delete-set, single-delete and show/watch workflows passed both engines with
+nine test/subtest passes and no skips (`/tmp/cleo-selected-delete-server.jsonl`).
+Its exact-head embedded `TestGraphPreview` sweep completed with 263 top-level
+tests, 1,236 passing test/subtest results, 71 expected server-only skips and
+zero failures (`/tmp/cleo-selected-candidate-broad-embedded.jsonl`). A full
+shared-server broad gate has not completed. Neither assembly is a PR merge.
+
 | **Relationship semantics and checked read projection**: native dependencies, canonical Links and readiness have different views. | Default `dep list` omits nonblocking kinds; `ready` must ignore informational Memory Links; parent/ready/list/graph/blocked views; Link kind filters. | #165, #174 and #175 expose kind and blocker rules; #169–#172 and #189–#190/#203 add checked parent/ready reads. Graph reads already use read transactions, but several collections refuse after bounded full scans. | Centralize relationship-kind classification and reuse the same checked projection for `dep`, `ready`, `list`, `children`, `blocked` and graph views. Test informational vs blocking edges, native and graph Links, hierarchy and row caps across both engines. Pagination is a separate deferred contract; keep honest refusal above a cap. |
 | **Installed Type closure and shared checked selection**: list and count currently choose different populations. | Default `list` can include every Bead Type while `count` is Issue-only; nominal `--type` is exact rather than including refinements. Legacy Issue-classification flags also need precedence over declared Type names. | Installed Type descriptors expose refinement relationships; Melinda's #217 supplies a bounded Memory-family collection reader, but neither establishes the agreed list/count CLI contract in the pinned integration. | Reuse one checked Type-resolution and candidate-selection seam for both commands. Donna selected omitted Type = Issue family, `--type X` = X plus transitive refinements, `--exact-type X` = declared X only, and `--type any` = all Bead Types. Preserve Issue visibility/status/pinned defaults and legacy `bug`/`task` classification filters. Count the complete selection before display limits; refuse incomplete acquisition. Resolve `any` URI reservation and mixed-result JSON admission with Type/output owners before wiring. |
 | **Later: legacy CLI compatibility adapter**: the graph store returns canonical records while shipping commands promise Issue-shaped feedback. | Human `show`, JSON `create`/`close`/`delete`/positional `link`, update result shapes, error categories and help. | #151/#152/#156 and other candidate PRs restore individual forms; #216 is a narrow `tag` facade over #196's checked label writer. Graph flag admission is currently command-specific. Draft [#214](https://github.com/donnabox/beads/pull/214) adds a separate canonical mutation envelope with `success`/`failure`/`unknown` and preserves typed operation results; no command consumes it yet, so it does not change current CLI behavior or qualify BDP pin adoption. | After the core operations are proven, define command-specific shipping projections from checked typed results, with a distinct explicit canonical records mode. Use golden differential workflows for human, JSON, stderr and exit codes. Build the adapter earlier only where it materially reduces the cost of the capability work or prevents a false success. |

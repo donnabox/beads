@@ -41,7 +41,7 @@ current-head check without attributing it to product code. A PR can have
 focused test evidence and still be open, unreviewed, or
 failing a hosted check; the validation details are recorded below rather than
 collapsed into the lifecycle label. These labels were checked against PR state
-on October 21, 2026. On PR creation, focused validation, review change, or
+on October 22, 2026. On PR creation, focused validation, review change, or
 merge, update the affected command row and the exact-head evidence below.
 Only after a merge into `codex/preview3-integration` and a fresh comparison
 should its behavior move into the pinned as-built column. This column is
@@ -129,7 +129,7 @@ locally; current-head hosted CI remains pending.
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. | As-built; no parity PR |
 | `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. Draft #231 proves a new-Issue symbolic batch with canonical Links in storage; stacked #232 wires new-key/local-edge `--graph`, and #233 adds exact existing local targets; stacked #234 admits native initial Issue text, assignee, owner, estimate, due date, and labels; #235 admits one exact existing Issue source linked to a new node. Test-only #236 pins new-source inception History; #237 admits multiple Links from one existing source with intermediate History; #238 admits a new existing-to-existing edge alongside a new node; #239 admits a change-free re-add of an already mapped Link; #240 admits deferred `assign_after_create`, #241 admits initial metadata and symbolic `metadata_refs`, #242 admits graph-plan parent relationships, and #243 admits inline local dependencies in the same transaction. #244–#245 admit initial defer timestamps at the shared graph Issue writer and both ordinary `--defer` and graph-plan `defer_until` CLI forms. Metadata-changing re-adds, other edge metadata and node forms still refuse. External targets (intentionally refused), same-batch Markdown targets and full graph-JSON relationships remain gaps; #246 covers partial dependency IDs as an unmerged convergence candidate. Shipping `create --graph` has no arbitrary update or close items; those are separate `bd batch` concerns. | Selected/open #152; candidates/open #159, #180–#181, #197–#202, #231–#246; current integration unchanged |
 | `create-form` | Explicit refusal. | Interactive Issue creation is unavailable. | Gap; no repair PR |
-| `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. Draft #209 proves opt-in linked deletion in one transaction; #210 adds a checked unforced preview; stacked draft #212 wires single-Issue CLI preview and `--force`. It leaves surviving dependents live. Draft #228–#229 extend the storage proof to bounded named sets and cascade. Draft #230 admits the multi-ID, cascade, and file CLI forms over that proof and preserves #163's single-ID dry-run behavior. A local #230+#250 assembly proves same-transaction bare-ID abbreviations for set deletion, unpushed. Dotted native IDs explicitly refuse set deletion pending upstream #7377. | Candidates/open #163, #209–#210, #212, #228–#230; local assembly unpushed; current integration unchanged |
+| `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. Draft #209 proves opt-in linked deletion in one transaction; #210 adds a checked unforced preview; stacked draft #212 wires single-Issue CLI preview and `--force`. It leaves surviving dependents live. Draft #228–#229 extend the storage proof to bounded named sets and cascade. Draft #230 admits the multi-ID, cascade, and file CLI forms over that proof and preserves #163's single-ID dry-run behavior. A #230+#250 assembly proves same-transaction bare-ID abbreviations for single and set deletion; the single-ID CLI follow-up is local. Dotted native IDs explicitly refuse set deletion pending upstream #7377. | Candidates/open #163, #209–#210, #212, #228–#230; assembly branch has no PR; current integration unchanged |
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. | As-built; mutation unqualified |
 | `gate` | Explicit refusal. | Gate create/check/list/show/resolve/waiter/discovery are unavailable. | Gap; no repair PR |
 | `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. | Gap; no command PR |
@@ -144,7 +144,7 @@ locally; current-head hosted CI remains pending.
 | `reopen` | Single and batch Issue reopen work; batches can partly succeed. | JSON shape differs; registered `--if-revision` refuses at the pinned commit. Draft #219–#220 add a checked single-Issue revision guard, including the already-open no-op; guarded multi-ID reopen still refuses. | Candidates/open #219–#220; current integration unchanged |
 | `search` | Issue search works for admitted filters. | `--type feat` silently yields no results despite current help claiming the alias; direct shipping v1.3.1 also did so, while the newer ordinary Preview route normalizes it. | As-built; no parity PR |
 | `set-state` | Explicit refusal. | Atomic state event and label write is unavailable. | Gap; no repair PR |
-| `show` | One current or retained Resource can be read. | Familiar human Issue detail, multi-ID, current/short/long/refs/children/watch and other display forms refuse at this commit. Selected #151 implements those named current-Issue forms and passed focused both-engine workflows, but is unmerged; other display forms remain unqualified or refused. | Selected/open #151; current-head checks green, review pending |
+| `show` | One current or retained Resource can be read. | Familiar human Issue detail, multi-ID, current/short/long/refs/children/watch and other display forms refuse at this commit. Selected #151 implements those named current-Issue forms and passed focused both-engine workflows, but is unmerged. Drafts #251–#253 add checked Bead selection, familiar Issue detail projection, and one-snapshot combined Bead/detail reads at the storage layer. A local assembly wires the selected current-Issue forms; other display forms remain unqualified or refused. | Selected/open #151; candidates/open #251–#253; current integration unchanged |
 | `state` | Read-only value and list forms work. | `set-state` does not; JSON may expose native rather than canonical Issue ID. Draft #249 proves abbreviated native Issue IDs for `state list`, but is unmerged. | Candidate/open #249; current integration unchanged |
 | `tag` | Explicit refusal. | Label shortcut and equivalent graph `update --add-label` are unavailable at this commit. #195–#196 provide the checked label writer; stacked #216 admits the `tag` shorthand and passed a focused both-engine workflow, with hosted CI and review pending. | Candidate/open #216 on #196; current integration unchanged |
 | `todo` | Bare/list/add/done work in tested flows. | Multi-ID done can partly succeed while exiting zero, matching shipping; graph list is bounded. | As-built; no parity PR |
@@ -371,8 +371,9 @@ locally; current-head hosted CI remains pending.
   (`/tmp/cleo-parity-through223-embedded-20261022.jsonl`,
   `/tmp/cleo-parity-through223-server-20261022.jsonl`). This is selected
   integration evidence, not complete CRUD+ qualification or a PR merge.
-  Current-head hosted CI is running or queued and review pending for both
-  PRs; neither is merged or selected.
+  Current-head hosted checks passed for both PRs (#222: 119 successes and
+  eight expected skips; #223: four successes and two expected skips). Review
+  remains pending; neither PR is merged or selected.
 - Draft [#224](https://github.com/donnabox/beads/pull/224) at `aad565b91`
   extends #222's graphstore reparent composer so one native Issue writer
   applies the parent edge and admitted scalar patch before the old/new
@@ -510,7 +511,7 @@ locally; current-head hosted CI remains pending.
   test/subtest passes, no skips; `/tmp/cleo-dep-remove-partial-server.jsonl`).
   The broader embedded pair-removal group and four current-head hosted checks
   passed; review is pending. It is an unmerged candidate.
-  Draft [#249](https://github.com/donnabox/beads/pull/249) at `c1b27df74`
+  Draft [#249](https://github.com/donnabox/beads/pull/249) at `402a494aa`
   moves the shipping abbreviation rule into the shared checked Issue selector.
   Selected reads, Issue updates, count filters and Issue quick actions now
   share exact/configured-prefix/unique-hash precedence; explicit graph paths
@@ -519,7 +520,11 @@ locally; current-head hosted CI remains pending.
   shared-server Dolt (four test/subtest passes, no skips;
   `/tmp/cleo-issue-selector-quick-server.jsonl`). Focused selector,
   dependency and graph-batch storage tests passed both engines (29
-  test/subtest passes, no skips); hosted CI and review are pending. Ordinary
+  test/subtest passes, no skips). A follow-up preserves the established
+  capability refusal for explicit Memory paths in Issue reads; its Issue
+  lease/state and selector workflows passed both engines (six test/subtest
+  passes, no skips; `/tmp/cleo-issue-selector-memory.jsonl`). Four current-head
+  hosted checks passed; review is pending. Ordinary
   `bd update` still pre-reads by graph path before this storage selector, so
   #249 alone does not qualify its bare abbreviated form. Stacked draft
   [#250](https://github.com/donnabox/beads/pull/250) at `2b70e2751`
@@ -530,6 +535,47 @@ locally; current-head hosted CI remains pending.
   `/tmp/cleo-update-selector-quick-current-server.jsonl`). Its hosted CI and
   review are pending. Property patch, historical, metadata-only and Type
   branches still need their own safe selector routing.
+  Stacked draft [#251](https://github.com/donnabox/beads/pull/251) at
+  `9d766779b` adds a storage-only Bead read through the same Issue selector.
+  Bare Issue abbreviations resolve before the read in one checked snapshot;
+  bare Memory fallback and explicit graph paths remain exact, and a
+  Memory/Issue collision refuses. Focused selector, read-budget and existing
+  Issue read tests passed embedded and real shared-server Dolt (22 passing
+  test/subtest events, no skips or failures;
+  `/tmp/cleo-read-selector-regression.jsonl`). Four current-head hosted checks
+  passed; review is pending. It does not change `bd show` until that command
+  uses the new entry point.
+  Stacked draft [#252](https://github.com/donnabox/beads/pull/252) at
+  `67e864489` resolves bare native Issue IDs or unique abbreviations and
+  projects familiar Issue details in one checked read transaction. Its
+  selector, read-budget and existing Issue-read regression group passed
+  embedded and real shared-server Dolt (22 passing test/subtest events, no
+  skips or failures; `/tmp/cleo-detail-selector-fixed-regression.jsonl`).
+  Four current-head hosted checks passed; review is pending. This remains a
+  storage capability until the selected `bd show` command consumes it.
+  Stacked draft [#253](https://github.com/donnabox/beads/pull/253) at
+  `bb2dda309` returns the Bead record and optional familiar Issue details
+  from one checked read snapshot. The earlier local `bd show` assembly read
+  them in separate transactions. Its focused selector, read-budget and
+  existing Issue-read regression group passed embedded and real shared-server
+  Dolt (22 passing test/subtest events, no skips or failures;
+  `/tmp/cleo-combined-show-regression.jsonl`). Four current-head hosted checks
+  passed; review is pending. #253 is storage-only and unmerged.
+  A disposable local assembly at `712f0f5ec` combines selected #151 with
+  #251–#252 and routes single, multi-ID, related and watch current `bd show`
+  through those checked readers. Three installed workflows covering native
+  abbreviations, short/JSON identity, Memory collisions, explicit Memory
+  paths, multi-ID, related views and a live watch passed embedded and real
+  shared-server Dolt (ten passing test/subtest events, no skips or failures;
+  `/tmp/cleo-show-selector-all-workflows.jsonl`). This has no PR and does not
+  qualify every historical or output form.
+  Local follow-up `f721497ca` adds #253 to that assembly and uses its
+  combined one-snapshot read for familiar single, multi-ID and related Issue
+  output. The installed legacy-JSON, native-abbreviation and watch workflows
+  passed embedded and real shared-server Dolt (nine passing test/subtest
+  events, no skips or failures; `/tmp/cleo-show-snapshot-workflows.jsonl`).
+  This follow-up is unpushed and has no PR; it does not qualify every show
+  output form or the full assembled graph CLI gate.
 - Draft [#209](https://github.com/donnabox/beads/pull/209)–[#210](https://github.com/donnabox/beads/pull/210) and stacked [#212](https://github.com/donnabox/beads/pull/212)
   provide a checked single-Issue linked-delete path: unforced preview refuses
   surviving native dependents; `--force` tombstones incident canonical Links
@@ -585,15 +631,55 @@ locally; current-head hosted CI remains pending.
   hosted CI and review pending. Dotted native Issue IDs still refuse until
   upstream contributor
   [#7377](https://github.com/gastownhall/beads/pull/7377) is integrated.
-  A separate unpushed local assembly `23d96d24a` combines #230 with #250's
+  A separate assembly `23d96d24a` combines #230 with #250's
   shared Issue selector and admits bare native abbreviations for set deletion.
   All selectors resolve within the deleting transaction; explicit graph paths
   stay exact, and missing, ambiguous or stale members leave the set unchanged.
   Focused storage and installed CLI workflows passed embedded and real
   shared-server Dolt without skips (logs:
   `/tmp/cleo-delete-set-selector-cli.jsonl`,
-  `/tmp/cleo-delete-set-selector-final.jsonl`). This is a capability proof,
-  not a selected or merged behavior; the branch bases still need reconciliation.
+  `/tmp/cleo-delete-set-selector-final.jsonl`). The assembly commit is on
+  `codex/cleo-selector-delete-integration` without a PR. Local follow-up
+  `317f205fd` routes bare single-Issue delete through the checked selector;
+  Issue, Memory and set deletion workflows passed on embedded and real
+  shared-server Dolt without skips (`/tmp/cleo-single-delete-selector.jsonl`).
+  A broader combined `TestGraphPreview` sweep was stopped after about 20
+  minutes with 806 passing test/subtest results and three unrelated failing
+  test groups: two older create tests still expected `--defer` to refuse after
+  the create candidate admitted it, and the Issue lease test expected a
+  capability error where the shared selector reported validation for a
+  Memory. The owning [#245](https://github.com/donnabox/beads/pull/245) head
+  `524b90cba` removes the obsolete refusals, and [#249](https://github.com/donnabox/beads/pull/249)
+  head `402a494aa` restores the established Memory refusal; their focused
+  embedded and real-server workflows passed. The partial log is
+  `/tmp/cleo-selector-delete-broad.jsonl`; it is not a completed or green
+  broad gate. No delete workflow failed in that run. A fresh broad gate is
+  required before qualification.
+  Local candidate assembly `053d2da29` includes the first two owning fixes.
+  Its second broad run passed all three earlier failure groups and 1,076
+  test/subtest results before it was stopped. It found one more obsolete C0
+  `create --defer` refusal, removed and focused-tested on #245 at `524b90cba`,
+  and two fresh-workspace server initialization deadlines after the disposable
+  shared Dolt process had accumulated over 1,300 connections. The partial log
+  `/tmp/cleo-selector-delete-broad-fixed.jsonl` is not a green broad gate.
+  Both timed-out workflows passed embedded and real shared-server Dolt when
+  retried against a fresh process: six test/subtest passes, no skips
+  (`/tmp/cleo-selector-server-retry.jsonl`).
+  A separate disposable assembly `290d7e4ff` adds selected
+  #151/#152/#156/#175 and the C0 test correction on top. Seven focused
+  installed show, Issue input, list, ready and positional-Link workflows
+  passed embedded and real shared-server Dolt (21 test/subtest passes, no
+  skips; `/tmp/cleo-selected-candidate-workflows.jsonl`). Three further
+  installed delete-set, single-delete and show/watch workflows passed on both
+  engines (nine test/subtest passes, no skips;
+  `/tmp/cleo-selected-delete-server.jsonl`). Markdown links and
+  diff checks passed. Its exact-head embedded `TestGraphPreview` sweep
+  completed with 263 top-level tests, 1,236 passing test/subtest results, 71
+  expected server-only skips and zero failures
+  (`/tmp/cleo-selected-candidate-broad-embedded.jsonl`). A full shared-server
+  broad gate has not completed. The checkout has no PR and is not merged.
+  This is a capability proof, not selected or merged behavior; the #230/#250
+  branch bases still need reconciliation.
   Upstream contributor
   [#7512](https://github.com/gastownhall/beads/pull/7512) owns a separate
   Markdown alias/direction parser correction; these PRs leave that parser
@@ -697,12 +783,16 @@ locally; current-head hosted CI remains pending.
   and retained inception versions. The focused run had four test/subtest
   passes and no skips; adjacent embedded graph-batch tests passed 15 results
   with seven server-only skips. Stacked draft
-  [#245](https://github.com/donnabox/beads/pull/245) at `ce1e700ed`
+  [#245](https://github.com/donnabox/beads/pull/245) at `524b90cba`
   wires ordinary `bd create --defer` and graph-plan `defer_until` over that
   proof, including shipping future-date default status and explicit-status
   precedence. Installed workflows passed embedded and real shared-server
-  Dolt: 17 test/subtest passes, no skips. Hosted CI/reviews for #244–#245
-  are pending. None of #231–#245 is merged.
+  Dolt: 17 test/subtest passes, no skips. Three obsolete defer-refusal
+  assertions were removed across the last two heads. The C0 admission test
+  passes at the current head; create-status, create-fields and create/reopen
+  workflows passed with the real shared server at the preceding head. The
+  current #245 head passed four hosted checks with two expected skips; reviews
+  for #244–#245 are pending. None of #231–#245 is merged.
 - A broad local assembled `TestGraphPreview` run through #196 completed with
   two failing top-level tests: `--ready=false` expected a now-obsolete
   refusal, and the usability workflow expected `capability_unavailable` for
