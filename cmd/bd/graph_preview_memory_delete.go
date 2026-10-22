@@ -30,7 +30,13 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 				return nil, "", err
 			}
 			if _, issue := current.(graphstore.IssueRecord); issue {
-				result, err := store.DeleteIssue(ctx, graphstore.IssueDeleteRequest(request))
+				issueRequest := graphstore.IssueDeleteRequest(request)
+				var result graphstore.IssueDeleteResult
+				if issueRequest.Preview {
+					result, err = store.PreviewDeleteIssueWithIncidentLinks(ctx, issueRequest)
+				} else {
+					result, err = store.DeleteIssueWithIncidentLinks(ctx, issueRequest)
+				}
 				if err != nil {
 					return nil, "", err
 				}
@@ -41,6 +47,13 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 				summary := fmt.Sprintf("%s %s at final live revision %s; identity and prior snapshots remain retained", verb, result.Issue.ID, result.Issue.Revision)
 				if result.Terminal != nil {
 					summary = fmt.Sprintf("%s %s at deletion revision %s; final live revision %s remains retained", verb, result.Issue.ID, result.Terminal.Revision, result.Issue.Revision)
+				}
+				if count := len(result.IncidentLinkIDs); count != 0 {
+					if result.Preview {
+						summary += fmt.Sprintf("; %d incident Link(s) would be removed", count)
+					} else {
+						summary += fmt.Sprintf("; %d incident Link(s) removed", count)
+					}
 				}
 				return result, summary, nil
 			}

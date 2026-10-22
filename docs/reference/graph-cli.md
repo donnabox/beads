@@ -445,15 +445,17 @@ bd close work --if-revision "$revision" --reason 'Finished the work'
 bd reopen work review --reason 'Follow-up needed'
 ```
 
-`bd delete ID` previews deletion of one unreferenced Memory or Issue without
-changing storage; `--dry-run` explicitly requests the same read-only preview,
-even with `--force`. Without `--dry-run`, `--force` applies deletion.
-`bd forget ID` applies Memory deletion directly and does not accept Issues.
-An optional `--if-revision TOKEN` guard rejects a stale target. Any live incoming,
-outgoing or self-Link makes deletion refuse; `--force` does not cascade.
-Memory refusal names the first blocking Link ID and the total count. Issue
-refusal lists the incident Link IDs; unlink them explicitly before retrying
-with a fresh revision.
+`bd delete ID` previews deletion of one Memory or Issue without changing
+storage. `--dry-run` requests that read-only preview even with `--force`;
+without `--dry-run`, `--force` applies deletion. `bd forget ID` applies
+Memory deletion directly and does not accept Issues. An optional
+`--if-revision TOKEN` refuses a stale target; omission accepts the current
+revision. Any live incoming, outgoing or self-Link still makes Memory deletion
+refuse. Memory refusal names the first blocking Link ID and the total count.
+Issue deletion removes incident Links in the same transaction. Its preview,
+including `--dry-run --force`, refuses when a surviving Issue depends on the
+target. Applied `--force` removes those dependency Links and leaves surviving
+dependents live. It does not cascade to dependent Issues.
 
 ```sh
 bd remember 'Temporary note' --id scratch
