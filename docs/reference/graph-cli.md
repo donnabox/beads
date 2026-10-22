@@ -515,9 +515,10 @@ bd update work --notes 'Revised handoff' --force --if-revision NEW_REVISION
 bd update work --clear-notes --if-revision LATEST_REVISION
 ```
 
-`bd assign ID PERSON`, `bd priority ID LEVEL` and `bd note ID TEXT` use the
-same native Issue writer as `bd update`. They accept a current Issue, preserve
-other fields, and reject Memory and Link targets. Assign accepts an optional
+`bd assign ID PERSON`, `bd priority ID LEVEL`, `bd note ID TEXT` and
+`bd tag ID LABEL` use the same native Issue writer as `bd update`. They accept
+a current Issue, preserve other fields, and reject Memory and Link targets.
+Assign accepts an optional
 `--if-revision` graph token and preserves the native live-claim transfer
 fence; `--force` is explicit when that fence must be bypassed. The note command
 also accepts its ordinary `--stdin` and `--file` text sources. These shortcuts
@@ -529,6 +530,7 @@ needed.
 bd priority work 1
 bd note work 'Checklist complete.'
 bd assign work alice
+bd tag work release
 ```
 
 `bd update work --assignee PERSON --force` uses the same live-claim transfer
