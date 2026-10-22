@@ -36,7 +36,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
@@ -57,6 +57,12 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		parentPath, err = graphPreviewBeadSelector(parentSelector)
 		if err != nil {
 			return err
+		}
+	}
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		if input == "-" && graphPreviewDescriptionUsesStdin(cmd) {
+			return graphFailure("invalid_properties", "--properties - and a description source cannot both read stdin", 2)
 		}
 	}
 	properties, err := graphPreviewCreateProperties(cmd)
@@ -85,22 +91,17 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
-	// Ordinary create treats "-" as stdin; this bounded graph route accepts
-	// inline Issue text only and refuses before acquiring input or opening storage.
-	for _, name := range []string{"description", "body", "message"} {
-		value, _ := cmd.Flags().GetString(name)
-		if cmd.Flags().Changed(name) && value == "-" {
-			return graphFailure("capability_unavailable", "graph Issue create currently accepts inline description text only; stdin and file sources are unavailable", 5)
-		}
+	if _, ok := properties["description"]; ok && graphPreviewDescriptionFlagsChanged(cmd) {
+		return graphFailure("invalid_properties", "Issue description was supplied by both --properties and a shorthand flag", 2)
 	}
-	description, _, err := getDescriptionFlag(cmd)
+	description, descriptionChanged, err := getDescriptionFlag(cmd)
 	if err != nil {
 		return err
 	}
+	if err := validateDescriptionUpdate(cmd, description, descriptionChanged); err != nil {
+		return graphFailure("invalid_properties", err.Error(), 2)
+	}
 	if value, ok := properties["description"]; ok {
-		if cmd.Flags().Changed("description") || cmd.Flags().Changed("body") || cmd.Flags().Changed("message") {
-			return graphFailure("invalid_properties", "Issue description was supplied by both --properties and a shorthand flag", 2)
-		}
 		text, ok := value.(string)
 		if !ok {
 			return graphFailure("invalid_properties", "Issue description must be a JSON string", 2)
