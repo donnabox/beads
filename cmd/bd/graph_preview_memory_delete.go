@@ -33,7 +33,10 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 				return nil, "", err
 			}
 			if _, issue := current.(graphstore.IssueRecord); issue {
-				issueRequest := graphstore.IssueDeleteRequest(request)
+				issueRequest := graphstore.IssueDeleteRequest{
+					Path: request.Path, Actor: request.Actor, ExpectedRevision: request.ExpectedRevision,
+					Unconditional: request.Unconditional, Preview: request.Preview,
+				}
 				var result graphstore.IssueDeleteResult
 				if issueRequest.Preview {
 					result, err = store.PreviewDeleteIssueWithIncidentLinks(ctx, issueRequest)

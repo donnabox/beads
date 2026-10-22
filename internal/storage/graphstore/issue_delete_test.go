@@ -8,8 +8,59 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/storage"
 	publicops "github.com/steveyegge/beads/issueops"
 )
+
+func TestIssueDeleteResolvesNativeAbbreviationInTransaction(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, backend)
+			request := plainIssue("Source")
+			request.Issue.ID = "exp-a3f8e9"
+			source, err := s.CreateIssue(ctx, "beads/source", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/context", Title: "Context"}); err != nil {
+				t.Fatal(err)
+			}
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{
+				Path: "links/context", SourcePath: "beads/source", TargetPath: "beads/context", TypeURL: RelatedTypeURL(s.ScopeURL()),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			selected := IssueDeleteRequest{Path: "beads/a3f8", NativeID: "a3f8", Actor: "deleter", ExpectedRevision: source.Revision}
+			before := workflowState(t, ctx, s)
+			preview, err := s.PreviewDeleteIssueWithIncidentLinks(ctx, selected)
+			if err != nil || !preview.Preview || preview.Deleted || !reflect.DeepEqual(preview.Issue, source) || !reflect.DeepEqual(preview.IncidentLinkIDs, []string{link.Link.ID}) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("abbreviated preview changed state or selected wrong Issue: %+v %v", preview, err)
+			}
+			stale := selected
+			stale.ExpectedRevision = "stale"
+			if _, err := s.DeleteIssueWithIncidentLinks(ctx, stale); !errors.Is(err, ErrConflict) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("stale abbreviated delete changed state: %v", err)
+			}
+			otherRequest := plainIssue("Other")
+			otherRequest.Issue.ID = "exp-a3f8f0"
+			if _, err := s.CreateIssue(ctx, "beads/other", otherRequest); err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, err := s.DeleteIssueWithIncidentLinks(ctx, selected); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("ambiguous abbreviated delete changed state: %v", err)
+			}
+			if _, err := s.DeleteIssueWithIncidentLinks(ctx, IssueDeleteRequest{Path: "beads/a3f8", Actor: "deleter", Unconditional: true}); !errors.Is(err, ErrNotFound) {
+				t.Fatalf("explicit graph path unexpectedly resolved an Issue abbreviation: %v", err)
+			}
+			deleted, err := s.DeleteIssueWithIncidentLinks(ctx, IssueDeleteRequest{Path: "beads/source", Actor: "deleter", ExpectedRevision: source.Revision})
+			if err != nil || !deleted.Deleted || deleted.Issue.ID != source.ID || !reflect.DeepEqual(deleted.IncidentLinkIDs, []string{link.Link.ID}) {
+				t.Fatalf("explicit path failed after ambiguous bare selector: %+v %v", deleted, err)
+			}
+		})
+	}
+}
 
 func TestIssueDeleteRetainsHistoryAndRefusesIncidentLinks(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
