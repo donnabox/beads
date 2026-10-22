@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -66,6 +67,9 @@ func memoryLinkProperties(cmd *cobra.Command) (map[string]any, error) {
 			return nil, fmt.Errorf("property %q supplied by both --%s and --properties", name, name)
 		}
 		value, _ := cmd.Flags().GetString(name)
+		if !utf8.ValidString(value) {
+			return nil, fmt.Errorf("--%s must be valid UTF-8", name)
+		}
 		properties[name] = value
 	}
 	return properties, nil
