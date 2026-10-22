@@ -66,3 +66,55 @@ func TestIssueNativeSelectorHeartbeatStateAndReclaim(t *testing.T) {
 		})
 	}
 }
+func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			request := plainIssue("Source")
+			request.Issue.ID = "exp-a3f8e9"
+			created, err := s.CreateIssue(ctx, "beads/source", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			selector := IssueSelector{Path: "beads/a3f8", NativeID: "a3f8"}
+			shown, err := s.ShowIssueSelected(ctx, selector)
+			if err != nil || !reflect.DeepEqual(shown, created) {
+				t.Fatalf("abbreviated read selected wrong Issue: %+v %v", shown, err)
+			}
+			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector})
+			if err != nil || !reflect.DeepEqual(paths, []string{"beads/source"}) {
+				t.Fatalf("abbreviated count filter selected wrong path: %v %v", paths, err)
+			}
+			title := "Updated"
+			updated, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: selector.Path, NativeID: selector.NativeID, Actor: "editor", ExpectedRevision: created.Revision, Title: &title})
+			if err != nil || !updated.Changed || updated.Issue.ID != created.ID || updated.Issue.Properties.Title != title {
+				t.Fatalf("abbreviated update selected wrong Issue: %+v %v", updated, err)
+			}
+			second := plainIssue("Other")
+			second.Issue.ID = "exp-a3f8f0"
+			if _, err := s.CreateIssue(ctx, "beads/other", second); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: selector.Path, NativeID: selector.NativeID, Actor: "editor", ExpectedRevision: updated.Issue.Revision, Title: &title}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("ambiguous abbreviation changed Issue: %v", err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/a3f8", Title: "Colliding Memory"}); err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, err := s.ShowIssueSelected(ctx, selector); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("bare graph-path collision selected an Issue: %v", err)
+			}
+			explicit, err := s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/source"})
+			if err != nil || explicit.ID != created.ID || explicit.Properties.Title != title {
+				t.Fatalf("explicit path did not stay exact: %+v %v", explicit, err)
+			}
+		})
+	}
+}
