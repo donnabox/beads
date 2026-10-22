@@ -330,3 +330,68 @@ func TestApplyNewIssueGraphMapsDistinctExistingSourcesInOneBatch(t *testing.T) {
 		})
 	}
 }
+
+func TestApplyNewIssueGraphAddsExistingPairWithNewNodeAtomically(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			source, err := s.CreateIssue(ctx, "beads/source", plainIssue("Existing source"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			target, err := s.CreateIssue(ctx, "beads/target", plainIssue("Existing target"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			request := publicops.ApplyBatchRequest{Actor: "batch-author", Items: []publicops.ApplyItem{
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "new", Issue: plainIssue("New node").Issue}},
+				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{ID: source.Properties.ID}, Target: publicops.Ref{ID: "beads/target"}, Type: types.DepBlocks}},
+			}}
+			before := workflowState(t, ctx, s)
+			fault := errors.New("existing pair Link retention failed")
+			s.afterWrite = func(stage string) error {
+				if stage == "source-retained" {
+					return fault
+				}
+				return nil
+			}
+			failed, err := s.ApplyNewIssueGraph(ctx, request)
+			s.afterWrite = nil
+			if !errors.Is(err, fault) || failed != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("existing-pair fault left partial state: result=%v err=%v", failed, err)
+			}
+			created, err := s.ApplyNewIssueGraph(ctx, request)
+			if err != nil || created["new"].ID == "" {
+				t.Fatalf("existing-pair batch: result=%v err=%v", created, err)
+			}
+			current, err := s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/source"})
+			if err != nil || len(current.Owned) != 1 {
+				t.Fatalf("source after batch: %+v err=%v", current, err)
+			}
+			var link LinkRecord
+			if err := json.Unmarshal(current.Owned[0], &link); err != nil {
+				t.Fatal(err)
+			}
+			if link.Source != source.ID || link.Target != target.ID {
+				t.Fatalf("existing-pair Link: %+v", link)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/source", source)
+			assertIssueEditVersion(t, ctx, s, "beads/source", current)
+			assertIssueEditCounts(t, ctx, s, source.Properties.ID, 2)
+			repeat := publicops.ApplyBatchRequest{Actor: "batch-author", Items: []publicops.ApplyItem{
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "another", Issue: plainIssue("Another node").Issue}},
+				request.Items[1],
+			}}
+			before = workflowState(t, ctx, s)
+			refused, err := s.ApplyNewIssueGraph(ctx, repeat)
+			if !errors.Is(err, ErrCapabilityUnavailable) || refused != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("re-add of existing pair was not a no-write refusal: result=%v err=%v", refused, err)
+			}
+		})
+	}
+}
