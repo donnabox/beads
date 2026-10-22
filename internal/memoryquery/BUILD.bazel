@@ -3,6 +3,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "memoryquery",
     srcs = [
+        "current_constraints.go",
         "current_family.go",
         "requires.go",
     ],
@@ -14,6 +15,7 @@ go_library(
 go_test(
     name = "memoryquery_test",
     srcs = [
+        "current_constraints_test.go",
         "current_family_test.go",
         "requires_test.go",
     ],
