@@ -73,6 +73,40 @@ func (s *Store) ShowIssueDetailsSelected(ctx context.Context, selector IssueSele
 	return details, err
 }
 
+// ReadBeadWithIssueDetailsSelected returns a current Bead and, when it is an
+// Issue, its familiar detail projection from one checked read transaction.
+// A Memory has no Issue details. The caller can choose a representation
+// without re-resolving a bare selector in a second snapshot.
+func (s *Store) ReadBeadWithIssueDetailsSelected(ctx context.Context, selector IssueSelector, opts workapi.DetailOptions) (any, *types.IssueDetails, error) {
+	if err := validateIssueSelector(selector); err != nil {
+		return nil, nil, err
+	}
+	var record any
+	var details *types.IssueDetails
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkCurrentReadBytes(ctx, tx); err != nil {
+			return err
+		}
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		path, selected, err := s.readBeadSelectedInTx(ctx, tx, selector)
+		if err != nil {
+			return err
+		}
+		record = selected
+		if issue, ok := selected.(IssueRecord); ok {
+			details, err = s.issueDetailsInTx(ctx, tx, path, issue, opts)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, nil, err
+	}
+	return record, details, nil
+}
+
 func (s *Store) issueDetailsInTx(ctx context.Context, tx *sql.Tx, path string, record IssueRecord, opts workapi.DetailOptions) (*types.IssueDetails, error) {
 	if record.Properties == nil {
 		return nil, fmt.Errorf("%w: Issue has no properties", ErrInvalidStore)
