@@ -46,7 +46,9 @@ func TestReparentIssueAtomicNativeAndGraphLinks(t *testing.T) {
 				t.Fatal(err)
 			}
 			child = old.Source
-			request := IssueReparentRequest{Path: "beads/child", ParentPath: "beads/new-parent", Actor: "editor", ExpectedRevision: child.Revision}
+			newTitle, newPriority := "Child after move", 1
+			request := IssueReparentRequest{Path: "beads/child", ParentPath: "beads/new-parent", Actor: "editor", ExpectedRevision: child.Revision,
+				Edit: UpdateIssueRequest{Title: &newTitle, Priority: &newPriority}}
 			before := workflowState(t, ctx, store)
 			stale := request
 			stale.ExpectedRevision = "00000000000000000000000000000000"
@@ -73,7 +75,7 @@ func TestReparentIssueAtomicNativeAndGraphLinks(t *testing.T) {
 			}
 			if !result.Changed || len(result.Removed) != 1 || result.Added == nil || result.Issue.Revision == child.Revision ||
 				result.Removed[0].ID != old.Link.ID || result.Added.Source != child.ID || result.Added.Target != newParent.ID ||
-				len(result.Issue.Owned) != 1 {
+				len(result.Issue.Owned) != 1 || result.Issue.Properties.Title != newTitle || result.Issue.Properties.Priority != newPriority {
 				t.Fatalf("incoherent reparent result: %+v", result)
 			}
 			if _, err := store.ShowLink(ctx, "links/old-parent"); !errors.Is(err, ErrGone) {
@@ -100,6 +102,20 @@ func TestReparentIssueAtomicNativeAndGraphLinks(t *testing.T) {
 			after := workflowState(t, ctx, store)
 			if again, err := store.ReparentIssue(ctx, noop); err != nil || again.Changed || !reflect.DeepEqual(workflowState(t, ctx, store), after) {
 				t.Fatalf("same-parent update was not a no-op: %+v %v", again, err)
+			}
+			// An edit against an already selected parent still goes through the
+			// same checked Issue writer, without replacing the parent Link.
+			description := "Edit after move"
+			sameParentEdit := noop
+			sameParentEdit.Edit = UpdateIssueRequest{Description: &description}
+			edited, err := store.ReparentIssue(ctx, sameParentEdit)
+			if err != nil || !edited.Changed || len(edited.Removed) != 0 || edited.Added != nil ||
+				edited.Issue.Properties.Description != description || edited.Issue.Revision == result.Issue.Revision ||
+				len(edited.Issue.Owned) != 1 {
+				t.Fatalf("same-parent scalar edit changed Link identity or failed: %+v %v", edited, err)
+			}
+			if current, err := store.ShowLink(ctx, newPath); err != nil || current.ID != result.Added.ID {
+				t.Fatalf("same-parent scalar edit replaced the parent Link: %+v %v", current, err)
 			}
 			cycleState := workflowState(t, ctx, store)
 			if _, err := store.ReparentIssue(ctx, IssueReparentRequest{

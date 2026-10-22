@@ -21,6 +21,9 @@ type IssueReparentRequest struct {
 	Path, NativeID, ParentPath, ParentNativeID string
 	Actor, ExpectedRevision                    string
 	Unconditional                              bool
+	// Edit is applied by the same native writer that replaces ParentID. Its
+	// selector, guard and actor come from the enclosing reparent request.
+	Edit UpdateIssueRequest
 }
 
 type IssueReparentResult struct {
@@ -49,8 +52,23 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 	if request.Path == request.ParentPath || request.Actor == "" || !utf8.ValidString(request.Actor) {
 		return IssueReparentResult{}, fmt.Errorf("%w: reparent requires distinct local Issues and a UTF-8 actor", storage.ErrValidation)
 	}
+	if request.Edit.Path != "" || request.Edit.NativeID != "" || request.Edit.Actor != "" ||
+		request.Edit.ExpectedRevision != "" || request.Edit.Unconditional || request.Edit.FromRevision != "" ||
+		len(request.Edit.PropertiesPatch) != 0 {
+		return IssueReparentResult{}, fmt.Errorf("%w: reparent edit cannot supply a second selector, guard or historical source", storage.ErrValidation)
+	}
+	if request.Edit.IssueType != nil || request.Edit.Status != nil || request.Edit.ExpectedStatus != nil ||
+		request.Edit.ExpectedAssignee != nil || request.Edit.ClosedBySession != nil || request.Edit.ForceClosePolicy ||
+		request.Edit.Labels.Replace.Set || len(request.Edit.Labels.Add) > 0 || len(request.Edit.Labels.Remove) > 0 {
+		return IssueReparentResult{}, fmt.Errorf("%w: reparent cannot yet combine type, status, label or conditional Issue edits", ErrCapabilityUnavailable)
+	}
+	patch, _, err := prepareIssueUpdatePatch(request.Edit)
+	if err != nil {
+		return IssueReparentResult{}, err
+	}
+	patch.ParentID = publicops.Field[string]{Set: true}
 	var result IssueReparentResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -130,14 +148,36 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 			}
 			old = append(old, oldLink{path, link})
 		}
-		if len(edges) == 1 && edges[0].target == parent.Properties.ID {
-			result = IssueReparentResult{Issue: child}
-			return nil
-		}
+		sameParent := len(edges) == 1 && edges[0].target == parent.Properties.ID
+		patch.ParentID.Value = parent.Properties.ID
 		attempt := publicops.UpdateRequest{Actor: request.Actor, IssueID: child.Properties.ID, IssuePlaneOnly: true,
-			Patch: publicops.IssuePatch{ParentID: publicops.Field[string]{Set: true, Value: parent.Properties.ID}}}
+			Patch: patch, ForceNotesOverwrite: request.Edit.ForceNotesOverwrite,
+			ForceAssigneeTransfer: request.Edit.ForceAssigneeTransfer}
 		if err := issueops.ValidateUpdateRequest(attempt); err != nil {
 			return err
+		}
+		if sameParent {
+			beforeNative := *child.Properties
+			beforeNative.Metadata = child.Metadata
+			updates, err := issueops.ResolveMergeOps(&beforeNative, issueops.UpdateFields(patch))
+			if err != nil {
+				return err
+			}
+			updates, err = issueops.DiscardNoopIssueUpdates(&beforeNative, updates)
+			if err != nil {
+				return err
+			}
+			resolvedMetadata, metadataChanged, err := issueops.ApplyMetadataPatch(child.Metadata, patch.Metadata)
+			if err != nil {
+				return err
+			}
+			if _, err := commonMetadata(resolvedMetadata); err != nil {
+				return err
+			}
+			if len(updates) == 0 && !metadataChanged {
+				result = IssueReparentResult{Issue: child}
+				return nil
+			}
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
@@ -149,10 +189,34 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 			return err
 		}
 		if !updated.Changed {
+			if sameParent {
+				result = IssueReparentResult{Issue: child}
+				return nil
+			}
 			return fmt.Errorf("%w: parent replacement unexpectedly became a no-op", ErrInvalidStore)
+		}
+		if err := checkIssueScalarStoredIntent(patch, updated.Issue); err != nil {
+			return err
 		}
 		if err := s.afterStage("issue-reparent"); err != nil {
 			return err
+		}
+		if sameParent {
+			if err := s.recordIssueMappingInTx(ctx, tx, childPath, child.Properties.ID); err != nil {
+				return err
+			}
+			if patch.Notes.Set || patch.AppendNotes.Set || patch.Metadata.Replace.Set || patch.Metadata.Merge.Set ||
+				len(patch.Metadata.Set) > 0 || len(patch.Metadata.Unset) > 0 {
+				if err := checkCurrentReadBytes(ctx, tx); err != nil {
+					return err
+				}
+			}
+			current, err := s.showIssueInTx(ctx, tx, childPath)
+			if err != nil {
+				return err
+			}
+			result = IssueReparentResult{Issue: current, Changed: true}
+			return nil
 		}
 		result.Removed = make([]LinkTombstone, 0, len(old))
 		for _, link := range old {
@@ -221,6 +285,12 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		}
 		if err := s.recordIssueMappingInTx(ctx, tx, childPath, child.Properties.ID); err != nil {
 			return err
+		}
+		if patch.Notes.Set || patch.AppendNotes.Set || patch.Metadata.Replace.Set || patch.Metadata.Merge.Set ||
+			len(patch.Metadata.Set) > 0 || len(patch.Metadata.Unset) > 0 {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
 		}
 		if err := s.afterStage("reparent-issue-retained"); err != nil {
 			return err
