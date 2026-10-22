@@ -2,7 +2,10 @@
 
 This is the complete command inventory Donna requested for the three prioritized
 CLI families. It compares shipping tag `v1.3.1` (`c1c4b642a`) with the **as-built**
-Preview 3 integration branch at `b6d0493ba` (October 21, 2026). An open PR is
+Preview 3 integration snapshot at `b6d0493ba` (October 21, 2026). The branch
+has since advanced to `6a5f47b43`; rows below retain the probed snapshot until
+its changed CLI surfaces are compared and must not be read as an assertion
+about every command at the newer head. An open PR is
 listed as a possible repair, never as behavior in that integration commit.
 The detailed, source-backed reports cover all 43 top-level commands and expand
 namespaces and graph-only Link verbs where their behavior differs:
@@ -81,9 +84,14 @@ the incident-Link listing form.
    shared-server Dolt. Donna selected shipping identity for a flat bare
    `--id`; [#180](https://github.com/donnabox/beads/pull/180) implements and
    tests that rule but remains unmerged. Explicit graph-qualified paths may
-   retain independent IDs. Head `4d3559d16` now has 119 successful hosted
-   checks and eight intentional skips after failed-job retries; review is
-   still undecided and the PR is unmerged. See the
+   retain independent IDs under the pinned current-v0 fixed-root contract.
+   Head `9790e609f` narrows the exceptional path spelling to an exact validated
+   graph path; its identity workflow passed embedded and real shared-server
+   Dolt, while new-head hosted CI is pending. Earlier head `4d3559d16` had
+   119 successful hosted checks and eight intentional skips; those results
+   do not qualify the new head. Accepted [BDP #280](https://github.com/gastownhall/bdp/issues/280)
+   makes paths Scope-defined and prohibits kind inference from spelling;
+   #180 does not implement that future namespace contract. See the
    [A–M evidence](preview3-cli-parity/issue-a-m.md).
 2. **P1: `bd dep list` silently omits nonblocking kinds.** Graph `dep add
    --type tracks` succeeds, yet default `dep list` can say “No blocking
@@ -107,6 +115,15 @@ the incident-Link listing form.
    skips; `/tmp/cleo-selected-slice-server-current.jsonl`). This qualifies
    the selected local assembly, not every shipping form or a PR merge. See
    the [selection record](preview3-cli-compatibility-selection.md).
+   #152 advanced to `8bd84b0eb` to refuse duplicate description and shared
+   stdin sources before input consumption. Its focused installed workflow and
+   no-read unit regression passed embedded and real shared-server Dolt; hosted
+   checks are running at the new head. A separate disposable merge of the
+   selected #150/#151/#152/#156/#175 heads onto integration `6a5f47b43`
+   passed seven focused workflows on both engines at local head `1b0d26c06`;
+   the #152 follow-up was then merged into local head `07b2b2307` without
+   rerunning the entire composition. This does not replace current-head hosted
+   checks or a landed comparison.
 
 Other misleading answers found during flag qualification: `bd dep tree ID
 --max-depth 1` reports “has no dependencies” for a root with a direct blocking
@@ -123,7 +140,7 @@ locally; current-head hosted CI remains pending.
 | Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
 | `assign` | Tested core works. | Graph IDs may be `beads/ID`; live-claim takeover was not requalified in this audit. Graph help describes the wrong revision-token shape and stale-guard exit code. Draft #249 proves abbreviated native Issue IDs in the shared checked selector, but is unmerged. | Candidate/open #249; current integration unchanged |
-| `children` | Immediate children work. | `--pretty` refuses; explicit-ID parents can yield surprising child and dependency IDs (P1). | Candidate/open #180; current-head checks green, unmerged |
+| `children` | Immediate children work. | `--pretty` refuses; explicit-ID parents can yield surprising child and dependency IDs (P1). | Candidate/open #180; focused both-engine pass at new head, hosted checks pending |
 | `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later missing ID; JSON differs; `--continue` and `--no-auto` refuse. Donna selected shipping's no-change-on-missing-ID rule for Preview 3. Draft #226–#227 implement same-transaction selector preflight for ordinary multi-ID close and `--claim-next`; other per-item policy refusals can still partly succeed. | Candidates/open #226–#227; current integration unchanged |
 | `comment` | Issue comment write works. | Comments on non-Issue Beads are unavailable; graph `issue_id` uses a canonical path. | As-built; no parity PR |
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. | As-built; no parity PR |
