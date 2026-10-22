@@ -483,6 +483,13 @@ locally; current-head hosted CI remains pending.
   without skips (`/tmp/cleo-create-deps-partial-server-tests.jsonl`). This
   proof has no PR or merge; the two candidate stacks still need a clean
   integration base before it can change the pinned command behavior.
+  A newer local-only assembly at `b17a8fbae` applies the original #193–#194
+  storage and CLI commits atop #245 without changing either PR. Positional
+  partial-ID Link, local `create --deps` and atomic graph-create workflows
+  passed together on embedded and real shared-server Dolt (nine test/subtest
+  passes, no skips; `/tmp/cleo-selector-create-assembly-server.jsonl`). This
+  assembly proves stack coexistence; it does not carry the `9f92ab4aa`
+  `create --deps` partial-ID adaptation into a reviewable PR yet.
 - Draft [#209](https://github.com/donnabox/beads/pull/209)–[#210](https://github.com/donnabox/beads/pull/210) and stacked [#212](https://github.com/donnabox/beads/pull/212)
   provide a checked single-Issue linked-delete path: unforced preview refuses
   surviving native dependents; `--force` tombstones incident canonical Links
