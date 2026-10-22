@@ -20,8 +20,9 @@ import (
 )
 
 // This disposable adapter preserves the Issue writer and classification rules.
-// Its canonical path is distinct from the internal backing ID; no alias or
-// production nominal-Type contract is established by this preview.
+// A bare explicit Issue ID names both the canonical path and native backing
+// Issue; an explicit beads/PATH remains a graph path and can differ from its
+// backing ID. No production nominal-Type contract is established here.
 func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
@@ -36,7 +37,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
@@ -152,11 +153,23 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	labels, _ := cmd.Flags().GetStringSlice("labels")
 	aliasLabels, _ := cmd.Flags().GetStringSlice("label")
 	creator := getActorWithGit()
-	request := publicops.CreateRequest{Actor: creator, Issue: &types.Issue{
+	forceIDPrefix, _ := cmd.Flags().GetBool("force")
+	request := publicops.CreateRequest{Actor: creator, ForceIDPrefix: forceIDPrefix, Issue: &types.Issue{
 		CreatedBy: creator, Owner: getOwner(),
 		Title: title, Description: description, Status: types.StatusOpen,
 		Priority: priority, IssueType: issueType, Labels: utils.NormalizeLabels(append(labels, aliasLabels...)),
 	}}
+	if cmd.Flags().Changed("id") {
+		selector, _ := cmd.Flags().GetString("id")
+		if graph.ValidateBeadPath(selector) != nil {
+			// Shipping --id chooses the native Issue ID. Keep that contract for
+			// the bare spelling; only a valid path in this preview's pinned
+			// fixed-root graph contract selects an independent graph path. The
+			// writer validates the configured prefix and reserves both IDs in
+			// the same transaction.
+			request.Issue.ID = selector
+		}
+	}
 	request.Issue.Metadata, err = graphPreviewMetadataCreate(cmd)
 	if err != nil {
 		return err
