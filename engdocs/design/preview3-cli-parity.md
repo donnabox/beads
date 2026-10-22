@@ -328,7 +328,11 @@ locally; current-head hosted CI remains pending.
   each write stage, stale-revision refusal, same-parent no-op, cycle refusal,
   and native-ID selector tests passed embedded and isolated real shared-server
   Dolt without skips (`/tmp/cleo-reparent-store-qualification-20261022.jsonl`).
-  Adjacent child-create and Issue-update storage tests passed locally. It is
+  Adjacent child-create and Issue-update storage tests passed locally. Its
+  first hosted native-lint job failed before a code finding because Bazel
+  timed out fetching Toybox for an unrelated test package; only that job
+  should be retried after the workflow settles. Other current-head checks
+  remain in progress. It is
   storage-only: `bd update --parent` remains unavailable on the pinned
   integration commit and on this PR head. Empty-parent detach is deliberately
   excluded because dotted IDs still imply a parent in shipping selectors;
