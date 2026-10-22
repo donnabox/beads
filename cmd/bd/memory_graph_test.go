@@ -36,7 +36,17 @@ func TestMemoryCurrentInput(t *testing.T) {
 			t.Fatal(err)
 		}
 		want := []memoryquery.CurrentRoot{{Path: "beads/a", Depth: op.depth}, {Path: "beads/b", Depth: op.depth}, {Path: "beads/a", Depth: op.depth}, {Path: "beads/a", Depth: op.depth}}
-		if !reflect.DeepEqual(got.Roots, want) || got.Family.URI != scope+"types/"+op.family || got.Direction != op.direction {
+		wantFamily, wantDirection := scope+"types/"+op.family, op.direction
+		if op.name == "constraints" || op.name == "subjects" {
+			// These fixed discovery operations reuse only the admitted roots
+			// and bounds, then dispatch to their dedicated store APIs.
+			wantFamily = ""
+			wantDirection = (graphstore.CurrentFamilyRequest{}).Direction
+			if c.Flags().Lookup("depth") != nil {
+				t.Fatalf("%s exposed an ordinary-family depth flag", op.name)
+			}
+		}
+		if !reflect.DeepEqual(got.Roots, want) || got.Family.URI != wantFamily || got.Family.Revision != "" || got.Direction != wantDirection {
 			t.Fatalf("%s: %+v", op.name, got)
 		}
 	}
