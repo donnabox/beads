@@ -81,11 +81,24 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			if len(allDeps.Nodes) != 3 || len(allDeps.Links) != 2 {
 				t.Fatalf("Dependency all lost familiar isolated open Issue: %+v", allDeps)
 			}
-			for _, flag := range []string{"--dot", "--html", "--compact", "--box"} {
-				text := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "i1", "--link-type", "references", flag)
+			for _, flag := range []string{"", "--dot", "--html", "--compact", "--box"} {
+				args := []string{"graph", "i1", "--link-type", "references"}
+				if flag != "" {
+					args = append(args, flag)
+				}
+				text := graphPolicyCLI(t, bd, work, home, nil, "", args...)
 				for _, id := range []string{"links/a", "links/parallel", "links/cycle", "links/pin"} {
-					if !strings.Contains(text, id) {
+					want := id
+					if flag == "" || flag == "--compact" {
+						want = "(" + strings.TrimPrefix(id, "links/") + ")"
+					}
+					if !strings.Contains(text, want) {
 						t.Fatalf("%s lost %s", flag, id)
+					}
+				}
+				if flag == "" || flag == "--compact" {
+					if !strings.Contains(text, "└──") || !strings.Contains(text, "4 Beads, 6 Links") || !strings.Contains(text, "(cycle)") || !strings.Contains(text, "target revision=\""+pin.Revision+"\"") {
+						t.Fatalf("installed compact relationship tree lost selection/pins:\n%s", text)
 					}
 				}
 			}

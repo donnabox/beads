@@ -53,8 +53,16 @@ selects the entire eligible population; explicitly combining it with
 ## Read the result
 
 Use the ordinary output options: default text, `--compact`, `--box`, `--dot`,
-`--html`, and `--json`. Text lists typed Beads and individually identified
-Links; compact and box change the Bead presentation. Generic views do not
+`--html`, and `--json`. Default text and `--compact` share a relationship tree
+with actual Types, authored arrows and individually identified Links. Every
+selected Link appears once, including parallel and cross-Links. A Bead expands
+once, under its canonical shortest-hop parent in the admitted direction;
+non-tree Links cannot change that parent. References retain identity and Type,
+including for a canonical appearance later in the view. All non-tree references
+say `shown elsewhere`; `cycle` additionally marks a selected directed loop. Counts distinguish unique Beads
+from actual Links, and a depth boundary retains its root and discloses its
+frontier. Display prefixes are elided only in the human tree; pins and JSON
+remain unchanged. `--box` retains its flat Bead/Link view. Generic views do not
 assign Memory priority, readiness or workflow status. HTML uses the existing
 D3 browser visualization and requires its D3 CDN to be reachable.
 
@@ -64,7 +72,7 @@ selected induced graph. A complete Bead's `owned` state is retained even when
 it describes a Link outside that selection; those embedded owned-state copies
 are not additional traversal edges. `--quiet` suppresses human output and
 preserves JSON output. Existing format precedence remains JSON, DOT, HTML,
-compact, box/default text.
+box, then default/compact text. No alternate-view flags are added.
 
 `--open` remains explicitly unavailable in link mode. The native dependency
 view can synthesize transitive display edges through closed Issues; generic

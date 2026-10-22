@@ -260,7 +260,7 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "list", "work"); !strings.Contains(got, "beads/work depends on beads/parent") {
 		t.Fatalf("missing human dependency summary: %q", got)
 	}
-	if view := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "work"); !strings.Contains(view, "beads/work --") || !strings.Contains(view, "2 Beads, 1 Links") {
+	if view := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "work"); !strings.Contains(view, "work [issue]") || !strings.Contains(view, "2 Beads, 1 Links") || !strings.Contains(view, "└── dependency") {
 		t.Fatalf("blocking graph lost its component: %q", view)
 	}
 	var check graphDependencyCheck
