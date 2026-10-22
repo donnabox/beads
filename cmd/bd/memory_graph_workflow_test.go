@@ -92,7 +92,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 				t.Fatalf("JSON aliases/raw projection: %+v %v", raw, err)
 			}
 			human := call("memory", "references", "a", "b")
-			for _, want := range []string{"└──", "references", "(ab)", "(parallel)", "(cycle)", "3 Beads, 4 Links"} {
+			for _, want := range []string{"└──", "references", "(ab)", "(parallel)", "(cycle)", "Aggregate: 3 unique Beads, 4 unique Links across 2 root views"} {
 				if !strings.Contains(human, want) {
 					t.Fatalf("human forest lost %q:\n%s", want, human)
 				}
