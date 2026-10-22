@@ -140,7 +140,7 @@ locally; current-head hosted CI remains pending.
 | `state` | Read-only value and list forms work. | `set-state` does not; JSON may expose native rather than canonical Issue ID. | As-built; no parity PR |
 | `tag` | Explicit refusal. | Label shortcut and equivalent graph `update --add-label` are unavailable at this commit. #195–#196 provide the checked label writer; stacked #216 admits the `tag` shorthand and passed a focused both-engine workflow, with hosted CI and review pending. | Candidate/open #216 on #196; current integration unchanged |
 | `todo` | Bare/list/add/done work in tested flows. | Multi-ID done can partly succeed while exiting zero, matching shipping; graph list is bounded. | As-built; no parity PR |
-| `update` | Admitted single-Issue, Memory and informational-Link edits work. | Multi-ID, Issue type/status/labels/parent/conditional-status, description file/stdin and forced assignee transfer refuse at this commit; JSON shape differs. #152/#164 and stacked #183–#188/#191–#192/#195–#196 repair subsets. Draft #222–#223 admit a checked parent-only move as unmerged work; detach and combined parent-plus-scalar edits remain gaps. | Selected/open #152; candidates/open #164, #183–#188, #191–#192, #195–#196, #222–#223 |
+| `update` | Admitted single-Issue, Memory and informational-Link edits work. | Multi-ID, Issue type/status/labels/parent/conditional-status, description file/stdin and forced assignee transfer refuse at this commit; JSON shape differs. #152/#164 and stacked #183–#188/#191–#192/#195–#196 repair subsets. Draft #222–#223 admit a checked parent-only move; stacked #224–#225 prove a combined parent-plus-scalar edit. Empty detach remains unresolved. None changes the pinned integration behavior. | Selected/open #152; candidates/open #164, #183–#188, #191–#192, #195–#196, #222–#225 |
 
 ## Views & Reports: command-by-command release-note draft
 
@@ -360,6 +360,40 @@ locally; current-head hosted CI remains pending.
   integration evidence, not complete CRUD+ qualification or a PR merge.
   Current-head hosted CI is running or queued and review pending for both
   PRs; neither is merged or selected.
+- Draft [#224](https://github.com/donnabox/beads/pull/224) at `aad565b91`
+  extends #222's graphstore reparent composer so one native Issue writer
+  applies the parent edge and admitted scalar patch before the old/new
+  canonical Links, retained Issue head and History publish in the same
+  transaction. Shared field validation also remains the path for ordinary
+  Issue updates. A same-parent scalar edit keeps its Link identity; a fully
+  identical retry is a no-op. Mixed-edit stale revision and injected rollback
+  controls passed embedded and isolated real shared-server Dolt: three
+  test/subtest passes, no skips in the server-backed run
+  (`/tmp/cleo-reparent-edit-server-20261022.jsonl`). The focused update and
+  reparent test run passed six test/subtest results with three expected
+  server-only skips in the separate no-server invocation. Stacked draft
+  [#225](https://github.com/donnabox/beads/pull/225) at `a40fa4b66` wires
+  combined `bd update CHILD --parent PARENT --title/--priority/...` through
+  that composer. Its installed workflow passed embedded and isolated real
+  shared-server Dolt (three test/subtest passes, no skips in the server-backed
+  run; `/tmp/cleo-reparent-edit-cli-server-20261022.jsonl`). Generated CLI
+  docs, Markdown links and diff checks passed. The exact-head broad graph CLI
+  sweep passed 256 top-level tests and 1,220 test/subtest results, with one
+  top-level and 63 total expected server-only skips, zero failures
+  (`/tmp/cleo-reparent-edit-cli-broad-20261022.jsonl`). Current-head hosted
+  CI and review are pending; #224–#225 remain unmerged, unselected
+  candidates, and empty-parent detach is still refused. A disposable combined
+  checkout at local-only `beaec990e` cherry-picked #224–#225 over earlier
+  status/type/label, ready and linked-delete candidates; its shared Issue
+  update helper required a manual merge that retained those earlier fields.
+  The combined branch explicitly refuses parent moves with status/type/label
+  or conditional field edits until those policies are composed rather than
+  silently dropping them. Focused embedded tests passed eight test/subtest
+  results with four expected server-only skips; isolated real shared-server
+  storage and installed CLI workflows passed six results without skips
+  (`/tmp/cleo-parity-through225-focused-20261022.jsonl`,
+  `/tmp/cleo-parity-through225-server-20261022.jsonl`). This is local assembly
+  evidence, not a PR merge or full CRUD+ qualification.
 - Stacked [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198)
   admit local Issue `create --deps` through one transaction. #197 creates the
   native Issue and dependency edges, canonical Links and source-owned History;
