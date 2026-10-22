@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
@@ -11,7 +12,8 @@ import (
 )
 
 // ApplyNewIssueGraph is the bounded storage proof for a graph JSON plan whose
-// nodes are all new durable Issues and whose edges name those nodes by key.
+// nodes are all new durable Issues and whose edges start at a new key and end
+// at a new key or an exact existing local Issue selector.
 // The native batch body and every canonical projection run in one graph write
 // transaction. Other ApplyBatch forms refuse before any write; this method is
 // not the CLI's complete graph-plan contract.
@@ -21,8 +23,10 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 		return nil, err
 	}
 	type edge struct {
-		source, target string
-		dependency     resolvedIssueCreateDependency
+		index             int
+		source, targetKey string
+		targetID          string
+		dependency        resolvedIssueCreateDependency
 	}
 	var edges []edge
 	creates := make(map[string]*publicops.CreateItem)
@@ -39,19 +43,19 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			creates[item.Create.Key] = item.Create
 		case publicops.ItemDepAdd:
 			dep := item.DepAdd
-			if dep.Source.Key == "" || dep.Target.Key == "" || dep.Metadata != "" || dep.ThreadID != "" || dep.HasSpawner {
-				return nil, fmt.Errorf("%w: graph batch item %d requires two new keyed Issues and no edge metadata", ErrCapabilityUnavailable, index)
+			if dep.Source.Key == "" || (dep.Target.Key == "") == (dep.Target.ID == "") || dep.Metadata != "" || dep.ThreadID != "" || dep.HasSpawner {
+				return nil, fmt.Errorf("%w: graph batch item %d requires a new keyed source, one local target, and no edge metadata", ErrCapabilityUnavailable, index)
 			}
 			nativeType, err := previewDependencyType(dep.Type)
 			if err != nil {
 				return nil, err
 			}
-			pair := dep.Source.Key + "\x00" + dep.Target.Key
+			pair := dep.Source.Key + "\x00" + dep.Target.Key + "\x00" + dep.Target.ID
 			if seen[pair] {
 				return nil, fmt.Errorf("%w: duplicate graph batch Dependency pair", storage.ErrValidation)
 			}
 			seen[pair] = true
-			edges = append(edges, edge{source: dep.Source.Key, target: dep.Target.Key, dependency: resolvedIssueCreateDependency{nativeType: nativeType}})
+			edges = append(edges, edge{index: index, source: dep.Source.Key, targetKey: dep.Target.Key, targetID: dep.Target.ID, dependency: resolvedIssueCreateDependency{nativeType: nativeType}})
 		default:
 			return nil, fmt.Errorf("%w: graph batch item %d is not a new Issue or local Dependency", ErrCapabilityUnavailable, index)
 		}
@@ -60,8 +64,8 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 		return nil, fmt.Errorf("%w: graph batch requires a new Issue", storage.ErrValidation)
 	}
 	for _, item := range edges {
-		if creates[item.source] == nil || creates[item.target] == nil {
-			return nil, fmt.Errorf("%w: graph batch Dependency must name two new Issues", ErrCapabilityUnavailable)
+		if creates[item.source] == nil || (item.targetKey != "" && creates[item.targetKey] == nil) {
+			return nil, fmt.Errorf("%w: graph batch Dependency source and keyed target must name new Issues", ErrCapabilityUnavailable)
 		}
 	}
 	ownedCount := make(map[string]int)
@@ -86,7 +90,33 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				return err
 			}
 		}
+		resolvedPairs := make(map[string]bool, len(edges))
 		for index := range edges {
+			if edges[index].targetID != "" {
+				selector := IssueSelector{Path: "beads/" + edges[index].targetID, NativeID: edges[index].targetID}
+				if strings.HasPrefix(edges[index].targetID, "beads/") {
+					selector = IssueSelector{Path: edges[index].targetID}
+				}
+				path, target, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+				if err != nil {
+					return err
+				}
+				if target.Type != issueType {
+					return fmt.Errorf("%w: graph batch target is not a local Issue", storage.ErrValidation)
+				}
+				edges[index].dependency.targetID = target.Properties.ID
+				edges[index].dependency.targetPath = path
+				plan.Items[edges[index].index].DepAdd.Target = publicops.Ref{ID: target.Properties.ID}
+			}
+			target := "key:" + edges[index].targetKey
+			if edges[index].targetID != "" {
+				target = "id:" + edges[index].dependency.targetID
+			}
+			pair := edges[index].source + "\x00" + target
+			if resolvedPairs[pair] {
+				return fmt.Errorf("%w: duplicate graph batch Dependency pair", storage.ErrValidation)
+			}
+			resolvedPairs[pair] = true
 			typeURL, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), issueType, edges[index].dependency.nativeType)
 			if !ok {
 				return fmt.Errorf("%w: native Dependency Link Type is unavailable", ErrCapabilityUnavailable)
@@ -145,8 +175,10 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 		bySource := make(map[string][]resolvedIssueCreateDependency)
 		for _, item := range edges {
 			dependency := item.dependency
-			dependency.targetID = applied.Keys[item.target]
-			dependency.targetPath = paths[item.target]
+			if item.targetKey != "" {
+				dependency.targetID = applied.Keys[item.targetKey]
+				dependency.targetPath = paths[item.targetKey]
+			}
 			bySource[item.source] = append(bySource[item.source], dependency)
 		}
 		records = make(map[string]IssueRecord, len(creates))
