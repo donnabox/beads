@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sort"
 	"strconv"
@@ -296,4 +297,83 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 		SetLastTouchedID(path)
 	}
 	return err
+}
+
+// Shipping bd update treats multiple IDs as independent writes. Keep each
+// checked Issue edit in its own transaction so a missing sibling cannot undo
+// successful edits, and do not reinterpret a single revision as a set guard.
+func runGraphPreviewUpdateIssues(cmd *cobra.Command, args []string) error {
+	if cmd.Flags().Changed("if-revision") {
+		return graphFailure("invalid_selector", "multi-ID graph update cannot share one --if-revision; update each Issue separately", 2)
+	}
+	if cmd.Flags().Changed("patch") {
+		return graphFailure("invalid_selector", "multi-ID graph update --patch requires one Bead ID", 2)
+	}
+	if cmd.Flags().Changed("parent") || cmd.Flags().Changed("type") || cmd.Flags().Changed("claim") ||
+		cmd.Flags().Changed("from-revision") || cmd.Flags().Changed("replace-properties") ||
+		graphPreviewLinkPinFlagsChanged(cmd) {
+		return graphFailure("capability_unavailable", "multi-ID graph update admits only checked Issue field and property edits", 5)
+	}
+	request, err := graphPreviewIssueEditRequest(cmd, "")
+	if err != nil {
+		return err
+	}
+	if err := graphPreviewIssuePropertyMerge(cmd, &request); err != nil {
+		return err
+	}
+	selected := make([]graphstore.IssueSelector, len(args))
+	for i, arg := range args {
+		identity, err := graphPreviewWritableIdentity(arg)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		selected[i], err = graphPreviewIssueSelector(identity)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+	}
+	request.Actor = getActorWithGit()
+	results := make([]graphstore.IssueMutationResult, 0, len(args))
+	human := make([]string, 0, len(args))
+	failed, unknown := false, false
+	for i, selector := range selected {
+		item := request
+		item.Path, item.NativeID = selector.Path, selector.NativeID
+		err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+			result, err := store.UpdateIssue(ctx, item)
+			if err != nil {
+				return nil, "", fmt.Errorf("updating %s: %w", args[i], err)
+			}
+			verb := "Unchanged"
+			if result.Changed {
+				verb = "Updated"
+			}
+			return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
+		}, func(value any, line string) error {
+			results = append(results, value.(graphstore.IssueMutationResult))
+			human = append(human, line)
+			SetLastTouchedID(selector.Path)
+			return nil
+		})
+		if err != nil {
+			failed = true
+			var reported *exitError
+			if errors.As(err, &reported) && reported.Code == 6 {
+				unknown = true
+				break // An uncertain commit needs inspection before any further writes.
+			}
+		}
+	}
+	if len(results) > 0 {
+		if err := graphPrint(results, strings.Join(human, "\n"), quietFlag); err != nil {
+			return err
+		}
+	}
+	if unknown {
+		return &exitError{Code: 6}
+	}
+	if failed {
+		return &exitError{Code: 1}
+	}
+	return nil
 }
