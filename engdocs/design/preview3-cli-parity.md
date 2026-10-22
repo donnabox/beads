@@ -344,8 +344,18 @@ locally; current-head hosted CI remains pending.
   docs, Markdown links and diff checks passed. A broader exact-head pure-Go
   `TestGraphPreview` run passed in `cmd/bd` and `internal/storage/graphstore`:
   150 top-level tests, 928 test/subtest passes, no skips or failures
-  (`/tmp/cleo-reparent-broad-20261022.jsonl`). Current-head hosted CI is
-  running or queued and review pending for both PRs; neither is merged or selected.
+  (`/tmp/cleo-reparent-broad-20261022.jsonl`). A disposable combined checkout
+  at local-only `f2969678d` cleanly cherry-picked #222–#223 onto the earlier
+  candidate integration checkout; its broad embedded graph run passed 151
+  top-level tests and 931 test/subtest results without skips or failures.
+  Selected installed reparent, linked-delete, Markdown-dependency and ready
+  workflows then passed embedded and isolated real shared-server Dolt in the
+  same checkout: 13 test/subtest results, no skips or failures
+  (`/tmp/cleo-parity-through223-embedded-20261022.jsonl`,
+  `/tmp/cleo-parity-through223-server-20261022.jsonl`). This is selected
+  integration evidence, not complete CRUD+ qualification or a PR merge.
+  Current-head hosted CI is running or queued and review pending for both
+  PRs; neither is merged or selected.
 - Stacked [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198)
   admit local Issue `create --deps` through one transaction. #197 creates the
   native Issue and dependency edges, canonical Links and source-owned History;
