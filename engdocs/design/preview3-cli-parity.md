@@ -116,7 +116,7 @@ locally; current-head hosted CI remains pending.
 | --- | --- | --- | --- |
 | `assign` | Tested core works. | Graph IDs may be `beads/ID`; live-claim takeover was not requalified in this audit. Graph help describes the wrong revision-token shape and stale-guard exit code. | As-built; no parity PR |
 | `children` | Immediate children work. | `--pretty` refuses; explicit-ID parents can yield surprising child and dependency IDs (P1). | Candidate/open #180; failed-job retry queued |
-| `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later missing ID; JSON differs; `--continue` and `--no-auto` refuse. Donna selected shipping's no-change-on-missing-ID rule for Preview 3; a checked batch implementation is pending. This decision does not imply rollback for every per-item policy refusal. | As-built; selected batch policy, implementation open |
+| `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later missing ID; JSON differs; `--continue` and `--no-auto` refuse. Donna selected shipping's no-change-on-missing-ID rule for Preview 3. Draft #226–#227 implement same-transaction selector preflight for ordinary multi-ID close and `--claim-next`; other per-item policy refusals can still partly succeed. | Candidates/open #226–#227; current integration unchanged |
 | `comment` | Issue comment write works. | Comments on non-Issue Beads are unavailable; graph `issue_id` uses a canonical path. | As-built; no parity PR |
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. | As-built; no parity PR |
 | `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. External targets, partial dependency IDs, same-batch target references and graph-JSON batch relationships remain gaps. | Selected/open #152; candidates/open #159, #180–#181, #197–#202; #180 failed-job retry queued |
@@ -471,6 +471,18 @@ locally; current-head hosted CI remains pending.
   corrects stale guide examples that used an unregistered `--unconditional`
   flag; its six current-head hosted checks passed, with review pending. No PR
   was merged by this test.
+- Draft [#226](https://github.com/donnabox/beads/pull/226)–[#227](https://github.com/donnabox/beads/pull/227)
+  implement Donna's selected multi-ID close rule. #226 adds an opt-in
+  same-transaction all-selector preflight to the graph batch writer; #227
+  routes ordinary multi-ID close through it and keeps the existing ordinary
+  JSON result shape. A missing selector leaves every sibling Issue, claim,
+  History entry and retained version unchanged. A valid selector with an
+  assignee-policy refusal still has a per-item outcome. Focused graphstore
+  and installed CLI workflows passed on embedded and real shared-server
+  Dolt, with no skips; docs link, generated CLI docs, freshness and diff
+  checks passed. Hosted current-head CI and review are pending. #64's
+  Preview 2 partial-missing example is superseded only for this selected
+  Preview 3 rule; these PRs do not replace its other batch behavior.
   Upstream contributor
   [#7512](https://github.com/gastownhall/beads/pull/7512) owns a separate
   Markdown alias/direction parser correction; these PRs leave that parser
