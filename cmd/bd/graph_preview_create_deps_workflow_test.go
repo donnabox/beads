@@ -48,6 +48,15 @@ func TestGraphPreviewCreateLocalDependenciesWorkflow(t *testing.T) {
 					t.Fatalf("wrong canonical Link for native dependency: %+v", link)
 				}
 			}
+			partialTarget := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Partial target", "--id", "dep-a3f8e9", "--json"))
+			partialSource := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Partial source", "--id", "dep-partial-source", "--deps", "blocked-by:a3f8", "--json"))
+			if len(partialSource.Owned) != 1 {
+				t.Fatalf("abbreviated create dependency has no canonical Link: %+v", partialSource)
+			}
+			var partialLink graphstore.LinkRecord
+			if err := json.Unmarshal(partialSource.Owned[0], &partialLink); err != nil || partialLink.Target != partialTarget.ID {
+				t.Fatalf("abbreviated create dependency selected wrong Issue: %+v %v", partialLink, err)
+			}
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "create", "External", "--id", "dep-external", "--deps", "blocked-by:external:other#1", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "dep-external", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "create", "Missing", "--id", "dep-missing-source", "--deps", "dep-absent", "--json")

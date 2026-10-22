@@ -63,7 +63,7 @@ func (s *Store) prepareIssueCreateDependenciesInTx(ctx context.Context, tx *sql.
 		if err := s.selectedLinkTypeInTx(ctx, tx, typeURL); err != nil {
 			return nil, publicops.CreateRequest{}, err
 		}
-		targetPath, target, err := s.resolveLiveIssueSelectorInTx(ctx, tx, dependency.Target)
+		targetPath, target, err := s.resolveDependencyOperandInTx(ctx, tx, dependency.Target.Path, dependency.Target.NativeID)
 		if err != nil {
 			return nil, publicops.CreateRequest{}, err
 		}
