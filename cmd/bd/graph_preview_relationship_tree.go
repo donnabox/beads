@@ -16,9 +16,10 @@ type graphRelationshipTree struct {
 	result           graphGenericResult
 	nodes            map[string]graphGenericNode
 	adjacent         map[string][]graphGenericLink
+	outgoing         map[string][]string
+	treeEdges        map[string]string
 	expanded         map[string]bool
 	emitted          map[string]bool
-	active           map[string]int
 	w                *graphExportWriter
 	limit, remaining int
 	err              error
@@ -33,7 +34,7 @@ type graphTreeLine struct {
 }
 
 func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, limit int) error {
-	t := graphRelationshipTree{result: r, nodes: map[string]graphGenericNode{}, adjacent: map[string][]graphGenericLink{}, expanded: map[string]bool{}, emitted: map[string]bool{}, active: map[string]int{}, w: w, limit: limit, remaining: limit}
+	t := graphRelationshipTree{result: r, nodes: map[string]graphGenericNode{}, adjacent: map[string][]graphGenericLink{}, outgoing: map[string][]string{}, treeEdges: map[string]string{}, expanded: map[string]bool{}, emitted: map[string]bool{}, w: w, limit: limit, remaining: limit}
 	invalid := func() error {
 		return fmt.Errorf("%w: incomplete or duplicate selected graph", graphstore.ErrInvalidStore)
 	}
@@ -52,6 +53,7 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, lim
 			return invalid()
 		}
 		links[l.ID] = true
+		t.outgoing[l.Source] = append(t.outgoing[l.Source], l.Target)
 		if r.Direction != "in" {
 			t.adjacent[l.Source] = append(t.adjacent[l.Source], l)
 		}
@@ -99,6 +101,7 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, lim
 	}
 	sort.Strings(ids)
 	roots = append(roots, ids...)
+	roots = t.chooseExpansion(roots)
 	first := true
 	for _, id := range roots {
 		if t.stopped() {
@@ -113,7 +116,7 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, lim
 		first = false
 		t.println(t.nodeLabel(id))
 		if !t.stopped() {
-			t.writeLines(t.expand(id, nil), "")
+			t.writeLines(t.expand(id), "")
 		}
 	}
 	if !first {
@@ -179,9 +182,36 @@ func (t *graphRelationshipTree) other(l graphGenericLink, id string) (string, in
 	return l.Source, -1
 }
 
-func (t *graphRelationshipTree) expand(id string, directions []int) []graphTreeLine {
+// Choose shortest-hop parents before placing any display-only cross-reference.
+// This only arranges the already-selected graph; it acquires or selects nothing.
+func (t *graphRelationshipTree) chooseExpansion(candidates []string) []string {
+	assigned := map[string]bool{}
+	roots := []string{}
+	for _, root := range candidates {
+		if assigned[root] {
+			continue
+		}
+		roots = append(roots, root)
+		assigned[root] = true
+		queue := []string{root}
+		for cursor := 0; cursor < len(queue); cursor++ {
+			id := queue[cursor]
+			for _, l := range t.adjacent[id] {
+				next, _ := t.other(l, id)
+				if assigned[next] {
+					continue
+				}
+				assigned[next] = true
+				t.treeEdges[l.ID] = next
+				queue = append(queue, next)
+			}
+		}
+	}
+	return roots
+}
+
+func (t *graphRelationshipTree) expand(id string) []graphTreeLine {
 	t.expanded[id] = true
-	t.active[id] = len(directions)
 	lines := []graphTreeLine{}
 	for _, l := range t.adjacent[id] {
 		if t.emitted[l.ID] {
@@ -190,17 +220,16 @@ func (t *graphRelationshipTree) expand(id string, directions []int) []graphTreeL
 		t.emitted[l.ID] = true
 		next, direction := t.other(l, id)
 		line := graphTreeLine{link: l, next: next, direction: direction}
-		if t.expanded[next] {
-			line.reference = " (shown above)"
-			if start, ancestor := t.active[next]; ancestor && graphTreeClosesCycle(directions[start:], direction) {
+		if t.treeEdges[l.ID] != next {
+			line.reference = " (shown elsewhere)"
+			if t.closesCycle(l) {
 				line.reference = " (cycle)"
 			}
 		} else {
-			line.children = t.expand(next, append(directions[:len(directions):len(directions)], direction))
+			line.children = t.expand(next)
 		}
 		lines = append(lines, line)
 	}
-	delete(t.active, id)
 	return lines
 }
 
@@ -231,14 +260,23 @@ func (t *graphRelationshipTree) writeLines(lines []graphTreeLine, prefix string)
 	}
 }
 
-// An undirected DFS ancestor reference is not necessarily a directed cycle.
-// Only a consistently authored path closed by the current edge proves one.
-// Other repeated nodes remain references, not a claim of acyclicity.
-func graphTreeClosesCycle(path []int, closing int) bool {
-	for _, direction := range path {
-		if direction != closing {
-			return false
+// A tree ancestor (or a future sibling) is not itself proof of a directed
+// cycle. A return path through selected authored Links is. This bounded local
+// display check neither consults excluded Links nor changes graph membership.
+func (t *graphRelationshipTree) closesCycle(link graphGenericLink) bool {
+	seen := map[string]bool{link.Target: true}
+	queue := []string{link.Target}
+	for cursor := 0; cursor < len(queue); cursor++ {
+		id := queue[cursor]
+		if id == link.Source {
+			return true
+		}
+		for _, next := range t.outgoing[id] {
+			if !seen[next] {
+				seen[next] = true
+				queue = append(queue, next)
+			}
 		}
 	}
-	return true
+	return false
 }

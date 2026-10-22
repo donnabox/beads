@@ -56,8 +56,10 @@ Use the ordinary output options: default text, `--compact`, `--box`, `--dot`,
 `--html`, and `--json`. Default text and `--compact` share a relationship tree
 with actual Types, authored arrows and individually identified Links. Every
 selected Link appears once, including parallel and cross-Links. A Bead expands
-once; repeats retain its identity and Type. `cycle` marks a displayed directed
-loop, while other repeats say `shown above`. Counts distinguish unique Beads
+once, under its canonical shortest-hop parent in the admitted direction;
+non-tree Links cannot change that parent. References retain identity and Type,
+including for a canonical appearance later in the view. `cycle` marks a selected directed
+loop, while other repeats say `shown elsewhere`. Counts distinguish unique Beads
 from actual Links, and a depth boundary retains its root and discloses its
 frontier. Display prefixes are elided only in the human tree; pins and JSON
 remain unchanged. `--box` retains its flat Bead/Link view. Generic views do not

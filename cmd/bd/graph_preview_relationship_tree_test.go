@@ -68,7 +68,7 @@ func TestGraphRelationshipTreeReferencesAndCycles(t *testing.T) {
 				t.Fatal(err)
 			}
 			text := graphTreeTestText(t, r)
-			if strings.Count(text, "(cycle)") != tc.cycles || strings.Count(text, "(shown above)") != tc.shared {
+			if strings.Count(text, "(cycle)") != tc.cycles || strings.Count(text, "(shown elsewhere)") != tc.shared {
 				t.Fatalf("wrong directed-cycle/shared reference:\n%s", text)
 			}
 			if len(strings.Split(text, "\n")) > len(r.Links)+len(r.Nodes)+5 {
@@ -87,7 +87,7 @@ func TestGraphRelationshipTreeReferencesAndCycles(t *testing.T) {
 
 func TestGraphRelationshipTreeLayoutAndDirections(t *testing.T) {
 	r := graphTreeTestResult("a", "out", []string{"a", "b", "c", "d"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"bd", "b", "d"}, genericTestEdge{"cd", "c", "d"})
-	want := "a [memory] \"A\"\n├── references (ab) → b [memory] \"B\"\n│   └── references (bd) → d [memory] \"D\"\n└── references (ac) → c [memory] \"C\"\n    └── references (cd) → d [memory] (shown above)\n\n4 Beads, 4 Links\nComplete: true; direction: out; depth: 1000; frontier: 0\n"
+	want := "a [memory] \"A\"\n├── references (ab) → b [memory] \"B\"\n│   └── references (bd) → d [memory] \"D\"\n└── references (ac) → c [memory] \"C\"\n    └── references (cd) → d [memory] (shown elsewhere)\n\n4 Beads, 4 Links\nComplete: true; direction: out; depth: 1000; frontier: 0\n"
 	if got := graphTreeTestText(t, r); got != want {
 		t.Fatalf("relationship layout:\n%s\nwant:\n%s", got, want)
 	}
@@ -215,7 +215,7 @@ func TestGraphRelationshipTreeLargeTitlesAndOutputBudget(t *testing.T) {
 	if len(text) > 2<<20 {
 		t.Fatalf("parallel title output is %d bytes; want at most 2 MiB", len(text))
 	}
-	if count := strings.Count(text, "(shown above)"); count != 299 {
+	if count := strings.Count(text, "(shown elsewhere)"); count != 299 {
 		t.Fatalf("shared references: got %d; want 299", count)
 	}
 	// A directly supplied summary can expand beyond the text byte bound when
@@ -260,4 +260,39 @@ func TestGraphRelationshipTreeCallerBudgetAndUnicodeOrder(t *testing.T) {
 	if !errors.Is(err, broken) || output.Len() != 0 {
 		t.Fatalf("first writer failure lost: %v, %d bytes", err, output.Len())
 	}
+}
+
+func TestGraphRelationshipTreeCanonicalExpansion(t *testing.T) {
+	t.Run("both-diamond-keeps-sibling", func(t *testing.T) {
+		r := graphTreeTestResult("a", "both", []string{"a", "b", "c", "d"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"bd", "b", "d"}, genericTestEdge{"cd", "c", "d"})
+		text := graphTreeTestText(t, r)
+		if !strings.Contains(text, "\n└── references (ac) → c [memory] \"C\"") || !strings.Contains(text, "references (cd) ← c [memory] (shown elsewhere)") {
+			t.Fatalf("induced reverse edge changed canonical tree parent:\n%s", text)
+		}
+	})
+	t.Run("depth-one-cross-link-keeps-sibling", func(t *testing.T) {
+		snapshot := genericTestSnapshot(t, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"bc", "b", "c"}, genericTestEdge{"cb", "c", "b"})
+		r, err := projectGraphGeneric(snapshot, genericTestScope, genericTestInput("a", "out", 1))
+		if err != nil {
+			t.Fatal(err)
+		}
+		text := graphTreeTestText(t, r)
+		if !strings.Contains(text, "\n└── references (ac) → c [memory] \"Title c") || strings.Contains(text, "│   └── references (bc) → c [memory] \"Title c") {
+			t.Fatalf("induced cross-Link deepened a depth-one expansion:\n%s", text)
+		}
+		if !strings.Contains(text, "references (cb) → b [memory]") {
+			t.Fatalf("outgoing non-tree Link lost its authored source placement:\n%s", text)
+		}
+	})
+	t.Run("outgoing-does-not-cross-incoming-bridge", func(t *testing.T) {
+		snapshot := genericTestSnapshot(t, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"cb", "c", "b"})
+		r, err := projectGraphGeneric(snapshot, genericTestScope, genericTestInput("a", "out", 10))
+		if err != nil {
+			t.Fatal(err)
+		}
+		text := graphTreeTestText(t, r)
+		if strings.Contains(text, "(cb)") || strings.Contains(text, "c [memory]") || !strings.Contains(text, "2 Beads, 1 Links") {
+			t.Fatalf("display crossed an incoming unselected bridge:\n%s", text)
+		}
+	})
 }
