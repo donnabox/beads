@@ -328,7 +328,7 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 	return nil
 }
 
-func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
+func runGraphPreviewUpdateIssue(cmd *cobra.Command, path, identity string) error {
 	// Resolve the structured input and its source conflicts before a description
 	// flag can consume stdin or open a file.
 	values, err := graphPreviewIssuePropertyValues(cmd)
@@ -339,17 +339,24 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
+	selected, err := graphPreviewIssueSelector(identity)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	request.NativeID = selected.NativeID
 	if values != nil {
 		if err := graphPreviewApplyIssueProperties(cmd, &request, values); err != nil {
 			return err
 		}
 	}
 	request.Actor = getActorWithGit()
+	var touched string
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateIssue(ctx, request)
 		if err != nil {
 			return nil, "", err
 		}
+		touched = graphPreviewDisplayLocalURL(result.Issue.ID)
 		verb := "Unchanged"
 		if result.Changed {
 			verb = "Updated"
@@ -357,7 +364,7 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 		return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touched)
 	}
 	return err
 }

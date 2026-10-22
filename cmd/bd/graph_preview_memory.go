@@ -70,7 +70,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewUpdateLink(cmd, args)
 	}
 	if graphPreviewIssueEditFlagsChanged(cmd) {
-		return runGraphPreviewUpdateIssue(cmd, path)
+		return runGraphPreviewUpdateIssue(cmd, path, selector)
 	}
 	return runGraphPreviewUpdateMemory(cmd, path)
 }

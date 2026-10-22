@@ -20,7 +20,7 @@ func TestGraphPreviewCreateMarkdownBatchWorkflow(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			work, home := t.TempDir(), t.TempDir()
-			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/markdown/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			args := []string{"init", "--graph-mode", "link", "--prefix", "md", "--scope-url", "https://example.invalid/markdown/", "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
 				if port == "" {
@@ -51,7 +51,34 @@ func TestGraphPreviewCreateMarkdownBatchWorkflow(t *testing.T) {
 					t.Fatalf("markdown Issue mapping differs: created=%+v shown=%+v", issue, shown)
 				}
 			}
+			prereq := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Prerequisite", "--id", "md-prereq"))
+			if err := os.WriteFile(plan, []byte("## Plain batch item\n\n## Dependent batch item\n\n### Dependencies\nmd-prereq\n"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			raw = call("", "create", "--file", plan)
+			if err := json.Unmarshal([]byte(raw), &issues); err != nil || len(issues) != 2 {
+				t.Fatalf("dependency batch Issue array: %v\n%s", err, raw)
+			}
+			dependent := graphMixedResult[graphstore.IssueRecord](t, call("", "show", issues[1].ID, "--format", "graph-json"))
+			if len(dependent.Owned) != 1 {
+				t.Fatalf("dependent Issue lacks its canonical Link: %+v", dependent)
+			}
+			var link graphstore.LinkRecord
+			if err := json.Unmarshal(dependent.Owned[0], &link); err != nil {
+				t.Fatal(err)
+			}
+			if link.Source != dependent.ID || link.Target != prereq.ID || link.Properties["dep_type"] != string(types.DepBlocks) {
+				t.Fatalf("markdown dependency Link = %+v", link)
+			}
 			if err := os.WriteFile(plan, []byte("## Must not land\n\n## Has a dependency\n\n### Dependencies\nmissing-issue\n"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			call("not_found", "create", "--file", plan)
+			if err := os.WriteFile(plan, []byte("## External must not land\n\n### Dependencies\nexternal:other#1\n"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			call("capability_unavailable", "create", "--file", plan)
+			if err := os.WriteFile(plan, []byte("## Typed external must not land\n\n### Dependencies\nblocked-by: external:other#1\n"), 0600); err != nil {
 				t.Fatal(err)
 			}
 			call("capability_unavailable", "create", "--file", plan)
@@ -64,7 +91,7 @@ func TestGraphPreviewCreateMarkdownBatchWorkflow(t *testing.T) {
 			}
 			call("invalid_properties", "create", "--file", plan, "--validate")
 			page := graphMixedResult[graphstore.IssueListPage](t, call("", "list", "--all", "--format=records-json"))
-			if len(page.Items) != 2 {
+			if len(page.Items) != 5 {
 				t.Fatalf("refused markdown file or lint left a partial Issue: %+v", page.Items)
 			}
 		})

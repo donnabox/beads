@@ -46,6 +46,13 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 			return DependencyResult{}, err
 		}
 	}
+	for _, selector := range []struct{ path, nativeID string }{
+		{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID},
+	} {
+		if selector.nativeID != "" && selector.path != "beads/"+selector.nativeID {
+			return DependencyResult{}, fmt.Errorf("%w: positional native ID requires its matching bare selector", storage.ErrValidation)
+		}
+	}
 	if request.Path != "" {
 		if err := validateLinkPath(request.Path); err != nil {
 			return DependencyResult{}, err
@@ -76,16 +83,19 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 				return err
 			}
 		}
-		source, err := s.requireIssueInTx(ctx, tx, request.SourcePath)
+		sourcePath, source, err := s.resolveDependencyOperandInTx(ctx, tx, request.SourcePath, request.SourceNativeID)
 		if err != nil {
 			return err
 		}
 		if request.ExpectedSourceRevision != "" && request.ExpectedSourceRevision != source.Revision {
 			return fmt.Errorf("%w: source revision changed (current %s)", ErrConflict, source.Revision)
 		}
-		target, err := s.requireIssueInTx(ctx, tx, request.TargetPath)
+		targetPath, target, err := s.resolveDependencyOperandInTx(ctx, tx, request.TargetPath, request.TargetNativeID)
 		if err != nil {
 			return err
+		}
+		if sourcePath == targetPath {
+			return fmt.Errorf("%w: Dependency requires two distinct local Issues", storage.ErrValidation)
 		}
 		for _, raw := range source.Owned {
 			var existing LinkRecord
@@ -99,7 +109,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 				if request.Path != "" && existing.ID != graph.CanonicalURL(s.options.Binding.ScopeURL, request.Path) {
 					return fmt.Errorf("%w: Dependency pair already has canonical Link %s", storage.ErrValidation, existing.ID)
 				}
-				result = DependencyResult{Link: existing, Source: source, Changed: false}
+				result = DependencyResult{Link: existing, Source: source, Target: target, Changed: false}
 				return nil
 			}
 		}
@@ -167,14 +177,14 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if err := s.afterStage("link-retained"); err != nil {
 			return err
 		}
-		if err := s.recordIssueMappingInTx(ctx, tx, request.SourcePath, source.Properties.ID); err != nil {
+		if err := s.recordIssueMappingInTx(ctx, tx, sourcePath, source.Properties.ID); err != nil {
 			return err
 		}
-		changed, err := s.showIssueInTx(ctx, tx, request.SourcePath)
+		changed, err := s.showIssueInTx(ctx, tx, sourcePath)
 		if err != nil {
 			return err
 		}
-		result = DependencyResult{Link: link, Source: changed, Changed: true}
+		result = DependencyResult{Link: link, Source: changed, Target: target, Changed: true}
 		return nil
 	})
 	if err != nil {
@@ -397,6 +407,22 @@ func (s *Store) recordIssueMappingWithContextInTx(ctx context.Context, tx *sql.T
 }
 
 func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, path, issueID string, previous issueRevisionContext) error {
+	var ordinal int64
+	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
+		return err
+	}
+	owned, err := s.ownedLinksInTx(ctx, tx, issueID)
+	if err != nil {
+		return err
+	}
+	return s.recordIssueMappingSnapshotInTx(ctx, tx, path, issueID, ordinal, owned, previous)
+}
+
+// recordIssueMappingSnapshotInTx retains a particular native revision and its
+// matching owned-Link set. A batch can finish all native writes before it
+// publishes graph Links, so reading only issues.current_revision and the final
+// owned set would lose the intermediate graph History of an existing source.
+func (s *Store) recordIssueMappingSnapshotInTx(ctx context.Context, tx *sql.Tx, path, issueID string, ordinal int64, owned []json.RawMessage, previous issueRevisionContext) error {
 	contextJSON, err := encodeIssueRevisionContext(previous)
 	if err != nil {
 		return err
@@ -407,19 +433,11 @@ func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, p
 	if contextJSON != nil {
 		storedContext = contextJSON
 	}
-	var ordinal int64
-	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
-		return err
-	}
 	historyOrdinal, err := nextIssueHistoryOrdinalInTx(ctx, tx, path, ordinal)
 	if err != nil {
 		return err
 	}
 	revision, err := freshToken()
-	if err != nil {
-		return err
-	}
-	owned, err := s.ownedLinksInTx(ctx, tx, issueID)
 	if err != nil {
 		return err
 	}

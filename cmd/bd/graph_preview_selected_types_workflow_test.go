@@ -110,11 +110,11 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 			for _, removed := range []string{"preview-memory", "example-cites", "example-follows"} {
 				refuse("capability_unavailable", "create", "Removed", "--type", "types/"+removed)
 			}
-			decision := graphMixedResult[graphstore.IssueRecord](t, call("create", "Native decision", "--id", "decision", "--type", "decision"))
+			decision := graphMixedResult[graphstore.IssueRecord](t, call("create", "Native decision", "--id", "beads/decision", "--type", "decision"))
 			if decision.Type != graphstore.IssueTypeURL(scope) {
 				t.Fatal("bare native decision became a nominal Memory Type")
 			}
-			epic := graphMixedResult[graphstore.IssueRecord](t, call("create", "Epic", "--id", "epic", "--type", "epic"))
+			epic := graphMixedResult[graphstore.IssueRecord](t, call("create", "Epic", "--id", "beads/epic", "--type", "epic"))
 			call("create", "Child", "--type", "task", "--parent", epic.ID)
 			call("children", epic.ID)
 			call("epic", "status")

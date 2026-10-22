@@ -65,7 +65,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "types", "--sections")
 			memory := graphMixedResult[graphstore.Record](t, call("create", "--type", "types/memory", "--id", "policy", "--body", "Code flow policy\nTarget integration."))
 			other := graphMixedResult[graphstore.Record](t, call("create", "Old code flow policy", "--type", graphstore.MemoryTypeURL(scope)))
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Move the branch", "--id", "work", "--type", "task"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Move the branch", "--id", "beads/work", "--type", "task"))
 			if memory.ID != scope+"beads/policy" || memory.Properties.Title != "Code flow policy" || other.ID == memory.ID || other.Properties.Body != "" || issue.ID != scope+"beads/work" || issue.Type != graphstore.IssueTypeURL(scope) {
 				t.Fatal("typed creation lost identity, body or Type")
 			}
