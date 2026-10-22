@@ -127,8 +127,18 @@ or a full local Type URL for nominal Types. Bare names select Issue
 classifications (for example task or bug); the CLI selects types/issue for them. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
 fields refuse. Fresh workspaces create types/issue Issues.`},
-		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
-Issue; use bd show links/ID for a Link. ID@TOKEN or '[URL]@TOKEN' selects
+		{showCmd, `Use bd show ID or bd show --id ID (equivalent to beads/ID) for a current Memory or
+Issue; use bd show links/ID for a Link. Multiple positional/--id operands
+show current Issues in the supplied order, with ordinary Issue JSON or human
+details. Memory, Link, exact-version and graph-json reads remain single-ID.
+--refs shows incoming Issue references, grouped by relationship; --children
+shows only parent-child references. Both accept current Issue IDs and retain
+the familiar human view or Issue-ID-keyed JSON object.
+--watch follows one current Issue, redrawing its human detail view when that
+Issue changes; stop it with Ctrl+C.
+--current selects the actor's first in-progress Issue, then hooked Issue, then
+the last-touched Issue; it cannot combine with an explicit ID.
+ID@TOKEN or '[URL]@TOKEN' selects
 one exact retained record; --version TOKEN remains an alternative (not both).
 @current and @unpinned read current. Unwrapped URL forms containing :// are
 literal, including raw @; use the full canonical Scope URL to escape local
@@ -192,7 +202,8 @@ bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
 in this preview. Native dep operands retain literal Issue-ID semantics,
 including @; bd link parses the selected endpoint revision syntax, but exact
-pins and @current still refuse pending implementation.`},
+pins and @current are supported for local informational Links. Native
+Dependency endpoints remain floating.`},
 		{depRemoveCmd, `Use bd dep remove issue blocker (or bd dep rm) to
 remove one local blocking Dependency by its Issue pair. An absent pair is a
 successful no-op and reports status not_found with --json. A real removal
@@ -209,8 +220,9 @@ by default and --force applies the checked mutation.
 
 Without --type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. In graph workspaces this form
-also parses the selected revision syntax; exact pins and @current still refuse
-pending implementation. bd dep add/remove keep literal Issue IDs, so the input
+also parses the selected revision syntax for informational Links; exact local
+pins and @current are supported, while native Dependency endpoints remain
+floating. bd dep add/remove keep literal Issue IDs, so the input
 syntaxes are not interchangeable. To create any native Dependency
 kind through the canonical namespace, use
   bd link create --type blocks --source ISSUE --target ISSUE
@@ -287,8 +299,10 @@ pinned Issues omitted unless --all or a filter selects them, quoted rows
 with status and priority, and a line under the header saying Memories are
 not listed. An Issue filter cannot be combined with a non-Issue --type;
 a configured directory label alone does not refuse one, it is simply not
-applied to Memories. Tree output is unavailable. --json returns the ordinary
-Issue-only array; use --format records-json for generic Bead records.`},
+applied to Memories. Tree output is unavailable; --tree=false selects the
+same flat output as --flat. --json and --format json
+return the ordinary Issue-only array; use --format records-json for generic
+Bead records.`},
 		{searchCmd, `Search current graph Issues by title or canonical local Bead ID.
 Results include closed Issues unless --status narrows them. --json returns the
 ordinary counted Issue row array with Scope-relative IDs. Supported filters:

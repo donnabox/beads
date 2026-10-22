@@ -17,13 +17,19 @@ func issueClaimCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
 	cmd.Flags().IntP("estimate", "e", 0, "")
-	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "patch", "notes", "append-notes", "body-file", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision", "set-labels", "add-label", "remove-label", "parent", "metadata", "actor") {
+	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "patch", "notes", "append-notes", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision", "set-labels", "add-label", "remove-label", "parent", "metadata", "actor") {
 		if cmd.Flags().Lookup(name) == nil {
-			cmd.Flags().String(name, "", "")
+			if name == "stdin" {
+				cmd.Flags().Bool(name, false, "")
+			} else {
+				cmd.Flags().String(name, "", "")
+			}
 		}
 	}
 	for _, name := range []string{"claim", "force", "unconditional", "unconditional-source", "stdin", "json", "quiet", "readonly", "graph-mode", "no-color"} {
-		cmd.Flags().Bool(name, false, "")
+		if cmd.Flags().Lookup(name) == nil {
+			cmd.Flags().Bool(name, false, "")
+		}
 	}
 	if err := cmd.ParseFlags(args); err != nil {
 		t.Fatal(err)

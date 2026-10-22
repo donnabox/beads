@@ -211,6 +211,17 @@ go_test(
     ],
 )
 
+# Source files linked by the Preview 3 CLI parity root-cause map.
+exports_files(
+    [
+        "backend.go",
+        "issue_close_batch.go",
+        "issue_create_batch.go",
+        "issue_delete.go",
+    ],
+    visibility = ["//test/docsync:__pkg__"],
+)
+
 # --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
 
 filegroup(
