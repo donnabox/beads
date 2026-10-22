@@ -3,7 +3,9 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -38,7 +40,20 @@ func TestGraphPreviewQuickCaptureWorkflow(t *testing.T) {
 			if hyphen.Properties.Title != "-follow-up" {
 				t.Fatalf("quick capture changed a flag-looking title: %q", hyphen.Properties.Title)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "q", "Child", "--parent", created, "--json")
+			childID := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "q", "Child", "--parent", created, "--labels", "own", "--json"))
+			if strings.Contains(childID, "\n") || !strings.HasPrefix(childID, created+".") {
+				t.Fatalf("quick child did not print one dotted ID: %q", childID)
+			}
+			child := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", childID, "--format", "graph-json"))
+			if child.Properties.Title != "Child" || !reflect.DeepEqual(child.Properties.Labels, []string{"own", "triage"}) || len(child.Owned) != 1 {
+				t.Fatalf("quick child lost title, inherited labels, or owner Link: title=%q labels=%v owned=%d", child.Properties.Title, child.Properties.Labels, len(child.Owned))
+			}
+			var link graphstore.LinkRecord
+			if err := json.Unmarshal(child.Owned[0], &link); err != nil || link.Source != child.ID || link.Target != record.ID || link.Properties["dep_type"] != "parent-child" {
+				t.Fatalf("quick child has no canonical parent-child Link: %+v %v", link, err)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "q", "Refused", "--parent=", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "q", "Refused", "--parent", "missing", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "q", "Forbidden", "--readonly", "--json")
 			// The helper decodes stderr as one JSON object; a second plain or JSON
 			// diagnostic would make this assertion fail.
