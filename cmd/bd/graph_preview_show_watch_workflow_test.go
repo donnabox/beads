@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
@@ -25,7 +27,13 @@ func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
 				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", initArgs...)
-			graphPolicyCLI(t, bd, work, home, nil, "", "create", "Initial watch title", "--id", "beads/work", "--json")
+			created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Initial watch title", "--id", "beads/work", "--json"))
+			nativeID := created.Properties.ID
+			if !strings.HasPrefix(nativeID, "watch-") || len(nativeID) < len("watch-")+3 {
+				t.Fatalf("fixture lacks a native Issue hash: %q", nativeID)
+			}
+			hash := strings.TrimPrefix(nativeID, "watch-")
+			abbreviated := hash[:len(hash)-1]
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Memory body", "--id", "beads/memory", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/missing", "--watch", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/memory", "--watch", "--json")
@@ -43,7 +51,7 @@ func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer stderr.Close()
-			watch := exec.Command(bd, "show", "beads/work", "--watch")
+			watch := exec.Command(bd, "show", abbreviated, "--watch")
 			watch.Dir = work
 			watch.Env = []string{
 				"PATH=" + os.Getenv("PATH"), "HOME=" + home,

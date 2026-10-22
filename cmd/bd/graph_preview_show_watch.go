@@ -37,10 +37,14 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 	if !strings.HasPrefix(path, "beads/") {
 		return graphFailure("capability_unavailable", "--watch requires an Issue", 5)
 	}
+	selector, err := graphPreviewIssueSelector(ref.Identity)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
 	// Refuse a Memory or missing Issue before starting a watch. The shared
 	// loop's initial-render failure is otherwise silent by design.
 	if err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		record, err := s.Read(ctx, path)
+		record, err := s.ReadBeadSelected(ctx, selector)
 		if err != nil {
 			return nil, "", err
 		}
@@ -59,7 +63,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 		render: func(ctx context.Context) *types.Issue {
 			var issue *types.Issue
 			err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-				detail, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
+				detail, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
 				if err != nil {
 					return nil, "", err
 				}
@@ -85,7 +89,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 			if err != nil {
 				return nil, err
 			}
-			record, readErr := s.Read(readCtx, path)
+			record, readErr := s.ReadBeadSelected(readCtx, selector)
 			closeErr := s.Close()
 			if err := errors.Join(readErr, closeErr); err != nil {
 				return nil, err
@@ -95,7 +99,10 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 				return nil, fmt.Errorf("%w: watched Bead is no longer an Issue", graphstore.ErrCapabilityUnavailable)
 			}
 			selected := *issue.Properties
-			selected.ID = path
+			selected.ID, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, issue.ID)
+			if err != nil {
+				return nil, err
+			}
 			revision = issue.Revision
 			return &selected, nil
 		},
