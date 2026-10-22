@@ -51,9 +51,10 @@ Force: Delete and orphan dependents
   bd delete bd-1 --force
 
 GRAPH PREVIEW:
-In a graph-mode link workspace, delete previews one unreferenced Memory or Issue.
+In a graph-mode link workspace, delete previews one Memory or Issue.
 --force applies the deletion; --if-revision TOKEN optionally rejects stale state. Identity and
-prior snapshots remain retained. Live incident Links refuse; cascade, batch,
+prior snapshots remain retained. Issue incident Links are removed with the Issue;
+without --force, surviving dependents refuse the preview. Cascade, batch,
 and file selection are unavailable in this graph slice.`,
 	Args:          cobra.MinimumNArgs(0),
 	SilenceUsage:  true,

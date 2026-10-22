@@ -47,14 +47,34 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			refuse("revision_conflict", "delete", "work", "--force", "--if-revision", "stale")
 			refuse("capability_unavailable", "forget", "work")
 			call("remember", "Other", "--id", "beads/other")
-			call("link", "work", "other", "--type", "types/references", "--id", "links/relation")
-			refuse("constraint_violation", "delete", "work")
-			refuse("constraint_violation", "delete", "work", "--force", "--if-revision", issue.Revision)
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, issue) {
-				t.Fatal("incident Link refusal changed Issue")
+			linked := graphMixedResult[graphstore.IssueRecord](t, call("create", "Linked", "--id", "beads/linked"))
+			call("link", "linked", "other", "--type", "types/references", "--id", "links/relation")
+			linkedPreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "linked"))
+			if !linkedPreview.Preview || linkedPreview.Deleted || !reflect.DeepEqual(linkedPreview.Issue, linked) || len(linkedPreview.IncidentLinkIDs) != 1 {
+				t.Fatal("informational Link preview did not disclose its cleanup")
 			}
-			link := graphMixedResult[graphstore.LinkRecord](t, call("show", "links/relation"))
-			call("link", "delete", "--force", "links/relation", "--if-revision", link.Revision)
+			refuse("revision_conflict", "delete", "linked", "--force", "--if-revision", "stale")
+			linkedDelete := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "linked", "--force", "--if-revision", linked.Revision))
+			if !linkedDelete.Deleted || len(linkedDelete.IncidentLinkIDs) != 1 {
+				t.Fatal("linked Issue deletion omitted Link cleanup")
+			}
+			refuse("gone", "show", "links/relation")
+			call("show", "other")
+
+			blocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Blocker", "--id", "beads/blocker"))
+			call("create", "Dependent", "--id", "beads/dependent")
+			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "dependent", "blocker"))
+			refuse("constraint_violation", "delete", "blocker")
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "blocker")); !reflect.DeepEqual(got, blocker) {
+				t.Fatal("dependent refusal changed blocker")
+			}
+			forced := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "blocker", "--force", "--if-revision", blocker.Revision))
+			if !forced.Deleted || len(forced.IncidentLinkIDs) != 1 || forced.IncidentLinkIDs[0] != dependency.Link.ID {
+				t.Fatal("force deletion omitted orphan Link cleanup")
+			}
+			call("show", "dependent")
+			refuse("gone", "show", dependency.Link.ID)
+
 			final := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work"))
 			before := call("versions", "work")
 			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "work", "--force", "--if-revision", final.Revision))
