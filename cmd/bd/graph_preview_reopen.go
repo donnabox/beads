@@ -15,11 +15,18 @@ func runGraphPreviewReopen(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "reason"); err != nil {
+	if err := graphPreviewFlags(cmd, "reason", "if-revision"); err != nil {
 		return err
 	}
 	if len(args) == 0 {
 		return graphFailure("invalid_selector", "graph reopen requires at least one Bead ID or beads/PATH", 2)
+	}
+	revision, _, err := graphPreviewRevisionGuard(cmd, false)
+	if err != nil {
+		return err
+	}
+	if revision != "" && len(args) != 1 {
+		return graphFailure("invalid_selector", "--if-revision only works when reopening a single Issue", 2)
 	}
 	paths := make([]string, len(args))
 	for i, selector := range args {
@@ -34,11 +41,13 @@ func runGraphPreviewReopen(cmd *cobra.Command, args []string) error {
 	}
 	reason, _ := cmd.Flags().GetString("reason")
 	var hadError bool
-	err := withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		results := make([]graphstore.IssueMutationResult, 0, len(paths))
 		var human strings.Builder
 		for i, path := range paths {
-			result, err := store.ReopenIssue(ctx, path, reason, getActorWithGit())
+			result, err := store.ReopenIssueWithOptions(ctx, graphstore.IssueReopenRequest{
+				Path: path, Reason: reason, Actor: getActorWithGit(), ExpectedRevision: revision,
+			})
 			if err != nil {
 				if len(paths) == 1 {
 					return nil, "", err
