@@ -325,6 +325,8 @@ func TestTypeValidationDoesNotAcquireNativeIssuePayloads(t *testing.T) {
 					t.Error(err)
 				}
 			})
+			// Near-budget fixture work is bounded independently from initialization.
+			ctx = currentReadBudgetContext(t, ctx)
 			request := plainIssue("Large native payload")
 			// Current native data plus its retained head exceeds the general
 			// whole-workspace read budget. Memory Type admission needs neither.
@@ -372,6 +374,9 @@ func TestTypeValidationDoesNotAcquireNativeIssuePayloads(t *testing.T) {
 			if current, err := s.Show(ctx, "beads/evaluation"); err != nil || !reflect.DeepEqual(current, evaluation) {
 				t.Fatalf("native edit changed exact subject binding: %v", err)
 			}
+			// Reading the retained large payload is a separate proof, not a
+			// Type-admission latency assertion sharing the mutation window.
+			ctx = currentReadBudgetContext(t, ctx)
 			assertIssueEditVersion(t, ctx, s, "beads/large", owner)
 		})
 	}
@@ -390,6 +395,9 @@ func TestNativePayloadUpdateDoesNotScanUnrelatedMemoryPopulation(t *testing.T) {
 					t.Error(err)
 				}
 			})
+			// This companion oversized-payload isolation fixture uses the same
+			// bounded workload allowance, without changing acquisition limits.
+			ctx = currentReadBudgetContext(t, ctx)
 			issue, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
 			if err != nil {
 				t.Fatal(err)
