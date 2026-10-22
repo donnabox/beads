@@ -16,6 +16,9 @@ func TestIssueDeleteSetPlanUsesOneBoundedGraphSnapshot(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			f := setupDependencyUnlink(t, backend, 2)
+			if _, err := f.store.Create(f.ctx, CreateRequest{Path: "beads/memory", Title: "Not an Issue", Body: "Memory"}); err != nil {
+				t.Fatal(err)
+			}
 			before := workflowState(t, f.ctx, f.store)
 			plan := func(paths []string, cascade bool) (issueDeleteSetPlan, error) {
 				var got issueDeleteSetPlan
@@ -40,6 +43,9 @@ func TestIssueDeleteSetPlanUsesOneBoundedGraphSnapshot(t *testing.T) {
 			}
 			if _, err := plan([]string{"beads/first", "beads/missing"}, true); !errors.Is(err, ErrNotFound) {
 				t.Fatalf("missing named Issue: %v", err)
+			}
+			if _, err := plan([]string{"beads/first", "beads/memory"}, false); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("non-Issue member was not refused before writing: %v", err)
 			}
 			oversize := make([]string, PreviewSnapshotLimit+1)
 			for i := range oversize {
