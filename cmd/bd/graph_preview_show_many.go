@@ -50,7 +50,18 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		details := make([]*types.IssueDetails, 0, len(selectors))
 		lines := make([]string, 0, len(selectors))
 		for index, selector := range selectors {
-			record, err := s.ReadBeadSelected(ctx, selector)
+			var record any
+			var detail *types.IssueDetails
+			var err error
+			if shortMode {
+				record, err = s.ReadBeadSelected(ctx, selector)
+			} else {
+				opts := workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps}
+				if !jsonOutput {
+					opts = workapi.DetailOptions{IncludeDependents: true, IncludeComments: true}
+				}
+				record, detail, err = s.ReadBeadWithIssueDetailsSelected(ctx, selector, opts)
+			}
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -74,18 +85,6 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 				shorthand.ID = resolvedPath
 				lines = append(lines, formatShortIssue(&shorthand))
 				continue
-			}
-			opts := workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps}
-			if !jsonOutput {
-				opts = workapi.DetailOptions{IncludeDependents: true, IncludeComments: true}
-			}
-			detail, err := s.ShowIssueDetailsSelected(ctx, selector, opts)
-			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
-				missing = append(missing, args[index])
-				continue
-			}
-			if err != nil {
-				return nil, "", err
 			}
 			if jsonOutput {
 				details = append(details, detail)

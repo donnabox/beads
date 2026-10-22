@@ -51,7 +51,7 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 		rows := make(map[string][]*types.IssueWithDependencyMetadata, len(selectors))
 		var human strings.Builder
 		for index, selector := range selectors {
-			record, err := s.ReadBeadSelected(ctx, selector)
+			record, detail, err := s.ReadBeadWithIssueDetailsSelected(ctx, selector, workapi.DetailOptions{IncludeDependents: true})
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -61,10 +61,6 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 			}
 			if _, ok := record.(graphstore.IssueRecord); !ok {
 				return nil, "", graphFailure("capability_unavailable", "--refs and --children require Issues", 5)
-			}
-			detail, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{IncludeDependents: true})
-			if err != nil {
-				return nil, "", err
 			}
 			related := make([]*types.IssueWithDependencyMetadata, 0, len(detail.Dependents))
 			for _, row := range detail.Dependents {
