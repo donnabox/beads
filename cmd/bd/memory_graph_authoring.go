@@ -1,7 +1,11 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"unicode/utf8"
+
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -20,7 +24,10 @@ var memoryLinkOperations = []memoryLinkOperation{
 // Input construction is separate from execution and shares generic Link parsing,
 // metadata and guards. No facade allocates identities or bypasses Type checks.
 func newMemoryLinkCommand(op memoryLinkOperation) *cobra.Command {
-	cmd := &cobra.Command{Use: op.name + " SOURCE --" + op.targetFlag + " TARGET", Short: op.description, Args: func(*cobra.Command, []string) error { return nil }}
+	cmd := &cobra.Command{Use: op.name + " SOURCE --" + op.targetFlag + " TARGET", Short: op.description,
+		Args: func(*cobra.Command, []string) error { return nil },
+		RunE: func(cmd *cobra.Command, args []string) error { return runMemoryLinkCommand(cmd, args, op) },
+	}
 	cmd.Flags().String(op.targetFlag, "", "Target Bead identity")
 	for _, flag := range []string{"title", "body", "status"} {
 		cmd.Flags().String(flag, "", "Optional Link "+flag+" property")
@@ -33,6 +40,7 @@ func newMemoryLinkCommand(op memoryLinkOperation) *cobra.Command {
 	cmd.Flags().String("if-source-revision", "", "Require this current owner revision atomically")
 	registerCanonicalOutputFlags(cmd)
 	cmd.Flags().Lookup("output-format").Usage = "Output: default, detail or json; --json is shorthand for json"
+	canonicalFailureFactories[cmd] = newMemoryMutationFailureRenderer
 	return cmd
 }
 
@@ -41,8 +49,13 @@ func memoryLinkProperties(cmd *cobra.Command) (map[string]any, error) {
 	if cmd.Flags().Changed("properties") {
 		input, _ := cmd.Flags().GetString("properties")
 		var err error
-		properties, err = graphPreviewProperties(input, cmd.InOrStdin())
+		raw, err := graphPreviewPropertiesJSON(input, cmd.InOrStdin())
 		if err != nil {
+			return nil, err
+		}
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		decoder.UseNumber()
+		if err := decoder.Decode(&properties); err != nil {
 			return nil, err
 		}
 	}
@@ -54,6 +67,9 @@ func memoryLinkProperties(cmd *cobra.Command) (map[string]any, error) {
 			return nil, fmt.Errorf("property %q supplied by both --%s and --properties", name, name)
 		}
 		value, _ := cmd.Flags().GetString(name)
+		if !utf8.ValidString(value) {
+			return nil, fmt.Errorf("--%s must be valid UTF-8", name)
+		}
 		properties[name] = value
 	}
 	return properties, nil
@@ -102,6 +118,15 @@ func memoryLinkRequest(cmd *cobra.Command, args []string, scope string, op memor
 	if err != nil {
 		return zero, err
 	}
+	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
+		return zero, fmt.Errorf("--if-source-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit)
+	}
 	result.ExpectedSourceRevision, result.UnconditionalSource = revision, unconditional
 	return result, nil
+}
+
+func init() {
+	for _, op := range memoryLinkOperations {
+		memoryGraphCmd.AddCommand(newMemoryLinkCommand(op))
+	}
 }
