@@ -375,6 +375,11 @@ installed legacy-JSON, native-abbreviation and watch workflows passed
 embedded and real shared-server Dolt (nine passing test/subtest events, no
 skips or failures; `/tmp/cleo-show-snapshot-workflows.jsonl`). This follow-up
 is unpushed with no PR and is not a full assembled CLI gate.
+Its exact-head embedded pure-Go `TestGraphPreview` sweep passed 927
+test/subtest results with no skips or failures
+(`/tmp/cleo-show-assembled-broad-20261022.jsonl`). This does not cover the
+full shared-server command set, and the assembly predates #253's latest
+rebase.
 
 Draft #254 at `03ff8861b` is the first command-local consumer of #252's
 selected detail reader beyond `show`: graph-mode `bd label list ID` returns

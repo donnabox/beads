@@ -586,7 +586,11 @@ locally; current-head hosted CI remains pending.
   passed embedded and real shared-server Dolt (nine passing test/subtest
   events, no skips or failures; `/tmp/cleo-show-snapshot-workflows.jsonl`).
   This follow-up is unpushed and has no PR; it does not qualify every show
-  output form or the full assembled graph CLI gate.
+  output form. Its exact-head embedded pure-Go `TestGraphPreview` sweep passed
+  927 test/subtest results with no skips or failures
+  (`/tmp/cleo-show-assembled-broad-20261022.jsonl`). The sweep does not
+  qualify shared-server integration across the full assembled command set,
+  and this local assembly predates #253's latest rebase.
   Draft [#254](https://github.com/donnabox/beads/pull/254) at `03ff8861b`
   stacks on #252 and admits only `bd label list ID` in graph mode. It uses the
   checked Issue detail reader for native full/abbreviated IDs and exact graph
