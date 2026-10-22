@@ -64,8 +64,8 @@ func runGraphPreviewCreateGraph(cmd *cobra.Command, args []string) error {
 	for _, edge := range plan.Edges {
 		allowed := GraphApplyEdge{FromKey: edge.FromKey, FromID: edge.FromID, ToKey: edge.ToKey, ToID: edge.ToID, Type: edge.Type}
 		if !reflect.DeepEqual(edge, allowed) || (edge.FromKey == "") == (edge.FromID == "") ||
-			(edge.ToKey == "") == (edge.ToID == "") || (edge.FromID != "" && edge.ToKey == "") {
-			return graphFailure("capability_unavailable", "graph edges require a new source and one local target, or one exact existing source and a new keyed target; metadata is unavailable", 5)
+			(edge.ToKey == "") == (edge.ToID == "") {
+			return graphFailure("capability_unavailable", "graph edges require new keyed or exact existing local Issue endpoints; metadata is unavailable", 5)
 		}
 	}
 	force, _ := cmd.Flags().GetBool("force")
