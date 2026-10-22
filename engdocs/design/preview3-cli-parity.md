@@ -461,6 +461,15 @@ locally; current-head hosted CI remains pending.
   zero failures (1,265 pass and 81 skip events including subtests). This is
   broader embedded evidence, not complete CRUD+ or shared-server qualification.
   The PRs remain unmerged candidates.
+  A separate local-only proof at `9f92ab4aa` assembles the #193–#194
+  positional selector with #197–#202 create-dependency work and reuses the
+  same transaction-scoped native Issue operand resolution for `create --deps`.
+  Abbreviated local targets resolve before the create write; ambiguous IDs
+  roll back, while explicit graph paths stay exact. Focused storage and
+  installed CLI workflows passed on embedded and real shared-server Dolt
+  without skips (`/tmp/cleo-create-deps-partial-server-tests.jsonl`). This
+  proof has no PR or merge; the two candidate stacks still need a clean
+  integration base before it can change the pinned command behavior.
 - Draft [#209](https://github.com/donnabox/beads/pull/209)–[#210](https://github.com/donnabox/beads/pull/210) and stacked [#212](https://github.com/donnabox/beads/pull/212)
   provide a checked single-Issue linked-delete path: unforced preview refuses
   surviving native dependents; `--force` tombstones incident canonical Links
