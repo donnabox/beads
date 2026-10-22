@@ -138,15 +138,15 @@ func TestMemoryConstraintsSeedAnchorsAndCycles(t *testing.T) {
 }
 
 func TestMemoryConstraintsIndependentSlotsAndBudget(t *testing.T) {
-	r := constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: 0}, {Path: "beads/a", RequiresDepth: 2}, {Path: "beads/e", RequiresDepth: 1}}, [4]string{"sab", "subject-to", "a", "b"}, [4]string{"bc", "requires", "b", "c"})
+	r := constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: 0}, {Path: "beads/a", RequiresDepth: 2}, {Path: "beads/e", RequiresDepth: 1}}, [4]string{"sab", "subject-to", "a", "b"}, [4]string{"ba", "requires", "b", "a"}, [4]string{"ad", "requires", "a", "d"})
 	s := constraintPresentationText(t, r)
-	if strings.Count(s, "(sab)") != 2 || strings.Count(s, "(bc)") != 1 || !strings.Contains(s, "Aggregate: 4 unique Beads, 2 unique Links across 3 root views") || !strings.Contains(s, `e [constraint] "E"`) {
+	if strings.Count(s, "(sab)") != 2 || strings.Count(s, "(ba)") != 1 || strings.Count(s, "(ad)") != 1 || !strings.Contains(s, "Aggregate: 4 unique Beads, 3 unique Links across 3 root views") || !strings.Contains(s, `e [constraint] "E"`) {
 		t.Fatal(s)
 	}
-	for _, cap := range []int{1, len(s) / 2, len(s) - 1} {
-		got, err := renderMemoryConstraintsGraph(r, genericTestScope, cap)
+	for _, budget := range []int{1, len(s) / 2, len(s) - 1} {
+		got, err := renderMemoryConstraintsGraph(r, genericTestScope, budget)
 		if got != "" || !errors.Is(err, graphstore.ErrLimitExceeded) {
-			t.Fatalf("cap%d returned %q %v", cap, got, err)
+			t.Fatalf("cap%d returned %q %v", budget, got, err)
 		}
 	}
 	if got, err := renderMemoryConstraintsGraph(r, genericTestScope, len(s)); err != nil || got != s {
@@ -293,5 +293,106 @@ func TestMemorySubjectsRejectsSecondaryOrIncompleteScope(t *testing.T) {
 				t.Fatalf("accepted non-direct capture: %q %v", got, err)
 			}
 		})
+	}
+}
+
+func TestMemoryConstraintCaptureRefusalAndRequestErrors(t *testing.T) {
+	makeRead := func() graphstore.CurrentConstraintsRead {
+		return constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: 1}}, [4]string{"sab", "subject-to", "a", "b"}, [4]string{"bc", "requires", "b", "c"})
+	}
+	for _, tc := range []struct {
+		name string
+		edit func(*graphstore.CurrentConstraintsRead)
+	}{
+		{"unknown-record", func(r *graphstore.CurrentConstraintsRead) { r.Records[0] = "invalid" }},
+		{"nil-issue-properties", func(r *graphstore.CurrentConstraintsRead) {
+			n := r.Records[0].(graphstore.Record)
+			r.Records[0] = graphstore.IssueRecord{ID: n.ID, Type: n.Type, Version: n.Version}
+		}},
+		{"duplicate-record", func(r *graphstore.CurrentConstraintsRead) { r.Records = append(r.Records, r.Records[0]) }},
+		{"wrong-version", func(r *graphstore.CurrentConstraintsRead) { r.Graph.Nodes[0].Version = "other" }},
+		{"wrong-endpoint", func(r *graphstore.CurrentConstraintsRead) {
+			for i, raw := range r.Records {
+				if l, ok := raw.(graphstore.LinkRecord); ok {
+					l.Target = genericTestScope + "beads/e"
+					r.Records[i] = l
+					break
+				}
+			}
+		}},
+		{"duplicate-view-node", func(r *graphstore.CurrentConstraintsRead) {
+			r.Graph.Views[0].Nodes = append(r.Graph.Views[0].Nodes, r.Graph.Views[0].Nodes[0])
+		}},
+		{"missing-view-root", func(r *graphstore.CurrentConstraintsRead) { r.Graph.Views[0].Nodes = r.Graph.Views[0].Nodes[1:] }},
+		{"unrepresented-union-node", func(r *graphstore.CurrentConstraintsRead) {
+			n := memoryquery.CurrentNode{Path: "beads/f", TypeURL: genericTestScope + "types/constraint", Version: "current"}
+			r.Graph.Nodes = append(r.Graph.Nodes, n)
+			r.Records = append(r.Records, graphstore.Record{ID: genericTestScope + n.Path, Type: n.TypeURL, Version: n.Version})
+		}},
+		{"negative-depth", func(r *graphstore.CurrentConstraintsRead) {
+			r.Graph.Views[0].Root.Depth = -1
+			r.Stages[0].Root.RequiresDepth = -1
+		}},
+		{"excess-depth", func(r *graphstore.CurrentConstraintsRead) {
+			r.Graph.Views[0].Root.Depth = graphstore.PreviewSnapshotLimit + 1
+			r.Stages[0].Root.RequiresDepth = graphstore.PreviewSnapshotLimit + 1
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			r := makeRead()
+			tc.edit(&r)
+			s, err := renderMemoryConstraintsGraph(r, genericTestScope, 100000)
+			if s != "" || !errors.Is(err, graphstore.ErrInvalidStore) {
+				t.Fatalf("accepted inconsistent capture %q %v", s, err)
+			}
+		})
+	}
+	r := makeRead()
+	for _, tc := range []struct {
+		scope  string
+		budget int
+	}{{"invalid", 100000}, {genericTestScope, 0}, {genericTestScope, -1}} {
+		for _, call := range []func() (string, error){func() (string, error) { return renderMemoryConstraintsGraph(r, tc.scope, tc.budget) }, func() (string, error) { return renderMemorySubjectsGraph(r.CurrentFamilyRead, tc.scope, tc.budget) }} {
+			s, err := call()
+			if s != "" || !errors.Is(err, graph.ErrValidation) {
+				t.Fatalf("request misclassified %q %v", s, err)
+			}
+		}
+	}
+	for _, call := range []func() (string, error){func() (string, error) {
+		return renderMemoryConstraintsGraph(graphstore.CurrentConstraintsRead{}, genericTestScope, 100000)
+	}, func() (string, error) {
+		return renderMemorySubjectsGraph(graphstore.CurrentFamilyRead{}, genericTestScope, 100000)
+	}} {
+		s, err := call()
+		if s != "" || !errors.Is(err, graphstore.ErrInvalidStore) {
+			t.Fatalf("empty capture misclassified %q %v", s, err)
+		}
+	}
+	r = constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: graphstore.PreviewSnapshotLimit}}, [4]string{"sab", "subject-to", "a", "b"})
+	if _, err := renderMemoryConstraintsGraph(r, genericTestScope, 100000); err != nil {
+		t.Fatal("exact producer depth bound refused", err)
+	}
+}
+
+func TestMemorySubjectsSelfDeclarationAndStrayNode(t *testing.T) {
+	fixture := constraintPresentationFixture(t, [4]string{"self", "subject-to", "a", "a"}, [4]string{"ba", "subject-to", "b", "a"})
+	g, err := memoryquery.CurrentSubjects(context.Background(), fixture, constraintPresentationFamily, []string{"beads/a"}, memoryquery.Limits{MaxNodes: 10, MaxLinks: 10, MaxInspected: 1000})
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := constraintPresentationRecords(g)
+	s, err := renderMemorySubjectsGraph(r, genericTestScope, 100000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(s, "subject-to (self) ← a [constraint] (shown elsewhere) (cycle)") || strings.Count(s, "(self)") != 1 || !strings.Contains(s, "fixed direct incoming Subject To scope") {
+		t.Fatal(s)
+	}
+	n := memoryquery.CurrentNode{Path: "beads/e", TypeURL: genericTestScope + "types/constraint", Version: "current"}
+	g.Nodes = append(g.Nodes, n)
+	g.Views[0].Nodes = append(g.Views[0].Nodes, n.Path)
+	if got, err := renderMemorySubjectsGraph(constraintPresentationRecords(g), genericTestScope, 100000); got != "" || !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("stray direct subject accepted %q %v", got, err)
 	}
 }
