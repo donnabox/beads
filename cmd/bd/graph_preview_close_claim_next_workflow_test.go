@@ -18,8 +18,8 @@ import (
 )
 
 // An installed graph workspace must close and claim in one durable act. A
-// refused sibling does not discard either landing, while retrying a no-op
-// close never claims a second Issue or creates another retained version.
+// missing sibling must prevent both the close and the claim, while retrying
+// a no-op close never claims a second Issue or creates another retained version.
 func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
@@ -71,8 +71,7 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				t.Fatal("no-op retry minted a version or claimed spare work")
 			}
 			call("create", "Higher priority spare", "--id", "next", "--priority", "0")
-			nextBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "next"))
-			partial := func(wantClaim string, args ...string) string {
+			missingClose := func(args ...string) string {
 				t.Helper()
 				ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 				defer cancel()
@@ -90,28 +89,23 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				cmd.Stdout, cmd.Stderr = &stdout, &stderr
 				err := cmd.Run()
 				if ctx.Err() != nil {
-					t.Fatalf("partial close timed out: %v", ctx.Err())
+					t.Fatalf("missing-selector close timed out: %v", ctx.Err())
 				}
-				if exit, ok := err.(*exec.ExitError); !ok || exit.ExitCode() != 1 || !strings.Contains(stderr.String(), `"code":"not_found"`) {
-					t.Fatalf("partial close did not report refused sibling: %v stdout=%s stderr=%s", err, stdout.String(), stderr.String())
-				}
-				if wantClaim != "" && (!strings.Contains(stderr.String(), `"code":"partial_close_claim_retained"`) || !strings.Contains(stderr.String(), wantClaim)) {
-					t.Fatalf("partial failure did not name its retained claim: %s", stderr.String())
+				if exit, ok := err.(*exec.ExitError); !ok || exit.ExitCode() != 3 || !strings.Contains(stderr.String(), `"code":"not_found"`) {
+					t.Fatalf("missing close did not report absent sibling: %v stdout=%s stderr=%s", err, stdout.String(), stderr.String())
 				}
 				return stdout.String()
 			}
-			mixed := graphMixedResult[claimResult](t, partial(scope+"beads/next", "close", "spare", "missing", "--claim-next", "--reason", "Done"))
-			if len(mixed.Closed) != 1 || mixed.Closed[0].ID != scope+"beads/spare" || mixed.Closed[0].Properties.Status != types.StatusClosed ||
-				mixed.Claimed.ID != scope+"beads/next" || mixed.Claimed.Revision == nextBefore.Revision || mixed.Claimed.Properties.Status != types.StatusInProgress {
-				t.Fatalf("partial close lost the committed close or claim: %+v", mixed)
+			spareVersionsBefore, nextVersionsBefore := call("versions", "spare"), call("versions", "next")
+			if output := missingClose("close", "spare", "missing", "--claim-next", "--reason", "Done"); output != "" {
+				t.Fatalf("missing selector emitted a committed close or claim: %s", output)
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "next")); !reflect.DeepEqual(got, mixed.Claimed) {
-				t.Fatal("partial failure hid or rolled back its retained claim")
+			if call("versions", "spare") != spareVersionsBefore || call("versions", "next") != nextVersionsBefore {
+				t.Fatal("missing selector changed the sibling Issue or claimed next work")
 			}
-			spareVersions, nextVersions := call("versions", "spare"), call("versions", "next")
-			repeated := graphMixedResult[[]graphstore.IssueRecord](t, partial("", "close", "spare", "missing", "--claim-next"))
-			if len(repeated) != 1 || call("versions", "spare") != spareVersions || call("versions", "next") != nextVersions {
-				t.Fatalf("partial retry claimed again or wrote a version: %+v", repeated)
+			landed := graphMixedResult[claimResult](t, call("close", "spare", "--claim-next", "--reason", "Done"))
+			if len(landed.Closed) != 1 || landed.Closed[0].ID != scope+"beads/spare" || landed.Claimed.ID != scope+"beads/next" {
+				t.Fatalf("valid retry did not close and claim: %+v", landed)
 			}
 			call("create", "Last unassigned work", "--id", "terminal")
 			nothingReady := graphMixedResult[[]graphstore.IssueRecord](t, call("close", "terminal", "--claim-next"))

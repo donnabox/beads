@@ -21,6 +21,9 @@ type IssueCloseBatchRequest struct {
 	Paths, Reasons   []string
 	Actor, Session   string
 	Force, ClaimNext bool
+	// RequireAllPaths rejects a missing or non-Issue selector before any batch
+	// item is written. Other per-item policy refusals retain batch semantics.
+	RequireAllPaths bool
 }
 
 type IssueCloseBatchOutcome struct {
@@ -68,6 +71,9 @@ func (s *Store) CloseIssues(ctx context.Context, request IssueCloseBatchRequest)
 			result.Outcomes[i].Path = path
 			before, err := s.requireIssueInTx(ctx, tx, path)
 			if err != nil {
+				if request.RequireAllPaths {
+					return fmt.Errorf("closing %s: %w", path, err)
+				}
 				if !errors.Is(err, ErrNotFound) && !errors.Is(err, ErrGone) && !errors.Is(err, storage.ErrValidation) {
 					return err
 				}
