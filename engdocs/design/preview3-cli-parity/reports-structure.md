@@ -2,6 +2,12 @@
 
 **Scope and pin.** Read-only audit of shipping `v1.3.1` (`c1c4b642ac1c08d8c828007a1c2f96e47e43ef7c`) against **as-built** `origin/codex/preview3-integration` (`b6d0493baf7c0a52f68df5a943158290e3b75878`, 2026-10-21). I compiled each pinned checkout with the repository `make build` recipe and `GOFLAGS=-buildvcs=false` because the disposable worktrees' VCS stamping failed. All conclusions below refer to b6d0493, never to an open PR. Initial source inspection used pinned temporary checkouts; the follow-up re-established them at `/private/tmp/cleo-flags-p3` and `/private/tmp/cleo-flags-v131` for the complete flag inventory. The requested `/Users/dbox/repos/wt/codex/cleo-graph-compat-audit` checkout was used to identify refs, instructions, and PR state without modification.
 
+**Delivery update (2026-10-22):** #150's blocked-parent filter fix and #175's
+ready regression test landed through [#256](https://github.com/donnabox/beads/pull/256)
+at integration `9be7c4894`. #150 remains open for newer audit commits; its
+delivered code is distinct from the baseline probes below. See the
+[living status column](../preview3-cli-parity.md).
+
 **Executive finding.** **P1 silent wrong answer:** graph `bd dep add A B --type tracks` persists a native dependency (exit 0), then graph `bd dep list A` exits 0 and omits it. If it is the only edge, the answer is literally `No blocking Dependencies.` Shipping `v1.3.1` default `dep list` shows the `tracks` edge. Graph `dep list --type tracks` refuses (exit 5), so ordinary users cannot get shipping parity through that command. This reproduces on embedded and real shared-server Dolt. [PR #165](https://github.com/donnabox/beads/pull/165) explicitly fixes this but is **open, unmerged**, based on b6d0493. Two **P2** findings: `dep tree ID --max-depth 1` says the Issue “has no dependencies” even with a direct blocking edge, while shipping prints a truncated root-only tree; and `status --graph --json` says `blockingDependencyPairUnlink:false` while `dep remove A B` works and the same capability prose says so.
 
 ## Evidence key and method

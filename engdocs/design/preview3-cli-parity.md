@@ -3,10 +3,14 @@
 This is the complete command inventory Donna requested for the three prioritized
 CLI families. It compares shipping tag `v1.3.1` (`c1c4b642a`) with the **as-built**
 Preview 3 integration snapshot at `b6d0493ba` (October 21, 2026). The branch
-has since advanced to `6a5f47b43`; rows below retain the probed snapshot until
-its changed CLI surfaces are compared and must not be read as an assertion
-about every command at the newer head. An open PR is
-listed as a possible repair, never as behavior in that integration commit.
+has since advanced to merge commit `9be7c4894` (October 22, 2026). The first
+three columns below retain the fully probed `b6d0493ba` snapshot; the work-status
+column tracks later delivery. Do not read an open candidate as behavior in
+either integration commit. The selected #150/#151/#152/#156/#175 slice landed
+through [#256](https://github.com/donnabox/beads/pull/256) at exact head
+`215b87d05`, whose tree equals merge commit `9be7c4894`. #151/#152/#156/#175
+are marked merged on GitHub. #150 remains open because its newer audit commits
+through `b0f334862` are not in #256.
 The detailed, source-backed reports cover all 43 top-level commands and expand
 namespaces and graph-only Link verbs where their behavior differs:
 
@@ -37,18 +41,18 @@ whole shipping command is compatible. `Selected/open` means Donna selected
 an unmerged PR for the first CRUD/ready slice. `Candidate/open` means an
 unmerged PR exists but has not been selected. `Gap` means no repair PR is
 currently listed. `Separate owner` identifies work outside this CLI parity
-stack. `Merged/integration` will be used only after a PR lands on the
-integration branch and the affected form is re-probed; no command-specific
-parity PR has that label in this snapshot. `CI needs triage` reports a failing
+stack. `Merged/integration` means the named behavior landed on the
+integration branch and its affected form was re-probed at the delivered tree;
+it does not certify the entire shipping command. `CI needs triage` reports a failing
 current-head check without attributing it to product code. A PR can have
 focused test evidence and still be open, unreviewed, or
 failing a hosted check; the validation details are recorded below rather than
 collapsed into the lifecycle label. These labels were checked against PR state
 on October 22, 2026. On PR creation, focused validation, review change, or
 merge, update the affected command row and the exact-head evidence below.
-Only after a merge into `codex/preview3-integration` and a fresh comparison
-should its behavior move into the pinned as-built column. This column is
-tracking scaffolding, not proposed release-note text.
+Only after a full command comparison at the new branch head should the pinned
+as-built columns be repinned. This column is tracking scaffolding, not proposed
+release-note text.
 
 **Execution order.** Continue the root-cause and command-local tracks in
 parallel. For cross-resource operations, first prove one checked transaction
@@ -101,12 +105,13 @@ the incident-Link listing form.
    Dependencies.” Shipping lists that edge. [#165](https://github.com/donnabox/beads/pull/165)
    is an unmerged candidate that fixes human all-kind reads; JSON remains an
    explicit refusal. See the [structure evidence](preview3-cli-parity/reports-structure.md).
-3. **Core display and editing still require unmerged work.** Current graph
-   `show ID` human output is a raw record rather than familiar Issue detail;
-   many familiar `show` and `update` forms refuse. Selected
+3. **Core display and editing have a delivered first slice, with larger gaps.**
+   At the fully probed `b6d0493ba` snapshot, graph `show ID` human output was
+   a raw record rather than familiar Issue detail, and many familiar `show`
+   and `update` forms refused. Selected
    [#151](https://github.com/donnabox/beads/pull/151) and
-   [#152](https://github.com/donnabox/beads/pull/152) repair subsets, while
-   other forms have no selected fix. A focused combined 18-workflow test of
+   [#152](https://github.com/donnabox/beads/pull/152) repair subsets delivered
+   through #256; other forms have no selected fix. A focused combined 18-workflow test of
    #151, #152, #156 and #175 passed both engines, but that is not a v1.3.1
    feature-parity certification. A newer disposable assembly at local-only
    `fbf03c401` includes the current #175 fixture correction: its broad
@@ -132,14 +137,18 @@ the incident-Link listing form.
    the input-source unit regression ran locally. Bazel source sync, docsync,
    generated CLI docs and diff checks passed. This does not replace
    current-head hosted checks or a landed comparison.
-   The selected five-PR composition is open as
-   [#256](https://github.com/donnabox/beads/pull/256). Its initial Bazel
+   The selected five-PR composition landed as
+   [#256](https://github.com/donnabox/beads/pull/256) at integration merge
+   `9be7c4894`. Its initial Bazel
    Dolt-server lane found that #151's new current-Issue and multi-show source
    files were absent from `cmd/bd/BUILD.bazel`'s `go_library` list. #151 head
    `e4d87ee9a` now lists both; the recomposed #256 head `215b87d05` includes
-   that exact fix and awaits new-head CI. Local package compilation, a complete
-   source-list comparison for `cmd/bd`, Bazel managed-list check and diff check
-   passed. The failed prior head does not qualify the new head.
+   that exact fix. Its exact-head hosted checks completed with 121 successes,
+   eight intentional skips, and no failures or pending checks. The merged tree
+   equals #256's tested tree. A focused re-probe of delivered `show`, description
+   input, list, ready and blocked-parent forms passed at that tree
+   (`/tmp/cleo-merged-selected-embedded-20261022.log`); the complete
+   v1.3.1 flag/output comparison remains open.
 
 Other misleading answers found during flag qualification: `bd dep tree ID
 --max-depth 1` reports “has no dependencies” for a root with a direct blocking
@@ -160,14 +169,14 @@ locally; current-head hosted CI remains pending.
 | `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later missing ID; JSON differs; `--continue` and `--no-auto` refuse. Donna selected shipping's no-change-on-missing-ID rule for Preview 3. Draft #226–#227 implement same-transaction selector preflight for ordinary multi-ID close and `--claim-next`; other per-item policy refusals can still partly succeed. | Candidates/open #226–#227; current integration unchanged |
 | `comment` | Issue comment write works. | Comments on non-Issue Beads are unavailable; graph `issue_id` uses a canonical path. | As-built; no parity PR |
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. | As-built; no parity PR |
-| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. Draft #231 proves a new-Issue symbolic batch with canonical Links in storage; stacked #232 wires new-key/local-edge `--graph`, and #233 adds exact existing local targets; stacked #234 admits native initial Issue text, assignee, owner, estimate, due date, and labels; #235 admits one exact existing Issue source linked to a new node. Test-only #236 pins new-source inception History; #237 admits multiple Links from one existing source with intermediate History; #238 admits a new existing-to-existing edge alongside a new node; #239 admits a change-free re-add of an already mapped Link; #240 admits deferred `assign_after_create`, #241 admits initial metadata and symbolic `metadata_refs`, #242 admits graph-plan parent relationships, and #243 admits inline local dependencies in the same transaction. #244–#245 admit initial defer timestamps at the shared graph Issue writer and both ordinary `--defer` and graph-plan `defer_until` CLI forms. Metadata-changing re-adds, other edge metadata and node forms still refuse. External targets (intentionally refused), same-batch Markdown targets and full graph-JSON relationships remain gaps; #246 covers partial dependency IDs as an unmerged convergence candidate. Shipping `create --graph` has no arbitrary update or close items; those are separate `bd batch` concerns. | Selected/open #152; candidates/open #159, #180–#181, #197–#202, #231–#246; current integration unchanged |
+| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work at the pinned snapshot. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152's description input subset landed via #256; #159 remains an unmerged subset. Draft #231 proves a new-Issue symbolic batch with canonical Links in storage; stacked #232 wires new-key/local-edge `--graph`, and #233 adds exact existing local targets; stacked #234 admits native initial Issue text, assignee, owner, estimate, due date, and labels; #235 admits one exact existing Issue source linked to a new node. Test-only #236 pins new-source inception History; #237 admits multiple Links from one existing source with intermediate History; #238 admits a new existing-to-existing edge alongside a new node; #239 admits a change-free re-add of an already mapped Link; #240 admits deferred `assign_after_create`, #241 admits initial metadata and symbolic `metadata_refs`, #242 admits graph-plan parent relationships, and #243 admits inline local dependencies in the same transaction. #244–#245 admit initial defer timestamps at the shared graph Issue writer and both ordinary `--defer` and graph-plan `defer_until` CLI forms. Metadata-changing re-adds, other edge metadata and node forms still refuse. External targets (intentionally refused), same-batch Markdown targets and full graph-JSON relationships remain gaps; #246 covers partial dependency IDs as an unmerged convergence candidate. Shipping `create --graph` has no arbitrary update or close items; those are separate `bd batch` concerns. | Merged/integration #152 via #256 (description file/stdin); candidates/open #159, #180–#181, #197–#202, #231–#246; other create gaps remain |
 | `create-form` | Explicit refusal. | Interactive Issue creation is unavailable. | Gap; no repair PR |
 | `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. Draft #209 proves opt-in linked deletion in one transaction; #210 adds a checked unforced preview; stacked draft #212 wires single-Issue CLI preview and `--force`. It leaves surviving dependents live. Draft #228–#229 extend the storage proof to bounded named sets and cascade. Draft #230 admits the multi-ID, cascade, and file CLI forms over that proof and preserves #163's single-ID dry-run behavior. A #230+#250 assembly proves same-transaction bare-ID abbreviations for single and set deletion; the single-ID CLI follow-up is local. Dotted native IDs explicitly refuse set deletion pending upstream #7377. | Candidates/open #163, #209–#210, #212, #228–#230; assembly branch has no PR; current integration unchanged |
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. | As-built; mutation unqualified |
 | `gate` | Explicit refusal. | Gate create/check/list/show/resolve/waiter/discovery are unavailable. | Gap; no repair PR |
 | `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. Draft #254 admits only `label list` through a checked current-Issue detail read; it is unmerged and does not change the pinned build. Label writes and propagation still refuse. | Candidate/open #254 for list; write/propagate gaps remain |
-| `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151/#161/#174 and #193–#194 are unmerged subsets; draft #246 converges the partial-ID route with graph create. A local assembly proves custom kinds with abbreviated native IDs together; it is not merged. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. | Selected/open #151; candidates/open #161, #174, #193–#194, #246; local composition validated |
-| `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156/#158/#166/#169–#172, #182 (`--id`), #189–#190 (`--ready`), and #203 (`--ready --parent`) are unmerged subsets. Donna selected a future shared Type-filter contract with `count`: omitted Type means the Issue family, `--type X` includes refinements, `--exact-type X` does not, and `--type any` selects all Bead Types. None of that contract has landed in the pinned build. | Selected/open #156; candidates/open #158, #166, #169–#172, #182, #189–#190, #203; Type selection design accepted, implementation unqualified |
+| `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists at the pinned snapshot. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151's familiar positional feedback landed via #256; #161/#174 and #193–#194 remain unmerged subsets, and draft #246 converges the partial-ID route with graph create. A local assembly proves custom kinds with abbreviated native IDs together; it is not merged. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. | Merged/integration #151 via #256 (familiar positional feedback); candidates/open #161, #174, #193–#194, #246; partial IDs/custom kinds remain |
+| `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters at the pinned snapshot. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156's `--format=json` and `--tree=false` aliases landed via #256; #158/#166/#169–#172, #182 (`--id`), #189–#190 (`--ready`), and #203 (`--ready --parent`) remain unmerged subsets. Donna selected a future shared Type-filter contract with `count`: omitted Type means the Issue family, `--type X` includes refinements, `--exact-type X` does not, and `--type any` selects all Bead Types. None of that contract has landed in the pinned build. | Merged/integration #156 via #256 (`--format=json`, `--tree=false`); candidates/open #158, #166, #169–#172, #182, #189–#190, #203; Type selection implementation unqualified |
 | `merge-slot` | Create/check/acquire/release work in tested flows. | Wrong-holder release refuses with misleading `graph_not_initialized` instead of a holder-mismatch category. | As-built; error-category gap open |
 | `note` | Positional, file and stdin Issue-note append work. | Non-Issue notes and multi-ID note writes are unavailable. Draft #249 proves abbreviated native Issue IDs for the positional form, but is unmerged. | Candidate/open #249; current integration unchanged |
 | `priority` | P0–P4 Issue update works. | Invalid-value exit code differs from shipping. Draft #249 proves abbreviated native Issue IDs, but is unmerged. | Candidate/open #249; exit-code gap open |
@@ -177,11 +186,11 @@ locally; current-head hosted CI remains pending.
 | `reopen` | Single and batch Issue reopen work; batches can partly succeed. | JSON shape differs; registered `--if-revision` refuses at the pinned commit. Draft #219–#220 add a checked single-Issue revision guard, including the already-open no-op; guarded multi-ID reopen still refuses. | Candidates/open #219–#220; current integration unchanged |
 | `search` | Issue search works for admitted filters. | `--type feat` silently yields no results despite current help claiming the alias; direct shipping v1.3.1 also did so, while the newer ordinary Preview route normalizes it. | As-built; no parity PR |
 | `set-state` | Explicit refusal. | Atomic state event and label write is unavailable. | Gap; no repair PR |
-| `show` | One current or retained Resource can be read. | Familiar human Issue detail, multi-ID, current/short/long/refs/children/watch and other display forms refuse at this commit. Selected #151 implements those named current-Issue forms and passed focused both-engine workflows, but is unmerged. Drafts #251–#253 add checked Bead selection, familiar Issue detail projection, and one-snapshot combined Bead/detail reads at the storage layer. A local assembly wires the selected current-Issue forms; other display forms remain unqualified or refused. | Selected/open #151; candidates/open #251–#253; current integration unchanged |
+| `show` | One current or retained Resource can be read at the pinned snapshot. | Familiar human Issue detail, multi-ID, current/short/long/refs/children/watch and other display forms refuse at this commit. #151 implements those named current-Issue forms and landed via #256 after focused both-engine workflows. Drafts #251–#253 add checked Bead selection, familiar Issue detail projection, and one-snapshot combined Bead/detail reads at the storage layer. The integrated CLI wires the selected current-Issue forms; other display forms remain unqualified or refused. | Merged/integration #151 via #256 (familiar current-Issue display, named forms); candidates/open #251–#253; other display gaps remain |
 | `state` | Read-only value and list forms work. | `set-state` does not; JSON may expose native rather than canonical Issue ID. Draft #249 proves abbreviated native Issue IDs for `state list`, but is unmerged. | Candidate/open #249; current integration unchanged |
 | `tag` | Explicit refusal. | Label shortcut and equivalent graph `update --add-label` are unavailable at this commit. #195–#196 provide the checked label writer; stacked #216 admits the `tag` shorthand and passed a focused both-engine workflow, with hosted CI and review pending. | Candidate/open #216 on #196; current integration unchanged |
 | `todo` | Bare/list/add/done work in tested flows. | Multi-ID done can partly succeed while exiting zero, matching shipping; graph list is bounded. | As-built; no parity PR |
-| `update` | Admitted single-Issue, Memory and informational-Link edits work. | Multi-ID, Issue type/status/labels/parent/conditional-status, description file/stdin and forced assignee transfer refuse at this commit; JSON shape differs. Shipping v1.3.1 multi-ID update is per-ID: successful edits survive a later missing ID and the command exits nonzero, so it must not inherit `bd batch` rollback policy. #152/#164 and stacked #183–#188/#191–#192/#195–#196 repair subsets. Draft #222–#223 admit a checked parent-only move; stacked #224–#225 prove a combined parent-plus-scalar edit. Draft #249 supplies checked abbreviated Issue selection and #250 routes scalar `bd update` through it; other update forms still pre-read literal paths. Draft #255 admits checked per-ID scalar/property edits for multiple Issues, with partial success and explicit refusals for shared guards and other forms. Empty detach remains unresolved. None changes the pinned integration behavior. | Selected/open #152; candidates/open #164, #183–#188, #191–#192, #195–#196, #222–#225, #249–#250, #255 |
+| `update` | Admitted single-Issue, Memory and informational-Link edits work at the pinned snapshot. | Multi-ID, Issue type/status/labels/parent/conditional-status, description file/stdin and forced assignee transfer refuse at this commit; JSON shape differs. Shipping v1.3.1 multi-ID update is per-ID: successful edits survive a later missing ID and the command exits nonzero, so it must not inherit `bd batch` rollback policy. #152's description file/stdin subset landed via #256; #164 and stacked #183–#188/#191–#192/#195–#196 remain candidate subsets. Draft #222–#223 admit a checked parent-only move; stacked #224–#225 prove a combined parent-plus-scalar edit. Draft #249 supplies checked abbreviated Issue selection and #250 routes scalar `bd update` through it; other update forms still pre-read literal paths. Draft #255 admits checked per-ID scalar/property edits for multiple Issues, with partial success and explicit refusals for shared guards and other forms. Empty detach remains unresolved. None changes the pinned `b6d0493ba` snapshot behavior. | Merged/integration #152 via #256 (description file/stdin); candidates/open #164, #183–#188, #191–#192, #195–#196, #222–#225, #249–#250, #255 |
 
 ## Views & Reports: command-by-command release-note draft
 
@@ -211,9 +220,11 @@ locally; current-head hosted CI remains pending.
 
 ## Staging consequences
 
-- **Already prepared, still unmerged.** The first CRUD slice is #151
-  (familiar show and positional Link feedback), #152 (description file/stdin),
-  #156 (list format aliases), and #175 (ready regression). Other directly
+- **First selected slice delivered through #256.** #151 adds familiar current-Issue
+  show and positional Link feedback, #152 adds description file/stdin input,
+  #156 adds list format aliases, and #175 pins the ready regression. #150's
+  blocked-parent filter fix also landed in #256, while its audit PR remains open
+  with later documentation commits outside that bundle. Other directly
   relevant candidates are #159 (`create --silent`), #158 (list sort/long),
   #163 (single-ID `delete --dry-run`), #164 (forced assignee update), #161
   (positional custom Dependency kinds), #174 (native-kind Link collection
@@ -221,8 +232,8 @@ locally; current-head hosted CI remains pending.
   (list `--id`), #183–#184 (Issue update status), #185–#186 (atomic Issue
   `--if-status` guard), #187–#188 (atomic Issue `--if-assignee` guard), and the stacked
   #166/#169–#172 list parent/tree chain. Their
-  passing individual checks do not validate the assembled branch or cover
-  every shipping form.
+  passing individual checks do not cover every shipping form. The selected
+  assembled tree passed exact-head hosted CI and focused delivered-form probes.
   Current-head #181 passed 256 top-level `TestGraphPreview` tests locally,
   with one server-only skip. #182 passed 12 graph list CLI tests and 15
   graph Issue list storage tests on embedded and real shared-server Dolt,
