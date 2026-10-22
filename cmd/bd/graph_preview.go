@@ -770,11 +770,23 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	var shownIssue, legacyIssue, legacyShort bool
 	err = withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
+		var details *types.IssueDetails
 		var err error
 		if versioned {
 			r, err = s.ReadVersion(ctx, path, version)
 		} else if strings.HasPrefix(path, "beads/") {
-			r, err = s.ReadBeadSelected(ctx, beadSelector)
+			if format == "" && !shortMode {
+				includeDependents, _ := cmd.Flags().GetBool("include-dependents")
+				includeComments, _ := cmd.Flags().GetBool("include-comments")
+				briefDeps, _ := cmd.Flags().GetBool("brief-deps")
+				opts := workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps}
+				if !jsonOutput {
+					opts = workapi.DetailOptions{IncludeDependents: true, IncludeComments: true}
+				}
+				r, details, err = s.ReadBeadWithIssueDetailsSelected(ctx, beadSelector, opts)
+			} else {
+				r, err = s.ReadBeadSelected(ctx, beadSelector)
+			}
 		} else {
 			r, err = s.Read(ctx, path)
 		}
@@ -792,21 +804,10 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return r, formatShortIssue(&issue), nil
 		}
 		if shownIssue && jsonOutput && format == "" && !versioned {
-			includeDependents, _ := cmd.Flags().GetBool("include-dependents")
-			includeComments, _ := cmd.Flags().GetBool("include-comments")
-			briefDeps, _ := cmd.Flags().GetBool("brief-deps")
-			details, err := s.ShowIssueDetailsSelected(ctx, beadSelector, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
-			if err != nil {
-				return nil, "", err
-			}
 			legacyIssue = true
 			return []*types.IssueDetails{details}, "", nil
 		}
 		if shownIssue && !jsonOutput && format == "" && !versioned {
-			details, err := s.ShowIssueDetailsSelected(ctx, beadSelector, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
-			if err != nil {
-				return nil, "", err
-			}
 			return details, renderGraphIssueDetails(details, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}), nil
 		}
 		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps") || cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
