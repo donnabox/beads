@@ -351,6 +351,16 @@ diagnostics. Its selector and installed state/lease workflows passed embedded
 and real shared-server Dolt. Four current-head hosted checks passed; review
 remains pending.
 
+A disposable assembly at `fa224fc4e` combines #250's shared selector with
+#222–#225 reparent and #255 multi-ID update. It found that the older
+reparent composer still called the dependency-remove selector helper removed
+by the shared-selector stack. A two-call adaptation to
+`resolveLiveIssueSelectorInTx` kept child and parent resolution inside the
+reparent write transaction. The assembled graph CLI sweep and installed
+assignment/reparent/multi-ID update workflows passed embedded and real
+shared-server Dolt; this fix is local to the assembly and must be reconciled
+before those PR branches converge.
+
 Draft #251 head `9d766779b` adds `ReadBeadSelected` on top of #249. Its
 selector and fallback read share one checked read transaction. The focused
 selector, read-budget and existing Issue-read regression group passed embedded

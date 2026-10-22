@@ -432,7 +432,19 @@ locally; current-head hosted CI remains pending.
   (`/tmp/cleo-multi-update-graph-sweep-r2-20261022.jsonl`). Hosted CI and
   review are pending. This PR is stacked on #225 and is not in the pinned
   integration; its graph JSON array of successful mutations still needs a
-  later shipping output-shape comparison.
+  later shipping output-shape comparison. A separate disposable assembly at
+  local-only `fa224fc4e` combines #250's shared Issue selector, #222–#225's
+  reparent work and #255. It exposed one compile-time integration break: the
+  older reparent composer called the exact-ID helper removed by the newer
+  selector stack. The assembly adapts child and parent lookup to the shared
+  resolver inside the existing write transaction. Its exact-head pure-Go
+  graph CLI sweep passed 928 test/subtest results with no skips or failures
+  (`/tmp/cleo-multi-update-assembled-pure-r2-20261022.jsonl`); installed
+  assignment, reparent and multi-ID update workflows passed embedded and real
+  shared-server Dolt with 10 total pass events, no skips or failures
+  (`/tmp/cleo-multi-update-assembled-server-20261022.jsonl`). This validates
+  the local composition only; the two-line adaptation is not on the open PR
+  branches and must be carried into any eventual convergence.
 - Stacked [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198)
   admit local Issue `create --deps` through one transaction. #197 creates the
   native Issue and dependency edges, canonical Links and source-owned History;
