@@ -81,10 +81,9 @@ the incident-Link listing form.
    shared-server Dolt. Donna selected shipping identity for a flat bare
    `--id`; [#180](https://github.com/donnabox/beads/pull/180) implements and
    tests that rule but remains unmerged. Explicit graph-qualified paths may
-   retain independent IDs. On head `4d3559d16`, the first hosted run had
-   long macOS race timeouts and an unrelated Memory budget test failure;
-   failed-job retries for workflows `39640821757` and `39640821781` are queued.
-   This is not a completed current-head gate. See the
+   retain independent IDs. Head `4d3559d16` now has 119 successful hosted
+   checks and eight intentional skips after failed-job retries; review is
+   still undecided and the PR is unmerged. See the
    [A–M evidence](preview3-cli-parity/issue-a-m.md).
 2. **P1: `bd dep list` silently omits nonblocking kinds.** Graph `dep add
    --type tracks` succeeds, yet default `dep list` can say “No blocking
@@ -124,11 +123,11 @@ locally; current-head hosted CI remains pending.
 | Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
 | `assign` | Tested core works. | Graph IDs may be `beads/ID`; live-claim takeover was not requalified in this audit. Graph help describes the wrong revision-token shape and stale-guard exit code. | As-built; no parity PR |
-| `children` | Immediate children work. | `--pretty` refuses; explicit-ID parents can yield surprising child and dependency IDs (P1). | Candidate/open #180; failed-job retry queued |
+| `children` | Immediate children work. | `--pretty` refuses; explicit-ID parents can yield surprising child and dependency IDs (P1). | Candidate/open #180; current-head checks green, unmerged |
 | `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later missing ID; JSON differs; `--continue` and `--no-auto` refuse. Donna selected shipping's no-change-on-missing-ID rule for Preview 3. Draft #226–#227 implement same-transaction selector preflight for ordinary multi-ID close and `--claim-next`; other per-item policy refusals can still partly succeed. | Candidates/open #226–#227; current integration unchanged |
 | `comment` | Issue comment write works. | Comments on non-Issue Beads are unavailable; graph `issue_id` uses a canonical path. | As-built; no parity PR |
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. | As-built; no parity PR |
-| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. External targets, partial dependency IDs, same-batch target references and graph-JSON batch relationships remain gaps. | Selected/open #152; candidates/open #159, #180–#181, #197–#202; #180 failed-job retry queued |
+| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. External targets, partial dependency IDs, same-batch target references and graph-JSON batch relationships remain gaps. | Selected/open #152; candidates/open #159, #180–#181, #197–#202; #180 current-head checks green, unmerged |
 | `create-form` | Explicit refusal. | Interactive Issue creation is unavailable. | Gap; no repair PR |
 | `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. Draft #209 proves opt-in linked deletion in one transaction; #210 adds a checked unforced preview; stacked draft #212 wires single-Issue CLI preview and `--force`. It leaves surviving dependents live. Draft #228–#229 extend the storage proof to bounded named sets and cascade. Draft #230 admits the multi-ID, cascade, and file CLI forms over that proof and preserves #163's single-ID dry-run behavior. Dotted native IDs explicitly refuse set deletion pending upstream #7377. | Candidates/open #163, #209–#210, #212, #228–#230; current integration unchanged |
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. | As-built; mutation unqualified |
