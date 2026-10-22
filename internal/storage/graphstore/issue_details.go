@@ -57,7 +57,7 @@ func (s *Store) ShowIssueDetailsSelected(ctx context.Context, selector IssueSele
 		var record IssueRecord
 		var err error
 		if selector.NativeID == "" {
-			record, err = s.showIssueInTx(ctx, tx, path)
+			path, record, err = s.resolveExactLiveIssueSelectorInTx(ctx, tx, selector)
 		} else {
 			path, record, err = s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
 		}
