@@ -109,6 +109,29 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", "batch-existing-source")); len(got) != 1 || got[0].Target != newTarget.ID {
 				t.Fatalf("existing source did not publish a Link to the new target: %+v", got)
 			}
+			writePlan(`{"nodes":[{"key":"multi-a","id":"batch-multi-a","title":"A"},{"key":"multi-b","id":"batch-multi-b","title":"B"}],"edges":[{"from_id":"batch-existing-source","to_key":"multi-a"},{"from_id":"beads/batch-existing-source","to_key":"multi-b"}]}`)
+			var multi GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &multi); err != nil {
+				t.Fatal(err)
+			}
+			if multi.IDs["multi-a"] != "batch-multi-a" || multi.IDs["multi-b"] != "batch-multi-b" {
+				t.Fatalf("multi-Link plan did not bind both targets: %+v", multi)
+			}
+			updated = graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-existing-source", "--format", "graph-json"))
+			if len(updated.Owned) != 3 {
+				t.Fatalf("existing source lost a Link after multi-Link plan: %+v", updated)
+			}
+			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", "batch-existing-source")); len(got) != 3 {
+				t.Fatalf("multi-Link plan did not publish all Links: %+v", got)
+			}
+			_, kind, versions, _ := graphVersionsListed(t, call("versions", "batch-existing-source"))
+			if kind != "issue" || len(versions) != 4 || versions[0].Version != updated.Revision || versions[3].Version != original.Revision {
+				t.Fatalf("multi-Link plan did not retain every source version: %+v", versions)
+			}
+			intermediate := graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-existing-source", "--version", versions[1].Version))
+			if len(intermediate.Owned) != 2 {
+				t.Fatalf("multi-Link plan's intermediate History has wrong owned set: %+v", intermediate)
+			}
 			writePlan(`{"nodes":[{"key":"missing-source-target","id":"batch-missing-source-target","title":"Must not exist"}],"edges":[{"from_id":"batch-missing-source","to_key":"missing-source-target"}]}`)
 			refuse("not_found", "create", "--graph", path)
 			refuse("not_found", "show", "batch-missing-source-target")
