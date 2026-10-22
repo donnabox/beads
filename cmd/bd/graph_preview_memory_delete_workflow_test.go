@@ -49,6 +49,10 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.Record](t, call("show", "beads/empty")); !reflect.DeepEqual(got, original) {
 				t.Fatal("preview changed current state")
 			}
+			dryRun := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", original.ID, "--force", "--dry-run", "--readonly"))
+			if !dryRun.Preview || dryRun.Deleted || !reflect.DeepEqual(dryRun.Memory, original) {
+				t.Fatal("explicit Memory --dry-run changed state or lost the preview")
+			}
 			updated := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/empty", "--title", "Final empty body", "--if-revision", original.Revision)).Memory
 			for _, args := range [][]string{
 				{"delete", "beads/empty", "--if-revision", original.Revision},
@@ -71,7 +75,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				refuse("permission_denied", args...)
 			}
 			refuse("invalid_properties", "delete", "beads/empty", "beads/other")
-			for _, flag := range []string{"--cascade", "--cascade=false", "--dry-run"} {
+			for _, flag := range []string{"--cascade", "--cascade=false"} {
 				refuse("invalid_properties", "delete", "beads/empty", flag)
 			}
 			refuse("invalid_selector", "delete", "beads/empty", "--from-file=/unread/deletions")
@@ -112,6 +116,10 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			issuePreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "beads/work"))
 			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != scope+"beads/work" {
 				t.Fatal("Issue deletion preview did not preserve live Issue")
+			}
+			issueDryRun := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "beads/work", "--force", "--dry-run", "--readonly"))
+			if !issueDryRun.Preview || issueDryRun.Deleted || issueDryRun.Issue.ID != issuePreview.Issue.ID {
+				t.Fatal("explicit Issue --dry-run changed state or lost the preview")
 			}
 			refuse("capability_unavailable", "forget", "beads/work")
 			related := scope + "types/superseded-by"

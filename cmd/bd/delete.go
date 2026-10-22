@@ -52,7 +52,7 @@ Force: Delete and orphan dependents
 
 GRAPH PREVIEW:
 In a graph-mode link workspace, delete previews a Memory or a bounded set of
-Issues. --force applies deletion; --dry-run keeps an Issue-set request read-only.
+Issues. --force applies deletion; --dry-run keeps any delete request read-only.
 --cascade includes dependent Issues, and --from-file adds Issue IDs from a file.
 Every named Issue must exist before a set is written. An unforced, non-cascade
 request refuses surviving dependents; --force orphans them. Identity and prior

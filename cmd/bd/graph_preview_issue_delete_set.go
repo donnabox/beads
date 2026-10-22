@@ -12,7 +12,7 @@ import (
 // The ordinary single-Bead route remains the default. These forms select
 // native Issue set semantics, including the bounded cascade closure.
 func graphPreviewDeleteSetRequested(cmd *cobra.Command, args []string) bool {
-	return len(args) > 1 || cmd.Flags().Changed("cascade") || cmd.Flags().Changed("from-file") || cmd.Flags().Changed("dry-run")
+	return len(args) > 1 || cmd.Flags().Changed("cascade") || cmd.Flags().Changed("from-file")
 }
 
 func runGraphPreviewDeleteIssueSet(cmd *cobra.Command, args []string) error {

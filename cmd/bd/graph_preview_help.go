@@ -173,7 +173,7 @@ interactive Issue update uses the last-touched Issue; scripts require an ID
 unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},
 		{deleteCmd, `bd delete ID previews a Memory or Issue without writing.
 Multiple Issue IDs and --from-file select a checked Issue set; --cascade
-includes dependent Issues. Apply with --force, or keep an Issue-set request
+includes dependent Issues. Apply with --force, or keep any delete request
 read-only with --dry-run. --if-revision TOKEN optionally rejects stale
 single-Issue state. Referenced Memories refuse and remain single-ID;
 dotted native Issue IDs refuse set deletion pending citation qualification.`},

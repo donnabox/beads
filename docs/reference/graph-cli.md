@@ -402,7 +402,7 @@ bd reopen work review --reason 'Follow-up needed'
 `bd delete ID` previews deletion of a Memory or Issue without changing
 storage; `--force` applies it. An Issue set can also be selected with multiple
 IDs or `--from-file PATH`. `--cascade` includes dependent Issues, while
-`--dry-run` keeps an Issue-set request read-only even beside `--force`.
+`--dry-run` keeps a Memory or Issue request read-only even beside `--force`.
 Every named Issue must exist before the set changes. Dotted native Issue IDs
 currently refuse set deletion while citation rewriting is being qualified.
 `bd forget ID` applies Memory deletion
