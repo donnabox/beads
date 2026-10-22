@@ -168,7 +168,7 @@ locally; current-head hosted CI remains pending.
 
 | Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
-| `dep` | Single local add/remove and blocking views work. | Default list silently omits nonblocking kinds (P1); tree/graph are blocking-only; depth-1 tree falsely says there are no dependencies (P2); list/tree/cycles JSON, file bulk add, relate/unrelate and other forms refuse. #165 fixes the default human list and #179 fixes the depth-1 answer; both are unmerged. | Candidates/open #165, #179 |
+| `dep` | Single local add/remove and blocking views work. | Default list silently omits nonblocking kinds (P1); tree/graph are blocking-only; depth-1 tree falsely says there are no dependencies (P2); abbreviated add operands, list/tree/cycles JSON, file bulk add, relate/unrelate and other forms refuse at the pinned commit. #165 fixes the default human list, #179 fixes the depth-1 answer, and draft #247 restores checked local abbreviation resolution for `dep add`; all are unmerged. | Candidates/open #165, #179, #247 |
 | `duplicate` | Explicit refusal. | Atomic duplicate edge and close is unavailable. | Gap; no repair PR |
 | `duplicates` | Explicit refusal. | Exact-content grouping and optional merge are unavailable. | Gap; no repair PR |
 | `epic` | Status, close-eligible dry run and actual close work in tested flows. | Multiple-epic partial failures were not live-probed. | As-built; multi-epic path unqualified |
@@ -492,8 +492,15 @@ locally; current-head hosted CI remains pending.
   shared-server Dolt (12 test/subtest passes, no skips;
   `/tmp/cleo-selector-create-partial-assembly-server.jsonl`). Docsync and diff
   checks passed. This convergence PR is an unmerged candidate; #193–#194
-  remain open for their separate reviews and current-head hosted CI for #246
-  is pending.
+  remain open for their separate reviews. #246 has four current-head hosted
+  successes and two expected skips; review is pending.
+  Draft [#247](https://github.com/donnabox/beads/pull/247) at `5d2749784`
+  extends the same in-transaction native Issue abbreviation resolver to graph
+  `bd dep add`, including `--blocked-by` and `--depends-on` targets. Explicit
+  graph paths remain exact. Its installed positional Link plus dep-add workflow
+  passed embedded and real shared-server Dolt (three test/subtest passes, no
+  skips; `/tmp/cleo-dep-add-partial-server-final.jsonl`). Docsync and diff
+  checks passed. Hosted CI and review are pending; it is an unmerged candidate.
 - Draft [#209](https://github.com/donnabox/beads/pull/209)–[#210](https://github.com/donnabox/beads/pull/210) and stacked [#212](https://github.com/donnabox/beads/pull/212)
   provide a checked single-Issue linked-delete path: unforced preview refuses
   surviving native dependents; `--force` tombstones incident canonical Links
