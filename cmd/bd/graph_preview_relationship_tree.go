@@ -18,6 +18,7 @@ type graphRelationshipTree struct {
 	adjacent         map[string][]graphGenericLink
 	outgoing         map[string][]string
 	treeEdges        map[string]string
+	owners           map[string]string
 	expanded         map[string]bool
 	emitted          map[string]bool
 	w                *graphExportWriter
@@ -34,7 +35,7 @@ type graphTreeLine struct {
 }
 
 func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, limit int) error {
-	t := graphRelationshipTree{result: r, nodes: map[string]graphGenericNode{}, adjacent: map[string][]graphGenericLink{}, outgoing: map[string][]string{}, treeEdges: map[string]string{}, expanded: map[string]bool{}, emitted: map[string]bool{}, w: w, limit: limit, remaining: limit}
+	t := graphRelationshipTree{result: r, nodes: map[string]graphGenericNode{}, adjacent: map[string][]graphGenericLink{}, outgoing: map[string][]string{}, treeEdges: map[string]string{}, owners: map[string]string{}, expanded: map[string]bool{}, emitted: map[string]bool{}, w: w, limit: limit, remaining: limit}
 	invalid := func() error {
 		return fmt.Errorf("%w: incomplete or duplicate selected graph", graphstore.ErrInvalidStore)
 	}
@@ -102,6 +103,7 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, lim
 	sort.Strings(ids)
 	roots = append(roots, ids...)
 	roots = t.chooseExpansion(roots)
+	t.placeLinks(roots)
 	first := true
 	for _, id := range roots {
 		if t.stopped() {
@@ -210,11 +212,41 @@ func (t *graphRelationshipTree) chooseExpansion(candidates []string) []string {
 	return roots
 }
 
+// Fix the row owner before descending. Otherwise a child can consume a later
+// parallel/cross Link that belongs to an earlier endpoint in tree order.
+func (t *graphRelationshipTree) placeLinks(roots []string) {
+	order := map[string]int{}
+	var visit func(string)
+	visit = func(id string) {
+		order[id] = len(order)
+		for _, l := range t.adjacent[id] {
+			next, _ := t.other(l, id)
+			if t.treeEdges[l.ID] == next {
+				t.owners[l.ID] = id
+				visit(next)
+			}
+		}
+	}
+	for _, root := range roots {
+		visit(root)
+	}
+	for _, l := range t.result.Links {
+		if t.owners[l.ID] != "" {
+			continue
+		}
+		owner := l.Source
+		if t.result.Direction == "in" || (t.result.Direction == "both" && order[l.Target] < order[l.Source]) {
+			owner = l.Target
+		}
+		t.owners[l.ID] = owner
+	}
+}
+
 func (t *graphRelationshipTree) expand(id string) []graphTreeLine {
 	t.expanded[id] = true
 	lines := []graphTreeLine{}
 	for _, l := range t.adjacent[id] {
-		if t.emitted[l.ID] {
+		if t.emitted[l.ID] || t.owners[l.ID] != id {
 			continue
 		}
 		t.emitted[l.ID] = true
@@ -223,7 +255,7 @@ func (t *graphRelationshipTree) expand(id string) []graphTreeLine {
 		if t.treeEdges[l.ID] != next {
 			line.reference = " (shown elsewhere)"
 			if t.closesCycle(l) {
-				line.reference = " (cycle)"
+				line.reference += " (cycle)"
 			}
 		} else {
 			line.children = t.expand(next)

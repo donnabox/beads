@@ -47,17 +47,17 @@ func TestGraphRelationshipTreeReferencesAndCycles(t *testing.T) {
 	for _, tc := range []struct {
 		name, root, direction string
 		edges                 []genericTestEdge
-		cycles, shared        int
+		cycles, references    int
 	}{
 		{"parallel-is-not-cycle", "a", "both", []genericTestEdge{{"ab", "a", "b"}, {"ab2", "a", "b"}}, 0, 1},
 		{"mixed-direction-dag-is-not-cycle", "a", "both", []genericTestEdge{{"ab", "a", "b"}, {"cb", "c", "b"}, {"ca", "c", "a"}}, 0, 1},
-		{"outgoing-cycle", "a", "out", []genericTestEdge{{"ab", "a", "b"}, {"bc", "b", "c"}, {"ca", "c", "a"}}, 1, 0},
-		{"both-cycle", "a", "both", []genericTestEdge{{"ab", "a", "b"}, {"bc", "b", "c"}, {"ca", "c", "a"}}, 1, 0},
-		{"incoming-cycle", "a", "in", []genericTestEdge{{"ab", "a", "b"}, {"bc", "b", "c"}, {"ca", "c", "a"}}, 1, 0},
+		{"outgoing-cycle", "a", "out", []genericTestEdge{{"ab", "a", "b"}, {"bc", "b", "c"}, {"ca", "c", "a"}}, 1, 1},
+		{"both-cycle", "a", "both", []genericTestEdge{{"ab", "a", "b"}, {"bc", "b", "c"}, {"ca", "c", "a"}}, 1, 1},
+		{"incoming-cycle", "a", "in", []genericTestEdge{{"ab", "a", "b"}, {"bc", "b", "c"}, {"ca", "c", "a"}}, 1, 1},
 		{"diamond", "a", "out", []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bd", "b", "d"}, {"cd", "c", "d"}}, 0, 1},
 		{"diamond-both", "a", "both", []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bd", "b", "d"}, {"cd", "c", "d"}}, 0, 1},
-		{"self-cycle", "a", "both", []genericTestEdge{{"aa", "a", "a"}}, 1, 0},
-		{"incoming-self-cycle", "a", "in", []genericTestEdge{{"aa", "a", "a"}}, 1, 0},
+		{"self-cycle", "a", "both", []genericTestEdge{{"aa", "a", "a"}}, 1, 1},
+		{"incoming-self-cycle", "a", "in", []genericTestEdge{{"aa", "a", "a"}}, 1, 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			// Authoritative selection comes from the real projection, so the
@@ -68,7 +68,7 @@ func TestGraphRelationshipTreeReferencesAndCycles(t *testing.T) {
 				t.Fatal(err)
 			}
 			text := graphTreeTestText(t, r)
-			if strings.Count(text, "(cycle)") != tc.cycles || strings.Count(text, "(shown elsewhere)") != tc.shared {
+			if strings.Count(text, "(cycle)") != tc.cycles || strings.Count(text, "(shown elsewhere)") != tc.references {
 				t.Fatalf("wrong directed-cycle/shared reference:\n%s", text)
 			}
 			if len(strings.Split(text, "\n")) > len(r.Links)+len(r.Nodes)+5 {
@@ -263,6 +263,13 @@ func TestGraphRelationshipTreeCallerBudgetAndUnicodeOrder(t *testing.T) {
 }
 
 func TestGraphRelationshipTreeCanonicalExpansion(t *testing.T) {
+	t.Run("both-parallel-keeps-first-endpoint-owner", func(t *testing.T) {
+		r := graphTreeTestResult("a", "both", []string{"a", "b"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ab2", "a", "b"})
+		text := graphTreeTestText(t, r)
+		if !strings.Contains(text, "\n└── references (ab2) → b [memory] (shown elsewhere)") || strings.Contains(text, "references (ab2) ← a") {
+			t.Fatalf("child stole a parallel Link from its earlier canonical endpoint:\n%s", text)
+		}
+	})
 	t.Run("both-diamond-keeps-sibling", func(t *testing.T) {
 		r := graphTreeTestResult("a", "both", []string{"a", "b", "c", "d"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"bd", "b", "d"}, genericTestEdge{"cd", "c", "d"})
 		text := graphTreeTestText(t, r)
@@ -282,6 +289,9 @@ func TestGraphRelationshipTreeCanonicalExpansion(t *testing.T) {
 		}
 		if !strings.Contains(text, "references (cb) → b [memory]") {
 			t.Fatalf("outgoing non-tree Link lost its authored source placement:\n%s", text)
+		}
+		if !strings.Contains(text, "references (bc) → c [memory] (shown elsewhere) (cycle)") {
+			t.Fatalf("future cyclic sibling lost its reference marker:\n%s", text)
 		}
 	})
 	t.Run("outgoing-does-not-cross-incoming-bridge", func(t *testing.T) {

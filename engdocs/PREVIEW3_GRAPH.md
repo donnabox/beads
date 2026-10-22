@@ -58,8 +58,8 @@ with actual Types, authored arrows and individually identified Links. Every
 selected Link appears once, including parallel and cross-Links. A Bead expands
 once, under its canonical shortest-hop parent in the admitted direction;
 non-tree Links cannot change that parent. References retain identity and Type,
-including for a canonical appearance later in the view. `cycle` marks a selected directed
-loop, while other repeats say `shown elsewhere`. Counts distinguish unique Beads
+including for a canonical appearance later in the view. All non-tree references
+say `shown elsewhere`; `cycle` additionally marks a selected directed loop. Counts distinguish unique Beads
 from actual Links, and a depth boundary retains its root and discloses its
 frontier. Display prefixes are elided only in the human tree; pins and JSON
 remain unchanged. `--box` retains its flat Bead/Link view. Generic views do not

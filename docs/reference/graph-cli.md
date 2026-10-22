@@ -253,8 +253,8 @@ relationship tree with actual Bead/Link Types, authored arrows and individual
 Link IDs. Canonical shortest-hop parents are chosen before placing cross-links;
 only those tree Links expand Beads. References retain every parallel and
 cross-Link, including a reference to a sibling that appears later. A `cycle`
-marker witnesses a directed cycle in the selected graph;
-other repeats say `shown elsewhere`. `--box` retains its flat Bead/Link view; DOT
+marker witnesses a directed cycle in the selected graph. Every non-tree
+reference says `shown elsewhere`; a cycle adds its own marker. `--box` retains its flat Bead/Link view; DOT
 and HTML remain available. Human trees elide `beads/`, `links/` and `types/`
 display prefixes; `--json` retains complete canonical Beads/Links and separate
 traversal metadata. The command's Issue-oriented compact help describes the
