@@ -385,7 +385,7 @@ func blockedLister() (issueops.BlockedLister, error) {
 var blockedCmd = &cobra.Command{
 	Use:           "blocked",
 	Short:         "Show blocked issues",
-	Long:          "Show dependency-blocked issues. In graph workspaces, label, label-any and exclude-label filters are supported; parent filtering requires a later graph slice.",
+	Long:          "Show dependency-blocked issues. In graph workspaces, parent and label filters are supported.",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {

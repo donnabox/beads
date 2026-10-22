@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
@@ -56,8 +57,13 @@ func blockedPreviewCommand(t *testing.T, args ...string) *cobra.Command {
 
 func TestGraphPreviewBlockedAdmission(t *testing.T) {
 	savedJSON, savedStructured := jsonOutput, graphPreviewStructuredErrors
+	savedConfig := graphPreviewConfig
+	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/blocked-admission/"}
 	jsonOutput, graphPreviewStructuredErrors = false, false
-	t.Cleanup(func() { jsonOutput, graphPreviewStructuredErrors = savedJSON, savedStructured })
+	t.Cleanup(func() {
+		jsonOutput, graphPreviewStructuredErrors = savedJSON, savedStructured
+		graphPreviewConfig = savedConfig
+	})
 	for _, tc := range []struct {
 		name        string
 		flags, args []string
@@ -66,8 +72,8 @@ func TestGraphPreviewBlockedAdmission(t *testing.T) {
 	}{
 		{name: "default"}, {name: "readonly", flags: []string{"--readonly"}}, {name: "quiet-json", flags: []string{"--quiet", "--json"}}, {name: "zero-cap", env: "0"},
 		{name: "selector", args: []string{"beads/work"}, code: 2},
-		{name: "parent", flags: []string{"--parent=beads/p"}, code: 5},
-		{name: "empty-parent", flags: []string{"--parent="}, code: 5},
+		{name: "parent", flags: []string{"--parent=beads/p"}},
+		{name: "empty-parent", flags: []string{"--parent="}, code: 2},
 		{name: "label", flags: []string{"--label=demo"}},
 		{name: "short-label", flags: []string{"-l", "demo"}},
 		{name: "csv-label", flags: []string{"--label=one,two"}},
@@ -141,12 +147,11 @@ func TestGraphPreviewBlockedDispatchBeforeStore(t *testing.T) {
 		graphPreviewActive, jsonOutput, graphPreviewStructuredErrors = savedActive, savedJSON, savedStructured
 	})
 	t.Setenv(maxRowsEnvVar, "")
-	// Call the actual registered command with an unsupported flag. It must reach
-	// graph admission and return before any legacy or graph store is opened.
+	// Malformed input must reach graph admission and return before any store opens.
 	cmd := blockedPreviewCommand(t, "--parent=")
 	err := cmd.RunE(cmd, nil)
 	var exit *exitError
-	if !errors.As(err, &exit) || exit.Code != 5 {
+	if !errors.As(err, &exit) || exit.Code != 2 {
 		t.Fatalf("registered blocked command bypassed graph admission: %v", err)
 	}
 }
