@@ -60,6 +60,11 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			if err := validateIssueCreate(publicops.CreateRequest{Actor: plan.Actor, Issue: item.Create.Issue, ForceIDPrefix: plan.ForceIDPrefix, DefaultPriority: item.Create.DefaultPriority}); err != nil {
 				return nil, fmt.Errorf("graph batch item %d: %w", index, err)
 			}
+			deferUntil, err := normalizeIssueDefer(item.Create.Issue.DeferUntil)
+			if err != nil {
+				return nil, fmt.Errorf("graph batch item %d: %w", index, err)
+			}
+			item.Create.Issue.DeferUntil = deferUntil
 			creates[item.Create.Key] = item.Create
 		case publicops.ItemDepAdd:
 			if deferredPhase {
