@@ -304,6 +304,15 @@ on both engines. The other focused storage subtests passed on both engines.
 Bazel managed-source, docs sync, generated CLI docs, and diff checks passed.
 This is composition evidence only; it was not pushed or merged.
 
+A second disposable merge adds #226–#227's checked close-selector preflight
+to that linked-delete assembly (`8b5ced7856`). It merged without conflicts.
+The focused close, delete-set, single-delete and close/reopen workflows plus
+their storage tests passed on embedded and real shared-server Dolt (30
+test/subtest passes, no skips or failures;
+`/tmp/cleo-close-delete-assembly-server.jsonl`). Bazel managed-source and
+docs-sync checks passed; the owned test server was stopped. This qualifies
+only the focused combination, not broad CI, release behavior, or a merge.
+
 The next CLI slice must preserve the distinction between the delete plan and
 confirmation. Shipping's single-ID `bd delete ID` previews a deletion and
 refuses when a surviving Issue depends on `ID`; `bd delete ID --force` applies
