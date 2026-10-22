@@ -64,6 +64,9 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 	if request.TypeURL == "" {
 		request.TypeURL = RelatedTypeURL(s.ScopeURL())
 	}
+	if err := s.requireAssessmentAuthoring(request.TypeURL); err != nil {
+		return LinkMutationResult{}, err
+	}
 	if !IsInformationalTypeURL(s.ScopeURL(), request.TypeURL) {
 		return LinkMutationResult{}, fmt.Errorf("%w: informational Link Type is not supported", storage.ErrValidation)
 	}
@@ -113,6 +116,12 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		}
 		if err := checkRevisionGuard(request.ExpectedSourceRevision, request.UnconditionalSource, revision, owned, "source"); err != nil {
 			return err
+		}
+		// An owned Link write also authors the complete source Bead state.
+		if owned {
+			if err := s.requireAssessmentAuthoring(recordType(source)); err != nil {
+				return err
+			}
 		}
 		if _, _, err := s.beadEndpointInTx(ctx, tx, request.TargetPath); err != nil {
 			return err
@@ -250,6 +259,16 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			return err
 		}
 		if err := checkRevisionGuard(request.ExpectedSourceRevision, request.UnconditionalSource, revision, owned, "source"); err != nil {
+			return err
+		}
+		// An owned Link write also authors the complete source Bead state.
+		if owned {
+			if err := s.requireAssessmentAuthoring(recordType(source)); err != nil {
+				return err
+			}
+		}
+
+		if err := s.requireAssessmentAuthoring(link.Type); err != nil {
 			return err
 		}
 

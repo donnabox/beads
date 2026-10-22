@@ -16,7 +16,7 @@ import (
 // neither installs definitions nor assumes a particular Memory catalog or parent
 // graph. The default text expands the existing Issue/Dependency classifications;
 // JSON and details describe the installed nominal Types themselves.
-func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, customTypes []string, details bool) (graphTypeInventory, string, error) {
+func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, customTypes []string, details, assessmentsEnabled bool) (graphTypeInventory, string, error) {
 	descriptors := append([]graph.TypeDescriptor(nil), selected...)
 	sort.Slice(descriptors, func(i, j int) bool {
 		return graph.CompareCodeUnits(descriptors[i].ID(), descriptors[j].ID()) < 0
@@ -29,7 +29,7 @@ func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, c
 		*count = *count + 1
 	}
 	for _, descriptor := range descriptors {
-		if graphPreviewIntrinsicType(descriptor) {
+		if graphPreviewIntrinsicType(descriptor) || !graphstore.AssessmentTypeAvailable(scope, descriptor.ID(), assessmentsEnabled) {
 			continue
 		}
 		var out *strings.Builder

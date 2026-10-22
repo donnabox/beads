@@ -25,6 +25,9 @@ type Config struct {
 	// This preview marker does not authorize migration or graph initialization.
 	GraphMode string `json:"graph_mode,omitempty"`
 
+	// GraphAssessmentsEnabled opts into the deferred assessment family. Missing is off.
+	GraphAssessmentsEnabled bool `json:"graph_assessments_enabled,omitempty"`
+
 	// Experimental graph workspace binding. Only normal graph init writes these;
 	// missing or mismatched values never authorize implicit bootstrap or migration.
 	GraphScopeURL      string `json:"graph_scope_url,omitempty"`
