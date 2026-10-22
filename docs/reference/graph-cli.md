@@ -404,6 +404,18 @@ bd update work --properties '{"priority":1,"description":"Review the release bra
 bd update work --patch '[{"op":"replace","path":"/description","value":"Reviewed."}]'
 ```
 
+On a fresh graph workspace, `bd update CHILD --parent PARENT` replaces the
+child's native parent-child dependency and canonical Link in one checked
+transaction. Use `--if-revision TOKEN` to refuse a stale child. A repeated
+same-parent request makes no new version. The new parent must be a nonempty
+local Issue; detaching a dotted-ID child would leave its ID implying the old
+parent, so this preview refuses `--parent ""`. Parent edits cannot yet combine
+with other update fields in one request. Labels are not inherited on reparent.
+
+```sh
+bd update work.1 --parent review
+```
+
 `bd close ID...` and `bd reopen ID...` accept one or more local Issues. A
 single `--reason` applies to every close target, repeated reasons map to IDs
 in input order, and `--reason-file PATH` preserves the file's literal text.
