@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -72,5 +75,28 @@ func TestMemoryLinkProperties(t *testing.T) {
 	c.SetIn(strings.NewReader(`{"body":"stdin"}`))
 	if got, err := memoryLinkProperties(c); err != nil || got["body"] != "stdin" {
 		t.Fatalf("shared properties reader: %+v %v", got, err)
+	}
+}
+
+func TestMemoryLinkPropertiesCanonicalNumbersAndFiles(t *testing.T) {
+	op := memoryLinkOperations[0]
+	raw := `{"n":9007199254740994,"nested":[1.25,1e-7],"unicode":"記憶"}`
+	file := filepath.Join(t.TempDir(), "properties.json")
+	if err := os.WriteFile(file, []byte(raw), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, input := range []string{raw, "@" + file, "@-"} {
+		c := memoryLinkTestCommand(t, op, "--properties="+input)
+		c.SetIn(strings.NewReader(raw))
+		got, err := memoryLinkProperties(c)
+		if err != nil || got["n"] != json.Number("9007199254740994") || got["nested"].([]any)[0] != json.Number("1.25") {
+			t.Fatalf("%s: %#v %v", input, got, err)
+		}
+	}
+	for _, raw := range []string{`{"n":9007199254740993}`, `{"n":1} {}`, `{"n":"\ud800"}`, `[]`, `null`, `{"nested":{"x":1,"x":2}}`} {
+		c := memoryLinkTestCommand(t, op, "--properties="+raw)
+		if got, err := memoryLinkProperties(c); err == nil || got != nil {
+			t.Fatalf("accepted invalid canonical properties %s: %#v %v", raw, got, err)
+		}
 	}
 }

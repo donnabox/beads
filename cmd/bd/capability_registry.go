@@ -457,6 +457,11 @@ var proxyCapabilityRegistry = []capabilityRow{
 	// Generic graph commands have no proxied-provider route. Graph workspace
 	// admission handles their supported direct embedded/server path first.
 	refusedPath("memory", "proxy.memory.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759").asParentGroup(),
+	refusedPath("memory reference", "proxy.memory.reference.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory supersede", "proxy.memory.supersede.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory requires", "proxy.memory.requires.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory defines", "proxy.memory.defines.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory subject-to", "proxy.memory.subject-to.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
 	refusedPath("memory references", "proxy.memory.references.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
 	refusedPath("memory referenced-by", "proxy.memory.referenced-by.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
 	refusedPath("memory successor", "proxy.memory.successor.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
