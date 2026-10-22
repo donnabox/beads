@@ -138,11 +138,13 @@ would therefore leave intermediate native revisions without matching graph
 Issue History. A safe extension pairs each changed edge with its native
 revision and the owned-Link set at that point inside the same transaction.
 Stacked draft [#237](https://github.com/donnabox/beads/pull/237) at
-`e2138a11b` does this for the admitted existing-source-to-new-target form:
+`5173b3945` does this for the admitted existing-source-to-new-target form:
 it checks the native revision sequence, maps each canonical snapshot, checks
 the aggregate Link cap, and rolls back if retaining the second version fails.
 Focused historical-content, rollback and installed CLI create/Link/versions
-tests passed embedded and real shared-server Dolt without skips; related
+tests passed embedded and real shared-server Dolt without skips on the earlier
+head; the current head adds a two-distinct-existing-sources rollback and
+History test, which passed both engines without skips. Related
 embedded graphstore tests passed.
 #237 is unmerged with hosted CI and review pending. Idempotent existing-target
 edges and arbitrary update/close items remain outside this bounded proof.
