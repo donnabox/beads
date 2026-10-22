@@ -141,6 +141,15 @@ including interleaved sources and idempotent edge results, then prove rollback
 and historical reads on embedded and shared-server Dolt. The existing guard
 remains until that correspondence is demonstrated.
 
+Test-only draft [#236](https://github.com/donnabox/beads/pull/236) at
+`5fbf1cb91` pins the different *new-source* inception rule: native create plus
+one edge produces two native `issue_versions` rows, while the graph catalog is
+allocated only after the whole plan lands and retains one canonical creation
+snapshot. This passed embedded and real shared-server Dolt without skips.
+That intentional compression does not justify dropping intermediate graph
+History for an existing, already allocated source. #236 hosted CI and review
+are pending.
+
 A first commit in #231 at `cb7da57c5` extends the graph batch adapter to keep an
 edge from a later item to an earlier item with an explicit native ID inside
 the existing transaction. A staged Link-retention failure rolls back the
