@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"unicode/utf8"
 
@@ -28,40 +29,31 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 	request.Actor = getActorWithGit()
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		if !forget {
-			current, err := store.Read(ctx, request.Path)
+			identity, err := graphPreviewWritableIdentity(args[0])
 			if err != nil {
 				return nil, "", err
 			}
-			if _, issue := current.(graphstore.IssueRecord); issue {
-				issueRequest := graphstore.IssueDeleteRequest{
-					Path: request.Path, Actor: request.Actor, ExpectedRevision: request.ExpectedRevision,
-					Unconditional: request.Unconditional, Preview: request.Preview,
+			selector, err := graphPreviewIssueSelector(identity)
+			if err != nil {
+				return nil, "", err
+			}
+			issueRequest := graphstore.IssueDeleteRequest{
+				Path: selector.Path, NativeID: selector.NativeID, Actor: request.Actor,
+				ExpectedRevision: request.ExpectedRevision, Unconditional: request.Unconditional, Preview: request.Preview,
+			}
+			if selector.NativeID != "" {
+				result, summary, err := graphPreviewDeleteIssue(ctx, store, issueRequest)
+				if err == nil || !errors.Is(err, graphstore.ErrIssueSelectorIsMemory) {
+					return result, summary, err
 				}
-				var result graphstore.IssueDeleteResult
-				if issueRequest.Preview {
-					result, err = store.PreviewDeleteIssueWithIncidentLinks(ctx, issueRequest)
-				} else {
-					result, err = store.DeleteIssueWithIncidentLinks(ctx, issueRequest)
-				}
+			} else {
+				current, err := store.Read(ctx, request.Path)
 				if err != nil {
 					return nil, "", err
 				}
-				verb := "Deleted"
-				if result.Preview {
-					verb = "Would delete"
+				if _, issue := current.(graphstore.IssueRecord); issue {
+					return graphPreviewDeleteIssue(ctx, store, issueRequest)
 				}
-				summary := fmt.Sprintf("%s %s at final live revision %s; identity and prior snapshots remain retained", verb, result.Issue.ID, result.Issue.Revision)
-				if result.Terminal != nil {
-					summary = fmt.Sprintf("%s %s at deletion revision %s; final live revision %s remains retained", verb, result.Issue.ID, result.Terminal.Revision, result.Issue.Revision)
-				}
-				if count := len(result.IncidentLinkIDs); count != 0 {
-					if result.Preview {
-						summary += fmt.Sprintf("; %d incident Link(s) would be removed", count)
-					} else {
-						summary += fmt.Sprintf("; %d incident Link(s) removed", count)
-					}
-				}
-				return result, summary, nil
 			}
 		}
 		result, err := store.DeleteMemory(ctx, request)
@@ -78,6 +70,35 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 		}
 		return result, summary, nil
 	})
+}
+
+func graphPreviewDeleteIssue(ctx context.Context, store *graphstore.Store, request graphstore.IssueDeleteRequest) (any, string, error) {
+	var result graphstore.IssueDeleteResult
+	var err error
+	if request.Preview {
+		result, err = store.PreviewDeleteIssueWithIncidentLinks(ctx, request)
+	} else {
+		result, err = store.DeleteIssueWithIncidentLinks(ctx, request)
+	}
+	if err != nil {
+		return nil, "", err
+	}
+	verb := "Deleted"
+	if result.Preview {
+		verb = "Would delete"
+	}
+	summary := fmt.Sprintf("%s %s at final live revision %s; identity and prior snapshots remain retained", verb, result.Issue.ID, result.Issue.Revision)
+	if result.Terminal != nil {
+		summary = fmt.Sprintf("%s %s at deletion revision %s; final live revision %s remains retained", verb, result.Issue.ID, result.Terminal.Revision, result.Issue.Revision)
+	}
+	if count := len(result.IncidentLinkIDs); count != 0 {
+		if result.Preview {
+			summary += fmt.Sprintf("; %d incident Link(s) would be removed", count)
+		} else {
+			summary += fmt.Sprintf("; %d incident Link(s) removed", count)
+		}
+	}
+	return result, summary, nil
 }
 
 func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget bool) (graphstore.MemoryDeleteRequest, error) {

@@ -5,6 +5,7 @@ package main
 import (
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -34,6 +35,21 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			}
 			call(initArgs...)
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work"))
+			prefix, _, ok := strings.Cut(issue.Properties.ID, "-")
+			if !ok {
+				t.Fatalf("fixture needs a configured Issue prefix: %q", issue.Properties.ID)
+			}
+			abbreviable := graphMixedResult[graphstore.IssueRecord](t, call("create", "Abbreviable", "--id", prefix+"-a3f8e9"))
+			abbreviatedPreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "a3f8"))
+			if !abbreviatedPreview.Preview || abbreviatedPreview.Issue.ID != abbreviable.ID {
+				t.Fatalf("abbreviated Issue preview: %+v", abbreviatedPreview)
+			}
+			refuse("revision_conflict", "delete", "a3f8", "--force", "--if-revision", "stale")
+			abbreviatedDelete := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "a3f8", "--force"))
+			if !abbreviatedDelete.Deleted || abbreviatedDelete.Issue.ID != abbreviable.ID {
+				t.Fatalf("abbreviated Issue delete: %+v", abbreviatedDelete)
+			}
+			refuse("gone", "show", abbreviable.Properties.ID)
 			preview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "work"))
 			if !preview.Preview || preview.Deleted || !reflect.DeepEqual(preview.Issue, issue) {
 				t.Fatal("default preview did not disclose unchanged Issue")
@@ -47,6 +63,9 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			refuse("revision_conflict", "delete", "work", "--force", "--if-revision", "stale")
 			refuse("capability_unavailable", "forget", "work")
 			call("remember", "Other", "--id", "beads/other")
+			if memory := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "other")); !memory.Preview || memory.Deleted {
+				t.Fatalf("bare Memory delete preview stopped dispatching: %+v", memory)
+			}
 			linked := graphMixedResult[graphstore.IssueRecord](t, call("create", "Linked", "--id", "beads/linked"))
 			call("link", "linked", "other", "--type", "types/references", "--id", "links/relation")
 			linkedPreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "linked"))

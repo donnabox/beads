@@ -23,6 +23,11 @@ type IssueDeleteRequest struct {
 	Unconditional, Preview bool
 }
 
+// ErrIssueSelectorIsMemory is returned before any write when a bare selector
+// names a Memory rather than an Issue. It lets the CLI choose the Memory
+// delete route without pre-reading a native Issue ID outside the transaction.
+var ErrIssueSelectorIsMemory = fmt.Errorf("%w: selector names a Memory, not an Issue", ErrCapabilityUnavailable)
+
 // IssueDeleteResult separates the final live Issue from graph deletion evidence.
 type IssueDeleteResult struct {
 	Issue           IssueRecord        `json:"issue"`
@@ -79,7 +84,7 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 			path, _, err = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID})
 			if err != nil {
 				if errors.Is(err, errNonIssueSelector) {
-					return ErrCapabilityUnavailable
+					return ErrIssueSelectorIsMemory
 				}
 				return err
 			}
