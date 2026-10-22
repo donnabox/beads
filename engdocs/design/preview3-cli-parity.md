@@ -494,12 +494,12 @@ locally; current-head hosted CI remains pending.
   checks passed. This convergence PR is an unmerged candidate; #193–#194
   remain open for their separate reviews. #246 has four current-head hosted
   successes and two expected skips; review is pending.
-  Draft [#247](https://github.com/donnabox/beads/pull/247) at `5d2749784`
+  Draft [#247](https://github.com/donnabox/beads/pull/247) at `5af243c7e`
   extends the same in-transaction native Issue abbreviation resolver to graph
-  `bd dep add`, including `--blocked-by` and `--depends-on` targets. Explicit
+  `bd dep add` and `bd dep --blocks`, including `--blocked-by` and `--depends-on` targets. Explicit
   graph paths remain exact. Its installed positional Link plus dep-add workflow
   passed embedded and real shared-server Dolt (three test/subtest passes, no
-  skips; `/tmp/cleo-dep-add-partial-server-final.jsonl`). Docsync and diff
+  skips; `/tmp/cleo-dep-forms-partial-server.jsonl`). Docsync and diff
   checks passed. Hosted CI and review are pending; it is an unmerged candidate.
 - Draft [#209](https://github.com/donnabox/beads/pull/209)–[#210](https://github.com/donnabox/beads/pull/210) and stacked [#212](https://github.com/donnabox/beads/pull/212)
   provide a checked single-Issue linked-delete path: unforced preview refuses
