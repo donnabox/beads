@@ -134,13 +134,13 @@ locally; current-head hosted CI remains pending.
 | `gate` | Explicit refusal. | Gate create/check/list/show/resolve/waiter/discovery are unavailable. | Gap; no repair PR |
 | `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. | Gap; no command PR |
 | `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151/#161/#174 and #193–#194 are unmerged subsets. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. | Selected/open #151; candidates/open #161, #174, #193–#194 |
-| `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156/#158/#166/#169–#172, #182 (`--id`), #189–#190 (`--ready`), and #203 (`--ready --parent`) are unmerged subsets. | Selected/open #156; candidates/open #158, #166, #169–#172, #182, #189–#190, #203 |
+| `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156/#158/#166/#169–#172, #182 (`--id`), #189–#190 (`--ready`), and #203 (`--ready --parent`) are unmerged subsets. Donna selected a future shared Type-filter contract with `count`: omitted Type means the Issue family, `--type X` includes refinements, `--exact-type X` does not, and `--type any` selects all Bead Types. None of that contract has landed in the pinned build. | Selected/open #156; candidates/open #158, #166, #169–#172, #182, #189–#190, #203; Type selection design accepted, implementation unqualified |
 | `merge-slot` | Create/check/acquire/release work in tested flows. | Wrong-holder release refuses with misleading `graph_not_initialized` instead of a holder-mismatch category. | As-built; error-category gap open |
 | `note` | Positional, file and stdin Issue-note append work. | Non-Issue notes and multi-ID note writes are unavailable. | As-built; no parity PR |
 | `priority` | P0–P4 Issue update works. | Invalid-value exit code differs from shipping. | As-built; exit-code gap open |
 | `promote` | Explicit refusal. | Wisp promotion is unavailable. | Gap; no repair PR |
 | `q` | Standalone quick capture works, including `feat` type normalization. | `--parent` refuses at the pinned commit; draft #218 uses the checked native child writer and preserves one-ID output, with focused both-engine qualification but pending hosted CI/review. | Candidate/open #218; current integration unchanged |
-| `query` | Admitted Issue predicates work. | Generic Bead/Link query is unavailable; parent OR/NOT forms can refuse. Melinda owns the query design. | Separate owner: Melinda; no parity PR |
+| `query` | Admitted Issue predicates work. | Parent OR/NOT forms can refuse. Generic Bead/Link query remains unavailable by deliberate Preview 3 scope: Donna chose to preserve Issue-only `bd query` compatibility without requiring a generic evaluator for Memory. | Intentional Issue-only scope; Melinda owns query; no parity PR |
 | `reopen` | Single and batch Issue reopen work; batches can partly succeed. | JSON shape differs; registered `--if-revision` refuses at the pinned commit. Draft #219–#220 add a checked single-Issue revision guard, including the already-open no-op; guarded multi-ID reopen still refuses. | Candidates/open #219–#220; current integration unchanged |
 | `search` | Issue search works for admitted filters. | `--type feat` silently yields no results despite current help claiming the alias; direct shipping v1.3.1 also did so, while the newer ordinary Preview route normalizes it. | As-built; no parity PR |
 | `set-state` | Explicit refusal. | Atomic state event and label write is unavailable. | Gap; no repair PR |
@@ -154,7 +154,7 @@ locally; current-head hosted CI remains pending.
 
 | Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
-| `count` | Durable-Issue totals/groups and admitted filters work. | Infra/ephemeral inclusion and some filters refuse; large inventories refuse rather than return partial counts. | As-built; filter/cap gaps open |
+| `count` | Durable-Issue totals/groups and admitted filters work. | Infra/ephemeral inclusion and some filters refuse; large inventories refuse rather than return partial counts. Donna selected the same future Type population as `list`, counted before page/display limits, with an explicit refusal if bounded acquisition is incomplete; Type-only generic counting is not in the pinned build. | As-built; filter/cap gaps open; Type selection design accepted, implementation unqualified |
 | `diff` | Explicit refusal. | Dolt commit/branch diff is unavailable; retained `compare` addresses one Resource instead. | Gap; no repair PR |
 | `find-duplicates` | Explicit refusal. | Similarity/AI duplicate discovery is unavailable. | Gap; no repair PR |
 | `history` | Changed contract: alias of retained `versions ID`. | No Dolt commit/audit history; `--limit` and `--events` refuse; JSON shape differs. | Changed contract; no parity PR |
@@ -339,8 +339,11 @@ locally; current-head hosted CI remains pending.
   Adjacent child-create and Issue-update storage tests passed locally. Its
   first hosted native-lint job failed before a code finding because Bazel
   timed out fetching Toybox for an unrelated test package. The isolated
-  failed-job retry and required CI gate passed at current head; two macOS
-  race jobs were still pending at the latest check. It is
+  failed-job retry and required CI gate passed at current head. The first
+  macOS graphstore race attempt then hit its 30-minute test timeout in
+  `TestLinkPropertiesPatchDeletedBudget/embedded` after three preceding
+  graphstore groups passed; no reparent assertion failed. Only that failed
+  job was retried in workflow `39710093424`, and the retry is pending. It is
   storage-only: `bd update --parent` remains unavailable on the pinned
   integration commit and on this PR head. Empty-parent detach is deliberately
   excluded because dotted IDs still imply a parent in shipping selectors;

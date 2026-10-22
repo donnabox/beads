@@ -1950,8 +1950,13 @@ sh_test(
 exports_files(
     [
         "AGENTS.md",
+        "batch.go",
         "capability_registry.go",
         "doctor.go",
+        "duplicate.go",
+        "graph_apply.go",
+        "graph_preview.go",
+        "graph_preview_workflow.go",
         "init_safety_help.go",
         "label.go",
         "main.go",
