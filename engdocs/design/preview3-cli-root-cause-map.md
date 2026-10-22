@@ -295,6 +295,15 @@ green and review pending. These PRs remain unmerged candidates. Dotted native ID
 until [upstream #7377](https://github.com/gastownhall/beads/pull/7377)
 fixes citation rewriting, preserving that contributor's work.
 
+A disposable local composition of #230 atop the corrected selected five-PR
+head (`457758d05e` on `215b87d05`) merged without conflicts. Focused
+installed delete workflows passed embedded and real shared-server Dolt. One
+storage server subtest initially failed during schema initialization before
+its assertion (`could not resolve initial root`); its isolated retry passed
+on both engines. The other focused storage subtests passed on both engines.
+Bazel managed-source, docs sync, generated CLI docs, and diff checks passed.
+This is composition evidence only; it was not pushed or merged.
+
 The next CLI slice must preserve the distinction between the delete plan and
 confirmation. Shipping's single-ID `bd delete ID` previews a deletion and
 refuses when a surviving Issue depends on `ID`; `bd delete ID --force` applies
