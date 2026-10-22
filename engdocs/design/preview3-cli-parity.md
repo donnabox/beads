@@ -127,7 +127,7 @@ locally; current-head hosted CI remains pending.
 | `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later missing ID; JSON differs; `--continue` and `--no-auto` refuse. Donna selected shipping's no-change-on-missing-ID rule for Preview 3. Draft #226–#227 implement same-transaction selector preflight for ordinary multi-ID close and `--claim-next`; other per-item policy refusals can still partly succeed. | Candidates/open #226–#227; current integration unchanged |
 | `comment` | Issue comment write works. | Comments on non-Issue Beads are unavailable; graph `issue_id` uses a canonical path. | As-built; no parity PR |
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. | As-built; no parity PR |
-| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. Draft #231 proves a new-Issue symbolic batch with canonical Links in storage; stacked #232 wires new-key/local-edge `--graph`, and #233 adds exact existing local targets; stacked #234 admits native initial Issue text, assignee, owner, estimate, due date, and labels; #235 admits one exact existing Issue source linked to a new node. Test-only #236 pins new-source inception History; #237 admits multiple Links from one existing source with intermediate History; #238 admits a new existing-to-existing edge alongside a new node; #239 admits a change-free re-add of an already mapped Link; #240 admits deferred `assign_after_create`, #241 admits initial metadata and symbolic `metadata_refs`, and #242 admits graph-plan parent relationships in the same transaction. Metadata-changing re-adds, other edge metadata and node forms still refuse. External targets, partial dependency IDs, same-batch Markdown targets and full graph-JSON relationships remain gaps. Shipping `create --graph` has no arbitrary update or close items; those are separate `bd batch` concerns. | Selected/open #152; candidates/open #159, #180–#181, #197–#202, #231–#242; current integration unchanged |
+| `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. Draft #231 proves a new-Issue symbolic batch with canonical Links in storage; stacked #232 wires new-key/local-edge `--graph`, and #233 adds exact existing local targets; stacked #234 admits native initial Issue text, assignee, owner, estimate, due date, and labels; #235 admits one exact existing Issue source linked to a new node. Test-only #236 pins new-source inception History; #237 admits multiple Links from one existing source with intermediate History; #238 admits a new existing-to-existing edge alongside a new node; #239 admits a change-free re-add of an already mapped Link; #240 admits deferred `assign_after_create`, #241 admits initial metadata and symbolic `metadata_refs`, #242 admits graph-plan parent relationships, and #243 admits inline local dependencies in the same transaction. #244–#245 admit initial defer timestamps at the shared graph Issue writer and both ordinary `--defer` and graph-plan `defer_until` CLI forms. Metadata-changing re-adds, other edge metadata and node forms still refuse. External targets (intentionally refused), partial dependency IDs, same-batch Markdown targets and full graph-JSON relationships remain gaps. Shipping `create --graph` has no arbitrary update or close items; those are separate `bd batch` concerns. | Selected/open #152; candidates/open #159, #180–#181, #197–#202, #231–#245; current integration unchanged |
 | `create-form` | Explicit refusal. | Interactive Issue creation is unavailable. | Gap; no repair PR |
 | `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. Draft #209 proves opt-in linked deletion in one transaction; #210 adds a checked unforced preview; stacked draft #212 wires single-Issue CLI preview and `--force`. It leaves surviving dependents live. Draft #228–#229 extend the storage proof to bounded named sets and cascade. Draft #230 admits the multi-ID, cascade, and file CLI forms over that proof and preserves #163's single-ID dry-run behavior. Dotted native IDs explicitly refuse set deletion pending upstream #7377. | Candidates/open #163, #209–#210, #212, #228–#230; current integration unchanged |
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. | As-built; mutation unqualified |
@@ -622,8 +622,29 @@ locally; current-head hosted CI remains pending.
   `parent_id` through the already checked parent-child Link batch path.
   The installed workflow proved key-over-ID precedence, new and existing
   parent targets, and one canonical parent-child Link per child on embedded
-  and real shared-server Dolt without skips. Hosted CI and review are
-  pending. None of #231–#242 is merged.
+  and real shared-server Dolt without skips. Its four current-head hosted
+  checks passed; review is pending. Stacked draft
+  [#243](https://github.com/donnabox/beads/pull/243) at `10455deae`
+  admits inline `deps` to forward plan keys and exact existing local Issue IDs.
+  It defaults to `blocks`, retains explicit valid kinds, and refuses
+  `external:` before opening the store. The installed workflow verified
+  canonical Links, one source inception version and refusal/rollback for
+  external and missing targets on embedded and real shared-server Dolt;
+  the adjacent metadata-ref storage workflow also passed both engines.
+  #243's four current-head hosted checks passed; review is pending. Stacked
+  draft [#244](https://github.com/donnabox/beads/pull/244) at `7475ce31d`
+  admits initial `defer_until` through the shared graph Issue create adapter.
+  Its single, child, Markdown-batch and graph-plan storage workflow passed
+  embedded and real shared-server Dolt with second-precision UTC normalization
+  and retained inception versions. The focused run had four test/subtest
+  passes and no skips; adjacent embedded graph-batch tests passed 15 results
+  with seven server-only skips. Stacked draft
+  [#245](https://github.com/donnabox/beads/pull/245) at `ce1e700ed`
+  wires ordinary `bd create --defer` and graph-plan `defer_until` over that
+  proof, including shipping future-date default status and explicit-status
+  precedence. Installed workflows passed embedded and real shared-server
+  Dolt: 17 test/subtest passes, no skips. Hosted CI/reviews for #244–#245
+  are pending. None of #231–#245 is merged.
 - A broad local assembled `TestGraphPreview` run through #196 completed with
   two failing top-level tests: `--ready=false` expected a now-obsolete
   refusal, and the usability workflow expected `capability_unavailable` for
