@@ -325,7 +325,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		"memoryCreate", "memoryRead", "memoryBodyFileInput", "memoryBodyStdinInput", "memoryPropertiesUpdate",
 		"memorySelectedUpdate", "memorySelectedUpdateCurrentByDefault", "memoryOverwriteDisclosure", "memoryUnreferencedDelete", "issueUnreferencedDelete", "issueCreate", "issueCreateAuthorship",
 		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueNotesReplace", "issueNotesClear", "issueEstimateUpdate", "issueReferenceUpdate", "issuePropertiesUpdate", "issuePropertiesPatch",
-		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "blockingDependencyShorthand", "blockingDependencyExplicitID", "linkPropertiesUpdate", "linkEndpointPins", "linkEndpointRepin", "linkUnlink", "blockingDependencyUnlink",
+		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "blockingDependencyShorthand", "blockingDependencyExplicitID", "linkPropertiesUpdate", "linkEndpointPins", "linkEndpointRepin", "linkUnlink", "blockingDependencyUnlink", "blockingDependencyPairUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueDatelessDeferral", "issueDatedDeferral", "issueReady", "genericRead",
 		"issueList", "issueListLegacyJSON", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
