@@ -13,9 +13,9 @@ import (
 
 // CreateIssueBatch uses the native batch writer and publishes every graph
 // identity and local dependency Link in that same transaction. A refused item
-// cannot leave earlier headings or edges behind. Dependency targets must
-// already exist; markdown headings have no caller-assigned IDs to refer to one
-// another within the batch.
+// cannot leave earlier headings or edges behind. A typed batch request may
+// name an earlier item's explicit native ID; generated IDs cannot be named
+// before creation. The current Markdown parser does not expose explicit IDs.
 func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBatchRequest) ([]IssueRecord, error) {
 	request = issueops.CloneCreateBatchRequest(request)
 	if err := issueops.ValidateCreateBatchRequest(request); err != nil {
@@ -46,15 +46,41 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			return err
 		}
 		resolvedByItem := make([][]resolvedIssueCreateDependency, len(request.Items))
+		batchTargetByItem := make([]map[int]int, len(request.Items))
+		earlierIDs := make(map[string]int, len(request.Items))
 		reverseBySource := make(map[string]int)
 		for index, item := range request.Items {
 			if issueops.ResolveInfraTypesInTx(ctx, tx)[string(item.Issue.IssueType.Normalize())] {
 				return issueops.CreateBatchItemError(index, fmt.Errorf("%w: infrastructure Issue types are not admitted by the graph preview", storage.ErrValidation))
 			}
 			dependencies := make([]IssueCreateDependency, 0, len(item.Dependencies))
+			local := make([]resolvedIssueCreateDependency, 0)
+			localTarget := make(map[int]int)
 			for _, dep := range item.Dependencies {
 				if dep.Metadata != "" || dep.ThreadID != "" {
 					return issueops.CreateBatchItemError(index, fmt.Errorf("%w: markdown Dependency metadata and threads are unavailable in graph mode", ErrCapabilityUnavailable))
+				}
+				if targetIndex, ok := earlierIDs[dep.TargetID]; ok {
+					if dep.Reverse {
+						return issueops.CreateBatchItemError(index, fmt.Errorf("%w: reverse Dependency to an earlier batch Issue is unavailable", ErrCapabilityUnavailable))
+					}
+					if err := s.requireRelationshipGenerationInTx(ctx, tx); err != nil {
+						return issueops.CreateBatchItemError(index, err)
+					}
+					nativeType, err := previewDependencyType(dep.Type)
+					if err != nil {
+						return issueops.CreateBatchItemError(index, err)
+					}
+					typeURL, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), issueType, nativeType)
+					if !ok {
+						return issueops.CreateBatchItemError(index, fmt.Errorf("%w: native Dependency Link Type is unavailable", ErrCapabilityUnavailable))
+					}
+					if err := s.selectedLinkTypeInTx(ctx, tx, typeURL); err != nil {
+						return issueops.CreateBatchItemError(index, err)
+					}
+					localTarget[len(local)] = targetIndex
+					local = append(local, resolvedIssueCreateDependency{targetID: dep.TargetID, typeURL: typeURL, nativeType: nativeType})
+					continue
 				}
 				selector := IssueSelector{Path: "beads/" + dep.TargetID, NativeID: dep.TargetID}
 				if strings.HasPrefix(dep.TargetID, "beads/") {
@@ -68,7 +94,24 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			if err != nil {
 				return issueops.CreateBatchItemError(index, err)
 			}
+			batchTargets := make(map[int]int, len(localTarget))
+			for localIndex, targetIndex := range localTarget {
+				batchTargets[len(resolved)+localIndex] = targetIndex
+			}
+			resolved = append(resolved, local...)
+			if len(resolved) > PreviewOwnedLinkLimit {
+				return issueops.CreateBatchItemError(index, fmt.Errorf("%w: preview source-owned Link limit %d exceeded", storage.ErrValidation, PreviewOwnedLinkLimit))
+			}
+			seen := make(map[string]bool, len(resolved))
+			for _, dependency := range resolved {
+				key := fmt.Sprintf("%t|%s", dependency.reverse, dependency.targetID)
+				if seen[key] {
+					return issueops.CreateBatchItemError(index, fmt.Errorf("%w: duplicate or conflicting create Dependency pair", storage.ErrValidation))
+				}
+				seen[key] = true
+			}
 			resolvedByItem[index] = resolved
+			batchTargetByItem[index] = batchTargets
 			for _, dep := range resolved {
 				if !dep.reverse {
 					continue
@@ -87,6 +130,12 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 				if !dep.reverse {
 					request.Items[index].Dependencies = append(request.Items[index].Dependencies, publicops.CreateDependency{TargetID: dep.targetID, Type: dep.nativeType})
 				}
+			}
+			if item.Issue.ID != "" {
+				if _, exists := earlierIDs[item.Issue.ID]; exists {
+					return issueops.CreateBatchItemError(index, fmt.Errorf("%w: duplicate explicit Issue ID in batch", storage.ErrValidation))
+				}
+				earlierIDs[item.Issue.ID] = index
 			}
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
@@ -141,6 +190,9 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 		}
 		for index, issue := range created.Issues {
 			path := paths[index]
+			for dependencyIndex, targetIndex := range batchTargetByItem[index] {
+				resolvedByItem[index][dependencyIndex].targetPath = paths[targetIndex]
+			}
 			if len(resolvedByItem[index]) != 0 {
 				if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, issue.ID, request.Actor, resolvedByItem[index], true); err != nil {
 					return issueops.CreateBatchItemError(index, err)
