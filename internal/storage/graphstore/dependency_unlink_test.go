@@ -164,6 +164,65 @@ func TestDependencyPairRemoveUsesNativeWriterAndNoop(t *testing.T) {
 	}
 }
 
+func TestDependencyPairRemoveResolvesNativeAbbreviationsInWrite(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			create := func(path, id string) IssueRecord {
+				t.Helper()
+				request := plainIssue(id)
+				request.Issue.ID = id
+				issue, err := s.CreateIssue(ctx, path, request)
+				if err != nil {
+					t.Fatal(err)
+				}
+				return issue
+			}
+			source := create("beads/work", "exp-a3f8e9")
+			target := create("beads/need", "exp-b7c4d2")
+			add := func() {
+				t.Helper()
+				if _, err := s.AddDependency(ctx, DependencyRequest{SourcePath: "beads/work", TargetPath: "beads/need", Actor: "author"}); err != nil {
+					t.Fatal(err)
+				}
+			}
+			add()
+			abbreviated := DependencyRemoveRequest{SourcePath: "beads/a3f8", SourceNativeID: "a3f8", TargetPath: "beads/b7c4", TargetNativeID: "b7c4", Actor: "remover"}
+			removed, err := s.RemoveDependency(ctx, abbreviated)
+			if err != nil || !removed.Removed || removed.Source.Properties.ID != source.Properties.ID || removed.Target.Properties.ID != target.Properties.ID {
+				t.Fatalf("abbreviated pair removal selected wrong Issues: %+v %v", removed, err)
+			}
+			before := workflowState(t, ctx, s)
+			missing, err := s.RemoveDependency(ctx, abbreviated)
+			if err != nil || missing.Removed || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("abbreviated absent pair changed state: %+v %v", missing, err)
+			}
+			add()
+			create("beads/other", "exp-b7c4e1")
+			before = workflowState(t, ctx, s)
+			if _, err := s.RemoveDependency(ctx, abbreviated); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("ambiguous abbreviation removed a pair: %v", err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/a3f8", Title: "Colliding Memory"}); err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, err := s.RemoveDependency(ctx, abbreviated); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("bare graph-path collision removed a pair: %v", err)
+			}
+			explicit, err := s.RemoveDependency(ctx, DependencyRemoveRequest{SourcePath: "beads/work", TargetPath: "beads/need", Actor: "remover"})
+			if err != nil || !explicit.Removed || explicit.Target.Properties.ID != target.Properties.ID {
+				t.Fatalf("explicit paths must remain exact: %+v %v", explicit, err)
+			}
+		})
+	}
+}
+
 func TestDependencyPairRemoveRefusesNonBlockingKind(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {

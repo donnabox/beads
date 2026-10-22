@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -108,6 +109,36 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			if got := issue(call("assign", custom.Properties.ID, "carol")); got.ID != "beads/custom-path" || got.Assignee != "carol" {
 				t.Fatalf("native-ID assign selected the wrong Issue: %+v", got)
+			}
+			parts := strings.SplitN(custom.Properties.ID, "-", 2)
+			if len(parts) != 2 {
+				t.Fatalf("fixture needs a configured Issue prefix: %q", custom.Properties.ID)
+			}
+			abbreviable := graphMixedResult[graphstore.IssueRecord](t, call("create", "Abbreviable", "--id", parts[0]+"-a3f8e9"))
+			partialID := "a3f8"
+			if got := issue(call("priority", partialID, "2")); got.ID != "beads/"+abbreviable.Properties.ID || got.Priority != 2 {
+				t.Fatalf("abbreviated priority selected the wrong Issue: %+v", got)
+			}
+			if got := issue(call("note", partialID, "Partial ID note")); got.ID != "beads/"+abbreviable.Properties.ID || got.Notes != "Partial ID note" {
+				t.Fatalf("abbreviated note selected the wrong Issue: %+v", got)
+			}
+			if got := issue(call("assign", partialID, "dana")); got.ID != "beads/"+abbreviable.Properties.ID || got.Assignee != "dana" {
+				t.Fatalf("abbreviated assign selected the wrong Issue: %+v", got)
+			}
+			var stateResult struct {
+				IssueID string `json:"issue_id"`
+			}
+			if err := json.Unmarshal([]byte(call("state", "list", partialID)), &stateResult); err != nil || stateResult.IssueID != abbreviable.Properties.ID {
+				t.Fatalf("abbreviated state selected the wrong Issue: %+v %v", stateResult, err)
+			}
+			updated := graphMixedResult[graphstore.IssueMutationResult](t, call("update", partialID, "--title", "Updated by partial"))
+			if !updated.Changed || updated.Issue.Properties.ID != abbreviable.Properties.ID || updated.Issue.Properties.Title != "Updated by partial" {
+				t.Fatalf("abbreviated update selected the wrong Issue: %+v", updated)
+			}
+			fallbackOutput := graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "", "update", "--title", "Follow-up", "--json")
+			followup := graphMixedResult[graphstore.IssueMutationResult](t, fallbackOutput)
+			if !followup.Changed || followup.Issue.Properties.ID != abbreviable.Properties.ID || followup.Issue.Properties.Title != "Follow-up" {
+				t.Fatalf("last touched after abbreviated update selected the wrong Issue: %+v", followup)
 			}
 			call("remember", "Colliding Memory", "--id", "beads/"+custom.Properties.ID)
 			beforeCollision := graphMemoryReadSnapshot(t, work)

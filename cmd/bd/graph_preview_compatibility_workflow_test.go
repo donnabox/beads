@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"reflect"
 	"strings"
@@ -46,6 +47,23 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			}
 			if !strings.HasPrefix(issue.Properties.ID, "compat-") || issue.ID != scope+"beads/"+issue.Properties.ID {
 				t.Fatalf("generated Issue path did not use the configured native prefix: %+v", issue)
+			}
+			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Explicit parent", "--id", "compat-parent", "--type", "epic"))
+			if parent.ID != scope+"beads/compat-parent" || parent.Properties.ID != "compat-parent" {
+				t.Fatalf("bare explicit Issue ID diverged from its native identity: %+v", parent)
+			}
+			child := graphMixedResult[graphstore.IssueRecord](t, call("create", "Child", "--parent", "compat-parent"))
+			if child.ID != scope+"beads/compat-parent.1" || child.Properties.ID != "compat-parent.1" {
+				t.Fatalf("child did not retain the shipping parent ID: %+v", child)
+			}
+			_, _, exit := graphGenerationRun(t, bd, work, home, "create", "Wrong prefix", "--id", "other-parent", "--json")
+			if exit == 0 {
+				t.Fatal("bare explicit Issue ID bypassed the native prefix rule")
+			}
+			refuse("not_found", "show", "other-parent")
+			forced := graphMixedResult[graphstore.IssueRecord](t, call("create", "Forced prefix", "--id", "other-parent", "--force"))
+			if forced.ID != scope+"beads/other-parent" || forced.Properties.ID != "other-parent" {
+				t.Fatalf("forced bare Issue ID diverged from shipping identity: %+v", forced)
 			}
 			if memory.Properties.Title != "Code flow policy" || memory.Properties.Body != body {
 				t.Fatal("default title changed body or failed to summarize")
@@ -224,6 +242,70 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			}
 			refuse("revision_conflict", "update", propertyIssue.ID, "--properties", `{"title":"stale"}`, "--if-revision", propertyIssue.Revision)
 			refuse("invalid_properties", "update", propertyIssue.ID, "--properties", `{"status":"closed"}`, "--if-revision", issuePatched.Issue.Revision)
+		})
+	}
+}
+
+func TestGraphPreviewPositionalLinkPartialIDsWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/link-partial/"
+			initArgs := []string{"init", "--graph-mode", "link", "--prefix", "compat", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification")
+				}
+				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			call(initArgs...)
+			source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--id", "beads/source"))
+			target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", "beads/target"))
+			abbreviate := func(id string) string {
+				t.Helper()
+				if !strings.HasPrefix(id, "compat-") || len(id) < len("compat-")+2 {
+					t.Fatalf("unexpected generated native Issue ID %q", id)
+				}
+				return id[len("compat-") : len(id)-1]
+			}
+			from, to := abbreviate(source.Properties.ID), abbreviate(target.Properties.ID)
+			decodeLink := func(raw string) map[string]any {
+				t.Helper()
+				var result map[string]any
+				if err := json.Unmarshal([]byte(raw), &result); err != nil {
+					t.Fatalf("decode familiar positional Link JSON: %v\n%s", err, raw)
+				}
+				return result
+			}
+			result := decodeLink(call("link", from, to))
+			if result["issue_id"] != source.Properties.ID || result["depends_on_id"] != target.Properties.ID || result["type"] != "blocks" {
+				t.Fatalf("positional partial Link resolved wrong Issues: %+v", result)
+			}
+			if repeated := decodeLink(call("link", from, to)); !reflect.DeepEqual(repeated, result) {
+				t.Fatalf("repeated positional Link changed familiar result: %+v", repeated)
+			}
+			var shown []struct {
+				Dependencies []json.RawMessage `json:"dependencies"`
+			}
+			if raw := call("show", source.ID); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 1 {
+				t.Fatalf("positional Link did not preserve one native relation: %s", raw)
+			}
+			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other blocker", "--id", "beads/other-blocker"))
+			call("dep", "add", from, "--blocked-by", abbreviate(other.Properties.ID))
+			if raw := call("show", source.ID); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 2 || !strings.Contains(raw, strings.TrimPrefix(other.ID, scope)) {
+				t.Fatalf("dep add partial IDs did not preserve the second native relation: %s", raw)
+			}
+			fourth := graphMixedResult[graphstore.IssueRecord](t, call("create", "Fourth blocker", "--id", "beads/fourth-blocker"))
+			call("dep", abbreviate(fourth.Properties.ID), "--blocks", from)
+			if raw := call("show", source.ID); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 3 || !strings.Contains(raw, strings.TrimPrefix(fourth.ID, scope)) {
+				t.Fatalf("dep --blocks partial IDs did not preserve the third native relation: %s", raw)
+			}
 		})
 	}
 }

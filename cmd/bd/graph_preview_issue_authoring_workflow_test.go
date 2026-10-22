@@ -151,8 +151,8 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
-			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "work"))
-			claimed := graphMixedResult[graphstore.IssueRecord](t, call("create", "Claimed", "--id", "claimed"))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work"))
+			claimed := graphMixedResult[graphstore.IssueRecord](t, call("create", "Claimed", "--id", "beads/claimed"))
 			claimedState := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "claimed", "--claim", "--actor", "operator"))
 			if !claimedState.Changed {
 				t.Fatal("claim setup did not change Issue")
@@ -209,7 +209,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			if !foundWork {
 				t.Fatalf("dated defer did not wake: %+v", woke)
 			}
-			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other", "--id", "other"))
+			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other", "--id", "beads/other"))
 			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("defer", "work", other.ID))
 			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
 				t.Fatalf("batch defer: %+v", batch)

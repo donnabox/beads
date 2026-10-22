@@ -44,10 +44,14 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 	graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "collision", "--id", "beads/work", "--title", "Memory", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Coexisting Memory", "--id", "beads/plan", "--title", "Plan", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "create", "collision", "--id", "beads/plan", "--json")
-	for _, flag := range []string{"--ephemeral", "--no-history", "--deps=blocks:beads/plan", "--description=-", "--body-file=missing", "--stdin", "--defer=tomorrow", "--status=closed"} {
+	for _, flag := range []string{"--ephemeral", "--no-history", "--defer=tomorrow"} {
 		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "create", "Unsupported", "--id", "beads/refused", flag, "--json")
 		graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 	}
+	// Local Dependencies are admitted now; this target is a Memory, not an
+	// Issue, so the selector must fail validation without creating the source.
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "Unsupported", "--id", "beads/refused", "--deps=blocks:beads/plan", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 	graphPolicyCLI(t, bd, work, home, []string{"BD_READONLY=true"}, "permission_denied", "create", "Read-only", "--id", "beads/refused", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 	for _, class := range []string{"ephemeral", "unversioned", "invalid"} {
