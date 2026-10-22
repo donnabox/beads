@@ -138,9 +138,9 @@ func TestMemoryConstraintsSeedAnchorsAndCycles(t *testing.T) {
 }
 
 func TestMemoryConstraintsIndependentSlotsAndBudget(t *testing.T) {
-	r := constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: 0}, {Path: "beads/a", RequiresDepth: 2}, {Path: "beads/e", RequiresDepth: 1}}, [4]string{"sab", "subject-to", "a", "b"}, [4]string{"bc", "requires", "b", "c"})
+	r := constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: 0}, {Path: "beads/a", RequiresDepth: 2}, {Path: "beads/e", RequiresDepth: 1}}, [4]string{"sab", "subject-to", "a", "b"}, [4]string{"ba", "requires", "b", "a"}, [4]string{"ad", "requires", "a", "d"})
 	s := constraintPresentationText(t, r)
-	if strings.Count(s, "(sab)") != 2 || strings.Count(s, "(bc)") != 1 || !strings.Contains(s, "Aggregate: 4 unique Beads, 2 unique Links across 3 root views") || !strings.Contains(s, `e [constraint] "E"`) {
+	if strings.Count(s, "(sab)") != 2 || strings.Count(s, "(ba)") != 1 || strings.Count(s, "(ad)") != 1 || !strings.Contains(s, "Aggregate: 4 unique Beads, 3 unique Links across 3 root views") || !strings.Contains(s, `e [constraint] "E"`) {
 		t.Fatal(s)
 	}
 	for _, cap := range []int{1, len(s) / 2, len(s) - 1} {
