@@ -144,8 +144,16 @@ the aggregate Link cap, and rolls back if retaining the second version fails.
 Focused historical-content, rollback and installed CLI create/Link/versions
 tests passed embedded and real shared-server Dolt without skips on the earlier
 head; the current head adds a two-distinct-existing-sources rollback and
-History test, which passed both engines without skips. Related
-embedded graphstore tests passed.
+History test, which passed both engines without skips. Related embedded
+graphstore tests and its four current-head hosted checks passed. Stacked
+draft [#238](https://github.com/donnabox/beads/pull/238)
+at `0f4f12cec` admits new exact existing-to-existing local Issue edges in a
+graph plan that also creates a node. Same-transaction endpoint selection,
+native edge insertion, canonical Link mapping, source History and fault
+rollback passed embedded and real shared-server Dolt, including the installed
+CLI path. A preexisting pair remains a no-write refusal: native re-add may
+refresh metadata and mint a version despite reporting no new edge, requiring
+a separate retention rule. #238 hosted CI and review are pending.
 #237 is unmerged with hosted CI and review pending. Idempotent existing-target
 edges and arbitrary update/close items remain outside this bounded proof.
 
