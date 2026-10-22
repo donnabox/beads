@@ -105,6 +105,9 @@ func TestApplyNewIssueGraphBindsForwardKeyAndRollsBackAfterNativeEdge(t *testing
 			if err != nil || len(linked["new"].Owned) != 1 {
 				t.Fatalf("existing-target edge did not publish one Link: result=%v err=%v", linked, err)
 			}
+			if existing.Items[1].DepAdd.Target != (publicops.Ref{ID: second.Properties.ID}) {
+				t.Fatalf("batch resolution mutated caller request: %+v", existing.Items[1].DepAdd.Target)
+			}
 			var existingLink LinkRecord
 			if err := json.Unmarshal(linked["new"].Owned[0], &existingLink); err != nil {
 				t.Fatal(err)
