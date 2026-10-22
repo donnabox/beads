@@ -13,6 +13,9 @@ import (
 // The default preview is a read; neither --force nor forget implies a cascade
 // or a missing guard.
 func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool) error {
+	if !forget && graphPreviewDeleteSetRequested(cmd, args) {
+		return runGraphPreviewDeleteIssueSet(cmd, args)
+	}
 	request, err := graphPreviewMemoryDeleteInput(cmd, args, forget)
 	if err != nil {
 		return err
@@ -77,7 +80,7 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget bool) (graphstore.MemoryDeleteRequest, error) {
 	allowed := []string{"if-revision"}
 	if !forget {
-		allowed = append(allowed, "force")
+		allowed = append(allowed, "force", "dry-run")
 	}
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return graphstore.MemoryDeleteRequest{}, err
@@ -94,7 +97,8 @@ func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget boo
 		return graphstore.MemoryDeleteRequest{}, err
 	}
 	force, _ := cmd.Flags().GetBool("force")
-	preview := !forget && !force
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
+	preview := !forget && (dryRun || !force)
 	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
 	if err != nil {
 		return graphstore.MemoryDeleteRequest{}, err

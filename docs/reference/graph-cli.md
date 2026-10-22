@@ -399,15 +399,21 @@ bd close work --if-revision "$revision" --reason 'Finished the work'
 bd reopen work review --reason 'Follow-up needed'
 ```
 
-`bd delete ID` previews deletion of one Memory or Issue without changing
-storage; `--force` applies it. `bd forget ID` applies Memory deletion
+`bd delete ID` previews deletion of a Memory or Issue without changing
+storage; `--force` applies it. An Issue set can also be selected with multiple
+IDs or `--from-file PATH`. `--cascade` includes dependent Issues, while
+`--dry-run` keeps a Memory or Issue request read-only even beside `--force`.
+Every named Issue must exist before the set changes. Dotted native Issue IDs
+currently refuse set deletion while citation rewriting is being qualified.
+`bd forget ID` applies Memory deletion
 directly and does not accept Issues. An optional `--if-revision TOKEN` refuses
 a stale target; omission accepts the current revision. Any live incoming,
 outgoing or self-Link still makes Memory deletion refuse. Memory refusal names
 the first blocking Link ID and the total count. Issue deletion removes its
 incident Links in the same transaction; unforced preview refuses if a
 surviving Issue depends on it. `--force` removes those dependency Links and
-leaves surviving dependents live. It does not cascade to dependent Issues.
+leaves surviving dependents live. `--cascade` deletes the dependent closure
+in the same checked transaction. Memory deletion remains single-ID.
 
 ```sh
 bd remember 'Temporary note' --id scratch
@@ -420,6 +426,8 @@ bd forget other-scratch
 bd create 'Temporary task' --id temp-work
 bd delete temp-work
 bd delete temp-work --force
+bd delete first second --force
+bd delete blocker --cascade --force
 ```
 
 Deletion removes current Bead state but reserves its ID and retains prior
