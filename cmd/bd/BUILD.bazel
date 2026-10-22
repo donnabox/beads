@@ -935,6 +935,7 @@ go_test(
         "graph_preview_agents_test.go",
         "graph_preview_assignee_error_test.go",
         "graph_preview_attribution_projection_test.go",
+        "graph_preview_blocked_parent_workflow_test.go",
         "graph_preview_blocked_test.go",
         "graph_preview_close_claim_next_workflow_test.go",
         "graph_preview_close_guard_workflow_test.go",
@@ -1992,8 +1993,13 @@ sh_test(
 exports_files(
     [
         "AGENTS.md",
+        "batch.go",
         "capability_registry.go",
         "doctor.go",
+        "duplicate.go",
+        "graph_apply.go",
+        "graph_preview.go",
+        "graph_preview_workflow.go",
         "init_safety_help.go",
         "label.go",
         "main.go",
