@@ -572,6 +572,9 @@ not accept a custom native Dependency kind. In the two-operand form, a bare
 Issue ID may be abbreviated when it uniquely identifies a live Issue. A
 `beads/PATH` or full Scope URL remains an exact graph selector; an ambiguous
 bare spelling is refused.
+`bd dep add` uses the same checked local Issue abbreviation rule for its
+positional source and positional or `--blocked-by`/`--depends-on` target;
+`bd dep BLOCKER --blocks BLOCKED` also applies it to both operands.
 
 Link updates accept the current Link by default; `--if-revision TOKEN`
 rejects a stale Link. Removal needs `--if-revision TOKEN` or `--unconditional`
