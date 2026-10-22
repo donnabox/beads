@@ -133,7 +133,7 @@ locally; current-head hosted CI remains pending.
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. | As-built; mutation unqualified |
 | `gate` | Explicit refusal. | Gate create/check/list/show/resolve/waiter/discovery are unavailable. | Gap; no repair PR |
 | `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. Draft #254 admits only `label list` through a checked current-Issue detail read; it is unmerged and does not change the pinned build. Label writes and propagation still refuse. | Candidate/open #254 for list; write/propagate gaps remain |
-| `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151/#161/#174 and #193–#194 are unmerged subsets; draft #246 converges the partial-ID route with graph create. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. | Selected/open #151; candidates/open #161, #174, #193–#194, #246 |
+| `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151/#161/#174 and #193–#194 are unmerged subsets; draft #246 converges the partial-ID route with graph create. A local assembly proves custom kinds with abbreviated native IDs together; it is not merged. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. | Selected/open #151; candidates/open #161, #174, #193–#194, #246; local composition validated |
 | `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156/#158/#166/#169–#172, #182 (`--id`), #189–#190 (`--ready`), and #203 (`--ready --parent`) are unmerged subsets. Donna selected a future shared Type-filter contract with `count`: omitted Type means the Issue family, `--type X` includes refinements, `--exact-type X` does not, and `--type any` selects all Bead Types. None of that contract has landed in the pinned build. | Selected/open #156; candidates/open #158, #166, #169–#172, #182, #189–#190, #203; Type selection design accepted, implementation unqualified |
 | `merge-slot` | Create/check/acquire/release work in tested flows. | Wrong-holder release refuses with misleading `graph_not_initialized` instead of a holder-mismatch category. | As-built; error-category gap open |
 | `note` | Positional, file and stdin Issue-note append work. | Non-Issue notes and multi-ID note writes are unavailable. Draft #249 proves abbreviated native Issue IDs for the positional form, but is unmerged. | Candidate/open #249; current integration unchanged |
@@ -445,6 +445,17 @@ locally; current-head hosted CI remains pending.
   (`/tmp/cleo-multi-update-assembled-server-20261022.jsonl`). This validates
   the local composition only; the two-line adaptation is not on the open PR
   branches and must be carried into any eventual convergence.
+- A follow-up disposable assembly at local-only `57c423f4f` adds #161's
+  positional custom-kind route to the #246 partial-native-ID candidate and
+  the preceding selector/update composition. A cross-feature installed test
+  reasserts each custom kind using abbreviations of the *native Issue IDs*
+  and verifies unchanged feedback and stored Link. The endpoint admission,
+  custom-kind and usability workflows passed embedded and real shared-server
+  Dolt (28 pass events, no skips or failures;
+  `/tmp/cleo-positional-link-assembled-20261022.jsonl`); the added
+  cross-feature case passed on both engines (10 pass events, no skips or
+  failures; `/tmp/cleo-positional-link-crosskind-r2-20261022.jsonl`). This
+  local assembly has no PR or merge and does not alter the pinned build.
 - Stacked [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198)
   admit local Issue `create --deps` through one transaction. #197 creates the
   native Issue and dependency edges, canonical Links and source-owned History;
