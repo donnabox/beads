@@ -132,7 +132,7 @@ locally; current-head hosted CI remains pending.
 | `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. Draft #209 proves opt-in linked deletion in one transaction; #210 adds a checked unforced preview; stacked draft #212 wires single-Issue CLI preview and `--force`. It leaves surviving dependents live. Draft #228–#229 extend the storage proof to bounded named sets and cascade. Draft #230 admits the multi-ID, cascade, and file CLI forms over that proof and preserves #163's single-ID dry-run behavior. A #230+#250 assembly proves same-transaction bare-ID abbreviations for single and set deletion; the single-ID CLI follow-up is local. Dotted native IDs explicitly refuse set deletion pending upstream #7377. | Candidates/open #163, #209–#210, #212, #228–#230; assembly branch has no PR; current integration unchanged |
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. | As-built; mutation unqualified |
 | `gate` | Explicit refusal. | Gate create/check/list/show/resolve/waiter/discovery are unavailable. | Gap; no repair PR |
-| `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. | Gap; no command PR |
+| `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. Draft #254 admits only `label list` through a checked current-Issue detail read; it is unmerged and does not change the pinned build. Label writes and propagation still refuse. | Candidate/open #254 for list; write/propagate gaps remain |
 | `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151/#161/#174 and #193–#194 are unmerged subsets; draft #246 converges the partial-ID route with graph create. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. | Selected/open #151; candidates/open #161, #174, #193–#194, #246 |
 | `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156/#158/#166/#169–#172, #182 (`--id`), #189–#190 (`--ready`), and #203 (`--ready --parent`) are unmerged subsets. Donna selected a future shared Type-filter contract with `count`: omitted Type means the Issue family, `--type X` includes refinements, `--exact-type X` does not, and `--type any` selects all Bead Types. None of that contract has landed in the pinned build. | Selected/open #156; candidates/open #158, #166, #169–#172, #182, #189–#190, #203; Type selection design accepted, implementation unqualified |
 | `merge-slot` | Create/check/acquire/release work in tested flows. | Wrong-holder release refuses with misleading `graph_not_initialized` instead of a holder-mismatch category. | As-built; error-category gap open |
@@ -545,14 +545,20 @@ locally; current-head hosted CI remains pending.
   `/tmp/cleo-read-selector-regression.jsonl`). Four current-head hosted checks
   passed; review is pending. It does not change `bd show` until that command
   uses the new entry point.
-  Stacked draft [#252](https://github.com/donnabox/beads/pull/252) at
+  Stacked draft [#252](https://github.com/donnabox/beads/pull/252) initially at
   `67e864489` resolves bare native Issue IDs or unique abbreviations and
   projects familiar Issue details in one checked read transaction. Its
   selector, read-budget and existing Issue-read regression group passed
   embedded and real shared-server Dolt (22 passing test/subtest events, no
   skips or failures; `/tmp/cleo-detail-selector-fixed-regression.jsonl`).
-  Four current-head hosted checks passed; review is pending. This remains a
-  storage capability until the selected `bd show` command consumes it.
+  Four hosted checks passed at that head. Follow-up head `7d0f05285` routes
+  explicit graph paths through the same checked exact-Issue resolver, so an
+  explicit Memory detail request refuses as non-Issue instead of surfacing a
+  null-scan error. Focused selector and Issue-read workflows passed embedded
+  and real shared-server Dolt (six passing test/subtest events, no skips or
+  failures; `/tmp/cleo-detail-memory-workflow.jsonl`). Current-head hosted CI
+  and review are pending. This remains a storage capability until a command
+  consumes it.
   Stacked draft [#253](https://github.com/donnabox/beads/pull/253) at
   `bb2dda309` returns the Bead record and optional familiar Issue details
   from one checked read snapshot. The earlier local `bd show` assembly read
@@ -576,6 +582,15 @@ locally; current-head hosted CI remains pending.
   events, no skips or failures; `/tmp/cleo-show-snapshot-workflows.jsonl`).
   This follow-up is unpushed and has no PR; it does not qualify every show
   output form or the full assembled graph CLI gate.
+  Draft [#254](https://github.com/donnabox/beads/pull/254) at `03ff8861b`
+  stacks on #252 and admits only `bd label list ID` in graph mode. It uses the
+  checked Issue detail reader for native full/abbreviated IDs and exact graph
+  paths; empty labels return a JSON array and explicit Memory paths refuse.
+  The installed workflow passed embedded and real shared-server Dolt (three
+  passing test/subtest events, no skips or failures;
+  `/tmp/cleo-label-list-qualified-workflow.jsonl`). Focused pure-Go command
+  tests, vet, Markdown links and generated CLI docs checks passed. Hosted CI
+  and review are pending. Other `bd label` forms remain refused.
 - Draft [#209](https://github.com/donnabox/beads/pull/209)–[#210](https://github.com/donnabox/beads/pull/210) and stacked [#212](https://github.com/donnabox/beads/pull/212)
   provide a checked single-Issue linked-delete path: unforced preview refuses
   surviving native dependents; `--force` tombstones incident canonical Links

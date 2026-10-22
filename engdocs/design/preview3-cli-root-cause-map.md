@@ -336,12 +336,18 @@ and real shared-server Dolt (22 passing events, no skips or failures;
 proof, not `bd show` CLI parity; four current-head hosted checks passed and
 review remains pending.
 
-Draft #252 head `67e864489` builds familiar Issue details after resolving a
+Draft #252 initially at `67e864489` builds familiar Issue details after resolving a
 bare native Issue ID or abbreviation in the same checked transaction. The
 focused selector, read-budget and existing Issue-read tests passed embedded
 and real shared-server Dolt (22 passing events, no skips or failures;
-`/tmp/cleo-detail-selector-fixed-regression.jsonl`). The CLI remains
-unchanged; four current-head hosted checks passed and review is pending.
+`/tmp/cleo-detail-selector-fixed-regression.jsonl`). Four hosted checks
+passed at that head. Follow-up head `7d0f05285` makes explicit graph paths
+use the same exact-Issue resolver; an explicit Memory detail read now refuses
+as non-Issue instead of failing on a null backing key. Focused selector and
+Issue-read workflows passed embedded and real shared-server Dolt (six
+passing events, no skips or failures;
+`/tmp/cleo-detail-memory-workflow.jsonl`). Current-head hosted CI and review
+are pending.
 
 Draft #253 head `bb2dda309` closes a remaining snapshot split in the local
 `bd show` assembly: the Bead record and familiar Issue details now come from
@@ -366,6 +372,14 @@ installed legacy-JSON, native-abbreviation and watch workflows passed
 embedded and real shared-server Dolt (nine passing test/subtest events, no
 skips or failures; `/tmp/cleo-show-snapshot-workflows.jsonl`). This follow-up
 is unpushed with no PR and is not a full assembled CLI gate.
+
+Draft #254 at `03ff8861b` is the first command-local consumer of #252's
+selected detail reader beyond `show`: graph-mode `bd label list ID` returns
+the shipping label-array JSON and familiar human labels for a current Issue.
+Its installed full/abbreviated/exact-path and Memory-refusal workflow passed
+embedded and real shared-server Dolt (three passing events, no skips or
+failures; `/tmp/cleo-label-list-qualified-workflow.jsonl`). This is an
+unmerged read-only candidate; label writes and propagation still refuse.
 
 The disposable local assembly at `b3f30c732` merges #230 and #250 with one
 documentation-only conflict; no code conflict or PR merge occurred. Focused
