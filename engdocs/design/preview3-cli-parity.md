@@ -341,8 +341,11 @@ locally; current-head hosted CI remains pending.
   without skips, covering stale refusal, native children, Link replacement,
   same-parent no-op, and explicit refusal of empty detach or combined edits
   (`/tmp/cleo-reparent-cli-qualification-20261022.jsonl`). Generated CLI
-  docs, Markdown links and diff checks passed. Current-head hosted CI is
-  queued and review pending for both PRs; neither is merged or selected.
+  docs, Markdown links and diff checks passed. A broader exact-head pure-Go
+  `TestGraphPreview` run passed in `cmd/bd` and `internal/storage/graphstore`:
+  150 top-level tests, 928 test/subtest passes, no skips or failures
+  (`/tmp/cleo-reparent-broad-20261022.jsonl`). Current-head hosted CI is
+  running or queued and review pending for both PRs; neither is merged or selected.
 - Stacked [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198)
   admit local Issue `create --deps` through one transaction. #197 creates the
   native Issue and dependency edges, canonical Links and source-owned History;
