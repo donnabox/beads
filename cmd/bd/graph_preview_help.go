@@ -307,8 +307,10 @@ pinned Issues omitted unless --all or a filter selects them, quoted rows
 with status and priority, and a line under the header saying Memories are
 not listed. An Issue filter cannot be combined with a non-Issue --type;
 a configured directory label alone does not refuse one, it is simply not
-applied to Memories. Tree output is unavailable. --json returns the ordinary
-Issue-only array; use --format records-json for generic Bead records.`},
+applied to Memories. Tree output is unavailable; --tree=false selects the
+same flat output as --flat. --json and --format json
+return the ordinary Issue-only array; use --format records-json for generic
+Bead records.`},
 		{searchCmd, `Search current graph Issues by title or canonical local Bead ID.
 Results include closed Issues unless --status narrows them. --json returns the
 ordinary counted Issue row array with Scope-relative IDs. Supported filters:
