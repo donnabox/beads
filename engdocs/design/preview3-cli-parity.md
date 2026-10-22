@@ -817,7 +817,10 @@ locally; current-head hosted CI remains pending.
   passes at the current head; create-status, create-fields and create/reopen
   workflows passed with the real shared server at the preceding head. The
   current #245 head passed four hosted checks with two expected skips; reviews
-  for #244–#245 are pending. None of #231–#245 is merged.
+  for #244–#245 are pending. Its exact-head embedded pure-Go
+  `TestGraphPreview` sweep passed 928 test/subtest results with no skips or
+  failures (`/tmp/cleo-graph-batch-245-broad-20261022.jsonl`); this does not
+  qualify the full shared-server graph CLI suite. None of #231–#245 is merged.
 - A broad local assembled `TestGraphPreview` run through #196 completed with
   two failing top-level tests: `--ready=false` expected a now-obsolete
   refusal, and the usability workflow expected `capability_unavailable` for

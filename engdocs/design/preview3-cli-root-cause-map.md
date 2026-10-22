@@ -192,14 +192,18 @@ targets before opening storage. Installed Link, inception-History and
 refusal/rollback checks passed embedded and real shared-server Dolt; its four
 current-head hosted checks passed and review is pending. Stacked drafts
 [#244](https://github.com/donnabox/beads/pull/244) at `7475ce31d` and
-[#245](https://github.com/donnabox/beads/pull/245) at `1b714c699` address a
+[#245](https://github.com/donnabox/beads/pull/245) at `524b90cba` address a
 shared initial-defer representation gap: the graph Issue adapter now retains
 the native UTC/second-precision `defer_until` across single, child, Markdown
 and symbolic batch creates, and the CLI admits ordinary `--defer` and graph
 JSON `defer_until`. Focused storage and installed CLI workflows passed embedded
-and real shared-server Dolt; the new #245 head also removes two obsolete
-defer-refusal test expectations and passed focused create workflows. #245's
-current-head hosted checks passed; reviews remain pending. None of
+and real shared-server Dolt; the new #245 head also removes three obsolete
+defer-refusal test expectations and passed focused create workflows. Its
+exact-head embedded pure-Go `TestGraphPreview` sweep passed 928 test/subtest
+results with no skips or failures
+(`/tmp/cleo-graph-batch-245-broad-20261022.jsonl`); the full shared-server
+graph CLI suite remains unqualified. #245's four current-head hosted checks
+passed; reviews remain pending. None of
 #237–#245 is merged;
 arbitrary update and close items are not part of shipping `create --graph`'s
 schema.
