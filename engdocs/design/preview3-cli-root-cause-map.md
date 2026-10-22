@@ -17,6 +17,16 @@ The transaction primitive exists. Ordinary `bd batch` executes its narrow script
 
 Atomic *commit* is distinct from all-or-nothing *item policy*. `BatchCloser` intentionally skips per-item refusals and commits successful siblings together ([`issueops/batchcloser.go`](../../issueops/batchcloser.go)). Graph `close --claim-next` uses one graph transaction with that policy ([`internal/storage/graphstore/issue_close_batch.go`](../../internal/storage/graphstore/issue_close_batch.go)); ordinary multi-ID graph `close` loops over separate single-Issue transactions ([`cmd/bd/graph_preview_workflow.go`](../../cmd/bd/graph_preview_workflow.go)). Shipping v1.3.1 direct `bd close A MISSING` pre-resolves both arguments and changes nothing, while its ordinary proxied path has per-item outcomes. Matching the tested direct behavior for a missing selector is narrower than changing all close refusals to rollback.
 
+Shipping multi-ID `bd update` has a different contract: it applies each ID
+separately, retains a successful update when a later ID is missing, and exits
+nonzero for the partial failure. The shipping source and parity test pin this
+behavior ([`cmd/bd/update.go`](../../cmd/bd/update.go),
+[`cmd/bd/write_verbs_parity_test.go`](../../cmd/bd/write_verbs_parity_test.go)).
+Graph multi-ID update therefore needs checked per-Issue writes and explicit
+partial-result reporting, not a blanket all-or-nothing batch policy. A
+guard-only failure has its own exit-code rule; copying `bd batch` rollback
+would change shipping semantics.
+
 This is a selected policy as well as a transaction-composition gap. Draft
 [#64](https://github.com/donnabox/beads/pull/64) deliberately introduced
 Preview 2 multi-Issue close with partial success: `bd close A MISSING` leaves
