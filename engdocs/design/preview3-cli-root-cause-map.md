@@ -45,8 +45,13 @@ Shipping `bd create --graph` is a separate batch contract from Markdown
 `bd create --file`. Its JSON plan gives every node a symbolic key; inline
 dependencies resolve that key before treating it as an existing Issue ID,
 and plan edges can refer to keys on either end
-([`cmd/bd/graph_apply.go`](../../cmd/bd/graph_apply.go)). The graph-mode
-Markdown batch in #201–#202 creates Issues and local Links atomically, but its
+([`cmd/bd/graph_apply.go`](../../cmd/bd/graph_apply.go)). The shipping plan
+schema has no arbitrary update or close items. It does have an
+`assign_after_create` node option that updates the newly created Issue's
+assignee later in the same transaction. That bounded form remains a Preview 3
+gap; generic update/close policy belongs to the separate `bd batch` contract.
+The graph-mode Markdown batch in #201–#202 creates Issues and local Links
+atomically, but its
 headings have no caller-assigned key and its Dependency targets must already
 exist ([`internal/storage/graphstore/issue_create_batch.go`](../../internal/storage/graphstore/issue_create_batch.go)). Thus that batch proof does not close the
 same-plan graph-JSON gap. The next storage proof should allocate and validate
@@ -111,8 +116,8 @@ existing local Issue target. The target resolves before native writes; alias
 duplicates and missing targets refuse without partial state. Its injected
 post-native-edge rollback, caller-request immutability check and installed CLI
 workflows passed embedded and real shared-server Dolt. Existing sources,
-partial or external targets, metadata
-and update/close items remain unavailable.
+partial or external targets, metadata and deferred assignment remain
+unavailable.
 
 Stacked draft [#234](https://github.com/donnabox/beads/pull/234) at
 `6f68b2d8a` admits initial Issue text, references, assignment, owner, estimate,
@@ -161,8 +166,8 @@ installed CLI workflows passed embedded and real shared-server Dolt without
 skips. Native metadata-changing re-adds can mint a version despite reporting
 no new edge, so they and unmapped native edges remain explicit refusals.
 #239's four current-head hosted checks passed; review is pending. None of
-#237–#239 is merged; arbitrary update/close items remain outside this bounded
-proof.
+#237–#239 is merged; deferred `assign_after_create` remains outside this
+bounded proof.
 
 Test-only draft [#236](https://github.com/donnabox/beads/pull/236) at
 `5fbf1cb91` pins the different *new-source* inception rule: native create plus
