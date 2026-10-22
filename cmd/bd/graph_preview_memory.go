@@ -47,6 +47,9 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if graphPreviewLinkPinFlagsChanged(cmd) && !strings.HasPrefix(path, "links/") {
 		return graphFailure("invalid_selector", "endpoint revision flags require an informational Link", 2)
 	}
+	if cmd.Flags().Changed("parent") {
+		return runGraphPreviewReparentIssue(cmd, args[0])
+	}
 	if cmd.Flags().Changed("from-revision") {
 		return runGraphPreviewHistoricalUpdate(cmd, path)
 	}

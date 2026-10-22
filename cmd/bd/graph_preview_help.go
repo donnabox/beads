@@ -184,7 +184,11 @@ preserves the existing pin. Pins can combine atomically with properties and
 metadata. Owned-source pins remain unavailable. Native Dependency properties and metadata are not editable here. Issue scalar
 edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
-unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},
+unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.
+On a fresh graph workspace, bd update CHILD --parent PARENT replaces the
+native parent-child edge and its canonical Link in one checked write.
+The parent must be a nonempty local Issue; detaching a dotted-ID child and
+combining --parent with other edits remain unavailable.`},
 		{deleteCmd, `For an unreferenced Memory, bd delete ID previews the
 deletion without writing. Apply with --force; --if-revision TOKEN optionally
 rejects stale state. Referenced Memories refuse; graph deletion does not cascade.`},
