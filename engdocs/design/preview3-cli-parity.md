@@ -148,7 +148,7 @@ locally; current-head hosted CI remains pending.
 | `state` | Read-only value and list forms work. | `set-state` does not; JSON may expose native rather than canonical Issue ID. Draft #249 proves abbreviated native Issue IDs for `state list`, but is unmerged. | Candidate/open #249; current integration unchanged |
 | `tag` | Explicit refusal. | Label shortcut and equivalent graph `update --add-label` are unavailable at this commit. #195–#196 provide the checked label writer; stacked #216 admits the `tag` shorthand and passed a focused both-engine workflow, with hosted CI and review pending. | Candidate/open #216 on #196; current integration unchanged |
 | `todo` | Bare/list/add/done work in tested flows. | Multi-ID done can partly succeed while exiting zero, matching shipping; graph list is bounded. | As-built; no parity PR |
-| `update` | Admitted single-Issue, Memory and informational-Link edits work. | Multi-ID, Issue type/status/labels/parent/conditional-status, description file/stdin and forced assignee transfer refuse at this commit; JSON shape differs. Shipping v1.3.1 multi-ID update is per-ID: successful edits survive a later missing ID and the command exits nonzero, so it must not inherit `bd batch` rollback policy. #152/#164 and stacked #183–#188/#191–#192/#195–#196 repair subsets. Draft #222–#223 admit a checked parent-only move; stacked #224–#225 prove a combined parent-plus-scalar edit. Draft #249 supplies checked abbreviated Issue selection and #250 routes scalar `bd update` through it; other update forms still pre-read literal paths. Empty detach remains unresolved. None changes the pinned integration behavior. | Selected/open #152; candidates/open #164, #183–#188, #191–#192, #195–#196, #222–#225, #249–#250 |
+| `update` | Admitted single-Issue, Memory and informational-Link edits work. | Multi-ID, Issue type/status/labels/parent/conditional-status, description file/stdin and forced assignee transfer refuse at this commit; JSON shape differs. Shipping v1.3.1 multi-ID update is per-ID: successful edits survive a later missing ID and the command exits nonzero, so it must not inherit `bd batch` rollback policy. #152/#164 and stacked #183–#188/#191–#192/#195–#196 repair subsets. Draft #222–#223 admit a checked parent-only move; stacked #224–#225 prove a combined parent-plus-scalar edit. Draft #249 supplies checked abbreviated Issue selection and #250 routes scalar `bd update` through it; other update forms still pre-read literal paths. Draft #255 admits checked per-ID scalar/property edits for multiple Issues, with partial success and explicit refusals for shared guards and other forms. Empty detach remains unresolved. None changes the pinned integration behavior. | Selected/open #152; candidates/open #164, #183–#188, #191–#192, #195–#196, #222–#225, #249–#250, #255 |
 
 ## Views & Reports: command-by-command release-note draft
 
@@ -419,6 +419,20 @@ locally; current-head hosted CI remains pending.
   expected server-only skip and no failures
   (`/tmp/cleo-integrated-reparent-broad.jsonl`). These results qualify the
   local composition only; they do not select or merge either PR.
+- Stacked draft [#255](https://github.com/donnabox/beads/pull/255) at
+  `3700b0bf1` admits multiple Issue field/property edits as checked per-ID
+  writes. A missing ID between valid IDs leaves both successful edits and
+  their retained predecessors intact, reports the requested missing selector,
+  and exits nonzero. A shared `--if-revision`, multi-ID reparent/retype/claim,
+  historical update and property patch refuse before writing. The installed
+  workflow passed embedded and real shared-server Dolt (two test/subtest
+  passes, no skips per engine; `/tmp/cleo-multi-update-embedded-r2-20261022.jsonl`,
+  `/tmp/cleo-multi-update-server-20261022.jsonl`). Its exact-head pure-Go graph
+  CLI sweep passed 929 test/subtest results with no skips or failures
+  (`/tmp/cleo-multi-update-graph-sweep-r2-20261022.jsonl`). Hosted CI and
+  review are pending. This PR is stacked on #225 and is not in the pinned
+  integration; its graph JSON array of successful mutations still needs a
+  later shipping output-shape comparison.
 - Stacked [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198)
   admit local Issue `create --deps` through one transaction. #197 creates the
   native Issue and dependency edges, canonical Links and source-owned History;
@@ -838,7 +852,8 @@ locally; current-head hosted CI remains pending.
   existing-target Markdown batches in #201–#202. #231 adds an unmerged
   storage-only symbolic graph batch proof. Full graph-JSON batch relations,
   `delete` multi-ID/cascade/from-file and linked CLI policy (draft #230,
-  unmerged), Issue `update` multi-ID/parent,
+  unmerged), Issue `update` multi-ID/parent (drafts #225 and #255 cover
+  bounded subsets but are unmerged),
   remaining `list --ready` combinations, and broader Link selector forms
   remain work to scope, implement and qualify.
   Some need a graph transaction primitive, not just a CLI flag. Their explicit
