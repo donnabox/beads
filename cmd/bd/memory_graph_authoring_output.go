@@ -78,16 +78,17 @@ func memoryLinkProblem(cmd *cobra.Command, renderer *clioutput.MutationRenderer,
 		}
 		return &exitError{Code: 1}
 	}
-	if len(data) > 0 {
-		if err := writeMemoryLinkDocument(cmd, data, state); err != nil {
-			return err
-		}
-	}
 	fmt.Fprintf(cmd.ErrOrStderr(), "%s: %s", code, message) //nolint:gosec // G705: CLI stderr diagnostics are not HTML.
 	if state.applied && code != "outcome_unknown" {
 		fmt.Fprintf(cmd.ErrOrStderr(), "; operation completed; inspect before retry; effect=%v", memoryLinkEffect(state))
 	}
 	fmt.Fprintln(cmd.ErrOrStderr())
+	// Keep the original refusal/effect diagnostic even if stdout delivery fails.
+	if len(data) > 0 {
+		if err := writeMemoryLinkDocument(cmd, data, state); err != nil {
+			return err
+		}
+	}
 	return &exitError{Code: status}
 }
 

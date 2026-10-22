@@ -139,6 +139,9 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			// Invalid properties/selectors are rejected before the writer. Read-only
 			// refusal also preserves the exact source postimage.
 			before = snapshot("d")
+			for _, flag := range []string{"title", "body", "status"} {
+				refuse("invalid_properties", 2, "memory", "reference", "d", "--to=b", "--"+flag+"="+string([]byte{0xff}))
+			}
 			refuse("invalid_properties", 2, "memory", "reference", "d", "--to=b", "--title=flag", "--properties", `{"title":"duplicate"}`)
 			refuse("invalid_properties", 2, "memory", "reference", "d", "--to=b", "--properties", `{"n":9007199254740993}`)
 			refuse("invalid_selector", 2, "memory", "reference", "d", "--to=b", "--output-format=tree")
