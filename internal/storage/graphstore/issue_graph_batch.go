@@ -34,6 +34,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 		sourcePath          string
 		targetKey, targetID string
 		dependency          resolvedIssueCreateDependency
+		preexisting         bool
 	}
 	var edges []edge
 	creates := make(map[string]*publicops.CreateItem)
@@ -113,8 +114,8 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				if err != nil {
 					return err
 				}
-				if source.Type != issueType || len(source.Owned) >= PreviewOwnedLinkLimit {
-					return fmt.Errorf("%w: graph batch existing source is not a local Issue with Link capacity", storage.ErrValidation)
+				if source.Type != issueType {
+					return fmt.Errorf("%w: graph batch existing source is not a local Issue", storage.ErrValidation)
 				}
 				if _, known := existingSources[path]; !known {
 					var nativeRevision int64
@@ -147,16 +148,6 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				resolved.Target = publicops.Ref{ID: target.Properties.ID}
 				plan.Items[edges[index].index].DepAdd = &resolved
 			}
-			if edges[index].sourceID != "" && edges[index].targetID != "" {
-				var existing int
-				err := tx.QueryRowContext(ctx, `SELECT 1 FROM dependencies WHERE issue_id=? AND depends_on_issue_id=? AND depends_on_wisp_id IS NULL AND depends_on_external IS NULL LIMIT 1`, edges[index].sourceID, edges[index].dependency.targetID).Scan(&existing)
-				if err == nil {
-					return fmt.Errorf("%w: graph batch re-add of an existing Dependency requires an explicit re-add policy", ErrCapabilityUnavailable)
-				}
-				if err != sql.ErrNoRows {
-					return err
-				}
-			}
 			target := "key:" + edges[index].targetKey
 			if edges[index].targetID != "" {
 				target = "id:" + edges[index].dependency.targetID
@@ -178,11 +169,32 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				return err
 			}
 			edges[index].dependency.typeURL = typeURL
+			if edges[index].sourceID != "" && edges[index].targetID != "" {
+				var nativeID, nativeType, metadata, thread string
+				err := tx.QueryRowContext(ctx, `SELECT id,type,metadata,thread_id FROM dependencies WHERE issue_id=? AND depends_on_issue_id=? AND depends_on_wisp_id IS NULL AND depends_on_external IS NULL LIMIT 1`, edges[index].sourceID, edges[index].dependency.targetID).Scan(&nativeID, &nativeType, &metadata, &thread)
+				if err != nil && err != sql.ErrNoRows {
+					return err
+				}
+				if err == nil {
+					if nativeType != string(edges[index].dependency.nativeType) || metadata != "{}" || thread != "" {
+						return fmt.Errorf("%w: graph batch existing Dependency is not a change-free canonical Link re-add", ErrCapabilityUnavailable)
+					}
+					var linkPath string
+					if err := tx.QueryRowContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='dependency' AND backing_key=? AND allocation_state='live'`, nativeID).Scan(&linkPath); err != nil {
+						return fmt.Errorf("%w: graph batch existing Dependency has no canonical Link", ErrCapabilityUnavailable)
+					}
+					link, err := s.currentLinkInTx(ctx, tx, linkPath)
+					if err != nil || link.Source != graph.CanonicalURL(s.ScopeURL(), edges[index].sourcePath) || link.Target != graph.CanonicalURL(s.ScopeURL(), edges[index].dependency.targetPath) || link.Type != typeURL {
+						return fmt.Errorf("%w: graph batch existing Dependency is not a matching canonical Link", ErrCapabilityUnavailable)
+					}
+					edges[index].preexisting = true
+				}
+			}
 		}
 		for path, source := range existingSources {
 			count := 0
 			for _, item := range edges {
-				if item.sourcePath == path {
+				if item.sourcePath == path && !item.preexisting {
 					count++
 				}
 			}
@@ -239,6 +251,12 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 		bySource := make(map[string][]resolvedIssueCreateDependency)
 		byExistingSource := make(map[string][]existingBatchEdge)
 		for _, item := range edges {
+			if item.preexisting {
+				if item.index >= len(applied.Items) || applied.Items[item.index].Kind != publicops.ItemDepAdd || applied.Items[item.index].Changed || applied.Items[item.index].IssueID != item.sourceID {
+					return fmt.Errorf("%w: graph batch canonical re-add changed a native Dependency", ErrInvalidStore)
+				}
+				continue
+			}
 			dependency := item.dependency
 			if item.targetKey != "" {
 				dependency.targetID = applied.Keys[item.targetKey]
@@ -270,6 +288,18 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			source := existingSources[path]
 			if err := s.mapExistingBatchSourceInTx(ctx, tx, path, source, plan.Actor, dependencies, applied); err != nil {
 				return err
+			}
+		}
+		for path, source := range existingSources {
+			if len(byExistingSource[path]) != 0 {
+				continue
+			}
+			var currentRevision int64
+			if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, source.record.Properties.ID).Scan(&currentRevision); err != nil {
+				return err
+			}
+			if currentRevision != source.nativeRevision {
+				return fmt.Errorf("%w: graph batch change-free re-add changed source History", ErrInvalidStore)
 			}
 		}
 		return checkCurrentReadBytes(ctx, tx)
