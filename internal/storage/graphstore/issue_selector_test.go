@@ -11,6 +11,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/workapi"
 )
 
 func TestIssueNativeSelectorHeartbeatStateAndReclaim(t *testing.T) {
@@ -90,6 +91,10 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 			if err != nil || !reflect.DeepEqual(mixed, created) {
 				t.Fatalf("abbreviated mixed read selected wrong Issue: %+v %v", mixed, err)
 			}
+			detail, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{})
+			if err != nil || detail == nil || detail.ID != "beads/source" || detail.Revision != created.Revision || detail.Title != created.Properties.Title {
+				t.Fatalf("abbreviated detail read selected wrong Issue: %+v %v", detail, err)
+			}
 			memory, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Notes"})
 			if err != nil {
 				t.Fatal(err)
@@ -126,9 +131,16 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 			if _, err := s.ReadBeadSelected(ctx, selector); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("bare mixed read hid an Issue/Memory collision: %v", err)
 			}
+			if _, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("bare detail read hid an Issue/Memory collision: %v", err)
+			}
 			explicit, err := s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/source"})
 			if err != nil || explicit.ID != created.ID || explicit.Properties.Title != title {
 				t.Fatalf("explicit path did not stay exact: %+v %v", explicit, err)
+			}
+			detail, err = s.ShowIssueDetailsSelected(ctx, IssueSelector{Path: "beads/source"}, workapi.DetailOptions{})
+			if err != nil || detail == nil || detail.ID != "beads/source" || detail.Title != title {
+				t.Fatalf("explicit detail path did not stay exact: %+v %v", detail, err)
 			}
 			mixed, err = s.ReadBeadSelected(ctx, IssueSelector{Path: "beads/a3f8"})
 			if err != nil {
