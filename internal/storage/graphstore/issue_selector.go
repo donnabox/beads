@@ -41,7 +41,8 @@ func validateIssueSelector(selector IssueSelector) error {
 // Resolve against the checked live catalog in the caller's transaction. A
 // bare spelling that also names a different graph path is ambiguous, even if
 // that path is a Memory or a retained deletion. Explicit paths remain exact.
-func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
+// This exact pass is also the first stage of native abbreviation resolution.
+func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
 	if selector.NativeID == "" {
 		var backing string
 		err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, selector.Path).Scan(&backing)
@@ -102,10 +103,15 @@ func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, se
 	return path, issue, err
 }
 
-// Native dependency operands accept shipping Issue abbreviations. Keep
-// selection in the writer's transaction: a CLI lookup followed by a write
-// could use a different Issue if the live catalog changed between calls.
-// Explicit beads/PATH selectors never reach this fallback.
+// Every bare native Issue selector accepts shipping Issue abbreviations.
+// Callers resolve inside their own transaction, so selection and any write
+// observe the same live catalog. Explicit beads/PATH stays exact.
+func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
+	return s.resolveDependencyOperandInTx(ctx, tx, selector.Path, selector.NativeID)
+}
+
+// Dependency requests predate IssueSelector as a request field. Keep this
+// adapter until those request types are migrated to the common selector.
 func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, path, nativeID string) (string, IssueRecord, error) {
 	if nativeID == "" {
 		issue, err := s.requireIssueInTx(ctx, tx, path)
@@ -115,7 +121,7 @@ func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, pa
 	case "", "null", "undefined", "none", "nil":
 		return "", IssueRecord{}, fmt.Errorf("%w: refusing missing-value token %q as an Issue ID", storage.ErrValidation, nativeID)
 	}
-	selected, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: nativeID})
+	selected, issue, err := s.resolveExactLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: nativeID})
 	if err == nil && issue.Properties.ID == nativeID {
 		return selected, issue, nil
 	}
