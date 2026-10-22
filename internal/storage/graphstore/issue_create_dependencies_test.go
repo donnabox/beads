@@ -81,6 +81,35 @@ func TestCreateIssueWithDependenciesMapsBothDirectionsAtomically(t *testing.T) {
 			if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
 				t.Fatalf("cycle refusal left native or graph create state: %v", err)
 			}
+			abbreviatedTarget := plainIssue("Abbreviated target")
+			abbreviatedTarget.Issue.ID = "exp-a3f8e9"
+			target, err := store.CreateIssue(ctx, "beads/abbreviated-target", abbreviatedTarget)
+			if err != nil {
+				t.Fatal(err)
+			}
+			partial := IssueCreateDependency{Target: IssueSelector{Path: "beads/a3f8", NativeID: "a3f8"}, Type: types.DepBlocks}
+			createdByPrefix, err := store.CreateIssueWithDependencies(ctx, "beads/abbreviated-child", plainIssue("Abbreviated child"), []IssueCreateDependency{partial})
+			if err != nil || len(createdByPrefix.Owned) != 1 {
+				t.Fatalf("partial dependency target was not resolved in create transaction: %+v %v", createdByPrefix, err)
+			}
+			var linked LinkRecord
+			if err := json.Unmarshal(createdByPrefix.Owned[0], &linked); err != nil || linked.Target != target.ID {
+				t.Fatalf("partial dependency selected wrong target: %+v %v", linked, err)
+			}
+			ambiguousTarget := plainIssue("Second abbreviated target")
+			ambiguousTarget.Issue.ID = "exp-a3f8f0"
+			if _, err := store.CreateIssue(ctx, "beads/second-abbreviated-target", ambiguousTarget); err != nil {
+				t.Fatal(err)
+			}
+			beforeAmbiguous := workflowState(t, ctx, store)
+			if _, err := store.CreateIssueWithDependencies(ctx, "beads/ambiguous-child", plainIssue("Ambiguous child"), []IssueCreateDependency{partial}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(beforeAmbiguous, workflowState(t, ctx, store)) {
+				t.Fatalf("ambiguous abbreviation changed create state: %v", err)
+			}
+			explicit := IssueCreateDependency{Target: IssueSelector{Path: "beads/abbreviated-target"}, Type: types.DepBlocks}
+			createdExplicit, err := store.CreateIssueWithDependencies(ctx, "beads/explicit-child", plainIssue("Explicit child"), []IssueCreateDependency{explicit})
+			if err != nil || len(createdExplicit.Owned) != 1 {
+				t.Fatalf("explicit target path should stay exact despite native abbreviation ambiguity: %+v %v", createdExplicit, err)
+			}
 		})
 	}
 }
