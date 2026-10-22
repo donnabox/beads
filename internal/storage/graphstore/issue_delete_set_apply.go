@@ -16,6 +16,7 @@ import (
 // policy. Every named path is resolved and checked in the deleting transaction.
 type IssueDeleteSetRequest struct {
 	Paths             []string
+	Selectors         []IssueSelector
 	ExpectedRevisions map[string]string
 	Unconditional     bool
 	Cascade           bool
@@ -39,9 +40,21 @@ func (s *Store) DeleteIssueSetWithIncidentLinks(ctx context.Context, req IssueDe
 	if !utf8.ValidString(req.Actor) {
 		return IssueDeleteSetResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
 	}
-	namedPaths := make(map[string]bool, len(req.Paths))
+	if len(req.Paths) != 0 && len(req.Selectors) != 0 {
+		return IssueDeleteSetResult{}, fmt.Errorf("%w: delete paths and Issue selectors cannot be combined", storage.ErrValidation)
+	}
+	if len(req.Selectors) > PreviewSnapshotLimit {
+		return IssueDeleteSetResult{}, fmt.Errorf("%w: delete request exceeds %d Issue selectors", ErrLimitExceeded, PreviewSnapshotLimit)
+	}
+	namedPaths := make(map[string]bool, len(req.Paths)+len(req.Selectors))
 	for _, path := range req.Paths {
 		namedPaths[path] = true
+	}
+	for _, selector := range req.Selectors {
+		if err := validateIssueSelector(selector); err != nil {
+			return IssueDeleteSetResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
+		}
+		namedPaths[selector.Path] = true
 	}
 	for path, revision := range req.ExpectedRevisions {
 		if !namedPaths[path] {
@@ -57,26 +70,49 @@ func (s *Store) DeleteIssueSetWithIncidentLinks(ctx context.Context, req IssueDe
 		transact = func(ctx context.Context, fn func(*sql.Tx) error) error { return s.withTx(ctx, false, fn) }
 	}
 	err := transact(ctx, func(tx *sql.Tx) error {
-		plan, err := s.planIssueDeleteSetInTx(ctx, tx, req.Paths, req.Cascade)
+		paths := req.Paths
+		guards := req.ExpectedRevisions
+		if len(req.Selectors) != 0 {
+			paths = make([]string, 0, len(req.Selectors))
+			guards = make(map[string]string, len(req.ExpectedRevisions))
+			seen := make(map[string]bool, len(req.Selectors))
+			for _, selector := range req.Selectors {
+				path, _, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+				if err != nil {
+					return err
+				}
+				if !seen[path] {
+					seen[path] = true
+					paths = append(paths, path)
+				}
+				if guard := req.ExpectedRevisions[selector.Path]; guard != "" {
+					if existing := guards[path]; existing != "" && existing != guard {
+						return fmt.Errorf("%w: conflicting revision guards for Issue %s", storage.ErrValidation, path)
+					}
+					guards[path] = guard
+				}
+			}
+		}
+		plan, err := s.planIssueDeleteSetInTx(ctx, tx, paths, req.Cascade)
 		if err != nil {
 			return err
 		}
 		byPath := make(map[string]IssueRecord, len(plan.Issues))
-		namedIDs := make([]string, 0, len(req.Paths))
-		namedSet := make(map[string]bool, len(req.Paths))
+		namedIDs := make([]string, 0, len(paths))
+		namedSet := make(map[string]bool, len(paths))
 		for _, issue := range plan.Issues {
 			byPath[strings.TrimPrefix(issue.ID, s.ScopeURL())] = issue
 			if strings.Contains(issue.Properties.ID, ".") {
 				return fmt.Errorf("%w: dotted Issue ID citation rewrite is not qualified for composed deletion", ErrCapabilityUnavailable)
 			}
 		}
-		for _, path := range req.Paths {
+		for _, path := range paths {
 			if namedSet[path] {
 				continue
 			}
 			namedSet[path] = true
 			issue := byPath[path]
-			if err := checkRevisionGuard(req.ExpectedRevisions[path], req.Unconditional, issue.Revision, !req.Preview, "Issue"); err != nil {
+			if err := checkRevisionGuard(guards[path], req.Unconditional, issue.Revision, !req.Preview, "Issue"); err != nil {
 				return err
 			}
 			namedIDs = append(namedIDs, issue.Properties.ID)

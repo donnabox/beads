@@ -117,6 +117,97 @@ func TestIssueDeleteSetComposesNativeAndGraphWrites(t *testing.T) {
 	}
 }
 
+func TestIssueDeleteSetResolvesEverySelectorBeforePlanning(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, backend)
+			firstRequest := plainIssue("First")
+			firstRequest.Issue.ID = "exp-a3f8e9"
+			_, err := s.CreateIssue(ctx, "beads/first", firstRequest)
+			if err != nil {
+				t.Fatal(err)
+			}
+			secondRequest := plainIssue("Second")
+			secondRequest.Issue.ID = "exp-b7c4d2"
+			if _, err := s.CreateIssue(ctx, "beads/second", secondRequest); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/context", Title: "Context"}); err != nil {
+				t.Fatal(err)
+			}
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{
+				Path: "links/context", SourcePath: "beads/first", TargetPath: "beads/context", TypeURL: RelatedTypeURL(s.ScopeURL()),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			request := IssueDeleteSetRequest{
+				Selectors:     []IssueSelector{{Path: "beads/a3f8", NativeID: "a3f8"}, {Path: "beads/second"}},
+				Unconditional: true, Actor: "deleter", Preview: true,
+			}
+			before := workflowState(t, ctx, s)
+			preview, err := s.DeleteIssueSetWithIncidentLinks(ctx, request)
+			if err != nil || !preview.Preview || preview.Deleted || len(preview.Issues) != 2 ||
+				!reflect.DeepEqual(preview.IncidentLinkIDs, []string{link.Link.ID}) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("resolved preview: %+v %v", preview, err)
+			}
+			missing := request
+			missing.Selectors = append(append([]IssueSelector{}, request.Selectors...), IssueSelector{Path: "beads/missing", NativeID: "missing"})
+			missing.Preview = false
+			if got, err := s.DeleteIssueSetWithIncidentLinks(ctx, missing); !errors.Is(err, ErrNotFound) || !reflect.ValueOf(got).IsZero() ||
+				!reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("missing set member changed state: %+v %v", got, err)
+			}
+			stale := request
+			stale.Preview = false
+			stale.Unconditional = false
+			second, err := s.ShowIssue(ctx, "beads/second")
+			if err != nil {
+				t.Fatal(err)
+			}
+			stale.ExpectedRevisions = map[string]string{"beads/a3f8": "stale", "beads/second": second.Revision}
+			if got, err := s.DeleteIssueSetWithIncidentLinks(ctx, stale); !errors.Is(err, ErrConflict) || !reflect.ValueOf(got).IsZero() ||
+				!reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("stale set member changed state: %+v %v", got, err)
+			}
+			otherRequest := plainIssue("Other")
+			otherRequest.Issue.ID = "exp-a3f8f0"
+			if _, err := s.CreateIssue(ctx, "beads/other", otherRequest); err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if got, err := s.DeleteIssueSetWithIncidentLinks(ctx, missing); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() ||
+				!reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("ambiguous set member changed state: %+v %v", got, err)
+			}
+			explicit := request
+			explicit.Selectors = []IssueSelector{{Path: "beads/a3f8e"}}
+			if got, err := s.DeleteIssueSetWithIncidentLinks(ctx, explicit); !errors.Is(err, ErrNotFound) || !reflect.ValueOf(got).IsZero() ||
+				!reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("explicit path resolved an abbreviation or changed state: %+v %v", got, err)
+			}
+			aliases := request
+			aliases.Selectors = []IssueSelector{{Path: "beads/a3f8e", NativeID: "a3f8e"}, {Path: "beads/first"}}
+			aliases.ExpectedRevisions = map[string]string{"beads/a3f8e": "first-guard", "beads/first": "second-guard"}
+			if got, err := s.DeleteIssueSetWithIncidentLinks(ctx, aliases); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() ||
+				!reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("conflicting guards for aliases changed state: %+v %v", got, err)
+			}
+			request.Selectors[0] = IssueSelector{Path: "beads/a3f8e", NativeID: "a3f8e"}
+			request.Preview = false
+			deleted, err := s.DeleteIssueSetWithIncidentLinks(ctx, request)
+			if err != nil || !deleted.Deleted || len(deleted.Issues) != 2 || len(deleted.IncidentLinkIDs) != 1 {
+				t.Fatalf("resolved set delete: %+v %v", deleted, err)
+			}
+			for _, path := range []string{"beads/first", "beads/second"} {
+				if _, err := s.ShowIssue(ctx, path); !errors.Is(err, ErrGone) {
+					t.Fatalf("%s was not deleted: %v", path, err)
+				}
+			}
+		})
+	}
+}
+
 func TestIssueDeleteSetNamedDependentPair(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {

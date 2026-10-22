@@ -429,7 +429,9 @@ bd reopen work review --reason 'Follow-up needed'
 storage; `--force` applies it. An Issue set can also be selected with multiple
 IDs or `--from-file PATH`. `--cascade` includes dependent Issues, while
 `--dry-run` keeps a Memory or Issue request read-only even beside `--force`.
-Every named Issue must exist before the set changes. Dotted native Issue IDs
+Bare Issue IDs may use an unambiguous native abbreviation; explicit
+`beads/PATH` selectors remain exact. All named Issues resolve in the deleting
+transaction before the set changes. Dotted native Issue IDs
 currently refuse set deletion while citation rewriting is being qualified.
 `bd forget ID` applies Memory deletion
 directly and does not accept Issues. An optional `--if-revision TOKEN` refuses

@@ -33,30 +33,30 @@ func runGraphPreviewDeleteIssueSet(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return graphFailure("invalid_selector", "delete requires at least one Issue ID or beads/PATH", 2)
 	}
-	paths := make([]string, 0, len(args))
-	seen := make(map[string]bool, len(args))
+	selectors := make([]graphstore.IssueSelector, 0, len(args))
+	seen := make(map[graphstore.IssueSelector]bool, len(args))
 	for _, input := range args {
 		selector, err := graphPreviewWritableIdentity(input)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		path, err := graphPreviewBeadSelector(selector)
+		selected, err := graphPreviewIssueSelector(selector)
 		if err != nil {
-			return err
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if !seen[path] {
-			seen[path] = true
-			paths = append(paths, path)
+		if !seen[selected] {
+			seen[selected] = true
+			selectors = append(selectors, selected)
 		}
 	}
-	if len(paths) > graphstore.PreviewSnapshotLimit {
+	if len(selectors) > graphstore.PreviewSnapshotLimit {
 		return graphFailure("limit_exceeded", fmt.Sprintf("delete exceeds %d Issue selectors", graphstore.PreviewSnapshotLimit), 2)
 	}
 	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
 	if err != nil {
 		return err
 	}
-	if revision != "" && len(paths) != 1 {
+	if revision != "" && len(selectors) != 1 {
 		return graphFailure("invalid_selector", "--if-revision requires exactly one Issue", 2)
 	}
 	force, _ := cmd.Flags().GetBool("force")
@@ -70,10 +70,10 @@ func runGraphPreviewDeleteIssueSet(cmd *cobra.Command, args []string) error {
 	}
 	expected := make(map[string]string)
 	if revision != "" {
-		expected[paths[0]] = revision
+		expected[selectors[0].Path] = revision
 	}
 	request := graphstore.IssueDeleteSetRequest{
-		Paths: paths, ExpectedRevisions: expected, Unconditional: unconditional,
+		Selectors: selectors, ExpectedRevisions: expected, Unconditional: unconditional,
 		Force: force, Cascade: cascade, Preview: preview, Actor: getActorWithGit(),
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {

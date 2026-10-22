@@ -5,6 +5,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -82,6 +83,24 @@ func TestGraphPreviewIssueDeleteSetWorkflow(t *testing.T) {
 			}
 			refuse("gone", "show", "file-first")
 			refuse("gone", "show", "file-second")
+
+			seed := graphMixedResult[graphstore.IssueRecord](t, call("create", "Seed", "--id", "beads/seed"))
+			prefix, _, ok := strings.Cut(seed.Properties.ID, "-")
+			if !ok {
+				t.Fatalf("fixture needs a configured Issue prefix: %q", seed.Properties.ID)
+			}
+			abbreviated := graphMixedResult[graphstore.IssueRecord](t, call("create", "Abbreviated", "--id", prefix+"-a3f8e9"))
+			call("create", "Companion", "--id", "beads/companion")
+			partialPreview := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "a3f8", "companion"))
+			if !partialPreview.Preview || partialPreview.Deleted || len(partialPreview.Issues) != 2 {
+				t.Fatalf("abbreviated set preview: %+v", partialPreview)
+			}
+			partialDelete := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "a3f8", "companion", "--force"))
+			if !partialDelete.Deleted || len(partialDelete.Issues) != 2 {
+				t.Fatalf("abbreviated set deletion: %+v", partialDelete)
+			}
+			refuse("gone", "show", abbreviated.Properties.ID)
+			refuse("gone", "show", "companion")
 		})
 	}
 }
