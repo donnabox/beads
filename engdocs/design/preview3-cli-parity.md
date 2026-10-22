@@ -112,7 +112,7 @@ locally; current-head hosted CI remains pending.
 
 ## Working With Issues: command-by-command release-note draft
 
-| Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (Oct 21) |
+| Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
 | `assign` | Tested core works. | Graph IDs may be `beads/ID`; live-claim takeover was not requalified in this audit. Graph help describes the wrong revision-token shape and stale-guard exit code. | As-built; no parity PR |
 | `children` | Immediate children work. | `--pretty` refuses; explicit-ID parents can yield surprising child and dependency IDs (P1). | Candidate/open #180; failed-job retry queued |
@@ -121,7 +121,7 @@ locally; current-head hosted CI remains pending.
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. | As-built; no parity PR |
 | `create` | Omitted `--type` creates a task; admitted inline Issue and Memory forms work. | Explicit-ID child identity is P1 at the pinned commit; #180 fixes bare-ID alignment but is unmerged. Initial status, atomic `--deps`, dry run and several file/batch/routing forms refuse at that commit. #181 fixes initial status, #197–#198 add local atomic `--deps`, #199–#200 combine it with `--parent`, and #201–#202 admit Markdown dependencies on existing local Issues as unmerged candidates; #152 and #159 are other subsets. External targets, partial dependency IDs, same-batch target references and graph-JSON batch relationships remain gaps. | Selected/open #152; candidates/open #159, #180–#181, #197–#202; #180 failed-job retry queued |
 | `create-form` | Explicit refusal. | Interactive Issue creation is unavailable. | Gap; no repair PR |
-| `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. Draft #209 proves opt-in linked deletion in one transaction; #210 adds a checked unforced preview; stacked draft #212 wires single-Issue CLI preview and `--force`. It leaves surviving dependents live. Draft #228–#229 extend the storage proof to bounded named sets and cascade, but no multi-ID/cascade CLI form is admitted and dotted native IDs are explicitly refused pending upstream #7377. | Candidates/open #163, #209–#210, #212, #228–#229; current integration unchanged |
+| `delete` | One unreferenced Bead can be previewed and force-deleted with a retained tombstone. | Linked Beads refuse; multi-ID, cascade, `--from-file`, and `--dry-run` refuse at this commit. #163 is an unmerged single-ID dry-run alias. Draft #209 proves opt-in linked deletion in one transaction; #210 adds a checked unforced preview; stacked draft #212 wires single-Issue CLI preview and `--force`. It leaves surviving dependents live. Draft #228–#229 extend the storage proof to bounded named sets and cascade. Draft #230 admits the multi-ID, cascade, and file CLI forms over that proof and preserves #163's single-ID dry-run behavior. Dotted native IDs explicitly refuse set deletion pending upstream #7377. | Candidates/open #163, #209–#210, #212, #228–#230; current integration unchanged |
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. | As-built; mutation unqualified |
 | `gate` | Explicit refusal. | Gate create/check/list/show/resolve/waiter/discovery are unavailable. | Gap; no repair PR |
 | `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. | Gap; no command PR |
@@ -144,7 +144,7 @@ locally; current-head hosted CI remains pending.
 
 ## Views & Reports: command-by-command release-note draft
 
-| Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (Oct 21) |
+| Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
 | `count` | Durable-Issue totals/groups and admitted filters work. | Infra/ephemeral inclusion and some filters refuse; large inventories refuse rather than return partial counts. | As-built; filter/cap gaps open |
 | `diff` | Explicit refusal. | Dolt commit/branch diff is unavailable; retained `compare` addresses one Resource instead. | Gap; no repair PR |
@@ -158,7 +158,7 @@ locally; current-head hosted CI remains pending.
 
 ## Dependencies & Structure: command-by-command release-note draft
 
-| Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (Oct 21) |
+| Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
 | `dep` | Single local add/remove and blocking views work. | Default list silently omits nonblocking kinds (P1); tree/graph are blocking-only; depth-1 tree falsely says there are no dependencies (P2); list/tree/cycles JSON, file bulk add, relate/unrelate and other forms refuse. #165 fixes the default human list and #179 fixes the depth-1 answer; both are unmerged. | Candidates/open #165, #179 |
 | `duplicate` | Explicit refusal. | Atomic duplicate edge and close is unavailable. | Gap; no repair PR |
@@ -492,9 +492,18 @@ locally; current-head hosted CI remains pending.
   plan/apply tests passed embedded and real shared-server Dolt without skips,
   including force, preview, named pair, cascade and staged rollback. A broader
   embedded Issue-delete sweep passed, with server subtests intentionally
-  skipped in that sweep. These PRs remain storage-only candidates; no
-  multi-ID or cascade CLI form is admitted. Dotted native Issue IDs still
-  refuse until upstream contributor
+  skipped in that sweep. These PRs remain storage-only candidates; stacked
+  draft [#230](https://github.com/donnabox/beads/pull/230) admits multi-ID,
+  `--cascade`, and `--from-file` over the checked set writer. Its exact source
+  passed installed set, single-Issue and Memory deletion workflows on embedded
+  and real shared-server Dolt: 32 test/subtest passes, no skips. A broader
+  embedded `TestGraphPreview` sweep passed 256 top-level tests, one expected
+  server-only skip, and zero failures. It also preserves #163's single-ID
+  `--dry-run` behavior, including `--force --dry-run --readonly`, and credits
+  that prior work. Generated CLI docs, docsync, doc flags/freshness, managed
+  Go source lists, and diff checks passed. #230 is an unmerged candidate with
+  hosted CI and review pending. Dotted native Issue IDs still refuse until
+  upstream contributor
   [#7377](https://github.com/gastownhall/beads/pull/7377) is integrated.
   Upstream contributor
   [#7512](https://github.com/gastownhall/beads/pull/7512) owns a separate
@@ -514,8 +523,8 @@ locally; current-head hosted CI remains pending.
 - **No complete repair PR yet.** Issue `create --deps` has an unmerged local
   target subset in #197–#198, with parent combination in #199–#200 and
   existing-target Markdown batches in #201–#202. Graph-JSON batch relations,
-  `delete` multi-ID/cascade/from-file and linked CLI policy (draft storage
-  proof #209), Issue `update` multi-ID/parent,
+  `delete` multi-ID/cascade/from-file and linked CLI policy (draft #230,
+  unmerged), Issue `update` multi-ID/parent,
   remaining `list --ready` combinations, and broader Link selector forms
   remain work to scope, implement and qualify.
   Some need a graph transaction primitive, not just a CLI flag. Their explicit

@@ -71,8 +71,12 @@ shared-server Dolt without skips. It does not select the CLI force/cascade
 policy or multi-ID outcome contract.
 Stacked draft [#228](https://github.com/donnabox/beads/pull/228)–[#229](https://github.com/donnabox/beads/pull/229)
 extend that storage proof to a checked named set and cascade closure. Focused
-tests prove missing-selector refusal and staged rollback on both engines;
-the CLI does not yet admit those forms. Dotted native IDs explicitly refuse
+tests prove missing-selector refusal and staged rollback on both engines.
+Stacked draft [#230](https://github.com/donnabox/beads/pull/230) admits
+multi-ID, cascade, and file-selected Issue sets through that composer;
+its installed deletion workflows passed both engines without skips, and its
+broader embedded graph CLI sweep passed 256 top-level tests with one server-only
+skip. These PRs remain unmerged candidates. Dotted native IDs explicitly refuse
 until [upstream #7377](https://github.com/gastownhall/beads/pull/7377)
 fixes citation rewriting, preserving that contributor's work.
 
@@ -100,11 +104,12 @@ preview and `--force` routes. Its installed workflow passed both engines and
 its six current-head hosted checks passed, with review pending. A disposable
 combined checkout included
 #163's `--dry-run` alias and passed existing Issue/Memory delete workflows on
-embedded Dolt; the server subtests were skipped, so the assembled combination
+embedded Dolt; the server subtests were skipped, so that earlier assembled combination
 also passed the broader embedded `TestGraphPreview` run at local-only
 `5b0552c61`: 273 top-level passes, one server-only top-level skip, zero
-failures. It still needs real shared-server qualification. #163 separately owns the alias
-and must be reconciled without dropping its tests. A separate CLI `ListLinks` call followed by
+failures. #230 subsequently reconciled #163's alias with the set route and
+passed the installed delete-set, single-Issue, and Memory workflows on real
+shared-server Dolt as well as embedded Dolt. A separate CLI `ListLinks` call followed by
 deletion would make the decision stale and would not close this class bug. The native role checks
 dependents from both dependency planes without filtering by kind
 ([`internal/storage/issueops/delete_role.go`](../../internal/storage/issueops/delete_role.go));
@@ -114,7 +119,7 @@ the graph plan must preserve that rule for every admitted native kind.
 
 | Root cause / seam | Exception cluster | Existing substrate | Focused work that could remove the class |
 | --- | --- | --- | --- |
-| **Graph transaction composition**: native Issue writes and canonical graph projection must land together. | `create --deps`, parent/dependency batches, linked `delete`, `update --parent`, `duplicate`, `supersede`, `set-state`; potentially multi-Issue update/delete. | `graphstore.withTx`; #197–#202 prove local create/dependency and Markdown batches can be atomic. Draft #209 proves single-Issue linked deletion; #228–#229 prove bounded named-set and cascade storage composition. Draft #222–#223 prove a checked parent-only move; stacked #224–#225 prove parent-plus-scalar composition through one native Issue writer, old/new canonical Links and installed CLI on both engines. Empty detach remains a policy gap. | Continue typed, transaction-scoped Issue and Link composition. Keep validation, native edge changes, graph catalog, retained versions and source-owned History in one transaction. Prove rollback after each stage on embedded and shared-server Dolt. Avoid exporting a raw transaction to CLI callers or assuming native `BatchApplier` alone maintains graph invariants. |
+| **Graph transaction composition**: native Issue writes and canonical graph projection must land together. | `create --deps`, parent/dependency batches, linked `delete`, `update --parent`, `duplicate`, `supersede`, `set-state`; potentially multi-Issue update/delete. | `graphstore.withTx`; #197–#202 prove local create/dependency and Markdown batches can be atomic. Draft #209 proves single-Issue linked deletion; #228–#229 prove bounded named-set and cascade storage composition, and #230 wires those set forms in the CLI. Draft #222–#223 prove a checked parent-only move; stacked #224–#225 prove parent-plus-scalar composition through one native Issue writer, old/new canonical Links and installed CLI on both engines. Empty detach remains a policy gap. | Continue typed, transaction-scoped Issue and Link composition. Keep validation, native edge changes, graph catalog, retained versions and source-owned History in one transaction. Prove rollback after each stage on embedded and shared-server Dolt. Avoid exporting a raw transaction to CLI callers or assuming native `BatchApplier` alone maintains graph invariants. |
 | **Batch outcome policy and command routing**, separate from the transaction engine. | Multi-ID `close` mismatch; multi-ID `reopen`, `update`, `delete`; `--claim-next` coupling and JSON result reporting. | Native `BatchCloser` commits survivors as one act; graph `CloseIssues` uses it. Draft #226–#227 preflight all close selectors in that transaction and route ordinary multi-ID close through it; `bd batch` remains outside the graph-mode route. | Keep a per-command contract table: preflight failures, per-item policy refusals, commit grouping, History and output. Qualify #226–#227 at current head, then add typed multi-resource operations only where a selected command contract calls for them. |
 | **One Issue selector model**: native ID, abbreviated ID and canonical graph path are different identities. | Explicit-ID children, positional `link`, `dep` operands, `create --deps` targets, parent filters/updates, list/show/update/delete selectors. | `IssueSelector` resolves exact bare native IDs and exact graph paths inside a transaction; #180 aligns bare flat create identity, #193–#194 add positional abbreviated IDs in the write transaction. | Extend a shared transaction-scoped resolver with shipping exact/unique-prefix precedence, explicit-path exactness, ambiguity and deleted/non-Issue rules. Have every write consume its result within the same transaction; no CLI read-then-write lookup. Reuse it across commands instead of reimplementing partial-ID rules. |
 | **Relationship semantics and checked read projection**: native dependencies, canonical Links and readiness have different views. | Default `dep list` omits nonblocking kinds; `ready` must ignore informational Memory Links; parent/ready/list/graph/blocked views; Link kind filters. | #165, #174 and #175 expose kind and blocker rules; #169–#172 and #189–#190/#203 add checked parent/ready reads. Graph reads already use read transactions, but several collections refuse after bounded full scans. | Centralize relationship-kind classification and reuse the same checked projection for `dep`, `ready`, `list`, `children`, `blocked` and graph views. Test informational vs blocking edges, native and graph Links, hierarchy and row caps across both engines. Pagination is a separate deferred contract; keep honest refusal above a cap. |
