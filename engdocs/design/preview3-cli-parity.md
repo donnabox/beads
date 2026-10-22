@@ -343,7 +343,9 @@ locally; current-head hosted CI remains pending.
   macOS graphstore race attempt then hit its 30-minute test timeout in
   `TestLinkPropertiesPatchDeletedBudget/embedded` after three preceding
   graphstore groups passed; no reparent assertion failed. Only that failed
-  job was retried in workflow `39710093424`, and the retry is pending. It is
+  job was retried in workflow `39710093424`; current head `19c074276` now
+  has 119 hosted successes and eight expected skips, with no failed or pending
+  checks. Review is still pending. It is
   storage-only: `bd update --parent` remains unavailable on the pinned
   integration commit and on this PR head. Empty-parent detach is deliberately
   excluded because dotted IDs still imply a parent in shipping selectors;
