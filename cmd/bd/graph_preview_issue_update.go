@@ -16,7 +16,17 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "body-file", "description-file", "stdin", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due"}
+
+func graphPreviewDescriptionFlagsChanged(cmd *cobra.Command) bool {
+	for _, name := range []string{"description", "body", "message", "body-file", "description-file"} {
+		if cmd.Flags().Changed(name) {
+			return true
+		}
+	}
+	stdin, _ := cmd.Flags().GetBool("stdin")
+	return stdin
+}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -28,11 +38,11 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 }
 
 // This narrow preview keeps familiar Issue field meanings while requiring the
-// existing opaque graph guard for a canonical Resource selector. File/stdin and
-// broader workflow flags remain explicit refusals; legacy routing is unchanged.
+// existing opaque graph guard for a canonical Resource selector. Broader
+// workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "force", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"if-revision", "force", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
@@ -102,13 +112,40 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		// does not grant permission to take another actor's active assignment.
 		request.Assignee = &value
 	}
+	if graphPreviewDescriptionFlagsChanged(cmd) {
+		// Keep graph's structured conflict error for incompatible inline aliases;
+		// the shipping parser otherwise writes directly to stderr.
+		var prior *string
+		for _, name := range []string{"description", "body", "message"} {
+			if !cmd.Flags().Changed(name) {
+				continue
+			}
+			value, _ := cmd.Flags().GetString(name)
+			if prior != nil && *prior != value {
+				return request, graphFailure("invalid_properties", "description aliases must have identical values", 2)
+			}
+			prior = &value
+		}
+		value, changed, err := getDescriptionFlag(cmd)
+		if err != nil {
+			return request, err
+		}
+		if err := validateDescriptionUpdate(cmd, value, changed); err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if changed {
+			if !utf8.ValidString(value) {
+				return request, graphFailure("invalid_properties", "Issue description must be valid UTF-8", 2)
+			}
+			request.Description = &value
+		}
+	}
 
 	fields := []struct {
 		name string
 		out  **string
 	}{
-		{"title", &request.Title}, {"description", &request.Description},
-		{"body", &request.Description}, {"message", &request.Description},
+		{"title", &request.Title},
 		{"design", &request.Design},
 		{"acceptance", &request.AcceptanceCriteria},
 		{"notes", &request.Notes},
@@ -127,9 +164,6 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 			if err := validateNotesUpdate(value); err != nil {
 				return request, graphFailure("invalid_properties", err.Error(), 2)
 			}
-		}
-		if value == "-" && field.out == &request.Description {
-			return request, graphFailure("capability_unavailable", "graph Issue update currently accepts inline text only; stdin and file sources are unavailable", 5)
 		}
 		if field.name == "title" {
 			value = strings.TrimSpace(value)

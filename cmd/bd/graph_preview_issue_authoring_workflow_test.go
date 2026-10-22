@@ -4,12 +4,83 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
+
+func TestGraphPreviewIssueDescriptionSources(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/issue-input/"
+			args := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for shared-server Issue input qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			run := func(input []byte, args ...string) string {
+				t.Helper()
+				code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, input, append(args, "--json")...)
+				if code != 0 {
+					t.Fatalf("%v exited %d: %s", args, code, stderr)
+				}
+				return stdout
+			}
+			refuse := func(want int, input []byte, args ...string) {
+				t.Helper()
+				code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, input, append(args, "--json")...)
+				if code != want || stdout != "" {
+					t.Fatalf("%v exited %d (want %d), stdout=%q stderr=%s", args, code, want, stdout, stderr)
+				}
+			}
+			file := filepath.Join(work, "description.md")
+			writeFile(t, file, []byte("From file — 雪\n"))
+			created := graphMixedResult[graphstore.IssueRecord](t, run(nil, "create", "File source", "--id", "beads/file", "--body-file", file))
+			if created.Properties.Description != "From file — 雪\n" {
+				t.Fatal("create lost file contents")
+			}
+			stdin := graphMixedResult[graphstore.IssueRecord](t, run([]byte("From stdin\r\n"), "create", "Stdin source", "--id", "beads/stdin", "--description=-"))
+			if stdin.Properties.Description != "From stdin\r\n" {
+				t.Fatal("create changed stdin contents")
+			}
+			refuse(2, []byte("should not be consumed"), "create", "Duplicate source", "--id", "beads/duplicate", "--properties", `{"description":"Property"}`, "--stdin")
+			refuse(2, []byte{}, "create", "Empty source", "--id", "beads/empty", "--stdin")
+			refuse(2, []byte{}, "update", "beads/file", "--stdin")
+			if got := graphMixedResult[graphstore.IssueRecord](t, run(nil, "show", "beads/file", "--format", "graph-json")); got.Revision != created.Revision || got.Properties.Description != created.Properties.Description {
+				t.Fatal("empty-input refusal changed Issue")
+			}
+			fromAlias := graphMixedResult[graphstore.IssueMutationResult](t, run([]byte("Replacement"), "update", "beads/file", "--body=-", "--if-revision", created.Revision))
+			if !fromAlias.Changed || fromAlias.Issue.Properties.Description != "Replacement" {
+				t.Fatal("update lost stdin alias")
+			}
+			writeFile(t, file, []byte("Second file"))
+			fromFile := graphMixedResult[graphstore.IssueMutationResult](t, run(nil, "update", "beads/file", "--description-file", file, "--if-revision", fromAlias.Issue.Revision))
+			if !fromFile.Changed || fromFile.Issue.Properties.Description != "Second file" {
+				t.Fatal("update lost description-file alias")
+			}
+			cleared := graphMixedResult[graphstore.IssueMutationResult](t, run([]byte{}, "update", "beads/file", "--stdin", "--allow-empty-description", "--if-revision", fromFile.Issue.Revision))
+			if !cleared.Changed || cleared.Issue.Properties.Description != "" || cleared.Issue.Revision == fromFile.Issue.Revision {
+				t.Fatal("explicit empty replacement did not create a revision")
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, run(nil, "show", "beads/stdin", "--format", "graph-json")); got.Properties.Description != stdin.Properties.Description {
+				t.Fatal("other Issue changed")
+			}
+			if !strings.Contains(run(nil, "show", "beads/file"), "File source") {
+				t.Fatal("Issue no longer visible after input edits")
+			}
+		})
+	}
+}
 
 func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
