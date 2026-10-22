@@ -25,10 +25,10 @@ FLAGS = ["-tags", "gms_pure_go", "-v", "-race", "-short", "-timeout=30m", "-skip
 # -json supplies framed verbose output. Explicit -v would override its
 # test2json framing and let unterminated application output hide RUN/PASS.
 JSON_FLAGS = [flag for flag in FLAGS if flag != "-v"]
-# Hosted graphstore root timings exceed the 30-minute package alarm with
-# four groups. Eight preserves the same exhaustive union and total deadline.
-GROUPS = 8
-COMMAND_GROUPS = 4
+GROUPS = 4  # Command groups and the default pure partition helper.
+# A native 81-root group exhausted 30m after 79 passing roots.
+# Finer graphstore batches retain every alarm and the total scope deadline.
+GRAPHSTORE_GROUPS = 8
 DISCOVERY_SECONDS = 900
 GROUP_SECONDS = 2100
 OTHER_SECONDS = 3600
@@ -204,11 +204,12 @@ class Runner:
         return self.output / (label + ".stdout")
 
 
-def partition(names, count=GROUPS):
+def partition(names, group_count=GROUPS):
+    require(type(group_count) is int and group_count > 0, "invalid partition count")
     require(names and len(names) == len(set(names)), "empty or duplicate discovered test set")
     eligible = sorted(name for name in names if not name.startswith("TestEmbedded"))
     require(eligible, "no eligible package tests")
-    groups = [eligible[index::count] for index in range(count)]
+    groups = [eligible[index::group_count] for index in range(group_count)]
     require(Counter(name for group in groups for name in group) == Counter(eligible), "incomplete group partition")
     return groups
 
@@ -291,7 +292,7 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
                 continue
             names_file = runner.run(label + "-discovery", [go, "test", *flags, "-list", ".", package], DISCOVERY_SECONDS)
             names = discovered_names(names_file)
-            groups = partition(names, GROUPS if package == GRAPHSTORE else COMMAND_GROUPS)
+            groups = partition(names, GRAPHSTORE_GROUPS if package == GRAPHSTORE else GROUPS)
             plan = dict(package=package, discovered=sorted(names),
                         excluded=sorted(set(names) - set(sum(groups, []))), groups=groups)
             partitions.append((label, package, summary_key, plan))
@@ -365,7 +366,7 @@ def verify_scopes(root, source_sha, package_parallel=None, test_parallel=None):
         require(isinstance(selected, dict), "missing partition discovery")
         require(sorted(discovered_names(directory / (prefix + "-discovery.stdout"))) == selected.get("discovered"),
                 "partition plan differs from compiled test discovery")
-        groups = partition(selected["discovered"], GROUPS if package == GRAPHSTORE else COMMAND_GROUPS)
+        groups = partition(selected["discovered"], GRAPHSTORE_GROUPS if package == GRAPHSTORE else GROUPS)
         require(selected.get("groups") == groups and len(summary.get(key, [])) == len(groups),
                 "scope did not retain the complete partition")
         expected_labels = ["package-discovery", prefix + "-discovery"]

@@ -38,6 +38,8 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal(err)
 			}
 			o := graphstore.Options{Backend: backend, Database: fmt.Sprintf("graph_read_%d", time.Now().UnixNano()), DataDir: filepath.Join(workspace, "dolt"), Branch: "main", Binding: graphstore.Binding{WorkspaceID: workspace, ScopeURL: "https://example.test/read/", AuthorityID: "0123456789abcdef0123456789abcdef", SchemaVersion: graphstore.SchemaVersion}}
+			// This wire-projection cohort intentionally exercises retained assessment semantics.
+			o.AssessmentsEnabled = true
 			if backend == "server" {
 				if os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT") == "" {
 					t.Skip("ordinary shared-server Dolt port not configured")

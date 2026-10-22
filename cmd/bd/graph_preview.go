@@ -566,8 +566,8 @@ func graphOptions(cfg *configfile.Config) graphstore.Options {
 	}
 	return graphstore.Options{Backend: cfg.DoltMode, DataDir: filepath.Join(graphPreviewDir, "embeddeddolt"), Database: cfg.DoltDatabase, Branch: "main",
 		Binding:        graphstore.Binding{WorkspaceID: cfg.GraphWorkspace, ScopeURL: cfg.GraphScopeURL, AuthorityID: cfg.GraphAuthorityID, SchemaVersion: cfg.GraphSchemaVersion},
-		TypeGeneration: graphPreviewTypeGeneration,
-		ServerHost:     cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
+		TypeGeneration: graphPreviewTypeGeneration, AssessmentsEnabled: cfg.GraphAssessmentsEnabled,
+		ServerHost: cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
 }
 
 func withGraphStore(fn func(context.Context, *graphstore.Store) (any, string, error)) error {

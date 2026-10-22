@@ -41,7 +41,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					LinkTypes []json.RawMessage `json:"linkTypes"`
 				} `json:"result"`
 			}
-			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 10 || len(installed.Result.LinkTypes) != 10 {
+			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 9 || len(installed.Result.LinkTypes) != 6 {
 				t.Fatalf("installed graph Types unavailable: %+v %v", installed, err)
 			}
 			for _, item := range append(installed.Result.BeadTypes, installed.Result.LinkTypes...) {
@@ -51,7 +51,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				}
 			}
 			visible := graphPolicyCLI(t, bd, work, home, nil, "", "types")
-			if !strings.Contains(visible, "Bead Types (22):") || !strings.Contains(visible, "Link Types (28):") ||
+			if !strings.Contains(visible, "Bead Types (21):") || !strings.Contains(visible, "Link Types (24):") ||
 				!strings.Contains(visible, "task") || !strings.Contains(visible, "Task Issue") ||
 				!strings.Contains(visible, "blocks") || !strings.Contains(visible, "Blocking Dependency") ||
 				!strings.Contains(visible, "types/subject-to") ||
