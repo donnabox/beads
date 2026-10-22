@@ -7,6 +7,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 func TestIssueDeleteRetainsHistoryAndRefusesIncidentLinks(t *testing.T) {
@@ -163,6 +165,12 @@ func TestIssueDeleteComposesDependencyUnlinksInOneTransaction(t *testing.T) {
 				!reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
 				t.Fatalf("checked preview: %+v %v", preview, err)
 			}
+			unforced, err := f.store.PreviewDeleteIssueWithIncidentLinks(f.ctx, request)
+			if err != nil || !unforced.Preview || unforced.Deleted ||
+				!reflect.DeepEqual(unforced.IncidentLinkIDs, preview.IncidentLinkIDs) ||
+				!reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
+				t.Fatalf("unforced outgoing preview: %+v %v", unforced, err)
+			}
 			for _, stage := range []string{"dependency-remove", "link-catalog", "link-retained", "issue-delete-native", "issue-delete-retained"} {
 				fault := errors.New("injected composed delete failure")
 				f.store.afterWrite = func(at string) error {
@@ -209,6 +217,23 @@ func TestIssueDeleteComposesIncomingDependencyUnlink(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			f := setupDependencyUnlink(t, backend, 1)
+			before := workflowState(t, f.ctx, f.store)
+			preview, err := f.store.PreviewDeleteIssueWithIncidentLinks(f.ctx, IssueDeleteRequest{
+				Path: "beads/first", ExpectedRevision: f.targets[0].Revision,
+			})
+			var blocked *publicops.DependentsOutsideRequestError
+			if !errors.As(err, &blocked) || blocked.IssueID != f.targets[0].Properties.ID ||
+				!reflect.DeepEqual(blocked.Dependents, []string{f.source.Properties.ID}) ||
+				!reflect.ValueOf(preview).IsZero() || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
+				t.Fatalf("unforced incoming preview: %+v %v", preview, err)
+			}
+			forcePreview, err := f.store.DeleteIssueWithIncidentLinks(f.ctx, IssueDeleteRequest{
+				Path: "beads/first", ExpectedRevision: f.targets[0].Revision, Preview: true,
+			})
+			if err != nil || !forcePreview.Preview || forcePreview.Deleted || len(forcePreview.IncidentLinkIDs) != 1 ||
+				!reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
+				t.Fatalf("force-mode incoming preview: %+v %v", forcePreview, err)
+			}
 			deleted, err := f.store.DeleteIssueWithIncidentLinks(f.ctx, IssueDeleteRequest{
 				Path: "beads/first", Actor: "deleter", ExpectedRevision: f.targets[0].Revision,
 			})
@@ -248,6 +273,11 @@ func TestIssueDeleteComposesInformationalLinkUnlink(t *testing.T) {
 			}
 			request := IssueDeleteRequest{Path: "beads/work", Actor: "deleter", ExpectedRevision: issue.Revision}
 			before := workflowState(t, ctx, s)
+			preview, err := s.PreviewDeleteIssueWithIncidentLinks(ctx, request)
+			if err != nil || !preview.Preview || preview.Deleted || len(preview.IncidentLinkIDs) != 1 ||
+				!reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("informational Link preview: %+v %v", preview, err)
+			}
 			for _, stage := range []string{"link-payload", "link-retained", "issue-delete-native"} {
 				fault := errors.New("injected owner delete failure")
 				s.afterWrite = func(at string) error {
