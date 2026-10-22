@@ -12,6 +12,9 @@ import (
 )
 
 type currentReads struct {
+	badCurrent *memoryquery.CurrentNode
+	badFeed    []graph.Link
+
 	nodes map[string]memoryquery.CurrentNode
 	links []graph.Link
 	hook  func()
@@ -19,6 +22,9 @@ type currentReads struct {
 }
 
 func (r *currentReads) Current(_ context.Context, path string) (memoryquery.CurrentNode, error) {
+	if r.badCurrent != nil {
+		return *r.badCurrent, nil
+	}
 	if r.hook != nil {
 		r.hook()
 	}
@@ -30,6 +36,9 @@ func (r *currentReads) Current(_ context.Context, path string) (memoryquery.Curr
 }
 func (r *currentReads) Incident(_ context.Context, path string, _ int) ([]graph.Link, error) {
 	r.calls[path]++
+	if r.badFeed != nil {
+		return r.badFeed, nil
+	}
 	out := []graph.Link{}
 	for _, l := range r.links {
 		if l.Source().Path() == path || l.Target().Path() == path {
@@ -202,5 +211,56 @@ func TestCurrentFamilyRepeatedRootSlotsUseUniqueNodeBudget(t *testing.T) {
 	g, err := memoryquery.CurrentFamily(context.Background(), r, allFamily, []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 0}, {Path: "beads/a", Depth: 1}}, graph.DirectionOut, memoryquery.Limits{MaxNodes: 1, MaxLinks: 0, MaxInspected: 0})
 	if err != nil || len(g.Nodes) != 1 || len(g.Views) != 2 || g.Views[0].Root.Depth == g.Views[1].Root.Depth {
 		t.Fatal(g, err)
+	}
+}
+
+func TestCurrentFamilyBothExpansion(t *testing.T) {
+	r := currentFixture(t, [][3]string{{"ab", "a", "b"}, {"bc", "b", "c"}, {"dc", "d", "c"}})
+	got := currentRun(t, r, []memoryquery.CurrentRoot{{Path: "beads/b", Depth: 1}}, graph.DirectionBoth)
+	if !reflect.DeepEqual(got.Views[0].Nodes, []string{"beads/a", "beads/b", "beads/c"}) || !reflect.DeepEqual(got.Views[0].Links, []string{"links/ab", "links/bc"}) || !reflect.DeepEqual(got.Views[0].Frontier, []string{"beads/c"}) {
+		t.Fatal(got)
+	}
+}
+func TestCurrentFamilySourcePin(t *testing.T) {
+	r := currentFixture(t, nil)
+	r.links = []graph.Link{link(t, "source-pin", "references", reference(t, "a", "current"), reference(t, "b", ""))}
+	roots := []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 1}}
+	got := currentRun(t, r, roots, graph.DirectionOut)
+	if got.Links[0].Source().Pin() != "current" {
+		t.Fatal("source pin erased")
+	}
+	n := r.nodes["beads/a"]
+	n.Version = "new"
+	r.nodes[n.Path] = n
+	read, err := memoryquery.CurrentFamily(context.Background(), r, allFamily, roots, graph.DirectionOut, currentLimits)
+	if !errors.Is(err, memoryquery.ErrCurrentContextUnavailable) || !reflect.DeepEqual(read, memoryquery.CurrentGraph{}) {
+		t.Fatal(read, err)
+	}
+}
+func TestCurrentFamilyReaderDefenses(t *testing.T) {
+	for _, which := range []string{"identity", "duplicate", "nonincident", "zero", "over_allowance"} {
+		t.Run(which, func(t *testing.T) {
+			r := currentFixture(t, [][3]string{{"ab", "a", "b"}})
+			limits := currentLimits
+			want := memoryquery.ErrReadContext
+			switch which {
+			case "identity":
+				r.badCurrent = &memoryquery.CurrentNode{Path: "beads/b", TypeURL: scope + "types/memory", Version: "current"}
+			case "duplicate":
+				r.badFeed = []graph.Link{r.links[0], r.links[0]}
+			case "nonincident":
+				r.badFeed = []graph.Link{link(t, "bc", "references", reference(t, "b", ""), reference(t, "c", ""))}
+			case "zero":
+				r.badFeed = []graph.Link{{}}
+			case "over_allowance":
+				limits.MaxInspected = 1
+				r.badFeed = []graph.Link{r.links[0], link(t, "ac", "references", reference(t, "a", ""), reference(t, "c", ""))}
+				want = memoryquery.ErrLimitExceeded
+			}
+			got, err := memoryquery.CurrentFamily(context.Background(), r, allFamily, []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 1}}, graph.DirectionOut, limits)
+			if !errors.Is(err, want) || !reflect.DeepEqual(got, memoryquery.CurrentGraph{}) {
+				t.Fatal(got, err)
+			}
+		})
 	}
 }

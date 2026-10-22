@@ -17,7 +17,10 @@ import (
 // The first slice admits References and Superseded By, including refinements,
 // in either direction. It is not a historical selector or a public CLI schema.
 // MaxBytes and Limits accumulate across all roots, including validation feeds.
-// MaxInspected bounds both acquisition rows and pure candidate-processing work.
+// MaxInspected independently caps accumulated acquisition rows and accumulated
+// pure candidate visits; those are two counters, not one combined work budget.
+// Fixed workspace/Type control reads are separately checked and may repeat in
+// existing helpers; their row/CPU cost is outside these persisted-data budgets.
 // No zero limit means unlimited. Exact caps succeed; excess refuses completely.
 type CurrentFamilyRequest struct {
 	Roots     []memoryquery.CurrentRoot
@@ -248,7 +251,10 @@ func (r *currentFamilyReader) Incident(ctx context.Context, path string, allowan
 }
 
 func (r *currentFamilyReader) hydrate(ctx context.Context, path string) (any, error) {
-	a := r.allocations[path]
+	a, ok := r.allocations[path]
+	if !ok || (a.backing != "generic" && a.backing != "issue") {
+		return nil, fmt.Errorf("%w: unselected hydration target", ErrInvalidStore)
+	}
 	if err := r.chargeInformational(ctx, "l.source_path=?", path); err != nil {
 		return nil, err
 	}

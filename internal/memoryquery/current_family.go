@@ -8,6 +8,10 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 )
 
+// currentFamilyBound is this internal preview operation's root/depth cap.
+// It matches graphstore's preview limits without importing storage into this module.
+const currentFamilyBound = 1000
+
 // CurrentNode binds an identity to its checked current Type and revision. It
 // deliberately contains no payload: frontier checks need not hydrate neighbors.
 // Canonical records are acquired by the storage adapter after node selection.
@@ -59,18 +63,18 @@ var ErrCurrentContextUnavailable = fmt.Errorf("selected reference is outside the
 // MaxInspected counts each candidate processing visit, including nonmembers and
 // repeated visits in different root views, not merely distinct output Links.
 // Every error returns zero state. It performs no satisfaction inference.
-func CurrentFamily(ctx context.Context, reader CurrentContext, family RequiresFamily, roots []CurrentRoot, direction graph.Direction, limits Limits) (CurrentGraph, error) {
+func CurrentFamily(ctx context.Context, reader CurrentContext, family func(context.Context, string) (bool, error), roots []CurrentRoot, direction graph.Direction, limits Limits) (CurrentGraph, error) {
 	if ctx == nil {
 		return CurrentGraph{}, fmt.Errorf("%w: missing context", graph.ErrValidation)
 	}
 	if err := ctx.Err(); err != nil {
 		return CurrentGraph{}, err
 	}
-	if reader == nil || family == nil || !direction.Valid() || len(roots) == 0 || len(roots) > 1000 || limits.MaxNodes < 1 || limits.MaxLinks < 0 || limits.MaxInspected < 0 {
+	if reader == nil || family == nil || !direction.Valid() || len(roots) == 0 || len(roots) > currentFamilyBound || limits.MaxNodes < 1 || limits.MaxLinks < 0 || limits.MaxInspected < 0 {
 		return CurrentGraph{}, fmt.Errorf("%w: invalid current family request", graph.ErrValidation)
 	}
 	for _, root := range roots {
-		if graph.ValidateBeadPath(root.Path) != nil || root.Depth < 0 || root.Depth > 1000 {
+		if graph.ValidateBeadPath(root.Path) != nil || root.Depth < 0 || root.Depth > currentFamilyBound {
 			return CurrentGraph{}, fmt.Errorf("%w: invalid current root", graph.ErrValidation)
 		}
 	}
@@ -225,6 +229,9 @@ func CurrentFamily(ctx context.Context, reader CurrentContext, family RequiresFa
 		view := CurrentView{Root: root, Nodes: []string{}, Links: []string{}, Frontier: []string{}}
 		emitted := map[string]graph.Link{}
 		for _, id := range queue {
+			if err := ctx.Err(); err != nil {
+				return CurrentGraph{}, err
+			}
 			view.Nodes = append(view.Nodes, id)
 			feed, err := incident(id)
 			if err != nil {

@@ -10,7 +10,10 @@ import (
 
 // Package-owned fragments only; all paths/IDs are bound values. These checks
 // precede helper enumeration/JSON decoding, including nonselected Link Types and
-// orphan authority rows. They bound acquired bytes/rows, not engine scan costs.
+// informational orphan authority rows. Native rows outside mapped incidence
+// are refused by the existing integrity counts before enumeration. These checks
+// bound persisted record bytes/rows, not engine scans or the separately bounded,
+// repeated fixed-Type descriptor/control reads performed by existing helpers.
 func (r *currentFamilyReader) chargeRows(ctx context.Context, from, columns string, copies int, args ...any) (uint64, error) {
 	fields := []string{"256"}
 	for _, c := range strings.Split(columns, ",") {
