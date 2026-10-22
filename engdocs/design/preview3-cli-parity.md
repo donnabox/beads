@@ -550,11 +550,12 @@ locally; current-head hosted CI remains pending.
   endpoints, metadata and update/close batch items remain unavailable at #232;
   stacked draft [#233](https://github.com/donnabox/beads/pull/233) adds exact
   existing local targets and refuses missing or duplicate aliases before a
-  write. Its fault-injection and installed workflows passed embedded and real
-  shared-server Dolt. Existing sources and update/close items remain gaps. A
+  write. At `bf61fe93a`, its fault-injection, caller-request immutability,
+  and installed workflows passed embedded and real shared-server Dolt.
+  Existing sources and update/close items remain gaps. A
   broader embedded graphstore sweep passed 177 test/subtest results with 21
-  server-only skips. #231 has four current-head hosted checks green; #232 and
-  #233 hosted checks and all three reviews are pending.
+  server-only skips. #231 and #232 each have four current-head hosted checks
+  green; #233 hosted checks and all three reviews are pending.
 - A broad local assembled `TestGraphPreview` run through #196 completed with
   two failing top-level tests: `--ready=false` expected a now-obsolete
   refusal, and the usability workflow expected `capability_unavailable` for

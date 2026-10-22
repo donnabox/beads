@@ -106,11 +106,12 @@ existing-ID endpoints refuse before writing. These drafts are not integrated or
 selected for release.
 
 Stacked draft [#233](https://github.com/donnabox/beads/pull/233) at
-`5727ae521` extends the same transaction to a new keyed source and an exact
+`bf61fe93a` extends the same transaction to a new keyed source and an exact
 existing local Issue target. The target resolves before native writes; alias
 duplicates and missing targets refuse without partial state. Its injected
-post-native-edge rollback and installed CLI workflows passed embedded and real
-shared-server Dolt. Existing sources, partial or external targets, metadata
+post-native-edge rollback, caller-request immutability check and installed CLI
+workflows passed embedded and real shared-server Dolt. Existing sources,
+partial or external targets, metadata
 and update/close items remain unavailable.
 
 A first commit in #231 at `cb7da57c5` extends the graph batch adapter to keep an
