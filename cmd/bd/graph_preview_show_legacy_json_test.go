@@ -222,6 +222,16 @@ func TestGraphPreviewShowNativeAbbreviation(t *testing.T) {
 			if !strings.Contains(short, "beads/source-path") || !strings.Contains(short, "Selected Issue") {
 				t.Fatalf("short show lost the resolved graph identity: %s", short)
 			}
+			manyJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", abbreviated, "beads/source-path", "--json")
+			var many []types.IssueDetails
+			if err := json.Unmarshal([]byte(manyJSON), &many); err != nil || len(many) != 2 || many[0].ID != "beads/source-path" || many[1].ID != "beads/source-path" {
+				t.Fatalf("multi-ID show lost the resolved graph identity: %v\n%s", err, manyJSON)
+			}
+			refsJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", abbreviated, "--refs", "--json")
+			var refs map[string]json.RawMessage
+			if err := json.Unmarshal([]byte(refsJSON), &refs); err != nil || string(refs["beads/source-path"]) != "[]" {
+				t.Fatalf("related show lost the resolved graph identity: %v\n%s", err, refsJSON)
+			}
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Colliding Memory", "--id", "beads/"+abbreviated, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "show", abbreviated, "--json")
 			if memory := graphMixedResult[graphstore.Record](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/"+abbreviated, "--json")); memory.Properties.Title != "Colliding Memory" {

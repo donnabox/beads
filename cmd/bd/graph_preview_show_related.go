@@ -24,7 +24,7 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 	if format != "" || cmd.Flags().Changed("version") {
 		return graphFailure("capability_unavailable", "--refs and --children require current Issues in the familiar output format", 5)
 	}
-	paths := make([]string, 0, len(args))
+	selectors := make([]graphstore.IssueSelector, 0, len(args))
 	for _, arg := range args {
 		ref, err := graphPreviewParseReference(arg)
 		if err != nil {
@@ -40,14 +40,18 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 		if !strings.HasPrefix(path, "beads/") {
 			return graphFailure("capability_unavailable", "--refs and --children require Issues", 5)
 		}
-		paths = append(paths, path)
+		selector, err := graphPreviewIssueSelector(ref.Identity)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		selectors = append(selectors, selector)
 	}
 	var missing []string
 	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		rows := make(map[string][]*types.IssueWithDependencyMetadata, len(paths))
+		rows := make(map[string][]*types.IssueWithDependencyMetadata, len(selectors))
 		var human strings.Builder
-		for index, path := range paths {
-			record, err := s.Read(ctx, path)
+		for index, selector := range selectors {
+			record, err := s.ReadBeadSelected(ctx, selector)
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -58,7 +62,7 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 			if _, ok := record.(graphstore.IssueRecord); !ok {
 				return nil, "", graphFailure("capability_unavailable", "--refs and --children require Issues", 5)
 			}
-			detail, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: true})
+			detail, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{IncludeDependents: true})
 			if err != nil {
 				return nil, "", err
 			}
@@ -69,11 +73,11 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 				}
 				related = append(related, row)
 			}
-			rows[path] = related
+			rows[detail.ID] = related
 			if refs {
-				renderGraphShowRefs(&human, path, related)
+				renderGraphShowRefs(&human, detail.ID, related)
 			} else {
-				renderGraphShowChildren(&human, path, related, short)
+				renderGraphShowChildren(&human, detail.ID, related, short)
 			}
 		}
 		return rows, human.String(), nil

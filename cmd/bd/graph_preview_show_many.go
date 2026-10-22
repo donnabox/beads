@@ -19,7 +19,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 	if format != "" || cmd.Flags().Changed("version") {
 		return graphFailure("capability_unavailable", "multi-ID show supports current Issue details only", 5)
 	}
-	paths := make([]string, 0, len(args))
+	selectors := make([]graphstore.IssueSelector, 0, len(args))
 	for _, arg := range args {
 		ref, err := graphPreviewParseReference(arg)
 		if err != nil {
@@ -35,17 +35,22 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		if !strings.HasPrefix(path, "beads/") {
 			return graphFailure("capability_unavailable", "multi-ID show supports current Issues only", 5)
 		}
-		paths = append(paths, path)
+		selector, err := graphPreviewIssueSelector(ref.Identity)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		selectors = append(selectors, selector)
 	}
 	includeDependents, _ := cmd.Flags().GetBool("include-dependents")
 	includeComments, _ := cmd.Flags().GetBool("include-comments")
 	briefDeps, _ := cmd.Flags().GetBool("brief-deps")
 	var missing []string
+	var firstSelectedPath string
 	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		details := make([]*types.IssueDetails, 0, len(paths))
-		lines := make([]string, 0, len(paths))
-		for index, path := range paths {
-			record, err := s.Read(ctx, path)
+		details := make([]*types.IssueDetails, 0, len(selectors))
+		lines := make([]string, 0, len(selectors))
+		for index, selector := range selectors {
+			record, err := s.ReadBeadSelected(ctx, selector)
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -57,9 +62,16 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 			if !ok {
 				return nil, "", graphFailure("capability_unavailable", "multi-ID show supports current Issues only", 5)
 			}
+			resolvedPath, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, issue.ID)
+			if err != nil {
+				return nil, "", err
+			}
+			if firstSelectedPath == "" {
+				firstSelectedPath = resolvedPath
+			}
 			if shortMode {
 				shorthand := *issue.Properties
-				shorthand.ID = path
+				shorthand.ID = resolvedPath
 				lines = append(lines, formatShortIssue(&shorthand))
 				continue
 			}
@@ -67,7 +79,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 			if !jsonOutput {
 				opts = workapi.DetailOptions{IncludeDependents: true, IncludeComments: true}
 			}
-			detail, err := s.ShowIssueDetails(ctx, path, opts)
+			detail, err := s.ShowIssueDetailsSelected(ctx, selector, opts)
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -108,8 +120,8 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		}
 		return nil
 	})
-	if err == nil {
-		SetLastTouchedID(paths[0])
+	if err == nil && firstSelectedPath != "" {
+		SetLastTouchedID(firstSelectedPath)
 	}
 	return err
 }
