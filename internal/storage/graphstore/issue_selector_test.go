@@ -86,6 +86,18 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 			if err != nil || !reflect.DeepEqual(shown, created) {
 				t.Fatalf("abbreviated read selected wrong Issue: %+v %v", shown, err)
 			}
+			mixed, err := s.ReadBeadSelected(ctx, selector)
+			if err != nil || !reflect.DeepEqual(mixed, created) {
+				t.Fatalf("abbreviated mixed read selected wrong Issue: %+v %v", mixed, err)
+			}
+			memory, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Notes"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			mixed, err = s.ReadBeadSelected(ctx, IssueSelector{Path: "beads/notes", NativeID: "notes"})
+			if err != nil || !reflect.DeepEqual(mixed, memory) {
+				t.Fatalf("bare Memory fallback changed selection: %+v %v", mixed, err)
+			}
 			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector})
 			if err != nil || !reflect.DeepEqual(paths, []string{"beads/source"}) {
 				t.Fatalf("abbreviated count filter selected wrong path: %v %v", paths, err)
@@ -111,9 +123,19 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 			if _, err := s.ShowIssueSelected(ctx, selector); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("bare graph-path collision selected an Issue: %v", err)
 			}
+			if _, err := s.ReadBeadSelected(ctx, selector); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("bare mixed read hid an Issue/Memory collision: %v", err)
+			}
 			explicit, err := s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/source"})
 			if err != nil || explicit.ID != created.ID || explicit.Properties.Title != title {
 				t.Fatalf("explicit path did not stay exact: %+v %v", explicit, err)
+			}
+			mixed, err = s.ReadBeadSelected(ctx, IssueSelector{Path: "beads/a3f8"})
+			if err != nil {
+				t.Fatalf("explicit Memory path did not stay exact: %v", err)
+			}
+			if _, ok := mixed.(Record); !ok {
+				t.Fatalf("explicit Memory path returned %T", mixed)
 			}
 		})
 	}
