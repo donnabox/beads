@@ -230,21 +230,54 @@ default grace period is longer than zero. Scope flags include repeatable
 `--any-replica`; use the latter only when recovering a lease from a departed
 replica. `bd set-state` and `bd gate` still refuse in graph mode.
 
+## Preview 3 selected-Type graph candidate
+
+The new candidate uses ordinary `bd graph BEAD` or `bd graph --all`.
+Omitting a selector is exactly `--link-type Dependency`, including refinements.
+Repeat `--link-type` for an OR union, or choose `--all-link-types`. Shared
+`--direction in|out|both` (default both) and `--depth` (default 1000) select
+reached Beads; all matching Links among them remain, including cross-links,
+parallel Links and cycles. Excluded Types cannot be traversal bridges.
+
+```sh
+bd graph work --link-type References --direction out --depth 3
+bd graph policy --link-type Requires --dot > requirements.dot
+bd graph --all --link-type References --html > graph.html
+```
+
+`--all` uses matching endpoint components for non-Dependency selectors,
+excluding unrelated isolates. Dependency `--all` retains open native Issues,
+including isolates. Explicit depth/direction with `--all` refuses. A named root
+remains without matching Links. Default text and `--compact` both render a
+relationship tree with actual Bead/Link Types, authored arrows and individual
+Link IDs. Canonical shortest-hop parents are chosen before placing cross-links;
+only those tree Links expand Beads. References retain every parallel and
+cross-Link, including a reference to a sibling that appears later. A `cycle`
+marker witnesses a directed cycle in the selected graph. Every non-tree
+reference says `shown elsewhere`; a cycle adds its own marker. `--box` retains its flat Bead/Link view; DOT
+and HTML remain available. Human trees elide `beads/`, `links/` and `types/`
+display prefixes; `--json` retains complete canonical Beads/Links and separate
+traversal metadata. The command's Issue-oriented compact help describes the
+native dependency view. `--open` remains unavailable in link mode. Node/Link bounds
+(default 1000 each), the complete-inventory acquisition limit (1000 Resources /
+16 MiB), and serialized output limit (16 MiB) refuse rather than return a
+successful partial graph. Depth truncation reports `complete: false` and a
+frontier. Pins remain authored on Links; adjacent Bead records are current,
+not a claim about a historical traversal. `--view generic` is optional/deprecated.
+This candidate needs integration and qualification before release adoption;
+it does not change the historical integration ledger below or dependency mode.
+
 ## Blocking dependency views
 
-`bd dep list ISSUE`, `bd dep tree ISSUE`, `bd dep cycles`, `bd graph ISSUE`
-and `bd graph check` read the current blocking Dependency graph. The tree
-supports `--direction down|up|both`; its both-direction human view labels
-dependencies and dependents separately. `bd graph check --json` returns the
-ordinary flat check object and local Issue IDs in its `cycles`. The existing
-`bd graph ISSUE --view generic` still traverses generic Links.
+`bd dep list ISSUE`, `bd dep tree ISSUE`, `bd dep cycles` and `bd graph check`
+retain the blocking Dependency views. The tree supports `--direction down|up|both`;
+its both-direction human view labels dependencies and dependents separately.
+`bd graph check --json` returns the ordinary flat check object and local Issue
+IDs in its `cycles`. These views read a complete bounded graph snapshot.
+Positive row caps refuse the complete graph/tree acquisition. `dep list/tree/cycles
+--json` still refuses until its ordinary JSON shape can be preserved.
 
-These views read a complete bounded graph snapshot. `bd graph ISSUE` and
-`bd dep tree ISSUE` refuse a positive `--max-rows` cap that would make their
-blocking answer incomplete.
-`dep list/tree/cycles --json` and `graph ISSUE --json` refuse until their
-ordinary JSON shapes can be preserved; use the human view or the explicit
-generic graph JSON view. In the local relationship-journeys candidate, fresh
+In the local relationship-journeys candidate, fresh
 v7 workspaces support `bd children PARENT` and `bd children PARENT --json` for
 immediate native parent-child Links, including closed children. The JSON result
 retains the ordinary Issue array shape; an empty family is `[]`. A dotted Issue
@@ -279,17 +312,16 @@ bd dep tree plan --direction both
 bd dep cycles
 bd graph plan
 bd graph check --json
-bd graph plan --view generic --direction out --depth 2 --json
+bd graph plan --all-link-types --direction out --depth 2 --json
 ```
 
 `dep list --direction up` lists dependents instead; `dep tree` also accepts
 `--max-depth` and deprecated `--reverse` (equivalent to `--direction up`).
 `dep cycles --limit N` caps displayed cycles, not the count reported.
-`dep list/tree/cycles --json` and `graph ISSUE --json` refuse because the
-ordinary JSON shapes are not yet preserved. A positive `--max-rows` or
-`BEADS_MAX_ROWS` also refuses the full blocking graph/tree snapshot rather
-than returning a partial answer. Generic traversal is a separate explicit
-Link view with its own bounds and JSON shape.
+`dep list/tree/cycles --json` refuses until ordinary JSON shapes are preserved.
+A positive `--max-rows` or `BEADS_MAX_ROWS` refuses full graph/tree acquisition
+rather than returning a partial answer. The Preview 3 graph candidate uses the
+selected-Type view and canonical graph JSON described above.
 
 ## Update and delete Beads
 

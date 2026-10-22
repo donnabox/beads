@@ -19,6 +19,17 @@ a **fresh, explicitly selected graph workspace**. Existing ordinary Issue
 workspaces continue using their existing commands and storage. This draft does
 not promise migration or that every target operation already runs.
 
+## Preview 3 selected-Type graph candidate
+
+The new `bd graph` candidate is documented in the
+[task guide](/reference/graph-cli#preview-3-selected-type-graph-candidate).
+It uses repeatable Link-Type union/refinement selection, default Dependency,
+shared direction/depth, induced matching Links, explicit frontier and canonical
+graph JSON, with ordinary output options. `--view generic` is optional.
+`--open` remains refused in link mode. This candidate supersedes the old
+summary-only graph route after integration/qualification; it does not silently
+rewrite the exact historical implementation ledger or assert it has shipped.
+
 ## Target graph CLI contract
 
 The focused [revision-aware CLI speclet](/reference/bdp/cli/references) is the

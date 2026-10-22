@@ -5,8 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
-	"strconv"
+	"sort"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -14,14 +13,16 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-var graphGenericFlags = []string{"view", "direction", "depth", "max-nodes", "max-links"}
+var graphGenericFlags = []string{"view", "direction", "depth", "max-nodes", "max-links", "link-type", "all-link-types"}
 
 func init() {
-	graphCmd.Flags().String("view", "", "Experimental graph view: generic requires a graph workspace")
+	graphCmd.Flags().String("view", "", "Deprecated: generic is the ordinary graph view in link mode")
 	graphCmd.Flags().String("direction", "both", "Generic Link direction: in, out or both (graph_mode link workspaces only)")
-	graphCmd.Flags().Int("depth", 1, "Generic expansion depth (0..1000) (graph_mode link workspaces only)")
-	graphCmd.Flags().Int("max-nodes", 100, "Generic emitted Bead bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
-	graphCmd.Flags().Int("max-links", 200, "Generic emitted Link bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
+	graphCmd.Flags().Int("depth", 1000, "Link hop depth (0..1000); frontier reports depth truncation (link mode only)")
+	graphCmd.Flags().StringArray("link-type", nil, "Select a Link Type including refinements (repeatable OR union; default Dependency; link mode only)")
+	graphCmd.Flags().Bool("all-link-types", false, "Select every installed public Link Type instead of Dependency (link mode only)")
+	graphCmd.Flags().Int("max-nodes", 1000, "Generic emitted Bead bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
+	graphCmd.Flags().Int("max-links", 1000, "Generic emitted Link bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
 }
 
 func graphGenericFlagsChanged(cmd *cobra.Command) bool {
@@ -35,24 +36,73 @@ func graphGenericFlagsChanged(cmd *cobra.Command) bool {
 
 func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (graphGenericInput, error) {
 	zero := graphGenericInput{}
-	if err := graphPreviewFlags(cmd, graphGenericFlags...); err != nil {
+	if err := graphPreviewFlags(cmd, append(append([]string{}, graphGenericFlags...), "all", "compact", "box", "dot", "html", "open", "max-rows")...); err != nil {
 		return zero, err
 	}
+	open, _ := cmd.Flags().GetBool("open")
+	if open {
+		return zero, graphFailure("capability_unavailable", "--open is not implemented for the generic graph view; omit it (dependency mode retains its existing open view)", 5)
+	}
 	view, _ := cmd.Flags().GetString("view")
-	if !cmd.Flags().Changed("view") || view != "generic" {
-		return zero, graphFailure("capability_unavailable", "graph preview requires explicit --view generic; native graph rendering is unavailable in a graph workspace", 5)
+	if cmd.Flags().Changed("view") && view != "generic" {
+		return zero, graphFailure("invalid_selector", "--view only accepts generic in link mode", 2)
 	}
-	if len(args) != 1 {
-		return zero, graphFailure("invalid_selector", "generic traversal requires one local Bead ID or beads/PATH", 2)
+	all, _ := cmd.Flags().GetBool("all")
+	if (all && len(args) != 0) || (!all && len(args) != 1) {
+		return zero, graphFailure("invalid_selector", "graph requires one local Bead ID or --all without an ID", 2)
 	}
-	path, err := graphPreviewResourcePath(scope, args[0])
-	if err != nil {
-		return zero, graphFailure("invalid_selector", err.Error(), 2)
+	if all && (cmd.Flags().Changed("direction") || cmd.Flags().Changed("depth")) {
+		return zero, graphFailure("invalid_selector", "--all selects the full matching population; omit --direction and --depth", 2)
 	}
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return zero, graphFailure("invalid_selector", err.Error(), 2)
+	in := graphGenericInput{All: all}
+	if !all {
+		path, err := graphPreviewResourcePath(scope, args[0])
+		if err != nil {
+			return zero, graphFailure("invalid_selector", err.Error(), 2)
+		}
+		if err := graph.ValidateBeadPath(path); err != nil {
+			return zero, graphFailure("invalid_selector", err.Error(), 2)
+		}
+		in.Root = graph.CanonicalURL(scope, path)
 	}
-	in := graphGenericInput{Root: graph.CanonicalURL(scope, path)}
+	in.AllLinkTypes, _ = cmd.Flags().GetBool("all-link-types")
+	selectors, _ := cmd.Flags().GetStringArray("link-type")
+	if cmd.Flags().Changed("link-type") && len(selectors) == 0 {
+		return zero, graphFailure("invalid_selector", "--link-type requires a nonempty Type selector", 2)
+	}
+	if in.AllLinkTypes && len(selectors) != 0 {
+		return zero, graphFailure("invalid_selector", "--all-link-types and --link-type are mutually exclusive", 2)
+	}
+	if !in.AllLinkTypes && len(selectors) == 0 {
+		selectors = []string{"dependency"}
+	}
+	for _, selector := range selectors {
+		if selector == "" {
+			return zero, graphFailure("invalid_selector", "--link-type requires a nonempty Type selector", 2)
+		}
+		if !strings.Contains(selector, "/") {
+			for _, name := range graphstore.FreshTypeNames() {
+				if strings.EqualFold(selector, name) {
+					selector = name
+					break
+				}
+			}
+		}
+		url, err := graphPreviewTypeURL(scope, selector)
+		if err != nil {
+			return zero, graphFailure("invalid_selector", err.Error(), 2)
+		}
+		seen := false
+		for _, existing := range in.LinkTypes {
+			if existing == url {
+				seen = true
+			}
+		}
+		if !seen {
+			in.LinkTypes = append(in.LinkTypes, url)
+		}
+	}
+	sort.Strings(in.LinkTypes)
 	in.Direction, _ = cmd.Flags().GetString("direction")
 	in.Depth, _ = cmd.Flags().GetInt("depth")
 	in.MaxNodes, _ = cmd.Flags().GetInt("max-nodes")
@@ -60,14 +110,8 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 	if err := validateGraphGenericBounds(in); err != nil {
 		return zero, graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if raw := os.Getenv(maxRowsEnvVar); raw != "" {
-		value, err := strconv.Atoi(raw)
-		if err != nil || value < 0 {
-			return zero, graphFailure("invalid_properties", "BEADS_MAX_ROWS must be a non-negative integer", 2)
-		}
-		if value > 0 {
-			return zero, graphFailure("capability_unavailable", "generic traversal uses explicit node/Link bounds; unset BEADS_MAX_ROWS", 5)
-		}
+	if err := graphPreviewRejectDependencyRowCap(cmd, "current graph acquisition"); err != nil {
+		return zero, err
 	}
 	return in, nil
 }
@@ -82,11 +126,17 @@ func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
+		// Dependency --all follows the familiar open-Issue population. Other
+		// selectors include only matching components, never unrelated isolates.
+		if in.All && !in.AllLinkTypes && len(in.LinkTypes) == 1 && in.LinkTypes[0] == graphstore.DependencyTypeURL(s.ScopeURL()) {
+			snapshot = graphSelectedOpenIssues(snapshot)
+		}
 		result, err := projectGraphGeneric(snapshot, s.ScopeURL(), in)
 		if err != nil {
 			return nil, "", err
 		}
-		output, err := renderGraphGeneric(result, jsonOutput, quietFlag)
+
+		output, err := renderGraphSelected(cmd, result, snapshot)
 		return nil, output, err
 	}, func(_ any, output string) error { return writeGraphGeneric(cmd.OutOrStdout(), output) })
 }
