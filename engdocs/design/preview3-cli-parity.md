@@ -380,8 +380,10 @@ locally; current-head hosted CI remains pending.
   docs, Markdown links and diff checks passed. The exact-head broad graph CLI
   sweep passed 256 top-level tests and 1,220 test/subtest results, with one
   top-level and 63 total expected server-only skips, zero failures
-  (`/tmp/cleo-reparent-edit-cli-broad-20261022.jsonl`). Current-head hosted
-  CI and review are pending; #224–#225 remain unmerged, unselected
+  (`/tmp/cleo-reparent-edit-cli-broad-20261022.jsonl`). At their current
+  heads, #224 and #225 each have four hosted successes; #225 also has two
+  intentional documentation skips. Reviews remain undecided; both PRs are
+  unmerged, unselected
   candidates, and empty-parent detach is still refused. A disposable combined
   checkout at local-only `beaec990e` cherry-picked #224–#225 over earlier
   status/type/label, ready and linked-delete candidates; its shared Issue
