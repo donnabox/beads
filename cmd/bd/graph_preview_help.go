@@ -173,8 +173,9 @@ interactive Issue update uses the last-touched Issue; scripts require an ID
 unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.
 On a fresh graph workspace, bd update CHILD --parent PARENT replaces the
 native parent-child edge and its canonical Link in one checked write.
-The parent must be a nonempty local Issue; detaching a dotted-ID child and
-combining --parent with other edits remain unavailable.`},
+Admitted scalar edits can accompany that move, and same-parent scalar edits
+preserve the Link identity. The parent must be a nonempty local Issue;
+detaching a dotted-ID child remains unavailable.`},
 		{deleteCmd, `For an unreferenced Memory, bd delete ID previews the
 deletion without writing. Apply with --force; --if-revision TOKEN optionally
 rejects stale state. Referenced Memories refuse; graph deletion does not cascade.`},
