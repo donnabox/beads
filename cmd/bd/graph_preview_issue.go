@@ -160,10 +160,12 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	}}
 	if cmd.Flags().Changed("id") {
 		selector, _ := cmd.Flags().GetString("id")
-		if !strings.Contains(selector, "/") {
+		if graph.ValidateBeadPath(selector) != nil {
 			// Shipping --id chooses the native Issue ID. Keep that contract for
-			// its bare spelling; the writer validates the configured prefix and
-			// reserves this ID in the same transaction as the graph path.
+			// the bare spelling; only a valid path in this preview's pinned
+			// fixed-root graph contract selects an independent graph path. The
+			// writer validates the configured prefix and reserves both IDs in
+			// the same transaction.
 			request.Issue.ID = selector
 		}
 	}
