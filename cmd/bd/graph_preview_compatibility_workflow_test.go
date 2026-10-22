@@ -301,6 +301,11 @@ func TestGraphPreviewPositionalLinkPartialIDsWorkflow(t *testing.T) {
 			if raw := call("show", source.ID); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 2 || !strings.Contains(raw, strings.TrimPrefix(other.ID, scope)) {
 				t.Fatalf("dep add partial IDs did not preserve the second native relation: %s", raw)
 			}
+			fourth := graphMixedResult[graphstore.IssueRecord](t, call("create", "Fourth blocker", "--id", "beads/fourth-blocker"))
+			call("dep", abbreviate(fourth.Properties.ID), "--blocks", from)
+			if raw := call("show", source.ID); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 3 || !strings.Contains(raw, strings.TrimPrefix(fourth.ID, scope)) {
+				t.Fatalf("dep --blocks partial IDs did not preserve the third native relation: %s", raw)
+			}
 		})
 	}
 }

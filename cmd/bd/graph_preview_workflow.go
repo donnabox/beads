@@ -244,7 +244,14 @@ func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return graphPreviewInsertDependency(sourcePath, targetPath, "", types.DepBlocks, "", "", blocked, args[0], false, [2]string{})
+	var nativeIDs [2]string
+	if sourcePath == "beads/"+blocked {
+		nativeIDs[0] = blocked
+	}
+	if targetPath == "beads/"+args[0] {
+		nativeIDs[1] = args[0]
+	}
+	return graphPreviewInsertDependency(sourcePath, targetPath, "", types.DepBlocks, "", "", blocked, args[0], false, nativeIDs)
 }
 
 func graphPreviewInsertDependency(sourcePath, targetPath, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool, nativeIDs [2]string) error {
