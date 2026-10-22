@@ -55,6 +55,8 @@ func runGraphPreviewCreateGraph(cmd *cobra.Command, args []string) error {
 			EstimatedMinutes: node.EstimatedMinutes, DueAt: node.DueAt,
 			Labels: node.Labels, Metadata: node.Metadata,
 			MetadataRefs: node.MetadataRefs,
+			Parent:       node.Parent, ParentKey: node.ParentKey,
+			ParentID: node.ParentID,
 		}
 		if node.Status == "open" {
 			allowed.Status = node.Status
