@@ -43,8 +43,13 @@ func runGraphPreviewCreateGraph(cmd *cobra.Command, args []string) error {
 	}
 	for _, node := range plan.Nodes {
 		// These initial values already have lossless native Issue create and
-		// graph-read representations. Keep relationship, lifecycle, metadata,
-		// and storage-class options behind their separate capability proofs.
+		// graph-read representations. Keep unsupported lifecycle and
+		// storage-class options behind their separate capability proofs.
+		for _, dep := range node.Deps {
+			if strings.HasPrefix(strings.TrimSpace(dep.Target), "external:") {
+				return graphFailure("capability_unavailable", "graph inline dependencies require local Issue targets; external targets are unavailable", 5)
+			}
+		}
 		allowed := GraphApplyNode{
 			Key: node.Key, ID: node.ID, Title: node.Title, Type: node.Type,
 			Description: node.Description, Design: node.Design,
@@ -56,7 +61,7 @@ func runGraphPreviewCreateGraph(cmd *cobra.Command, args []string) error {
 			Labels: node.Labels, Metadata: node.Metadata,
 			MetadataRefs: node.MetadataRefs,
 			Parent:       node.Parent, ParentKey: node.ParentKey,
-			ParentID: node.ParentID,
+			ParentID: node.ParentID, Deps: node.Deps,
 		}
 		if node.Status == "open" {
 			allowed.Status = node.Status
