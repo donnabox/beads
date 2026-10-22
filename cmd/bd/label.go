@@ -566,6 +566,9 @@ var labelListCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewLabelList(cmd, args[0])
+		}
 		evt := metrics.NewCommandEvent("label-list")
 		defer func() {
 			if c := metrics.Global(); c != nil {

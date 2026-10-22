@@ -55,7 +55,7 @@ func graphListConfig(t *testing.T, work, yaml string) {
 // graphListSeedIssue creates an Issue through the controlled writer between two
 // installed processes, for a state no admitted command can author. Close it
 // before the next process opens the workspace, embedded mode included.
-func graphListSeedIssue(t *testing.T, work, path string, request publicops.CreateRequest) {
+func graphListSeedIssue(t *testing.T, work, path string, request publicops.CreateRequest) string {
 	t.Helper()
 	cfg, err := configfile.LoadForDiscovery(filepath.Join(work, ".beads"))
 	if err != nil || cfg == nil {
@@ -76,9 +76,11 @@ func graphListSeedIssue(t *testing.T, work, path string, request publicops.Creat
 			t.Error(err)
 		}
 	}()
-	if _, err := s.CreateIssue(ctx, path, request); err != nil {
+	created, err := s.CreateIssue(ctx, path, request)
+	if err != nil {
 		t.Fatal(err)
 	}
+	return created.Properties.ID
 }
 
 // graphListBeads runs the structured Bead list and returns its page: the
