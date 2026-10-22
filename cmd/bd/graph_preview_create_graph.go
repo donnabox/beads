@@ -53,7 +53,8 @@ func runGraphPreviewCreateGraph(cmd *cobra.Command, args []string) error {
 			Assignee: node.Assignee, AssignAfterCreate: node.AssignAfterCreate,
 			Owner: node.Owner, Priority: node.Priority,
 			EstimatedMinutes: node.EstimatedMinutes, DueAt: node.DueAt,
-			Labels: node.Labels,
+			Labels: node.Labels, Metadata: node.Metadata,
+			MetadataRefs: node.MetadataRefs,
 		}
 		if node.Status == "open" {
 			allowed.Status = node.Status

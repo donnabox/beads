@@ -49,8 +49,13 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			if deferredPhase {
 				return nil, fmt.Errorf("%w: graph batch creates must precede deferred assignments", ErrCapabilityUnavailable)
 			}
-			if item.Create.Key == "" || len(item.Create.MetadataRefs) != 0 {
-				return nil, fmt.Errorf("%w: graph batch item %d requires a key and cannot carry metadata refs", ErrCapabilityUnavailable, index)
+			if item.Create.Key == "" {
+				return nil, fmt.Errorf("%w: graph batch item %d requires a key", ErrCapabilityUnavailable, index)
+			}
+			for name, ref := range item.Create.MetadataRefs {
+				if name == "" || ref.Key == "" || ref.ID != "" {
+					return nil, fmt.Errorf("%w: graph batch metadata refs must name new keyed Issues", ErrCapabilityUnavailable)
+				}
 			}
 			if err := validateIssueCreate(publicops.CreateRequest{Actor: plan.Actor, Issue: item.Create.Issue, ForceIDPrefix: plan.ForceIDPrefix, DefaultPriority: item.Create.DefaultPriority}); err != nil {
 				return nil, fmt.Errorf("graph batch item %d: %w", index, err)
@@ -100,6 +105,13 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 	for key := range deferredAssignees {
 		if creates[key] == nil {
 			return nil, fmt.Errorf("%w: deferred assignee must target a new keyed Issue", ErrCapabilityUnavailable)
+		}
+	}
+	for _, create := range creates {
+		for _, ref := range create.MetadataRefs {
+			if creates[ref.Key] == nil {
+				return nil, fmt.Errorf("%w: graph batch metadata ref must name a new keyed Issue", ErrCapabilityUnavailable)
+			}
 		}
 	}
 	for _, item := range edges {
@@ -257,7 +269,32 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 					break
 				}
 			}
-			if !sameIssueCreateFields(create.Issue, issue, plan.Actor) || issueops.IsWisp(issue) {
+			expected := *create.Issue
+			if len(create.MetadataRefs) != 0 {
+				metadata, err := commonMetadata(expected.Metadata)
+				if err != nil {
+					return err
+				}
+				var values map[string]json.RawMessage
+				if err := json.Unmarshal(metadata, &values); err != nil {
+					return err
+				}
+				for name, ref := range create.MetadataRefs {
+					value, err := json.Marshal(applied.Keys[ref.Key])
+					if err != nil {
+						return err
+					}
+					values[name] = value
+				}
+				expected.Metadata, err = json.Marshal(values)
+				if err != nil {
+					return err
+				}
+				if assignee, ok := deferredAssignees[key]; ok {
+					expected.Assignee = assignee
+				}
+			}
+			if !sameIssueCreateFields(&expected, issue, plan.Actor) || issueops.IsWisp(issue) {
 				return fmt.Errorf("%w: graph batch Issue %q cannot be represented exactly", storage.ErrValidation, key)
 			}
 			if assignee, ok := deferredAssignees[key]; ok {
