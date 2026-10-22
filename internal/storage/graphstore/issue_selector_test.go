@@ -103,6 +103,9 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 			if err != nil || !reflect.DeepEqual(mixed, memory) {
 				t.Fatalf("bare Memory fallback changed selection: %+v %v", mixed, err)
 			}
+			if _, err := s.ShowIssueDetailsSelected(ctx, IssueSelector{Path: "beads/notes"}, workapi.DetailOptions{}); !errors.Is(err, ErrCapabilityUnavailable) {
+				t.Fatalf("explicit Memory detail read should refuse as non-Issue: %v", err)
+			}
 			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector})
 			if err != nil || !reflect.DeepEqual(paths, []string{"beads/source"}) {
 				t.Fatalf("abbreviated count filter selected wrong path: %v %v", paths, err)
