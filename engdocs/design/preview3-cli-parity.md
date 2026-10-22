@@ -98,7 +98,16 @@ the incident-Link listing form.
    [#152](https://github.com/donnabox/beads/pull/152) repair subsets, while
    other forms have no selected fix. A focused combined 18-workflow test of
    #151, #152, #156 and #175 passed both engines, but that is not a v1.3.1
-   feature-parity certification. See the [selection record](preview3-cli-compatibility-selection.md).
+   feature-parity certification. A newer disposable assembly at local-only
+   `fbf03c401` includes the current #175 fixture correction: its broad
+   embedded graph CLI sweep passed 258 top-level tests with one expected
+   server-only skip and no failures
+   (`/tmp/cleo-selected-slice-broad-current.jsonl`). Seven focused installed
+   create, edit, delete, versions, list, Link and ready workflows passed on
+   embedded and real shared-server Dolt (23 test/subtest pass events, no
+   skips; `/tmp/cleo-selected-slice-server-current.jsonl`). This qualifies
+   the selected local assembly, not every shipping form or a PR merge. See
+   the [selection record](preview3-cli-compatibility-selection.md).
 
 Other misleading answers found during flag qualification: `bd dep tree ID
 --max-depth 1` reports “has no dependencies” for a root with a direct blocking
