@@ -73,6 +73,22 @@ behavior. This is a storage capability proof first; the shipping JSON field
 surface and output envelope can follow after the plan and rollback invariants
 pass on both engines.
 
+The native heterogeneous batch already exposes a reusable in-transaction
+body: `PlanApplyBatch` checks symbolic keys and request shape before opening a
+transaction, and `ApplyBatchInTx` binds the keys, creates the Issues and adds
+their edges under the caller's `*sql.Tx`
+([`internal/storage/batch_apply.go`](../../internal/storage/batch_apply.go),
+[`internal/storage/issueops/batch_apply.go`](../../internal/storage/issueops/batch_apply.go)).
+The graph adapter can lower the shipping JSON plan to that checked request,
+run the body inside `graphstore.withTx`, then publish Bead identities, every
+native edge's canonical Link, retained versions and source-owned History
+before commit. It must validate that every plan field and endpoint is
+representable by the installed graph Types; an existing native edge must not
+gain a second canonical Link. A useful first test is two generated-ID nodes
+with a forward symbolic edge, followed by an injected failure after the native
+edge and before Link retention. Embedded and shared-server Dolt must both
+show no nodes, edge, catalogue entries or versions after that failure.
+
 A local-only proof at `cb7da57c5` extends the graph batch adapter to keep an
 edge from a later item to an earlier item with an explicit native ID inside
 the existing transaction. A staged Link-retention failure rolls back the
