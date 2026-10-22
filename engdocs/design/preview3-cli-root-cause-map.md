@@ -128,6 +128,19 @@ workflows passed embedded and real shared-server Dolt without skips. Multiple
 Links from one existing source refuse until intermediate-version retention is
 proven. #235 hosted CI and review are pending.
 
+The next same-source batch proof has a specific retention seam. Native
+`ApplyBatchInTx` applies dependency items in request order, and each genuinely
+inserted edge mints an `issue_versions` row for its source. Its `ItemResult`
+reports whether the edge changed but carries no post-edge Issue revision or
+owned-Link snapshot. Graph `recordIssueMappingInTx` reads only the final native
+revision and final canonical owned set. Removing #235's one-Link guard would
+therefore leave intermediate native revisions without matching graph Issue
+History. A safe extension needs to pair each changed edge with its native
+revision and the owned-Link set at that point inside the same transaction,
+including interleaved sources and idempotent edge results, then prove rollback
+and historical reads on embedded and shared-server Dolt. The existing guard
+remains until that correspondence is demonstrated.
+
 A first commit in #231 at `cb7da57c5` extends the graph batch adapter to keep an
 edge from a later item to an earlier item with an explicit native ID inside
 the existing transaction. A staged Link-retention failure rolls back the
