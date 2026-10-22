@@ -83,8 +83,11 @@ the incident-Link listing form.
    output mixes the two identities. This reproduced on embedded and real
    shared-server Dolt. Donna selected shipping identity for a flat bare
    `--id`; [#180](https://github.com/donnabox/beads/pull/180) implements and
-   tests that rule but remains unmerged. Explicit graph-qualified paths may
-   retain independent IDs under the pinned current-v0 fixed-root contract.
+   tests that rule but remains unmerged. #180 also proposes retaining the
+   pinned current-v0 graph-path spelling for explicit `beads/PATH`, with a
+   potentially different native backing ID. Donna's opaque Scope-unique ID
+   direction has not approved that dual-identity exception, so #180 is held
+   for the underlying identity decision rather than selected to land as-is.
    Head `9790e609f` narrows the exceptional path spelling to an exact validated
    graph path; its identity workflow passed embedded and real shared-server
    Dolt, while new-head hosted CI is pending. Earlier head `4d3559d16` had
@@ -122,8 +125,13 @@ the incident-Link listing form.
    selected #150/#151/#152/#156/#175 heads onto integration `6a5f47b43`
    passed seven focused workflows on both engines at local head `1b0d26c06`;
    the #152 follow-up was then merged into local head `07b2b2307` without
-   rerunning the entire composition. This does not replace current-head hosted
-   checks or a landed comparison.
+   rerunning the entire composition. The final five-PR recomposition at local
+   `872a440c0` includes #150's Bazel docsync visibility fix and #152's input
+   fix. Eight focused graph CLI test functions passed in that exact tree;
+   their installed workflows ran on embedded and real shared-server Dolt, and
+   the input-source unit regression ran locally. Bazel source sync, docsync,
+   generated CLI docs and diff checks passed. This does not replace
+   current-head hosted checks or a landed comparison.
 
 Other misleading answers found during flag qualification: `bd dep tree ID
 --max-depth 1` reports “has no dependencies” for a root with a direct blocking
@@ -140,7 +148,7 @@ locally; current-head hosted CI remains pending.
 | Command | Current link-mode status at `b6d0493ba` | What users cannot rely on yet | Work status (living tracker) |
 | --- | --- | --- | --- |
 | `assign` | Tested core works. | Graph IDs may be `beads/ID`; live-claim takeover was not requalified in this audit. Graph help describes the wrong revision-token shape and stale-guard exit code. Draft #249 proves abbreviated native Issue IDs in the shared checked selector, but is unmerged. | Candidate/open #249; current integration unchanged |
-| `children` | Immediate children work. | `--pretty` refuses; explicit-ID parents can yield surprising child and dependency IDs (P1). | Candidate/open #180; focused both-engine pass at new head, hosted checks pending |
+| `children` | Immediate children work. | `--pretty` refuses; explicit-ID parents can yield surprising child and dependency IDs (P1). | Candidate/open #180; focused both-engine pass, hosted checks pending, identity decision held |
 | `close` | Single close and no-op work. | A batch may close earlier IDs then fail on a later missing ID; JSON differs; `--continue` and `--no-auto` refuse. Donna selected shipping's no-change-on-missing-ID rule for Preview 3. Draft #226–#227 implement same-transaction selector preflight for ordinary multi-ID close and `--claim-next`; other per-item policy refusals can still partly succeed. | Candidates/open #226–#227; current integration unchanged |
 | `comment` | Issue comment write works. | Comments on non-Issue Beads are unavailable; graph `issue_id` uses a canonical path. | As-built; no parity PR |
 | `comments` | Issue feed and `comments add` work. | Non-Issue comments are unavailable; custom-author/file combinations were not fully retested. | As-built; no parity PR |
