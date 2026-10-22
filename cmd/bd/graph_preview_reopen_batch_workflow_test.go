@@ -96,11 +96,13 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 				t.Fatalf("partial batch hid the successful reopen: %+v", changed)
 			}
 			call("create", "Third", "--id", "beads/third")
-			closedPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(1, `"code":"not_found"`, "close", "third", "missing"))
-			if len(closedPartial) != 1 || !closedPartial[0].Changed || closedPartial[0].Issue.Properties.Status != types.StatusClosed {
-				t.Fatalf("partial batch hid the successful close: %+v", closedPartial)
+			thirdBefore := call("versions", "third")
+			if output := runMixedBatch(3, `"code":"not_found"`, "close", "third", "missing"); output != "" {
+				t.Fatalf("missing close selector emitted a successful sibling: %s", output)
 			}
-			call("reopen", "third")
+			if got := call("versions", "third"); got != thirdBefore {
+				t.Fatal("missing close selector changed a sibling Issue")
+			}
 			// Ordinary direct defer/undefer pre-resolves all IDs and rejects a
 			// missing sibling before writing, while the ordinary proxied route
 			// commits survivors and returns 0 with a plain stderr warning.
