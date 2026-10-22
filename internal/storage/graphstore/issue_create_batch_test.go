@@ -175,3 +175,56 @@ func TestGraphIssueCreateBatchMapsLocalDependenciesAtomically(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphIssueCreateBatchCanLinkEarlierExplicitItem(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			first := plainIssue("Prerequisite").Issue
+			first.ID = "exp-prereq"
+			request := publicops.CreateBatchRequest{Actor: "test-author", Items: []publicops.BatchCreateItem{
+				{Issue: first},
+				{Issue: plainIssue("Dependent").Issue, Dependencies: []publicops.CreateDependency{{TargetID: first.ID, Type: types.DepBlocks}}},
+			}}
+			before := workflowState(t, ctx, s)
+			fault := errors.New("retaining same-batch Link failed")
+			s.afterWrite = func(stage string) error {
+				if stage == "create-dependency-retained" {
+					return fault
+				}
+				return nil
+			}
+			_, err = s.CreateIssueBatch(ctx, request)
+			s.afterWrite = nil
+			if !errors.Is(err, fault) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("same-batch Link fault left native or graph state: %v", err)
+			}
+			records, err := s.CreateIssueBatch(ctx, request)
+			if err != nil || len(records) != 2 {
+				t.Fatalf("same-batch records=%+v err=%v", records, err)
+			}
+			if records[0].Properties.ID != first.ID || len(records[1].Owned) != 1 {
+				t.Fatalf("same-batch Issue identity/owned Links: %+v", records)
+			}
+			var link LinkRecord
+			if err := json.Unmarshal(records[1].Owned[0], &link); err != nil {
+				t.Fatal(err)
+			}
+			if link.Source != records[1].ID || link.Target != records[0].ID || link.Properties["dep_type"] != string(types.DepBlocks) {
+				t.Fatalf("same-batch Link = %+v", link)
+			}
+			before = workflowState(t, ctx, s)
+			request.Items[0].Issue.ID = "exp-next"
+			request.Items[1].Dependencies = []publicops.CreateDependency{{TargetID: "exp-next", Type: types.DepBlocks, Reverse: true}}
+			_, err = s.CreateIssueBatch(ctx, request)
+			if !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("reverse same-batch edge was not an atomic explicit refusal: %v", err)
+			}
+		})
+	}
+}
