@@ -19,8 +19,8 @@ import (
 
 var memoryGraphCmd = &cobra.Command{
 	Use:         "memory",
-	Short:       "Explore Memory relationships and explicit obligations",
-	Long:        "Read Memory relationships in a graph-mode link workspace. Existing remember, recall, memories and forget retain their own contracts.",
+	Short:       "Explore and record Memory relationships",
+	Long:        "Explore and record Memory relationships in a graph-mode link workspace. Existing remember, recall, memories and forget retain their own contracts.",
 	Annotations: map[string]string{skipStoreAnnotation: "1", canonicalDefaultAnnotation: "1"},
 }
 
