@@ -399,14 +399,15 @@ bd close work --if-revision "$revision" --reason 'Finished the work'
 bd reopen work review --reason 'Follow-up needed'
 ```
 
-`bd delete ID` previews deletion of one unreferenced Memory or Issue without
-changing storage; `--force` applies it. `bd forget ID` applies Memory deletion
+`bd delete ID` previews deletion of one Memory or Issue without changing
+storage; `--force` applies it. `bd forget ID` applies Memory deletion
 directly and does not accept Issues. Applying either command requires an
 explicit write choice, shown here with `--unconditional`. Any live incoming,
-outgoing or self-Link makes deletion refuse; `--force` does not cascade.
-Memory refusal names the first blocking Link ID and the total count. Issue
-refusal lists the incident Link IDs; unlink them explicitly before retrying
-with a fresh revision.
+outgoing or self-Link still makes Memory deletion refuse. Memory refusal names
+the first blocking Link ID and the total count. Issue deletion removes its
+incident Links in the same transaction; unforced preview refuses if a
+surviving Issue depends on it. `--force` removes those dependency Links and
+leaves surviving dependents live. It does not cascade to dependent Issues.
 
 ```sh
 bd remember 'Temporary note' --id scratch
