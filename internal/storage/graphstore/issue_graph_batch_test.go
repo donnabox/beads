@@ -198,19 +198,63 @@ func TestApplyNewIssueGraphLinksExistingSourceToNewTargetAtomically(t *testing.T
 			if got := graphBatchRowCount(t, ctx, s, "dependencies"); got != 1 {
 				t.Fatalf("native edges=%d, want 1", got)
 			}
-			// Two aliases for the same existing source would create multiple
-			// native revisions. Refuse until every intermediate canonical
-			// mapping can be retained without losing History.
-			ambiguous := publicops.ApplyBatchRequest{Actor: "batch-author", Items: []publicops.ApplyItem{
+			// Two aliases for one allocated source must retain each native
+			// mutation as a distinct canonical Issue version, with the owned
+			// Link set that existed after that particular edge.
+			multiple := publicops.ApplyBatchRequest{Actor: "batch-author", Items: []publicops.ApplyItem{
 				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "a", Issue: plainIssue("A").Issue}},
 				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "b", Issue: plainIssue("B").Issue}},
 				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{ID: source.Properties.ID}, Target: publicops.Ref{Key: "a"}, Type: types.DepBlocks}},
 				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{ID: "beads/existing"}, Target: publicops.Ref{Key: "b"}, Type: types.DepBlocks}},
 			}}
 			before = workflowState(t, ctx, s)
-			refused, err := s.ApplyNewIssueGraph(ctx, ambiguous)
-			if !errors.Is(err, ErrCapabilityUnavailable) || refused != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("two existing-source edges did not refuse before writing: result=%v err=%v", refused, err)
+			retained := 0
+			s.afterWrite = func(stage string) error {
+				if stage == "source-retained" {
+					retained++
+					if retained == 2 {
+						return fault
+					}
+				}
+				return nil
+			}
+			failed, err = s.ApplyNewIssueGraph(ctx, multiple)
+			s.afterWrite = nil
+			if !errors.Is(err, fault) || failed != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("second source-version fault left partial state: result=%v err=%v", failed, err)
+			}
+			created, err := s.ApplyNewIssueGraph(ctx, multiple)
+			if err != nil || len(created) != 2 {
+				t.Fatalf("two existing-source edges: result=%v err=%v", created, err)
+			}
+			current, err = s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/existing"})
+			if err != nil || len(current.Owned) != 3 {
+				t.Fatalf("current source after two edges: %+v err=%v", current, err)
+			}
+			assertIssueEditCounts(t, ctx, s, source.Properties.ID, 4)
+			kind, versions, err := s.Versions(ctx, "beads/existing")
+			if err != nil || kind != KindIssue || len(versions) != 4 {
+				t.Fatalf("source History: kind=%s versions=%+v err=%v", kind, versions, err)
+			}
+			for i, wantOwned := range []int{3, 2, 1, 0} {
+				body, err := s.ReadVersion(ctx, "beads/existing", versions[i].Version)
+				issue, ok := body.(IssueRecord)
+				if err != nil || !ok || len(issue.Owned) != wantOwned {
+					t.Fatalf("source History[%d] owned=%d want=%d body=%+v err=%v", i, len(issue.Owned), wantOwned, body, err)
+				}
+				if i == 1 {
+					targets := make(map[string]bool)
+					for _, raw := range issue.Owned {
+						var link LinkRecord
+						if err := json.Unmarshal(raw, &link); err != nil {
+							t.Fatal(err)
+						}
+						targets[link.Target] = true
+					}
+					if !targets[newTarget.ID] || !targets[created["a"].ID] || targets[created["b"].ID] {
+						t.Fatalf("intermediate source History has the wrong Links: %+v", targets)
+					}
+				}
 			}
 		})
 	}
