@@ -106,7 +106,9 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				}
 				edges[index].dependency.targetID = target.Properties.ID
 				edges[index].dependency.targetPath = path
-				plan.Items[edges[index].index].DepAdd.Target = publicops.Ref{ID: target.Properties.ID}
+				resolved := *plan.Items[edges[index].index].DepAdd
+				resolved.Target = publicops.Ref{ID: target.Properties.ID}
+				plan.Items[edges[index].index].DepAdd = &resolved
 			}
 			target := "key:" + edges[index].targetKey
 			if edges[index].targetID != "" {
