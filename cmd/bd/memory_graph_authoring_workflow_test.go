@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 type memoryAuthoredLink struct {
@@ -139,6 +140,9 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			// Invalid properties/selectors are rejected before the writer. Read-only
 			// refusal also preserves the exact source postimage.
 			before = snapshot("d")
+			for _, guard := range []string{string([]byte{0xff}), strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)} {
+				refuse("invalid_selector", 2, "memory", "reference", "d", "--to=b", "--if-source-revision="+guard)
+			}
 			for _, flag := range []string{"title", "body", "status"} {
 				refuse("invalid_properties", 2, "memory", "reference", "d", "--to=b", "--"+flag+"="+string([]byte{0xff}))
 			}

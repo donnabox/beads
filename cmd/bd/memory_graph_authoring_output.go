@@ -85,7 +85,7 @@ func memoryLinkProblem(cmd *cobra.Command, renderer *clioutput.MutationRenderer,
 	fmt.Fprintln(cmd.ErrOrStderr())
 	// Keep the original refusal/effect diagnostic even if stdout delivery fails.
 	if len(data) > 0 {
-		if err := writeMemoryLinkDocument(cmd, data, state); err != nil {
+		if err := writeMemoryLinkDocument(cmd, data, state, true); err != nil {
 			return err
 		}
 	}
@@ -94,15 +94,17 @@ func memoryLinkProblem(cmd *cobra.Command, renderer *clioutput.MutationRenderer,
 
 // Exactly one final publication attempt. A short/failed writer may already have
 // delivered a prefix, so appending another envelope would corrupt the stream.
-func writeMemoryLinkDocument(cmd *cobra.Command, data []byte, state memoryLinkExecution) error {
+func writeMemoryLinkDocument(cmd *cobra.Command, data []byte, state memoryLinkExecution, diagnosisPrinted bool) error {
 	if err := writeCanonicalDocument(cmd.OutOrStdout(), data); err != nil {
 		fmt.Fprintf(cmd.ErrOrStderr(), "output_error: %v", err)
-		if state.applied && !errors.Is(state.err, graphstore.ErrOutcomeUnknown) {
+		if !diagnosisPrinted && state.applied && !errors.Is(state.err, graphstore.ErrOutcomeUnknown) {
 			fmt.Fprintf(cmd.ErrOrStderr(), "; operation completed; do not replay automatically; inspect effect=%v", memoryLinkEffect(state))
 		}
 		fmt.Fprintln(cmd.ErrOrStderr())
 		if errors.Is(state.err, graphstore.ErrOutcomeUnknown) {
-			fmt.Fprintln(cmd.ErrOrStderr(), "outcome_unknown: inspect before retry; do not automatically replay")
+			if !diagnosisPrinted {
+				fmt.Fprintln(cmd.ErrOrStderr(), "outcome_unknown: inspect before retry; do not automatically replay")
+			}
 			return &exitError{Code: 6}
 		}
 		return &exitError{Code: 1}

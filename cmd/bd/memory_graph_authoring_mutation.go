@@ -216,7 +216,7 @@ func publishMemoryLinkExecution(cmd *cobra.Command, renderer *clioutput.Mutation
 	if err != nil {
 		return memoryLinkProblem(cmd, renderer, "output_error", err.Error(), 1, state)
 	}
-	return writeMemoryLinkDocument(cmd, data, state)
+	return writeMemoryLinkDocument(cmd, data, state, false)
 }
 
 // This is predecessor identity context, not an invented complete Resource.

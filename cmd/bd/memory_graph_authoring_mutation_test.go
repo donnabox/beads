@@ -237,7 +237,7 @@ func TestMemoryLinkCreateOutputFailureNeverReplays(t *testing.T) {
 			want = 6
 		}
 		memoryAuthoringExit(t, err, want)
-		if writer.calls != 1 || !strings.Contains(stderr, "inspect") {
+		if writer.calls != 1 || !strings.Contains(stderr, "inspect") || strings.Count(stderr, "outcome_unknown:") > 1 || strings.Count(stderr, "operation completed") > 1 {
 			t.Fatalf("writes=%d stderr=%s", writer.calls, stderr)
 		}
 		if unknown && strings.Contains(stderr, "operation completed") {
@@ -283,7 +283,7 @@ func TestMemoryLinkCreateRefusalDeliveryKeepsDiagnosis(t *testing.T) {
 	writer := &memoryAuthoringShortWriter{}
 	_, stderr, err := memoryAuthoringPublish(t, state, writer)
 	memoryAuthoringExit(t, err, 1) // the document could not be delivered
-	if writer.calls != 1 || !strings.Contains(stderr, "revision_conflict:") || !strings.Contains(stderr, "output_error:") || strings.Contains(stderr, "operation completed") {
+	if writer.calls != 1 || !strings.Contains(stderr, "revision_conflict:") || !strings.Contains(stderr, "output_error:") || strings.Index(stderr, "revision_conflict:") > strings.Index(stderr, "output_error:") || strings.Contains(stderr, "operation completed") {
 		t.Fatalf("lost refusal diagnosis: calls=%d %s", writer.calls, stderr)
 	}
 }

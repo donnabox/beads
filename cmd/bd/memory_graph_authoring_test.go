@@ -153,3 +153,17 @@ func TestMemoryLinkCanonicalBoundary(t *testing.T) {
 		}
 	}
 }
+
+func TestMemoryLinkSourceGuardAdmission(t *testing.T) {
+	for _, guard := range []string{string([]byte{0xff}), strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)} {
+		c := memoryLinkTestCommand(t, memoryLinkOperations[0], "--to=b", "--if-source-revision="+guard)
+		got, err := memoryLinkRequest(c, []string{"a"}, "https://example.invalid/memory-create/", memoryLinkOperations[0])
+		if err == nil || !reflect.DeepEqual(got, graphstore.LinkCreateRequest{}) {
+			t.Fatalf("invalid guard admitted: %#v %v", got, err)
+		}
+	}
+	c := memoryLinkTestCommand(t, memoryLinkOperations[0], "--to=b", "--if-source-revision="+strings.Repeat("x", graphstore.PreviewVersionTokenLimit))
+	if _, err := memoryLinkRequest(c, []string{"a"}, "https://example.invalid/memory-create/", memoryLinkOperations[0]); err != nil {
+		t.Fatalf("valid maximum-size opaque guard refused: %v", err)
+	}
+}

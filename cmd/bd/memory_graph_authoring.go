@@ -118,6 +118,9 @@ func memoryLinkRequest(cmd *cobra.Command, args []string, scope string, op memor
 	if err != nil {
 		return zero, err
 	}
+	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
+		return zero, fmt.Errorf("--if-source-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit)
+	}
 	result.ExpectedSourceRevision, result.UnconditionalSource = revision, unconditional
 	return result, nil
 }
