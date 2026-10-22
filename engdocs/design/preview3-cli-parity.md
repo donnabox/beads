@@ -598,8 +598,9 @@ locally; current-head hosted CI remains pending.
   thread-empty existing canonical Link. A mixed plan with that no-op followed
   by a new edge retains exactly one new source version. Storage and installed
   CLI workflows passed embedded and real shared-server Dolt without skips;
-  changed-kind and unrepresentable re-adds still refuse. #239 hosted CI and
-  review are pending. None of #231–#239 is merged.
+  changed-kind and unrepresentable re-adds still refuse. #239's four
+  current-head hosted checks passed; review is pending. None of #231–#239 is
+  merged.
 - A broad local assembled `TestGraphPreview` run through #196 completed with
   two failing top-level tests: `--ready=false` expected a now-obsolete
   refusal, and the usability workflow expected `capability_unavailable` for

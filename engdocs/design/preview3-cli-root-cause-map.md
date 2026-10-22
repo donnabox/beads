@@ -160,8 +160,9 @@ plan retains only the genuinely inserted edge revision. Focused storage and
 installed CLI workflows passed embedded and real shared-server Dolt without
 skips. Native metadata-changing re-adds can mint a version despite reporting
 no new edge, so they and unmapped native edges remain explicit refusals.
-#239 hosted CI and review are pending. None of #237–#239 is merged; arbitrary
-update/close items remain outside this bounded proof.
+#239's four current-head hosted checks passed; review is pending. None of
+#237–#239 is merged; arbitrary update/close items remain outside this bounded
+proof.
 
 Test-only draft [#236](https://github.com/donnabox/beads/pull/236) at
 `5fbf1cb91` pins the different *new-source* inception rule: native create plus
