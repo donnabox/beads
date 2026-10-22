@@ -38,26 +38,26 @@ func renderGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, lim
 	return renderGraphRelationshipTreePart(w, r, limit, true)
 }
 
-// A captured Memory root supplies its own frontier and aggregate framing.
-// The generic graph wrapper retains its existing summary and forest behavior.
-func renderGraphRelationshipTreePart(w *graphExportWriter, r graphGenericResult, limit int, summary bool) error {
+// Bind and order an already-admitted graph for either one tree or a staged forest.
+// This does not acquire records, classify Types or choose graph membership.
+func newGraphRelationshipTree(w *graphExportWriter, r graphGenericResult, limit int) (*graphRelationshipTree, error) {
 	t := graphRelationshipTree{result: r, nodes: map[string]graphGenericNode{}, adjacent: map[string][]graphGenericLink{}, outgoing: map[string][]string{}, treeEdges: map[string]string{}, owners: map[string]string{}, expanded: map[string]bool{}, emitted: map[string]bool{}, w: w, limit: limit, remaining: limit}
 	invalid := func() error {
 		return fmt.Errorf("%w: incomplete or duplicate selected graph", graphstore.ErrInvalidStore)
 	}
 	for _, n := range r.Nodes {
 		if n.ID == "" || n.Type == "" || t.nodes[n.ID].ID != "" {
-			return invalid()
+			return nil, invalid()
 		}
 		t.nodes[n.ID] = n
 	}
 	if (r.Root == "" && !r.All) || (r.Root != "" && t.nodes[r.Root].ID == "") {
-		return invalid()
+		return nil, invalid()
 	}
 	links := map[string]bool{}
 	for _, l := range r.Links {
 		if l.ID == "" || l.Type == "" || links[l.ID] || t.nodes[l.Source].ID == "" || t.nodes[l.Target].ID == "" {
-			return invalid()
+			return nil, invalid()
 		}
 		links[l.ID] = true
 		t.outgoing[l.Source] = append(t.outgoing[l.Source], l.Target)
@@ -69,11 +69,11 @@ func renderGraphRelationshipTreePart(w *graphExportWriter, r graphGenericResult,
 		}
 	}
 	if r.Direction != "in" && r.Direction != "out" && r.Direction != "both" {
-		return invalid()
+		return nil, invalid()
 	}
 	for _, id := range r.Frontier {
 		if t.nodes[id].ID == "" {
-			return invalid()
+			return nil, invalid()
 		}
 	}
 	for id := range t.adjacent {
@@ -96,6 +96,16 @@ func renderGraphRelationshipTreePart(w *graphExportWriter, r graphGenericResult,
 			return a.ID < b.ID
 		})
 	}
+	return &t, nil
+}
+
+// A captured Memory root supplies its own frontier and aggregate framing.
+// The generic graph wrapper retains its existing summary and forest behavior.
+func renderGraphRelationshipTreePart(w *graphExportWriter, r graphGenericResult, limit int, summary bool) error {
+	t, err := newGraphRelationshipTree(w, r, limit)
+	if err != nil {
+		return err
+	}
 	// The requested root comes first. Remaining components (including --all
 	// isolates) are a stable forest, not fabricated connections between roots.
 	roots := make([]string, 0, len(t.nodes)+1)
@@ -110,7 +120,7 @@ func renderGraphRelationshipTreePart(w *graphExportWriter, r graphGenericResult,
 	roots = append(roots, ids...)
 	roots = t.chooseExpansion(roots)
 	if !summary && len(roots) != 1 {
-		return invalid()
+		return fmt.Errorf("%w: disconnected captured root", graphstore.ErrInvalidStore)
 	}
 	t.placeLinks(roots)
 	first := true
@@ -134,7 +144,7 @@ func renderGraphRelationshipTreePart(w *graphExportWriter, r graphGenericResult,
 		if !first {
 			t.println("")
 		}
-		t.println(fmt.Sprintf("%d Beads, %d Links", len(t.nodes), len(links)))
+		t.println(fmt.Sprintf("%d Beads, %d Links", len(t.nodes), len(r.Links)))
 		t.println(fmt.Sprintf("Complete: %t; direction: %s; depth: %d; frontier: %d", r.Complete, r.Direction, r.Depth, len(r.Frontier)))
 		for _, id := range r.Frontier {
 			if t.stopped() {
@@ -206,21 +216,40 @@ func (t *graphRelationshipTree) chooseExpansion(candidates []string) []string {
 		}
 		roots = append(roots, root)
 		assigned[root] = true
-		queue := []string{root}
-		for cursor := 0; cursor < len(queue); cursor++ {
-			id := queue[cursor]
-			for _, l := range t.adjacent[id] {
-				next, _ := t.other(l, id)
-				if assigned[next] {
-					continue
-				}
-				assigned[next] = true
-				t.treeEdges[l.ID] = next
-				queue = append(queue, next)
-			}
-		}
+		t.assignExpansion(assigned, []string{root})
 	}
 	return roots
+}
+
+// All phase seeds are canonical anchors before any Requires edge is placed.
+func (t *graphRelationshipTree) chooseAnchoredExpansion(anchors []string) error {
+	assigned := map[string]bool{}
+	for _, id := range anchors {
+		if t.nodes[id].ID == "" || assigned[id] {
+			return fmt.Errorf("%w: invalid captured forest seed", graphstore.ErrInvalidStore)
+		}
+		assigned[id] = true
+	}
+	t.assignExpansion(assigned, append([]string(nil), anchors...))
+	if len(assigned) != len(t.nodes) {
+		return fmt.Errorf("%w: disconnected captured stage", graphstore.ErrInvalidStore)
+	}
+	return nil
+}
+
+func (t *graphRelationshipTree) assignExpansion(assigned map[string]bool, queue []string) {
+	for cursor := 0; cursor < len(queue); cursor++ {
+		id := queue[cursor]
+		for _, l := range t.adjacent[id] {
+			next, _ := t.other(l, id)
+			if assigned[next] {
+				continue
+			}
+			assigned[next] = true
+			t.treeEdges[l.ID] = next
+			queue = append(queue, next)
+		}
+	}
 }
 
 // Fix the row owner before descending. Otherwise a child can consume a later
