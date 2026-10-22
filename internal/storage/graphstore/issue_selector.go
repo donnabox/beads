@@ -269,7 +269,13 @@ func (s *Store) ShowIssueSelected(ctx context.Context, selector IssueSelector) (
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		var issue IssueRecord
+		var err error
+		if selector.NativeID == "" {
+			_, issue, err = s.resolveExactLiveIssueSelectorInTx(ctx, tx, selector)
+		} else {
+			_, issue, err = s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		}
 		result = issue
 		return err
 	})
