@@ -52,6 +52,11 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		return IssueChildCreateResult{}, err
 	}
 	create.Issue.DueAt = due
+	deferUntil, err := normalizeIssueDefer(create.Issue.DeferUntil)
+	if err != nil {
+		return IssueChildCreateResult{}, err
+	}
+	create.Issue.DeferUntil = deferUntil
 	var result IssueChildCreateResult
 	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {

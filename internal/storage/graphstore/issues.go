@@ -32,9 +32,9 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 	// CloneCreateRequest materializes empty relation slices. Their lengths
 	// were checked above; preserve that empty representation without admitting
 	// any dependency or comment values into this bounded adapter.
-	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Notes: i.Notes, Owner: i.Owner, CreatedBy: i.CreatedBy, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, DueAt: i.DueAt, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments, Metadata: i.Metadata}
+	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Notes: i.Notes, Owner: i.Owner, CreatedBy: i.CreatedBy, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, DueAt: i.DueAt, DeferUntil: i.DeferUntil, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments, Metadata: i.Metadata}
 	if !reflect.DeepEqual(i, allowed) {
-		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, initial notes, owner, creator, assignee, estimate, external/spec references, classification, status, priority, due date, labels and metadata; no relationships, ephemeral or no-history records", storage.ErrValidation)
+		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, initial notes, owner, creator, assignee, estimate, external/spec references, classification, status, priority, due and defer dates, labels and metadata; no relationships, ephemeral or no-history records", storage.ErrValidation)
 	}
 	if _, err := commonMetadata(i.Metadata); err != nil {
 		return err
@@ -73,6 +73,11 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 		return IssueRecord{}, err
 	}
 	request.Issue.DueAt = due
+	deferUntil, err := normalizeIssueDefer(request.Issue.DeferUntil)
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	request.Issue.DeferUntil = deferUntil
 	revision, err := freshToken()
 	if err != nil {
 		return IssueRecord{}, err
