@@ -81,11 +81,11 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err := s.selectedLinkTypeInTx(ctx, tx, linkType); err != nil {
 			return err
 		}
-		childPath, child, err := s.resolveDependencyRemoveIssueInTx(ctx, tx, request.Path, request.NativeID)
+		childPath, child, err := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID})
 		if err != nil {
 			return err
 		}
-		parentPath, parent, err := s.resolveDependencyRemoveIssueInTx(ctx, tx, request.ParentPath, request.ParentNativeID)
+		parentPath, parent, err := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.ParentPath, NativeID: request.ParentNativeID})
 		if err != nil {
 			return err
 		}
