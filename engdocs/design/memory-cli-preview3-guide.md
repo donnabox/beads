@@ -72,7 +72,10 @@ commands have fixed traversal rules and do not accept `--depth`.
 
 The human output includes a Discovery line describing this scope. JSON records
 it as `traversal.discovery`; each `constraints` root also has a `stages` object
-separating its initial declarations from the Requires closure. These commands
+separating its initial declarations from the Requires closure. Its
+`stages.requires.depth` records that phase’s internal bound; the traversal
+direction is `staged`. Direct and staged operations omit ordinary root depth
+metadata and expose no depth flag. These commands
 report recorded relationships. They do not discover implicit applicability or
 evaluate whether a constraint is satisfied.
 
@@ -86,8 +89,10 @@ bd memory defines privacy --to retention
 bd memory subject-to service --to privacy
 ```
 
-Each command creates a Link owned by its source. `supersede` retires the old
-Memory by creating its Superseded By Link to the replacement. It refuses a
+Each command uses the checked Link writer. The Link Type determines ownership
+and source revision effects: a bare References Link does not revise its source.
+`supersede` retires the old Memory by creating its owned Superseded By Link to
+the replacement. It refuses a
 second successor, including an identical one; it never retargets an existing
 Link or changes either Memory’s status automatically. The result includes the
 new Link identity.
@@ -103,7 +108,7 @@ bd memory reference design --to policy --status reviewed \
 
 The commands reuse the shared Link identity allocator. `--id` supplies an
 explicit Link identity; `--if-source-revision` guards the owning source against
-concurrent changes. Relationship validation still applies: Requires cycles
+concurrent changes where the Link Type declares source ownership. Relationship validation still applies: Requires cycles
 are allowed, while Defines forbids a second defining parent and all-Defines
 cycles.
 
