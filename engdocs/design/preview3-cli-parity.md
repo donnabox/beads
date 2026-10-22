@@ -339,8 +339,8 @@ locally; current-head hosted CI remains pending.
   Adjacent child-create and Issue-update storage tests passed locally. Its
   first hosted native-lint job failed before a code finding because Bazel
   timed out fetching Toybox for an unrelated test package. The isolated
-  failed-job retry passed at current head; the required CI gate was still
-  running at the latest check. It is
+  failed-job retry and required CI gate passed at current head; two macOS
+  race jobs were still pending at the latest check. It is
   storage-only: `bd update --parent` remains unavailable on the pinned
   integration commit and on this PR head. Empty-parent detach is deliberately
   excluded because dotted IDs still imply a parent in shipping selectors;

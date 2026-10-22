@@ -41,6 +41,22 @@ both embedded and shared-server Dolt leave no partial state. A linked delete
 canary should likewise prove either complete intended cleanup or a refusal
 that changes nothing; the cleanup policy still needs a command contract.
 
+Shipping `bd create --graph` is a separate batch contract from Markdown
+`bd create --file`. Its JSON plan gives every node a symbolic key; inline
+dependencies resolve that key before treating it as an existing Issue ID,
+and plan edges can refer to keys on either end
+([`cmd/bd/graph_apply.go`](../../cmd/bd/graph_apply.go)). The graph-mode
+Markdown batch in #201–#202 creates Issues and local Links atomically, but its
+headings have no caller-assigned key and its Dependency targets must already
+exist ([`internal/storage/graphstore/issue_create_batch.go`](../../internal/storage/graphstore/issue_create_batch.go)). Thus that batch proof does not close the
+same-plan graph-JSON gap. The next storage proof should allocate and validate
+all node identities and edges in one checked transaction, then publish native
+Issues, canonical Links, retained versions and History together; it must
+refuse a plan it cannot represent without committing a subset. Harry Miller's
+open [upstream #7521](https://github.com/gastownhall/beads/pull/7521)
+supplies a status/creation timestamp invariant for shipping graph plans and
+should be preserved when that path is implemented.
+
 The native `Deleter` already supplies a bounded, transactional deletion plan
 ([`issueops/deleter.go`](../../issueops/deleter.go)): without `--force` or
 `--cascade`, dependents outside the named set cause a whole-request refusal;
