@@ -104,6 +104,19 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if kind != "issue" || len(deferredVersions) != 1 {
 				t.Fatalf("deferred assignment must have one canonical inception version: %+v", deferredVersions)
 			}
+			writePlan(`{"nodes":[{"key":"referencing","id":"batch-referencing","title":"Referencing","metadata":{"note":"kept"},"metadata_refs":{"peer":"referenced","self":"referencing"},"assignee":"agent","assign_after_create":true},{"key":"referenced","id":"batch-referenced","title":"Referenced"}],"edges":[{"from_key":"referencing","to_key":"referenced"}]}`)
+			var referenced GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &referenced); err != nil {
+				t.Fatal(err)
+			}
+			withRefs := graphMixedResult[graphstore.IssueRecord](t, call("show", referenced.IDs["referencing"], "--format", "graph-json"))
+			var metadata map[string]any
+			if err := json.Unmarshal(withRefs.Metadata, &metadata); err != nil {
+				t.Fatal(err)
+			}
+			if metadata["note"] != "kept" || metadata["peer"] != referenced.IDs["referenced"] || metadata["self"] != referenced.IDs["referencing"] || withRefs.Properties == nil || withRefs.Properties.Assignee != "agent" || len(withRefs.Owned) != 1 {
+				t.Fatalf("graph plan lost metadata refs or Link: %+v", withRefs)
+			}
 			call("create", "Existing source", "--id", "batch-existing-source")
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-existing-source", "--format", "graph-json"))
 			writePlan(`{"nodes":[{"key":"new-target","id":"batch-new-target","title":"New target"}],"edges":[{"from_id":"batch-existing-source","to_key":"new-target"}]}`)
