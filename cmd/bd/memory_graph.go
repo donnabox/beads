@@ -24,6 +24,11 @@ var memoryGraphCmd = &cobra.Command{
 	Annotations: map[string]string{skipStoreAnnotation: "1", canonicalDefaultAnnotation: "1"},
 }
 
+// Direct declaration captures have a fixed one-hop root context, not a CLI depth.
+const memoryDirectSubjectsDepth = 1
+
+// Family/direction select ordinary reads; constraints/subjects select their own
+// fixed operations. Their depth is an internal capture bound only.
 type memoryReadOperation struct {
 	name, family, description string
 	direction                 graph.Direction
@@ -40,7 +45,7 @@ var memoryReadOperations = []memoryReadOperation{
 	{"definition", "defines", "Show the defining Constraint subtree", graph.DirectionOut, 1000},
 	{"defined-by", "defines", "Show the input Constraint's defining parent", graph.DirectionIn, 1},
 	{"constraints", "subject-to", "Discover explicitly governing Constraints and their requirements", graph.DirectionOut, 1000},
-	{"subjects", "subject-to", "Show direct explicit subjects of a Constraint", graph.DirectionIn, 1},
+	{"subjects", "subject-to", "Show direct explicit subjects of a Constraint", graph.DirectionIn, memoryDirectSubjectsDepth},
 }
 
 func init() {
@@ -101,9 +106,12 @@ func memoryCurrentRequest(cmd *cobra.Command, args []string, scope string, op me
 	if depth < 0 || depth > 1000 || nodes < 1 || nodes > 1000 || links < 1 || links > 1000 {
 		return zero, fmt.Errorf("depth must be 0..1000 and node/Link bounds 1..1000")
 	}
-	request := graphstore.CurrentFamilyRequest{Family: typecatalog.Reference{URI: scope + "types/" + op.family},
-		Direction: op.direction, Limits: memoryquery.Limits{MaxNodes: nodes, MaxLinks: links, MaxInspected: 100000},
+	request := graphstore.CurrentFamilyRequest{Limits: memoryquery.Limits{MaxNodes: nodes, MaxLinks: links, MaxInspected: 100000},
 		MaxBytes: graphstore.PreviewCurrentReadByteLimit,
+	}
+	if op.name != "constraints" && op.name != "subjects" {
+		request.Family = typecatalog.Reference{URI: scope + "types/" + op.family}
+		request.Direction = op.direction
 	}
 	for _, arg := range args {
 		ref, err := graphPreviewParseReference(arg)
@@ -201,6 +209,9 @@ func runMemoryCurrentRead(cmd *cobra.Command, args []string, op memoryReadOperat
 			return canonicalReadError(cmd, renderer, graphstore.ErrInvalidStore, "invalid_store")
 		}
 		if err := validateMemoryCurrentCapture(read, graphPreviewConfig.GraphScopeURL, request.Roots); err != nil {
+			return canonicalReadError(cmd, renderer, err, "invalid_store")
+		}
+		if err := validateMemoryDiscoveryCapture(read, staged, graphPreviewConfig.GraphScopeURL, op.name); err != nil {
 			return canonicalReadError(cmd, renderer, err, "invalid_store")
 		}
 		if quietFlag && format != "json" {

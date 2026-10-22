@@ -36,7 +36,7 @@ type memoryGraphTraversal struct {
 type memoryGraphRoot struct {
 	ID       string             `json:"id"`
 	Revision string             `json:"revision"`
-	Depth    int                `json:"depth"`
+	Depth    *int               `json:"depth,omitempty"`
 	Beads    []string           `json:"beads"`
 	Links    []string           `json:"links"`
 	Frontier []string           `json:"frontier"`
@@ -65,7 +65,10 @@ func memoryCurrentResult(read graphstore.CurrentFamilyRead, scope string, op mem
 		return zero, err
 	}
 	result := memoryGraphResult{Scope: scope, Beads: inventory.Beads, Links: inventory.Links,
-		Traversal: memoryGraphTraversal{Operation: op.name, Current: true, Direction: req.Direction.String(), MaxNodes: req.Limits.MaxNodes, MaxLinks: req.Limits.MaxLinks, Complete: true, Roots: []memoryGraphRoot{}},
+		Traversal: memoryGraphTraversal{Operation: op.name, Current: true, Direction: op.direction.String(), MaxNodes: req.Limits.MaxNodes, MaxLinks: req.Limits.MaxLinks, Complete: true, Roots: []memoryGraphRoot{}},
+	}
+	if op.name == "constraints" {
+		result.Traversal.Direction = "staged"
 	}
 	versions := map[string]string{}
 	identities := map[string]string{}
@@ -120,7 +123,11 @@ func memoryCurrentResult(read graphstore.CurrentFamilyRead, scope string, op mem
 		if view.Root != req.Roots[i] || versions[view.Root.Path] == "" {
 			return zero, fmt.Errorf("%w: mismatched root context", graphstore.ErrInvalidStore)
 		}
-		root := memoryGraphRoot{ID: graph.CanonicalURL(scope, view.Root.Path), Revision: versions[view.Root.Path], Depth: view.Root.Depth, Beads: canonical(view.Nodes), Links: canonical(view.Links), Frontier: canonical(view.Frontier)}
+		depth := view.Root.Depth
+		root := memoryGraphRoot{ID: graph.CanonicalURL(scope, view.Root.Path), Revision: versions[view.Root.Path], Depth: &depth, Beads: canonical(view.Nodes), Links: canonical(view.Links), Frontier: canonical(view.Frontier)}
+		if op.name == "constraints" || op.name == "subjects" {
+			root.Depth = nil
+		}
 		encoded, err := encodeMemoryGraphJSON(root)
 		if err != nil {
 			return zero, err

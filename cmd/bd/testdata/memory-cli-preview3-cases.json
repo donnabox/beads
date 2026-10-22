@@ -881,6 +881,16 @@
         "frontierByRoot": {
           "work": [],
           "other": []
+        },
+        "linksByRoot": {
+          "work": [
+            "work-spec",
+            "spec-req",
+            "req-privacy"
+          ],
+          "other": [
+            "other-privacy"
+          ]
         }
       },
       "note": "Privacy is one Bead with separate witnesses. Do not make other subject to spec or req."
@@ -924,6 +934,15 @@
             "c"
           ],
           "b": []
+        },
+        "linksByRoot": {
+          "a": [
+            "ab",
+            "ac"
+          ],
+          "b": [
+            "bd"
+          ]
         }
       },
       "note": "Compute each root's graph with its own depth budget in one read view, then aggregate those graphs. Exclude cd: neither per-root result contains both endpoints. Retain per-root frontiers without borrowing another root's depth budget."
@@ -992,7 +1011,7 @@
         ],
         "frontier": []
       },
-      "note": "A display walk a→b←c→a returns to a but the authored graph is acyclic. Indentation/backtracking is not evidence of a directed cycle.",
+      "note": "A display walk a\u2192b\u2190c\u2192a returns to a but the authored graph is acyclic. Indentation/backtracking is not evidence of a directed cycle.",
       "operation": {
         "root": "a",
         "family": "references",

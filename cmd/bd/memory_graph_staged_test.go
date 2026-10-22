@@ -18,7 +18,7 @@ func memoryStagedContextFixture() (memoryGraphResult, graphstore.CurrentConstrai
 		{ID: link("sc"), Source: bdpwire.Reference{URI: bead("s")}, Target: bdpwire.Reference{URI: bead("c")}},
 		{ID: link("cs"), Source: bdpwire.Reference{URI: bead("c")}, Target: bdpwire.Reference{URI: bead("s")}},
 		{ID: link("sd"), Source: bdpwire.Reference{URI: bead("s")}, Target: bdpwire.Reference{URI: bead("d")}},
-	}, Traversal: memoryGraphTraversal{Roots: []memoryGraphRoot{{ID: bead("s"), Revision: "current", Depth: 2, Beads: []string{bead("c"), bead("d"), bead("s")}, Links: []string{link("cs"), link("sc"), link("sd")}, Frontier: []string{}}}}}
+	}, Traversal: memoryGraphTraversal{Roots: []memoryGraphRoot{{ID: bead("s"), Revision: "current", Depth: func() *int { n := 2; return &n }(), Beads: []string{bead("c"), bead("d"), bead("s")}, Links: []string{link("cs"), link("sc"), link("sd")}, Frontier: []string{}}}}}
 	captured := graphstore.CurrentConstraintsRead{Stages: []memoryquery.ConstraintStage{{Root: memoryquery.ConstraintRoot{Path: "beads/s", RequiresDepth: 2}, SubjectTo: []memoryquery.ConstraintSeed{{Link: "links/sc", Target: "beads/c"}}, Requires: memoryquery.CurrentStage{Seeds: []string{"beads/c"}, Nodes: []string{"beads/c", "beads/d", "beads/s"}, Links: []string{"links/cs", "links/sd"}, Frontier: []string{}}}}}
 	return result, captured
 }
@@ -56,6 +56,15 @@ func TestMemoryConstraintStageContext(t *testing.T) {
 		}},
 		{"missing-required-link", func(_ *memoryGraphResult, r *graphstore.CurrentConstraintsRead) {
 			r.Stages[0].Requires.Links = []string{"links/cs"}
+		}},
+		{"unanchored-phase", func(result *memoryGraphResult, r *graphstore.CurrentConstraintsRead) {
+			r.Stages[0].SubjectTo = nil
+			r.Stages[0].Requires.Seeds = nil
+			result.Links = append(result.Links[:0], result.Links[1:]...)
+			result.Traversal.Roots[0].Links = []string{result.Scope + "links/cs", result.Scope + "links/sd"}
+		}},
+		{"phase-edge-overlap", func(_ *memoryGraphResult, r *graphstore.CurrentConstraintsRead) {
+			r.Stages[0].Requires.Links = append(r.Stages[0].Requires.Links, "links/sc")
 		}},
 		{"wrong-frontier", func(_ *memoryGraphResult, r *graphstore.CurrentConstraintsRead) {
 			r.Stages[0].Requires.Frontier = []string{"beads/c"}

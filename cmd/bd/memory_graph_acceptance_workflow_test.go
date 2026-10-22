@@ -37,6 +37,7 @@ type memoryAcceptanceCorpus struct {
 			Frontier       []string
 			RootMembership map[string][]string `json:"rootMembership"`
 			FrontierByRoot map[string][]string `json:"frontierByRoot"`
+			LinksByRoot    map[string][]string `json:"linksByRoot"`
 		}
 	} `json:"readCases"`
 }
@@ -148,6 +149,7 @@ func TestMemoryCLIReadAcceptanceWorkflow(t *testing.T) {
 								t.Fatalf("unexpected root %s", r.ID)
 							}
 							expect("root "+name, r.Beads, membership, "beads")
+							expect("root links "+name, r.Links, tc.Expected.LinksByRoot[name], "links")
 							expect("root frontier "+name, r.Frontier, tc.Expected.FrontierByRoot[name], "beads")
 						}
 					}

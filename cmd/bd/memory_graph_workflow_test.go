@@ -116,11 +116,11 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			}
 			legacy("link", "create", "b", "d", "--type", "types/superseded-by", "--id", "retirement")
 			successor := read("successor", "b")
-			if len(successor.Beads) != 2 || len(successor.Links) != 1 || successor.Traversal.Roots[0].Depth != 1000 {
+			if len(successor.Beads) != 2 || len(successor.Links) != 1 || (successor.Traversal.Roots[0].Depth == nil || *successor.Traversal.Roots[0].Depth != 1000) {
 				t.Fatalf("replacement chain: %+v", successor)
 			}
 			supersedes := read("supersedes", "d")
-			if len(supersedes.Beads) != 2 || len(supersedes.Links) != 1 || supersedes.Traversal.Roots[0].Depth != 1 {
+			if len(supersedes.Beads) != 2 || len(supersedes.Links) != 1 || (supersedes.Traversal.Roots[0].Depth == nil || *supersedes.Traversal.Roots[0].Depth != 1) {
 				t.Fatalf("replacement inverse: %+v", supersedes)
 			}
 			current := graphMixedResult[graphstore.Record](t, legacy("show", "d"))

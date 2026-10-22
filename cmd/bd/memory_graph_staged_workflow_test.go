@@ -40,12 +40,16 @@ func TestMemoryConstraintReadCLIWorkflow(t *testing.T) {
 				t.Fatalf("staged selection: %+v", result.Traversal)
 			}
 			root := result.Traversal.Roots[0]
-			if root.Stages == nil || len(root.Stages.SubjectTo) != 1 || len(root.Stages.Requires.Beads) != 3 || len(root.Stages.Requires.Links) != 2 || root.Stages.SubjectTo[0].Link != scope+"links/recurrence/sc" {
+			if root.Depth != nil || result.Traversal.Direction != "staged" || root.Stages == nil || root.Stages.Requires.Depth != 1000 || len(root.Stages.SubjectTo) != 1 || len(root.Stages.Requires.Beads) != 3 || len(root.Stages.Requires.Links) != 2 || root.Stages.SubjectTo[0].Link != scope+"links/recurrence/sc" {
 				t.Fatalf("phase witnesses lost: %+v", root.Stages)
 			}
 			human := call("memory", "constraints", "recurrence/s")
 			if strings.Count(human, "s [policy]") != 2 || !strings.Contains(human, "(recurrence/sd)") || strings.Contains(human, "(recurrence/ce)") || !strings.Contains(human, "Discovery: explicit Subject To declarations and their Requires dependencies") {
 				t.Fatalf("phase recurrence/scope:\n%s", human)
+			}
+			human = call("memory", "constraints", "recurrence/s", "recurrence/c")
+			if strings.Count(human, "Discovery: explicit Subject To declarations") != 1 || !strings.Contains(human, "Root recurrence/s:") || !strings.Contains(human, "Root recurrence/c:") {
+				t.Fatalf("multi-root scope attribution:\n%s", human)
 			}
 			direct := decode(call("memory", "subjects", "recurrence/c", "--json"))
 			if len(direct.Beads) != 2 || len(direct.Links) != 1 || direct.Traversal.Discovery != "direct-incoming-subject-to" {

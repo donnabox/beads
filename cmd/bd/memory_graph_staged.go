@@ -19,6 +19,7 @@ type memoryGraphSeed struct {
 	Target string `json:"target"`
 }
 type memoryGraphRequiresStage struct {
+	Depth    int      `json:"depth"`
 	Seeds    []string `json:"seeds"`
 	Beads    []string `json:"beads"`
 	Links    []string `json:"links"`
@@ -59,7 +60,7 @@ func memoryConstraintStages(result *memoryGraphResult, read graphstore.CurrentCo
 	}
 	for i, stage := range read.Stages {
 		root := &result.Traversal.Roots[i]
-		if root.ID != graph.CanonicalURL(result.Scope, stage.Root.Path) || root.Depth != stage.Root.RequiresDepth {
+		if root.ID != graph.CanonicalURL(result.Scope, stage.Root.Path) || (root.Depth != nil && *root.Depth != stage.Root.RequiresDepth) {
 			return invalid()
 		}
 		nodes, links := map[string]bool{}, map[string]bool{}
@@ -99,7 +100,7 @@ func memoryConstraintStages(result *memoryGraphResult, read graphstore.CurrentCo
 		for _, path := range stage.Requires.Links {
 			id := graph.CanonicalURL(result.Scope, path)
 			ends, ok := linkEndpoints[id]
-			if !ok || !links[id] || requirements[id] || !phaseNodes[ends[0]] || !phaseNodes[ends[1]] {
+			if !ok || !links[id] || declarations[id] || requirements[id] || !phaseNodes[ends[0]] || !phaseNodes[ends[1]] {
 				return invalid()
 			}
 			requirements[id] = true
@@ -125,6 +126,33 @@ func memoryConstraintStages(result *memoryGraphResult, read graphstore.CurrentCo
 		if !sameSet(combinedNodes, root.Beads) {
 			return invalid()
 		}
+		// Every phase member must be reached forward from an explicit seed.
+		reached, queue := map[string]bool{}, []string{}
+		for _, seed := range stage.Requires.Seeds {
+			id := graph.CanonicalURL(result.Scope, seed)
+			if !phaseNodes[id] {
+				return invalid()
+			}
+			reached[id] = true
+			queue = append(queue, id)
+		}
+		outgoing := map[string][]string{}
+		for id := range requirements {
+			ends := linkEndpoints[id]
+			outgoing[ends[0]] = append(outgoing[ends[0]], ends[1])
+		}
+		for i := 0; i < len(queue); i++ {
+			for _, target := range outgoing[queue[i]] {
+				if !reached[target] {
+					reached[target] = true
+					queue = append(queue, target)
+				}
+			}
+		}
+		if len(reached) != len(phaseNodes) {
+			return invalid()
+		}
+		projected.Requires.Depth = stage.Root.RequiresDepth
 		projected.Requires.Seeds = canonical(stage.Requires.Seeds)
 		projected.Requires.Beads = canonical(stage.Requires.Nodes)
 		projected.Requires.Links = canonical(stage.Requires.Links)
