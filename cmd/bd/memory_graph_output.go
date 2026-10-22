@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/spf13/cobra"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -24,6 +25,7 @@ type memoryGraphResult struct {
 }
 type memoryGraphTraversal struct {
 	Operation string            `json:"operation"`
+	Discovery string            `json:"discovery,omitempty"`
 	Current   bool              `json:"current"`
 	Direction string            `json:"direction"`
 	MaxNodes  int               `json:"maxNodes"`
@@ -32,12 +34,13 @@ type memoryGraphTraversal struct {
 	Roots     []memoryGraphRoot `json:"roots"`
 }
 type memoryGraphRoot struct {
-	ID       string   `json:"id"`
-	Revision string   `json:"revision"`
-	Depth    int      `json:"depth"`
-	Beads    []string `json:"beads"`
-	Links    []string `json:"links"`
-	Frontier []string `json:"frontier"`
+	ID       string             `json:"id"`
+	Revision string             `json:"revision"`
+	Depth    int                `json:"depth"`
+	Beads    []string           `json:"beads"`
+	Links    []string           `json:"links"`
+	Frontier []string           `json:"frontier"`
+	Stages   *memoryGraphStages `json:"stages,omitempty"`
 }
 
 func memoryGraphDescriptor() clioutput.Descriptor {
@@ -135,7 +138,7 @@ func memoryCurrentResult(read graphstore.CurrentFamilyRead, scope string, op mem
 
 // Reuse the common renderer/document writer. Buffer and bound the final framed
 // bytes before publishing; a policy refusal never emits a success prefix.
-func renderMemoryCanonicalResult(cmd *cobra.Command, renderer *clioutput.Renderer, result memoryGraphResult) error {
+func renderMemoryCanonicalResult(cmd *cobra.Command, renderer *clioutput.Renderer, result memoryGraphResult, format string) error {
 	raw, err := encodeMemoryGraphJSON(result)
 	if err != nil {
 		return memoryGraphOutputError(cmd, renderer, err)
@@ -149,6 +152,9 @@ func renderMemoryCanonicalResult(cmd *cobra.Command, renderer *clioutput.Rendere
 			return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 		}
 		return memoryGraphOutputError(cmd, renderer, err)
+	}
+	if format == "detail" {
+		output = append(output, []byte(memoryDiscoveryLine(result.Traversal.Operation))...)
 	}
 	if len(output) > graphstore.PreviewCurrentReadByteLimit {
 		return canonicalReadError(cmd, renderer, graphstore.ErrLimitExceeded, "output_error")

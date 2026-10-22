@@ -39,6 +39,8 @@ var memoryReadOperations = []memoryReadOperation{
 	{"required-by", "requires", "Show Constraints that directly require the input", graph.DirectionIn, 1},
 	{"definition", "defines", "Show the defining Constraint subtree", graph.DirectionOut, 1000},
 	{"defined-by", "defines", "Show the input Constraint's defining parent", graph.DirectionIn, 1},
+	{"constraints", "subject-to", "Discover explicitly governing Constraints and their requirements", graph.DirectionOut, 1000},
+	{"subjects", "subject-to", "Show direct explicit subjects of a Constraint", graph.DirectionIn, 1},
 }
 
 func init() {
@@ -53,7 +55,9 @@ func newMemoryReadCommand(op memoryReadOperation) *cobra.Command {
 		Args: func(*cobra.Command, []string) error { return nil },
 		RunE: func(cmd *cobra.Command, args []string) error { return runMemoryCurrentRead(cmd, args, op) },
 	}
-	cmd.Flags().Int("depth", op.depth, "Maximum relationship hops for each input root (0..1000)")
+	if op.name != "constraints" && op.name != "subjects" {
+		cmd.Flags().Int("depth", op.depth, "Maximum relationship hops for each input root (0..1000)")
+	}
 	cmd.Flags().Int("max-nodes", 100, "Maximum unique selected Beads across roots (1..1000); excess refuses")
 	cmd.Flags().Int("max-links", 200, "Maximum unique selected Links across roots (1..1000); excess refuses")
 	registerCanonicalOutputFlags(cmd)
@@ -88,7 +92,10 @@ func memoryCurrentRequest(cmd *cobra.Command, args []string, scope string, op me
 			return zero, fmt.Errorf("%w: Memory graph reads use explicit node/Link bounds; unset BEADS_MAX_ROWS", graphstore.ErrCapabilityUnavailable)
 		}
 	}
-	depth, _ := cmd.Flags().GetInt("depth")
+	depth := op.depth
+	if cmd.Flags().Lookup("depth") != nil {
+		depth, _ = cmd.Flags().GetInt("depth")
+	}
 	nodes, _ := cmd.Flags().GetInt("max-nodes")
 	links, _ := cmd.Flags().GetInt("max-links")
 	if depth < 0 || depth > 1000 || nodes < 1 || nodes > 1000 || links < 1 || links > 1000 {
@@ -162,11 +169,35 @@ func runMemoryCurrentRead(cmd *cobra.Command, args []string, op memoryReadOperat
 	}
 	defer func() { graphFailureReporter = previous }()
 	return withGraphStoreStageErrorMappers(30*time.Second, func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.ReadCurrentFamily(ctx, request)
-		return result, "", err
+		switch op.name {
+		case "subjects":
+			roots := make([]string, 0, len(request.Roots))
+			for _, root := range request.Roots {
+				roots = append(roots, root.Path)
+			}
+			result, err := store.ReadCurrentSubjects(ctx, graphstore.CurrentSubjectsRequest{Roots: roots, Limits: request.Limits, MaxBytes: request.MaxBytes})
+			return result, "", err
+		case "constraints":
+			roots := make([]graphstore.CurrentConstraintRoot, 0, len(request.Roots))
+			for _, root := range request.Roots {
+				roots = append(roots, graphstore.CurrentConstraintRoot{Path: root.Path, RequiresDepth: root.Depth})
+			}
+			result, err := store.ReadCurrentConstraints(ctx, graphstore.CurrentConstraintsRequest{Roots: roots, Limits: request.Limits, MaxBytes: request.MaxBytes})
+			return result, "", err
+		default:
+			result, err := store.ReadCurrentFamily(ctx, request)
+			return result, "", err
+		}
 	}, func(value any, _ string) error {
-		read, ok := value.(graphstore.CurrentFamilyRead)
-		if !ok {
+		var read graphstore.CurrentFamilyRead
+		var staged *graphstore.CurrentConstraintsRead
+		switch captured := value.(type) {
+		case graphstore.CurrentFamilyRead:
+			read = captured
+		case graphstore.CurrentConstraintsRead:
+			read = captured.CurrentFamilyRead
+			staged = &captured
+		default:
 			return canonicalReadError(cmd, renderer, graphstore.ErrInvalidStore, "invalid_store")
 		}
 		if err := validateMemoryCurrentCapture(read, graphPreviewConfig.GraphScopeURL, request.Roots); err != nil {
@@ -180,15 +211,35 @@ func runMemoryCurrentRead(cmd *cobra.Command, args []string, op memoryReadOperat
 			if err != nil {
 				return canonicalReadError(cmd, renderer, err, "invalid_store")
 			}
-			return renderMemoryCanonicalResult(cmd, renderer, result)
+			if op.name == "subjects" {
+				result.Traversal.Discovery = "direct-incoming-subject-to"
+			}
+			if staged != nil {
+				result.Traversal.Discovery = "explicit-subject-to-and-requires"
+				if err := memoryConstraintStages(&result, *staged); err != nil {
+					return canonicalReadError(cmd, renderer, err, "invalid_store")
+				}
+			}
+			return renderMemoryCanonicalResult(cmd, renderer, result, format)
 		}
 		// Bind presentation to the exact direction used for acquisition. The
 		// private capture is not an independently reusable query description.
-		text, err := renderMemoryCurrentGraph(read, graphPreviewConfig.GraphScopeURL, request.Direction, graphstore.PreviewCurrentReadByteLimit)
+		disclosure := memoryDiscoveryLine(op.name)
+		presentationBudget := graphstore.PreviewCurrentReadByteLimit - len(disclosure)
+		var text string
+		var err error
+		switch {
+		case staged != nil:
+			text, err = renderMemoryConstraintsGraph(*staged, graphPreviewConfig.GraphScopeURL, presentationBudget)
+		case op.name == "subjects":
+			text, err = renderMemorySubjectsGraph(read, graphPreviewConfig.GraphScopeURL, presentationBudget)
+		default:
+			text, err = renderMemoryCurrentGraph(read, graphPreviewConfig.GraphScopeURL, request.Direction, presentationBudget)
+		}
 		if err != nil {
 			return memoryGraphOutputError(cmd, renderer, err)
 		}
-		if err := writeCanonicalDocument(cmd.OutOrStdout(), []byte(text)); err != nil {
+		if err := writeCanonicalDocument(cmd.OutOrStdout(), []byte(text+disclosure)); err != nil {
 			fmt.Fprintf(cmd.ErrOrStderr(), "output_error: %v\n", err)
 			return &exitError{Code: 1}
 		}

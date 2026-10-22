@@ -65,16 +65,12 @@ func TestMemoryCLIReadAcceptanceWorkflow(t *testing.T) {
 			memoryAcceptanceSeed(t, work, scope, corpus)
 			for _, tc := range corpus.ReadCases {
 				t.Run(tc.ID, func(t *testing.T) {
-					// The next staged command slice removes this explicit temporary boundary.
 					command := tc.Command
 					if len(command) == 0 && tc.Operation != nil {
 						command = []string{"bd", "graph", tc.Operation.Root, "--link-type", tc.Operation.Family, "--direction", tc.Operation.Direction, "--depth", strconv.Itoa(tc.Operation.Depth)}
 					}
 					if len(command) < 3 {
 						t.Fatalf("missing concrete invocation for %s", tc.ID)
-					}
-					if command[1] == "memory" && (command[2] == "constraints" || command[2] == "subjects") {
-						t.Skip("staged/direct CLI wiring is the next owned slice")
 					}
 					args := slices.Clone(command[1:])
 					prefix := "beads/" + tc.Fixture + "/"
