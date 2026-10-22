@@ -1,15 +1,14 @@
 ---
-title: "Memory CLI specification"
+title: "Memory CLI specification (draft)"
 description: "Preview 3 design for Memory relationships, requirements and explicit applicability."
 ---
 
-Use Memory relationships to find related knowledge, follow replacements, and
-read the requirements governing work. The proposed `bd memory` command group
-provides those focused operations over the shared Bead and Link graph.
+**Draft: accepted command design; implementation and qualification pending.**
+The availability notice below states the target policy.
 
-This is an implementation-pending design specification. The availability
-notice below states the target policy; implementation and qualification are
-tracked separately.
+The proposed `bd memory` command group would help users find related knowledge,
+follow replacements, and read the requirements governing work through the
+shared Bead and Link graph.
 
 ## Preview 3 availability
 
@@ -58,12 +57,13 @@ previous facade's exact source and evidence scope. It does not qualify the
 new commands or presentation. This page is a preview specification, not the
 pinned stable release documentation; it does not change the release pin.
 
-## Requires
+## Required source specification
 
 This CLI facade requires the
 [Memory Bead and Link Type specification at BDP `afec9117`](https://github.com/gastownhall/bdp/blob/afec9117914bd1c1fe0027c2067e4d89677e40a3/specs/types/memory/memory.md).
 The exact source revision is
-`afec9117914bd1c1fe0027c2067e4d89677e40a3`; its SHA256 is
+`afec9117914bd1c1fe0027c2067e4d89677e40a3`. The SHA256 of the
+`specs/types/memory/memory.md` file bytes at that revision is
 `1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34`.
 That specification defines the Type meanings, properties, endpoint restrictions
 and ownership rules. This page defines the Beads command mapping.
@@ -94,7 +94,7 @@ one subject's obligations to the other.
 | `bd memory definition ID...` | Defines family | Outgoing | 1000 |
 | `bd memory defined-by ID...` | Defines family | Incoming | 1 |
 | `bd memory constraints SUBJECT...` | Subject To once, then Requires family | Staged | Bounded closure |
-| `bd memory subjects CONSTRAINT...` | Subject To family | Incoming | 1 |
+| `bd memory subjects CONSTRAINT...` | Subject To family | Incoming | Direct; not depth-tunable |
 
 `ID...`, `SUBJECT...` and `CONSTRAINT...` mean one or more arguments, not literal
 selector syntax. Each command's roots must meet its Type contract. Successor
@@ -105,17 +105,25 @@ support in the selected workspace.
 
 Every family selection includes refinements. Display the actual declared
 Types, not the selected base Type. A depth of 1000 is a bound, not a promise
-of unlimited traversal. `--depth` adjusts ordinary family traversal extent. `subjects` remains a
-direct declaration lookup; deeper Subject To traversal is not part of its
-initial contract. The staged query's stage-specific depth controls and the
-remaining flag combinations are not selected by this document.
+of unlimited traversal. `--depth` adjusts ordinary family traversal extent.
+`subjects` remains a direct declaration lookup and rejects `--depth`; secondary Subject To Links
+are outside its scope, not a depth frontier. The staged query's stage-specific
+depth controls and the remaining flag combinations are not selected by this document.
 
 Ordinary family traversals use the shared graph semantics: reach Beads in the
 selected direction and depth, then retain all matching Links between reached
-Beads. This includes cross-links, parallel Links and cycle-closing Links within
-each root's result. For a diamond A-to-B, A-to-C, B-to-D, C-to-D, querying
+Beads in either direction. Direction governs reachability only; it does not
+filter the induced Links. This includes reverse Links, cross-links, parallel
+Links and cycle-closing Links within each root's result. For a diamond A-to-B, A-to-C, B-to-D, C-to-D, querying
 roots A and B at depth one includes AB, AC and BD, but not CD: neither
 individual root reaches both C and D within its own budget.
+Render a separate tree for each requested root, expanding a Bead at most once
+within that root's view. A shared Bead may be expanded again in another root's
+view because its selected relationships and frontier can differ. Label each
+frontier by its root. Aggregate counts deduplicate Bead and Link identities;
+relationship lines shared across root views do not increase those counts.
+The shared graph presentation includes a worked multi-root example.
+
 The staged `constraints` query and direct `subjects` lookup have the narrower
 edge scopes described below. They do not admit unrelated Links solely because
 their endpoints are present.
@@ -156,7 +164,7 @@ $ bd memory references alpha --depth 1000
 alpha [memory] Alpha
 └── references → beta [memory] Beta
     └── references → gamma [memory] Gamma
-        └── references → alpha (cycle)
+        └── references → alpha [memory] (cycle)
 
 3 Beads, 3 Links
 ```
@@ -174,6 +182,12 @@ source Constraint's own conditions were met.
 
 `requirements` follows both relationships. `definition` follows only Defines,
 so it shows the defining subtree without external Requires dependencies.
+Requires-family cycles may mix ordinary Requires and Defines Links. Only a
+cycle consisting entirely of Defines-family Links is forbidden by the defining
+tree rule; the child's single-defining-parent restriction still applies. This
+follows the frozen Type specification's Requires Cycles and Defines Tree
+structure rules.
+
 The reverse commands start with direct relationships. These queries discover
 structure and obligations; they do not decide satisfaction, approval or
 compliance.
@@ -241,6 +255,8 @@ is the requested Constraint. It does not include secondary Subject To Links
 between those subjects, repeatedly traverse Subject To, or perform reverse
 Requires traversal to discover indirectly bound subjects. With multiple roots,
 aggregate these per-root declaration graphs and preserve their membership.
+This command does not read the deferred Evaluation `subjects` property; that
+property identifies an assessment group, a separate concept.
 
 Proposed output:
 
@@ -251,7 +267,18 @@ access [policy] Limit data access
 └── subject-to ← export-work [issue] Implement CSV export
 
 2 Beads, 1 Link
+Discovery: direct incoming Subject To declarations only
 ```
+
+`constraints` always prints the discovery-scope line shown above:
+`Discovery: explicit Subject To declarations and their Requires dependencies`.
+`subjects` always prints `Discovery: direct incoming Subject To declarations only`.
+For multiple roots, print the scope once for the operation and attribute any
+depth frontier to its root. These lines qualify what was discovered; they do
+not claim exhaustive implicit applicability or satisfaction. Machine-readable
+scope and completeness use the common output adapter's contract, with its
+exact graph binding reconciled before public wiring; no new field is defined
+here. Other ordinary family reads need no applicability-discovery line.
 
 Preview 3 discovers explicit applicability and the obligations derived from
 Requires/Defines. It does not discover every implicitly applicable Policy.
@@ -276,14 +303,15 @@ contracts. These facades do not bypass validation or introduce a separate
 allocator.
 
 Known properties have named `--title`, `--body` and `--status` flags.
-`--properties` supplies other declared properties and `--metadata` carries
-informational metadata. A property supplied both through a named flag and
-`--properties` is refused; there is no silent precedence. Omitted properties
+`--properties` may supply any admitted property, including title/body/status
+when its named flag is omitted. `--metadata` carries informational metadata.
+A property supplied both through a named flag and `--properties` is refused; there is no silent precedence. Omitted properties
 remain absent. Status is an optional nonblank open string, not an automatic
 workflow, dispatch, visibility or approval state.
 
-Use shared `--id` and applicable revision guards. Shared `bd create` and
-`bd link create` own automatic ID generation. Confirmation must include the
+Use optional shared `--id` and applicable revision guards. When `--id` is
+omitted, automatic ID generation uses the shared allocator whose contract
+lives with `bd create` and `bd link create`. Confirmation must include the
 created Link identity. Exact CRUD confirmation formatting remains under the
 common output contract, not this facade.
 
@@ -345,24 +373,31 @@ Memory records. Native `--graph-mode dependency` behavior remains unchanged.
 The following mapping remains shared generic CLI behavior. It is not a claim
 that the new `bd memory` facades have shipped. Use Type selectors reported by
 the selected workspace rather than constructing identities from display
-names. Select the nominal Memory Decision Type explicitly when distinguishing
-it from an existing Issue classification named `decision`.
+names. Bare native Issue classifications keep their existing meaning for
+create, update and list filters. In particular, `--type decision` selects the
+native Issue classification; it does not select Memory Decision or become
+ambiguous. Select Memory Decision with the qualified selector reported by
+`bd types`, such as `types/decision` in the selected catalog. This preserves
+existing scripts and does not invent new short aliases.
 
 `bd types`, `bd types --details` and `bd types --json` follow the selected
 workspace's inventory and availability policy. Existing native Issue
 classifications and Dependency behavior remain available. The intrinsic
 Type, BeadType, LinkType, ConformsTo and Refines Types are absent from public
-inventories and are not user authoring or filter selections. Active
-`example-*` and `preview-*` nominal Type registrations are removed, while
-existing configured native Issue classifications with those prefixes remain
-valid. Inventory admission does not promise that an exact nominal Type filter
-expands to refinements; the family reads above explicitly request family
+inventories and are not user authoring or filter selections. The selected
+input catalog already omits the old `example-*` and `preview-*` nominal
+registrations; this CLI proposal adds no registration removal. Existing
+configured native Issue classifications with those prefixes remain valid.
+The [selected-catalog source tests](https://github.com/donnabox/beads/blob/b6d0493baf7c0a52f68df5a943158290e3b75878/cmd/bd/graph_preview_selected_types_workflow_test.go)
+record that input policy, not qualification of these new facades. Inventory
+admission does not promise that an exact nominal Type filter expands to refinements; the family reads above explicitly request family
 semantics. `--details` may show a partial Type description.
 
 Memory, Constraint, Policy, Decision, Procedure, Requirement, Scenario and
 Specification form the non-assessment Bead catalog. References, Superseded By,
 Requires, Defines and Subject To form the corresponding Link catalog.
-Evaluation and Conformance-family definitions are retained as deferred design;
+Evaluation and Conformance-family definitions (including the peer Addresses,
+Satisfies and Violates refinements) are retained as deferred design;
 listing definitions or recognizing existing records does not imply permission
 to author them.
 
@@ -392,7 +427,10 @@ or evaluator. This limitation does not define new predicate syntax.
 `bd update ID --type TYPE` is the command mapping for explicit Type changes.
 Omitting a properties edit preserves all current properties. Explicit property
 edits may accompany the change; the complete resulting record must be valid.
-No values are automatically converted or dropped.
+No values are automatically converted or dropped. While the assessment gate
+is off, retyping a Bead into Evaluation returns capability unavailable, as does
+any admitted authoring Type change into a gated Conformance-family Type. Valid
+retyping out of Evaluation still follows ordinary incident-Link constraints.
 
 Retyping uses the command's ordinary revision-guard behavior. This facade adds
 no separate mandatory retyping guard. An explicit stale guard refuses the
@@ -449,8 +487,9 @@ bound to that identity for its lifetime. Retyping it away from Evaluation and
 back does not reset the group; a different group requires a new Evaluation.
 An ordinary Memory extension named `subjects` before its first Evaluation
 revision does not establish this binding. The exact typedef input above
-includes this accepted lifetime rule. The [decision and implementation receipt](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6282549426)
-records the ruling and its separately qualified product evidence.
+includes this accepted lifetime rule. The [decision record](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6282549426)
+records the ruling; it is not itself runtime qualification. The release ledger
+links the exact implementation and execution evidence.
 
 The Evaluation owns its Conformance-family claims. Each claim concerns the
 Evaluation's whole subject group collectively. Adding a claim revises its
