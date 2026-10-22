@@ -191,6 +191,41 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			refuse("invalid_properties", "dep", "add", issue.ID, otherBlocker.ID, "--id", "links/different-block")
 			thirdBlocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Third prerequisite"))
 			refuse("identity_reserved", "dep", "add", issue.ID, thirdBlocker.ID, "--id", "links/chosen-block")
+			// The shipping positional form remains a Link creation route. Its
+			// first Issue is blocked by the second, and repeating the same pair
+			// must not allocate another Link or Issue version.
+			decodeShorthand := func(raw string) map[string]any {
+				t.Helper()
+				var output map[string]any
+				if err := json.Unmarshal([]byte(raw), &output); err != nil {
+					t.Fatalf("decode familiar positional link: %v\n%s", err, raw)
+				}
+				return output
+			}
+			shorthandBlock := decodeShorthand(call("link", issue.ID, thirdBlocker.ID))
+			if shorthandBlock["status"] != "added" || shorthandBlock["issue_id"] != issue.Properties.ID || shorthandBlock["depends_on_id"] != thirdBlocker.Properties.ID || shorthandBlock["type"] != "blocks" || shorthandBlock["schema_version"] != float64(1) {
+				t.Fatalf("positional link lost shipping JSON fields or pair direction: %+v", shorthandBlock)
+			}
+			beforeShorthandNoop := call("versions", issue.ID)
+			beforeShorthandLinks := call("link", "list", "--source", issue.ID, "--type", "blocks")
+			if shorthandNoop := decodeShorthand(call("link", issue.ID, thirdBlocker.ID)); !reflect.DeepEqual(shorthandNoop, shorthandBlock) {
+				t.Fatalf("repeated positional link changed its familiar result: %+v", shorthandNoop)
+			}
+			humanShorthand := graphPolicyCLI(t, bd, work, home, nil, "", "link", issue.ID, thirdBlocker.ID)
+			if !strings.Contains(humanShorthand, "Linked:") || !strings.Contains(humanShorthand, issue.Properties.ID) || !strings.Contains(humanShorthand, thirdBlocker.Properties.ID) || !strings.Contains(humanShorthand, "(blocks)") {
+				t.Fatalf("positional link lost familiar human feedback: %s", humanShorthand)
+			}
+			if afterShorthandNoop := call("versions", issue.ID); afterShorthandNoop != beforeShorthandNoop {
+				t.Fatal("repeated positional link allocated another Issue version")
+			}
+			if afterShorthandLinks := call("link", "list", "--source", issue.ID, "--type", "blocks"); afterShorthandLinks != beforeShorthandLinks {
+				t.Fatal("repeated positional link allocated another Link")
+			}
+			refuse("invalid_properties", "link", issue.ID, thirdBlocker.ID, "--type", "tracks")
+			shorthandTracks := decodeShorthand(call("link", otherBlocker.ID, thirdBlocker.ID, "--type", "tracks"))
+			if shorthandTracks["issue_id"] != otherBlocker.Properties.ID || shorthandTracks["depends_on_id"] != thirdBlocker.Properties.ID || shorthandTracks["type"] != "tracks" {
+				t.Fatalf("positional link lost its explicit Dependency kind: %+v", shorthandTracks)
+			}
 			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", dependency.Link.Revision)
 			propertyMemory := graphMixedResult[graphstore.Record](t, call("remember", "--id", "beads/property-memory", "--properties", `{"title":"Property title","body":"First body"}`))
 			merged := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{"body":"Second body"}`, "--if-revision", propertyMemory.Revision))
