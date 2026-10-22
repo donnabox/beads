@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -12,10 +13,18 @@ import (
 // Each root gets an independent tree; canonical Owned copies are never edges.
 // It neither selects another graph nor publishes output. The caller owns the
 // command writer and may publish only the complete successful return value.
+// Direction must be the immutable request direction used for this read; this
+// private capture is not independently self-describing. The CLI owns that bind.
 func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, direction graph.Direction, maxBytes int) (string, error) {
 	invalid := func() error { return fmt.Errorf("%w: inconsistent captured Memory graph", graphstore.ErrInvalidStore) }
-	if graph.ValidateScopeURL(scope) != nil || !direction.Valid() || maxBytes < 1 || len(read.Graph.Views) == 0 {
+	if graph.ValidateScopeURL(scope) != nil || !direction.Valid() || maxBytes < 1 {
+		return "", fmt.Errorf("%w: invalid Memory presentation request", graph.ErrValidation)
+	}
+	if len(read.Graph.Views) == 0 {
 		return "", invalid()
+	}
+	limitExceeded := func() error {
+		return fmt.Errorf("%w: Memory output exceeds %d bytes", graphstore.ErrLimitExceeded, maxBytes)
 	}
 	nodes := map[string]graphGenericNode{}
 	links := map[string]graphGenericLink{}
@@ -69,14 +78,14 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 	w := &graphExportWriter{out: &output}
 	line := func(s string) error {
 		if len(s)+1 > maxBytes-output.Len() {
-			return fmt.Errorf("%w: Memory output exceeds %d bytes", graphstore.ErrLimitExceeded, maxBytes)
+			return limitExceeded()
 		}
 		w.println(s)
 		return w.wrapError("memory")
 	}
 	seenNodes, seenLinks := map[string]bool{}, map[string]bool{}
 	for i, view := range read.Graph.Views {
-		if graph.ValidateBeadPath(view.Root.Path) != nil || view.Root.Depth < 0 || view.Root.Depth > graphGenericBound {
+		if graph.ValidateBeadPath(view.Root.Path) != nil || view.Root.Depth < 0 || view.Root.Depth > graphstore.PreviewSnapshotLimit {
 			return "", invalid()
 		}
 		r := graphGenericResult{Scope: scope, Root: graph.CanonicalURL(scope, view.Root.Path), Direction: direction.String(), Depth: view.Root.Depth, Complete: len(view.Frontier) == 0}
@@ -114,9 +123,12 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 			}
 		}
 		if err := renderGraphRelationshipTreePart(w, r, maxBytes-output.Len(), false); err != nil {
+			if errors.Is(err, graphstore.ErrLimitExceeded) {
+				return "", limitExceeded()
+			}
 			return "", err
 		}
-		// Quote display identifiers before framing; arbitrary data cannot inject
+		// Escape display identifiers before framing; arbitrary data cannot inject
 		// another root or a false completion/frontier line.
 		label := (&graphRelationshipTree{result: r}).label
 		if err := line(fmt.Sprintf("Root %s: complete: %t; direction: %s; depth: %d; frontier: %d", label(r.Root), r.Complete, r.Direction, r.Depth, len(r.Frontier))); err != nil {
@@ -134,7 +146,7 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 	if err := line(""); err != nil {
 		return "", err
 	}
-	if err := line(fmt.Sprintf("%d Beads, %d Links", len(seenNodes), len(seenLinks))); err != nil {
+	if err := line(fmt.Sprintf("Aggregate: %d unique Beads, %d unique Links across %d root views", len(seenNodes), len(seenLinks), len(read.Graph.Views))); err != nil {
 		return "", err
 	}
 	return output.String(), nil

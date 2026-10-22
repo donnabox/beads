@@ -91,11 +91,14 @@ func TestMemoryCurrentGraphIndependentRoots(t *testing.T) {
 	r := memoryPresentationFixture(t, roots, graph.DirectionOut, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"bd", "b", "d"})
 	before := fmt.Sprintf("%#v", r)
 	s := memoryPresentationText(t, r, graph.DirectionOut)
-	if strings.Count(s, "3 Beads, 2 Links") != 1 || strings.Count(s, "(ab)") != 1 || strings.Count(s, "(bd)") != 1 || strings.Count(s, "b [policy] \"B\"") != 2 {
+	if strings.Count(s, "Aggregate: 3 unique Beads, 2 unique Links across 2 root views") != 1 || strings.Count(s, "(ab)") != 1 || strings.Count(s, "(bd)") != 1 || strings.Count(s, "b [policy] \"B\"") != 2 {
 		t.Fatalf("lost per-root expansion or aggregate identity counts:\n%s", s)
 	}
 	if !strings.Contains(s, "Root a: complete: false; direction: out; depth: 1; frontier: 1") || !strings.Contains(s, "Root a: more relationships beyond depth 1: b") || !strings.Contains(s, "Root b: complete: true; direction: out; depth: 1; frontier: 0") {
 		t.Fatalf("frontier was flattened across roots:\n%s", s)
+	}
+	if strings.Contains(s, "ignored-owned-copy") {
+		t.Fatal("walked Owned decoy", s)
 	}
 	if fmt.Sprintf("%#v", r) != before {
 		t.Fatal("presenter mutated captured read")
@@ -103,7 +106,7 @@ func TestMemoryCurrentGraphIndependentRoots(t *testing.T) {
 	// Same root identity at a different depth is still an independent view.
 	r = memoryPresentationFixture(t, []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 0}, {Path: "beads/a", Depth: 2}}, graph.DirectionOut, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"bd", "b", "d"})
 	s = memoryPresentationText(t, r, graph.DirectionOut)
-	if strings.Count(s, "a [policy] \"A\"") != 2 || strings.Count(s, "3 Beads, 2 Links") != 1 || !strings.Contains(s, "Root a: more relationships beyond depth 0: a") {
+	if strings.Count(s, "a [policy] \"A\"") != 2 || strings.Count(s, "Aggregate: 3 unique Beads, 2 unique Links across 2 root views") != 1 || !strings.Contains(s, "Root a: more relationships beyond depth 0: a") {
 		t.Fatal(s)
 	}
 }
@@ -170,7 +173,7 @@ func TestMemoryCurrentGraphCumulativeBudget(t *testing.T) {
 	text := memoryPresentationText(t, r, graph.DirectionOut)
 	for _, size := range []int{1, len(text) / 2, len(text) - 1} {
 		s, err := renderMemoryCurrentGraph(r, genericTestScope, graph.DirectionOut, size)
-		if s != "" || !errors.Is(err, graphstore.ErrLimitExceeded) {
+		if s != "" || !errors.Is(err, graphstore.ErrLimitExceeded) || !strings.Contains(err.Error(), fmt.Sprintf("Memory output exceeds %d bytes", size)) {
 			t.Fatalf("cap%d: %q %v", size, s, err)
 		}
 	}
@@ -244,7 +247,7 @@ func TestMemoryCurrentGraphActualFamilyLabels(t *testing.T) {
 				}
 			}
 			s := memoryPresentationText(t, r, graph.DirectionOut)
-			if !strings.Contains(s, typ+" (ab) → b [policy]") || strings.Count(s, "2 Beads, 1 Links") != 1 {
+			if !strings.Contains(s, typ+" (ab) → b [policy]") || strings.Count(s, "Aggregate: 2 unique Beads, 1 unique Links") != 1 {
 				t.Fatal(s)
 			}
 		})
@@ -256,13 +259,39 @@ func TestMemoryCurrentGraphKeepsRootLocalEdges(t *testing.T) {
 	roots := []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 0}, {Path: "beads/b", Depth: 0}}
 	r := memoryPresentationFixture(t, roots, graph.DirectionBoth, edges...)
 	s := memoryPresentationText(t, r, graph.DirectionBoth)
-	if len(r.Graph.Links) != 0 || strings.Contains(s, "(ab)") || !strings.Contains(s, "2 Beads, 0 Links") || strings.Count(s, "frontier: 1") != 2 {
+	if len(r.Graph.Links) != 0 || strings.Contains(s, "(ab)") || !strings.Contains(s, "Aggregate: 2 unique Beads, 0 unique Links") || strings.Count(s, "frontier: 1") != 2 {
 		t.Fatalf("union re-induced an unselected Link:\n%s", s)
 	}
 	roots[0].Depth, roots[1].Depth = 1, 1
 	r = memoryPresentationFixture(t, roots, graph.DirectionBoth, edges...)
 	s = memoryPresentationText(t, r, graph.DirectionBoth)
-	if strings.Count(s, "(ab)") != 2 || strings.Count(s, "2 Beads, 1 Links") != 1 || !strings.Contains(s, "(ab) → b [policy]") || !strings.Contains(s, "(ab) ← a [policy]") {
+	if strings.Count(s, "(ab)") != 2 || strings.Count(s, "Aggregate: 2 unique Beads, 1 unique Links") != 1 || !strings.Contains(s, "(ab) → b [policy]") || !strings.Contains(s, "(ab) ← a [policy]") {
 		t.Fatalf("shared Link lost per-root placement or unique count:\n%s", s)
+	}
+}
+
+func TestMemoryCurrentGraphCoverageAndArguments(t *testing.T) {
+	r := memoryPresentationFixture(t, []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 1}}, graph.DirectionOut, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"parallel", "a", "b"})
+	r.Graph.Views[0].Links = r.Graph.Views[0].Links[:1]
+	s, err := renderMemoryCurrentGraph(r, genericTestScope, graph.DirectionOut, 10000)
+	if s != "" || !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("dropped non-tree Link escaped aggregate coverage: %q %v", s, err)
+	}
+	r = memoryPresentationFixture(t, []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 0}}, graph.DirectionOut)
+	r.Graph.Nodes = append(r.Graph.Nodes, memoryquery.CurrentNode{Path: "beads/e", TypeURL: genericTestScope + "types/policy", Version: "current"})
+	r.Records = append(r.Records, graphstore.Record{ID: genericTestScope + "beads/e", Type: genericTestScope + "types/policy", Version: "current"})
+	s, err = renderMemoryCurrentGraph(r, genericTestScope, graph.DirectionOut, 10000)
+	if s != "" || !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("unrepresented union node escaped aggregate coverage: %q %v", s, err)
+	}
+	for _, tc := range []struct {
+		scope     string
+		direction graph.Direction
+		cap       int
+	}{{"invalid", graph.DirectionOut, 1000}, {genericTestScope, graph.Direction(255), 1000}, {genericTestScope, graph.DirectionOut, 0}} {
+		s, err = renderMemoryCurrentGraph(r, tc.scope, tc.direction, tc.cap)
+		if s != "" || !errors.Is(err, graph.ErrValidation) {
+			t.Fatalf("misclassified presentation argument: %q %v", s, err)
+		}
 	}
 }
