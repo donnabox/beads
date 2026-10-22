@@ -150,6 +150,17 @@ product-scope questions, not evidence that the transaction engine is missing.
 `external:` dependency targets are an agreed explicit graph-mode refusal;
 local targets are the selected implementation path.
 
+`duplicate` and `supersede` share one later composition seam: shipping
+resolves two Issues, adds a typed native dependency, then closes the source
+through a separate call ([`cmd/bd/duplicate.go`](../../cmd/bd/duplicate.go)).
+The graph route currently refuses both. A shared checked graph operation
+should resolve both selectors and commit the native edge, canonical Link,
+source closure, retained versions and History together, with a staged-failure
+rollback proof. Calling public `AddDependency` then `CloseIssue` would repeat
+shipping's partial-write exposure and cannot qualify this class. This is
+separate from the first selected CRUD/ready slice; neither command is marked
+release-blocking by this map.
+
 For multi-Issue and cascade delete, the native `DeleteInTx` body already
 preflights missing IDs, checks outside dependents, bounds the transitive
 closure, and rewrites surviving neighbors in one transaction
