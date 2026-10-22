@@ -171,9 +171,12 @@ metadata. Owned-source pins remain unavailable. Native Dependency properties and
 edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
 unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},
-		{deleteCmd, `For an unreferenced Memory, bd delete ID previews the
-deletion without writing. Apply with --force; --if-revision TOKEN optionally
-rejects stale state. Referenced Memories refuse; graph deletion does not cascade.`},
+		{deleteCmd, `bd delete ID previews a Memory or Issue without writing.
+Multiple Issue IDs and --from-file select a checked Issue set; --cascade
+includes dependent Issues. Apply with --force, or keep an Issue-set request
+read-only with --dry-run. --if-revision TOKEN optionally rejects stale
+single-Issue state. Referenced Memories refuse and remain single-ID;
+dotted native Issue IDs refuse set deletion pending citation qualification.`},
 		{forgetCmd, `Use bd forget ID to delete one unreferenced Memory now.
 Add --if-revision TOKEN to reject stale state. Canonical IDs are retained and
 incident Links prevent deletion; no cascade is performed.`},

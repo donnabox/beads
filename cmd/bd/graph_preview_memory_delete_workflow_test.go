@@ -59,7 +59,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			}
 			for _, args := range [][]string{
 				{"delete", "beads/empty", "--if-revision="},
-				{"delete", "beads/empty", "beads/other"}, {"delete", "links/context"},
+				{"delete", "links/context"},
 				{"delete", "https://foreign.invalid/beads/empty"},
 			} {
 				refuse("invalid_selector", args...)
@@ -70,9 +70,11 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			} {
 				refuse("permission_denied", args...)
 			}
-			for _, flag := range []string{"--cascade", "--cascade=false", "--from-file=/unread/deletions", "--dry-run"} {
-				refuse("capability_unavailable", "delete", "beads/empty", flag)
+			refuse("invalid_properties", "delete", "beads/empty", "beads/other")
+			for _, flag := range []string{"--cascade", "--cascade=false", "--dry-run"} {
+				refuse("invalid_properties", "delete", "beads/empty", flag)
 			}
+			refuse("invalid_selector", "delete", "beads/empty", "--from-file=/unread/deletions")
 			refuse("not_found", "delete", "beads/missing")
 			// The graph adapter must honor bound read-only policy and migration
 			// freezes while leaving its default preview available as a read.

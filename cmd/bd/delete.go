@@ -51,11 +51,13 @@ Force: Delete and orphan dependents
   bd delete bd-1 --force
 
 GRAPH PREVIEW:
-In a graph-mode link workspace, delete previews one Memory or Issue.
---force applies the deletion; --if-revision TOKEN optionally rejects stale state. Identity and
-prior snapshots remain retained. Issue incident Links are removed with the Issue;
-without --force, surviving dependents refuse the preview. Cascade, batch,
-and file selection are unavailable in this graph slice.`,
+In a graph-mode link workspace, delete previews a Memory or a bounded set of
+Issues. --force applies deletion; --dry-run keeps an Issue-set request read-only.
+--cascade includes dependent Issues, and --from-file adds Issue IDs from a file.
+Every named Issue must exist before a set is written. An unforced, non-cascade
+request refuses surviving dependents; --force orphans them. Identity and prior
+snapshots remain retained. Memory deletion remains single-ID and refuses live
+incident Links. Dotted native Issue IDs still refuse set deletion.`,
 	Args:          cobra.MinimumNArgs(0),
 	SilenceUsage:  true,
 	SilenceErrors: true,

@@ -13,6 +13,9 @@ import (
 // The default preview is a read; neither --force nor forget implies a cascade
 // or a missing guard.
 func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool) error {
+	if !forget && graphPreviewDeleteSetRequested(cmd, args) {
+		return runGraphPreviewDeleteIssueSet(cmd, args)
+	}
 	request, err := graphPreviewMemoryDeleteInput(cmd, args, forget)
 	if err != nil {
 		return err

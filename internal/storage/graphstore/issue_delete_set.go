@@ -40,7 +40,7 @@ func (s *Store) planIssueDeleteSetInTx(ctx context.Context, tx *sql.Tx, paths []
 			continue
 		}
 		seen[path] = true
-		issue, err := s.showIssueInTx(ctx, tx, path)
+		issue, err := s.requireIssueInTx(ctx, tx, path)
 		if err != nil {
 			return issueDeleteSetPlan{}, err
 		}
