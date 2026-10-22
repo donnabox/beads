@@ -32,35 +32,75 @@ func (s *Store) ShowIssueDetails(ctx context.Context, path string, opts workapi.
 		if err != nil {
 			return err
 		}
-		if record.Properties == nil {
-			return fmt.Errorf("%w: Issue has no properties", ErrInvalidStore)
-		}
-		// Read the native Issue in this same verified snapshot. Its metadata
-		// and labels keep their ordinary JSON representation; the graph
-		// record's common metadata and separated owned Links are different
-		// projections of the same state.
-		issue, err := issueops.GetIssueInTx(ctx, tx, record.Properties.ID)
-		if err != nil {
-			return err
-		}
-		details, err = workapi.BuildIssueDetails(ctx, graphIssueDetailSource{tx: tx}, issue, false, opts)
-		if err != nil {
-			return err
-		}
-		details.Revision = record.Revision
-		// Native Issue IDs are backing keys, not graph selectors. Project every
-		// Issue reference through this same transaction's catalog before the
-		// detail array escapes; a bare backing ID can otherwise resolve to an
-		// unrelated Memory with the same Bead path.
-		if err := s.projectIssueDetailIDsInTx(ctx, tx, details); err != nil {
-			return err
-		}
-		if details.ID != path {
-			return fmt.Errorf("%w: Issue allocation changed during detail projection", ErrInvalidStore)
-		}
-		return nil
+		details, err = s.issueDetailsInTx(ctx, tx, path, record, opts)
+		return err
 	})
 	return details, err
+}
+
+// ShowIssueDetailsSelected resolves a bare native Issue ID (including a unique
+// abbreviation) and projects its detail view in the same checked snapshot.
+// Explicit graph paths remain exact.
+func (s *Store) ShowIssueDetailsSelected(ctx context.Context, selector IssueSelector, opts workapi.DetailOptions) (*types.IssueDetails, error) {
+	if err := validateIssueSelector(selector); err != nil {
+		return nil, err
+	}
+	var details *types.IssueDetails
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkCurrentReadBytes(ctx, tx); err != nil {
+			return err
+		}
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		path := selector.Path
+		var record IssueRecord
+		var err error
+		if selector.NativeID == "" {
+			record, err = s.showIssueInTx(ctx, tx, path)
+		} else {
+			path, record, err = s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		}
+		if err != nil {
+			return err
+		}
+		details, err = s.issueDetailsInTx(ctx, tx, path, record, opts)
+		return err
+	})
+	if errors.Is(err, errNonIssueSelector) {
+		return nil, ErrCapabilityUnavailable
+	}
+	return details, err
+}
+
+func (s *Store) issueDetailsInTx(ctx context.Context, tx *sql.Tx, path string, record IssueRecord, opts workapi.DetailOptions) (*types.IssueDetails, error) {
+	if record.Properties == nil {
+		return nil, fmt.Errorf("%w: Issue has no properties", ErrInvalidStore)
+	}
+	// Read the native Issue in this same verified snapshot. Its metadata
+	// and labels keep their ordinary JSON representation; the graph
+	// record's common metadata and separated owned Links are different
+	// projections of the same state.
+	issue, err := issueops.GetIssueInTx(ctx, tx, record.Properties.ID)
+	if err != nil {
+		return nil, err
+	}
+	details, err := workapi.BuildIssueDetails(ctx, graphIssueDetailSource{tx: tx}, issue, false, opts)
+	if err != nil {
+		return nil, err
+	}
+	details.Revision = record.Revision
+	// Native Issue IDs are backing keys, not graph selectors. Project every
+	// Issue reference through this same transaction's catalog before the
+	// detail array escapes; a bare backing ID can otherwise resolve to an
+	// unrelated Memory with the same Bead path.
+	if err := s.projectIssueDetailIDsInTx(ctx, tx, details); err != nil {
+		return nil, err
+	}
+	if details.ID != path {
+		return nil, fmt.Errorf("%w: Issue allocation changed during detail projection", ErrInvalidStore)
+	}
+	return details, nil
 }
 
 func (s *Store) projectIssueDetailIDsInTx(ctx context.Context, tx *sql.Tx, details *types.IssueDetails) error {
