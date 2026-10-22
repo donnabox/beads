@@ -119,6 +119,20 @@ product-scope questions, not evidence that the transaction engine is missing.
 `external:` dependency targets are an agreed explicit graph-mode refusal;
 local targets are the selected implementation path.
 
+For multi-Issue and cascade delete, the native `DeleteInTx` body already
+preflights missing IDs, checks outside dependents, bounds the transitive
+closure, and rewrites surviving neighbors in one transaction
+([`internal/storage/issueops/delete_role.go`](../../internal/storage/issueops/delete_role.go)).
+That is a useful planner, but calling it alone would leave graph catalog,
+canonical Link tombstones, retained terminal versions and History out of sync.
+The next proof must resolve the *complete* deletion set to live graph Issue
+paths before writing, account for non-graph and wisp members explicitly, and
+delete the native rows and every canonical incident Link in the same graph
+transaction. Dotted child IDs also expose a citation-rewrite boundary bug;
+upstream contributor [gastownhall/beads#7377](https://github.com/gastownhall/beads/pull/7377)
+has the relevant fix and conformance tests. It remains open with conflicts, so
+any graph cascade work should preserve that prior work and attribution.
+
 ## Proposed proof before widening a module
 
 1. Take two or more failing operations from a row and express the same storage invariant through one private seam; demonstrate that a shared fix removes both failures. Start with exact, unambiguous selectors and typed results where possible.
