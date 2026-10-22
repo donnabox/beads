@@ -133,13 +133,18 @@ The next same-source batch proof has a specific retention seam. Native
 inserted edge mints an `issue_versions` row for its source. Its `ItemResult`
 reports whether the edge changed but carries no post-edge Issue revision or
 owned-Link snapshot. Graph `recordIssueMappingInTx` reads only the final native
-revision and final canonical owned set. Removing #235's one-Link guard would
-therefore leave intermediate native revisions without matching graph Issue
-History. A safe extension needs to pair each changed edge with its native
-revision and the owned-Link set at that point inside the same transaction,
-including interleaved sources and idempotent edge results, then prove rollback
-and historical reads on embedded and shared-server Dolt. The existing guard
-remains until that correspondence is demonstrated.
+revision and final canonical owned set. Merely removing #235's one-Link guard
+would therefore leave intermediate native revisions without matching graph
+Issue History. A safe extension pairs each changed edge with its native
+revision and the owned-Link set at that point inside the same transaction.
+Stacked draft [#237](https://github.com/donnabox/beads/pull/237) at
+`f181e1a1c` does this for the admitted existing-source-to-new-target form:
+it checks the native revision sequence, maps each canonical snapshot, checks
+the aggregate Link cap, and rolls back if retaining the second version fails.
+Focused historical-content and rollback tests passed embedded and real
+shared-server Dolt without skips; related embedded graphstore tests passed.
+#237 is unmerged with hosted CI and review pending. Idempotent existing-target
+edges and arbitrary update/close items remain outside this bounded proof.
 
 Test-only draft [#236](https://github.com/donnabox/beads/pull/236) at
 `5fbf1cb91` pins the different *new-source* inception rule: native create plus
@@ -148,7 +153,8 @@ allocated only after the whole plan lands and retains one canonical creation
 snapshot. This passed embedded and real shared-server Dolt without skips.
 That intentional compression does not justify dropping intermediate graph
 History for an existing, already allocated source. #236 hosted CI and review
-are pending.
+are pending. It is the base of #237, which preserves this rule while mapping
+each later native revision of an already allocated source.
 
 A first commit in #231 at `cb7da57c5` extends the graph batch adapter to keep an
 edge from a later item to an earlier item with an explicit native ID inside
@@ -241,7 +247,7 @@ the graph plan must preserve that rule for every admitted native kind.
 
 | Root cause / seam | Exception cluster | Existing substrate | Focused work that could remove the class |
 | --- | --- | --- | --- |
-| **Graph transaction composition**: native Issue writes and canonical graph projection must land together. | `create --deps`, parent/dependency batches, graph-JSON symbolic batches, linked `delete`, `update --parent`, `duplicate`, `supersede`, `set-state`; potentially multi-Issue update/delete. | `graphstore.withTx`; #197–#202 prove local create/dependency and Markdown batches can be atomic. Draft #231 proves new-Issue symbolic edges and canonical Link retention on both engines; #232 wires that bounded `bd create --graph` form; #233 adds an exact existing local target and #234–#235 admit initial fields and one existing-source edge without changing the commit boundary. Draft #209 proves single-Issue linked deletion; #228–#229 prove bounded named-set and cascade storage composition, and #230 wires those set forms in the CLI. Draft #222–#223 prove a checked parent-only move; stacked #224–#225 prove parent-plus-scalar composition through one native Issue writer, old/new canonical Links and installed CLI on both engines. Empty detach remains a policy gap. | Continue typed, transaction-scoped Issue and Link composition. Keep validation, native edge changes, graph catalog, retained versions and source-owned History in one transaction. Prove rollback after each stage on embedded and shared-server Dolt. Avoid exporting a raw transaction to CLI callers or assuming native `BatchApplier` alone maintains graph invariants. |
+| **Graph transaction composition**: native Issue writes and canonical graph projection must land together. | `create --deps`, parent/dependency batches, graph-JSON symbolic batches, linked `delete`, `update --parent`, `duplicate`, `supersede`, `set-state`; potentially multi-Issue update/delete. | `graphstore.withTx`; #197–#202 prove local create/dependency and Markdown batches can be atomic. Draft #231 proves new-Issue symbolic edges and canonical Link retention on both engines; #232 wires that bounded `bd create --graph` form; #233 adds an exact existing local target and #234–#235 admit initial fields and one existing-source edge. #236 pins new-source inception History; #237 maps multiple existing-source edge revisions with their intermediate canonical owned-Link sets, still inside one transaction. Draft #209 proves single-Issue linked deletion; #228–#229 prove bounded named-set and cascade storage composition, and #230 wires those set forms in the CLI. Draft #222–#223 prove a checked parent-only move; stacked #224–#225 prove parent-plus-scalar composition through one native Issue writer, old/new canonical Links and installed CLI on both engines. Empty detach remains a policy gap. | Continue typed, transaction-scoped Issue and Link composition. Keep validation, native edge changes, graph catalog, retained versions and source-owned History in one transaction. Prove rollback after each stage on embedded and shared-server Dolt. Avoid exporting a raw transaction to CLI callers or assuming native `BatchApplier` alone maintains graph invariants. |
 | **Batch outcome policy and command routing**, separate from the transaction engine. | Multi-ID `close` mismatch; multi-ID `reopen`, `update`, `delete`; `--claim-next` coupling and JSON result reporting. | Native `BatchCloser` commits survivors as one act; graph `CloseIssues` uses it. Draft #226–#227 preflight all close selectors in that transaction and route ordinary multi-ID close through it; `bd batch` remains outside the graph-mode route. | Keep a per-command contract table: preflight failures, per-item policy refusals, commit grouping, History and output. Qualify #226–#227 at current head, then add typed multi-resource operations only where a selected command contract calls for them. |
 | **One Issue selector model**: native ID, abbreviated ID and canonical graph path are different identities. | Explicit-ID children, positional `link`, `dep` operands, `create --deps` targets, parent filters/updates, list/show/update/delete selectors. | `IssueSelector` resolves exact bare native IDs and exact graph paths inside a transaction; #180 aligns bare flat create identity, #193–#194 add positional abbreviated IDs in the write transaction. A local-only assembly at `9f92ab4aa` reused that resolver for `create --deps` and passed focused embedded and real-server workflows; its candidate bases have not converged in an open PR. | Extend the same transaction-scoped resolver with shipping exact/unique-prefix precedence, explicit-path exactness, ambiguity and deleted/non-Issue rules. Have every write consume its result within the same transaction; no CLI read-then-write lookup. Reuse it across commands instead of reimplementing partial-ID rules. |
 | **Relationship semantics and checked read projection**: native dependencies, canonical Links and readiness have different views. | Default `dep list` omits nonblocking kinds; `ready` must ignore informational Memory Links; parent/ready/list/graph/blocked views; Link kind filters. | #165, #174 and #175 expose kind and blocker rules; #169–#172 and #189–#190/#203 add checked parent/ready reads. Graph reads already use read transactions, but several collections refuse after bounded full scans. | Centralize relationship-kind classification and reuse the same checked projection for `dep`, `ready`, `list`, `children`, `blocked` and graph views. Test informational vs blocking edges, native and graph Links, hierarchy and row caps across both engines. Pagination is a separate deferred contract; keep honest refusal above a cap. |
