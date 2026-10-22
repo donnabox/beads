@@ -151,11 +151,17 @@ at `0f4f12cec` admits new exact existing-to-existing local Issue edges in a
 graph plan that also creates a node. Same-transaction endpoint selection,
 native edge insertion, canonical Link mapping, source History and fault
 rollback passed embedded and real shared-server Dolt, including the installed
-CLI path. A preexisting pair remains a no-write refusal: native re-add may
-refresh metadata and mint a version despite reporting no new edge, requiring
-a separate retention rule. #238 hosted CI and review are pending.
-#237 is unmerged with hosted CI and review pending. Idempotent existing-target
-edges and arbitrary update/close items remain outside this bounded proof.
+CLI path. Its four current-head hosted checks passed; review is pending.
+Stacked draft [#239](https://github.com/donnabox/beads/pull/239) at
+`bdeed74fb` admits the proven same-type, metadata-empty, thread-empty
+change-free re-add when the native pair already has a matching canonical
+Link. It verifies the native item and source revision did not change; a mixed
+plan retains only the genuinely inserted edge revision. Focused storage and
+installed CLI workflows passed embedded and real shared-server Dolt without
+skips. Native metadata-changing re-adds can mint a version despite reporting
+no new edge, so they and unmapped native edges remain explicit refusals.
+#239 hosted CI and review are pending. None of #237–#239 is merged; arbitrary
+update/close items remain outside this bounded proof.
 
 Test-only draft [#236](https://github.com/donnabox/beads/pull/236) at
 `5fbf1cb91` pins the different *new-source* inception rule: native create plus
