@@ -1,0 +1,132 @@
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"unicode/utf8"
+
+	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
+)
+
+type memoryLinkOperation struct{ name, family, targetFlag, description string }
+
+var memoryLinkOperations = []memoryLinkOperation{
+	{"reference", "references", "to", "Record a reference to another Bead"},
+	{"supersede", "superseded-by", "by", "Retire an older Memory in favor of a successor"},
+	{"requires", "requires", "to", "Record a necessary Constraint"},
+	{"defines", "defines", "to", "Record an owned subordinate Constraint"},
+	{"subject-to", "subject-to", "to", "Declare a Constraint governing a Bead"},
+}
+
+// Input construction is separate from execution and shares generic Link parsing,
+// metadata and guards. No facade allocates identities or bypasses Type checks.
+func newMemoryLinkCommand(op memoryLinkOperation) *cobra.Command {
+	cmd := &cobra.Command{Use: op.name + " SOURCE --" + op.targetFlag + " TARGET", Short: op.description,
+		Args: func(*cobra.Command, []string) error { return nil },
+		RunE: func(cmd *cobra.Command, args []string) error { return runMemoryLinkCommand(cmd, args, op) },
+	}
+	cmd.Flags().String(op.targetFlag, "", "Target Bead identity")
+	for _, flag := range []string{"title", "body", "status"} {
+		cmd.Flags().String(flag, "", "Optional Link "+flag+" property")
+	}
+	cmd.Flags().String("properties", "", "Link properties JSON object, @file or @-; cannot duplicate named properties")
+	cmd.Flags().String("metadata", "", "Informational metadata JSON object")
+	cmd.Flags().String("id", "", "Optional shared Link identity")
+	cmd.Flags().String("source-revision", "", "Explicit source endpoint revision selector")
+	cmd.Flags().String("target-revision", "", "Explicit target endpoint revision selector")
+	cmd.Flags().String("if-source-revision", "", "Require this current owner revision atomically")
+	registerCanonicalOutputFlags(cmd)
+	cmd.Flags().Lookup("output-format").Usage = "Output: default, detail or json; --json is shorthand for json"
+	canonicalFailureFactories[cmd] = newMemoryMutationFailureRenderer
+	return cmd
+}
+
+func memoryLinkProperties(cmd *cobra.Command) (map[string]any, error) {
+	properties := map[string]any{}
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		var err error
+		raw, err := graphPreviewPropertiesJSON(input, cmd.InOrStdin())
+		if err != nil {
+			return nil, err
+		}
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		decoder.UseNumber()
+		if err := decoder.Decode(&properties); err != nil {
+			return nil, err
+		}
+	}
+	for _, name := range []string{"title", "body", "status"} {
+		if !cmd.Flags().Changed(name) {
+			continue
+		}
+		if _, exists := properties[name]; exists {
+			return nil, fmt.Errorf("property %q supplied by both --%s and --properties", name, name)
+		}
+		value, _ := cmd.Flags().GetString(name)
+		if !utf8.ValidString(value) {
+			return nil, fmt.Errorf("--%s must be valid UTF-8", name)
+		}
+		properties[name] = value
+	}
+	return properties, nil
+}
+
+func memoryLinkRequest(cmd *cobra.Command, args []string, scope string, op memoryLinkOperation) (graphstore.LinkCreateRequest, error) {
+	zero := graphstore.LinkCreateRequest{}
+	if len(args) != 1 || !cmd.Flags().Changed(op.targetFlag) {
+		return zero, fmt.Errorf("%s requires one source and --%s TARGET", op.name, op.targetFlag)
+	}
+	target, _ := cmd.Flags().GetString(op.targetFlag)
+	if target == "" {
+		return zero, fmt.Errorf("--%s requires a Bead identity", op.targetFlag)
+	}
+	result := graphstore.LinkCreateRequest{TypeURL: scope + "types/" + op.family}
+	endpoints := []string{args[0], target}
+	paths := make([]string, 2)
+	pins := make([]graphstore.EndpointPin, 2)
+	for i, name := range []string{"source-revision", "target-revision"} {
+		flag, _ := cmd.Flags().GetString(name)
+		ref, err := graphPreviewReferenceWithFlag(endpoints[i], flag, cmd.Flags().Changed(name))
+		if err != nil {
+			return zero, err
+		}
+		path, err := graphPreviewResourcePath(scope, ref.Identity)
+		if err != nil {
+			return zero, err
+		}
+		if err := graph.ValidateBeadPath(path); err != nil {
+			return zero, err
+		}
+		paths[i] = path
+		pins[i] = graphPreviewEndpointPin(ref)
+	}
+	result.SourcePath, result.TargetPath = paths[0], paths[1]
+	result.SourcePin, result.TargetPin = pins[0], pins[1]
+	if cmd.Flags().Changed("id") {
+		value, _ := cmd.Flags().GetString("id")
+		path, err := graphPreviewLinkPath(scope, value)
+		if err != nil {
+			return zero, err
+		}
+		result.Path = path
+	}
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true)
+	if err != nil {
+		return zero, err
+	}
+	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
+		return zero, fmt.Errorf("--if-source-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit)
+	}
+	result.ExpectedSourceRevision, result.UnconditionalSource = revision, unconditional
+	return result, nil
+}
+
+func init() {
+	for _, op := range memoryLinkOperations {
+		memoryGraphCmd.AddCommand(newMemoryLinkCommand(op))
+	}
+}

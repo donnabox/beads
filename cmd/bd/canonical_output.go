@@ -69,8 +69,19 @@ func admitCanonicalGraphPreview(cmd *cobra.Command) (bool, error) {
 	return admitGraphPreview(cmd)
 }
 
+const canonicalDefaultAnnotation = "bd:canonical_output_default"
+
+func canonicalOutputDefault(cmd *cobra.Command) bool {
+	for c := cmd; c != nil; c = c.Parent() {
+		if c.Annotations[canonicalDefaultAnnotation] == "1" {
+			return true
+		}
+	}
+	return false
+}
+
 func canonicalOutputSelected(cmd *cobra.Command) bool {
-	return cmd.Flags().Changed("output-format")
+	return canonicalOutputDefault(cmd) || cmd.Flags().Changed("output-format")
 }
 
 // Legacy switches remain legacy even when their spelling mentions JSON. The
@@ -97,8 +108,18 @@ func canonicalOutputOptions(cmd *cobra.Command) (clioutput.Options, bool, error)
 		return opts, false, nil
 	}
 	for _, flag := range []string{"json", "format"} {
+		if flag == "json" && canonicalOutputDefault(cmd) {
+			continue
+		}
 		if cmd.Flags().Changed(flag) || cmd.Root().PersistentFlags().Changed(flag) {
 			return opts, true, fmt.Errorf("--output-format cannot be combined with legacy --%s; choose one output contract", flag)
+		}
+	}
+	if canonicalOutputDefault(cmd) {
+		if cmd.Flags().Lookup("json") != nil {
+			opts.JSON, _ = cmd.Flags().GetBool("json")
+		} else if cmd.Root().PersistentFlags().Lookup("json") != nil {
+			opts.JSON, _ = cmd.Root().PersistentFlags().GetBool("json")
 		}
 	}
 	opts.Formats, _ = cmd.Flags().GetStringArray("output-format")

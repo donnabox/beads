@@ -890,9 +890,12 @@ jobs:
 
       # --profile and --build_event_json_file are command options, so they go
       # after `test` (a startup position fails).
+      # A cold local fork run executes every action on the runner. The
+      # assembled Preview 3 suite completed successfully in 90m39s; leave
+      # room for that work while retaining the job's 100-minute outer bound.
       - name: bazel test //... --config=ci
         id: test
-        timeout-minutes: 90
+        timeout-minutes: 95
         run: |
           set -o pipefail
           start=$(date +%s)

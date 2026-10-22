@@ -7,6 +7,7 @@ go_library(
         "collection_paging.go",
         "doc.go",
         "jsonl.go",
+        "mutation.go",
         "pointer.go",
         "projection.go",
         "render.go",
@@ -20,6 +21,7 @@ go_test(
     name = "clioutput_test",
     srcs = [
         "collection_test.go",
+        "mutation_test.go",
         "render_test.go",
     ],
     data = glob(["testdata/**"]),

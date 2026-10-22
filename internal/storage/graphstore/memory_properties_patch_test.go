@@ -619,21 +619,28 @@ func TestMemoryPropertiesPatchDeletedBudget(t *testing.T) {
 			ctx, _, s, original, _, _ := memoryPropertiesPatchFixture(t, backend)
 			ctx = currentReadBudgetContext(t, ctx)
 			deleted := propertiesPatchDeletedFiller(t, ctx, s)
+			// Fixture construction and each refusal/verification phase retain the
+			// standard bounded budget independently. This is a rollback assertion,
+			// not an assertion that every large-record SQL read fits one deadline.
+			ctx = currentReadBudgetContext(t, ctx)
 			if _, err := s.Read(ctx, "beads/plan"); err != nil {
 				t.Fatalf("deleted filler fixture unreadable: %v", err)
 			}
 			before := workflowState(t, ctx, s)
 			for _, unconditional := range []bool{false, true} {
+				ctx = currentReadBudgetContext(t, ctx)
 				r := MemoryPropertiesPatchRequest{Path: "beads/plan", Patch: memoryPropertiesOperation(t, "body", strings.Repeat("b", 768<<10)), Unconditional: unconditional}
 				if !unconditional {
 					r.ExpectedRevision = original.Revision
 				}
 				got, err := s.PatchMemoryProperties(ctx, r)
+				ctx = currentReadBudgetContext(t, ctx)
 				if !errors.Is(err, ErrLimitExceeded) || !reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 					t.Fatalf("deleted-head budget rollback: changed=%t err=%v", got.Changed, err)
 				}
 			}
 			for i, path := range []string{"beads/deleted-filler-a", "beads/deleted-filler-b"} {
+				ctx = currentReadBudgetContext(t, ctx)
 				got, err := s.PatchMemoryProperties(ctx, MemoryPropertiesPatchRequest{Path: path, Patch: memoryPropertiesOperation(t, "body", "resurrect"), ExpectedRevision: deleted[i].Revision})
 				if !errors.Is(err, ErrGone) || !reflect.ValueOf(got).IsZero() {
 					t.Fatalf("deleted subject patched: changed=%t err=%v", got.Changed, err)
@@ -643,6 +650,7 @@ func TestMemoryPropertiesPatchDeletedBudget(t *testing.T) {
 					t.Fatalf("deleted retained head changed: %v", err)
 				}
 			}
+			ctx = currentReadBudgetContext(t, ctx)
 			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatal("deleted subject refusal changed state")
 			}
