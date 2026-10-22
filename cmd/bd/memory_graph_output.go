@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -41,13 +42,16 @@ type memoryGraphRoot struct {
 
 func memoryGraphDescriptor() clioutput.Descriptor {
 	return clioutput.Descriptor{BDPSpec: bdpwire.Pin, ResultKind: "graph",
-		Protection: &clioutput.Protection{Required: []string{"scope", "traversal"}},
+		Protection: &clioutput.Protection{Required: []string{"scope", "beads", "links", "traversal"}},
 	}
 }
 
 func memoryCurrentResult(read graphstore.CurrentFamilyRead, scope string, op memoryReadOperation, req graphstore.CurrentFamilyRequest) (memoryGraphResult, error) {
 	zero := memoryGraphResult{}
 	if err := graph.ValidateScopeURL(scope); err != nil {
+		return zero, err
+	}
+	if err := validateMemoryCurrentCapture(read, scope, req.Roots); err != nil {
 		return zero, err
 	}
 	if len(read.Graph.Views) != len(req.Roots) {
@@ -74,7 +78,7 @@ func memoryCurrentResult(read graphstore.CurrentFamilyRead, scope string, op mem
 	// appearance before encoding the compound result. This is a conservative
 	// output budget, not a new serializer or a successful truncation policy.
 	for _, bead := range inventory.Beads {
-		raw, err := json.Marshal(bead)
+		raw, err := encodeMemoryGraphJSON(bead)
 		if err != nil {
 			return zero, err
 		}
@@ -83,7 +87,7 @@ func memoryCurrentResult(read graphstore.CurrentFamilyRead, scope string, op mem
 		}
 	}
 	for _, link := range inventory.Links {
-		raw, err := json.Marshal(link)
+		raw, err := encodeMemoryGraphJSON(link)
 		if err != nil {
 			return zero, err
 		}
@@ -114,15 +118,12 @@ func memoryCurrentResult(read graphstore.CurrentFamilyRead, scope string, op mem
 			return zero, fmt.Errorf("%w: mismatched root context", graphstore.ErrInvalidStore)
 		}
 		root := memoryGraphRoot{ID: graph.CanonicalURL(scope, view.Root.Path), Revision: versions[view.Root.Path], Depth: view.Root.Depth, Beads: canonical(view.Nodes), Links: canonical(view.Links), Frontier: canonical(view.Frontier)}
-		if err := charge(6*len(root.ID) + 6*len(root.Revision) + 128); err != nil {
+		encoded, err := encodeMemoryGraphJSON(root)
+		if err != nil {
 			return zero, err
 		}
-		for _, group := range [][]string{root.Beads, root.Links, root.Frontier} {
-			for _, id := range group {
-				if err := charge(6*len(id) + 3); err != nil {
-					return zero, err
-				}
-			}
+		if err := charge(len(encoded) + 2); err != nil {
+			return zero, err
 		}
 		result.Traversal.Roots = append(result.Traversal.Roots, root)
 		if len(root.Frontier) > 0 {
@@ -135,9 +136,9 @@ func memoryCurrentResult(read graphstore.CurrentFamilyRead, scope string, op mem
 // Reuse the common renderer/document writer. Buffer and bound the final framed
 // bytes before publishing; a policy refusal never emits a success prefix.
 func renderMemoryCanonicalResult(cmd *cobra.Command, renderer *clioutput.Renderer, result memoryGraphResult) error {
-	raw, err := json.Marshal(result)
+	raw, err := encodeMemoryGraphJSON(result)
 	if err != nil {
-		return canonicalReadError(cmd, renderer, err, "output_error")
+		return memoryGraphOutputError(cmd, renderer, err)
 	}
 	if len(raw) > graphstore.PreviewCurrentReadByteLimit {
 		return canonicalReadError(cmd, renderer, graphstore.ErrLimitExceeded, "output_error")
@@ -147,7 +148,7 @@ func renderMemoryCanonicalResult(cmd *cobra.Command, renderer *clioutput.Rendere
 		if errors.Is(err, clioutput.ErrInvalidProjection) {
 			return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 		}
-		return canonicalReadError(cmd, renderer, err, "output_error")
+		return memoryGraphOutputError(cmd, renderer, err)
 	}
 	if len(output) > graphstore.PreviewCurrentReadByteLimit {
 		return canonicalReadError(cmd, renderer, graphstore.ErrLimitExceeded, "output_error")
@@ -192,4 +193,23 @@ func newMemoryGraphRenderer(options clioutput.Options) (*clioutput.Renderer, str
 	}
 	renderer, err := clioutput.New(memoryGraphDescriptor(), base)
 	return renderer, format, err
+}
+
+// Match the common CLI encoder: documents are not HTML. The common renderer
+// still owns framing/projection, and the command owns one final bounded write.
+func encodeMemoryGraphJSON(value any) ([]byte, error) {
+	var output bytes.Buffer
+	encoder := json.NewEncoder(&output)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(value); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSuffix(output.Bytes(), []byte("\n")), nil
+}
+
+func memoryGraphOutputError(cmd *cobra.Command, renderer canonicalFailureRenderer, err error) error {
+	if errors.Is(err, graphstore.ErrInvalidStore) || errors.Is(err, graphstore.ErrLimitExceeded) || errors.Is(err, graphstore.ErrCapabilityUnavailable) {
+		return canonicalReadError(cmd, renderer, err, "invalid_store")
+	}
+	return canonicalFailure(cmd, renderer, "output_error", err.Error(), 1)
 }

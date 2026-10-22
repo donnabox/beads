@@ -12,6 +12,7 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/memoryquery"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/typecatalog"
 )
@@ -34,6 +35,10 @@ var memoryReadOperations = []memoryReadOperation{
 	{"referenced-by", "references", "Show Beads that reference the input", graph.DirectionIn, 1},
 	{"successor", "superseded-by", "Follow the replacement chain, retaining the starting Memory", graph.DirectionOut, 1000},
 	{"supersedes", "superseded-by", "Show Memories directly replaced by the input", graph.DirectionIn, 1},
+	{"requirements", "requires", "Show necessary Constraints, including defining children", graph.DirectionOut, 1000},
+	{"required-by", "requires", "Show Constraints that directly require the input", graph.DirectionIn, 1},
+	{"definition", "defines", "Show the defining Constraint subtree", graph.DirectionOut, 1000},
+	{"defined-by", "defines", "Show the input Constraint's defining parent", graph.DirectionIn, 1},
 }
 
 func init() {
@@ -77,7 +82,7 @@ func memoryCurrentRequest(cmd *cobra.Command, args []string, scope string, op me
 	if raw := os.Getenv(maxRowsEnvVar); raw != "" {
 		value, err := strconv.Atoi(raw)
 		if err != nil || value < 0 {
-			return zero, fmt.Errorf("BEADS_MAX_ROWS must be a non-negative integer")
+			return zero, fmt.Errorf("%w: BEADS_MAX_ROWS must be a non-negative integer", storage.ErrValidation)
 		}
 		if value > 0 {
 			return zero, fmt.Errorf("%w: Memory graph reads use explicit node/Link bounds; unset BEADS_MAX_ROWS", graphstore.ErrCapabilityUnavailable)
@@ -143,6 +148,9 @@ func runMemoryCurrentRead(cmd *cobra.Command, args []string, op memoryReadOperat
 	}
 	request, err := memoryCurrentRequest(cmd, args, graphPreviewConfig.GraphScopeURL, op)
 	if err != nil {
+		if errors.Is(err, storage.ErrValidation) {
+			return canonicalFailure(cmd, renderer, "invalid_properties", err.Error(), 2)
+		}
 		if errors.Is(err, graphstore.ErrCapabilityUnavailable) {
 			return canonicalReadError(cmd, renderer, err, "invalid_selector")
 		}
@@ -161,21 +169,24 @@ func runMemoryCurrentRead(cmd *cobra.Command, args []string, op memoryReadOperat
 		if !ok {
 			return canonicalReadError(cmd, renderer, graphstore.ErrInvalidStore, "invalid_store")
 		}
-		result, err := memoryCurrentResult(read, graphPreviewConfig.GraphScopeURL, op, request)
-		if err != nil {
+		if err := validateMemoryCurrentCapture(read, graphPreviewConfig.GraphScopeURL, request.Roots); err != nil {
 			return canonicalReadError(cmd, renderer, err, "invalid_store")
 		}
+		if quietFlag && format != "json" {
+			return nil
+		}
 		if format == "json" || format == "detail" {
+			result, err := memoryCurrentResult(read, graphPreviewConfig.GraphScopeURL, op, request)
+			if err != nil {
+				return canonicalReadError(cmd, renderer, err, "invalid_store")
+			}
 			return renderMemoryCanonicalResult(cmd, renderer, result)
 		}
 		// Bind presentation to the exact direction used for acquisition. The
 		// private capture is not an independently reusable query description.
 		text, err := renderMemoryCurrentGraph(read, graphPreviewConfig.GraphScopeURL, request.Direction, graphstore.PreviewCurrentReadByteLimit)
 		if err != nil {
-			return canonicalReadError(cmd, renderer, err, "output_error")
-		}
-		if quietFlag {
-			return nil
+			return memoryGraphOutputError(cmd, renderer, err)
 		}
 		if err := writeCanonicalDocument(cmd.OutOrStdout(), []byte(text)); err != nil {
 			fmt.Fprintf(cmd.ErrOrStderr(), "output_error: %v\n", err)

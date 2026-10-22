@@ -97,6 +97,20 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 					t.Fatalf("human forest lost %q:\n%s", want, human)
 				}
 			}
+			if explicit := call("memory", "references", "a", "b", "--output-format=tree"); explicit != human {
+				t.Fatalf("explicit tree differs:\n%s\n%s", explicit, human)
+			}
+			detail := call("memory", "references", "a", "--output-format=detail")
+			for _, want := range []string{"scope", "traversal", "memory-command"} {
+				if !strings.Contains(detail, want) {
+					t.Fatalf("detail lost %s: %s", want, detail)
+				}
+			}
+			for _, format := range []string{"tree", "detail"} {
+				if output := call("memory", "references", "a", "--output-format="+format, "--quiet"); output != "" {
+					t.Fatalf("quiet %s wrote output: %s", format, output)
+				}
+			}
 			if strings.Contains(human, "types/") || strings.Contains(human, "beads/") || strings.Contains(human, "links/") {
 				t.Fatalf("display prefixes retained:\n%s", human)
 			}

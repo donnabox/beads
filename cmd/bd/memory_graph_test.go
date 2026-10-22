@@ -13,8 +13,12 @@ import (
 func memoryTestCommand(t *testing.T, op memoryReadOperation, flags ...string) *cobra.Command {
 	t.Helper()
 	c := newMemoryReadCommand(op)
-	c.Annotations = map[string]string{canonicalDefaultAnnotation: "1"}
-	c.Flags().Bool("json", false, "")
+	root := &cobra.Command{Use: "bd"}
+	root.PersistentFlags().Bool("json", false, "")
+	root.PersistentFlags().String("format", "", "")
+	parent := &cobra.Command{Use: "memory", Annotations: memoryGraphCmd.Annotations}
+	root.AddCommand(parent)
+	parent.AddCommand(c)
 	t.Cleanup(func() { delete(canonicalFailureFactories, c) })
 	if err := c.ParseFlags(flags); err != nil {
 		t.Fatal(err)
@@ -84,6 +88,7 @@ func TestMemoryCanonicalBoundary(t *testing.T) {
 		{flags: []string{"--json", "--output-format=tree"}, refuse: true},
 		{flags: []string{"--json", "--output-format=detail"}, refuse: true},
 		{flags: []string{"--output-format=json", "--output-format=detail"}, refuse: true},
+		{flags: []string{"--format=json"}, refuse: true},
 	} {
 		c := memoryTestCommand(t, memoryReadOperations[0], tc.flags...)
 		opts, selected, err := canonicalOutputOptions(c)
@@ -96,6 +101,12 @@ func TestMemoryCanonicalBoundary(t *testing.T) {
 	}
 	if canonicalOutputDefault(rememberCmd) || canonicalOutputDefault(graphCmd) {
 		t.Fatal("new namespace changed an existing command contract")
+	}
+	for _, op := range memoryReadOperations {
+		registered, _, err := rootCmd.Find([]string{"memory", op.name})
+		if err != nil || registered == nil || registered.Name() != op.name || !canonicalOutputDefault(registered) || registered.InheritedFlags().Lookup("json") == nil {
+			t.Fatalf("registered command lost inherited contract: %s %v", op.name, err)
+		}
 	}
 	if !canonicalOutputDefault(memoryGraphCmd) {
 		t.Fatal("new group is not canonical by default")

@@ -1,0 +1,1110 @@
+{
+  "status": "authored semantic acceptance cases; not executed product tests",
+  "date": "2026-10-21",
+  "scope": "Preview 3 Memory facade target; stored Type semantics are defined elsewhere",
+  "representation": "Logical fixture IDs and Type names only. This is not a BDP wire/import format or a new public query IR. Expected blocks describe logical operation results for review, not serialized field names. Multi-root membership/frontier context stays internal until reconciled with the common output contract.",
+  "fixtures": {
+    "succession": {
+      "beads": [
+        {
+          "id": "a",
+          "type": "memory"
+        },
+        {
+          "id": "b",
+          "type": "memory"
+        },
+        {
+          "id": "c",
+          "type": "memory"
+        },
+        {
+          "id": "x",
+          "type": "memory"
+        },
+        {
+          "id": "alone",
+          "type": "memory"
+        }
+      ],
+      "links": [
+        {
+          "id": "ab",
+          "type": "superseded-by",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "bc",
+          "type": "superseded-by",
+          "source": "b",
+          "target": "c"
+        },
+        {
+          "id": "xb",
+          "type": "superseded-by",
+          "source": "x",
+          "target": "b"
+        }
+      ]
+    },
+    "diamond": {
+      "beads": [
+        {
+          "id": "a",
+          "type": "memory"
+        },
+        {
+          "id": "b",
+          "type": "memory"
+        },
+        {
+          "id": "c",
+          "type": "memory"
+        },
+        {
+          "id": "d",
+          "type": "memory"
+        }
+      ],
+      "links": [
+        {
+          "id": "ab",
+          "type": "references",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "ac",
+          "type": "references",
+          "source": "a",
+          "target": "c"
+        },
+        {
+          "id": "bd",
+          "type": "references",
+          "source": "b",
+          "target": "d"
+        },
+        {
+          "id": "cd",
+          "type": "references",
+          "source": "c",
+          "target": "d"
+        }
+      ]
+    },
+    "cycle": {
+      "beads": [
+        {
+          "id": "a",
+          "type": "memory"
+        },
+        {
+          "id": "b",
+          "type": "memory"
+        },
+        {
+          "id": "c",
+          "type": "memory"
+        }
+      ],
+      "links": [
+        {
+          "id": "ab",
+          "type": "references",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "bc",
+          "type": "references",
+          "source": "b",
+          "target": "c"
+        },
+        {
+          "id": "ca",
+          "type": "references",
+          "source": "c",
+          "target": "a"
+        }
+      ]
+    },
+    "induced": {
+      "beads": [
+        {
+          "id": "a",
+          "type": "memory"
+        },
+        {
+          "id": "b",
+          "type": "memory"
+        },
+        {
+          "id": "c",
+          "type": "memory"
+        }
+      ],
+      "links": [
+        {
+          "id": "ab",
+          "type": "references",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "ac",
+          "type": "references",
+          "source": "a",
+          "target": "c"
+        },
+        {
+          "id": "bc",
+          "type": "references",
+          "source": "b",
+          "target": "c"
+        }
+      ]
+    },
+    "parallel": {
+      "beads": [
+        {
+          "id": "a",
+          "type": "memory"
+        },
+        {
+          "id": "b",
+          "type": "memory"
+        }
+      ],
+      "links": [
+        {
+          "id": "first",
+          "type": "references",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "second",
+          "type": "references",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "back",
+          "type": "references",
+          "source": "b",
+          "target": "a"
+        }
+      ]
+    },
+    "constraints": {
+      "beads": [
+        {
+          "id": "work",
+          "type": "issue"
+        },
+        {
+          "id": "other",
+          "type": "issue"
+        },
+        {
+          "id": "spec",
+          "type": "specification"
+        },
+        {
+          "id": "req",
+          "type": "requirement"
+        },
+        {
+          "id": "privacy",
+          "type": "policy"
+        },
+        {
+          "id": "review",
+          "type": "policy"
+        }
+      ],
+      "links": [
+        {
+          "id": "work-spec",
+          "type": "subject-to",
+          "source": "work",
+          "target": "spec"
+        },
+        {
+          "id": "spec-req",
+          "type": "defines",
+          "source": "spec",
+          "target": "req"
+        },
+        {
+          "id": "req-privacy",
+          "type": "requires",
+          "source": "req",
+          "target": "privacy"
+        },
+        {
+          "id": "spec-review",
+          "type": "subject-to",
+          "source": "spec",
+          "target": "review"
+        },
+        {
+          "id": "other-privacy",
+          "type": "subject-to",
+          "source": "other",
+          "target": "privacy"
+        }
+      ]
+    },
+    "necessary-cycle": {
+      "beads": [
+        {
+          "id": "a",
+          "type": "policy"
+        },
+        {
+          "id": "b",
+          "type": "policy"
+        }
+      ],
+      "links": [
+        {
+          "id": "ab",
+          "type": "requires",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "ba",
+          "type": "requires",
+          "source": "b",
+          "target": "a"
+        }
+      ]
+    },
+    "mixed": {
+      "beads": [
+        {
+          "id": "work",
+          "type": "issue"
+        },
+        {
+          "id": "note",
+          "type": "memory"
+        },
+        {
+          "id": "followup",
+          "type": "issue"
+        },
+        {
+          "id": "guide",
+          "type": "procedure"
+        }
+      ],
+      "links": [
+        {
+          "id": "wn",
+          "type": "references",
+          "source": "work",
+          "target": "note"
+        },
+        {
+          "id": "nf",
+          "type": "references",
+          "source": "note",
+          "target": "followup"
+        },
+        {
+          "id": "fg",
+          "type": "references",
+          "source": "followup",
+          "target": "guide"
+        }
+      ]
+    },
+    "direct-subjects": {
+      "beads": [
+        {
+          "id": "policy",
+          "type": "policy"
+        },
+        {
+          "id": "a",
+          "type": "policy"
+        },
+        {
+          "id": "b",
+          "type": "policy"
+        }
+      ],
+      "links": [
+        {
+          "id": "ap",
+          "type": "subject-to",
+          "source": "a",
+          "target": "policy"
+        },
+        {
+          "id": "bp",
+          "type": "subject-to",
+          "source": "b",
+          "target": "policy"
+        },
+        {
+          "id": "ab",
+          "type": "subject-to",
+          "source": "a",
+          "target": "b"
+        }
+      ]
+    },
+    "parallel-no-cycle": {
+      "beads": [
+        {
+          "id": "a",
+          "type": "memory"
+        },
+        {
+          "id": "b",
+          "type": "memory"
+        }
+      ],
+      "links": [
+        {
+          "id": "first",
+          "type": "references",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "second",
+          "type": "references",
+          "source": "a",
+          "target": "b"
+        }
+      ]
+    },
+    "mixed-direction-dag": {
+      "beads": [
+        {
+          "id": "a",
+          "type": "memory"
+        },
+        {
+          "id": "b",
+          "type": "memory"
+        },
+        {
+          "id": "c",
+          "type": "memory"
+        }
+      ],
+      "links": [
+        {
+          "id": "ab",
+          "type": "references",
+          "source": "a",
+          "target": "b"
+        },
+        {
+          "id": "cb",
+          "type": "references",
+          "source": "c",
+          "target": "b"
+        },
+        {
+          "id": "ca",
+          "type": "references",
+          "source": "c",
+          "target": "a"
+        }
+      ]
+    },
+    "second-parent": {
+      "beads": [
+        {
+          "id": "spec",
+          "type": "specification"
+        },
+        {
+          "id": "req",
+          "type": "requirement"
+        },
+        {
+          "id": "privacy",
+          "type": "policy"
+        }
+      ],
+      "links": [
+        {
+          "id": "spec-req",
+          "type": "defines",
+          "source": "spec",
+          "target": "req"
+        }
+      ]
+    },
+    "mixed-requires-cycle": {
+      "beads": [
+        {
+          "id": "spec",
+          "type": "specification"
+        },
+        {
+          "id": "req",
+          "type": "requirement"
+        }
+      ],
+      "links": [
+        {
+          "id": "defines-child",
+          "type": "defines",
+          "source": "spec",
+          "target": "req"
+        },
+        {
+          "id": "requires-parent",
+          "type": "requires",
+          "source": "req",
+          "target": "spec"
+        }
+      ]
+    }
+  },
+  "readCases": [
+    {
+      "id": "successor-full",
+      "fixture": "succession",
+      "command": [
+        "bd",
+        "memory",
+        "successor",
+        "a"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b",
+          "c"
+        ],
+        "selectedLinks": [
+          "ab",
+          "bc"
+        ],
+        "frontier": []
+      }
+    },
+    {
+      "id": "successor-zero-hop",
+      "fixture": "succession",
+      "command": [
+        "bd",
+        "memory",
+        "successor",
+        "alone"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "alone"
+        ],
+        "selectedLinks": [],
+        "frontier": []
+      }
+    },
+    {
+      "id": "supersedes-direct",
+      "fixture": "succession",
+      "command": [
+        "bd",
+        "memory",
+        "supersedes",
+        "c"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "b",
+          "c"
+        ],
+        "selectedLinks": [
+          "bc"
+        ],
+        "frontier": [
+          "b"
+        ]
+      }
+    },
+    {
+      "id": "supersedes-ancestry",
+      "fixture": "succession",
+      "command": [
+        "bd",
+        "memory",
+        "supersedes",
+        "c",
+        "--depth",
+        "1000"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b",
+          "c",
+          "x"
+        ],
+        "selectedLinks": [
+          "ab",
+          "bc",
+          "xb"
+        ],
+        "frontier": []
+      }
+    },
+    {
+      "id": "references-one-hop",
+      "fixture": "diamond",
+      "command": [
+        "bd",
+        "memory",
+        "references",
+        "a"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b",
+          "c"
+        ],
+        "selectedLinks": [
+          "ab",
+          "ac"
+        ],
+        "frontier": [
+          "b",
+          "c"
+        ]
+      }
+    },
+    {
+      "id": "references-diamond",
+      "fixture": "diamond",
+      "command": [
+        "bd",
+        "memory",
+        "references",
+        "a",
+        "--depth",
+        "2"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b",
+          "c",
+          "d"
+        ],
+        "selectedLinks": [
+          "ab",
+          "ac",
+          "bd",
+          "cd"
+        ],
+        "frontier": []
+      }
+    },
+    {
+      "id": "references-cycle",
+      "fixture": "cycle",
+      "command": [
+        "bd",
+        "memory",
+        "references",
+        "a",
+        "--depth",
+        "2"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b",
+          "c"
+        ],
+        "selectedLinks": [
+          "ab",
+          "bc",
+          "ca"
+        ],
+        "frontier": []
+      },
+      "note": "Render the closing ca Link as a cycle reference; do not duplicate the a record or recurse forever."
+    },
+    {
+      "id": "references-induced-cross-link",
+      "fixture": "induced",
+      "command": [
+        "bd",
+        "memory",
+        "references",
+        "a"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b",
+          "c"
+        ],
+        "selectedLinks": [
+          "ab",
+          "ac",
+          "bc"
+        ],
+        "frontier": []
+      },
+      "note": "Depth chooses Beads; preserve matching cross-link bc even though a discovered c directly."
+    },
+    {
+      "id": "references-parallel-and-reverse",
+      "fixture": "parallel",
+      "command": [
+        "bd",
+        "memory",
+        "references",
+        "a"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b"
+        ],
+        "selectedLinks": [
+          "first",
+          "second",
+          "back"
+        ],
+        "frontier": []
+      },
+      "note": "All three actual Links are induced among reached Beads. Direction selects reachability, not a rewrite of authored arrows."
+    },
+    {
+      "id": "requirements-includes-defines",
+      "fixture": "constraints",
+      "command": [
+        "bd",
+        "memory",
+        "requirements",
+        "spec"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "spec",
+          "req",
+          "privacy"
+        ],
+        "selectedLinks": [
+          "spec-req",
+          "req-privacy"
+        ],
+        "frontier": []
+      },
+      "note": "Neither subject-to edge from spec nor incoming work-spec is a Requires-family edge."
+    },
+    {
+      "id": "definition-excludes-external-requirement",
+      "fixture": "constraints",
+      "command": [
+        "bd",
+        "memory",
+        "definition",
+        "spec"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "spec",
+          "req"
+        ],
+        "selectedLinks": [
+          "spec-req"
+        ],
+        "frontier": []
+      }
+    },
+    {
+      "id": "required-by-direct",
+      "fixture": "constraints",
+      "command": [
+        "bd",
+        "memory",
+        "required-by",
+        "privacy"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "privacy",
+          "req"
+        ],
+        "selectedLinks": [
+          "req-privacy"
+        ],
+        "frontier": [
+          "req"
+        ]
+      }
+    },
+    {
+      "id": "requires-cycle",
+      "fixture": "necessary-cycle",
+      "command": [
+        "bd",
+        "memory",
+        "requirements",
+        "a"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b"
+        ],
+        "selectedLinks": [
+          "ab",
+          "ba"
+        ],
+        "frontier": []
+      },
+      "note": "Mutual necessity is allowed; it adds no satisfaction evidence."
+    },
+    {
+      "id": "constraints-staged-no-transitive-subject-to",
+      "fixture": "constraints",
+      "command": [
+        "bd",
+        "memory",
+        "constraints",
+        "work"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "work",
+          "spec",
+          "req",
+          "privacy"
+        ],
+        "selectedLinks": [
+          "work-spec",
+          "spec-req",
+          "req-privacy"
+        ],
+        "frontier": []
+      },
+      "note": "Exclude review and spec-review; a Constraint's own Subject To declarations do not bind the original work subject."
+    },
+    {
+      "id": "subjects-direct-declaration-edges",
+      "fixture": "direct-subjects",
+      "command": [
+        "bd",
+        "memory",
+        "subjects",
+        "policy"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "policy",
+          "a",
+          "b"
+        ],
+        "selectedLinks": [
+          "ap",
+          "bp"
+        ],
+        "frontier": []
+      },
+      "note": "Exclude secondary declaration ab between reached subjects; this command selects declarations targeting its root, not an induced graph of every Subject To edge among reached Beads."
+    },
+    {
+      "id": "subjects-direct",
+      "fixture": "constraints",
+      "command": [
+        "bd",
+        "memory",
+        "subjects",
+        "privacy"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "privacy",
+          "other"
+        ],
+        "selectedLinks": [
+          "other-privacy"
+        ],
+        "frontier": []
+      },
+      "note": "work has a derived obligation through spec/req but no direct Subject To privacy; reverse derived subjects are deferred. Incoming Requires is outside this operation, not a Subject To depth frontier."
+    },
+    {
+      "id": "constraints-multiple-roots",
+      "fixture": "constraints",
+      "command": [
+        "bd",
+        "memory",
+        "constraints",
+        "work",
+        "other"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "work",
+          "other",
+          "spec",
+          "req",
+          "privacy"
+        ],
+        "selectedLinks": [
+          "work-spec",
+          "other-privacy",
+          "spec-req",
+          "req-privacy"
+        ],
+        "rootMembership": {
+          "work": [
+            "work",
+            "spec",
+            "req",
+            "privacy"
+          ],
+          "other": [
+            "other",
+            "privacy"
+          ]
+        },
+        "frontierByRoot": {
+          "work": [],
+          "other": []
+        }
+      },
+      "note": "Privacy is one Bead with separate witnesses. Do not make other subject to spec or req."
+    },
+    {
+      "id": "references-multiple-roots",
+      "fixture": "diamond",
+      "command": [
+        "bd",
+        "memory",
+        "references",
+        "a",
+        "b"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b",
+          "c",
+          "d"
+        ],
+        "selectedLinks": [
+          "ab",
+          "ac",
+          "bd"
+        ],
+        "rootMembership": {
+          "a": [
+            "a",
+            "b",
+            "c"
+          ],
+          "b": [
+            "b",
+            "d"
+          ]
+        },
+        "frontierByRoot": {
+          "a": [
+            "b",
+            "c"
+          ],
+          "b": []
+        }
+      },
+      "note": "Compute each root's graph with its own depth budget in one read view, then aggregate those graphs. Exclude cd: neither per-root result contains both endpoints. Retain per-root frontiers without borrowing another root's depth budget."
+    },
+    {
+      "id": "mixed-issue-memory-path",
+      "fixture": "mixed",
+      "command": [
+        "bd",
+        "memory",
+        "references",
+        "work",
+        "--depth",
+        "3"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "work",
+          "note",
+          "followup",
+          "guide"
+        ],
+        "selectedLinks": [
+          "wn",
+          "nf",
+          "fg"
+        ],
+        "frontier": []
+      }
+    },
+    {
+      "id": "both-parallel-is-not-directed-cycle",
+      "fixture": "parallel-no-cycle",
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b"
+        ],
+        "selectedLinks": [
+          "first",
+          "second"
+        ],
+        "frontier": []
+      },
+      "note": "A both-direction display may encounter an ancestor via a second parallel Link, but these two same-direction Links are not a directed cycle. Use an already-shown reference, never a cycle label.",
+      "operation": {
+        "root": "a",
+        "family": "references",
+        "direction": "both",
+        "depth": 1000
+      }
+    },
+    {
+      "id": "both-mixed-directions-is-not-directed-cycle",
+      "fixture": "mixed-direction-dag",
+      "expected": {
+        "selectedBeads": [
+          "a",
+          "b",
+          "c"
+        ],
+        "selectedLinks": [
+          "ab",
+          "cb",
+          "ca"
+        ],
+        "frontier": []
+      },
+      "note": "A display walk a→b←c→a returns to a but the authored graph is acyclic. Indentation/backtracking is not evidence of a directed cycle.",
+      "operation": {
+        "root": "a",
+        "family": "references",
+        "direction": "both",
+        "depth": 1000
+      }
+    },
+    {
+      "id": "requires-mixed-defines-cycle",
+      "fixture": "mixed-requires-cycle",
+      "command": [
+        "bd",
+        "memory",
+        "requirements",
+        "spec"
+      ],
+      "expected": {
+        "selectedBeads": [
+          "spec",
+          "req"
+        ],
+        "selectedLinks": [
+          "defines-child",
+          "requires-parent"
+        ],
+        "frontier": []
+      },
+      "note": "Mixed Requires-family cycles are permitted; this is not an all-Defines cycle. Terminate without claiming satisfaction."
+    }
+  ],
+  "authoringCases": [
+    {
+      "id": "references-independent-parallels",
+      "fixture": "parallel",
+      "command": [
+        "bd",
+        "memory",
+        "reference",
+        "a",
+        "--to",
+        "b",
+        "--id",
+        "third"
+      ],
+      "expected": "create distinct third Link; return third ID; retain existing Links"
+    },
+    {
+      "id": "supersede-existing-successor",
+      "fixture": "succession",
+      "command": [
+        "bd",
+        "memory",
+        "supersede",
+        "a",
+        "--by",
+        "b"
+      ],
+      "expected": "refuse create-only operation; no owner, Link or history change; do not silently reuse or retarget"
+    },
+    {
+      "id": "supersede-cycle",
+      "fixture": "succession",
+      "command": [
+        "bd",
+        "memory",
+        "supersede",
+        "c",
+        "--by",
+        "a"
+      ],
+      "expected": "refuse cycle atomically"
+    },
+    {
+      "id": "defines-second-parent",
+      "fixture": "second-parent",
+      "command": [
+        "bd",
+        "memory",
+        "defines",
+        "privacy",
+        "--to",
+        "req"
+      ],
+      "expected": "refuse second defining parent atomically",
+      "note": "Only the child single-parent rule is violated; no reverse Requires path confounds the refusal."
+    },
+    {
+      "id": "duplicate-property-input",
+      "fixture": "constraints",
+      "command": [
+        "bd",
+        "memory",
+        "requires",
+        "spec",
+        "--to",
+        "privacy",
+        "--title",
+        "x",
+        "--properties",
+        "{\"title\":\"y\"}"
+      ],
+      "expected": "refuse duplicate named/property input before write"
+    }
+  ],
+  "additionalQualification": [
+    "Exact-ID conflict/retry behavior follows the shared authoring contract; no invented idempotency promise.",
+    "All errors preserve atomicity; bounds exhaustion does not return a successful partial result.",
+    "Multi-root read uses one authorized consistent view and retains per-root depth/membership.",
+    "Depth frontier is distinct from budgets and unsupported pin/history errors.",
+    "Preserve actual authored pins/canonical records; no history coalescing or fabricated Link identity.",
+    "Default-off assessment gate is Trish-owned and must be combined explicitly.",
+    "Native dependency-mode CLI regression uses actual legacy cases, including known query quirks.",
+    "Presentation preserves every selected cross/parallel/cycle Link once per root view, with finite per-root expansion and aggregate counts deduplicated by identity."
+  ]
+}
