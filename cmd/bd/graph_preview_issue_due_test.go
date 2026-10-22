@@ -72,7 +72,7 @@ func TestGraphPreviewIssueDueRefusals(t *testing.T) {
 		{"oversize", []string{"--due=" + strings.Repeat("x", 4097)}, 2},
 		{"status", []string{"--due=", "--status=open"}, 5},
 		{"source-guard", []string{"--due=", "--if-source-revision=x"}, 5},
-		{"file", []string{"--due=", "--body-file=missing"}, 5},
+		{"file", []string{"--due=", "--body-file=missing"}, 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
