@@ -146,18 +146,17 @@ func TestIssueDeleteComposesDependencyUnlinksInOneTransaction(t *testing.T) {
 			f := setupDependencyUnlink(t, backend, 2)
 			request := IssueDeleteRequest{
 				Path: "beads/source", Actor: "deleter", ExpectedRevision: f.source.Revision,
-				RemoveIncidentLinks: true,
 			}
 			before := workflowState(t, f.ctx, f.store)
 			stale := request
 			stale.ExpectedRevision = "stale"
-			if got, err := f.store.DeleteIssue(f.ctx, stale); !errors.Is(err, ErrConflict) ||
+			if got, err := f.store.DeleteIssueWithIncidentLinks(f.ctx, stale); !errors.Is(err, ErrConflict) ||
 				!reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
 				t.Fatalf("stale linked deletion: %+v %v", got, err)
 			}
-			preview, err := f.store.DeleteIssue(f.ctx, IssueDeleteRequest{
+			preview, err := f.store.DeleteIssueWithIncidentLinks(f.ctx, IssueDeleteRequest{
 				Path: request.Path, ExpectedRevision: request.ExpectedRevision,
-				RemoveIncidentLinks: true, Preview: true,
+				Preview: true,
 			})
 			if err != nil || !preview.Preview || preview.Deleted || len(preview.IncidentLinkIDs) != 2 ||
 				preview.IncidentLinkIDs[0] != f.links[0].ID || preview.IncidentLinkIDs[1] != f.links[1].ID ||
@@ -172,13 +171,13 @@ func TestIssueDeleteComposesDependencyUnlinksInOneTransaction(t *testing.T) {
 					}
 					return nil
 				}
-				got, err := f.store.DeleteIssue(f.ctx, request)
+				got, err := f.store.DeleteIssueWithIncidentLinks(f.ctx, request)
 				f.store.afterWrite = nil
 				if !errors.Is(err, fault) || !reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
 					t.Fatalf("%s rollback: %+v %v", stage, got, err)
 				}
 			}
-			deleted, err := f.store.DeleteIssue(f.ctx, request)
+			deleted, err := f.store.DeleteIssueWithIncidentLinks(f.ctx, request)
 			if err != nil || !deleted.Deleted || deleted.Terminal == nil || len(deleted.IncidentLinkIDs) != 2 ||
 				deleted.Issue.Revision == f.source.Revision || deleted.Terminal.PreviousVersion != deleted.Issue.Revision {
 				t.Fatalf("composed deletion: %+v %v", deleted, err)
@@ -210,9 +209,8 @@ func TestIssueDeleteComposesIncomingDependencyUnlink(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			f := setupDependencyUnlink(t, backend, 1)
-			deleted, err := f.store.DeleteIssue(f.ctx, IssueDeleteRequest{
+			deleted, err := f.store.DeleteIssueWithIncidentLinks(f.ctx, IssueDeleteRequest{
 				Path: "beads/first", Actor: "deleter", ExpectedRevision: f.targets[0].Revision,
-				RemoveIncidentLinks: true,
 			})
 			if err != nil || !deleted.Deleted || deleted.Terminal == nil ||
 				deleted.Terminal.PreviousVersion != f.targets[0].Revision {
@@ -248,7 +246,7 @@ func TestIssueDeleteComposesInformationalLinkUnlink(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			request := IssueDeleteRequest{Path: "beads/work", Actor: "deleter", ExpectedRevision: issue.Revision, RemoveIncidentLinks: true}
+			request := IssueDeleteRequest{Path: "beads/work", Actor: "deleter", ExpectedRevision: issue.Revision}
 			before := workflowState(t, ctx, s)
 			for _, stage := range []string{"link-payload", "link-retained", "issue-delete-native"} {
 				fault := errors.New("injected owner delete failure")
@@ -258,13 +256,13 @@ func TestIssueDeleteComposesInformationalLinkUnlink(t *testing.T) {
 					}
 					return nil
 				}
-				got, err := s.DeleteIssue(ctx, request)
+				got, err := s.DeleteIssueWithIncidentLinks(ctx, request)
 				s.afterWrite = nil
 				if !errors.Is(err, fault) || !reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 					t.Fatalf("%s rollback: %+v %v", stage, got, err)
 				}
 			}
-			deleted, err := s.DeleteIssue(ctx, request)
+			deleted, err := s.DeleteIssueWithIncidentLinks(ctx, request)
 			if err != nil || !deleted.Deleted || len(deleted.IncidentLinkIDs) != 1 || deleted.IncidentLinkIDs[0] != added.Link.ID {
 				t.Fatalf("delete with Memory owner: %+v %v", deleted, err)
 			}

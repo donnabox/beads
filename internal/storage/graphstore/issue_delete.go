@@ -16,9 +16,6 @@ import (
 type IssueDeleteRequest struct {
 	Path, Actor, ExpectedRevision string
 	Unconditional, Preview        bool
-	// RemoveIncidentLinks is an explicit graph storage operation. Callers must
-	// choose a command-level deletion policy before enabling it.
-	RemoveIncidentLinks bool
 }
 
 // IssueDeleteResult separates the final live Issue from graph deletion evidence.
@@ -31,6 +28,16 @@ type IssueDeleteResult struct {
 }
 
 func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (IssueDeleteResult, error) {
+	return s.deleteIssue(ctx, request, false)
+}
+
+// DeleteIssueWithIncidentLinks is the explicit composed storage operation.
+// The CLI must select its own force/cascade policy before using it.
+func (s *Store) DeleteIssueWithIncidentLinks(ctx context.Context, request IssueDeleteRequest) (IssueDeleteResult, error) {
+	return s.deleteIssue(ctx, request, true)
+}
+
+func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, removeIncidentLinks bool) (IssueDeleteResult, error) {
 	if err := validatePath(request.Path); err != nil {
 		return IssueDeleteResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
@@ -71,7 +78,7 @@ func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (Is
 		for i, link := range links {
 			ids[i] = link.ID
 		}
-		if len(links) != 0 && !request.RemoveIncidentLinks {
+		if len(links) != 0 && !removeIncidentLinks {
 			return fmt.Errorf("%w: %s has incident Links %s; unlink explicitly before retrying", ErrIncidentLinkConstraint, request.Path, strings.Join(ids, ", "))
 		}
 		result = IssueDeleteResult{Issue: current, Preview: request.Preview, IncidentLinkIDs: ids}
