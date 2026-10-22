@@ -5908,7 +5908,9 @@ if "-list" in args:
     if mode == "empty": sys.exit(0)
     print("TestEmbeddedOld")
     if mode == "excluded-only": sys.exit(0)
-    for name in ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"]: print(name)
+    names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"]
+    if mode == "last-group": names += ["TestAardvark", "TestZZLast"]
+    for name in names: print(name)
     print("BenchmarkIgnored")
     if mode == "duplicate-name": print("TestNew")
     print("ok  " + graph + " 0.01s")
@@ -5953,13 +5955,13 @@ class DispatchControls(unittest.TestCase):
             expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"])
             self.assertEqual(sorted(sum(plan["groups"], [])), expected)
             self.assertEqual(len(sum(plan["groups"], [])), len(expected))
-            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"]))))
-            self.assertEqual(len(summary["groups"]), 4)
-            self.assertTrue(any(g["skipped"] for g in summary["groups"]))
+            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"])), m.GRAPHSTORE_GROUPS))
+            self.assertEqual(len(summary["groups"]), 8)
+            self.assertTrue(any(g.get("skipped") for g in summary["groups"]))
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             self.assertEqual(calls[0], ["list", "-race", "-tags", "gms_pure_go", "./..."])
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 9)
+            self.assertEqual(len(executions), 12)
             self.assertEqual(plan["command"]["excluded"], ["TestEmbeddedOld"])
             self.assertEqual(sorted(sum(plan["command"]["groups"], [])), expected)
             self.assertEqual(len(sum(plan["command"]["groups"], [])), len(expected))
@@ -5974,11 +5976,30 @@ class DispatchControls(unittest.TestCase):
             self.assertNotIn(m.GRAPHSTORE, executions[-1])
             self.assertNotIn(m.COMMAND, executions[-1])
             for index, group in enumerate(plan["groups"], 1):
+                if not group:
+                    self.assertEqual(summary["groups"][index - 1], dict(label="graphstore-%d" % index, roots=[], empty=True))
+                    continue
                 census = json.loads((output / ("graphstore-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
             for index, group in enumerate(plan["command"]["groups"], 1):
                 census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
+
+    def test_eighth_graphstore_group_has_a_real_terminal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            output = root / "evidence"
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "last-group"}):
+                m.execute(root, output, str(fake), scope="graphstore", source_sha="a" * 40)
+            summary = json.loads((output / "summary.json").read_text())
+            self.assertTrue(summary["passed"])
+            self.assertEqual(len(summary["groups"]), 8)
+            last = summary["groups"][-1]
+            self.assertEqual(last["label"], "graphstore-8")
+            self.assertEqual(last["roots"], ["TestZZLast"])
+            self.assertEqual(summary["groups"][0]["roots"], ["ExampleValue", "TestZulu"])
+            self.assertEqual(last["skipped"], [])
+            self.assertEqual(json.loads((output / "graphstore-8-census.json").read_text())["roots"], last["roots"])
 
     def test_macos_scope_policy_stays_distinct_from_pr_core(self):
         source = "a" * 40
@@ -6005,8 +6026,8 @@ class DispatchControls(unittest.TestCase):
             self.assertEqual(proof["scopes"], ["graphstore", "remaining"])
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 9)
-            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), 4)
+            self.assertEqual(len(executions), 12)
+            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), 7)
             self.assertEqual(sum(call[-1] == m.COMMAND for call in executions), 4)
             for case in ("missing", "duplicate", "source", "flags", "packages", "raw", "failed", "cleanup", "receipt", "discovery"):
                 with self.subTest(case=case):
@@ -6127,6 +6148,15 @@ class DispatchControls(unittest.TestCase):
     def test_partition_refuses_empty_or_duplicate(self):
         for names in [[], ["TestA", "TestA"], ["TestEmbeddedOnly"]]:
             with self.assertRaises(RuntimeError): m.partition(names)
+    def test_partition_counts_and_unchanged_limits(self):
+        for count in (0, -1, None, True, "8", 1.5):
+            with self.subTest(count=count), self.assertRaises(RuntimeError):
+                m.partition(["TestOne"], count)
+        self.assertEqual(len(m.partition(["TestOne"])), 4)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 8)
+        self.assertEqual((m.GROUP_SECONDS, m.TOTAL_SECONDS), (2100, 6900))
+        self.assertIn("-timeout=30m", m.FLAGS)
+
     def test_unexpected_package_refused(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "events"
