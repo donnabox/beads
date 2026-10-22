@@ -27,6 +27,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if cmd.Flags().Changed("graph") {
+		return runGraphPreviewCreateGraph(cmd, args)
+	}
 	if cmd.Flags().Changed("file") {
 		return runGraphPreviewCreateMarkdown(cmd, args)
 	}
