@@ -57,6 +57,22 @@ open [upstream #7521](https://github.com/gastownhall/beads/pull/7521)
 supplies a status/creation timestamp invariant for shipping graph plans and
 should be preserved when that path is implemented.
 
+The common create writer is close to the needed primitive, but its public
+request cannot yet express the plan. `ExecuteCreateBatch` prepares every
+item and assigns all native IDs before its single `CreateIssuesInTxWithResult`
+call ([`internal/storage/issueops/create_batch.go`](../../internal/storage/issueops/create_batch.go));
+the public `BatchCreateItem` contract permits a dependency only on an
+earlier item with a caller-supplied ID
+([`issueops/batchcreator.go`](../../issueops/batchcreator.go)). Graph-mode
+Markdown creation resolves every dependency against an already stored Issue
+*before* invoking that writer. The reusable seam is therefore a checked
+plan-to-native-ID mapping inside the same write transaction, followed by
+validation and publication of the complete edge set. A loop of single-Issue
+creates or a CLI lookup after the first write would lose all-or-nothing
+behavior. This is a storage capability proof first; the shipping JSON field
+surface and output envelope can follow after the plan and rollback invariants
+pass on both engines.
+
 The native `Deleter` already supplies a bounded, transactional deletion plan
 ([`issueops/deleter.go`](../../issueops/deleter.go)): without `--force` or
 `--cascade`, dependents outside the named set cause a whole-request refusal;
