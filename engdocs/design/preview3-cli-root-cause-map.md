@@ -114,6 +114,13 @@ workflows passed embedded and real shared-server Dolt. Existing sources,
 partial or external targets, metadata
 and update/close items remain unavailable.
 
+Stacked draft [#234](https://github.com/donnabox/beads/pull/234) at
+`6f68b2d8a` admits initial Issue text, references, assignment, owner, estimate,
+due date and labels through the checked native writer. Its installed
+create/show/Link workflow passed embedded and real shared-server Dolt without
+skips. Other graph-plan forms remain explicit refusals; hosted CI and review
+are pending.
+
 A first commit in #231 at `cb7da57c5` extends the graph batch adapter to keep an
 edge from a later item to an earlier item with an explicit native ID inside
 the existing transaction. A staged Link-retention failure rolls back the
