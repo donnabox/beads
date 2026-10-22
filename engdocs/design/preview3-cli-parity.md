@@ -140,7 +140,7 @@ locally; current-head hosted CI remains pending.
 | `state` | Read-only value and list forms work. | `set-state` does not; JSON may expose native rather than canonical Issue ID. | As-built; no parity PR |
 | `tag` | Explicit refusal. | Label shortcut and equivalent graph `update --add-label` are unavailable at this commit. #195–#196 provide the checked label writer; stacked #216 admits the `tag` shorthand and passed a focused both-engine workflow, with hosted CI and review pending. | Candidate/open #216 on #196; current integration unchanged |
 | `todo` | Bare/list/add/done work in tested flows. | Multi-ID done can partly succeed while exiting zero, matching shipping; graph list is bounded. | As-built; no parity PR |
-| `update` | Admitted single-Issue, Memory and informational-Link edits work. | Multi-ID, Issue type/status/labels/parent/conditional-status, description file/stdin and forced assignee transfer refuse at this commit; JSON shape differs. #152/#164 and stacked #183–#188/#191–#192/#195–#196 repair subsets. | Selected/open #152; candidates/open #164, #183–#188, #191–#192, #195–#196 |
+| `update` | Admitted single-Issue, Memory and informational-Link edits work. | Multi-ID, Issue type/status/labels/parent/conditional-status, description file/stdin and forced assignee transfer refuse at this commit; JSON shape differs. #152/#164 and stacked #183–#188/#191–#192/#195–#196 repair subsets. Draft #222 proves atomic nonempty graph Issue reparenting in storage but has no CLI route. | Selected/open #152; candidates/open #164, #183–#188, #191–#192, #195–#196, #222 |
 
 ## Views & Reports: command-by-command release-note draft
 
@@ -321,6 +321,20 @@ locally; current-head hosted CI remains pending.
   contributor in [gastownhall/beads#7209](https://github.com/gastownhall/beads/pull/7209)
   and preserve earlier [#64](https://github.com/donnabox/beads/pull/64).
   Hosted CI and review are pending; neither candidate is merged or selected.
+- Draft [#222](https://github.com/donnabox/beads/pull/222) at `19c074276`
+  adds a checked graphstore nonempty Issue reparent operation. The native
+  parent-edge replacement, old canonical Link tombstone, new canonical Link,
+  and child-owned History commit in one transaction. Fault injection after
+  each write stage, stale-revision refusal, same-parent no-op, cycle refusal,
+  and native-ID selector tests passed embedded and isolated real shared-server
+  Dolt without skips (`/tmp/cleo-reparent-store-qualification-20261022.jsonl`).
+  Adjacent child-create and Issue-update storage tests passed locally. It is
+  storage-only: `bd update --parent` remains unavailable on the pinned
+  integration commit and on this PR head. Empty-parent detach is deliberately
+  excluded because dotted IDs still imply a parent in shipping selectors;
+  [upstream contributor #7369](https://github.com/gastownhall/beads/pull/7369)
+  documents that ambiguity and is credited without being replaced. Current-head
+  hosted CI is queued, review pending; #222 is unmerged and unselected.
 - Stacked [#197](https://github.com/donnabox/beads/pull/197)–[#198](https://github.com/donnabox/beads/pull/198)
   admit local Issue `create --deps` through one transaction. #197 creates the
   native Issue and dependency edges, canonical Links and source-owned History;
