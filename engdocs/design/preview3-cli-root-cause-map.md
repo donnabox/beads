@@ -126,7 +126,7 @@ resolution, native batch, canonical Link, old/new source versions and History
 share one transaction. Focused storage rollback/retention and installed CLI
 workflows passed embedded and real shared-server Dolt without skips. Multiple
 Links from one existing source refuse until intermediate-version retention is
-proven. #235 hosted CI and review are pending.
+proven. #235 has four passing current-head hosted checks; review is pending.
 
 The next same-source batch proof has a specific retention seam. Native
 `ApplyBatchInTx` applies dependency items in request order, and each genuinely
