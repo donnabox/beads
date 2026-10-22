@@ -157,7 +157,8 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				if strings.HasPrefix(edges[index].sourceID, "beads/") {
 					selector = IssueSelector{Path: edges[index].sourceID}
 				}
-				path, source, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+				// A graph plan records stable existing IDs, not interactive CLI abbreviations.
+				path, source, err := s.resolveExactLiveIssueSelectorInTx(ctx, tx, selector)
 				if err != nil {
 					return err
 				}
@@ -182,7 +183,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				if strings.HasPrefix(edges[index].targetID, "beads/") {
 					selector = IssueSelector{Path: edges[index].targetID}
 				}
-				path, target, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+				path, target, err := s.resolveExactLiveIssueSelectorInTx(ctx, tx, selector)
 				if err != nil {
 					return err
 				}
