@@ -594,8 +594,9 @@ locally; current-head hosted CI remains pending.
   The installed workflow passed embedded and real shared-server Dolt (three
   passing test/subtest events, no skips or failures;
   `/tmp/cleo-label-list-qualified-workflow.jsonl`). Focused pure-Go command
-  tests, vet, Markdown links and generated CLI docs checks passed. Hosted CI
-  and review are pending. Other `bd label` forms remain refused.
+  tests, vet, Markdown links and generated CLI docs checks passed. Four
+  current-head hosted checks passed; review is pending. Other `bd label`
+  forms remain refused.
 - Draft [#209](https://github.com/donnabox/beads/pull/209)–[#210](https://github.com/donnabox/beads/pull/210) and stacked [#212](https://github.com/donnabox/beads/pull/212)
   provide a checked single-Issue linked-delete path: unforced preview refuses
   surviving native dependents; `--force` tombstones incident canonical Links

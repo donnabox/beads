@@ -346,16 +346,19 @@ use the same exact-Issue resolver; an explicit Memory detail read now refuses
 as non-Issue instead of failing on a null backing key. Focused selector and
 Issue-read workflows passed embedded and real shared-server Dolt (six
 passing events, no skips or failures;
-`/tmp/cleo-detail-memory-workflow.jsonl`). Current-head hosted CI and review
-are pending.
+`/tmp/cleo-detail-memory-workflow.jsonl`). Four current-head hosted checks
+passed; review is pending.
 
-Draft #253 head `bb2dda309` closes a remaining snapshot split in the local
+Draft #253 head `d500cfb75` closes a remaining snapshot split in the local
 `bd show` assembly: the Bead record and familiar Issue details now come from
 one checked read transaction. Its selector, read-budget and existing Issue
 read regression group passed embedded and real shared-server Dolt (22 passing
-events, no skips or failures; `/tmp/cleo-combined-show-regression.jsonl`). It
-is a storage capability; four current-head hosted checks passed and review is
-pending.
+events, no skips or failures; `/tmp/cleo-combined-show-regression.jsonl`).
+After rebasing on #252's explicit-Memory refusal, the focused selector and
+Issue-read workflows passed again on embedded and real shared-server Dolt
+(nine passing events, no skips or failures;
+`/tmp/cleo-combined-rebase-workflow.jsonl`). It is a storage capability;
+four current-head hosted checks passed and review is pending.
 
 A disposable local assembly at `712f0f5ec` combines selected #151 with
 #251–#252 and uses the checked readers for single, multi-ID, related and watch
@@ -378,8 +381,9 @@ selected detail reader beyond `show`: graph-mode `bd label list ID` returns
 the shipping label-array JSON and familiar human labels for a current Issue.
 Its installed full/abbreviated/exact-path and Memory-refusal workflow passed
 embedded and real shared-server Dolt (three passing events, no skips or
-failures; `/tmp/cleo-label-list-qualified-workflow.jsonl`). This is an
-unmerged read-only candidate; label writes and propagation still refuse.
+failures; `/tmp/cleo-label-list-qualified-workflow.jsonl`). Four current-head
+hosted checks passed; review is pending. This is an unmerged read-only
+candidate; label writes and propagation still refuse.
 
 The disposable local assembly at `b3f30c732` merges #230 and #250 with one
 documentation-only conflict; no code conflict or PR merge occurred. Focused
