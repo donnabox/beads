@@ -259,3 +259,74 @@ func TestApplyNewIssueGraphLinksExistingSourceToNewTargetAtomically(t *testing.T
 		})
 	}
 }
+
+func TestApplyNewIssueGraphMapsDistinctExistingSourcesInOneBatch(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			first, err := s.CreateIssue(ctx, "beads/first", plainIssue("First source"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			second, err := s.CreateIssue(ctx, "beads/second", plainIssue("Second source"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			request := publicops.ApplyBatchRequest{Actor: "batch-author", Items: []publicops.ApplyItem{
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "a", Issue: plainIssue("Target A").Issue}},
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "b", Issue: plainIssue("Target B").Issue}},
+				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{ID: first.Properties.ID}, Target: publicops.Ref{Key: "a"}, Type: types.DepBlocks}},
+				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{ID: "beads/second"}, Target: publicops.Ref{Key: "b"}, Type: types.DepBlocks}},
+			}}
+			before := workflowState(t, ctx, s)
+			fault := errors.New("second source snapshot failed")
+			retained := 0
+			s.afterWrite = func(stage string) error {
+				if stage == "source-retained" {
+					retained++
+					if retained == 2 {
+						return fault
+					}
+				}
+				return nil
+			}
+			failed, err := s.ApplyNewIssueGraph(ctx, request)
+			s.afterWrite = nil
+			if !errors.Is(err, fault) || failed != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("second source fault left partial state: result=%v err=%v", failed, err)
+			}
+			created, err := s.ApplyNewIssueGraph(ctx, request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, item := range []struct {
+				path   string
+				before IssueRecord
+				key    string
+			}{
+				{"beads/first", first, "a"},
+				{"beads/second", second, "b"},
+			} {
+				current, err := s.ShowIssueSelected(ctx, IssueSelector{Path: item.path})
+				if err != nil || len(current.Owned) != 1 {
+					t.Fatalf("%s current source: %+v err=%v", item.path, current, err)
+				}
+				var link LinkRecord
+				if err := json.Unmarshal(current.Owned[0], &link); err != nil {
+					t.Fatal(err)
+				}
+				if link.Target != created[item.key].ID || link.Source != item.before.ID {
+					t.Fatalf("%s Link: %+v", item.path, link)
+				}
+				assertIssueEditVersion(t, ctx, s, item.path, item.before)
+				assertIssueEditVersion(t, ctx, s, item.path, current)
+				assertIssueEditCounts(t, ctx, s, item.before.Properties.ID, 2)
+			}
+		})
+	}
+}
