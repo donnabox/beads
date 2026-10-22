@@ -577,13 +577,15 @@ locally; current-head hosted CI remains pending.
   `issue_versions` rows but one canonical graph creation snapshot. Its focused
   test passed embedded and real shared-server Dolt without skips; hosted CI
   and review are pending. Stacked draft
-  [#237](https://github.com/donnabox/beads/pull/237) at `f181e1a1c`
+  [#237](https://github.com/donnabox/beads/pull/237) at `e2138a11b`
   admits multiple existing-source-to-new-target Links per plan and retains
   each intermediate native revision with its corresponding canonical owned
   set. The focused historical-content and second-retention-fault workflows
   passed embedded and real shared-server Dolt without skips; related
-  graphstore History/dependency tests passed embedded. #237 hosted CI and
-  review are pending. None of #231–#237 is merged.
+  graphstore History/dependency tests passed embedded. Its installed CLI
+  create/Link/versions workflow also passed embedded and real shared-server
+  Dolt without skips at the current head. #237 hosted CI and review are
+  pending. None of #231–#237 is merged.
 - A broad local assembled `TestGraphPreview` run through #196 completed with
   two failing top-level tests: `--ready=false` expected a now-obsolete
   refusal, and the usability workflow expected `capability_unavailable` for
