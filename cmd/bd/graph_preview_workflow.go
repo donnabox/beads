@@ -334,8 +334,8 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 		}
 		paths[i] = path
 	}
-	if claimNext {
-		return runGraphPreviewCloseClaimNext(paths, targets, reasons, session, force, suggestNext)
+	if claimNext || len(paths) > 1 {
+		return runGraphPreviewCloseBatch(paths, targets, reasons, session, force, claimNext, suggestNext)
 	}
 	var hadError bool
 	var firstSettled string
@@ -395,7 +395,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session string, force, suggestNext bool) error {
+func runGraphPreviewCloseBatch(paths, targets, reasons []string, session string, force, claimNext, suggestNext bool) error {
 	var hadError bool
 	var claimedID string
 	var firstSettled string
@@ -405,12 +405,14 @@ func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session str
 			perPathReasons[i] = reasonForCloseIndex(reasons, i)
 		}
 		result, err := store.CloseIssues(ctx, graphstore.IssueCloseBatchRequest{
-			Paths: paths, Reasons: perPathReasons, Actor: getActorWithGit(), Session: session, Force: force, ClaimNext: true,
+			Paths: paths, Reasons: perPathReasons, Actor: getActorWithGit(), Session: session,
+			Force: force, ClaimNext: claimNext, RequireAllPaths: len(paths) > 1,
 		})
 		if err != nil {
 			return nil, "", err
 		}
 		closed := make([]graphstore.IssueRecord, 0, len(paths))
+		ordinary := make([]graphstore.IssueMutationResult, 0, len(paths))
 		var human strings.Builder
 		for i, outcome := range result.Outcomes {
 			if outcome.Err != nil {
@@ -422,6 +424,9 @@ func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session str
 				continue
 			}
 			closed = append(closed, outcome.Issue)
+			ordinary = append(ordinary, graphstore.IssueMutationResult{
+				Issue: outcome.Issue, Changed: outcome.Changed, OpenChildren: outcome.OpenChildren,
+			})
 			if firstSettled == "" {
 				firstSettled = paths[i]
 			}
@@ -435,11 +440,14 @@ func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session str
 			}
 		}
 		var output any = closed
+		if !claimNext {
+			output = ordinary
+		}
 		if result.ClaimedNext != nil {
 			claimedID = result.ClaimedNext.ID
 			output = map[string]any{"closed": closed, "claimed": result.ClaimedNext}
 			fmt.Fprintf(&human, "Claimed next ready Issue %s\n", result.ClaimedNext.ID)
-		} else if len(closed) > 0 {
+		} else if claimNext && len(closed) > 0 {
 			human.WriteString("No ready Issues available to claim.\n")
 		}
 		if suggestNext && len(closed) > 0 {
