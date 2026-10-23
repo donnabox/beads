@@ -123,8 +123,8 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			if engine == "server" {
 				raceBefore := graphMixedResult[graphstore.IssueRecord](t, call("create", "Race for claim", "--graph-path", "beads/race"))
 				outcomes := graphMutationRacePair(t, bd, work, home, [2][]string{
-					{"update", "beads/race", "--claim", "--actor=first", "--json"},
-					{"update", "beads/race", "--claim", "--actor=second", "--json"},
+					{"update", scope + "beads/race", "--claim", "--actor=first", "--json"},
+					{"update", scope + "beads/race", "--claim", "--actor=second", "--json"},
 				}, map[string]int{"revision_conflict": 4, "constraint_violation": 4})
 				winner := -1
 				for i, outcome := range outcomes {
