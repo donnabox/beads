@@ -11,6 +11,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/workapi"
 )
 
 func TestIssueNativeSelectorHeartbeatStateAndReclaim(t *testing.T) {
@@ -62,6 +63,162 @@ func TestIssueNativeSelectorHeartbeatStateAndReclaim(t *testing.T) {
 			stable := workflowState(t, ctx, s)
 			if _, err := s.HeartbeatIssueSelected(ctx, selector, "holder"); !errors.Is(err, storage.ErrNotClaimable) || !reflect.DeepEqual(stable, workflowState(t, ctx, s)) {
 				t.Fatalf("released holder heartbeat changed state: %v", err)
+			}
+		})
+	}
+}
+
+func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			request := plainIssue("Source")
+			request.Issue.ID = "exp-a3f8e9"
+			created, err := s.CreateIssue(ctx, "beads/source", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			selector := IssueSelector{Path: "beads/a3f8", NativeID: "a3f8"}
+			shown, err := s.ShowIssueSelected(ctx, selector)
+			if err != nil || !reflect.DeepEqual(shown, created) {
+				t.Fatalf("abbreviated read selected wrong Issue: %+v %v", shown, err)
+			}
+			mixed, err := s.ReadBeadSelected(ctx, selector)
+			if err != nil || !reflect.DeepEqual(mixed, created) {
+				t.Fatalf("abbreviated mixed read selected wrong Issue: %+v %v", mixed, err)
+			}
+			detail, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{})
+			if err != nil || detail == nil || detail.ID != "beads/source" || detail.Revision != created.Revision || detail.Title != created.Properties.Title {
+				t.Fatalf("abbreviated detail read selected wrong Issue: %+v %v", detail, err)
+			}
+			combined, combinedDetail, err := s.ReadBeadWithIssueDetailsSelected(ctx, selector, workapi.DetailOptions{})
+			if err != nil || !reflect.DeepEqual(combined, created) || !reflect.DeepEqual(combinedDetail, detail) {
+				t.Fatalf("combined abbreviated read changed either projection: %+v %+v %v", combined, combinedDetail, err)
+			}
+			memory, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Notes"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			mixed, err = s.ReadBeadSelected(ctx, IssueSelector{Path: "beads/notes", NativeID: "notes"})
+			if err != nil || !reflect.DeepEqual(mixed, memory) {
+				t.Fatalf("bare Memory fallback changed selection: %+v %v", mixed, err)
+			}
+			if _, err := s.ShowIssueDetailsSelected(ctx, IssueSelector{Path: "beads/notes"}, workapi.DetailOptions{}); !errors.Is(err, ErrCapabilityUnavailable) {
+				t.Fatalf("explicit Memory detail read should refuse as non-Issue: %v", err)
+			}
+			combined, combinedDetail, err = s.ReadBeadWithIssueDetailsSelected(ctx, IssueSelector{Path: "beads/notes", NativeID: "notes"}, workapi.DetailOptions{})
+			if err != nil || !reflect.DeepEqual(combined, memory) || combinedDetail != nil {
+				t.Fatalf("combined Memory read fabricated Issue details: %+v %+v %v", combined, combinedDetail, err)
+			}
+			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector})
+			if err != nil || !reflect.DeepEqual(paths, []string{"beads/source"}) {
+				t.Fatalf("abbreviated count filter selected wrong path: %v %v", paths, err)
+			}
+			title := "Updated"
+			updated, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: selector.Path, NativeID: selector.NativeID, Actor: "editor", ExpectedRevision: created.Revision, Title: &title})
+			if err != nil || !updated.Changed || updated.Issue.ID != created.ID || updated.Issue.Properties.Title != title {
+				t.Fatalf("abbreviated update selected wrong Issue: %+v %v", updated, err)
+			}
+			second := plainIssue("Other")
+			second.Issue.ID = "exp-a3f8f0"
+			if _, err := s.CreateIssue(ctx, "beads/other", second); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: selector.Path, NativeID: selector.NativeID, Actor: "editor", ExpectedRevision: updated.Issue.Revision, Title: &title}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("ambiguous abbreviation changed Issue: %v", err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/a3f8", Title: "Colliding Memory"}); err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, err := s.ShowIssueSelected(ctx, selector); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("bare graph-path collision selected an Issue: %v", err)
+			}
+			if _, err := s.ReadBeadSelected(ctx, selector); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("bare mixed read hid an Issue/Memory collision: %v", err)
+			}
+			if _, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("bare detail read hid an Issue/Memory collision: %v", err)
+			}
+			if _, _, err := s.ReadBeadWithIssueDetailsSelected(ctx, selector, workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("combined read hid an Issue/Memory collision: %v", err)
+			}
+			explicit, err := s.ShowIssueSelected(ctx, IssueSelector{Path: "beads/source"})
+			if err != nil || explicit.ID != created.ID || explicit.Properties.Title != title {
+				t.Fatalf("explicit path did not stay exact: %+v %v", explicit, err)
+			}
+			detail, err = s.ShowIssueDetailsSelected(ctx, IssueSelector{Path: "beads/source"}, workapi.DetailOptions{})
+			if err != nil || detail == nil || detail.ID != "beads/source" || detail.Title != title {
+				t.Fatalf("explicit detail path did not stay exact: %+v %v", detail, err)
+			}
+			mixed, err = s.ReadBeadSelected(ctx, IssueSelector{Path: "beads/a3f8"})
+			if err != nil {
+				t.Fatalf("explicit Memory path did not stay exact: %v", err)
+			}
+			if _, ok := mixed.(Record); !ok {
+				t.Fatalf("explicit Memory path returned %T", mixed)
+			}
+		})
+	}
+}
+
+func TestPositionalDependencyResolvesNativeAbbreviationsInWrite(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			create := func(path, id string) IssueRecord {
+				t.Helper()
+				request := plainIssue(id)
+				request.Issue.ID = id
+				issue, err := s.CreateIssue(ctx, path, request)
+				if err != nil {
+					t.Fatal(err)
+				}
+				return issue
+			}
+			source := create("beads/work", "exp-a3f8e9")
+			target := create("beads/need", "exp-b7c4d2")
+			request := DependencyRequest{SourcePath: "beads/a3f8", SourceNativeID: "a3f8", TargetPath: "beads/b7c4", TargetNativeID: "b7c4", Actor: "tester"}
+			linked, err := s.AddDependency(ctx, request)
+			if err != nil || !linked.Changed || linked.Source.Properties.ID != source.Properties.ID || linked.Target.Properties.ID != target.Properties.ID {
+				t.Fatalf("abbreviated dependency: %+v %v", linked, err)
+			}
+			if linked.Link.Source != source.ID || linked.Link.Target != target.ID {
+				t.Fatalf("wrong endpoint allocation: %+v", linked.Link)
+			}
+			repeat, err := s.AddDependency(ctx, request)
+			if err != nil || repeat.Changed || repeat.Link.ID != linked.Link.ID {
+				t.Fatalf("abbreviation repeat changed link: %+v %v", repeat, err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/a3f8", Title: "Colliding Memory", Body: "not an Issue"}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.AddDependency(ctx, request); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("bare graph-path collision: %v", err)
+			}
+			request.SourcePath, request.SourceNativeID = "beads/work", ""
+			create("beads/other", "exp-b7c4e1")
+			if _, err := s.AddDependency(ctx, request); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("ambiguous target abbreviation: %v", err)
+			}
+			exact := create("beads/exact", "exp-b7c4")
+			resolved, err := s.AddDependency(ctx, request)
+			if err != nil || resolved.Link.Target != exact.ID {
+				t.Fatalf("exact hash must win over abbreviations: %+v %v", resolved, err)
+			}
+			if _, err := s.AddDependency(ctx, DependencyRequest{SourcePath: "beads/work", TargetPath: "beads/need", Actor: "tester"}); err != nil {
+				t.Fatalf("explicit paths must remain exact: %v", err)
 			}
 		})
 	}

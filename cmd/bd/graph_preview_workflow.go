@@ -151,7 +151,15 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		}
 	}
 	familiarLink := cmd.Name() == "link" && !cmd.Flags().Changed("id") && !cmd.Flags().Changed("if-source-revision")
-	return graphPreviewInsertDependency(paths[0], paths[1], selectedType, depType, linkPath, sourceRevision, args[0], args[1], familiarLink)
+	var nativeIDs [2]string
+	if cmd.Name() == "link" || (cmd.Name() == "add" && cmd.Parent() != nil && cmd.Parent().Name() == "dep") {
+		for i := range args {
+			if args[i] == strings.TrimPrefix(paths[i], "beads/") {
+				nativeIDs[i] = args[i]
+			}
+		}
+	}
+	return graphPreviewInsertDependency(paths[0], paths[1], selectedType, depType, linkPath, sourceRevision, args[0], args[1], familiarLink, nativeIDs)
 }
 
 // The store independently checks the installed Type in the write transaction.
@@ -236,12 +244,19 @@ func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return graphPreviewInsertDependency(sourcePath, targetPath, "", types.DepBlocks, "", "", blocked, args[0], false)
+	var nativeIDs [2]string
+	if sourcePath == "beads/"+blocked {
+		nativeIDs[0] = blocked
+	}
+	if targetPath == "beads/"+args[0] {
+		nativeIDs[1] = args[0]
+	}
+	return graphPreviewInsertDependency(sourcePath, targetPath, "", types.DepBlocks, "", "", blocked, args[0], false, nativeIDs)
 }
 
-func graphPreviewInsertDependency(sourcePath, targetPath, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool) error {
+func graphPreviewInsertDependency(sourcePath, targetPath, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool, nativeIDs [2]string) error {
 	write := func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
+		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, SourceNativeID: nativeIDs[0], TargetNativeID: nativeIDs[1], Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
 				kind := "blocking"
@@ -255,10 +270,7 @@ func graphPreviewInsertDependency(sourcePath, targetPath, typeURL string, depTyp
 		if familiarLink {
 			fromID, fromTitle := result.Source.Properties.ID, result.Source.Properties.Title
 			SetLastTouchedID(fromID)
-			toID, toTitle := targetLabel, ""
-			if target, err := store.ShowIssue(ctx, targetPath); err == nil && target.Properties != nil {
-				toID, toTitle = target.Properties.ID, target.Properties.Title
-			}
+			toID, toTitle := result.Target.Properties.ID, result.Target.Properties.Title
 			return map[string]string{
 					"status": "added", "issue_id": fromID, "depends_on_id": toID, "type": string(depType),
 				}, fmt.Sprintf("%s Linked: %s depends on %s (%s)",

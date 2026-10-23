@@ -96,9 +96,34 @@ random `beads/` paths; generated Link IDs remain under `links/`.
 For slash-bearing Issue IDs in this draft, use the returned canonical URL with
 mixed-resource readers such as `bd show`; their local selector routing has not
 yet adopted opaque native IDs.
+An explicit `--id` must use the configured native prefix unless `--force` is
+supplied. `--status` sets the initial Issue status; without it, a future
+`--defer DATE` makes the Issue `deferred`, otherwise creation defaults to
+`open`. An explicit `--status` wins over `--defer`, while retaining the
+timestamp. The native Issue writer validates built-in and configured custom
+statuses. A graph JSON node may specify `defer_until` as an RFC3339 timestamp
+for the same initial deferral.
+
+For an ordinary Issue create, `--deps` accepts local Issue targets with the
+shipping dependency spellings. Bare `ID`, `blocked-by:ID`, and
+`depends-on:ID` make the new Issue depend on that target; `blocks:ID` makes
+the target depend on the new Issue. The Issue and each canonical Link are
+created in one transaction. `--parent` can be combined with local `--deps`;
+the dotted child Issue, its parent Link, and the requested dependency Links
+commit together. A Markdown `--file` batch can also name existing local
+Issues under a `### Dependencies` heading; every heading, native dependency,
+canonical Link, and retained version commits together. Targets must be live
+local Issues. Graph mode explicitly refuses `external:` targets. Use a full
+native Issue ID or explicit `beads/PATH` for a target; partial-ID
+abbreviations and dependencies on another new heading in the same file are
+not admitted. Markdown dependency spellings follow the Markdown parser, so
+use a bare ID for an ordinary blocking dependency.
 
 ```sh
-bd create 'Move the release branch' --id work --type task
+bd create 'Move the release branch' --id mp-work --type task --status open
+bd create 'Run release checks' --deps blocked-by:mp-work
+bd create 'Release gate' --id mp-gate
+bd create 'Child release task' --parent mp-work --deps blocked-by:mp-gate
 bd create --type types/memory \
   --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```
@@ -583,6 +608,20 @@ Conformance claims. The selected nominal subtypes inherit those rules.
 Changing an owned Link changes its owner; its target does not change merely
 because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for constraints and exact Evaluation subject rules.
+
+For the shipping two-operand form, `bd link BLOCKED BLOCKER --type KIND`
+stores a native Issue Dependency kind literally when `KIND` is nonempty UTF-8
+of at most 32 bytes. `depends-on` and `blocked-by` therefore remain custom,
+nonblocking kinds here; neither becomes `blocks`. `bd dep add --type` treats
+those two spellings as aliases for `blocks` and admits only built-in kinds.
+Canonical `bd link create --type` selects an installed Link Type, so it does
+not accept a custom native Dependency kind. In the two-operand form, a bare
+Issue ID may be abbreviated when it uniquely identifies a live Issue. A
+`beads/PATH` or full Scope URL remains an exact graph selector; an ambiguous
+bare spelling is refused.
+`bd dep add` uses the same checked local Issue abbreviation rule for its
+positional source and positional or `--blocked-by`/`--depends-on` target;
+`bd dep BLOCKER --blocks BLOCKED` also applies it to both operands.
 
 Link updates accept the current Link by default; `--if-revision TOKEN`
 rejects a stale Link. Removal needs `--if-revision TOKEN` or `--unconditional`

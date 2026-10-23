@@ -32,9 +32,9 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 	// CloneCreateRequest materializes empty relation slices. Their lengths
 	// were checked above; preserve that empty representation without admitting
 	// any dependency or comment values into this bounded adapter.
-	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Notes: i.Notes, Owner: i.Owner, CreatedBy: i.CreatedBy, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, DueAt: i.DueAt, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments, Metadata: i.Metadata}
+	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Notes: i.Notes, Owner: i.Owner, CreatedBy: i.CreatedBy, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, DueAt: i.DueAt, DeferUntil: i.DeferUntil, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments, Metadata: i.Metadata}
 	if !reflect.DeepEqual(i, allowed) {
-		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, initial notes, owner, creator, assignee, estimate, external/spec references, classification, status, priority, due date, labels and metadata; no relationships, ephemeral or no-history records", storage.ErrValidation)
+		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, initial notes, owner, creator, assignee, estimate, external/spec references, classification, status, priority, due and defer dates, labels and metadata; no relationships, ephemeral or no-history records", storage.ErrValidation)
 	}
 	if _, err := commonMetadata(i.Metadata); err != nil {
 		return err
@@ -46,6 +46,19 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 // retained writer in the graph transaction. Specialized tables are the only
 // current authority; issue_versions is the only Issue snapshot store.
 func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.CreateRequest) (IssueRecord, error) {
+	return s.createIssue(ctx, path, request, nil)
+}
+
+// CreateIssueWithDependencies creates a durable Issue and its local native
+// Dependencies, canonical Links, and source-owned mappings in one transaction.
+func (s *Store) CreateIssueWithDependencies(ctx context.Context, path string, request publicops.CreateRequest, dependencies []IssueCreateDependency) (IssueRecord, error) {
+	if len(dependencies) == 0 {
+		return IssueRecord{}, fmt.Errorf("%w: dependency create requires at least one local target", storage.ErrValidation)
+	}
+	return s.createIssue(ctx, path, request, dependencies)
+}
+
+func (s *Store) createIssue(ctx context.Context, path string, request publicops.CreateRequest, dependencies []IssueCreateDependency) (IssueRecord, error) {
 	if path != "" {
 		if err := validatePath(path); err != nil {
 			return IssueRecord{}, err
@@ -60,6 +73,11 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		return IssueRecord{}, err
 	}
 	request.Issue.DueAt = due
+	deferUntil, err := normalizeIssueDefer(request.Issue.DeferUntil)
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	request.Issue.DeferUntil = deferUntil
 	revision, err := freshToken()
 	if err != nil {
 		return IssueRecord{}, err
@@ -99,6 +117,10 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if issueops.ResolveInfraTypesInTx(ctx, tx)[string(request.Issue.IssueType.Normalize())] {
 			return fmt.Errorf("%w: infrastructure Issue types are not admitted by the graph preview", storage.ErrValidation)
 		}
+		resolved, native, err := s.prepareIssueCreateDependenciesInTx(ctx, tx, issueType, request, dependencies)
+		if err != nil {
+			return err
+		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
@@ -114,9 +136,9 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		unScope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unScope()
-		created, _, err := issueops.ExecuteCreate(ctx, tx, request)
+		created, _, err := issueops.ExecuteCreate(ctx, tx, native)
 		if err != nil {
-			return err
+			return fmt.Errorf("native Issue create: %w", err)
 		}
 		if path == "" {
 			// The graph path is a separate address from the opaque native ID.
@@ -151,10 +173,14 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := s.afterStage("issue-catalog"); err != nil {
 			return err
 		}
-		// This is an identity mapping, not a second snapshot. The local ordinal
-		// never escapes as the graph Version or as a portable History address.
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,'[]','{"inception":"create"}',?)`, path, revision, created.Issue.ID, ordinal, ordinal); err != nil {
-			return err
+		if len(resolved) == 0 {
+			// This is an identity mapping, not a second snapshot. The local ordinal
+			// never escapes as the graph Version or as a portable History address.
+			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,'[]','{"inception":"create"}',?)`, path, revision, created.Issue.ID, ordinal, ordinal); err != nil {
+				return err
+			}
+		} else if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, created.Issue.ID, request.Actor, resolved, true); err != nil {
+			return fmt.Errorf("map created Issue dependencies: %w", err)
 		}
 		if err := s.afterStage("retained"); err != nil {
 			return err
@@ -218,30 +244,73 @@ func (s *Store) Read(ctx context.Context, path string) (any, error) {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		var backing string
-		if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return ErrNotFound
-			}
-			return err
-		}
 		var err error
-		switch backing {
-		case "generic":
-			result, err = s.showMemoryInTx(ctx, tx, path)
-		case "issue":
-			result, err = s.showIssueInTx(ctx, tx, path)
-		case "dependency", "informational":
-			result, err = s.showLinkInTx(ctx, tx, path)
-		default:
-			err = fmt.Errorf("%w: unsupported backing", ErrInvalidStore)
-		}
+		result, err = s.readCurrentVerifiedInTx(ctx, tx, path)
 		return err
 	})
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
+}
+
+// ReadBeadSelected uses the shared native Issue selector for bare spelling,
+// then reads a non-Issue Bead at that exact path in the same checked snapshot.
+// An explicit graph path never resolves through a native ID. Ambiguous bare
+// spelling refuses even when a Memory exists at the fallback path.
+func (s *Store) ReadBeadSelected(ctx context.Context, selector IssueSelector) (any, error) {
+	if err := validateIssueSelector(selector); err != nil {
+		return nil, err
+	}
+	var result any
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkCurrentReadBytes(ctx, tx); err != nil {
+			return err
+		}
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		var err error
+		_, result, err = s.readBeadSelectedInTx(ctx, tx, selector)
+		return err
+	})
+	return result, err
+}
+
+func (s *Store) readBeadSelectedInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, any, error) {
+	if selector.NativeID != "" {
+		path, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		switch {
+		case err == nil:
+			return path, issue, nil
+		case errors.Is(err, ErrNotFound), errors.Is(err, errNonIssueSelector):
+			// Bare Memory names retain their existing read spelling.
+		default:
+			return "", nil, err
+		}
+	}
+	result, err := s.readCurrentVerifiedInTx(ctx, tx, selector.Path)
+	return selector.Path, result, err
+}
+
+func (s *Store) readCurrentVerifiedInTx(ctx context.Context, tx *sql.Tx, path string) (any, error) {
+	var backing string
+	if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
+		return nil, err
+	}
+	switch backing {
+	case "generic":
+		return s.showMemoryInTx(ctx, tx, path)
+	case "issue":
+		return s.showIssueInTx(ctx, tx, path)
+	case "dependency", "informational":
+		return s.showLinkInTx(ctx, tx, path)
+	default:
+		return nil, fmt.Errorf("%w: unsupported backing", ErrInvalidStore)
+	}
 }
 
 func (s *Store) ShowIssue(ctx context.Context, path string) (IssueRecord, error) {
