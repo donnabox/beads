@@ -57,7 +57,11 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "version"); err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	ref, err := graphPreviewParseReference(args[0])
+	literal, err := graphPreviewResolveMemoryArgument(args[0])
+	if err != nil {
+		return err
+	}
+	ref, err := graphPreviewParseReference(literal)
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}

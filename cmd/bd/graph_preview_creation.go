@@ -3,7 +3,8 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"strings"
+	"github.com/steveyegge/beads/internal/memoryapi"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -35,12 +36,11 @@ func graphPreviewCreateBeadPath(cmd *cobra.Command) (string, error) {
 
 // This is a deterministic display summary, not an inferred semantic title.
 // The complete body remains unchanged. Whitespace-only bodies get an empty title.
-func graphPreviewMemoryTitle(body string) string {
-	line, _, _ := strings.Cut(strings.TrimSpace(body), "\n")
-	title := []rune(strings.Join(strings.Fields(line), " "))
-	const maxRunes = 80
-	if len(title) > maxRunes {
-		return string(title[:maxRunes-1]) + "…"
+func graphPreviewMemoryTitle(body string) string { return memoryapi.TitleFromBody(body) }
+
+func graphPreviewMemoryDisplayID(memory graphstore.Record) string {
+	if memory.PublicID != "" {
+		return memory.PublicID
 	}
-	return string(title)
+	return memory.ID
 }

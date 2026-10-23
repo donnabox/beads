@@ -209,7 +209,7 @@ func (r *currentFamilyReader) Current(ctx context.Context, path string) (memoryq
 	if err := validatePath(path); err != nil {
 		return memoryquery.CurrentNode{}, err
 	}
-	count, err := r.chargeRows(ctx, "graph_preview_catalog c WHERE c.path=?", "c.path,c.resource_kind,c.type_url,c.revision,c.allocation_state,c.backing,c.backing_key", 4, path)
+	count, err := r.chargeRows(ctx, "graph_preview_catalog c WHERE c.path=?", "c.path,c.resource_kind,c.type_url,c.revision,c.allocation_state,c.backing,c.backing_key,c.public_id", 4, path)
 	if err != nil {
 		return memoryquery.CurrentNode{}, err
 	}

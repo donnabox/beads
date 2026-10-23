@@ -35,7 +35,7 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 		{"config WHERE `key`='issue_prefix'", "value", 1},
 		// Exact reads inspect allocation metadata before refusing deleted/invalid
 		// states. Include tombstones; deleted Memory final heads are charged below.
-		{"graph_preview_catalog c", "c.path,c.type_url,c.revision,c.resource_kind,c.backing,c.backing_key", 1},
+		{"graph_preview_catalog c", "c.path,c.type_url,c.revision,c.resource_kind,c.backing,c.backing_key,c.public_id", 1},
 		{"graph_preview_payloads p JOIN graph_preview_catalog c ON c.path=p.path WHERE " + live, "p.properties,p.metadata", 1},
 		// A live Link is read as a top-level Resource and at most once as source-owned
 		// state. The owner's retained snapshot/owned JSON is charged separately.

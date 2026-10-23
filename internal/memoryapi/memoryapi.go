@@ -158,3 +158,15 @@ func FilterMemories(all map[string]string, search string) map[string]string {
 	}
 	return out
 }
+
+// TitleFromBody returns the existing graph Memory creation summary. It does
+// not alter the body or derive identity; import and remember share this rule.
+func TitleFromBody(body string) string {
+	line, _, _ := strings.Cut(strings.TrimSpace(body), "\n")
+	title := []rune(strings.Join(strings.Fields(line), " "))
+	const maxRunes = 80
+	if len(title) > maxRunes {
+		return string(title[:maxRunes-1]) + "…"
+	}
+	return string(title)
+}

@@ -117,6 +117,13 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 }
 
 func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
+	if len(args) == 1 {
+		resolved, err := graphPreviewResolveMemoryArgument(args[0])
+		if err != nil {
+			return err
+		}
+		args = []string{resolved}
+	}
 	in, err := graphPreviewGenericInput(cmd, args, graphPreviewConfig.GraphScopeURL)
 	if err != nil {
 		return err

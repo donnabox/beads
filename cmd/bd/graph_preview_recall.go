@@ -22,18 +22,17 @@ func runGraphPreviewRecall(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph recall requires one canonical Memory selector", 2)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
-	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
 	version, _ := cmd.Flags().GetString("version")
 	versioned := cmd.Flags().Changed("version")
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
 		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+		path, err := s.ResolveMemorySelector(ctx, args[0])
+		if err != nil {
+			return nil, "", err
+		}
 		var value any
-		var err error
 		if versioned {
 			value, err = s.ReadVersion(ctx, path, version)
 		} else {

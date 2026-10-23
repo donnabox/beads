@@ -226,12 +226,16 @@ func (s *Store) decodeMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, 
 	if err := s.validateVersionOwned(ctx, tx, memory.ID, memory.Type, memory.Owned); err != nil {
 		return Record{}, err
 	}
+	memory.PublicID, err = memoryPublicIDInTx(ctx, tx, path)
+	if err != nil {
+		return Record{}, err
+	}
 	return memory, nil
 }
 
 func readVersionBytes(ctx context.Context, tx *sql.Tx, path, version, head string) ([]byte, string, error) {
 	var size uint64
-	err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(snapshot)+OCTET_LENGTH(actor)
+	err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(snapshot)+OCTET_LENGTH(actor)+COALESCE((SELECT OCTET_LENGTH(public_id) FROM graph_preview_catalog WHERE path=graph_preview_versions.path),0)
  FROM graph_preview_versions WHERE path=? AND version=?`, path, version).Scan(&size)
 	if errors.Is(err, sql.ErrNoRows) {
 		if version == head {

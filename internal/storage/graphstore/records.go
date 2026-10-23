@@ -27,6 +27,11 @@ func validatePath(path string) error {
 // payload and records the complete accepted snapshot. There is no keyed upsert
 // or optional History switch. Commit uncertainty returns no success record.
 func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
+	var err error
+	req, err = PrepareMemoryIdentity(req)
+	if err != nil {
+		return Record{}, err
+	}
 	if err := validatePath(req.Path); err != nil {
 		return Record{}, err
 	}
@@ -41,7 +46,7 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if err != nil {
 		return Record{}, err
 	}
-	r := Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, req.Path),
+	r := Record{PublicID: req.PublicID, ID: graph.CanonicalURL(s.options.Binding.ScopeURL, req.Path),
 		Type: MemoryTypeURL(s.options.Binding.ScopeURL), Revision: revision, Version: revision,
 		Properties: Properties{Title: req.Title, Body: req.Body}, Metadata: metadata, Owned: []json.RawMessage{}}
 	if req.TypeURL != "" {
@@ -107,14 +112,18 @@ func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r
 	if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
-	if exists, err := publicResourceIDExistsInTx(ctx, tx, req.Path); err != nil {
+	publicID := req.PublicID
+	if publicID == "" {
+		publicID = req.Path
+	}
+	if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
 		return err
 	} else if exists {
 		return ErrAlreadyExists
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
-        (path, resource_kind, type_url, revision, allocation_state, backing)
-        VALUES (?, 'bead', ?, ?, 'live', 'generic')`, req.Path, r.Type, r.Revision); err != nil {
+        (path, resource_kind, type_url, revision, allocation_state, backing, public_id)
+        VALUES (?, 'bead', ?, ?, 'live', 'generic', ?)`, req.Path, r.Type, r.Revision, nullableMemoryPublicID(req.PublicID)); err != nil {
 		return err
 	}
 	if err := s.afterStage("allocation"); err != nil {
@@ -130,7 +139,12 @@ func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r
 	if err != nil {
 		return err
 	}
-	return s.afterStage("retained")
+	if err := s.afterStage("retained"); err != nil {
+		return err
+	}
+	// Public IDs are untruncated data. Refuse oversized aggregate growth inside
+	// this write transaction rather than committing an unreadable allocation.
+	return checkCurrentReadBytes(ctx, tx)
 }
 
 func (s *Store) touchCoordination(ctx context.Context, tx *sql.Tx) error {
@@ -252,6 +266,10 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if !bytes.Equal(payload, canonicalPayload) || !bytes.Equal(snapshot, canonicalSnapshot) {
 		return Record{}, fmt.Errorf("%w: current and retained state differ", ErrInvalidStore)
 	}
+	record.PublicID, err = memoryPublicIDInTx(ctx, tx, path)
+	if err != nil {
+		return Record{}, err
+	}
 	return record, nil
 }
 
@@ -321,4 +339,11 @@ func insertPreviewVersionInTx(ctx context.Context, tx *sql.Tx, path, version str
 	changeAt := time.Now().UTC()
 	_, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path, version, snapshot, actor, ordinal, change_at) VALUES (?, ?, ?, ?, ?, ?)`, path, version, snapshot, actor, ordinal, changeAt)
 	return err
+}
+
+func nullableMemoryPublicID(id string) any {
+	if id == "" {
+		return nil
+	}
+	return id
 }

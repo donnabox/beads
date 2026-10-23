@@ -55,6 +55,9 @@ type Options struct {
 
 // CreateRequest creates a new canonical Memory path; it is not a keyed upsert.
 type CreateRequest struct {
+	// PublicID is an exact user identity; Path is its private locator. Empty
+	// retains the legacy allocation-path public identity.
+	PublicID       string
 	TypeURL        string
 	PropertiesJSON json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
 	Path           string
@@ -76,6 +79,8 @@ type Properties struct {
 // Record is a complete preview Memory record, including its outgoing owned Links.
 // Version identifies retained state; it is not a local ordinal or timestamp.
 type Record struct {
+	// PublicID is checked allocation data for local CLI projection, not BDP wire.
+	PublicID    string            `json:"-"`
 	ID          string            `json:"id"`
 	Type        string            `json:"type"`
 	Revision    string            `json:"revision"`

@@ -172,7 +172,7 @@ func (s *Store) memoryTerminalDescriptorInTx(ctx context.Context, tx *sql.Tx, pa
 // snapshot. Charge those roles together before decoding any of them.
 func checkDeletedMemoryReadBytes(ctx context.Context, tx *sql.Tx, path, head, source string) error {
 	var size uint64
-	if err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(d.snapshot)+OCTET_LENGTH(d.actor)
+	if err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(d.snapshot)+OCTET_LENGTH(d.actor)+COALESCE((SELECT OCTET_LENGTH(public_id) FROM graph_preview_catalog WHERE path=d.path),0)
  +COALESCE(OCTET_LENGTH(b.snapshot)+OCTET_LENGTH(b.actor),0)
  +CASE WHEN s.version<>d.version AND s.version<>COALESCE(b.version,'') THEN OCTET_LENGTH(s.snapshot)+OCTET_LENGTH(s.actor) ELSE 0 END
  FROM graph_preview_versions d

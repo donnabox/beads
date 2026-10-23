@@ -82,7 +82,7 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 	}
 	var backing string
 	err = tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog
-		WHERE path=? AND backing IN ('generic','dependency','informational') AND allocation_state='live'`, selector.NativeID).Scan(&backing)
+		WHERE COALESCE(public_id,path)=? AND backing IN ('generic','dependency','informational') AND allocation_state='live'`, selector.NativeID).Scan(&backing)
 	if err == nil {
 		return "", IssueRecord{}, nonIssueSelectorError(backing)
 	}

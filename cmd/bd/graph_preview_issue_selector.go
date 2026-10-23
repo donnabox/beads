@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -34,6 +35,11 @@ func graphPreviewIssueSelector(selector string) (graphstore.IssueSelector, error
 // between this read and the writer's transaction, so it must use a canonical
 // Scope URL (or a writer that resolves shorthand in its own transaction).
 func graphPreviewResolvedWritePath(selector string) (string, error) {
+	resolved, resolveErr := graphPreviewResolveMemoryArgument(selector)
+	if resolveErr != nil {
+		return "", resolveErr
+	}
+	selector = resolved
 	path, localID, err := graphPreviewResourceReadSelector(selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
@@ -50,7 +56,10 @@ func graphPreviewResolvedWritePath(selector string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	exact := selected == localID // Memory and Link public IDs are their paths.
+	exact := selected == localID // Older Memory and Link allocations publish paths.
+	if memory, ok := record.(graphstore.Record); ok && memory.PublicID != "" {
+		exact = memory.PublicID == localID
+	}
 	if issue, ok := record.(graphstore.IssueRecord); ok {
 		exact = issue.Properties.ID == localID
 	}
@@ -61,6 +70,11 @@ func graphPreviewResolvedWritePath(selector string) (string, error) {
 }
 
 func graphPreviewResolvedHistoricalPath(selector string) (string, error) {
+	resolved, resolveErr := graphPreviewResolveMemoryArgument(selector)
+	if resolveErr != nil {
+		return "", resolveErr
+	}
+	selector = resolved
 	path, localID, err := graphPreviewResourceReadSelector(selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
@@ -85,8 +99,34 @@ func graphPreviewResourceReadSelector(selector string) (path, localID string, er
 		}
 		return "", "", errors.New("expected a local Resource ID or canonical Scope URL")
 	}
-	if strings.Contains(selector, "://") || graph.ValidateBeadPath("beads/"+selector) != nil || graph.ValidateLinkPath("links/"+selector) != nil {
+	if !utf8.ValidString(selector) || strings.TrimSpace(selector) == "" {
 		return "", "", errors.New("expected a local Resource ID or canonical Scope URL")
 	}
 	return "beads/" + selector, selector, nil
+}
+
+// Resolve an allocated literal Memory ID before interpreting optional reference
+// syntax. The allocation is immutable; ambiguity with another canonical locator
+// refuses. Unknown/non-Memory inputs keep the established general parser.
+func graphPreviewResolveMemoryArgument(selector string) (string, error) {
+	resolved := selector
+	err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		_, err := store.ResolveExactAllocatedResourcePath(ctx, selector)
+		if errors.Is(err, graphstore.ErrNotFound) {
+			return nil, "", nil
+		}
+		if err != nil {
+			return nil, "", err
+		}
+		path, err := store.ResolveMemorySelector(ctx, selector)
+		if errors.Is(err, graphstore.ErrCapabilityUnavailable) {
+			return nil, "", nil
+		}
+		if err != nil {
+			return nil, "", err
+		}
+		resolved = store.ScopeURL() + path
+		return nil, "", nil
+	}, func(any, string) error { return nil })
+	return resolved, err
 }

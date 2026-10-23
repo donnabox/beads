@@ -13,7 +13,11 @@ import (
 // selection as mixed reads, while keeping selection and mutation in one tx.
 // Only a canonical URL (localID empty) selects a graph path directly.
 func (s *Store) resolveLiveBeadWriteSelectorInTx(ctx context.Context, tx *sql.Tx, candidatePath, localID string) (string, error) {
-	if err := validatePath(candidatePath); err != nil {
+	if localID == "" {
+		if err := validatePath(candidatePath); err != nil {
+			return "", err
+		}
+	} else if err := validatePublicID(localID); err != nil {
 		return "", err
 	}
 	if localID == "" {
@@ -23,7 +27,7 @@ func (s *Store) resolveLiveBeadWriteSelectorInTx(ctx context.Context, tx *sql.Tx
 		return "", fmt.Errorf("%w: local Bead ID does not match its candidate path", storage.ErrValidation)
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE allocation_state='live' AND
-		((backing='issue' AND backing_key=?) OR (backing='generic' AND path=?)) LIMIT 2`, localID, localID)
+		((backing='issue' AND backing_key=?) OR (backing='generic' AND COALESCE(public_id,path)=?)) LIMIT 2`, localID, localID)
 	if err != nil {
 		return "", err
 	}

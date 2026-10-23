@@ -39,7 +39,7 @@ var previewDDL = []string{
         path VARBINARY(1024) PRIMARY KEY, resource_kind VARBINARY(16) NOT NULL,
         type_url LONGBLOB NOT NULL, revision VARBINARY(32) NOT NULL,
         allocation_state VARBINARY(16) NOT NULL, backing VARBINARY(32) NOT NULL,
-        backing_key VARBINARY(255) NULL, UNIQUE KEY one_backing (backing, backing_key))`,
+        backing_key VARBINARY(255) NULL, public_id LONGBLOB NULL, UNIQUE KEY one_backing (backing, backing_key))`,
 	`CREATE TABLE graph_preview_payloads (
         path VARBINARY(1024) PRIMARY KEY, properties LONGBLOB NOT NULL,
         metadata LONGBLOB NULL)`,
@@ -264,7 +264,7 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	}
 	// Reject incomplete bootstrap on open, even before a caller selects a row.
 	for _, query := range []string{
-		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key FROM graph_preview_catalog LIMIT 0`,
+		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key, public_id FROM graph_preview_catalog LIMIT 0`,
 		`SELECT path, properties, metadata FROM graph_preview_payloads LIMIT 0`,
 		`SELECT path, source_path, target_path, source_revision, target_revision, properties, metadata, attribution FROM graph_preview_links LIMIT 0`,
 		`SELECT path, version, snapshot, actor, ordinal, change_at, native_participation_generation FROM graph_preview_versions LIMIT 0`,

@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/config"
+	"github.com/steveyegge/beads/internal/memoryapi"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/utils"
@@ -434,9 +435,18 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	path, err := graphPreviewCreateBeadPath(cmd)
-	if err != nil {
-		return err
+	publicID := ""
+	path := ""
+	if cmd.Flags().Changed("id") {
+		publicID, _ = cmd.Flags().GetString("id")
+		if _, err := memoryapi.ValidateKey(publicID); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+	} else {
+		path, err = graphPreviewCreateBeadPath(cmd)
+		if err != nil {
+			return err
+		}
 	}
 	metadata, err := graphPreviewMetadataCreate(cmd)
 	if err != nil {
@@ -450,11 +460,15 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 		if err := graphPreviewRequireInstalledType(ctx, store, typeURL, graph.KindBead, true); err != nil {
 			return nil, "", err
 		}
-		record, err := store.Create(ctx, graphstore.CreateRequest{Path: path, TypeURL: typeURL, PropertiesJSON: properties, Actor: getActorWithGit(), Metadata: metadata})
+		record, err := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, Path: path, TypeURL: typeURL, PropertiesJSON: properties, Actor: getActorWithGit(), Metadata: metadata})
 		if err != nil {
 			return nil, "", err
 		}
-		return record, fmt.Sprintf("Created %s\n", path), nil
+		displayID := publicID
+		if displayID == "" {
+			displayID = path
+		}
+		return record, fmt.Sprintf("Created %s\n", displayID), nil
 	})
 }
 

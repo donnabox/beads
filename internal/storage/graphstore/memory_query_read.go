@@ -192,7 +192,7 @@ func (r *memoryQueryReader) Resolve(ctx context.Context, ref graph.Ref) (graph.B
 	if len(r.records) >= r.request.Limits.MaxNodes {
 		return graph.Bead{}, fmt.Errorf("%w: scoped Memory node acquisition", memoryquery.ErrLimitExceeded)
 	}
-	count, err := r.charge(ctx, `SELECT CAST(LEAST(COALESCE(SUM(4*(256+OCTET_LENGTH(path)+OCTET_LENGTH(type_url)+OCTET_LENGTH(revision)+OCTET_LENGTH(resource_kind)+OCTET_LENGTH(allocation_state)+OCTET_LENGTH(backing)+COALESCE(OCTET_LENGTH(backing_key),0))),0),?) AS UNSIGNED),COUNT(*) FROM graph_preview_catalog WHERE path=?`, ref.Path())
+	count, err := r.charge(ctx, `SELECT CAST(LEAST(COALESCE(SUM(4*(256+OCTET_LENGTH(path)+OCTET_LENGTH(type_url)+OCTET_LENGTH(revision)+OCTET_LENGTH(resource_kind)+OCTET_LENGTH(allocation_state)+OCTET_LENGTH(backing)+COALESCE(OCTET_LENGTH(backing_key),0)+COALESCE(OCTET_LENGTH(public_id),0))),0),?) AS UNSIGNED),COUNT(*) FROM graph_preview_catalog WHERE path=?`, ref.Path())
 	if err != nil {
 		return graph.Bead{}, err
 	}

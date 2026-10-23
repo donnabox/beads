@@ -161,7 +161,15 @@ func runMemoryCurrentRead(cmd *cobra.Command, args []string, op memoryReadOperat
 			return canonicalFailure(cmd, renderer, "capability_unavailable", "Memory graph field masks are not available yet", 5)
 		}
 	}
-	request, err := memoryCurrentRequest(cmd, args, graphPreviewConfig.GraphScopeURL, op)
+	resolvedArgs := append([]string(nil), args...)
+	for i, arg := range resolvedArgs {
+		resolved, err := graphPreviewResolveMemoryArgument(arg)
+		if err != nil {
+			return err
+		}
+		resolvedArgs[i] = resolved
+	}
+	request, err := memoryCurrentRequest(cmd, resolvedArgs, graphPreviewConfig.GraphScopeURL, op)
 	if err != nil {
 		if errors.Is(err, storage.ErrValidation) {
 			return canonicalFailure(cmd, renderer, "invalid_properties", err.Error(), 2)
