@@ -1,6 +1,12 @@
 # Preview 3 CLI audit: Working With Issues, N–Z shard
 
-**Comparison:** shipping `v1.3.1` = `c1c4b642ac1c08d8c828007a1c2f96e47e43ef7c`; actual Preview 3 integration `origin/codex/preview3-integration` = `b6d0493baf7c0a52f68df5a943158290e3b75878` (October 21, 2026). The PRs below are **unmerged candidates**, not behavior in that integration commit. This assessment uses command registration, actual route source and installed command probes. The starting design audit and selection table were not treated as proof. All workspaces were disposable. `G:` below means `git show b6d0493ba:<path>`; `S:` means `git show v1.3.1:<path>` from the Beads repository. Both executables were built with `-tags gms_pure_go -buildvcs=false` from exact detached checkouts of those commits; the source checkouts have since been removed, but the Git refs remain available.
+**Comparison:** shipping `v1.3.1` = `c1c4b642ac1c08d8c828007a1c2f96e47e43ef7c`; actual Preview 3 integration `origin/codex/preview3-integration` = `b6d0493baf7c0a52f68df5a943158290e3b75878` (October 21, 2026). The PRs below were **unmerged candidates at this pin**, not behavior in that integration commit. This assessment uses command registration, actual route source and installed command probes. The starting design audit and selection table were not treated as proof. All workspaces were disposable. `G:` below means `git show b6d0493ba:<path>`; `S:` means `git show v1.3.1:<path>` from the Beads repository. Both executables were built with `-tags gms_pure_go -buildvcs=false` from exact detached checkouts of those commits; the source checkouts have since been removed, but the Git refs remain available.
+
+**Delivery update (2026-10-22):** #151 current-Issue display and #152
+description file/stdin input landed through [#256](https://github.com/donnabox/beads/pull/256)
+at integration `9be7c4894`. The rows below remain a historical comparison to
+`b6d0493ba`; see the [living status column](../preview3-cli-parity.md) for
+delivered forms and still-open gaps.
 
 **Coverage:** 14 of 14 assigned top-level commands, 21 expanded command routes (`merge-slot` four verbs, `state` two, `todo` bare/add/list/done), with representative executable probes for every top-level command and each admitted subcommand. Human and JSON, valid/refused and no-op/partial batch cases were sampled. All stateful graph probes ran on embedded Dolt; the create/note/priority/search/query/update/state/reopen/todo/merge-slot subset also ran against a real external shared-server Dolt at `127.0.0.1:33987`. Shipping v1.3.1 was likewise sampled on embedded and that server. The temporary server was stopped. This is a bounded compatibility audit, not a full flag-by-flag server test suite.
 

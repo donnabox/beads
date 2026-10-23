@@ -2,6 +2,13 @@
 
 Audit date: 2026-10-21. Scope: assign, children, close, comment, comments, create, create-form, delete, edit, gate, label, link, list (13 top-level commands). Shipping source/build is annotated tag v1.3.1 at c1c4b642a. Preview source/build is exactly origin/codex/preview3-integration at b6d0493ba, not the later audit checkout and not any candidate PR. I made no repository edits. The selection table and shipping compatibility audit in engdocs/design supplied candidate PR names, not evidence of current behavior.
 
+**Delivery update (2026-10-22):** #152 description input, #151 positional Link
+feedback, and #156 list aliases landed through [#256](https://github.com/donnabox/beads/pull/256)
+at integration `9be7c4894`. The probe rows below remain pinned to `b6d0493ba`;
+their historical “unmerged” and refusal notes describe that earlier build.
+See the [living status column](../preview3-cli-parity.md) for delivery and
+remaining gaps.
+
 Evidence method: built both binaries from disposable detached worktrees with CGO and Homebrew ICU headers/libraries; initialized separate disposable embedded Dolt and separate databases on a real Dolt sql-server at 127.0.0.1:34121 with --server --external. Every status below rests on executed probes plus the cited source; help/registration alone is not treated as success. Paths in source citations are relative to the named commit. Exit codes are process exit codes. “Refusal” means nonzero exit with a named error; “untested” never means supported.
 
 ## Release blockers and notable behavior
