@@ -153,7 +153,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if err := s.afterStage("link-catalog"); err != nil {
 			return err
 		}
-		link, err := s.currentLinkInTx(ctx, tx, path)
+		link, err := s.currentLinkForCreationInTx(ctx, tx, path)
 		if err != nil {
 			return err
 		}
@@ -214,6 +214,16 @@ func (s *Store) requireIssueInTx(ctx context.Context, tx *sql.Tx, path string) (
 // currentLinkInTx selects the authoritative specialized or generic Link row.
 // A retained snapshot never substitutes for current authority.
 func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (LinkRecord, error) {
+	return s.currentLinkProjectionInTx(ctx, tx, path, false)
+}
+
+// Creation callers explicitly permit the interval before retaining the first
+// native version. Ordinary current readers never accept a missing head row.
+func (s *Store) currentLinkForCreationInTx(ctx context.Context, tx *sql.Tx, path string) (LinkRecord, error) {
+	return s.currentLinkProjectionInTx(ctx, tx, path, true)
+}
+
+func (s *Store) currentLinkProjectionInTx(ctx context.Context, tx *sql.Tx, path string, creating bool) (LinkRecord, error) {
 	var selectedBacking string
 	if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&selectedBacking); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -247,7 +257,8 @@ func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (L
 	if err != nil {
 		return LinkRecord{}, err
 	}
-	var sourcePath, targetPath, depType, metadata, thread, actor string
+	var sourcePath, targetPath, depType, thread, actor string
+	var metadata sql.NullString
 	var at time.Time
 	var nativeBytes uint64
 	if err := tx.QueryRowContext(ctx, `SELECT COALESCE(OCTET_LENGTH(metadata),0)+COALESCE(OCTET_LENGTH(created_by),0)+COALESCE(OCTET_LENGTH(thread_id),0)+256 FROM dependencies WHERE id=?`, key).Scan(&nativeBytes); err != nil {
@@ -268,7 +279,7 @@ func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (L
 	if !ok || !utf8.ValidString(depType) || typ != expectedType || thread != "" {
 		return LinkRecord{}, fmt.Errorf("%w: Dependency exceeds preview", ErrInvalidStore)
 	}
-	canonicalMetadata, err := commonMetadata([]byte(metadata))
+	canonicalMetadata, err := commonMetadata([]byte(metadata.String))
 	if err != nil {
 		return LinkRecord{}, fmt.Errorf("%w: invalid native Dependency metadata: %v", ErrInvalidStore, err)
 	}
@@ -277,7 +288,7 @@ func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (L
 		status = "claimed"
 	}
 	attribution := Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}
-	attribution, err = nativeLinkAttributionInTx(ctx, tx, path, revision, attribution)
+	attribution, err = nativeLinkAttributionInTx(ctx, tx, path, revision, attribution, creating)
 	if err != nil {
 		return LinkRecord{}, err
 	}

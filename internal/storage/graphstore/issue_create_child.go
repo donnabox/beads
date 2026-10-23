@@ -157,7 +157,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err := s.afterStage("child-link-catalog"); err != nil {
 			return err
 		}
-		link, err := s.currentLinkInTx(ctx, tx, linkPath)
+		link, err := s.currentLinkForCreationInTx(ctx, tx, linkPath)
 		if err != nil {
 			return err
 		}
