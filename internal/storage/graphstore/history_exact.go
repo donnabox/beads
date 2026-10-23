@@ -293,7 +293,7 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 	depType, hasKind := link.Properties["dep_type"].(string)
 	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) ||
 		!hasKind || len(link.Properties) != 1 || !types.DependencyType(depType).IsValid() ||
-		!utf8.ValidString(depType) || !bytes.Equal(link.Metadata, []byte(`{}`)) {
+		!utf8.ValidString(depType) {
 		return fmt.Errorf("%w: invalid retained Dependency", ErrInvalidStore)
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {

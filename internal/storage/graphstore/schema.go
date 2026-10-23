@@ -75,7 +75,7 @@ func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
 		ID: DependencyTypeURL(scope), Name: "Dependency", Describes: graph.KindLink,
-		Description: "Issue-owned native Dependency with live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; no other properties or metadata edits are supported. One ordered Issue pair has at most one Dependency.",
+		Description: "Issue-owned native Dependency with live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; common metadata is editable; no other properties are supported. One ordered Issue pair has at most one Dependency.",
 		Source:      &endpoint, Target: &endpoint,
 	})
 }

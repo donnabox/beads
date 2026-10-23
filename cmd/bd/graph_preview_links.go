@@ -259,7 +259,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	if err := graph.ValidateLinkPath(path); err != nil {
-		return graphFailure("capability_unavailable", "this preview updates informational Link properties only", 5)
+		return graphFailure("capability_unavailable", "Link updates require a canonical links/PATH identity", 5)
 	}
 	sourcePin, targetPin, err := graphPreviewLinkPinIntents(cmd)
 	if err != nil {

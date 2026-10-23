@@ -99,7 +99,7 @@ var linkShowCmd = &cobra.Command{
 }
 
 var linkUpdateCmd = &cobra.Command{
-	Use: "update LINK", Short: "Update an informational Link or recover it from a retained revision",
+	Use: "update LINK", Short: "Update a Link or recover it from a retained revision",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		selector, err := graphPreviewWritableIdentity(args[0])

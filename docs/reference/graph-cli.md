@@ -592,7 +592,7 @@ for constraints and exact Evaluation subject rules.
 Link updates and removal accept the current Link by default; `--if-revision
 TOKEN` rejects a stale Link. Removal retains the identity and prior snapshots.
 Native Dependency remains
-restricted to live Issues and retains its existing blocking and unlink rules.
+restricted to live unpinned Issues. Its `dep_type` string and common metadata can be edited, including through a retained historical base; native cycle, hierarchy and readiness checks still apply. Historical recovery preserves the Link ID and refuses a pair already asserted under another Link ID. The source receives one native version.
 
 For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
 The native `bd dep add BLOCKED --blocked-by BLOCKER` and `--depends-on BLOCKER`
@@ -728,7 +728,7 @@ the ordering authority. A removed Link still lists its prior citable versions;
 terminal deletion revisions appear separately in `terminal_versions`, and a
 currently deleted Resource exposes its deletion guard in `currentState`.
 These markers are never citable live snapshots, including after same-ID recovery.
-Memory and admitted native Issue recovery, and informational Link recovery,
+Memory, admitted native Issue, and Link recovery,
 use [checked historical Update](/reference/bdp/cli/historical-update).
 BDP HTTP History and as-of selection remain unavailable. `bd status --graph` reports
 `versionList: true`; `historyExact: false` refers to the unavailable HTTP

@@ -284,10 +284,9 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			head = link.Revision
 		}
 		if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
-			if request.FromRevision != "" {
-				return fmt.Errorf("%w: historical update is not supported for native Dependency Links", ErrCapabilityUnavailable)
-			}
-			return fmt.Errorf("%w: property update requires informational Link Type", storage.ErrValidation)
+			var err error
+			result, err = s.writeNativeLinkPropertiesInTx(ctx, tx, request, properties, patch, link, terminal, head)
+			return err
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, head, true, "Link"); err != nil {
 			return err

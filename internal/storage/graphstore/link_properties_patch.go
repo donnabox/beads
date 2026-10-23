@@ -12,10 +12,10 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// LinkPropertiesPatchRequest combines informational Link property operations,
-// optional metadata edits and independent endpoint pin intents. The
-// current private Type admits an optional string note. Memory-owned Links also
-// require a source guard; an Issue source remains unchanged by this writer.
+// LinkPropertiesPatchRequest combines Link property operations, optional
+// metadata edits and independent informational endpoint pin intents. Each Type
+// validates its final properties. Owned Links require a separate source guard;
+// native Dependency edits use the Issue-domain writer and version their source.
 // This preview does not expose the public BDP Update profile.
 type LinkPropertiesPatchRequest struct {
 	FromRevision           string

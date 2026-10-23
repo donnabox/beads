@@ -191,39 +191,6 @@ func TestHistoricalLinkPinsAndRecoveryRollback(t *testing.T) {
 // Native revision context is a separately delivered authority seam. Until that
 // writer is present, historical requests must refuse rather than storing a
 // generic payload or fabricating a retained envelope for a native Dependency.
-func TestHistoricalLinkNativeAuthorityRefusal(t *testing.T) {
-	for _, engine := range []string{"embedded", "server"} {
-		t.Run(engine, func(t *testing.T) {
-			ctx, _, s := memoryDeleteStore(t, engine)
-			source, err := s.CreateIssue(ctx, "beads/source", plainIssue("Source"))
-			if err != nil {
-				t.Fatal(err)
-			}
-			if _, err := s.CreateIssue(ctx, "beads/target", plainIssue("Target")); err != nil {
-				t.Fatal(err)
-			}
-			created, err := s.AddDependency(ctx, DependencyRequest{Path: "links/native", SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision, Actor: "create"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			before := workflowState(t, ctx, s)
-			_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/native", FromRevision: created.Link.Revision, ExpectedRevision: created.Link.Revision, ExpectedSourceRevision: created.Source.Revision})
-			if !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("live native authority bypass: %v", err)
-			}
-			deleted, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/native", ExpectedRevision: created.Link.Revision, ExpectedSourceRevision: created.Source.Revision, Actor: "delete"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			before = workflowState(t, ctx, s)
-			_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/native", FromRevision: created.Link.Revision, ExpectedRevision: deleted.Link.Revision, ExpectedSourceRevision: deleted.Source.(IssueRecord).Revision})
-			if !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("deleted native authority bypass: %v", err)
-			}
-		})
-	}
-}
-
 func TestHistoricalLinkTerminalPrivacyBudgetAndMissingEndpoint(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
