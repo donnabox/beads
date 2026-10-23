@@ -93,9 +93,10 @@ its ordinary preview path is `beads/` followed by that whole ID. Use the
 separate Preview 3 `--graph-path beads/PATH` option to choose only a graph path
 and let the native Issue writer allocate its ID. Generated Memory IDs remain
 random `beads/` paths; generated Link IDs remain under `links/`.
-For slash-bearing Issue IDs in this draft, use the returned canonical URL with
-mixed-resource readers such as `bd show`; their local selector routing has not
-yet adopted opaque native IDs.
+Current `bd show` and `bd link show` resolve local public IDs as opaque within
+the Scope, including slash-bearing IDs. A canonical same-Scope URL selects an
+exact graph path. Other write and historical routes retain their documented
+selector limits.
 
 ```sh
 bd create 'Move the release branch' --id work --type task
@@ -584,6 +585,10 @@ Conformance claims. The selected nominal subtypes inherit those rules.
 Changing an owned Link changes its owner; its target does not change merely
 because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for constraints and exact Evaluation subject rules.
+
+The positional `bd link` write still treats `beads/PATH` as an exact graph
+path. A full same-Scope URL also selects that path. Current `bd show` and
+`bd link show` reads instead treat local spellings as opaque public IDs.
 
 Link updates accept the current Link by default; `--if-revision TOKEN`
 rejects a stale Link. Removal needs `--if-revision TOKEN` or `--unconditional`
