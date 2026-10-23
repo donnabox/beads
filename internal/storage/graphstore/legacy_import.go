@@ -101,6 +101,10 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 				if errors.Is(err, domain.ErrDependencyCycle) {
 					return fmt.Errorf("%w: legacy dependencies contain a cycle", storage.ErrValidation)
 				}
+				var hierarchy *domain.DependencyHierarchyConflictError
+				if errors.As(err, &hierarchy) {
+					return fmt.Errorf("%w: legacy dependency hierarchy conflict: %w", storage.ErrValidation, err)
+				}
 				return err
 			}
 			if err := s.afterStage("import-native"); err != nil {

@@ -179,8 +179,8 @@ func TestLegacyImportDependencyKinds(t *testing.T) {
 			{ID: "scratch-35t", Title: "Source", Dependencies: []*types.Dependency{{IssueID: "scratch-35t", DependsOnID: "scratch-8b8", Type: kind}}},
 			{ID: "scratch-8b8", Title: "Target"},
 		}}
-		if _, err := prepareLegacyImport(input, "importer"); !errors.Is(err, storage.ErrValidation) {
-			t.Fatalf("invalid native kind %q admitted: %v", kind, err)
+		if _, err := prepareLegacyImport(input, "importer"); !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), "dependency kind") {
+			t.Fatalf("wrong refusal for invalid native kind %q: %v", kind, err)
 		}
 	}
 }
@@ -534,6 +534,53 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 					}
 				}
 			})
+		})
+	}
+}
+
+// Parent-child admission reaches native hierarchy validation; its refusal
+// must remain a data error with no partial import, not an unavailable route.
+func TestLegacyImportNativeHierarchyAndKinds(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := store.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			conflict := parseLegacyFixture(t, `{"id":"old-a","title":"Ancestor"}
+{"id":"old-b","title":"Child","dependencies":[{"depends_on_id":"old-a","type":"parent-child"}]}
+{"id":"old-c","title":"Grandchild","dependencies":[{"depends_on_id":"old-b","type":"parent-child"},{"depends_on_id":"old-a","type":"blocks"}]}`)
+			before := legacyImportState(t, ctx, store)
+			for _, dryRun := range []bool{true, false} {
+				result, err := store.ImportLegacy(ctx, conflict, "importer", dryRun)
+				if !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), "ancestor") {
+					t.Fatalf("hierarchy conflict must be a validation refusal: result=%+v error=%v", result, err)
+				}
+				if !reflect.DeepEqual(result, LegacyImportResult{}) || !reflect.DeepEqual(before, legacyImportState(t, ctx, store)) {
+					t.Fatal("hierarchy refusal returned partial results or changed data")
+				}
+			}
+			valid := parseLegacyFixture(t, `{"id":"old-a","title":"Child","dependencies":[{"depends_on_id":"old-b","type":"parent-child"},{"depends_on_id":"old-c","type":"blocks"}]}
+{"id":"old-b","title":"Parent"}
+{"id":"old-c","title":"Other","dependencies":[{"depends_on_id":"old-b","type":"custom-kind"}]}`)
+			result, err := store.ImportLegacy(ctx, valid, "importer", false)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for pair, kind := range map[string]string{
+				"old-a -> old-b": "parent-child", "old-a -> old-c": "blocks", "old-c -> old-b": "custom-kind",
+			} {
+				link, err := store.ShowLink(ctx, strings.TrimPrefix(result.DependencyIDs[pair], store.ScopeURL()))
+				if err != nil || link.Type != DependencyTypeURL(store.ScopeURL()) || link.Properties["dep_type"] != kind {
+					t.Fatalf("native kind %s not preserved: %+v, %v", pair, link, err)
+				}
+			}
 		})
 	}
 }

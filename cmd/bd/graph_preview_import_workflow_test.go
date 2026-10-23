@@ -61,6 +61,9 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 				string(fixture) + `{"_type":"issue","id":"bad","title":"bad","history":[]}`,
 				`{"id":"old-a","title":"a","dependencies":[{"depends_on_id":"old-b","type":"blocks"}]}
 {"id":"old-b","title":"b","dependencies":[{"depends_on_id":"old-a","type":"blocks"}]}`,
+				`{"id":"old-a","title":"Ancestor"}
+{"id":"old-b","title":"Child","dependencies":[{"depends_on_id":"old-a","type":"parent-child"}]}
+{"id":"old-c","title":"Grandchild","dependencies":[{"depends_on_id":"old-b","type":"parent-child"},{"depends_on_id":"old-a","type":"blocks"}]}`,
 			} {
 				call(input, "invalid_properties", "import", "-")
 				if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
@@ -170,6 +173,7 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 			if result.DryRun || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || !reflect.DeepEqual(result.DependencyIDs, preview.DependencyIDs) {
 				t.Fatalf("apply identity maps differ from dry-run: %+v / %+v", result, preview)
 			}
+			memory := graphMixedResult[graphstore.Record](t, call("", "show", result.MemoryIDs["scratch-8b8"]))
 			for pair, kind := range map[string]string{
 				"scratch-35t -> scratch-8b8": "relates-to",
 				"scratch-35t -> scratch-9zj": "blocks",
@@ -183,6 +187,12 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 				if kind == "relates-to" && (link.Attribution.Actor != "source-actor" || link.Attribution.RecordedAt != "2026-10-23T13:07:20Z") {
 					t.Fatalf("source dependency attribution changed: %+v", link.Attribution)
 				}
+				if kind == "blocks" {
+					recordedAt, err := time.Parse(time.RFC3339Nano, link.Attribution.RecordedAt)
+					if err != nil || recordedAt.IsZero() || link.Attribution.Actor == "" || link.Attribution.Actor != memory.Attribution.Actor {
+						t.Fatalf("missing generated dependency attribution: %+v", link.Attribution)
+					}
+				}
 				retained := graphMixedResult[graphstore.LinkRecord](t, call("", "link", "show", link.ID, "--version", link.Revision))
 				if !reflect.DeepEqual(retained, link) {
 					t.Fatalf("initial retained dependency differs: %+v / %+v", retained, link)
@@ -193,7 +203,9 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 				t.Fatalf("collision identity mapping=%+v", result)
 			}
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("", "show", issueID, "--format", "graph-json"))
-			memory := graphMixedResult[graphstore.Record](t, call("", "show", memoryID))
+			if memory.ID != memoryID {
+				t.Fatalf("Memory read returned wrong identity: %+v", memory)
+			}
 			if issue.Properties.Title != "Target" || memory.Properties.Title != "scratch-8b8" || memory.Properties.Body != "Colliding key, distinct Memory" || memory.Type != graphstore.MemoryTypeURL(scope) {
 				t.Fatalf("colliding Issue/Memory data changed: %+v / %+v", issue, memory)
 			}
