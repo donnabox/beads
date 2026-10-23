@@ -20,11 +20,14 @@ import (
 // properties and metadata always come from dependencies, never snapshot JSON.
 // NULL is the initial creation projection; showLinkInTx separately requires the
 // exact retained envelope to agree, so dropping an update override is corruption.
-func nativeLinkAttributionInTx(ctx context.Context, tx *sql.Tx, path, revision string, creation Attribution) (Attribution, error) {
+func nativeLinkAttributionInTx(ctx context.Context, tx *sql.Tx, path, revision string, creation Attribution, creating bool) (Attribution, error) {
 	var size sql.NullInt64
 	err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(native_attribution) FROM graph_preview_versions WHERE path=? AND version=?`, path, revision).Scan(&size)
-	if errors.Is(err, sql.ErrNoRows) { // Initial insertion before retaining it.
-		return creation, nil
+	if errors.Is(err, sql.ErrNoRows) {
+		if creating {
+			return creation, nil
+		}
+		return Attribution{}, fmt.Errorf("%w: missing native Link current-head attribution mapping", ErrInvalidStore)
 	}
 	if err != nil {
 		return Attribution{}, err
@@ -156,7 +159,7 @@ func (s *Store) writeNativeLinkPropertiesInTx(ctx context.Context, tx *sql.Tx, r
 	}
 	var key string
 	if err := tx.QueryRowContext(ctx, `SELECT id FROM dependencies WHERE issue_id=? AND depends_on_issue_id=?`, source.Properties.ID, target.Properties.ID).Scan(&key); err != nil {
-		return LinkMutationResult{}, err
+		return LinkMutationResult{}, fmt.Errorf("%w: native Dependency readback: %v", ErrInvalidStore, err)
 	}
 	revision, err := freshToken()
 	if err != nil {

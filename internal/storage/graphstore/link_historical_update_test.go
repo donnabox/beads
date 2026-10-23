@@ -188,9 +188,6 @@ func TestHistoricalLinkPinsAndRecoveryRollback(t *testing.T) {
 	}
 }
 
-// Native revision context is a separately delivered authority seam. Until that
-// writer is present, historical requests must refuse rather than storing a
-// generic payload or fabricating a retained envelope for a native Dependency.
 func TestHistoricalLinkTerminalPrivacyBudgetAndMissingEndpoint(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {

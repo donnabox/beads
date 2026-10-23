@@ -3,6 +3,7 @@
 package graphstore
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"reflect"
@@ -10,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -21,7 +23,7 @@ func TestHistoricalNativeLinkCompositionRecovery(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			f := setupDependencyUnlink(t, engine, 1)
-			s, ctx := f.store, f.ctx
+			s, ctx := f.store, issueops.WithEventsJournal(f.ctx, true)
 			initial := f.links[0]
 			var creator, createdAt string
 			if err := s.db.QueryRowContext(ctx, `SELECT created_by,CAST(created_at AS CHAR) FROM dependencies WHERE issue_id=? AND depends_on_issue_id=?`, f.source.Properties.ID, f.targets[0].Properties.ID).Scan(&creator, &createdAt); err != nil {
@@ -50,6 +52,13 @@ func TestHistoricalNativeLinkCompositionRecovery(t *testing.T) {
 			if h := restored.Link.Attribution.HistoricalUpdate; h == nil || h.FromRevision != metadata.Link.Revision || h.PreviousRevision != current.Link.Revision || restored.Link.Attribution.Actor != "historical-author" {
 				t.Fatalf("wrong attribution: %+v", restored.Link)
 			}
+			var removedEvents, addedEvents int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM bd_events_journal WHERE issue_id=? AND actor='historical-author' AND op='dep_remove'`, f.source.Properties.ID).Scan(&removedEvents); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM bd_events_journal WHERE issue_id=? AND actor='historical-author' AND op='dep_add'`, f.source.Properties.ID).Scan(&addedEvents); err != nil || removedEvents != 0 || addedEvents != 1 {
+				t.Fatalf("kind replacement must journal one upsert: adds=%d removes=%d %v", addedEvents, removedEvents, err)
+			}
 			var nextOrdinal int
 			if err := s.db.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, f.source.Properties.ID).Scan(&nextOrdinal); err != nil || nextOrdinal != ordinal+1 {
 				t.Fatalf("source versions %d -> %d: %v", ordinal, nextOrdinal, err)
@@ -69,6 +78,10 @@ func TestHistoricalNativeLinkCompositionRecovery(t *testing.T) {
 			noop, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: restored.Link.Revision, ExpectedRevision: restored.Link.Revision, ExpectedSourceRevision: restored.Source.(IssueRecord).Revision, Actor: "noop"})
 			if err != nil || noop.Changed || !reflect.DeepEqual(noop.Link, restored.Link) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("native no-op wrote: %+v %v", noop, err)
+			}
+			emptyActor, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: restored.Link.Revision, ExpectedRevision: restored.Link.Revision, ExpectedSourceRevision: restored.Source.(IssueRecord).Revision})
+			if err != nil || emptyActor.Changed || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("non-authoring no-op requires actor: %+v %v", emptyActor, err)
 			}
 			deleted, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/first", ExpectedRevision: restored.Link.Revision, ExpectedSourceRevision: restored.Source.(IssueRecord).Revision, Actor: "delete"})
 			if err != nil {
@@ -183,6 +196,21 @@ func TestHistoricalNativeLinkRollbackAndCycle(t *testing.T) {
 		t.Run(engine, func(t *testing.T) {
 			f := setupDependencyUnlink(t, engine, 1)
 			s, ctx := f.store, f.ctx
+			liveBefore := workflowState(t, ctx, s)
+			liveFailure := errors.New("live native edit rollback")
+			for _, stage := range []string{"coordination", "dependency", "link-catalog", "link-retained", "source-catalog", "source-retained"} {
+				s.afterWrite = func(at string) error {
+					if at == stage {
+						return liveFailure
+					}
+					return nil
+				}
+				_, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, Properties: map[string]any{"dep_type": "relates-to"}, ExpectedRevision: f.links[0].Revision, ExpectedSourceRevision: f.source.Revision, Actor: "live-edit"})
+				s.afterWrite = nil
+				if !errors.Is(err, liveFailure) || !reflect.DeepEqual(liveBefore, workflowState(t, ctx, s)) {
+					t.Fatalf("%s partial live native update: %v", stage, err)
+				}
+			}
 			deleted, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/first", ExpectedRevision: f.links[0].Revision, ExpectedSourceRevision: f.source.Revision, Actor: "delete"})
 			if err != nil {
 				t.Fatal(err)
@@ -213,6 +241,30 @@ func TestHistoricalNativeLinkRollbackAndCycle(t *testing.T) {
 			_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, ExpectedRevision: recovered.Link.Revision, ExpectedSourceRevision: recovered.Source.(IssueRecord).Revision, Actor: "cannot-cycle"})
 			if err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("historical native cycle admitted or changed state: %v", err)
+			}
+		})
+	}
+}
+
+func TestNativeLinkInitialProjectionAuthority(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			f := setupDependencyUnlink(t, engine, 1)
+			s, ctx := f.store, f.ctx
+			if _, err := s.db.ExecContext(ctx, `UPDATE dependencies SET metadata=NULL WHERE issue_id=? AND depends_on_issue_id=?`, f.source.Properties.ID, f.targets[0].Properties.ID); err != nil {
+				t.Fatal(err)
+			}
+			link, err := s.ShowLink(ctx, "links/first")
+			if err != nil || !reflect.DeepEqual(link, f.links[0]) {
+				t.Fatalf("nullable native metadata projection: %+v %v", link, err)
+			}
+			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_versions WHERE path=? AND version=?`, "links/first", f.links[0].Revision); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			err = s.withTx(ctx, false, func(tx *sql.Tx) error { _, err := s.currentLinkInTx(ctx, tx, "links/first"); return err })
+			if !errors.Is(err, ErrInvalidStore) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("ordinary read used creation fallback: %v", err)
 			}
 		})
 	}
