@@ -64,8 +64,8 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			}
 			call(args...)
 			memory := call("remember", "Progress context", "--id", "beads/context", "--title", "Context")
-			call("create", "Record progress", "--id", "beads/work", "--labels", "demo,graph")
-			target := call("create", "Prerequisite", "--id", "beads/gate")
+			call("create", "Record progress", "--graph-path", "beads/work", "--labels", "demo,graph")
+			target := call("create", "Prerequisite", "--graph-path", "beads/gate")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))

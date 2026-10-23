@@ -50,9 +50,9 @@ func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector", "close", "--json")
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector",
 				"update", "--priority", "0", "--json")
-			call("create", "First", "--id", "beads/first", "--priority", "2")
+			call("create", "First", "--graph-path", "beads/first", "--priority", "2")
 			marker("beads/first")
-			call("create", "Second", "--id", "beads/second", "--priority", "1")
+			call("create", "Second", "--graph-path", "beads/second", "--priority", "1")
 			marker("beads/second")
 			call("remember", "A note", "--id", "memory")
 			call("show", "memory")

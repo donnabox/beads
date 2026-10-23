@@ -110,15 +110,15 @@ recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id ID.
 Without --id, the canonical beads/ path uses the Issue ID allocated by the
 ordinary writer, including this workspace's configured prefix and ID mode.
-An explicit bare --id ID keeps the shipping native Issue ID and maps it to
-beads/ID; it must match the workspace's configured Issue prefix. An explicit
-beads/PATH selects a graph path whose native backing ID may differ.
---force permits a bare Issue ID outside the configured prefix, as in ordinary
-Issue creation.
+An explicit --id ID keeps the entire spelling as the native Issue ID, even
+when it contains slashes, and maps it to beads/ID. It must match the
+workspace's configured Issue prefix unless --force overrides that shipping
+check. Use --graph-path beads/PATH to select only a graph path and generate
+the native Issue ID separately. --id and --graph-path cannot be combined.
 On a fresh graph workspace, --parent ID creates a dotted child ID
 and its parent-child Link in one transaction. The parent must be a local Issue;
 the child inherits its labels unless --no-inherit-labels is set. --parent and
---id cannot be combined.
+--id or --graph-path cannot be combined with --parent.
 --metadata accepts one JSON object on Issue or Memory creation; omitted
 metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as

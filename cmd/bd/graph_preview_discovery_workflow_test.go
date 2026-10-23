@@ -19,10 +19,10 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			call("create", "Authentication work", "--id", "beads/work", "--priority", "1", "--labels", "backend", "--metadata", `{"team":"backend"}`)
-			call("create", "Other work", "--id", "beads/other", "--priority", "2")
+			call("create", "Authentication work", "--graph-path", "beads/work", "--priority", "1", "--labels", "backend", "--metadata", `{"team":"backend"}`)
+			call("create", "Other work", "--graph-path", "beads/other", "--priority", "2")
 			call("close", "beads/other")
-			call("create", "Child work", "--id", "beads/work.child", "--priority", "3", "--type", "bug")
+			call("create", "Child work", "--graph-path", "beads/work.child", "--priority", "3", "--type", "bug")
 
 			var found []*types.IssueWithCounts
 			if out := call("search", "Authentication"); json.Unmarshal([]byte(out), &found) != nil || len(found) != 1 || found[0].ID != "beads/work" || found[0].Title != "Authentication work" {
@@ -100,13 +100,18 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "count", "--include-infra", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--parent", "work", "--no-parent", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--exclude-status", "bogus", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--id", "links/wrong-kind", "--json")
+			var opaqueMissing struct {
+				Count int `json:"count"`
+			}
+			if err := json.Unmarshal([]byte(graphPolicyCLI(t, bd, work, home, nil, "", "count", "--id", "links/wrong-kind", "--json")), &opaqueMissing); err != nil || opaqueMissing.Count != 0 {
+				t.Fatalf("opaque, missing Issue ID count = %+v, %v", opaqueMissing, err)
+			}
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--by-status", "--by-type", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "query", "parent!=beads/work", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "query", "type=task", "--offset", "1", "--sort", "priority", "--json")
 
-			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--id", "beads/custom-path"))
-			call("create", "Dotted child", "--id", "beads/custom-path.child")
+			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path"))
+			call("create", "Dotted child", "--graph-path", "beads/custom-path.child")
 			if custom.Properties.ID == "custom-path" {
 				t.Fatal("fixture needs a native ID distinct from its graph path")
 			}

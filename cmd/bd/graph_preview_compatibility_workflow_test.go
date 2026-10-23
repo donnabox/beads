@@ -72,16 +72,40 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if fixed.ID != scope+"beads/fixed" || fixed.Properties.Title != "  Explicit title  " {
 				t.Fatal("explicit identity/title not preserved")
 			}
-			explicitIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Explicit Issue", "--id", "beads/fixed-issue"))
+			explicitIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Explicit Issue", "--graph-path", "beads/fixed-issue"))
 			if explicitIssue.ID != scope+"beads/fixed-issue" {
 				t.Fatalf("explicit Issue path changed: %+v", explicitIssue)
 			}
+			literalIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal Issue ID", "--id", "beads/literal-issue", "--type", "epic", "--force"))
+			if literalIssue.Properties.ID != "beads/literal-issue" || literalIssue.ID != scope+"beads/beads/literal-issue" {
+				t.Fatalf("slash-bearing --id was not kept literal: %+v", literalIssue)
+			}
+			literalChild := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal child", "--parent", "beads/literal-issue", "--force"))
+			if literalChild.Properties.ID != "beads/literal-issue.1" || literalChild.ID != scope+"beads/beads/literal-issue.1" {
+				t.Fatalf("slash-bearing parent ID did not retain dotted child identity: %+v", literalChild)
+			}
+			refuse("identity_reserved", "create", "Native ID collides with path", "--id", "beads/fixed-issue", "--force")
+			refuse("identity_reserved", "create", "Path collides with native ID", "--graph-path", "beads/literal-issue")
+			collision := graphMixedResult[graphstore.Record](t, call("remember", "Existing Memory", "--id", "beads/compat-collision"))
+			coexistingIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Distinct opaque ID", "--id", "compat-collision"))
+			if coexistingIssue.Properties.ID != "compat-collision" || !strings.HasPrefix(coexistingIssue.ID, scope+"beads/compat-collision-") {
+				t.Fatalf("different opaque IDs did not retain their own identity: %+v", coexistingIssue)
+			}
+			if got := graphMixedResult[graphstore.Record](t, call("show", collision.ID)); !reflect.DeepEqual(got, collision) {
+				t.Fatal("coexisting Issue changed the existing Memory")
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", coexistingIssue.ID, "--format", "graph-json")); got.Properties.ID != coexistingIssue.Properties.ID {
+				t.Fatal("coexisting Issue cannot be selected by its canonical URL")
+			}
 			refuse("identity_reserved", "remember", "Overwrite", "--id", "beads/fixed", "--create-only")
-			refuse("identity_reserved", "create", "Overwrite", "--id", "beads/fixed-issue")
-			refuse("identity_reserved", "create", "Wrong kind", "--id", "beads/fixed")
+			refuse("identity_reserved", "create", "Overwrite", "--graph-path", "beads/fixed-issue")
+			refuse("identity_reserved", "create", "Duplicate literal", "--id", "beads/literal-issue", "--force")
+			refuse("identity_reserved", "create", "Wrong kind", "--graph-path", "beads/fixed")
 			refuse("identity_reserved", "remember", "Wrong kind", "--id", "beads/fixed-issue")
 			refuse("invalid_selector", "remember", "Body", "--id=")
 			refuse("invalid_selector", "create", "Title", "--id=")
+			refuse("invalid_selector", "create", "Both", "--id", "compat-both", "--graph-path", "beads/both")
+			refuse("invalid_selector", "create", "Bad path", "--graph-path", "links/not-a-bead")
 			refuse("invalid_properties", "remember", "Body", "--title=")
 			if got := graphMixedResult[graphstore.Record](t, call("show", fixed.ID)); !reflect.DeepEqual(got, fixed) {
 				t.Fatal("refused creation changed existing Memory")
@@ -249,7 +273,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if !linkCleared.Changed || len(linkCleared.Link.Properties) != 0 {
 				t.Fatal("explicit Link root patch did not clear properties")
 			}
-			propertyIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "--id", "beads/property-issue", "--properties", `{"title":"Property Issue","priority":1,"description":"Initial","estimated_minutes":7}`))
+			propertyIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "--graph-path", "beads/property-issue", "--properties", `{"title":"Property Issue","priority":1,"description":"Initial","estimated_minutes":7}`))
 			if propertyIssue.Properties.Title != "Property Issue" || propertyIssue.Properties.Priority != 1 || propertyIssue.Properties.Description != "Initial" || propertyIssue.Properties.EstimatedMinutes == nil || *propertyIssue.Properties.EstimatedMinutes != 7 {
 				t.Fatal("Issue property initialization lost typed values")
 			}

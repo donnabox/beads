@@ -36,8 +36,8 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			call(args...)
-			call("create", "First", "--id", "beads/first")
-			call("create", "Second", "--id", "beads/second")
+			call("create", "First", "--graph-path", "beads/first")
+			call("create", "Second", "--graph-path", "beads/second")
 			closed := graphMixedResult[[]graphstore.IssueMutationResult](t, call("close", "first", "second", "--reason", "First done", "--reason", "Second done"))
 			if len(closed) != 2 || !closed[0].Changed || !closed[1].Changed ||
 				closed[0].Issue.Properties.Status != types.StatusClosed || closed[1].Issue.Properties.Status != types.StatusClosed {
@@ -95,7 +95,7 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 			if len(changed) != 1 || !changed[0].Changed || changed[0].Issue.Properties.Status != types.StatusOpen {
 				t.Fatalf("partial batch hid the successful reopen: %+v", changed)
 			}
-			call("create", "Third", "--id", "beads/third")
+			call("create", "Third", "--graph-path", "beads/third")
 			closedPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(1, `"code":"not_found"`, "close", "third", "missing"))
 			if len(closedPartial) != 1 || !closedPartial[0].Changed || closedPartial[0].Issue.Properties.Status != types.StatusClosed {
 				t.Fatalf("partial batch hid the successful close: %+v", closedPartial)
@@ -118,7 +118,7 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 			if !positional.Changed || positional.Issue.Properties.CloseReason != "Positional reason" {
 				t.Fatalf("done alias lost its positional reason: %+v", positional)
 			}
-			call("create", "Fourth", "--id", "beads/fourth")
+			call("create", "Fourth", "--graph-path", "beads/fourth")
 			reasonFile := filepath.Join(work, "close-reason.txt")
 			if err := os.WriteFile(reasonFile, []byte("Reason from file\n"), 0o600); err != nil {
 				t.Fatal(err)
@@ -152,8 +152,8 @@ func TestGraphPreviewCloseForceAndSessionWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, extraEnv, code, append(args, "--json")...)
 			}
 			call(nil, "", initArgs...)
-			call(nil, "", "create", "Prerequisite", "--id", "beads/prerequisite")
-			call(nil, "", "create", "Blocked work", "--id", "beads/work")
+			call(nil, "", "create", "Prerequisite", "--graph-path", "beads/prerequisite")
+			call(nil, "", "create", "Blocked work", "--graph-path", "beads/work")
 			call(nil, "", "dep", "add", "work", "prerequisite")
 			before := call(nil, "", "versions", "work")
 			call(nil, "constraint_violation", "close", "work", "--reason", "Not yet")
@@ -173,7 +173,7 @@ func TestGraphPreviewCloseForceAndSessionWorkflow(t *testing.T) {
 				t.Fatalf("re-close changed the first close or retained a successor: %+v", repeated)
 			}
 
-			call(nil, "", "create", "Assigned work", "--id", "beads/assigned", "--assignee", "foreign-holder")
+			call(nil, "", "create", "Assigned work", "--graph-path", "beads/assigned", "--assignee", "foreign-holder")
 			assignedBefore := call(nil, "", "versions", "assigned")
 			call(nil, "invalid_properties", "close", "assigned")
 			if call(nil, "", "versions", "assigned") != assignedBefore {
@@ -208,12 +208,12 @@ func TestGraphPreviewCloseSuggestNextWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call("", initArgs...)
-			call("", "create", "Prerequisite", "--id", "beads/prerequisite")
-			call("", "create", "Dependent", "--id", "beads/dependent")
+			call("", "create", "Prerequisite", "--graph-path", "beads/prerequisite")
+			call("", "create", "Dependent", "--graph-path", "beads/dependent")
 			call("", "dep", "add", "dependent", "prerequisite")
 			dependentBefore := call("", "versions", "dependent")
 			prerequisiteBefore := call("", "versions", "prerequisite")
-			call("", "create", "Unrelated", "--id", "beads/unrelated")
+			call("", "create", "Unrelated", "--graph-path", "beads/unrelated")
 			unrelatedBefore := call("", "versions", "unrelated")
 			call("invalid_selector", "close", "prerequisite", "unrelated", "--suggest-next")
 			if call("", "versions", "prerequisite") != prerequisiteBefore || call("", "versions", "unrelated") != unrelatedBefore {

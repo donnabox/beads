@@ -113,9 +113,9 @@ func TestGraphPreviewCheckCycleJSONUsesNativeIssueIDs(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/check-cycles/"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	a := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "A", "--id", "beads/a", "--json"))
-	b := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "B", "--id", "beads/b", "--json"))
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "C", "--id", "beads/c", "--json")
+	a := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "A", "--graph-path", "beads/a", "--json"))
+	b := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "B", "--graph-path", "beads/b", "--json"))
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "C", "--graph-path", "beads/c", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/a", "beads/b", "--json")
 	bc := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/b", "beads/c", "--json"))
 	graphPreviewRetargetDependencyForCycle(t, work, scope, bc.Link, b.Properties.ID, a.Properties.ID, a.ID)
@@ -162,7 +162,7 @@ func TestGraphPreviewDepTreeBothDistinguishesDirections(t *testing.T) {
 		{"beads/blocker", "Blocker"},
 		{"beads/dependent", "Dependent"},
 	} {
-		graphPolicyCLI(t, bd, work, home, nil, "", "create", issue.title, "--id", issue.id, "--json")
+		graphPolicyCLI(t, bd, work, home, nil, "", "create", issue.title, "--graph-path", issue.id, "--json")
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/root", "beads/blocker", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/dependent", "beads/root", "--json")
@@ -186,9 +186,9 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/structure/"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--id", "beads/parent", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Work", "--id", "beads/work", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--id", "beads/isolated", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--graph-path", "beads/parent", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Work", "--graph-path", "beads/work", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--graph-path", "beads/isolated", "--json")
 
 	// Only native parent-child edges count. A blocking dependency does not
 	// make an Issue a child.
@@ -327,7 +327,7 @@ func TestGraphPreviewChildrenNative(t *testing.T) {
 	const scope = "https://example.invalid/native-children/"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 	for _, id := range []string{"beads/parent", "beads/child", "beads/parent.lookalike"} {
-		graphPolicyCLI(t, bd, work, home, nil, "", "create", id, "--id", id, "--json")
+		graphPolicyCLI(t, bd, work, home, nil, "", "create", id, "--graph-path", id, "--json")
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "child", "parent", "--type", "parent-child", "--json")
 	var children []struct {
@@ -355,9 +355,9 @@ func TestGraphPreviewEpicNativeProgressAndClose(t *testing.T) {
 		return graphPolicyCLI(t, bd, work, home, nil, code, args...)
 	}
 	call("", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	call("", "create", "Release epic", "--id", "beads/epic", "--type", "epic", "--json")
-	call("", "create", "Child work", "--id", "beads/child", "--json")
-	call("", "create", "Dotted lookalike", "--id", "beads/epic.lookalike", "--json")
+	call("", "create", "Release epic", "--graph-path", "beads/epic", "--type", "epic", "--json")
+	call("", "create", "Child work", "--graph-path", "beads/child", "--json")
+	call("", "create", "Dotted lookalike", "--graph-path", "beads/epic.lookalike", "--json")
 	call("", "dep", "add", "child", "epic", "--type", "parent-child", "--json")
 	decode := func(raw string) []struct {
 		Epic struct {
@@ -420,8 +420,8 @@ func TestGraphPreviewEpicCloseEligibleActorAndPartialFailure(t *testing.T) {
 	for _, owner := range []string{"alice", "bob"} {
 		epic := "beads/" + owner + "-epic"
 		child := "beads/" + owner + "-child"
-		call("create", owner+" epic", "--id", epic, "--type", "epic", "--assignee", owner, "--actor", owner)
-		call("create", owner+" child", "--id", child)
+		call("create", owner+" epic", "--graph-path", epic, "--type", "epic", "--assignee", owner, "--actor", owner)
+		call("create", owner+" child", "--graph-path", child)
 		call("dep", "add", child, epic, "--type", "parent-child")
 		call("close", child, "--reason", "Done")
 	}
@@ -481,7 +481,7 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	call("", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 	created := map[string]graphstore.IssueRecord{}
 	for _, id := range []string{"work", "first", "second"} {
-		created[id] = graphMixedResult[graphstore.IssueRecord](t, call("", "create", id, "--id", "beads/"+id, "--json"))
+		created[id] = graphMixedResult[graphstore.IssueRecord](t, call("", "create", id, "--graph-path", "beads/"+id, "--json"))
 	}
 	added := graphMixedResult[graphstore.DependencyResult](t, call("", "dep", "add", "work", "first", "--id", "links/first", "--json"))
 	firstHistory := call("", "versions", "first", "--json")
@@ -525,8 +525,8 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	// Explicit canonical paths can differ from native backing IDs. The native
 	// IDs printed by familiar dep output must resolve to these mapped Issues,
 	// while a colliding graph Bead must make the bare spelling ambiguous.
-	source := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Custom source", "--id", "beads/custom-source-path", "--json"))
-	target := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Custom target", "--id", "beads/custom-target-path", "--json"))
+	source := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Custom source", "--graph-path", "beads/custom-source-path", "--json"))
+	target := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Custom target", "--graph-path", "beads/custom-target-path", "--json"))
 	if source.Properties.ID == "custom-source-path" || target.Properties.ID == "custom-target-path" {
 		t.Fatalf("fixture must distinguish canonical path from native backing ID: %s %s", source.Properties.ID, target.Properties.ID)
 	}
@@ -553,8 +553,8 @@ func TestGraphPreviewIncompleteIssueStructureRefusesWithoutMutation(t *testing.T
 	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/unmapped-structure/"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Original", "--id", "beads/original", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Replacement", "--id", "beads/replacement", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Original", "--graph-path", "beads/original", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Replacement", "--graph-path", "beads/replacement", "--json")
 	originalHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "original", "--json")
 	replacementHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "replacement", "--json")
 	before := legacyUpgradeTreeDigest(t, work)

@@ -17,7 +17,7 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", "https://example.invalid/issues/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "A real Issue", "--id", "beads/work", "--description", "Preserve this body — 雪", "--type", "enhancement", "--priority", "1", "--labels", " demo , ,demo", "--label", "demo, other ", "--json")
+	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "A real Issue", "--graph-path", "beads/work", "--description", "Preserve this body — 雪", "--type", "enhancement", "--priority", "1", "--labels", " demo , ,demo", "--label", "demo, other ", "--json")
 	var envelope struct {
 		Result struct {
 			ID, Type, Revision, Version string
@@ -43,12 +43,12 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "collision", "--id", "beads/work", "--title", "Memory", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Coexisting Memory", "--id", "beads/plan", "--title", "Plan", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "create", "collision", "--id", "beads/plan", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "create", "collision", "--graph-path", "beads/plan", "--json")
 	for _, flag := range []string{"--ephemeral", "--no-history", "--deps=blocks:beads/plan", "--defer=tomorrow", "--status=closed"} {
-		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "create", "Unsupported", "--id", "beads/refused", flag, "--json")
+		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "create", "Unsupported", "--graph-path", "beads/refused", flag, "--json")
 		graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 	}
-	graphPolicyCLI(t, bd, work, home, []string{"BD_READONLY=true"}, "permission_denied", "create", "Read-only", "--id", "beads/refused", "--json")
+	graphPolicyCLI(t, bd, work, home, []string{"BD_READONLY=true"}, "permission_denied", "create", "Read-only", "--graph-path", "beads/refused", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 	for _, class := range []string{"ephemeral", "unversioned", "invalid"} {
 		code := "capability_unavailable"
@@ -58,7 +58,7 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 		configPath := filepath.Join(work, ".beads", "config.yaml")
 		writeFile(t, configPath, []byte("storage-class.task: "+class+"\n"))
 		before := legacyUpgradeTreeDigest(t, work)
-		graphPolicyCLI(t, bd, work, home, nil, code, "create", "Configured class", "--id", "beads/refused", "--json")
+		graphPolicyCLI(t, bd, work, home, nil, code, "create", "Configured class", "--graph-path", "beads/refused", "--json")
 		if after := legacyUpgradeTreeDigest(t, work); after != before {
 			t.Fatal("unsupported storage class refusal changed workspace")
 		}

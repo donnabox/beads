@@ -418,7 +418,10 @@ build still accepts a bare Bead ID in some mixed-resource commands, so the
 stricter target syntax needs parser, help and example updates before admission.
 Exact local Scope URLs remain accepted; aliases and foreign Scope URLs are
 unavailable. Shorthand only changes CLI input, never stored identity or output.
-Creation accepts an optional bare `--id ID` or canonical `--id beads/PATH`.
+Issue creation accepts an optional literal `--id ID`, including a slash-bearing
+ID such as `beads/PATH`. The separate Preview 3 `--graph-path beads/PATH`
+option selects only the graph path and leaves native Issue ID allocation to
+the ordinary writer. Those two options cannot be combined.
 When an Issue ID is omitted, `create` uses the native configured-prefix Issue
 ID at its canonical Bead path, adding a suffix only if that path is reserved.
 Other Bead types use their own ID generators. An explicit ID is used at its

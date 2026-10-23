@@ -29,7 +29,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		want []string
 	}{
 		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
-		{"create", createCmd, []string{"Graph preview workspaces:", "--type types/memory", "--id policy", "bare --id ID keeps the shipping native Issue ID", "beads/PATH selects a graph path", "--force permits a bare Issue ID", "--properties JSON", "types/NAME", "--parent ID creates a dotted child ID"}},
+		{"create", createCmd, []string{"Graph preview workspaces:", "--type types/memory", "--id policy", "--id ID keeps the entire spelling", "--graph-path beads/PATH", "--force overrides that shipping", "--properties JSON", "types/NAME", "--parent ID creates a dotted child ID"}},
 		{"q", quickCmd, []string{"Graph preview workspaces:", "bd q -- -follow-up", "--parent is unavailable here", "Ordinary Issue workspaces:", "bd q \"Subtask\" --parent"}},
 		{"dep", depCmd, []string{"Graph preview workspaces:", "bd dep BLOCKER --blocks BLOCKED", "--no-cycle-check"}},
 		{"dep-remove", depRemoveCmd, []string{"Graph preview workspaces:", "bd dep remove issue blocker", "status not_found", "dependency_removed", "bd link delete ID --force"}},

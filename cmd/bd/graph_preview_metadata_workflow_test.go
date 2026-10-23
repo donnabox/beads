@@ -54,7 +54,7 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 			if !unsetByRemember.Changed || !bytes.Equal(unsetByRemember.Memory.Metadata, []byte(`{}`)) {
 				t.Fatalf("remember unset-only metadata = %+v", unsetByRemember)
 			}
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work", "--metadata", `{"team":"issues"}`))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work", "--metadata", `{"team":"issues"}`))
 			refuse("invalid_properties", "update", issue.ID, "--metadata", `{"x":1,"x":2}`, "--if-revision", issue.Revision)
 			if !bytes.Equal(issue.Metadata, []byte(`{"team":"issues"}`)) || len(issue.Properties.Metadata) != 0 {
 				t.Fatalf("Issue metadata = %s, properties=%+v", issue.Metadata, issue.Properties)

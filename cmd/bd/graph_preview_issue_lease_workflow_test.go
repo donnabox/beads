@@ -42,12 +42,12 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
-			call("create", "Leased work", "--id", "beads/work")
+			call("create", "Leased work", "--graph-path", "beads/work")
 			claim := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--claim", "--actor", "holder"))
 			before := graphMemoryReadSnapshot(t, work)
 			refuse("constraint_violation", "heartbeat", "work", "--actor", "stranger")
 			refuse("permission_denied", "heartbeat", "work", "--actor", "holder", "--readonly")
-			refuse("invalid_selector", "heartbeat", "links/work", "--actor", "holder")
+			refuse("not_found", "heartbeat", "links/work", "--actor", "holder")
 			if !reflect.DeepEqual(before, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("heartbeat refusal changed graph state")
 			}
@@ -65,7 +65,7 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 			if !reflect.DeepEqual(live, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("live-lease reclaim changed graph state")
 			}
-			call("create", "Stateful work", "--id", "beads/stateful", "--labels", "mode:degraded")
+			call("create", "Stateful work", "--graph-path", "beads/stateful", "--labels", "mode:degraded")
 			// Bare status and state retain their native JSON shapes.
 			initialStatus := nativeJSON("status")
 			if summary, ok := initialStatus["summary"].(map[string]any); !ok || summary["total_issues"] != float64(2) {
@@ -97,7 +97,7 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 
 			// A familiar native ID may differ from its explicit canonical path.
 			// Every Issue-only command must resolve it through the checked catalog.
-			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--id", "beads/custom-path", "--labels", "mode:ready"))
+			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path", "--labels", "mode:ready"))
 			if custom.Properties.ID == "custom-path" {
 				t.Fatalf("fixture did not separate canonical path and native ID: %+v", custom)
 			}

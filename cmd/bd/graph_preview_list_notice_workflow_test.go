@@ -43,8 +43,8 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 			otherRow := `"` + scope + `beads/other" "open" P2 "Other work"`
 
 			call("remember", "plan body", "--id", "beads/plan", "--title", "Plan")
-			call("create", "Frontend work", "--id", "beads/work", "--priority", "1", "--labels", "frontend")
-			call("create", "Other work", "--id", "beads/other", "--priority", "2")
+			call("create", "Frontend work", "--graph-path", "beads/work", "--priority", "1", "--labels", "frontend")
+			call("create", "Other work", "--graph-path", "beads/other", "--priority", "2")
 
 			// A typed Issue option selects the Issue query and says so on the line
 			// under the header, naming the options in canonical order.
@@ -99,7 +99,7 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 func TestGraphPreviewListTypedOptionsSelectIssueQuery(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := graphListWorkspace(t, bd, "embedded", "https://example.invalid/typed/")
-	for _, args := range [][]string{{"remember", "plan body", "--id", "beads/plan", "--title", "Plan"}, {"create", "Frontend work", "--id", "beads/work"}} {
+	for _, args := range [][]string{{"remember", "plan body", "--id", "beads/plan", "--title", "Plan"}, {"create", "Frontend work", "--graph-path", "beads/work"}} {
 		graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 	}
 	for _, tc := range []struct{ option, value string }{
@@ -139,7 +139,7 @@ func TestGraphPreviewCustomIssueTypePrefixWorkflow(t *testing.T) {
 				{"preview-task", "beads/preview"},
 				{"example-task", "beads/example"},
 			} {
-				graphPolicyCLI(t, bd, work, home, nil, "", "create", tc.kind, "--id", tc.id, "--type", tc.kind, "--json")
+				graphPolicyCLI(t, bd, work, home, nil, "", "create", tc.kind, "--graph-path", tc.id, "--type", tc.kind, "--json")
 			}
 			for _, tc := range []struct{ kind, id, other string }{
 				{"preview-task", "beads/preview", "beads/example"},

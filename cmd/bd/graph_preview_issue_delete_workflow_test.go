@@ -33,12 +33,12 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(initArgs...)
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work"))
 			preview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "work"))
 			if !preview.Preview || preview.Deleted || !reflect.DeepEqual(preview.Issue, issue) {
 				t.Fatal("default preview did not disclose unchanged Issue")
 			}
-			unguarded := graphMixedResult[graphstore.IssueRecord](t, call("create", "Unguarded deletion", "--id", "beads/unguarded"))
+			unguarded := graphMixedResult[graphstore.IssueRecord](t, call("create", "Unguarded deletion", "--graph-path", "beads/unguarded"))
 			applied := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "unguarded", "--force"))
 			if !applied.Deleted || applied.Preview || !reflect.DeepEqual(applied.Issue, unguarded) {
 				t.Fatal("unguarded --force did not delete the current Issue")
@@ -63,7 +63,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			}
 			refuse("gone", "show", "work")
 			refuse("gone", "delete", "work", "--force")
-			refuse("identity_reserved", "create", "Replacement", "--id", "beads/work")
+			refuse("identity_reserved", "create", "Replacement", "--graph-path", "beads/work")
 			type terminalHistory struct {
 				CurrentState *graphstore.BeadTerminalState `json:"currentState"`
 				Versions     []map[string]any              `json:"versions"`

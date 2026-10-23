@@ -39,9 +39,9 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			call(initArgs...)
-			call("create", "Blocking prerequisite", "--id", "beads/blocker", "--priority", "3")
-			call("create", "Next work", "--id", "beads/dependent", "--priority", "0")
-			call("create", "Spare work", "--id", "beads/spare", "--priority", "1")
+			call("create", "Blocking prerequisite", "--graph-path", "beads/blocker", "--priority", "3")
+			call("create", "Next work", "--graph-path", "beads/dependent", "--priority", "0")
+			call("create", "Spare work", "--graph-path", "beads/spare", "--priority", "1")
 			call("dep", "add", "dependent", "blocker")
 			dependentBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "dependent"))
 			spareBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "spare"))
@@ -70,7 +70,7 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "spare")), spareBefore) {
 				t.Fatal("no-op retry minted a version or claimed spare work")
 			}
-			call("create", "Higher priority spare", "--id", "beads/next", "--priority", "0")
+			call("create", "Higher priority spare", "--graph-path", "beads/next", "--priority", "0")
 			nextBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "next"))
 			partial := func(wantClaim string, args ...string) string {
 				t.Helper()
@@ -113,7 +113,7 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 			if len(repeated) != 1 || call("versions", "spare") != spareVersions || call("versions", "next") != nextVersions {
 				t.Fatalf("partial retry claimed again or wrote a version: %+v", repeated)
 			}
-			call("create", "Last unassigned work", "--id", "beads/terminal")
+			call("create", "Last unassigned work", "--graph-path", "beads/terminal")
 			nothingReady := graphMixedResult[[]graphstore.IssueRecord](t, call("close", "terminal", "--claim-next"))
 			if len(nothingReady) != 1 || nothingReady[0].Properties.Status != types.StatusClosed {
 				t.Fatalf("no-ready close did not commit without a claim: %+v", nothingReady)

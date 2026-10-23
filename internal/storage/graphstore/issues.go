@@ -69,6 +69,29 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
+		// A public ID that happens to spell an existing graph path still names
+		// that ID literally. Refuse the collision before either identity is
+		// published, regardless of which representation was created first.
+		if request.Issue.ID != "" && validateResourcePath(request.Issue.ID) == nil {
+			var exists int
+			err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, request.Issue.ID).Scan(&exists)
+			if err == nil {
+				return ErrAlreadyExists
+			}
+			if !errors.Is(err, sql.ErrNoRows) {
+				return err
+			}
+		}
+		if path != "" {
+			var exists int
+			err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live'`, path).Scan(&exists)
+			if err == nil {
+				return ErrAlreadyExists
+			}
+			if !errors.Is(err, sql.ErrNoRows) {
+				return err
+			}
+		}
 		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
 		if err != nil {
 			return err
@@ -96,11 +119,9 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 			return err
 		}
 		if path == "" {
-			// An omitted graph --id follows the ordinary Issue writer, including
-			// its configured prefix, hash/counter mode and collision handling.
-			// The catalog may independently reserve an ID for a Memory or a
-			// deleted Bead. Keep the native Issue ID while choosing an unused
-			// canonical path in this same transaction.
+			// The graph path is a separate address from the opaque native ID.
+			// A Memory or deleted Bead may reserve the preferred path while
+			// the native Issue keeps its own public ID.
 			path, err = generatedIssuePath(ctx, tx, created.Issue.ID)
 			if err != nil {
 				return err

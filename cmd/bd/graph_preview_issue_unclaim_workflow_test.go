@@ -36,8 +36,8 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
-			call("create", "Claim work", "--id", "beads/work", "--labels", "demo,graph")
-			assigned := graphMixedResult[graphstore.IssueRecord](t, call("create", "Assigned work", "--id", "beads/assigned", "--assignee", "rig.agent"))
+			call("create", "Claim work", "--graph-path", "beads/work", "--labels", "demo,graph")
+			assigned := graphMixedResult[graphstore.IssueRecord](t, call("create", "Assigned work", "--graph-path", "beads/assigned", "--assignee", "rig.agent"))
 			openRelease := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "assigned", "--actor", "rig.agent"))
 			if !openRelease.Changed || openRelease.Issue.Properties.Status != types.StatusOpen || openRelease.Issue.Properties.Assignee != "" || openRelease.Issue.Revision == assigned.Revision {
 				t.Fatalf("open assigned Issue did not follow native release: %+v", openRelease)
@@ -94,8 +94,8 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			if !conditional.Changed || conditional.Issue.Properties.Assignee != "" {
 				t.Fatalf("conditional release failed: %+v", conditional)
 			}
-			call("create", "Batch one", "--id", "beads/batch-one", "--assignee", "next.agent")
-			call("create", "Batch two", "--id", "beads/batch-two", "--assignee", "next.agent")
+			call("create", "Batch one", "--graph-path", "beads/batch-one", "--assignee", "next.agent")
+			call("create", "Batch two", "--graph-path", "beads/batch-two", "--assignee", "next.agent")
 			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("unclaim", "batch-one", "batch-two", "--actor", "next.agent"))
 			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
 				t.Fatalf("batch release failed: %+v", batch)

@@ -121,7 +121,7 @@ func TestGraphPreviewListOrderAndCapWorkflow(t *testing.T) {
 
 			// A Memory, an Issue and a Memory, each recorded by its own process.
 			call("remember", "first body", "--id", "beads/first", "--title", "First")
-			call("create", "Second", "--id", "beads/second")
+			call("create", "Second", "--graph-path", "beads/second")
 			call("remember", "third body", "--id", "beads/third", "--title", "Third")
 			beads, more := structured(nil)
 			expect("creation order", beads, more, []string{"beads/third", "beads/second", "beads/first"}, false)

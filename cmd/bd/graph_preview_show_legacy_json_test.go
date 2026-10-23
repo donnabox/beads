@@ -27,8 +27,8 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", initArgs...)
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "--current", "--actor", "nobody", "--json")
-			created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Visible issue", "--id", "beads/work", "--description", "Body", "--labels", "one,two", "--estimate", "17", "--metadata", `{"review":true}`, "--json"))
-			prerequisite := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Prerequisite", "--id", "beads/needs", "--json"))
+			created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Visible issue", "--graph-path", "beads/work", "--description", "Body", "--labels", "one,two", "--estimate", "17", "--metadata", `{"review":true}`, "--json"))
+			prerequisite := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Prerequisite", "--graph-path", "beads/needs", "--json"))
 			// A native backing ID can also name a different canonical Bead. No ID in
 			// the Issue detail response may accidentally route to that Memory.
 			for _, nativeID := range []string{created.Properties.ID, prerequisite.Properties.ID} {
@@ -56,7 +56,7 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			if !strings.Contains(noRefs, `"beads/work": []`) {
 				t.Fatalf("--refs omitted an Issue with no incoming references: %s", noRefs)
 			}
-			parent := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--id", "beads/parent", "--type", "epic", "--json"))
+			parent := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--graph-path", "beads/parent", "--type", "epic", "--json"))
 			child := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Child", "--parent", "beads/parent", "--json"))
 			childrenJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/parent", "--children", "--json")
 			var children map[string]json.RawMessage
@@ -100,7 +100,7 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "show", "beads/work", "--current", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "show", "--id=beads/work", "--current", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "", "create", "Active work", "--id", "beads/active", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "create", "Active work", "--graph-path", "beads/active", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "", "update", "beads/active", "--claim", "--actor", "holder", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/needs", "--json")
 			var active []types.IssueDetails

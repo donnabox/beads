@@ -69,8 +69,8 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			}
 			call(args...)
 			memory := call("remember", "Claim context", "--id", "beads/context", "--title", "Context")
-			call("create", "Claim work", "--id", "beads/work", "--labels", "demo,graph", "--actor", "creator")
-			target := call("create", "Prerequisite", "--id", "beads/gate")
+			call("create", "Claim work", "--graph-path", "beads/work", "--labels", "demo,graph", "--actor", "creator")
+			target := call("create", "Prerequisite", "--graph-path", "beads/gate")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
@@ -121,7 +121,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			// The existing storage test forces overlap. Independent installed server
 			// processes also prove one complete winner and only typed domain refusals.
 			if engine == "server" {
-				raceBefore := graphMixedResult[graphstore.IssueRecord](t, call("create", "Race for claim", "--id", "beads/race"))
+				raceBefore := graphMixedResult[graphstore.IssueRecord](t, call("create", "Race for claim", "--graph-path", "beads/race"))
 				outcomes := graphMutationRacePair(t, bd, work, home, [2][]string{
 					{"update", "beads/race", "--claim", "--actor=first", "--json"},
 					{"update", "beads/race", "--claim", "--actor=second", "--json"},

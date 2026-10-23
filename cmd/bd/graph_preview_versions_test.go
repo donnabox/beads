@@ -67,7 +67,7 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 					"--server-port", port, "--server-user", "root")
 			}
 			call(initArgs...)
-			call("create", "Source", "--id", "beads/source")
+			call("create", "Source", "--graph-path", "beads/source")
 			call("remember", "Target", "--id", "target")
 			call("link", "source", "target", "--id", "links/edge", "--type", scope+"types/references")
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
@@ -286,7 +286,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 
 	// Issue plane: created, then renamed, so there are two versions to order
 	// and a second row to carry native attribution.
-	run(t, "create", "Issue subject", "--id", "beads/issue", "--actor", author, "--json")
+	run(t, "create", "Issue subject", "--graph-path", "beads/issue", "--actor", author, "--json")
 	run(t, "remember", "Link target", "--id", "beads/target", "--actor", author, "--json")
 	run(t, "update", "beads/issue", "--title", "Issue subject renamed", "--actor", author, "--json")
 	// Memory plane: created, then replaced. Memory records no attribution

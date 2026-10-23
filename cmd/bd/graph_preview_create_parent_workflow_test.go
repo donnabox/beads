@@ -20,7 +20,7 @@ func TestGraphPreviewCreateParentNativeChildAndCanonicalLink(t *testing.T) {
 	}
 	call("", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope,
 		"--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	parent := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Parent", "--id", "beads/selected-parent",
+	parent := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Parent", "--graph-path", "beads/selected-parent",
 		"--type", "epic", "--labels", "inherited", "--json"))
 	child := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Child", "--parent", "selected-parent",
 		"--labels", "own", "--json"))

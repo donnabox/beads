@@ -56,8 +56,8 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			call(args...)
 			call("remember", "private-memory-body", "--id", "beads/plan", "--title", "Plan")
 			call("remember", "private-memory-body", "--id", "beads/context", "--title", "Context")
-			call("create", "Work", "--id", "beads/work", "--priority", "1", "--labels", "release")
-			call("create", "Gate", "--id", "beads/gate", "--priority", "2")
+			call("create", "Work", "--graph-path", "beads/work", "--priority", "1", "--labels", "release")
+			call("create", "Gate", "--graph-path", "beads/gate", "--priority", "2")
 			related := scope + "types/references"
 			for _, edge := range [][3]string{{"plan", "context", "context"}, {"plan", "work", "work"}, {"context", "gate", "gate"}} {
 				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--type", related)
