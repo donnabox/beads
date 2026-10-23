@@ -18,6 +18,7 @@ import (
 // require a source guard; an Issue source remains unchanged by this writer.
 // This preview does not expose the public BDP Update profile.
 type LinkPropertiesPatchRequest struct {
+	FromRevision           string
 	Path                   string
 	Patch                  []byte
 	Actor                  string
@@ -36,12 +37,17 @@ func (s *Store) PatchLinkProperties(ctx context.Context, request LinkPropertiesP
 	if !utf8.ValidString(request.Actor) {
 		return LinkMutationResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
 	}
+	if request.FromRevision != "" {
+		if err := validateVersionToken(request.FromRevision); err != nil {
+			return LinkMutationResult{}, err
+		}
+	}
 	patch, err := graphpatch.Parse(request.Patch)
 	if err != nil {
 		return LinkMutationResult{}, memoryPropertiesPatchError(err)
 	}
 	return s.writeLinkProperties(ctx, LinkUpdateRequest{
-		Path: request.Path, Actor: request.Actor, ExpectedRevision: request.ExpectedRevision,
+		Path: request.Path, FromRevision: request.FromRevision, Actor: request.Actor, ExpectedRevision: request.ExpectedRevision,
 		Unconditional: request.Unconditional, ExpectedSourceRevision: request.ExpectedSourceRevision,
 		UnconditionalSource: request.UnconditionalSource, Metadata: request.Metadata, SourcePin: request.SourcePin, TargetPin: request.TargetPin,
 	}, nil, patch)

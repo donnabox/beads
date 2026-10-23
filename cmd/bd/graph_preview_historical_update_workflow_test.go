@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -37,7 +38,7 @@ func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
 				{"revision_unknown", []string{"update", "subject", "--from-revision", "unknown"}},
 				{"invalid_selector", []string{"update", "subject", "--from-revision", ""}},
 				{"invalid_selector", []string{"update", "subject@current", "--from-revision", original.Revision}},
-				{"capability_unavailable", []string{"update", "links/not-created", "--from-revision", original.Revision}},
+				{"not_found", []string{"update", "links/not-created", "--from-revision", original.Revision}},
 			} {
 				graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...)
 			}
@@ -46,6 +47,58 @@ func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
 			}
 			if got := graphMixedResult[graphstore.Record](t, call("show", "subject", "--version", original.Revision)); !reflect.DeepEqual(got, original) {
 				t.Fatal("original history changed")
+			}
+		})
+	}
+}
+
+func TestGraphPreviewHistoricalLinkWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/historical-link/")
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			call("remember", "Source", "--id", "beads/source")
+			call("remember", "Target", "--id", "beads/target")
+			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--source", "source", "--target", "target", "--type", "types/references", "--id", "historical", "--properties", `{"note":"first"}`, "--metadata", `{"old":true}`))
+			last := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--properties", `{"note":"last"}`, "--replace-metadata", `{"last":true}`))
+			restored := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--from-revision", first.Link.Revision, "--if-revision", last.Link.Revision, "--set-metadata", "explicit=7"))
+			if !restored.Changed || restored.Link.Properties["note"] != "first" || string(restored.Link.Metadata) != `{"explicit":7,"old":true}` || restored.Link.Attribution.HistoricalUpdate == nil {
+				t.Fatalf("historical Link composition: %+v", restored)
+			}
+			noop := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--from_revision", restored.Link.Revision))
+			if noop.Changed || !reflect.DeepEqual(noop.Link, restored.Link) {
+				t.Fatalf("source-only no-op: %+v", noop)
+			}
+			deleted := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "historical", "--force", "--if-revision", restored.Link.Revision))
+			humanDeleted := graphPolicyCLI(t, bd, work, home, nil, "", "link", "versions", "historical")
+			if !strings.Contains(humanDeleted, "This Link has been removed") || !strings.Contains(humanDeleted, "deletion revision") || strings.Contains(humanDeleted, "did not create a Link version") {
+				t.Fatalf("contradictory deleted human history: %s", humanDeleted)
+			}
+			type linkHistory struct {
+				CurrentState *graphstore.ResourceTerminalState `json:"currentState"`
+				Terminal     []map[string]any                  `json:"terminal_versions"`
+			}
+			history := graphMixedResult[linkHistory](t, call("link", "versions", "historical"))
+			if history.CurrentState == nil || history.CurrentState.Revision != deleted.Link.Revision || history.CurrentState.Type != deleted.Link.Type || len(history.Terminal) != 1 {
+				t.Fatalf("missing Link terminal descriptor: %+v", history)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "link", "update", "historical", "--from-revision", first.Link.Revision, "--if-revision", restored.Link.Revision, "--json")
+			recovered := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--from-revision", first.Link.Revision, "--if-revision", history.CurrentState.Revision, "--patch", `[{"op":"replace","path":"/note","value":"after source"}]`))
+			if !recovered.Changed || recovered.Link.ID != first.Link.ID || recovered.Link.Properties["note"] != "after source" || recovered.Link.Attribution.HistoricalUpdate == nil || recovered.Link.Attribution.HistoricalUpdate.PreviousRevision != deleted.Link.Revision {
+				t.Fatalf("same-ID recovery: %+v", recovered)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", "historical", "--version", deleted.Link.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "update", "historical", "--from-revision", deleted.Link.Revision, "--json")
+			if current := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", "historical")); !reflect.DeepEqual(current, recovered.Link) {
+				t.Fatalf("refusal changed Link: %+v", current)
+			}
+			humanRecovered := graphPolicyCLI(t, bd, work, home, nil, "", "link", "versions", "historical")
+			if !strings.Contains(humanRecovered, "Terminal deletion versions are retained separately") || strings.Contains(humanRecovered, "This Link has been removed") {
+				t.Fatalf("recovered human history lost terminal evidence: %s", humanRecovered)
 			}
 		})
 	}

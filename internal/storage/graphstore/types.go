@@ -209,6 +209,7 @@ type LinkCreateRequest struct {
 // Type or endpoint identities. Nil pin intent preserves the stored Reference.
 // A guard is mandatory for the Link and, when owned, its source Memory.
 type LinkUpdateRequest struct {
+	FromRevision           string
 	Path, Actor            string
 	SourcePin, TargetPin   *EndpointPin
 	Properties             map[string]any

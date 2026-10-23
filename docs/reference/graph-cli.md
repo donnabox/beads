@@ -725,9 +725,12 @@ the local revision number. Human output calls the number `REV`, matching
 ordinary `bd versions`; graph JSON uses `local_revision`. It orders versions
 within this store and is not a stable cross-clone address. `change_at` is not
 the ordering authority. A removed Link still lists its prior citable versions;
-the private deletion marker is not a Resource version and is omitted. Memory
-deletion also adds no version. There is still no
-BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
+terminal deletion revisions appear separately in `terminal_versions`, and a
+currently deleted Resource exposes its deletion guard in `currentState`.
+These markers are never citable live snapshots, including after same-ID recovery.
+Memory and admitted native Issue recovery, and informational Link recovery,
+use [checked historical Update](/reference/bdp/cli/historical-update).
+BDP HTTP History and as-of selection remain unavailable. `bd status --graph` reports
 `versionList: true`; `historyExact: false` refers to the unavailable HTTP
 History profile. The [technical reference](/reference/graph-cli-specification-draft#list-a-resources-versions)
 details ordering and refusal behavior.
