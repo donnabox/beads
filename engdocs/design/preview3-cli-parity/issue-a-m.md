@@ -8,6 +8,10 @@ at integration `9be7c4894`. The probe rows below remain pinned to `b6d0493ba`;
 their historical “unmerged” and refusal notes describe that earlier build.
 See the [living status column](../preview3-cli-parity.md) for delivery and
 remaining gaps.
+On October 23, [#258](https://github.com/donnabox/beads/pull/258)
+delivered checked linked and named-set Issue deletion at integration
+`430426ea5`. The historical delete probe row below remains unchanged;
+current forms and limits are tracked in that living status column.
 
 Evidence method: built both binaries from disposable detached worktrees with CGO and Homebrew ICU headers/libraries; initialized separate disposable embedded Dolt and separate databases on a real Dolt sql-server at 127.0.0.1:34121 with --server --external. Every status below rests on executed probes plus the cited source; help/registration alone is not treated as success. Paths in source citations are relative to the named commit. Exit codes are process exit codes. “Refusal” means nonzero exit with a named error; “untested” never means supported.
 

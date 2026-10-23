@@ -4,7 +4,8 @@
 
 **Delivery update (2026-10-22):** #150's blocked-parent filter fix and #175's
 ready regression test landed through [#256](https://github.com/donnabox/beads/pull/256)
-at integration `9be7c4894`. #150 remains open for newer audit commits; its
+at integration `9be7c4894`. #150's later audit-only commits landed at
+`c3675cf9c`; the living audit ledger now continues in #260. The
 delivered code is distinct from the baseline probes below. See the
 [living status column](../preview3-cli-parity.md).
 
