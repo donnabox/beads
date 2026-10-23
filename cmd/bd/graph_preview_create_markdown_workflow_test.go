@@ -46,7 +46,7 @@ func TestGraphPreviewCreateMarkdownBatchWorkflow(t *testing.T) {
 				t.Fatalf("markdown batch fields: %+v", issues)
 			}
 			for _, issue := range issues {
-				shown := graphMixedResult[graphstore.IssueRecord](t, call("", "show", issue.ID, "--format", "graph-json"))
+				shown := graphMixedResult[graphstore.IssueRecord](t, call("", "show", "https://example.invalid/markdown/"+issue.ID, "--format", "graph-json"))
 				if shown.Properties.Title != issue.Title || shown.Properties.ID == issue.ID || shown.ID != "https://example.invalid/markdown/"+issue.ID {
 					t.Fatalf("markdown Issue mapping differs: created=%+v shown=%+v", issue, shown)
 				}
