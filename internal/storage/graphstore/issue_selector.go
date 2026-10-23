@@ -9,9 +9,9 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 )
 
-// IssueSelector keeps the explicit graph path separate from a bare native
-// Issue ID. NativeID is set only for bare CLI spelling, never for beads/PATH
-// or a canonical URL.
+// IssueSelector keeps an exact canonical graph path separate from an opaque
+// local native Issue ID. NativeID is set for any local spelling, including
+// strings that happen to contain beads/; canonical URLs select paths only.
 type IssueSelector struct {
 	Path     string
 	NativeID string
@@ -36,8 +36,9 @@ func validateIssueSelector(selector IssueSelector) error {
 }
 
 // Resolve against the checked live catalog in the caller's transaction. A
-// bare spelling that also names a different graph path is ambiguous, even if
-// that path is a Memory or a retained deletion. Explicit paths remain exact.
+// local spelling may name a native Issue ID or a graph path retained by the
+// current-v0 preview. If those identify different records, refuse rather than
+// selecting one by its spelling. Canonical URLs remain exact paths.
 func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
 	if selector.NativeID == "" {
 		var backing string
@@ -54,11 +55,27 @@ func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, se
 		issue, err := s.requireIssueInTx(ctx, tx, selector.Path)
 		return selector.Path, issue, err
 	}
-	var backing string
-	err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, selector.Path).Scan(&backing)
-	pathExists := err == nil
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+	backingAt := func(path string) (string, bool, error) {
+		var backing string
+		err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing)
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", false, nil
+		}
+		return backing, err == nil, err
+	}
+	backing, pathExists, err := backingAt(selector.Path)
+	if err != nil {
 		return "", IssueRecord{}, err
+	}
+	legacyPath := ""
+	legacyBacking := ""
+	legacyExists := false
+	if selector.NativeID != selector.Path && validatePath(selector.NativeID) == nil {
+		legacyPath = selector.NativeID
+		legacyBacking, legacyExists, err = backingAt(legacyPath)
+		if err != nil {
+			return "", IssueRecord{}, err
+		}
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live' LIMIT 2`, selector.NativeID)
 	if err != nil {
@@ -79,20 +96,28 @@ func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, se
 	if len(paths) > 1 {
 		return "", IssueRecord{}, fmt.Errorf("%w: native Issue ID has multiple live graph allocations", ErrInvalidStore)
 	}
-	if len(paths) == 1 && pathExists && paths[0] != selector.Path {
-		return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches both a graph path and a different native Issue; use an explicit beads/PATH", storage.ErrValidation, selector.NativeID)
+	if pathExists && legacyExists {
+		return "", IssueRecord{}, fmt.Errorf("%w: Issue ID %q matches two graph paths; use a canonical Scope URL", storage.ErrValidation, selector.NativeID)
+	}
+	if len(paths) == 1 && ((pathExists && paths[0] != selector.Path) || (legacyExists && paths[0] != legacyPath)) {
+		return "", IssueRecord{}, fmt.Errorf("%w: Issue ID %q matches a graph path and a different native Issue; use a canonical Scope URL", storage.ErrValidation, selector.NativeID)
 	}
 	path := selector.Path
 	if !pathExists {
-		if len(paths) == 0 {
+		if len(paths) == 0 && !legacyExists {
 			return "", IssueRecord{}, ErrNotFound
 		}
-		path = paths[0]
+		if len(paths) == 1 {
+			path = paths[0]
+		} else {
+			path = legacyPath
+			backing = legacyBacking
+		}
 		if err := validatePath(path); err != nil {
 			return "", IssueRecord{}, fmt.Errorf("%w: invalid native Issue graph allocation: %v", ErrInvalidStore, err)
 		}
 	}
-	if pathExists && backing != "issue" {
+	if backing != "issue" && (pathExists || (legacyExists && len(paths) == 0)) {
 		return "", IssueRecord{}, nonIssueSelectorError(backing)
 	}
 	issue, err := s.requireIssueInTx(ctx, tx, path)

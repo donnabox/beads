@@ -29,9 +29,9 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				t.Helper()
 				graphPatchProcess(t, bd, work, home, nil, code, 90*time.Second, append(args, "--json")...)
 			}
-			call("create", "Source", "--id", "beads/source")
+			call("create", "Source", "--graph-path", "beads/source")
 			call("remember", "Target", "--id", "beads/target")
-			call("create", "Native target", "--id", "beads/native-target")
+			call("create", "Native target", "--graph-path", "beads/native-target")
 			sourceBefore := call("show", "beads/source")
 			linksBefore := call("link", "list", "--source", "beads/source")
 			for _, tc := range []struct {

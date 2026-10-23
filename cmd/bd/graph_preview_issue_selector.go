@@ -8,16 +8,21 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-// Only bare CLI spelling may resolve through the native Issue ID catalog.
-// An explicit beads/PATH or canonical URL always denotes that exact path.
+// A local Issue ID is opaque: even beads/PATH spelling first names that whole
+// native ID. Only a canonical Scope URL selects an exact graph path.
 func graphPreviewIssueSelector(selector string) (graphstore.IssueSelector, error) {
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
-	if err != nil || graph.ValidateBeadPath(path) != nil {
-		return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or beads/PATH")
+	if path, kind, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, selector); ok {
+		if kind != graph.KindBead || graph.ValidateBeadPath(path) != nil {
+			return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or canonical Bead URL")
+		}
+		return graphstore.IssueSelector{Path: path}, nil
 	}
-	selected := graphstore.IssueSelector{Path: path}
-	if selector == strings.TrimPrefix(path, "beads/") {
-		selected.NativeID = selector
+	if strings.Contains(selector, "://") {
+		return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or canonical Bead URL")
 	}
-	return selected, nil
+	path := "beads/" + selector
+	if graph.ValidateBeadPath(path) != nil {
+		return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or canonical Bead URL")
+	}
+	return graphstore.IssueSelector{Path: path, NativeID: selector}, nil
 }

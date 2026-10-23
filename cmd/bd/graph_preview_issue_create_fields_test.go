@@ -100,7 +100,7 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "fields", "--scope-url", "https://example.invalid/create-fields/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "First fields", "--id", "beads/work", "--design", "  雪\r\n ", "--acceptance", "accepted", "-a", "author", "-e", "0", "--external-ref", "tracker #42", "--spec-id", "spec/one", "--actor", "create-author", "--json")
+	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "First fields", "--graph-path", "beads/work", "--design", "  雪\r\n ", "--acceptance", "accepted", "-a", "author", "-e", "0", "--external-ref", "tracker #42", "--spec-id", "spec/one", "--actor", "create-author", "--json")
 	var envelope struct {
 		Result struct {
 			Revision   string
@@ -114,7 +114,7 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 	if envelope.Result.Revision == "" || i.Design != "  雪\r\n " || i.AcceptanceCriteria != "accepted" || i.Assignee != "author" || i.EstimatedMinutes == nil || *i.EstimatedMinutes != 0 || i.ExternalRef == nil || *i.ExternalRef != "tracker #42" || i.SpecID != "spec/one" || i.Status != types.StatusOpen {
 		t.Fatalf("production create lost fields: %+v", i)
 	}
-	fromProperties := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "--id", "beads/from-properties", "--properties", `{"title":"Typed issue","description":"Exact description","priority":1,"estimated_minutes":45,"labels":["preview"],"assignee":"reviewer"}`, "--metadata", `{"team":"docs"}`, "--json"))
+	fromProperties := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "--graph-path", "beads/from-properties", "--properties", `{"title":"Typed issue","description":"Exact description","priority":1,"estimated_minutes":45,"labels":["preview"],"assignee":"reviewer"}`, "--metadata", `{"team":"docs"}`, "--json"))
 	if fromProperties.Properties.Title != "Typed issue" || fromProperties.Properties.Description != "Exact description" || fromProperties.Properties.Priority != 1 || fromProperties.Properties.EstimatedMinutes == nil || *fromProperties.Properties.EstimatedMinutes != 45 || fromProperties.Properties.Assignee != "reviewer" || len(fromProperties.Properties.Labels) != 1 || string(fromProperties.Metadata) != `{"team":"docs"}` {
 		t.Fatalf("Issue properties initializer lost typed values or metadata: %+v", fromProperties)
 	}
@@ -122,8 +122,8 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 	if memory.Properties.Title != "Typed memory" || memory.Properties.Body != "Exact body" {
 		t.Fatalf("Memory properties initializer lost typed values: %+v", memory)
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--id", "beads/duplicate-properties", "--title", "Title", "--properties", `{"title":"Title"}`, "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--id", "beads/immutable-properties", "--properties", `{"title":"Refused","status":"closed"}`, "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--graph-path", "beads/duplicate-properties", "--title", "Title", "--properties", `{"title":"Title"}`, "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--graph-path", "beads/immutable-properties", "--properties", `{"title":"Refused","status":"closed"}`, "--json")
 	for _, flags := range [][]string{nil, {"--version", envelope.Result.Revision}} {
 		args := append([]string{"show", "beads/work", "--format", "graph-json", "--json"}, flags...)
 		if got := graphPolicyCLI(t, bd, work, home, nil, "", args...); got != created {
@@ -143,7 +143,7 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 		{"design-file", "--design-file=/missing-create-design", "capability_unavailable"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			args := []string{"create", "Refused", "--id", "beads/refused", tc.flag, "--json"}
+			args := []string{"create", "Refused", "--graph-path", "beads/refused", tc.flag, "--json"}
 			if tc.name == "status-with-notes" {
 				// Initial notes are now admitted; status remains a refusal even alongside them.
 				args = append(args, "--status=open")
@@ -151,7 +151,7 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, tc.code, args...)
 		})
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--id", "beads/refused", "--design-file=/missing-create-design", "--readonly", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--graph-path", "beads/refused", "--design-file=/missing-create-design", "--readonly", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--format", "graph-json", "--json"); got != created {
 		t.Fatal("refused creates changed accepted record")

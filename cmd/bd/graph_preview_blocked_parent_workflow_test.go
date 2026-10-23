@@ -30,7 +30,7 @@ func TestGraphPreviewBlockedParentWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			call(args...)
-			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Parent", "--id", "beads/selected-parent", "--type", "epic"))
+			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Parent", "--graph-path", "beads/selected-parent", "--type", "epic"))
 			child := graphMixedResult[graphstore.IssueRecord](t, call("create", "Child", "--parent", "beads/selected-parent"))
 			blocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Prerequisite"))
 			unrelated := graphMixedResult[graphstore.IssueRecord](t, call("create", "Unrelated"))

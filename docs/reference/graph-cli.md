@@ -88,8 +88,14 @@ property, retyping and refusal details for the Preview 3 candidate.
 When an Issue is created without `--id`, its canonical `beads/` ID uses the
 Issue ID allocated under the workspace prefix set by `bd init --prefix`. For
 example, a generated `mp-53` Issue is `beads/mp-53` locally. An explicitly
-supplied `--id` remains the requested canonical path. Generated Memory IDs
-remain random `beads/` paths; generated Link IDs remain under `links/`.
+supplied `--id` is the literal native Issue ID, even if it contains slashes;
+its ordinary preview path is `beads/` followed by that whole ID. Use the
+separate Preview 3 `--graph-path beads/PATH` option to choose only a graph path
+and let the native Issue writer allocate its ID. Generated Memory IDs remain
+random `beads/` paths; generated Link IDs remain under `links/`.
+For slash-bearing Issue IDs in this draft, use the returned canonical URL with
+mixed-resource readers such as `bd show`; their local selector routing has not
+yet adopted opaque native IDs.
 
 ```sh
 bd create 'Move the release branch' --id work --type task
@@ -598,7 +604,7 @@ adding Issue History or a Link tombstone; an actual removal records one native
 dependency event and source version. The target Issue stays unchanged.
 Bare native Issue IDs are resolved within the same removal transaction when
 their graph paths differ. A bare ID that also names a different Bead refuses
-as ambiguous; use `beads/PATH` or its full canonical URL to select explicitly.
+as ambiguous; use the full canonical Scope URL to select an exact graph path.
 `bd unlink` continues to require an exact Link ID and revision guard for a
 blocking Dependency. `bd dep relate` and `bd dep unrelate` are outside this
 graph preview because the ordinary command owns two directed relationships,

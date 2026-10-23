@@ -23,7 +23,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			for _, id := range []string{"i1", "i2", "isolated-issue"} {
-				call("create", id, "--id", id, "--type", "task")
+				call("create", id, "--graph-path", "beads/"+id, "--type", "task")
 			}
 			for _, id := range []string{"m1", "m2", "isolated-memory"} {
 				call("create", id, "--id", id, "--type", "types/memory")

@@ -25,7 +25,7 @@ func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
 				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", initArgs...)
-			graphPolicyCLI(t, bd, work, home, nil, "", "create", "Initial watch title", "--id", "beads/work", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "create", "Initial watch title", "--graph-path", "beads/work", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Memory body", "--id", "beads/memory", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/missing", "--watch", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/memory", "--watch", "--json")

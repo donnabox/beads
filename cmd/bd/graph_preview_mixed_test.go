@@ -118,8 +118,8 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			call(args...)
 			memory := graphMixedResult[graphstore.Record](t, call("remember", "Original body", "--id", "beads/plan", "--title", "Plan"))
 			other := call("remember", "Independent body", "--id", "beads/context", "--title", "Context")
-			call("create", "Ship the release", "--id", "beads/work", "--description", "Original Issue", "--priority", "1")
-			gate := call("create", "Prerequisite", "--id", "beads/gate")
+			call("create", "Ship the release", "--graph-path", "beads/work", "--description", "Original Issue", "--priority", "1")
+			gate := call("create", "Prerequisite", "--graph-path", "beads/gate")
 
 			selected := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/plan", "--title", "Selected title", "--if-revision", memory.Revision))
 			if !selected.Changed || selected.Memory.Properties.Body != memory.Properties.Body || selected.Replaced != nil {

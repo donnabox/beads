@@ -137,7 +137,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 	}
 	call(t, "init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive",
 		"--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
-	issue := graphMixedResult[graphstore.IssueRecord](t, call(t, "create", "Unchanged Issue source", "--id", "beads/work"))
+	issue := graphMixedResult[graphstore.IssueRecord](t, call(t, "create", "Unchanged Issue source", "--graph-path", "beads/work"))
 	issueShown := call(t, "show", "beads/work")
 
 	// The public CLI does not advertise exact History. Read-only inspection of

@@ -309,8 +309,8 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 			} {
 				t.Run(tc.name, func(t *testing.T) {
 					sourcePath, targetPath, linkPath := "beads/source-"+tc.name, "beads/target-"+tc.name, "links/"+tc.name
-					source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--id", sourcePath))
-					target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", targetPath))
+					source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--graph-path", sourcePath))
+					target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--graph-path", targetPath))
 					typeURL, _ := graphstore.RelationshipDependencyTypeURL(scope, tc.kind)
 					addArgs := []string{"dep", "add", sourcePath, targetPath, "--type", string(tc.kind), "--id", linkPath}
 					if tc.viaLink {

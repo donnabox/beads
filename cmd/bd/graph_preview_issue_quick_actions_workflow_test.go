@@ -46,7 +46,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 				return result
 			}
 			call(args...)
-			call("create", "Quick actions", "--id", "beads/work", "--description", "Keep this")
+			call("create", "Quick actions", "--graph-path", "beads/work", "--description", "Keep this")
 			call("remember", "Memory text", "--id", "beads/context", "--title", "Context")
 			before := read()
 			priority := issue(call("priority", "beads/work", "0"))
@@ -96,7 +96,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "note", "beads/context", "No")
 			refuse("capability_unavailable", "assign", "beads/context", "alice")
 
-			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--id", "beads/custom-path"))
+			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path"))
 			if custom.Properties.ID == "custom-path" {
 				t.Fatal("fixture needs a native ID distinct from its graph path")
 			}

@@ -195,8 +195,8 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			}
 			memory := graphMixedResult[graphstore.Record](t, call("create", "Original title", "--type", "types/constraint", "--id", "beads/plan", "--body", "Original body"))
 			survivor := graphMixedResult[graphstore.Record](t, call("remember", "Untouched", "--id", "beads/context", "--title", "Context"))
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work"))
-			target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", "beads/target"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work"))
+			target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--graph-path", "beads/target"))
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", issue.ID, target.ID))
 			issueCurrent, targetCurrent := call("show", issue.ID, "--format", "graph-json"), call("show", target.ID, "--format", "graph-json")
 			showMemory := func() graphstore.Record {

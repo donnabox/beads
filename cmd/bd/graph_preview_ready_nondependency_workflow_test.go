@@ -18,7 +18,7 @@ func TestGraphPreviewReadyIgnoresInformationalLinks(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work", "--labels", "selected"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work", "--labels", "selected"))
 			call("create", "--type", "types/memory", "--id", "context", "--properties", `{"title":"Context","body":"Informational context."}`)
 			ready := func() []graphstore.IssueRecord {
 				t.Helper()

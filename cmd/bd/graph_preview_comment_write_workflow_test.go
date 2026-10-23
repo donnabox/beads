@@ -46,7 +46,7 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 				return comment
 			}
 			call(args...)
-			call("create", "Comment target", "--id", "beads/work")
+			call("create", "Comment target", "--graph-path", "beads/work")
 			call("remember", "Context", "--id", "beads/memory")
 			before := read()
 			call("remember", "Collision", "--id", "beads/"+before.Properties.ID)

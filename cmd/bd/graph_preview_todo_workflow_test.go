@@ -51,7 +51,7 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 			if created.ID == "" || created.IssueType != types.TypeTask || created.Status != types.StatusOpen || created.Priority != 1 || created.Description != "Keep context" {
 				t.Fatalf("TODO add lost native task defaults: %+v", created)
 			}
-			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "A bug", "--id", "bug", "--type", "bug"))
+			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "A bug", "--graph-path", "beads/bug", "--type", "bug"))
 			call("remember", "Memory body", "--id", "memo")
 			for _, args := range [][]string{{"todo"}, {"todo", "list"}} {
 				got := list(args...)

@@ -129,7 +129,7 @@ func TestGraphPreviewHistoricalNativeIssueWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--id", "beads/subject", "--description", "original body", "--notes", "historical notes", "--metadata", `{"old":null}`))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--graph-path", "beads/subject", "--description", "original body", "--notes", "historical notes", "--metadata", `{"old":null}`))
 			current := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--properties", `{"title":"Current","description":"current body"}`, "--replace-metadata", `{"current":true}`, "--notes", "current notes", "--force"))
 			applied := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", original.Revision, "--if-revision", current.Issue.Revision, "--properties", `{"title":"Explicit"}`, "--set-metadata", "explicit=7", "--force"))
 			if !applied.Changed || applied.Issue.Properties.Title != "Explicit" || applied.Issue.Properties.Description != original.Properties.Description || applied.Issue.Properties.Notes != original.Properties.Notes || string(applied.Issue.Metadata) != `{"explicit":7,"old":null}` || applied.Issue.Attribution.HistoricalUpdate == nil || applied.Issue.Attribution.HistoricalUpdate.PreviousRevision != current.Issue.Revision || applied.Issue.Attribution.Inception != original.Attribution.Inception {
@@ -174,7 +174,7 @@ func TestGraphPreviewHistoricalNativeOrderedPatch(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--id", "beads/subject", "--description", "historical body", "--metadata", `{"source":true}`))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--graph-path", "beads/subject", "--description", "historical body", "--metadata", `{"source":true}`))
 			current := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--properties", `{"description":"current body"}`, "--replace-metadata", `{"current":true}`))
 			patched := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", original.Revision, "--if-revision", current.Issue.Revision, "--patch", `[{"op":"replace","path":"/design","value":"intermediate"},{"op":"replace","path":"/design","value":"explicit"}]`))
 			if !patched.Changed || patched.Issue.Properties.Design != "explicit" || patched.Issue.Properties.Description != "historical body" || string(patched.Issue.Metadata) != string(original.Metadata) {
@@ -208,7 +208,7 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 				t.Helper()
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
-			source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--id", "beads/subject", "--description", "historical body", "--labels", "old", "--metadata", `{"source":true}`))
+			source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Original", "--graph-path", "beads/subject", "--description", "historical body", "--labels", "old", "--metadata", `{"source":true}`))
 			current := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--properties", `{"description":"last current"}`, "--replace-metadata", `{"current":true}`))
 			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "subject", "--force", "--if-revision", current.Issue.Revision))
 			if deleted.Terminal == nil || deleted.Terminal.Revision == current.Issue.Revision {

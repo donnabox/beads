@@ -123,8 +123,8 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			// default limit becomes visible to it.
 			graphListConfig(t, work, "list:\n  limit: 2\n")
 			call("remember", "private body", "--id", "beads/plan", "--title", "Plan")
-			call("create", "Open work", "--id", "beads/open", "--priority", "1")
-			call("create", "Finished work", "--id", "beads/done", "--priority", "2")
+			call("create", "Open work", "--graph-path", "beads/open", "--priority", "1")
+			call("create", "Finished work", "--graph-path", "beads/done", "--priority", "2")
 			call("close", "beads/done")
 			graphListSeedIssue(t, work, "beads/pin", publicops.CreateRequest{Actor: "test-author", Issue: &publicops.Issue{
 				Title: "Pinned note", Description: "kept", Status: types.StatusPinned, IssueType: types.TypeTask, Priority: 3,

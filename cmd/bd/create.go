@@ -61,6 +61,9 @@ var createCmd = &cobra.Command{
 		if graphPreviewActive {
 			return runGraphPreviewCreateIssue(cmd, args)
 		}
+		if cmd.Flags().Changed("graph-path") {
+			return HandleError("--graph-path requires graph preview")
+		}
 		CheckReadonly("create") // also covers the migration freeze check (dc-6jaq)
 
 		evt := metrics.NewCommandEvent("create")
@@ -941,6 +944,7 @@ func init() {
 	createCmd.Flags().StringSlice("label", []string{}, "Alias for --labels")
 	_ = createCmd.Flags().MarkHidden("label") // Only fails if flag missing (caught in tests)
 	createCmd.Flags().String("id", "", "Explicit issue ID (e.g., 'bd-42' for partitioning)")
+	createCmd.Flags().String("graph-path", "", "Preview 3 only: explicit graph path for Issue creation (e.g., beads/PATH)")
 	createCmd.Flags().String("parent", "", "Parent issue ID for hierarchical child (e.g., 'bd-a3f8e9')")
 	createCmd.Flags().Bool("no-inherit-labels", false, "Don't inherit labels from parent issue")
 	createCmd.Flags().StringSlice("deps", []string{}, "Dependencies as 'type:id' or bare 'id'. Bare 'id', 'depends-on:id', and 'blocked-by:id' all make THIS issue depend on id; 'blocks:id' reverses direction (id depends on this issue). E.g. 'blocked-by:bd-20,discovered-from:bd-15'")

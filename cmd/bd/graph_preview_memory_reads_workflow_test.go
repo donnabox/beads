@@ -309,7 +309,7 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			original := graphMixedResult[graphstore.Record](t, call("remember", body, "--id", "beads/plan", "--title", "Straße plan"))
 			empty := graphMixedResult[graphstore.Record](t, call("remember", "", "--id", "beads/empty", "--title", "Empty"))
 			contextMemory := graphMixedResult[graphstore.Record](t, call("remember", "Surviving context", "--id", "beads/context", "--title", "Context"))
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Surviving Issue", "--id", "beads/work"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Surviving Issue", "--graph-path", "beads/work"))
 			selected := discover("STRASSE")
 			if selected.Projection != "summary" || selected.Scope != scope || !selected.Complete || selected.Next != nil || len(selected.Items) != 1 || selected.Items[0].ID != original.ID || selected.Items[0].Version != original.Revision || !reflect.DeepEqual(selected.Items[0].MatchedFields, []string{"title"}) || selected.Items[0].Excerpt != nil {
 				t.Fatalf("literal case-folded discovery: %+v", selected)
