@@ -17,6 +17,7 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			work, home := t.TempDir(), t.TempDir()
+			const workURL = "https://example.invalid/comments/beads/work"
 			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/comments/", "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
@@ -35,7 +36,7 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 			}
 			read := func() graphstore.IssueRecord {
 				t.Helper()
-				return graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work", "--format", "graph-json"))
+				return graphMixedResult[graphstore.IssueRecord](t, call("show", workURL, "--format", "graph-json"))
 			}
 			decode := func(output string) types.Comment {
 				t.Helper()
@@ -51,18 +52,18 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 			before := read()
 			call("remember", "Collision", "--id", "beads/"+before.Properties.ID)
 			versions := call("versions", "beads/work")
-			first := decode(call("comment", "beads/work", "Starting", "review", "--actor", "alice"))
+			first := decode(call("comment", workURL, "Starting", "review", "--actor", "alice"))
 			if first.ID == "" || first.IssueID != "beads/work" || first.Author != "alice" || first.Text != "Starting review" {
 				t.Fatalf("singular comment did not return stored row: %+v", first)
 			}
 			file := filepath.Join(work, "followup.txt")
 			writeFile(t, file, []byte("Follow-up from file\n"))
-			second := decode(call("comments", "add", "beads/work", "--file", file, "--author", "bob"))
+			second := decode(call("comments", "add", workURL, "--file", file, "--author", "bob"))
 			if second.ID == first.ID || second.IssueID != "beads/work" || second.Author != "bob" || second.Text != "Follow-up from file\n" {
 				t.Fatalf("plural comment did not return stored row: %+v", second)
 			}
 			var listed []*types.Comment
-			listedJSON := call("comments", "beads/work")
+			listedJSON := call("comments", workURL)
 			if err := json.Unmarshal([]byte(listedJSON), &listed); err != nil {
 				t.Fatalf("comments --json must retain ordinary array shape: %v\n%s", err, listedJSON)
 			}
@@ -74,21 +75,21 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 				t.Fatal("comments minted an Issue Resource version")
 			}
 			for _, command := range [][]string{
-				{"comment", "beads/work", "Quiet singular", "--quiet"},
-				{"comments", "add", "beads/work", "Quiet plural", "--quiet"},
+				{"comment", workURL, "Quiet singular", "--quiet"},
+				{"comments", "add", workURL, "Quiet plural", "--quiet"},
 			} {
 				if got := graphPolicyCLI(t, bd, work, home, nil, "", command...); got != "" {
 					t.Fatalf("quiet comment %v printed %q", command, got)
 				}
 			}
 			var afterQuiet []*types.Comment
-			quietFeed := call("comments", "beads/work")
+			quietFeed := call("comments", workURL)
 			if err := json.Unmarshal([]byte(quietFeed), &afterQuiet); err != nil || len(afterQuiet) != 4 {
 				t.Fatalf("quiet comment writes did not both persist: %v\n%s", err, quietFeed)
 			}
-			refuse("invalid_properties", "comment", "beads/work", " ")
-			refuse("permission_denied", "comment", "beads/work", "No", "--readonly")
-			refuse("permission_denied", "comments", "add", "beads/work", "No", "--readonly")
+			refuse("invalid_properties", "comment", workURL, " ")
+			refuse("permission_denied", "comment", workURL, "No", "--readonly")
+			refuse("permission_denied", "comments", "add", workURL, "No", "--readonly")
 			refuse("invalid_properties", "comment", "beads/memory", "No")
 			refuse("invalid_properties", "comments", "add", "beads/memory", "No")
 		})

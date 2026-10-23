@@ -18,7 +18,8 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			work, home := t.TempDir(), t.TempDir()
-			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/quick/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			const scope = "https://example.invalid/quick/"
+			args := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
 				if port == "" {
@@ -36,7 +37,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			read := func() graphstore.IssueRecord {
 				t.Helper()
-				return graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work", "--format", "graph-json"))
+				return graphMixedResult[graphstore.IssueRecord](t, call("show", scope+"beads/work", "--format", "graph-json"))
 			}
 			issue := func(output string) types.Issue {
 				t.Helper()
@@ -50,52 +51,52 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			call("create", "Quick actions", "--graph-path", "beads/work", "--description", "Keep this")
 			call("remember", "Memory text", "--id", "beads/context", "--title", "Context")
 			before := read()
-			priority := issue(call("priority", "beads/work", "0"))
+			priority := issue(call("priority", scope+"beads/work", "0"))
 			current := read()
 			if priority.ID != "beads/work" || priority.Priority != 0 || current.Properties.Priority != 0 || current.Revision == before.Revision || current.Properties.Description != "Keep this" {
 				t.Fatalf("priority write did not preserve Issue shape and fields: %+v %+v", priority, current)
 			}
 			state := graphMemoryReadSnapshot(t, work)
-			call("priority", "beads/work", "P0")
+			call("priority", scope+"beads/work", "P0")
 			if got := read(); got.Revision != current.Revision || !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("same priority changed Resource version or native state")
 			}
-			note := issue(call("note", "beads/work", "Progress", "continues"))
+			note := issue(call("note", scope+"beads/work", "Progress", "continues"))
 			after := read()
 			if note.ID != "beads/work" || note.Notes != "Progress continues" || after.Properties.Notes != note.Notes || after.Revision == current.Revision {
 				t.Fatalf("note did not append once: %+v %+v", note, after)
 			}
-			call("note", "beads/work", "Second")
+			call("note", scope+"beads/work", "Second")
 			if got := read(); got.Properties.Notes != "Progress continues\nSecond" {
 				t.Fatalf("second note overwrote prior text: %q", got.Properties.Notes)
 			}
 			preAssign := read()
-			assigned := issue(call("assign", "beads/work", "alice", "--if-revision", preAssign.Revision, "--actor", "alice"))
+			assigned := issue(call("assign", scope+"beads/work", "alice", "--if-revision", preAssign.Revision, "--actor", "alice"))
 			if assigned.ID != "beads/work" || assigned.Assignee != "alice" || read().Revision == preAssign.Revision {
 				t.Fatalf("assign lost canonical identity or failed to version: %+v", assigned)
 			}
-			refuse("revision_conflict", "assign", "beads/work", "bob", "--if-revision", preAssign.Revision)
+			refuse("revision_conflict", "assign", scope+"beads/work", "bob", "--if-revision", preAssign.Revision)
 			state = graphMemoryReadSnapshot(t, work)
-			call("assign", "beads/work", "alice")
+			call("assign", scope+"beads/work", "alice")
 			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("same assignee changed native state")
 			}
-			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim", "--actor", "alice"))
+			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--claim", "--actor", "alice"))
 			if !claimed.Changed || claimed.Issue.Properties.Assignee != "alice" {
 				t.Fatalf("claim setup failed: %+v", claimed)
 			}
-			refuse("constraint_violation", "assign", "beads/work", "bob", "--actor", "bob")
-			transferred := issue(call("assign", "beads/work", "bob", "--actor", "bob", "--force"))
+			refuse("constraint_violation", "assign", scope+"beads/work", "bob", "--actor", "bob")
+			transferred := issue(call("assign", scope+"beads/work", "bob", "--actor", "bob", "--force"))
 			if transferred.Assignee != "bob" || read().Properties.Assignee != "bob" {
 				t.Fatalf("explicit forced transfer failed: %+v", transferred)
 			}
-			refuse("invalid_properties", "priority", "beads/work", "P9")
-			refuse("permission_denied", "assign", "beads/work", "alice", "--readonly")
-			refuse("permission_denied", "priority", "beads/work", "2", "--readonly")
-			refuse("permission_denied", "note", "beads/work", "No", "--readonly")
-			refuse("capability_unavailable", "priority", "beads/context", "2")
-			refuse("capability_unavailable", "note", "beads/context", "No")
-			refuse("capability_unavailable", "assign", "beads/context", "alice")
+			refuse("invalid_properties", "priority", scope+"beads/work", "P9")
+			refuse("permission_denied", "assign", scope+"beads/work", "alice", "--readonly")
+			refuse("permission_denied", "priority", scope+"beads/work", "2", "--readonly")
+			refuse("permission_denied", "note", scope+"beads/work", "No", "--readonly")
+			refuse("capability_unavailable", "priority", scope+"beads/context", "2")
+			refuse("capability_unavailable", "note", scope+"beads/context", "No")
+			refuse("capability_unavailable", "assign", scope+"beads/context", "alice")
 
 			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path"))
 			if custom.Properties.ID == "custom-path" {
@@ -139,7 +140,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(beforeCollision, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("ambiguous native ID changed Issue or Memory state")
 			}
-			if got := issue(call("priority", "beads/custom-path", "0")); got.Priority != 0 {
+			if got := issue(call("priority", scope+"beads/custom-path", "0")); got.Priority != 0 {
 				t.Fatalf("explicit path did not select custom Issue: %+v", got)
 			}
 		})

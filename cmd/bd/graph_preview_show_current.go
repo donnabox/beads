@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -14,7 +15,7 @@ import (
 // may use the last-touched fallback.
 func graphPreviewCurrentIssueID(actor string) (string, error) {
 	if actor == "" || strings.EqualFold(actor, "none") || strings.EqualFold(actor, "null") {
-		return GetLastTouchedID(), nil
+		return graphPreviewCurrentSelector(GetLastTouchedID()), nil
 	}
 	var selected string
 	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
@@ -28,6 +29,7 @@ func graphPreviewCurrentIssueID(actor string) (string, error) {
 			}
 			if len(page.Items) != 0 {
 				selected, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, page.Items[0].ID)
+				selected = graphPreviewCurrentSelector(selected)
 				return nil, "", err
 			}
 		}
@@ -39,5 +41,12 @@ func graphPreviewCurrentIssueID(actor string) (string, error) {
 	if selected != "" {
 		return selected, nil
 	}
-	return GetLastTouchedID(), nil
+	return graphPreviewCurrentSelector(GetLastTouchedID()), nil
+}
+
+func graphPreviewCurrentSelector(id string) string {
+	if graph.ValidateBeadPath(id) == nil {
+		return graph.CanonicalURL(graphPreviewConfig.GraphScopeURL, id)
+	}
+	return id
 }

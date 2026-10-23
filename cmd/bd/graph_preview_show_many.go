@@ -19,7 +19,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 	if format != "" || cmd.Flags().Changed("version") {
 		return graphFailure("capability_unavailable", "multi-ID show supports current Issue details only", 5)
 	}
-	paths := make([]string, 0, len(args))
+	selectors := make([]struct{ path, localID string }, 0, len(args))
 	for _, arg := range args {
 		ref, err := graphPreviewParseReference(arg)
 		if err != nil {
@@ -28,24 +28,29 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
 			return graphFailure("capability_unavailable", "multi-ID show supports current Issue details only", 5)
 		}
-		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, ref.Identity)
+		path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 		if !strings.HasPrefix(path, "beads/") {
 			return graphFailure("capability_unavailable", "multi-ID show supports current Issues only", 5)
 		}
-		paths = append(paths, path)
+		selectors = append(selectors, struct{ path, localID string }{path, localID})
 	}
 	includeDependents, _ := cmd.Flags().GetBool("include-dependents")
 	includeComments, _ := cmd.Flags().GetBool("include-comments")
 	briefDeps, _ := cmd.Flags().GetBool("brief-deps")
 	var missing []string
+	var firstSelected string
 	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		details := make([]*types.IssueDetails, 0, len(paths))
-		lines := make([]string, 0, len(paths))
-		for index, path := range paths {
-			record, err := s.Read(ctx, path)
+		details := make([]*types.IssueDetails, 0, len(selectors))
+		lines := make([]string, 0, len(selectors))
+		for index, selector := range selectors {
+			opts := workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps}
+			if !jsonOutput {
+				opts = workapi.DetailOptions{IncludeDependents: true, IncludeComments: true}
+			}
+			path, record, detail, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.path, selector.localID, opts)
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -57,23 +62,14 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 			if !ok {
 				return nil, "", graphFailure("capability_unavailable", "multi-ID show supports current Issues only", 5)
 			}
+			if firstSelected == "" {
+				firstSelected = path
+			}
 			if shortMode {
 				shorthand := *issue.Properties
 				shorthand.ID = path
 				lines = append(lines, formatShortIssue(&shorthand))
 				continue
-			}
-			opts := workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps}
-			if !jsonOutput {
-				opts = workapi.DetailOptions{IncludeDependents: true, IncludeComments: true}
-			}
-			detail, err := s.ShowIssueDetails(ctx, path, opts)
-			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
-				missing = append(missing, args[index])
-				continue
-			}
-			if err != nil {
-				return nil, "", err
 			}
 			if jsonOutput {
 				details = append(details, detail)
@@ -108,8 +104,8 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		}
 		return nil
 	})
-	if err == nil {
-		SetLastTouchedID(paths[0])
+	if err == nil && firstSelected != "" {
+		SetLastTouchedID(firstSelected)
 	}
 	return err
 }

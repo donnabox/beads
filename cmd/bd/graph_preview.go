@@ -679,8 +679,12 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 }
 
 func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
+	return runGraphPreviewShowKind(cmd, args, false)
+}
+
+func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if canonicalOutputSelected(cmd) {
-		return runCanonicalShow(cmd, args, false)
+		return runCanonicalShow(cmd, args, linkOnly)
 	}
 	if err := graphPreviewFlags(cmd, "id", "current", "refs", "children", "watch", "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
 		return err
@@ -731,13 +735,9 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewShowMany(cmd, args, shortMode, longMode, localTime, commentsTail, format)
 	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH; use a positional ID or --id", 2)
+		return graphFailure("invalid_selector", "graph show requires one local public ID or canonical Scope URL; use a positional ID or --id", 2)
 	}
 	ref, err := graphPreviewParseReference(args[0])
-	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, ref.Identity)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -760,17 +760,36 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
 		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
+	path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if versioned && localID != "" {
+		return graphFailure("capability_unavailable", "retained versions require an exact canonical Scope URL", 5)
+	}
 	var shownIssue, legacyIssue, legacyShort bool
 	err = withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
+		var details *types.IssueDetails
 		var err error
 		if versioned {
 			r, err = s.ReadVersion(ctx, path, version)
 		} else {
-			r, err = s.Read(ctx, path)
+			includeDependents, _ := cmd.Flags().GetBool("include-dependents")
+			includeComments, _ := cmd.Flags().GetBool("include-comments")
+			briefDeps, _ := cmd.Flags().GetBool("brief-deps")
+			if !jsonOutput && format == "" {
+				includeDependents, includeComments = true, true
+			}
+			path, r, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, path, localID, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
 		}
 		if err != nil {
 			return nil, "", err
+		}
+		if linkOnly {
+			if _, ok := r.(graphstore.LinkRecord); !ok {
+				return nil, "", graphFailure("capability_unavailable", "link show requires a Link Resource", 5)
+			}
 		}
 		_, shownIssue = r.(graphstore.IssueRecord)
 		if shortMode && shownIssue && !versioned && format == "" {
@@ -780,21 +799,10 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return r, formatShortIssue(&issue), nil
 		}
 		if shownIssue && jsonOutput && format == "" && !versioned {
-			includeDependents, _ := cmd.Flags().GetBool("include-dependents")
-			includeComments, _ := cmd.Flags().GetBool("include-comments")
-			briefDeps, _ := cmd.Flags().GetBool("brief-deps")
-			details, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
-			if err != nil {
-				return nil, "", err
-			}
 			legacyIssue = true
 			return []*types.IssueDetails{details}, "", nil
 		}
 		if shownIssue && !jsonOutput && format == "" && !versioned {
-			details, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
-			if err != nil {
-				return nil, "", err
-			}
 			return details, renderGraphIssueDetails(details, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}), nil
 		}
 		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps") || cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {

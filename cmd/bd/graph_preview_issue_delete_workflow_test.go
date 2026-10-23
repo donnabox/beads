@@ -43,25 +43,25 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			if !applied.Deleted || applied.Preview || !reflect.DeepEqual(applied.Issue, unguarded) {
 				t.Fatal("unguarded --force did not delete the current Issue")
 			}
-			refuse("gone", "show", "unguarded")
+			refuse("gone", "show", unguarded.ID)
 			refuse("revision_conflict", "delete", "work", "--force", "--if-revision", "stale")
 			refuse("capability_unavailable", "forget", "work")
 			call("remember", "Other", "--id", "beads/other")
 			call("link", "work", "other", "--type", "types/references", "--id", "links/relation")
 			refuse("constraint_violation", "delete", "work")
 			refuse("constraint_violation", "delete", "work", "--force", "--if-revision", issue.Revision)
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", issue.ID)); !reflect.DeepEqual(got, issue) {
 				t.Fatal("incident Link refusal changed Issue")
 			}
-			link := graphMixedResult[graphstore.LinkRecord](t, call("show", "links/relation"))
+			link := graphMixedResult[graphstore.LinkRecord](t, call("show", scope+"links/relation"))
 			call("link", "delete", "--force", "links/relation", "--if-revision", link.Revision)
-			final := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work"))
+			final := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", issue.ID))
 			before := call("versions", "work")
 			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "work", "--force", "--if-revision", final.Revision))
 			if !deleted.Deleted || deleted.Preview || !reflect.DeepEqual(deleted.Issue, final) {
 				t.Fatal("apply did not disclose final live Issue")
 			}
-			refuse("gone", "show", "work")
+			refuse("gone", "show", issue.ID)
 			refuse("gone", "delete", "work", "--force")
 			refuse("identity_reserved", "create", "Replacement", "--graph-path", "beads/work")
 			type terminalHistory struct {
@@ -75,7 +75,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 				t.Fatal("native deletion lost prior snapshots or distinct D")
 			}
 
-			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--version", final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
+			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", issue.ID, "--version", final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
 				t.Fatal("final live snapshot unavailable")
 			}
 			call("show", "other")

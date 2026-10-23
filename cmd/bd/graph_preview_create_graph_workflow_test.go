@@ -18,7 +18,8 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			work, home := t.TempDir(), t.TempDir()
-			args := []string{"init", "--graph-mode", "link", "--prefix", "batch", "--scope-url", "https://example.invalid/batch/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			const scope = "https://example.invalid/batch/"
+			args := []string{"init", "--graph-mode", "link", "--prefix", "batch", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
 				if port == "" {
@@ -220,7 +221,7 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if kind != "issue" || len(versions) != 4 || versions[0].Version != updated.Revision || versions[3].Version != original.Revision {
 				t.Fatalf("multi-Link plan did not retain every source version: %+v", versions)
 			}
-			intermediate := graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-existing-source", "--version", versions[1].Version))
+			intermediate := graphMixedResult[graphstore.IssueRecord](t, call("show", scope+"beads/batch-existing-source", "--version", versions[1].Version))
 			if len(intermediate.Owned) != 2 {
 				t.Fatalf("multi-Link plan's intermediate History has wrong owned set: %+v", intermediate)
 			}

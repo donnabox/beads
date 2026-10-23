@@ -107,6 +107,87 @@ func (s *Store) ReadBeadWithIssueDetailsSelected(ctx context.Context, selector I
 	return record, details, nil
 }
 
+// ReadResourceWithIssueDetailsSelected resolves a local public ID across the
+// currently supported Bead and Link backings in one checked snapshot. A
+// canonical Scope URL supplies only an exact path. No local spelling is
+// interpreted as a graph path, including beads/ and links/ prefixes.
+func (s *Store) ReadResourceWithIssueDetailsSelected(ctx context.Context, path, localID string, opts workapi.DetailOptions) (string, any, *types.IssueDetails, error) {
+	if localID == "" {
+		if err := validateResourcePath(path); err != nil {
+			return "", nil, nil, err
+		}
+	} else if path != "beads/"+localID || validatePath(path) != nil || validateLinkPath("links/"+localID) != nil {
+		return "", nil, nil, fmt.Errorf("%w: invalid local Resource ID", storage.ErrValidation)
+	}
+	var selectedPath string
+	var record any
+	var details *types.IssueDetails
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkCurrentReadBytes(ctx, tx); err != nil {
+			return err
+		}
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		if localID == "" {
+			selectedPath = path
+			var err error
+			record, err = s.readCurrentVerifiedInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+		} else {
+			issuePath, issue, issueErr := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: localID})
+			if issueErr != nil && !errors.Is(issueErr, ErrNotFound) && !errors.Is(issueErr, errNonIssueSelector) {
+				return issueErr
+			}
+			if issueErr == nil {
+				selectedPath, record = issuePath, issue
+			}
+			for _, candidate := range []struct{ path, backing string }{{path, "generic"}, {"links/" + localID, "link"}} {
+				var backing string
+				err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, candidate.path).Scan(&backing)
+				if errors.Is(err, sql.ErrNoRows) {
+					continue
+				}
+				if err != nil {
+					return err
+				}
+				if candidate.backing == "generic" && backing != "generic" {
+					continue
+				}
+				if candidate.backing == "link" && backing != "dependency" && backing != "informational" {
+					continue
+				}
+				if selectedPath != "" {
+					return fmt.Errorf("%w: public ID %q identifies multiple Resources; use a canonical Scope URL", storage.ErrValidation, localID)
+				}
+				selectedPath = candidate.path
+			}
+			if selectedPath == "" {
+				return ErrNotFound
+			}
+			if record == nil {
+				var err error
+				record, err = s.readCurrentVerifiedInTx(ctx, tx, selectedPath)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		if issue, ok := record.(IssueRecord); ok {
+			var err error
+			details, err = s.issueDetailsInTx(ctx, tx, selectedPath, issue, opts)
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return "", nil, nil, err
+	}
+	return selectedPath, record, details, nil
+}
+
 func (s *Store) issueDetailsInTx(ctx context.Context, tx *sql.Tx, path string, record IssueRecord, opts workapi.DetailOptions) (*types.IssueDetails, error) {
 	if record.Properties == nil {
 		return nil, fmt.Errorf("%w: Issue has no properties", ErrInvalidStore)

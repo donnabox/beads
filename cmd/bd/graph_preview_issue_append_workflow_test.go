@@ -68,7 +68,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			target := call("create", "Prerequisite", "--graph-path", "beads/gate")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
-			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim", "--actor", "holder"))
 			if !claimed.Changed || claimed.Issue.Properties.Assignee != "holder" || claimed.Issue.Properties.LeaseExpiresAt == nil {
 				t.Fatalf("claim: %+v", claimed)
@@ -113,7 +113,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("refusals changed complete current state")
 			}
-			if call("show", "beads/context") != memory || call("show", "beads/gate", "--format", "graph-json") != target {
+			if call("show", scope+"beads/context") != memory || call("show", scope+"beads/gate", "--format", "graph-json") != target {
 				t.Fatal("append changed surrounding Beads")
 			}
 			if got := graphMixedResult[graphstore.LinkRecord](t, call("show", dependency.Link.ID)); !reflect.DeepEqual(got, dependency.Link) {
@@ -152,7 +152,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			}
 			call("close", "beads/gate", "--reason", "Done", "--actor", "holder")
 			call("close", "beads/work", "--reason", "Done", "--actor", "holder")
-			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
+			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			changed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--append-notes=Post-completion", "--if-revision", closed.Revision, "--actor", "holder"))
 			if !changed.Changed {
 				t.Fatal("closed append reported no-op")

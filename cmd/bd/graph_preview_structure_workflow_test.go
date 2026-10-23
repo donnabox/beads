@@ -116,8 +116,8 @@ func TestGraphPreviewCheckCycleJSONUsesNativeIssueIDs(t *testing.T) {
 	a := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "A", "--graph-path", "beads/a", "--json"))
 	b := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "B", "--graph-path", "beads/b", "--json"))
 	graphPolicyCLI(t, bd, work, home, nil, "", "create", "C", "--graph-path", "beads/c", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/a", "beads/b", "--json")
-	bc := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/b", "beads/c", "--json"))
+	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/a", scope+"beads/b", "--json")
+	bc := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/b", scope+"beads/c", "--json"))
 	graphPreviewRetargetDependencyForCycle(t, work, scope, bc.Link, b.Properties.ID, a.Properties.ID, a.ID)
 
 	stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "graph", "check", "--json")
@@ -164,8 +164,8 @@ func TestGraphPreviewDepTreeBothDistinguishesDirections(t *testing.T) {
 	} {
 		graphPolicyCLI(t, bd, work, home, nil, "", "create", issue.title, "--graph-path", issue.id, "--json")
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/root", "beads/blocker", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/dependent", "beads/root", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/root", scope+"beads/blocker", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/dependent", scope+"beads/root", "--json")
 
 	got := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "root", "--direction", "both"))
 	want := strings.Join([]string{
@@ -198,7 +198,7 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "children", "parent", "--pretty", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "children", "missing", "--json")
 
-	created := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/work", "beads/parent", "--json"))
+	created := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/work", scope+"beads/parent", "--json"))
 	if created.Link.Source != scope+"beads/work" || created.Link.Target != scope+"beads/parent" {
 		t.Fatalf("dependency endpoints lost canonical IDs: %+v", created.Link)
 	}
@@ -329,7 +329,7 @@ func TestGraphPreviewChildrenNative(t *testing.T) {
 	for _, id := range []string{"beads/parent", "beads/child", "beads/parent.lookalike"} {
 		graphPolicyCLI(t, bd, work, home, nil, "", "create", id, "--graph-path", id, "--json")
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "child", "parent", "--type", "parent-child", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/child", scope+"beads/parent", "--type", "parent-child", "--json")
 	var children []struct {
 		ID     string  `json:"id"`
 		Parent *string `json:"parent"`
@@ -358,7 +358,7 @@ func TestGraphPreviewEpicNativeProgressAndClose(t *testing.T) {
 	call("", "create", "Release epic", "--graph-path", "beads/epic", "--type", "epic", "--json")
 	call("", "create", "Child work", "--graph-path", "beads/child", "--json")
 	call("", "create", "Dotted lookalike", "--graph-path", "beads/epic.lookalike", "--json")
-	call("", "dep", "add", "child", "epic", "--type", "parent-child", "--json")
+	call("", "dep", "add", scope+"beads/child", scope+"beads/epic", "--type", "parent-child", "--json")
 	decode := func(raw string) []struct {
 		Epic struct {
 			ID string `json:"id"`
@@ -422,7 +422,7 @@ func TestGraphPreviewEpicCloseEligibleActorAndPartialFailure(t *testing.T) {
 		child := "beads/" + owner + "-child"
 		call("create", owner+" epic", "--graph-path", epic, "--type", "epic", "--assignee", owner, "--actor", owner)
 		call("create", owner+" child", "--graph-path", child)
-		call("dep", "add", child, epic, "--type", "parent-child")
+		call("dep", "add", scope+child, scope+epic, "--type", "parent-child")
 		call("close", child, "--reason", "Done")
 	}
 	beforeAlice := call("versions", "beads/alice-epic")
@@ -454,10 +454,10 @@ func TestGraphPreviewEpicCloseEligibleActorAndPartialFailure(t *testing.T) {
 	if len(aliceAfterRows) != len(aliceBeforeRows)+1 {
 		t.Fatalf("successful sibling close must append one Issue History version: %d -> %d", len(aliceBeforeRows), len(aliceAfterRows))
 	}
-	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/alice-epic", "--format", "graph-json")); got.Properties.Status != "closed" || got.Attribution.Actor != "alice" {
+	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", scope+"beads/alice-epic", "--format", "graph-json")); got.Properties.Status != "closed" || got.Attribution.Actor != "alice" {
 		t.Fatalf("explicit actor lost authority or provenance: %+v", got)
 	}
-	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/bob-epic", "--format", "graph-json")); got.Properties.Status == "closed" {
+	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", scope+"beads/bob-epic", "--format", "graph-json")); got.Properties.Status == "closed" {
 		t.Fatalf("another actor closed Bob's epic: %+v", got)
 	}
 	if call("versions", "beads/bob-epic") != beforeBob {
@@ -466,7 +466,7 @@ func TestGraphPreviewEpicCloseEligibleActorAndPartialFailure(t *testing.T) {
 	if got := call("epic", "close-eligible", "--actor", "bob"); !strings.Contains(got, `"count": 1`) {
 		t.Fatalf("assigned actor could not finish remaining epic: %s", got)
 	}
-	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/bob-epic", "--format", "graph-json")); got.Properties.Status != "closed" || got.Attribution.Actor != "bob" {
+	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", scope+"beads/bob-epic", "--format", "graph-json")); got.Properties.Status != "closed" || got.Attribution.Actor != "bob" {
 		t.Fatalf("second epic close lost actor provenance: %+v", got)
 	}
 }
@@ -483,7 +483,7 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	for _, id := range []string{"work", "first", "second"} {
 		created[id] = graphMixedResult[graphstore.IssueRecord](t, call("", "create", id, "--graph-path", "beads/"+id, "--json"))
 	}
-	added := graphMixedResult[graphstore.DependencyResult](t, call("", "dep", "add", "work", "first", "--id", "links/first", "--json"))
+	added := graphMixedResult[graphstore.DependencyResult](t, call("", "dep", "add", scope+"beads/work", scope+"beads/first", "--id", "links/first", "--json"))
 	firstHistory := call("", "versions", "first", "--json")
 	workHistory := call("", "versions", "work", "--json")
 	type removalJSON struct {
@@ -513,7 +513,7 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	} else if _, _, after, _ := graphVersionsListed(t, call("", "versions", "work", "--json")); len(after) != len(before)+1 {
 		t.Fatalf("pair removal should append exactly one source History version: %d → %d", len(before), len(after))
 	}
-	call("gone", "show", "links/first", "--json")
+	call("gone", "show", scope+"links/first", "--json")
 	afterRemoval := call("", "versions", "work", "--json")
 	again := decode(call("", "dep", "rm", "work", "first", "--json"))
 	if again.Status != "not_found" || again.Removed || call("", "versions", "work", "--json") != afterRemoval {
@@ -530,19 +530,19 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	if source.Properties.ID == "custom-source-path" || target.Properties.ID == "custom-target-path" {
 		t.Fatalf("fixture must distinguish canonical path from native backing ID: %s %s", source.Properties.ID, target.Properties.ID)
 	}
-	call("", "dep", "add", "beads/custom-source-path", "beads/custom-target-path", "--id", "links/custom-edge", "--json")
+	call("", "dep", "add", scope+"beads/custom-source-path", scope+"beads/custom-target-path", "--id", "links/custom-edge", "--json")
 	native := decode(call("", "dep", "remove", source.Properties.ID, target.Properties.ID, "--json"))
 	if !native.Removed || native.IssueID != source.Properties.ID || native.DependsOnID != target.Properties.ID {
 		t.Fatalf("bare native IDs did not resolve the checked Issue pair: %+v", native)
 	}
-	call("", "dep", "add", "beads/custom-source-path", "beads/custom-target-path", "--id", "links/custom-readded", "--json")
+	call("", "dep", "add", scope+"beads/custom-source-path", scope+"beads/custom-target-path", "--id", "links/custom-readded", "--json")
 	call("", "remember", "Colliding Memory", "--id", "beads/"+source.Properties.ID, "--json")
 	beforeAmbiguous := call("", "versions", "beads/custom-source-path", "--json")
 	call("invalid_properties", "dep", "remove", source.Properties.ID, target.Properties.ID, "--json")
 	if after := call("", "versions", "beads/custom-source-path", "--json"); after != beforeAmbiguous {
 		t.Fatalf("ambiguous native selector changed Issue History\nbefore: %s\nafter: %s", beforeAmbiguous, after)
 	}
-	explicit := decode(call("", "dep", "remove", "beads/custom-source-path", scope+"beads/custom-target-path", "--json"))
+	explicit := decode(call("", "dep", "remove", scope+"beads/custom-source-path", scope+"beads/custom-target-path", "--json"))
 	if !explicit.Removed || explicit.IssueID != source.Properties.ID || explicit.DependsOnID != target.Properties.ID {
 		t.Fatalf("explicit canonical selectors lost authority after bare-ID collision: %+v", explicit)
 	}

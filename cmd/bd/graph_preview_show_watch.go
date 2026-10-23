@@ -30,17 +30,17 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 	if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
 		return graphFailure("capability_unavailable", "--watch requires a current Issue", 5)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, ref.Identity)
+	selectorPath, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if !strings.HasPrefix(path, "beads/") {
+	if !strings.HasPrefix(selectorPath, "beads/") {
 		return graphFailure("capability_unavailable", "--watch requires an Issue", 5)
 	}
 	// Refuse a Memory or missing Issue before starting a watch. The shared
 	// loop's initial-render failure is otherwise silent by design.
 	if err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		record, err := s.Read(ctx, path)
+		_, record, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, selectorPath, localID, workapi.DetailOptions{})
 		if err != nil {
 			return nil, "", err
 		}
@@ -59,9 +59,12 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 		render: func(ctx context.Context) *types.Issue {
 			var issue *types.Issue
 			err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-				detail, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
+				_, record, detail, err := s.ReadResourceWithIssueDetailsSelected(ctx, selectorPath, localID, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
 				if err != nil {
 					return nil, "", err
+				}
+				if _, ok := record.(graphstore.IssueRecord); !ok {
+					return nil, "", graphFailure("capability_unavailable", "--watch requires an Issue", 5)
 				}
 				return detail, renderGraphIssueDetails(detail, graphIssueDetailOptions{CommentsTail: commentsTail}), nil
 			}, func(result any, human string) error {
@@ -85,7 +88,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 			if err != nil {
 				return nil, err
 			}
-			record, readErr := s.Read(readCtx, path)
+			path, record, _, readErr := s.ReadResourceWithIssueDetailsSelected(readCtx, selectorPath, localID, workapi.DetailOptions{})
 			closeErr := s.Close()
 			if err := errors.Join(readErr, closeErr); err != nil {
 				return nil, err

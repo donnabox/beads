@@ -12,6 +12,7 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/workapi"
 )
 
 // Reader leaves storage lifetime with its caller. Each Resource read includes
@@ -32,6 +33,18 @@ func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
 		return nil, err
 	}
 	return r.projectResource(ctx, record)
+}
+
+// ResourceSelected resolves a local opaque public ID in storage's checked
+// snapshot before projecting its Resource. Immutable Type descriptors may be
+// read afterward without reselecting the Resource.
+func (r *Reader) ResourceSelected(ctx context.Context, path, localID string) (string, any, error) {
+	selected, record, _, err := r.store.ReadResourceWithIssueDetailsSelected(ctx, path, localID, workapi.DetailOptions{})
+	if err != nil {
+		return "", nil, err
+	}
+	projected, err := r.projectResource(ctx, record)
+	return selected, projected, err
 }
 
 // ResourceVersion projects one exact retained snapshot through the same BDP

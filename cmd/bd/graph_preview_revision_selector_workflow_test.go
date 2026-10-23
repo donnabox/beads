@@ -32,7 +32,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 			call("create", "Source", "--graph-path", "beads/source")
 			call("remember", "Target", "--id", "beads/target")
 			call("create", "Native target", "--graph-path", "beads/native-target")
-			sourceBefore := call("show", "beads/source")
+			sourceBefore := call("show", scope+"beads/source")
 			linksBefore := call("link", "list", "--source", "beads/source")
 			for _, tc := range []struct {
 				name, source, target string
@@ -46,7 +46,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 					args := []string{"link", "create", tc.source, tc.target, "--type", "types/references"}
 					args = append(args, tc.flags...)
 					refuse("revision_unknown", args...)
-					if got := call("show", "beads/source"); got != sourceBefore {
+					if got := call("show", scope+"beads/source"); got != sourceBefore {
 						t.Fatal("refused Link creation changed the owning source")
 					}
 					if got := call("link", "list", "--source", "beads/source"); got != linksBefore {
@@ -70,7 +70,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				{"capability_unavailable", []string{"link", "source", "native-target", "--type", "blocks", "--target-revision", "observed"}},
 			} {
 				refuse(tc.code, tc.args...)
-				if got := call("show", "beads/source"); got != sourceBefore {
+				if got := call("show", scope+"beads/source"); got != sourceBefore {
 					t.Fatal("refused shorthand Link creation changed the source")
 				}
 				if got := call("link", "list", "--source", "beads/source"); got != linksBefore {
@@ -232,7 +232,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			}
 			human = graphPolicyCLI(t, bd, work, home, nil, "", "link", "disclosure", "target", "--type", "types/subject-to", "--id", "links/disclosed")
 			owner := graphMixedResult[graphstore.Record](t, call("show", "disclosure"))
-			linked := graphMixedResult[graphstore.LinkRecord](t, call("show", "links/disclosed"))
+			linked := graphMixedResult[graphstore.LinkRecord](t, call("show", scope+"links/disclosed"))
 			if !strings.Contains(human, "Current Link revision: ["+linked.ID+"]@"+linked.Revision) || !strings.Contains(human, "Current source revision: ["+owner.ID+"]@"+owner.Revision) {
 				t.Fatalf("Link write omitted current source revision: %q", human)
 			}

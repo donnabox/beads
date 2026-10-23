@@ -50,7 +50,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 			if !edited.Changed || edited.Memory.Type != scope+"types/requirement" || !strings.Contains(call("show", memory.ID), `"kept"`) {
 				t.Fatal("combined retype/merge lost inherited complete properties")
 			}
-			retained := graphMixedResult[graphstore.Record](t, call("show", "memory@"+memory.Revision))
+			retained := graphMixedResult[graphstore.Record](t, call("show", "["+memory.ID+"]@"+memory.Revision))
 			if !reflect.DeepEqual(retained, memory) {
 				t.Fatal("retype rewrote the original Type/payload/history")
 			}

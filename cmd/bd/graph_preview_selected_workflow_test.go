@@ -31,8 +31,8 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			for _, edge := range [][3]string{{"i1", "m1", "a"}, {"m1", "i2", "b"}, {"i2", "m2", "c"}, {"i1", "m1", "parallel"}, {"m1", "i1", "cycle"}} {
 				call("link", "create", edge[0], edge[1], "--id", edge[2], "--type", "types/references")
 			}
-			call("dep", "add", "i1", "i2")
-			call("dep", "add", "i2", "isolated-issue")
+			call("dep", "add", scope+"beads/i1", scope+"beads/i2")
+			call("dep", "add", scope+"beads/i2", scope+"beads/isolated-issue")
 			pin := graphMixedResult[graphstore.Record](t, call("show", "m2"))
 			call("link", "create", "m1", "m2", "--id", "pin", "--type", "types/references", "--target-revision", pin.Revision)
 			call("update", "m2", "--properties", `{"title":"New current title"}`)

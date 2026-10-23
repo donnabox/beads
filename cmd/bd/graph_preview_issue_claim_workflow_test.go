@@ -73,7 +73,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			target := call("create", "Prerequisite", "--graph-path", "beads/gate")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim", "--actor", "rig.agent"))
 			if !claimed.Changed {
 				t.Fatal("initial claim did not change Issue")
@@ -107,7 +107,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("no-op/refusal changed current graph, including lease timestamps")
 			}
-			if call("show", "beads/context") != memory || call("show", "beads/gate", "--format", "graph-json") != target {
+			if call("show", scope+"beads/context") != memory || call("show", scope+"beads/gate", "--format", "graph-json") != target {
 				t.Fatal("claim changed unrelated Beads")
 			}
 			if got := graphMixedResult[graphstore.LinkRecord](t, call("show", dependency.Link.ID)); !reflect.DeepEqual(got, dependency.Link) {

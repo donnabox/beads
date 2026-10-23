@@ -85,13 +85,13 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 				if row.Version == removed.Link.Version {
 					t.Fatalf("deletion marker became a version: %+v", row)
 				}
-				call("show", "links/edge", "--version", row.Version)
+				call("show", scope+"links/edge", "--version", row.Version)
 			}
 			if got := call("history", "links/edge"); got != listed {
 				t.Fatalf("history alias differs from versions: history=%s versions=%s", got, listed)
 			}
 			_, stderr, code := graphVersionsProcess(t, bd, work, home,
-				"show", "links/edge", "--version", removed.Link.Version, "--json")
+				"show", scope+"links/edge", "--version", removed.Link.Version, "--json")
 			if code == 0 || !strings.Contains(stderr, "gone") {
 				t.Fatalf("private deletion token unexpectedly citable: code=%d stderr=%q", code, stderr)
 			}
@@ -357,9 +357,9 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 				t.Fatalf("non-citable deletion token appeared as a Resource version: %+v", row)
 			}
 			// Every returned token must actually work as an exact address.
-			run(t, "show", "links/related", "--version", row.Version, "--json")
+			run(t, "show", scope+"links/related", "--version", row.Version, "--json")
 		}
-		_, stderr, code := graphVersionsProcess(t, bd, work, home, "show", "links/related", "--version", removedLink.Link.Version, "--json")
+		_, stderr, code := graphVersionsProcess(t, bd, work, home, "show", scope+"links/related", "--version", removedLink.Link.Version, "--json")
 		if code == 0 || !strings.Contains(stderr, "gone") {
 			t.Fatalf("private deletion token unexpectedly citable: code=%d stderr=%q", code, stderr)
 		}
