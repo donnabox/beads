@@ -38,7 +38,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			for _, id := range []string{"a", "b", "c", "d"} {
 				old("create", id, "--id", id, "--type", "types/constraint")
 			}
-			old("create", "native", "--id", "i", "--type", "task")
+			old("create", "native", "--graph-path", "beads/i", "--type", "task")
 			decode := func(raw string) memoryAuthoredLink {
 				t.Helper()
 				var frame struct {
