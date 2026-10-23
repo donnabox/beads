@@ -9,6 +9,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 // IssueDeleteRequest previews or applies deletion of one durable graph Issue.
@@ -20,13 +21,32 @@ type IssueDeleteRequest struct {
 
 // IssueDeleteResult separates the final live Issue from graph deletion evidence.
 type IssueDeleteResult struct {
-	Issue    IssueRecord        `json:"issue"`
-	Terminal *BeadTerminalState `json:"terminal,omitempty"`
-	Preview  bool               `json:"preview"`
-	Deleted  bool               `json:"deleted"`
+	Issue           IssueRecord        `json:"issue"`
+	Terminal        *BeadTerminalState `json:"terminal,omitempty"`
+	Preview         bool               `json:"preview"`
+	Deleted         bool               `json:"deleted"`
+	IncidentLinkIDs []string           `json:"incident_link_ids,omitempty"`
 }
 
 func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (IssueDeleteResult, error) {
+	return s.deleteIssue(ctx, request, false, false)
+}
+
+// DeleteIssueWithIncidentLinks is the explicit composed storage operation.
+// The CLI must select its own force/cascade policy before using it.
+func (s *Store) DeleteIssueWithIncidentLinks(ctx context.Context, request IssueDeleteRequest) (IssueDeleteResult, error) {
+	return s.deleteIssue(ctx, request, true, false)
+}
+
+// PreviewDeleteIssueWithIncidentLinks plans an unforced single-Issue deletion
+// under one read transaction. Native dependents outside the deletion set
+// refuse, including when a canonical Link would otherwise be unlinked.
+func (s *Store) PreviewDeleteIssueWithIncidentLinks(ctx context.Context, request IssueDeleteRequest) (IssueDeleteResult, error) {
+	request.Preview = true
+	return s.deleteIssue(ctx, request, true, true)
+}
+
+func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, removeIncidentLinks, enforceDependents bool) (IssueDeleteResult, error) {
 	if err := validatePath(request.Path); err != nil {
 		return IssueDeleteResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
@@ -63,16 +83,44 @@ func (s *Store) DeleteIssue(ctx context.Context, request IssueDeleteRequest) (Is
 		if err != nil {
 			return err
 		}
-		if len(links) != 0 {
-			ids := make([]string, len(links))
-			for i, link := range links {
-				ids[i] = link.ID
-			}
+		ids := make([]string, len(links))
+		for i, link := range links {
+			ids[i] = link.ID
+		}
+		if len(links) != 0 && !removeIncidentLinks {
 			return fmt.Errorf("%w: %s has incident Links %s; unlink explicitly before retrying", ErrIncidentLinkConstraint, request.Path, strings.Join(ids, ", "))
 		}
-		result = IssueDeleteResult{Issue: current, Preview: request.Preview}
+		if enforceDependents {
+			issueID := current.Properties.ID
+			byTarget, err := issueops.ExternalDependentsBySourceInTx(ctx, tx, []string{issueID}, map[string]bool{issueID: true})
+			if err != nil {
+				return err
+			}
+			if dependents := byTarget[issueID]; len(dependents) != 0 {
+				return &publicops.DependentsOutsideRequestError{IssueID: issueID, Dependents: dependents}
+			}
+		}
+		result = IssueDeleteResult{Issue: current, Preview: request.Preview, IncidentLinkIDs: ids}
 		if request.Preview {
 			return nil
+		}
+		for _, link := range links {
+			path := strings.TrimPrefix(link.ID, s.ScopeURL())
+			if _, err := s.unlinkInTx(ctx, tx, LinkDeleteRequest{
+				Path: path, Actor: request.Actor, ExpectedRevision: link.Revision,
+				UnconditionalSource: true,
+			}); err != nil {
+				return err
+			}
+		}
+		if len(links) != 0 {
+			// Unlinking a dependency can version its source Issue. The deletion
+			// terminal must refer to that final live head, not the pre-plan head.
+			current, err = s.showIssueInTx(ctx, tx, request.Path)
+			if err != nil {
+				return err
+			}
+			result.Issue = current
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err

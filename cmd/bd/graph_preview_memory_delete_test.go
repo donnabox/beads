@@ -57,9 +57,12 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 		{"cascade", "beads/plan", []string{"--cascade"}, false, false, 5},
 		{"false-cascade", "beads/plan", []string{"--cascade=false"}, false, false, 5},
 		{"file", "beads/plan", []string{"--from-file=/unread/deletions"}, false, false, 5},
-		{"dry-run", "beads/plan", []string{"--dry-run"}, false, false, 5},
+		{"dry-run", "beads/plan", []string{"--dry-run"}, false, true, 0},
+		{"force-dry-run", "beads/plan", []string{"--force", "--dry-run"}, false, true, 0},
+		{"false-dry-run", "beads/plan", []string{"--dry-run=false", "--force"}, false, false, 0},
 		{"erase", "beads/plan", []string{"--erase"}, false, false, 5},
 		{"forget-force", "beads/plan", []string{"--force"}, true, false, 5},
+		{"forget-dry-run", "beads/plan", []string{"--dry-run"}, true, false, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := graphPreviewMemoryDeleteInput(memoryDeleteCommand(t, tc.flags), []string{tc.selector}, tc.forget)
