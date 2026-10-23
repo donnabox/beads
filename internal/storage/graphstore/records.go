@@ -81,15 +81,15 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if err := catalog.validateProperties(r.Type, properties, graph.KindBead); err != nil {
 		return Record{}, err
 	}
-	snapshot, err := canonicalJSON(r)
-	if err != nil {
-		return Record{}, err
-	}
 	err = s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		return s.createInTx(ctx, tx, req, r, properties, snapshot)
+		accepted, err := s.createPreparedMemoryInTx(ctx, tx, req, r, properties)
+		if err == nil {
+			r = accepted
+		}
+		return err
 	})
 	if err != nil {
 		return Record{}, err
@@ -97,54 +97,89 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	return r, nil
 }
 
+// createInTx preserves the existing path-based importer seam. New public-ID
+// imports use createPreparedMemoryInTx and consume its actual returned locator.
 func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties, snapshot []byte) error {
-	if err := s.requireAssessmentAuthoring(r.Type); err != nil {
+	if req.PublicID != "" {
+		return fmt.Errorf("%w: public-ID import requires returned allocation", ErrCapabilityUnavailable)
+	}
+	canonical, err := canonicalJSON(r)
+	if err != nil {
 		return err
+	}
+	if !bytes.Equal(snapshot, canonical) {
+		return fmt.Errorf("%w: legacy create snapshot differs from prepared record", ErrInvalidStore)
+	}
+	_, err = s.createPreparedMemoryInTx(ctx, tx, req, r, properties)
+	return err
+}
+
+func (s *Store) createPreparedMemoryInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties []byte) (Record, error) {
+	if err := s.requireAssessmentAuthoring(r.Type); err != nil {
+		return Record{}, err
 	}
 	if err := s.touchCoordination(ctx, tx); err != nil {
-		return err
-	}
-	var exists int
-	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path = ?`, req.Path).Scan(&exists)
-	if err == nil {
-		return ErrAlreadyExists
-	}
-	if !errors.Is(err, sql.ErrNoRows) {
-		return err
+		return Record{}, err
 	}
 	publicID := req.PublicID
 	if publicID == "" {
 		publicID = req.Path
 	}
 	if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
-		return err
+		return Record{}, err
 	} else if exists {
-		return ErrAlreadyExists
+		return Record{}, ErrAlreadyExists
+	}
+	for attempt := 0; ; attempt++ {
+		var occupied int
+		err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, req.Path).Scan(&occupied)
+		if errors.Is(err, sql.ErrNoRows) {
+			break
+		}
+		if err != nil {
+			return Record{}, err
+		}
+		if !req.privatePathGenerated || attempt >= 8 {
+			return Record{}, ErrAlreadyExists
+		}
+		token, err := freshToken()
+		if err != nil {
+			return Record{}, err
+		}
+		req.Path = "beads/" + token
+	}
+	r.ID = graph.CanonicalURL(s.ScopeURL(), req.Path)
+	snapshot, err := canonicalJSON(r)
+	if err != nil {
+		return Record{}, err
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
         (path, resource_kind, type_url, revision, allocation_state, backing, public_id)
         VALUES (?, 'bead', ?, ?, 'live', 'generic', ?)`, req.Path, r.Type, r.Revision, nullableMemoryPublicID(req.PublicID)); err != nil {
-		return err
+		return Record{}, err
 	}
 	if err := s.afterStage("allocation"); err != nil {
-		return err
+		return Record{}, err
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_payloads (path, properties, metadata) VALUES (?, ?, ?)`, req.Path, properties, r.Metadata); err != nil {
-		return err
+		return Record{}, err
 	}
 	if err := s.afterStage("payload"); err != nil {
-		return err
+		return Record{}, err
 	}
 	err = insertPreviewVersionInTx(ctx, tx, req.Path, r.Version, snapshot, req.Actor)
 	if err != nil {
-		return err
+		return Record{}, err
 	}
 	if err := s.afterStage("retained"); err != nil {
-		return err
+		return Record{}, err
 	}
 	// Public IDs are untruncated data. Refuse oversized aggregate growth inside
 	// this write transaction rather than committing an unreadable allocation.
-	return checkCurrentReadBytes(ctx, tx)
+	if err := checkCurrentReadBytes(ctx, tx); err != nil {
+		return Record{}, err
+	}
+	return r, nil
 }
 
 func (s *Store) touchCoordination(ctx context.Context, tx *sql.Tx) error {

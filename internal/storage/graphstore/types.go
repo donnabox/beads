@@ -57,14 +57,15 @@ type Options struct {
 type CreateRequest struct {
 	// PublicID is an exact user identity; Path is its private locator. Empty
 	// retains the legacy allocation-path public identity.
-	PublicID       string
-	TypeURL        string
-	PropertiesJSON json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
-	Path           string
-	Title          string
-	Body           string
-	Actor          string
-	Metadata       json.RawMessage
+	PublicID             string
+	privatePathGenerated bool
+	TypeURL              string
+	PropertiesJSON       json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
+	Path                 string
+	Title                string
+	Body                 string
+	Actor                string
+	Metadata             json.RawMessage
 }
 
 // Properties retains the common Memory fields and every other authored property.

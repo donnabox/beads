@@ -175,7 +175,11 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	pins := make([]graphstore.EndpointPin, 2)
 	for i, endpoint := range []struct{ name, value string }{{"source-revision", args[0]}, {"target-revision", args[1]}} {
 		flag, _ := cmd.Flags().GetString(endpoint.name)
-		ref, err := graphPreviewReferenceWithFlag(endpoint.value, flag, cmd.Flags().Changed(endpoint.name))
+		identity, err := graphPreviewResolveMemoryArgument(endpoint.value)
+		if err != nil {
+			return err
+		}
+		ref, err := graphPreviewReferenceWithFlag(identity, flag, cmd.Flags().Changed(endpoint.name))
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -201,11 +205,11 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	paths := make([]string, 2)
 	localIDs := make([]string, 2)
 	for i, selector := range args {
-		selected, err := graphPreviewIssueSelector(selector)
+		path, localID, err := graphPreviewResourceReadSelector(selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		paths[i], localIDs[i] = selected.Path, selected.NativeID
+		paths[i], localIDs[i] = path, localID
 	}
 	path, _ := cmd.Flags().GetString("id")
 	if cmd.Flags().Changed("id") {

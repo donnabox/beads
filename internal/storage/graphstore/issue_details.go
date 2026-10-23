@@ -141,15 +141,8 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 			return err
 		}
 		if localID == "" {
-			var publicPath string
-			err := tx.QueryRowContext(ctx, `SELECT path FROM graph_preview_catalog WHERE COALESCE(public_id,path)=? AND backing IN ('generic','dependency','informational')`, s.ScopeURL()+path).Scan(&publicPath)
-			if err != nil && !errors.Is(err, sql.ErrNoRows) {
-				return err
-			}
-			if err == nil && publicPath != path {
-				return fmt.Errorf("%w: selector names a public ID and a different canonical locator", storage.ErrValidation)
-			}
 			selectedPath = path
+			var err error
 			record, err = s.readCurrentVerifiedInTx(ctx, tx, path)
 			if err != nil {
 				return err
@@ -159,24 +152,39 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 			// preview. Bare suffixes remain compatibility shorthand; an Issue's
 			// private graph path is never a second local Issue identity.
 			exactNonIssuePath := ""
-			var exactBacking string
-			exactErr := tx.QueryRowContext(ctx, `SELECT path,backing FROM graph_preview_catalog WHERE backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=? LIMIT 1`, localID).Scan(&exactNonIssuePath, &exactBacking)
-			if exactErr != nil && !errors.Is(exactErr, sql.ErrNoRows) {
-				return exactErr
+			rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=? AND allocation_state='live' LIMIT 2`, localID)
+			if err != nil {
+				return err
 			}
-			if exactErr == nil {
-				selectedPath = exactNonIssuePath
-				var err error
-				record, err = s.readCurrentVerifiedInTx(ctx, tx, selectedPath)
-				if err != nil {
+			for rows.Next() {
+				if exactNonIssuePath != "" {
+					_ = rows.Close()
+					return fmt.Errorf("%w: public ID has multiple live allocations", ErrInvalidStore)
+				}
+				if err := rows.Scan(&exactNonIssuePath); err != nil {
+					_ = rows.Close()
 					return err
 				}
-				return nil
 			}
-			// Only path-shaped remaining selectors can name native Issues or
-			// participate in legacy abbreviation/suffix compatibility.
-			if validatePath(path) != nil || validateLinkPath("links/"+localID) != nil {
-				return ErrNotFound
+			if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+				return err
+			}
+			if exactNonIssuePath == "" {
+				// Explicit public IDs remain authoritative through deletion;
+				// old NULL-ID suffix compatibility retains its former policy.
+				var deleted int
+				if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE public_id=? AND allocation_state='deleted'`, localID).Scan(&deleted); err != nil {
+					return err
+				}
+				if deleted > 1 {
+					return fmt.Errorf("%w: duplicate deleted public IDs", ErrInvalidStore)
+				}
+				if deleted == 1 {
+					return ErrGone
+				}
+				if validatePath(path) != nil || validateLinkPath("links/"+localID) != nil {
+					return ErrNotFound
+				}
 			}
 
 			issuePath, issue, issueErr := s.resolveExactLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: localID})
@@ -205,7 +213,7 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 			if exactNonIssuePath == "" && !exactIssue {
 				for _, candidate := range []struct{ path, backing string }{{path, "generic"}, {"links/" + localID, "link"}} {
 					var backing string
-					err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live'`, candidate.path).Scan(&backing)
+					err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live' AND (backing<>'generic' OR public_id IS NULL)`, candidate.path).Scan(&backing)
 					if errors.Is(err, sql.ErrNoRows) {
 						continue
 					}

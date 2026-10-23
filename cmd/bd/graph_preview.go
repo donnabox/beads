@@ -73,7 +73,7 @@ func graphPreviewBlockingTypeURL(scope string) string {
 func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
-	rememberCmd.Flags().String("id", "", "Memory ID or beads/PATH; creates if unused or updates existing Memory (generated when omitted; graph preview only)")
+	rememberCmd.Flags().String("id", "", "Literal public Memory ID; creates or updates the same identity (--key is compatible; omitted ID derives from content in graph mode)")
 	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)")
 	rememberCmd.Flags().String("metadata", "", "Merge a JSON object into an existing Memory, or set initial metadata on create (graph preview only)")
 	rememberCmd.Flags().String("replace-metadata", "", "Replace all Memory metadata with a JSON object on an existing-ID edit (graph preview only)")
@@ -82,7 +82,7 @@ func init() {
 	rememberCmd.Flags().StringArray("set-metadata", nil, "Set Memory metadata key=value (repeatable; graph preview only)")
 	rememberCmd.Flags().StringArray("unset-metadata", nil, "Remove Memory metadata key (repeatable; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
-	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id; refuse an allocated ID (graph preview only)")
+	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id or --key; refuse an allocated ID (graph preview only)")
 	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for an existing-ID update (graph preview only)")
 	rememberCmd.Flags().String("body-file", "", "Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)")
 	rememberCmd.Flags().Bool("stdin", false, "Read graph Memory body from stdin (preview: at most 1 MiB)")
@@ -677,6 +677,9 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		if body == nil {
 			return graphFailure("invalid_properties", "Memory creation requires a body", 2)
 		}
+		if title != nil && strings.TrimSpace(*title) == "" {
+			return graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
+		}
 		createTitle := graphPreviewMemoryTitle(*body)
 		if title != nil {
 			createTitle = *title
@@ -752,7 +755,13 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph show requires one local public ID or canonical Scope URL; use a positional ID or --id", 2)
 	}
-	literal, err := graphPreviewResolveMemoryArgument(args[0])
+	var literal string
+	var err error
+	if cmd.Flags().Changed("id") {
+		literal, err = graphPreviewResolveLiteralArgument(args[0])
+	} else {
+		literal, err = graphPreviewResolveMemoryArgument(args[0])
+	}
 	if err != nil {
 		return err
 	}

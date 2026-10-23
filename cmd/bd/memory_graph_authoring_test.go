@@ -40,8 +40,7 @@ func TestMemoryLinkInput(t *testing.T) {
 	op := memoryLinkOperations[0]
 	for _, tc := range []struct{ flags, args []string }{
 		{}, {flags: []string{"--to=b"}}, {flags: []string{"--to=b"}, args: []string{"a", "other"}},
-		{flags: []string{"--to="}, args: []string{"a"}}, {flags: []string{"--to=links/b"}, args: []string{"a"}},
-		{flags: []string{"--to=https://foreign.invalid/beads/b"}, args: []string{"a"}},
+		{flags: []string{"--to="}, args: []string{"a"}}, {flags: []string{"--to=" + scope + "links/b"}, args: []string{"a"}},
 		{flags: []string{"--to=b@old", "--target-revision=other"}, args: []string{"a"}},
 		{flags: []string{"--to=b", "--id=beads/wrong"}, args: []string{"a"}},
 	} {

@@ -40,10 +40,10 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			call(args...)
 			const body = "  Code  flow policy\nTarget integration; retain the previous policy."
 			memory := graphMixedResult[graphstore.Record](t, call("remember", body))
-			other := graphMixedResult[graphstore.Record](t, call("remember", body))
+			other := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", body)).Memory
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Update integration target"))
-			if memory.ID == other.ID || memory.ID == issue.ID || other.ID == issue.ID || !strings.HasPrefix(memory.ID, scope+"beads/") {
-				t.Fatal("omitted IDs did not allocate distinct canonical identities")
+			if memory.ID != other.ID || memory.ID == issue.ID || !strings.HasPrefix(memory.ID, scope+"beads/") {
+				t.Fatal("derived Memory identity did not overwrite while Issue allocation stayed separate")
 			}
 			if !strings.HasPrefix(issue.Properties.ID, "compat-") || issue.ID != scope+"beads/"+issue.Properties.ID {
 				t.Fatalf("generated Issue path did not use the configured native prefix: %+v", issue)

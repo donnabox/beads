@@ -88,7 +88,7 @@ func (s *Store) resolveAllocatedResourcePath(ctx context.Context, id string, all
 		// Issue's private path cannot answer an unqualified local selector.
 		for _, candidate := range []struct{ path, backing string }{{"beads/" + id, "generic"}, {"links/" + id, "link"}} {
 			var backing string
-			err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, candidate.path).Scan(&backing)
+			err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND (backing<>'generic' OR public_id IS NULL)`, candidate.path).Scan(&backing)
 			if errors.Is(err, sql.ErrNoRows) {
 				continue
 			}
@@ -132,12 +132,22 @@ func PrepareMemoryIdentity(req CreateRequest) (CreateRequest, error) {
 		return CreateRequest{}, err
 	}
 	if req.Path == "" {
-		token, err := freshToken()
-		if err != nil {
-			return CreateRequest{}, err
+		// Preserve the established canonical layout when it is a valid private
+		// address. The public bytes are independent and never normalized.
+		req.Path = req.PublicID
+		if validatePath(req.Path) != nil {
+			req.Path = "beads/" + req.PublicID
 		}
-		req.Path = "beads/" + token
+		if validatePath(req.Path) != nil {
+			token, err := freshToken()
+			if err != nil {
+				return CreateRequest{}, err
+			}
+			req.Path = "beads/" + token
+		}
+		req.privatePathGenerated = true
 	}
+
 	return req, nil
 }
 

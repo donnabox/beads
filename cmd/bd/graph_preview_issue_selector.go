@@ -93,7 +93,11 @@ func graphPreviewResolvedHistoricalPath(selector string) (string, error) {
 // Current mixed reads accept opaque local public IDs or exact same-Scope URLs.
 // The local spelling never chooses Bead versus Link from a prefix.
 func graphPreviewResourceReadSelector(selector string) (path, localID string, err error) {
-	if path, kind, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, selector); ok {
+	return graphPreviewResourceReadSelectorIn(graphPreviewConfig.GraphScopeURL, selector)
+}
+
+func graphPreviewResourceReadSelectorIn(scope, selector string) (path, localID string, err error) {
+	if path, kind, ok := graph.SplitCanonicalURL(scope, selector); ok {
 		if (kind == graph.KindBead && graph.ValidateBeadPath(path) == nil) || (kind == graph.KindLink && graph.ValidateLinkPath(path) == nil) {
 			return path, "", nil
 		}
@@ -127,6 +131,20 @@ func graphPreviewResolveMemoryArgument(selector string) (string, error) {
 		}
 		resolved = store.ScopeURL() + path
 		return nil, "", nil
+	}, func(any, string) error { return nil })
+	return resolved, err
+}
+
+// --id/--key forms select literal identity data. They never interpret the data
+// as URL or revision syntax, even when another Resource owns that locator.
+func graphPreviewResolveLiteralArgument(selector string) (string, error) {
+	var resolved string
+	err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		path, err := store.ResolveExactAllocatedResourcePath(ctx, selector)
+		if err == nil {
+			resolved = store.ScopeURL() + path
+		}
+		return nil, "", err
 	}, func(any, string) error { return nil })
 	return resolved, err
 }

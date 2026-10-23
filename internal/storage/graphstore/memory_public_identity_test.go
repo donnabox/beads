@@ -3,6 +3,7 @@
 package graphstore
 
 import (
+	"bytes"
 	"errors"
 	"reflect"
 	"strings"
@@ -99,5 +100,18 @@ func TestMemoryPublicIdentityCrossKindAndAmbiguity(t *testing.T) {
 				t.Fatal("ambiguity changed state")
 			}
 		})
+	}
+}
+
+func TestMemoryPublicIdentityIsNotBDPWire(t *testing.T) {
+	record := Record{ID: "https://example.invalid/beads/locator", Type: "https://example.invalid/types/memory", Revision: "r", Version: "r", Properties: Properties{Title: "Title", Body: "Body"}}
+	before, err := canonicalJSON(record)
+	if err != nil {
+		t.Fatal(err)
+	}
+	record.PublicID = " exact 雪 @key "
+	after, err := canonicalJSON(record)
+	if err != nil || !bytes.Equal(before, after) {
+		t.Fatal("local public ID altered pinned canonical record JSON")
 	}
 }

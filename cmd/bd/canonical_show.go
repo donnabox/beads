@@ -48,16 +48,30 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if err != nil {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
+	literalFlag := false
+	ids, _ := cmd.Flags().GetStringArray("id")
+	if len(ids) != 0 {
+		if len(args) != 0 || len(ids) != 1 {
+			return canonicalFailure(cmd, renderer, "invalid_selector", "canonical show requires one positional selector or one literal --id", 2)
+		}
+		args = ids
+		literalFlag = true
+	}
 	if len(args) != 1 {
 		return canonicalFailure(cmd, renderer, "invalid_selector", "canonical show requires exactly one Resource identity", 2)
 	}
-	if err := canonicalGraphFlags(cmd, renderer, "version"); err != nil {
+	if err := canonicalGraphFlags(cmd, renderer, "id", "version"); err != nil {
 		return err
 	}
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "version"); err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	literal, err := graphPreviewResolveMemoryArgument(args[0])
+	var literal string
+	if literalFlag {
+		literal, err = graphPreviewResolveLiteralArgument(args[0])
+	} else {
+		literal, err = graphPreviewResolveMemoryArgument(args[0])
+	}
 	if err != nil {
 		return err
 	}

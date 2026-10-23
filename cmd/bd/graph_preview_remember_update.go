@@ -65,6 +65,9 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, publicID string, title, b
 		}
 		path, err = store.ResolveExactAllocatedResourcePath(ctx, publicID)
 		if err != nil {
+			if graphPreviewRememberDefiniteError(err, graphstore.ErrNotFound) && title != nil && strings.TrimSpace(*title) == "" {
+				return nil, "", graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
+			}
 			return nil, "", err
 		}
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{

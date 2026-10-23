@@ -70,14 +70,11 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 	if !IsInformationalTypeURL(s.ScopeURL(), request.TypeURL) {
 		return LinkMutationResult{}, fmt.Errorf("%w: informational Link Type is not supported", storage.ErrValidation)
 	}
-	for _, path := range []string{request.SourcePath, request.TargetPath} {
-		if err := validatePath(path); err != nil {
-			return LinkMutationResult{}, err
-		}
+	if err := validateBeadWriteOperand(request.SourcePath, request.SourceLocalID); err != nil {
+		return LinkMutationResult{}, err
 	}
-	if request.SourceLocalID != "" && request.SourcePath != "beads/"+request.SourceLocalID ||
-		request.TargetLocalID != "" && request.TargetPath != "beads/"+request.TargetLocalID {
-		return LinkMutationResult{}, fmt.Errorf("%w: local Bead ID does not match its candidate path", storage.ErrValidation)
+	if err := validateBeadWriteOperand(request.TargetPath, request.TargetLocalID); err != nil {
+		return LinkMutationResult{}, err
 	}
 	if request.Path != "" {
 		if err := validateLinkPath(request.Path); err != nil {
