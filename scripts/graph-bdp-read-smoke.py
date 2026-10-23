@@ -280,9 +280,9 @@ def main():
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
         capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--type", "types/references",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
-        dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", "beads/work", "beads/prereq", "--json"]))
+        dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", scope + "beads/work", scope + "beads/prereq", "--json"]))
         for path in [*records, "links/context", "links/back", dependency["link"]["id"]]:
-            capture.success("fresh-process-show", ["show", path, "--json"])
+            capture.success("fresh-process-show", ["show", path if path.startswith(scope) else scope + path, "--json"])
         capture.passed("normal initialization and fresh-process Memory/Issue/mixed-Link/Dependency creation and reads")
         token = secrets.token_urlsafe(32)
         token_file = capture.root / "http-token"
@@ -337,7 +337,7 @@ def main():
         # Alpha remains unreferenced and unchanged throughout the public-client
         # checks. Use its original observed revision, not a fresh pre-read.
         alpha = records["beads/alpha"]
-        deleted = c0.envelope(capture.success("memory-delete", ["delete", "beads/alpha", "--force",
+        deleted = c0.envelope(capture.success("memory-delete", ["delete", scope + "beads/alpha", "--force",
             "--if-revision", alpha["revision"], "--json"]))
         c0.require_memory_deletion(deleted, alpha)
         name = "python-after-delete"
