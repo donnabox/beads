@@ -76,7 +76,12 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 				t.Fatal("legacy derivation changed")
 			}
 			one := graphMixedResult[graphstore.Record](t, call("remember", "One body", "--id", "one"))
-			call("remember", "URL key body", "--id", one.ID)
+			literal := graphMixedResult[graphstore.Record](t, call("remember", "URL key body", "--id", one.ID))
+			selected := graphMixedResult[graphstore.Record](t, call("show", "--id", one.ID, "--format", "graph-json"))
+			if selected.ID != literal.ID {
+				t.Fatal("literal --id selected locator allocation")
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "show", one.ID, "--format", "graph-json", "--json")
 			before := graphMixedResult[graphMemoryDiscoveryResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "memories", "--all", "--format", "records-json"))
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "forget", one.ID, "--if-revision", one.Revision, "--json")
 			after := graphMixedResult[graphMemoryDiscoveryResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "memories", "--all", "--format", "records-json"))

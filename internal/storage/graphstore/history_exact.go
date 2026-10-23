@@ -149,16 +149,16 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 	if err != nil {
 		return nil, err
 	}
-	if state == "deleted" && kind == "link" && version == head {
-		var tombstone LinkTombstone
-		if json.Unmarshal(raw, &tombstone) != nil || !sameVersionJSON(raw, tombstone) ||
-			tombstone.ID != s.ScopeURL()+path || tombstone.Type != typ.String || tombstone.Revision != version ||
-			tombstone.Version != version || tombstone.State != "deleted" ||
-			!authorityID.MatchString(tombstone.PreviousVersion) || tombstone.PreviousVersion == version ||
-			!validVersionAttribution(tombstone.Attribution, actor) {
-			return nil, fmt.Errorf("%w: invalid retained deletion marker", ErrInvalidStore)
+	if kind == "link" {
+		var marker struct {
+			State string `json:"state"`
 		}
-		return nil, ErrGone
+		if json.Unmarshal(raw, &marker) == nil && marker.State == "deleted" {
+			if _, err := s.decodeLinkTerminal(path, typ.String, version, raw, actor); err != nil {
+				return nil, err
+			}
+			return nil, ErrGone
+		}
 	}
 	if kind == "link" {
 		var link LinkRecord
@@ -297,7 +297,7 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 	depType, hasKind := link.Properties["dep_type"].(string)
 	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) ||
 		!hasKind || len(link.Properties) != 1 || !types.DependencyType(depType).IsValid() ||
-		!utf8.ValidString(depType) || !bytes.Equal(link.Metadata, []byte(`{}`)) {
+		!utf8.ValidString(depType) {
 		return fmt.Errorf("%w: invalid retained Dependency", ErrInvalidStore)
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {

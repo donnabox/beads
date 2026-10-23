@@ -156,11 +156,11 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err != nil || cfg == nil {
 		t.Fatalf("read initialized binding: %v", err)
 	}
-	if cfg.GraphSchemaVersion != 8 {
-		t.Fatalf("graph_schema_version = %d, want 8", cfg.GraphSchemaVersion)
+	if cfg.GraphSchemaVersion != 10 {
+		t.Fatalf("graph_schema_version = %d, want 10", cfg.GraphSchemaVersion)
 	}
-	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 8 {
-		t.Fatalf("persisted schema_version = %d, want 8", persisted)
+	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 10 {
+		t.Fatalf("persisted schema_version = %d, want 10", persisted)
 	}
 	// Availability changes discovery, not the immutable installed catalog.
 	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 20 {
@@ -176,8 +176,8 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &installed); err != nil {
 		t.Fatalf("read fresh Type inventory: %v\n%s", err, out)
 	}
-	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 9 || links != 6 {
-		t.Fatalf("fresh available Types = %d Bead, %d Link; want 9 and 6", beads, links)
+	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 10 || links != 6 {
+		t.Fatalf("fresh available Types = %d Bead, %d Link; want 10 and 6", beads, links)
 	}
 
 	refuse := func(marker, want string) {

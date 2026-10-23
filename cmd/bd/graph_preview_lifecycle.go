@@ -84,7 +84,7 @@ var linkShowCmd = &cobra.Command{
 }
 
 var linkUpdateCmd = &cobra.Command{
-	Use: "update LINK", Short: "Update an informational Link",
+	Use: "update LINK", Short: "Update a Link or recover it from a retained revision",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		selector, err := graphPreviewWritableIdentity(args[0])
@@ -159,6 +159,8 @@ func init() {
 	linkShowCmd.Flags().String("version", "", "Read an exact retained Link version")
 	linkShowCmd.Flags().String("format", "", "Use graph-json for the complete graph record")
 	for _, command := range []*cobra.Command{linkUpdateCmd} {
+		command.Flags().SetNormalizeFunc(normalizeHistoricalRevisionFlag)
+		command.Flags().String("from-revision", "", "Compose editable Link content from this exact retained live revision; recover a deleted Link with the same ID")
 		command.Flags().String("source-revision", "", "Re-pin the source to an exact token or current, or unpin with unpinned; owned source pins refuse")
 		command.Flags().String("target-revision", "", "Re-pin the target to an exact token or current, or unpin with unpinned")
 		command.Flags().String("properties", "", "Merge named Link properties from JSON, @file, or @-")

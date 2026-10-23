@@ -65,7 +65,7 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 //   - there is no such thing: nothing is allocated at that path.
 //
 // The third shape, "something prevented a complete answer", is NOT reachable as
-// a normal answer here. Every plane in a SchemaVersion-8 workspace can order,
+// a normal answer here. Every plane in a SchemaVersion-9 workspace can order,
 // so a store that cannot answer is a corrupt store, and corruption is a refusal
 // rather than an outcome. There is deliberately no "exists but empty" success
 // case either: a subject's creation IS version 1, written in the same
@@ -130,10 +130,10 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		if history.CurrentState != nil {
 			result["currentState"] = history.CurrentState
 		}
-		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue) && len(terminalRows) != 0 {
+		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue || kind == graphstore.KindLink) && len(terminalRows) != 0 {
 			result["terminal_versions"] = graphVersionRowsJSON(terminalRows)
 		}
-		summary := renderGraphVersions(args[0], kind, citable, removed)
+		summary := renderGraphVersions(args[0], kind, citable, removed, history.CurrentState != nil)
 		if history.CurrentState != nil {
 			summary += fmt.Sprintf("\nCurrent state: deleted\n  deletion revision: %s\n", history.CurrentState.Revision)
 		}
@@ -149,7 +149,7 @@ func graphCitableVersionRows(kind graphstore.ResourceKind, rows []graphstore.Ver
 	removed := false
 	for _, row := range rows {
 		if row.Removed {
-			if (kind != graphstore.KindLink && kind != graphstore.KindMemory && kind != graphstore.KindIssue) || (kind == graphstore.KindLink && removed) {
+			if kind != graphstore.KindLink && kind != graphstore.KindMemory && kind != graphstore.KindIssue {
 				return nil, nil, false, fmt.Errorf("%w: invalid deletion marker in version history", graphstore.ErrInvalidStore)
 			}
 			removed = true
@@ -172,7 +172,7 @@ func graphCitableVersionRows(kind graphstore.ResourceKind, rows []graphstore.Ver
 // listing is for. The ordinal is 1-2 characters and the token is 32, which no
 // single terminal row holds alongside a timestamp and an actor, so the token
 // gets its own line rather than being truncated into uselessness.
-func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []graphstore.VersionRow, removed bool) string {
+func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []graphstore.VersionRow, removed, currentlyDeleted bool) string {
 	if len(rows) == 0 {
 		// Defensive, and deliberately NOT reassuring. An allocated subject
 		// always has at least version 1, because its creation version is
@@ -222,12 +222,10 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 		fmt.Fprintf(&b, "  bd compare %s --from <token> --to <token>\n", selector)
 	}
 	if removed {
-		if kind == graphstore.KindLink {
-			b.WriteString("\nThis Link has been removed. Its prior versions remain citable; deletion\n")
-			b.WriteString("did not create a Link version.\n")
-		} else {
-			b.WriteString("\nTerminal deletion versions are retained separately from live snapshots.\n")
+		if kind == graphstore.KindLink && currentlyDeleted {
+			b.WriteString("\nThis Link has been removed. Its prior live versions remain citable.\n")
 		}
+		b.WriteString("\nTerminal deletion versions are retained separately from live snapshots.\n")
 	}
 	return b.String()
 }

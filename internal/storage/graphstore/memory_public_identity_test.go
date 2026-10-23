@@ -16,7 +16,7 @@ func TestMemoryPublicIdentityExactLifecycle(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
-			keys := []string{"plain", " plain ", "PLAIN", "雪/%@?#", "é", "é", "beads/plain", strings.Repeat("long", 600)}
+			keys := []string{"plain", " plain ", "PLAIN", "雪/%@?#", "é", "é", "beads/plain", "beads/free", strings.Repeat("long", 600)}
 			for _, key := range keys {
 				body := "  Exact body\n雪\n"
 				created, err := s.Create(ctx, CreateRequest{PublicID: key, Title: "Independent title", Body: body})
@@ -24,7 +24,7 @@ func TestMemoryPublicIdentityExactLifecycle(t *testing.T) {
 					t.Fatal(err)
 				}
 				path := strings.TrimPrefix(created.ID, s.ScopeURL())
-				if created.PublicID != key || path == key || created.Properties.Body != body {
+				if created.PublicID != key || created.Properties.Body != body {
 					t.Fatalf("identity/content changed: %+v", created)
 				}
 				selected, err := s.ResolveExactAllocatedResourcePath(ctx, key)
