@@ -8,6 +8,7 @@ go_library(
         "identity.go",
         "laws.go",
         "reader.go",
+        "resource_identity.go",
         "types.go",
         "types_role.go",
     ],
@@ -22,6 +23,7 @@ go_test(
     srcs = [
         "laws_internal_test.go",
         "laws_test.go",
+        "resource_identity_test.go",
         "roles_test.go",
         "types_test.go",
     ],

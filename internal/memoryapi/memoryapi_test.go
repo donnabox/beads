@@ -8,6 +8,18 @@ import (
 	"github.com/steveyegge/beads/memoryops"
 )
 
+// These accepted legacy keys cannot be represented by the retained canonical
+// URI segment grammar. Keep this boundary visible without silently choosing a
+// new key restriction or an encoding policy for legacy imports.
+func TestValidateKeyPreservesNonURILegacyKeys(t *testing.T) {
+	for _, key := range []string{"..", "a//b", "\x00"} {
+		got, err := ValidateKey(key)
+		if err != nil || got != key {
+			t.Fatalf("legacy key %q changed: %q %v", key, got, err)
+		}
+	}
+}
+
 // TestDeriveKeyGoldenTable is the pin that matters most in this package.
 //
 // DeriveKey has minted every auto-generated memory key since `bd remember`
