@@ -23,7 +23,8 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			work, home := t.TempDir(), t.TempDir()
-			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/reopen-batch/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			const scope = "https://example.invalid/reopen-batch/"
+			args := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
 				if port == "" {
@@ -35,17 +36,18 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
+			uri := func(id string) string { return scope + "beads/" + id }
 			call(args...)
 			call("create", "First", "--graph-path", "beads/first")
 			call("create", "Second", "--graph-path", "beads/second")
-			closed := graphMixedResult[[]graphstore.IssueMutationResult](t, call("close", "first", "second", "--reason", "First done", "--reason", "Second done"))
+			closed := graphMixedResult[[]graphstore.IssueMutationResult](t, call("close", uri("first"), uri("second"), "--reason", "First done", "--reason", "Second done"))
 			if len(closed) != 2 || !closed[0].Changed || !closed[1].Changed ||
 				closed[0].Issue.Properties.Status != types.StatusClosed || closed[1].Issue.Properties.Status != types.StatusClosed {
 				t.Fatalf("batch did not close both Issues in input order: %+v", closed)
 			}
 			firstBefore, secondBefore := call("versions", "first"), call("versions", "second")
 
-			reopened := graphMixedResult[[]graphstore.IssueMutationResult](t, call("reopen", "first", "second", "--reason", "More work"))
+			reopened := graphMixedResult[[]graphstore.IssueMutationResult](t, call("reopen", uri("first"), uri("second"), "--reason", "More work"))
 			if len(reopened) != 2 || !reopened[0].Changed || !reopened[1].Changed ||
 				reopened[0].Issue.Properties.Status != types.StatusOpen || reopened[1].Issue.Properties.Status != types.StatusOpen {
 				t.Fatalf("batch did not reopen both Issues in input order: %+v", reopened)
@@ -90,31 +92,33 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 				return stdout.String()
 			}
 
-			call("close", "first")
-			changed := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(1, `"code":"not_found"`, "reopen", "first", "missing"))
+			call("close", uri("first"))
+			changed := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(1, `"code":"not_found"`, "reopen", uri("first"), "missing"))
 			if len(changed) != 1 || !changed[0].Changed || changed[0].Issue.Properties.Status != types.StatusOpen {
 				t.Fatalf("partial batch hid the successful reopen: %+v", changed)
 			}
 			call("create", "Third", "--graph-path", "beads/third")
-			closedPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(1, `"code":"not_found"`, "close", "third", "missing"))
-			if len(closedPartial) != 1 || !closedPartial[0].Changed || closedPartial[0].Issue.Properties.Status != types.StatusClosed {
-				t.Fatalf("partial batch hid the successful close: %+v", closedPartial)
+			thirdBefore := call("versions", "third")
+			if output := runMixedBatch(3, `"code":"not_found"`, "close", uri("third"), "missing"); output != "" {
+				t.Fatalf("missing close selector emitted a successful sibling: %s", output)
 			}
-			call("reopen", "third")
+			if got := call("versions", "third"); got != thirdBefore {
+				t.Fatal("missing close selector changed a sibling Issue")
+			}
 			// Ordinary direct defer/undefer pre-resolves all IDs and rejects a
 			// missing sibling before writing, while the ordinary proxied route
 			// commits survivors and returns 0 with a plain stderr warning.
 			// Preserve the graph route's existing proxied-style behavior until
 			// that native split receives a release-contract decision.
-			deferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(0, "Error changing deferral for missing:", "defer", "third", "missing"))
+			deferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(0, "Error changing deferral for missing:", "defer", uri("third"), "missing"))
 			if len(deferredPartial) != 1 || !deferredPartial[0].Changed || deferredPartial[0].Issue.Properties.Status != types.StatusDeferred {
 				t.Fatalf("mixed defer hid the successful Issue: %+v", deferredPartial)
 			}
-			undeferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(0, "Error changing deferral for missing:", "undefer", "third", "missing"))
+			undeferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(0, "Error changing deferral for missing:", "undefer", uri("third"), "missing"))
 			if len(undeferredPartial) != 1 || !undeferredPartial[0].Changed || undeferredPartial[0].Issue.Properties.Status != types.StatusOpen {
 				t.Fatalf("mixed undefer hid the successful Issue: %+v", undeferredPartial)
 			}
-			positional := graphMixedResult[graphstore.IssueMutationResult](t, call("done", "third", "Positional reason"))
+			positional := graphMixedResult[graphstore.IssueMutationResult](t, call("done", uri("third"), "Positional reason"))
 			if !positional.Changed || positional.Issue.Properties.CloseReason != "Positional reason" {
 				t.Fatalf("done alias lost its positional reason: %+v", positional)
 			}
@@ -123,7 +127,7 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 			if err := os.WriteFile(reasonFile, []byte("Reason from file\n"), 0o600); err != nil {
 				t.Fatal(err)
 			}
-			filed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", "fourth", "--reason-file", reasonFile))
+			filed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", uri("fourth"), "--reason-file", reasonFile))
 			if !filed.Changed || filed.Issue.Properties.CloseReason != "Reason from file\n" {
 				t.Fatalf("close lost its reason file: %+v", filed)
 			}

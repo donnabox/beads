@@ -458,8 +458,9 @@ On a single Issue,
 `--suggest-next` reads Issues that this close newly unblocks; it does not claim
 them. `--claim-next` claims the highest-priority ready Issue in the same
 transaction as the close, only when at least one target actually closes. A
-mixed batch may keep a close and its claim while reporting another target's
-failure; retrying an already-closed batch makes no new claim or version.
+A missing ID aborts a batch before any close or claim. Other per-Issue policy
+refusals may keep successful closes and a claim; retrying an already-closed
+batch makes no new claim or version.
 Gate evaluation, `--continue`, molecule advancement and remote routing remain
 pending.
 

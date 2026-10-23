@@ -259,8 +259,9 @@ with multiple IDs, --suggest-next or --claim-next. Without it, close accepts
 the current revision. On one Issue, --suggest-next lists Issues that closing it
 newly unblocks, without claiming them. --claim-next atomically claims the
 highest-priority ready Issue when at least one close lands; an already-closed
-retry earns no new claim. A mixed batch keeps its successful closes and claim
-even when another ID refuses. Without an ID, interactive close uses the
+retry earns no new claim. A missing ID aborts a batch before any close or
+claim; other per-Issue policy refusals may keep successful closes and a claim.
+Without an ID, interactive close uses the
 last-touched Issue; scripts require an ID unless BD_LAST_TOUCHED_FALLBACK=1
 explicitly enables the fallback. Gate evaluation, --continue, molecule
 advancement and remote-routing forms remain unavailable.`},

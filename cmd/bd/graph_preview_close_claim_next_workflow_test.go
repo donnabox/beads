@@ -3,8 +3,13 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"errors"
 	"os"
+	"os/exec"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -69,8 +74,21 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 			call("create", "Higher priority spare", "--graph-path", "beads/next", "--priority", "0")
 			nextBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("next")))
 			spareVersions, nextVersions := call("versions", "spare"), call("versions", "next")
+			missingClose := func() {
+				t.Helper()
+				ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+				defer cancel()
+				cmd := graphMemoryReadCommand(ctx, bd, work, home, "close", uri("spare"), "missing", "--claim-next", "--reason", "Done", "--json")
+				var stdout, stderr bytes.Buffer
+				cmd.Stdout, cmd.Stderr = &stdout, &stderr
+				err := cmd.Run()
+				var exit *exec.ExitError
+				if ctx.Err() != nil || !errors.As(err, &exit) || exit.ExitCode() != 3 || stdout.Len() != 0 || !strings.Contains(stderr.String(), `"code":"not_found"`) {
+					t.Fatalf("missing close must refuse without output: err=%v stdout=%s stderr=%s", err, stdout.String(), stderr.String())
+				}
+			}
 			for i := 0; i < 2; i++ {
-				graphPolicyCLI(t, bd, work, home, nil, "not_found", "close", uri("spare"), "missing", "--claim-next", "--reason", "Done", "--json")
+				missingClose()
 				if call("versions", "spare") != spareVersions || call("versions", "next") != nextVersions ||
 					!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("spare"))), spareBefore) ||
 					!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("next"))), nextBefore) {
