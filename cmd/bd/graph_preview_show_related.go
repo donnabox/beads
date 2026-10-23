@@ -24,7 +24,7 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 	if format != "" || cmd.Flags().Changed("version") {
 		return graphFailure("capability_unavailable", "--refs and --children require current Issues in the familiar output format", 5)
 	}
-	paths := make([]string, 0, len(args))
+	selectors := make([]struct{ path, localID string }, 0, len(args))
 	for _, arg := range args {
 		ref, err := graphPreviewParseReference(arg)
 		if err != nil {
@@ -33,21 +33,21 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 		if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
 			return graphFailure("capability_unavailable", "--refs and --children require current Issues", 5)
 		}
-		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, ref.Identity)
+		path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 		if !strings.HasPrefix(path, "beads/") {
 			return graphFailure("capability_unavailable", "--refs and --children require Issues", 5)
 		}
-		paths = append(paths, path)
+		selectors = append(selectors, struct{ path, localID string }{path, localID})
 	}
 	var missing []string
 	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		rows := make(map[string][]*types.IssueWithDependencyMetadata, len(paths))
+		rows := make(map[string][]*types.IssueWithDependencyMetadata, len(selectors))
 		var human strings.Builder
-		for index, path := range paths {
-			record, err := s.Read(ctx, path)
+		for index, selector := range selectors {
+			path, record, detail, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.path, selector.localID, workapi.DetailOptions{IncludeDependents: true})
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -57,10 +57,6 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 			}
 			if _, ok := record.(graphstore.IssueRecord); !ok {
 				return nil, "", graphFailure("capability_unavailable", "--refs and --children require Issues", 5)
-			}
-			detail, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: true})
-			if err != nil {
-				return nil, "", err
 			}
 			related := make([]*types.IssueWithDependencyMetadata, 0, len(detail.Dependents))
 			for _, row := range detail.Dependents {

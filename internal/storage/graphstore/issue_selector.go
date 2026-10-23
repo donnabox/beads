@@ -9,12 +9,11 @@ import (
 	"strings"
 
 	"github.com/steveyegge/beads/internal/storage"
-	"github.com/steveyegge/beads/internal/utils"
 )
 
-// IssueSelector keeps the explicit graph path separate from a bare native
-// Issue ID. NativeID is set only for bare CLI spelling, never for beads/PATH
-// or a canonical URL.
+// IssueSelector keeps an exact canonical graph path separate from an opaque
+// local native Issue ID. NativeID is set for any local spelling, including
+// strings that happen to contain beads/; canonical URLs select paths only.
 type IssueSelector struct {
 	Path     string
 	NativeID string
@@ -39,9 +38,10 @@ func validateIssueSelector(selector IssueSelector) error {
 }
 
 // Resolve against the checked live catalog in the caller's transaction. A
-// bare spelling that also names a different graph path is ambiguous, even if
-// that path is a Memory or a retained deletion. Explicit paths remain exact.
-// This exact pass is also the first stage of native abbreviation resolution.
+// local spelling names a native Issue ID, never a graph path. If it also
+// names another backing's path, refuse rather than choosing by spelling.
+// Canonical URLs remain exact paths.
+// This exact pass is the first stage of native abbreviation resolution.
 func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
 	if selector.NativeID == "" {
 		var backing string
@@ -58,11 +58,26 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 		issue, err := s.requireIssueInTx(ctx, tx, selector.Path)
 		return selector.Path, issue, err
 	}
-	var backing string
-	err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, selector.Path).Scan(&backing)
-	pathExists := err == nil
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+	backingAt := func(path string) (string, bool, error) {
+		var backing string
+		err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing)
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", false, nil
+		}
+		return backing, err == nil, err
+	}
+	backing, pathExists, err := backingAt(selector.Path)
+	if err != nil {
 		return "", IssueRecord{}, err
+	}
+	legacyPath := ""
+	legacyExists := false
+	if selector.NativeID != selector.Path && validatePath(selector.NativeID) == nil {
+		legacyPath = selector.NativeID
+		_, legacyExists, err = backingAt(legacyPath)
+		if err != nil {
+			return "", IssueRecord{}, err
+		}
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live' LIMIT 2`, selector.NativeID)
 	if err != nil {
@@ -83,29 +98,26 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 	if len(paths) > 1 {
 		return "", IssueRecord{}, fmt.Errorf("%w: native Issue ID has multiple live graph allocations", ErrInvalidStore)
 	}
-	if len(paths) == 1 && pathExists && paths[0] != selector.Path {
-		return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches both a graph path and a different native Issue; use an explicit beads/PATH", storage.ErrValidation, selector.NativeID)
+	if legacyExists && (len(paths) == 0 || paths[0] != legacyPath) {
+		return "", IssueRecord{}, fmt.Errorf("%w: public Issue ID %q also names a different graph path; use a canonical Scope URL", storage.ErrValidation, selector.NativeID)
 	}
-	path := selector.Path
-	if !pathExists {
-		if len(paths) == 0 {
-			return "", IssueRecord{}, ErrNotFound
-		}
-		path = paths[0]
-		if err := validatePath(path); err != nil {
-			return "", IssueRecord{}, fmt.Errorf("%w: invalid native Issue graph allocation: %v", ErrInvalidStore, err)
-		}
+	if pathExists && ((len(paths) == 0 && backing == "issue") || (len(paths) == 1 && paths[0] != selector.Path)) {
+		return "", IssueRecord{}, fmt.Errorf("%w: public Issue ID %q conflicts with a graph path; use a canonical Scope URL", storage.ErrValidation, selector.NativeID)
 	}
-	if pathExists && backing != "issue" {
+	if len(paths) == 1 {
+		issue, err := s.requireIssueInTx(ctx, tx, paths[0])
+		return paths[0], issue, err
+	}
+	if pathExists {
 		return "", IssueRecord{}, nonIssueSelectorError(backing)
 	}
-	issue, err := s.requireIssueInTx(ctx, tx, path)
-	return path, issue, err
+	return "", IssueRecord{}, ErrNotFound
 }
 
 // Every bare native Issue selector accepts shipping Issue abbreviations.
 // Callers resolve inside their own transaction, so selection and any write
-// observe the same live catalog. Explicit beads/PATH stays exact.
+// observe the same live catalog. Canonical URLs stay exact through Path-only
+// selectors; local beads/PATH spelling is an opaque public ID.
 func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
 	return s.resolveDependencyOperandInTx(ctx, tx, selector.Path, selector.NativeID)
 }
@@ -148,7 +160,7 @@ func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, pa
 		}
 	}
 	search := nativeID
-	if p := utils.ExtractIssuePrefixKnown(nativeID, known); p != "" {
+	if p := configuredIssuePrefix(nativeID, known); p != "" {
 		search = strings.TrimPrefix(nativeID, p+"-")
 	}
 	if !validPartialIssueHash(search) {
@@ -208,7 +220,7 @@ func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, pa
 			return "", IssueRecord{}, fmt.Errorf("%w: too many Issue ID candidates for %q; use a longer ID", storage.ErrValidation, nativeID)
 		}
 		hash := candidate.id
-		if p := utils.ExtractIssuePrefixKnown(candidate.id, known); p != "" {
+		if p := configuredIssuePrefix(candidate.id, known); p != "" {
 			hash = strings.TrimPrefix(candidate.id, p+"-")
 		}
 		if candidate.id == nativeID || hash == search {
@@ -258,6 +270,19 @@ func validPartialIssueHash(value string) bool {
 		}
 	}
 	return true
+}
+
+// An unknown prefix is part of the opaque ID. The general Issue helper falls
+// back to a spelling heuristic, which could turn other-parent into a match
+// for compat-parent even though those are different public IDs.
+func configuredIssuePrefix(id string, known []string) string {
+	longest := ""
+	for _, prefix := range known {
+		if len(prefix) > len(longest) && strings.HasPrefix(id, prefix+"-") {
+			longest = prefix
+		}
+	}
+	return longest
 }
 
 func (s *Store) ShowIssueSelected(ctx context.Context, selector IssueSelector) (IssueRecord, error) {

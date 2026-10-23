@@ -166,3 +166,75 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 		})
 	}
 }
+func TestOpaqueResourceReadSelectorKeepsPublicIDsSeparateFromGraphPaths(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			literal := plainIssue("Literal")
+			literal.Issue.ID = "exp-beads/literal"
+			_, err = s.CreateIssue(ctx, "beads/allocation", literal)
+			if err != nil {
+				t.Fatal(err)
+			}
+			path, record, details, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/exp-beads/literal", "exp-beads/literal", workapi.DetailOptions{})
+			if read, ok := record.(IssueRecord); err != nil || path != "beads/allocation" || !ok || read.Properties.ID != literal.Issue.ID || details == nil || details.ID != "beads/allocation" {
+				t.Fatalf("literal public ID read: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			}
+			pathOnly := plainIssue("Path only")
+			pathOnly.Issue.ID = "exp-other-id"
+			_, err = s.CreateIssue(ctx, "beads/path-only", pathOnly)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/beads/path-only", "beads/path-only", workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("local path spelling silently selected an unrelated Issue: %v", err)
+			}
+			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/path-only", "", workapi.DetailOptions{})
+			if read, ok := record.(IssueRecord); err != nil || path != "beads/path-only" || !ok || read.Properties.ID != pathOnly.Issue.ID || details == nil || details.ID != "beads/path-only" {
+				t.Fatalf("canonical path read: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			}
+			memory, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Notes"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/notes", "notes", workapi.DetailOptions{})
+			if read, ok := record.(Record); err != nil || path != "beads/notes" || !ok || read.ID != memory.ID || details != nil {
+				t.Fatalf("unambiguous Memory fallback: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			}
+			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/beads/notes", "beads/notes", workapi.DetailOptions{})
+			if read, ok := record.(Record); err != nil || path != "beads/notes" || !ok || read.ID != memory.ID || details != nil {
+				t.Fatalf("exact Memory public spelling: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			}
+			link, err := s.AddDependency(ctx, DependencyRequest{Path: "links/edge", SourcePath: "beads/allocation", TargetPath: "beads/path-only", Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{})
+			if read, ok := record.(LinkRecord); err != nil || path != "links/edge" || !ok || read.ID != link.Link.ID || details != nil {
+				t.Fatalf("local Link ID read: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			}
+			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/links/edge", "links/edge", workapi.DetailOptions{})
+			if read, ok := record.(LinkRecord); err != nil || path != "links/edge" || !ok || read.ID != link.Link.ID || details != nil {
+				t.Fatalf("exact Link public spelling: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/edge", Title: "Same public spelling"}); err != nil {
+				t.Fatal(err)
+			}
+			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("Memory/Link collision silently chose one backing: %v", err)
+			}
+			if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/edge", Actor: "remover", ExpectedRevision: link.Link.Revision, ExpectedSourceRevision: link.Source.Revision}); err != nil {
+				t.Fatal(err)
+			}
+			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{})
+			if read, ok := record.(Record); err != nil || path != "beads/edge" || !ok || read.Properties.Title != "Same public spelling" || details != nil {
+				t.Fatalf("removed Link still shadowed live Memory: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			}
+		})
+	}
+}

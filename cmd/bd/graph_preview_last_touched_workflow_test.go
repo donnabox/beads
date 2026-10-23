@@ -60,14 +60,14 @@ func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector",
 				"update", "--properties", `{"title":"Wrong","body":"Target"}`, "--json")
 			marker("beads/second")
-			call("show", "first")
+			call("show", scope+"beads/first")
 			marker("beads/first")
 			updated := graphMixedResult[graphstore.IssueMutationResult](t, fallback("update", "--priority", "0"))
 			if !updated.Changed || updated.Issue.ID != scope+"beads/first" || updated.Issue.Properties.Priority != 0 {
 				t.Fatalf("no-ID update missed the last shown Issue: %+v", updated)
 			}
 			marker("beads/first")
-			call("show", "second")
+			call("show", scope+"beads/second")
 			closed := graphMixedResult[graphstore.IssueMutationResult](t, fallback("close", "--reason", "done"))
 			if !closed.Changed || closed.Issue.ID != scope+"beads/second" || closed.Issue.Properties.Status != types.StatusClosed {
 				t.Fatalf("no-ID close missed the last shown Issue: %+v", closed)

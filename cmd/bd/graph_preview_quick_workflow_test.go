@@ -28,13 +28,13 @@ func TestGraphPreviewQuickCaptureWorkflow(t *testing.T) {
 			if !strings.HasPrefix(created, "beads/quick-") || strings.Contains(created, "\n") {
 				t.Fatalf("quick capture did not print exactly one canonical ID: %q", created)
 			}
-			record := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", created, "--format", "graph-json"))
+			record := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/quick-capture/"+created, "--format", "graph-json"))
 			if record.ID != "https://example.invalid/quick-capture/"+created || record.Properties.Title != "Quick capture" || record.Properties.Priority != 1 || record.Properties.IssueType != "bug" || len(record.Properties.Labels) != 1 || record.Properties.Labels[0] != "triage" {
 				t.Fatalf("quick capture lost Issue fields: ID=%q title=%q priority=%d type=%q labels=%v", record.ID, record.Properties.Title, record.Properties.Priority, record.Properties.IssueType, record.Properties.Labels)
 			}
 			// Like ordinary q, -- ends option parsing so a leading hyphen is title text.
 			hyphenID := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "q", "--", "-follow-up"))
-			hyphen := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", hyphenID, "--format", "graph-json"))
+			hyphen := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/quick-capture/"+hyphenID, "--format", "graph-json"))
 			if hyphen.Properties.Title != "-follow-up" {
 				t.Fatalf("quick capture changed a flag-looking title: %q", hyphen.Properties.Title)
 			}

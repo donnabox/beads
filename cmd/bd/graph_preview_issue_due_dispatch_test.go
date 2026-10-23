@@ -64,7 +64,7 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	if !changed.Result.Changed || changed.Result.Issue.Properties.DueAt != nil || changed.Result.Issue.Revision == first.Result.Revision {
 		t.Fatal("due clear did not reach Issue writer")
 	}
-	if exact := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--version", first.Result.Revision, "--format", "graph-json", "--json"); exact != created {
+	if exact := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/due/beads/work", "--version", first.Result.Revision, "--format", "graph-json", "--json"); exact != created {
 		t.Fatal("clearing due changed initial retained record")
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "", "update", "beads/work", "--due=2000-01-01T00:00:00Z", "--if-revision", changed.Result.Issue.Revision, "--json")
@@ -76,7 +76,7 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	if len(page.Result.Items) != 1 || page.Result.Items[0].ID != first.Result.ID || page.Result.HasMore {
 		t.Fatal("due filters did not select complete Issue")
 	}
-	before := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--json")
+	before := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/due/beads/work", "--json")
 	for _, tc := range []struct {
 		name, code string
 		args       []string
@@ -89,7 +89,7 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) { graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...) })
 	}
-	if current := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--json"); current != before {
+	if current := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/due/beads/work", "--json"); current != before {
 		t.Fatal("refusal changed current Issue")
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/bad", "--json")
