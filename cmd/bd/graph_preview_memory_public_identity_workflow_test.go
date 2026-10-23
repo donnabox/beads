@@ -65,6 +65,13 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 					t.Fatal("restore changed identity or source content")
 				}
 			}
+			const sourceKey, targetKey = "源/@literal?#", " target literal "
+			source := graphMixedResult[graphstore.Record](t, call("remember", "Source body", "--id", sourceKey))
+			target := graphMixedResult[graphstore.Record](t, call("remember", "Target body", "--id", targetKey))
+			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--source", sourceKey, "--target", targetKey, "--type", "types/references", "--id", "literal-endpoints"))
+			if linked.Link.Source != source.ID || linked.Link.Target != target.ID {
+				t.Fatal("literal public endpoints selected different allocations")
+			}
 			const content = "The exact legacy derived identity must overwrite"
 			first := graphMixedResult[graphstore.Record](t, call("remember", content))
 			second := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", content))

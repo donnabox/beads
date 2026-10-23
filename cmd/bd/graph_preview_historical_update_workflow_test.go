@@ -41,7 +41,7 @@ func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
 				{"revision_conflict", []string{"update", "beads/subject", "--from-revision", original.Revision, "--if-revision", current.Memory.Revision}},
 				{"revision_unknown", []string{"update", "beads/subject", "--from-revision", "unknown"}},
 				{"invalid_selector", []string{"update", "beads/subject", "--from-revision", ""}},
-				{"invalid_selector", []string{"update", "subject@current", "--from-revision", original.Revision}},
+				{"not_found", []string{"update", "subject@current", "--from-revision", original.Revision}},
 				{"not_found", []string{"update", "https://example.invalid/historical-update/links/not-created", "--from-revision", original.Revision}},
 			} {
 				graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...)
@@ -65,8 +65,8 @@ func TestGraphPreviewHistoricalLinkWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			call("remember", "Source", "--id", "beads/source")
-			call("remember", "Target", "--id", "beads/target")
+			call("remember", "Source", "--id", "source")
+			call("remember", "Target", "--id", "target")
 			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--source", "source", "--target", "target", "--type", "types/references", "--id", "historical", "--properties", `{"note":"first"}`, "--metadata", `{"old":true}`))
 			last := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--properties", `{"note":"last"}`, "--replace-metadata", `{"last":true}`))
 			restored := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--from-revision", first.Link.Revision, "--if-revision", last.Link.Revision, "--set-metadata", "explicit=7"))
@@ -95,7 +95,7 @@ func TestGraphPreviewHistoricalLinkWorkflow(t *testing.T) {
 			if !recovered.Changed || recovered.Link.ID != first.Link.ID || recovered.Link.Properties["note"] != "after source" || recovered.Link.Attribution.HistoricalUpdate == nil || recovered.Link.Attribution.HistoricalUpdate.PreviousRevision != deleted.Link.Revision {
 				t.Fatalf("same-ID recovery: %+v", recovered)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", "historical", "--version", deleted.Link.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", deleted.Link.ID, "--version", deleted.Link.Revision, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "update", "historical", "--from-revision", deleted.Link.Revision, "--json")
 			if current := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", "historical")); !reflect.DeepEqual(current, recovered.Link) {
 				t.Fatalf("refusal changed Link: %+v", current)
