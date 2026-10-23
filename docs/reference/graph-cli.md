@@ -114,7 +114,7 @@ commit together. A Markdown `--file` batch can also name existing local
 Issues under a `### Dependencies` heading; every heading, native dependency,
 canonical Link, and retained version commits together. Targets must be live
 local Issues. Graph mode explicitly refuses `external:` targets. Use a full
-native Issue ID or explicit `beads/PATH` for a target; partial-ID
+native Issue ID or a canonical same-Scope URL for an exact graph path; partial-ID
 abbreviations and dependencies on another new heading in the same file are
 not admitted. Markdown dependency spellings follow the Markdown parser, so
 use a bare ID for an ordinary blocking dependency.
@@ -618,8 +618,10 @@ those two spellings as aliases for `blocks` and admits only built-in kinds.
 Canonical `bd link create --type` selects an installed Link Type, so it does
 not accept a custom native Dependency kind. In the two-operand form, a bare
 Issue ID may be abbreviated when it uniquely identifies a live Issue. A
-`beads/PATH` or full Scope URL remains an exact graph selector; an ambiguous
-bare spelling is refused.
+This write route still treats `beads/PATH` as an exact graph path; a full
+same-Scope URL also selects that path. Current `bd show` and `bd link show`
+reads instead treat local spellings as opaque public IDs. Keep this difference in mind
+until the remaining write routes use the same opaque-ID rule.
 `bd dep add` uses the same checked local Issue abbreviation rule for its
 positional source and positional or `--blocked-by`/`--depends-on` target;
 `bd dep BLOCKER --blocks BLOCKED` also applies it to both operands.

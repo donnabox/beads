@@ -191,7 +191,7 @@ func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, pa
 		}
 		candidate := normalizedExact[0]
 		if (selectedErr == nil && selected != candidate.path) || errors.Is(selectedErr, errNonIssueSelector) {
-			return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches both a graph path and a different native Issue; use an explicit beads/PATH", storage.ErrValidation, nativeID)
+			return "", IssueRecord{}, fmt.Errorf("%w: public Issue ID %q is ambiguous; use a canonical Scope URL for an exact graph path", storage.ErrValidation, nativeID)
 		}
 		resolved, err := s.requireIssueInTx(ctx, tx, candidate.path)
 		return candidate.path, resolved, err
@@ -240,10 +240,10 @@ func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, pa
 		return selected, issue, selectedErr
 	}
 	if selectedErr == nil && selected != matches[0].path {
-		return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches both a graph path and a different native Issue; use an explicit beads/PATH", storage.ErrValidation, nativeID)
+		return "", IssueRecord{}, fmt.Errorf("%w: public Issue ID %q is ambiguous; use a canonical Scope URL for an exact graph path", storage.ErrValidation, nativeID)
 	}
 	if errors.Is(selectedErr, errNonIssueSelector) {
-		return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches a non-Issue path and a native Issue; use an explicit beads/PATH", storage.ErrValidation, nativeID)
+		return "", IssueRecord{}, fmt.Errorf("%w: public Issue ID %q is ambiguous across Resource kinds; use a canonical Scope URL for an exact graph path", storage.ErrValidation, nativeID)
 	}
 	if len(matches) > 1 {
 		ids := make([]string, 0, len(matches))
