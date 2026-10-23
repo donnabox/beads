@@ -49,6 +49,10 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/empty")); !reflect.DeepEqual(got, original) {
 				t.Fatal("preview changed current state")
 			}
+			dryRun := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", original.ID, "--force", "--dry-run", "--readonly"))
+			if !dryRun.Preview || dryRun.Deleted || !reflect.DeepEqual(dryRun.Memory, original) {
+				t.Fatal("explicit Memory --dry-run changed state or lost the preview")
+			}
 			updated := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/empty", "--title", "Final empty body", "--if-revision", original.Revision)).Memory
 			for _, args := range [][]string{
 				{"delete", "beads/empty", "--if-revision", original.Revision},
@@ -59,7 +63,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			}
 			for _, args := range [][]string{
 				{"delete", "beads/empty", "--if-revision="},
-				{"delete", "beads/empty", "beads/other"}, {"delete", "links/context"},
+				{"delete", "links/context"},
 				{"delete", "https://foreign.invalid/beads/empty"},
 			} {
 				refuse("invalid_selector", args...)
@@ -70,9 +74,11 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			} {
 				refuse("permission_denied", args...)
 			}
-			for _, flag := range []string{"--cascade", "--cascade=false", "--from-file=/unread/deletions", "--dry-run"} {
-				refuse("capability_unavailable", "delete", "beads/empty", flag)
+			refuse("invalid_properties", "delete", "beads/empty", "beads/other")
+			for _, flag := range []string{"--cascade", "--cascade=false"} {
+				refuse("invalid_properties", "delete", "beads/empty", flag)
 			}
+			refuse("invalid_selector", "delete", "beads/empty", "--from-file=/unread/deletions")
 			refuse("not_found", "delete", "beads/missing")
 			// The graph adapter must honor bound read-only policy and migration
 			// freezes while leaving its default preview available as a read.
@@ -107,14 +113,19 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			plan := graphMixedResult[graphstore.Record](t, call("remember", "Plan", "--id", "beads/plan", "--title", "Plan"))
 			other := call("remember", "Context", "--id", "beads/other", "--title", "Context")
 			issue := call("create", "Keep Issue", "--graph-path", "beads/work")
-			issuePreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "beads/work"))
+			issueRecord := graphMixedResult[graphstore.IssueRecord](t, issue)
+			issuePreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issueRecord.Properties.ID))
 			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != scope+"beads/work" {
 				t.Fatal("Issue deletion preview did not preserve live Issue")
 			}
-			refuse("capability_unavailable", "forget", "beads/work")
+			issueDryRun := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issueRecord.Properties.ID, "--force", "--dry-run", "--readonly"))
+			if !issueDryRun.Preview || issueDryRun.Deleted || issueDryRun.Issue.ID != issuePreview.Issue.ID {
+				t.Fatal("explicit Issue --dry-run changed state or lost the preview")
+			}
+			refuse("capability_unavailable", "forget", issueRecord.Properties.ID)
 			related := scope + "types/superseded-by"
 			call("link", "beads/plan", "beads/other", "--id", "links/outgoing", "--type", related, "--if-source-revision", plan.Revision)
-			call("link", "beads/work", "beads/plan", "--id", "links/incoming", "--type", "types/references")
+			call("link", issueRecord.ID, scope+"beads/plan", "--id", "links/incoming", "--type", "types/references")
 			for _, path := range []string{"links/outgoing", "links/incoming"} {
 				before := call("show", scope+"beads/plan")
 				linkBefore := call("show", scope+path)

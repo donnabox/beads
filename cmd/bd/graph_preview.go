@@ -942,6 +942,8 @@ func graphStorageErrorWithFallback(err error, fallback string) error {
 		return graphFailure("revision_unknown", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrIncidentLinkConstraint):
 		return graphFailure("constraint_violation", err.Error(), 4)
+	case errors.Is(err, publicops.ErrDependentsOutsideRequest):
+		return graphFailure("constraint_violation", err.Error(), 4)
 	case errors.Is(err, graphstore.ErrGone):
 		return graphFailure("gone", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrCapabilityUnavailable), errors.Is(err, graphstore.ErrLimitExceeded):

@@ -449,31 +449,45 @@ bd close work --if-revision "$revision" --reason 'Finished the work'
 bd reopen work review --reason 'Follow-up needed'
 ```
 
-`bd delete ID` previews deletion of one unreferenced Memory or Issue without
-changing storage; `--force` applies it. `bd forget ID` applies Memory deletion
-directly and does not accept Issues. Applying either command requires an
-explicit write choice, shown here with `--unconditional`. Any live incoming,
-outgoing or self-Link makes deletion refuse; `--force` does not cascade.
-Memory refusal names the first blocking Link ID and the total count. Issue
-refusal lists the incident Link IDs; unlink them explicitly before retrying
-with a fresh revision.
+`bd delete ID` previews deletion of a Memory or Issue without changing
+storage; `--force` applies it. An Issue set can also be selected with multiple
+IDs or `--from-file PATH`. `--cascade` includes dependent Issues, while
+`--dry-run` keeps a Memory or Issue request read-only even beside `--force`.
+Each local ID is an opaque public ID, including a spelling such as
+`beads/work`; a same-Scope URL selects an exact graph path. Named Issue
+selectors are resolved in the checked deletion transaction, including lines
+read from `--from-file`.
+Every named Issue must exist before the set changes. Dotted native Issue IDs
+currently refuse set deletion while citation rewriting is being qualified.
+`bd forget ID` applies Memory deletion
+directly and does not accept Issues. An optional `--if-revision TOKEN` refuses
+a stale target; omission accepts the current revision. Any live incoming,
+outgoing or self-Link still makes Memory deletion refuse. Memory refusal names
+the first blocking Link ID and the total count. Issue deletion removes its
+incident Links in the same transaction; unforced preview refuses if a
+surviving Issue depends on it. `--force` removes those dependency Links and
+leaves surviving dependents live. `--cascade` deletes the dependent closure
+in the same checked transaction. Memory deletion remains single-ID.
 
 ```sh
 bd remember 'Temporary note' --id scratch
 bd delete scratch
-bd delete scratch --force --unconditional
+bd delete scratch --force
 # Or, for another unreferenced Memory:
 bd remember 'Another temporary note' --id other-scratch
-bd forget other-scratch --unconditional
-# An unreferenced Issue follows the same preview and guarded apply shape:
+bd forget other-scratch
+# An Issue follows the same preview and apply shape:
 bd create 'Temporary task' --id temp-work
 bd delete temp-work
-bd delete temp-work --force --unconditional
+bd delete temp-work --force
+bd delete first second --force
+bd delete blocker --cascade --force
 ```
 
 Deletion removes current Bead state but reserves its ID and retains prior
-snapshots. It does not create a graph deletion version or promise erasure or
-restore. Native Issue deletion records its ordinary delete journal event.
+snapshots plus a distinct graph terminal deletion revision. It does not
+promise erasure or restore. Native Issue deletion records its ordinary delete
+journal event; removed incident Links retain their own terminal revisions.
 
 Use `bd defer ID...` to set Issues aside and `bd undefer ID...` to return
 deferred Issues to open. An undated defer stays in the icebox until undeferred.
@@ -573,7 +587,7 @@ bd link policy work --type types/references \
 bd links policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
-bd unlink policy-work --unconditional
+bd unlink policy-work
 ```
 
 `bd links ID` lists current incident Links with Type first and in-Scope IDs
@@ -590,9 +604,9 @@ The positional `bd link` write still treats `beads/PATH` as an exact graph
 path. A full same-Scope URL also selects that path. Current `bd show` and
 `bd link show` reads instead treat local spellings as opaque public IDs.
 
-Link updates accept the current Link by default; `--if-revision TOKEN`
-rejects a stale Link. Removal needs `--if-revision TOKEN` or `--unconditional`
-and retains the identity and prior snapshots. Native Dependency remains
+Link updates and removal accept the current Link by default; `--if-revision
+TOKEN` rejects a stale Link. Removal retains the identity and prior snapshots.
+Native Dependency remains
 restricted to live Issues and retains its existing blocking and unlink rules.
 
 For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
@@ -696,14 +710,13 @@ bd history policy  # same listing in a graph workspace
 | `--version TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`; use a saved `version` token. |
 | `--from TOKEN --to TOKEN` | Select the two complete states for `bd compare`. |
 | `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has the saved `revision`. In an ordinary workspace, `bd update` and `bd delete` instead read it as the legacy compare-and-swap on a decimal bead `revision`. |
-| `--unconditional` | On deletion and Link removal, explicitly accept the current record without an expected revision. Graph deferral also accepts it as an explicit spelling of its current-state default. Ordinary edits no longer use this flag. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
 
-`bd remember` with an existing `--id` or `--update`, `bd update`, and `bd link
-update` default to accepting the current state. Memory deletion and Link
-removal still have their command-specific guard
-requirements; consult the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) before
-automating them. A semantic no-op retains the existing revision.
+`bd remember` with an existing `--id` or `--update`, `bd update`, `bd link
+update`, Memory/Issue deletion, and Link removal accept the current state when
+no `--if-revision` is supplied. A supplied token guards the observed revision.
+The draft specification's `--unconditional` spelling is not registered in this
+CLI slice. A semantic no-op retains the existing revision.
 
 Structured graph records carry an `attribution` object only when a principal
 was recorded. This applies to reads such as `bd show`, `bd compare`,

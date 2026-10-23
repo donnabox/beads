@@ -96,6 +96,14 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return "", IssueRecord{}, err
 	}
+	err = tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog
+		WHERE backing='issue' AND backing_key=? AND allocation_state='deleted'`, selector.NativeID).Scan(&backing)
+	if err == nil {
+		return "", IssueRecord{}, ErrGone
+	}
+	if !errors.Is(err, sql.ErrNoRows) {
+		return "", IssueRecord{}, err
+	}
 	return "", IssueRecord{}, ErrNotFound
 }
 

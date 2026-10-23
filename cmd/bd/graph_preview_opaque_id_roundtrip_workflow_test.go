@@ -76,6 +76,17 @@ func TestGraphPreviewOpaqueIssueIDShowUpdateCloseRoundtrip(t *testing.T) {
 				if shown := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/x", "--format", "graph-json")); shown.Properties.Status != types.StatusOpen {
 					t.Fatalf("close of x changed beads/x: %+v", shown)
 				}
+				preview := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "beads/x", "target"))
+				if !preview.Preview || len(preview.Issues) != 2 || len(preview.IncidentLinkIDs) != 1 {
+					t.Fatalf("opaque set preview selected the wrong Issues or Links: %+v", preview)
+				}
+				deleted := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "beads/x", "target", "--force"))
+				if !deleted.Deleted || len(deleted.Issues) != 2 || len(deleted.IncidentLinkIDs) != 1 {
+					t.Fatalf("opaque set deletion selected the wrong Issues or Links: %+v", deleted)
+				}
+				if shown := graphMixedResult[graphstore.IssueRecord](t, call("show", "x", "--format", "graph-json")); shown.Properties.Status != types.StatusClosed {
+					t.Fatalf("deleting beads/x also deleted x: %+v", shown)
+				}
 			})
 		}
 	}

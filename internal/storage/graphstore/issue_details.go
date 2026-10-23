@@ -209,6 +209,23 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 				}
 			}
 			if selectedPath == "" {
+				// A deleted public ID remains reserved. Report its terminal
+				// state only after every live exact and compatibility candidate
+				// has missed, so an old deleted Link cannot shadow a live Bead.
+				var deleted int
+				err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog
+					WHERE allocation_state='deleted' AND
+					((backing='issue' AND backing_key=?) OR
+					 (backing IN ('generic','dependency','informational') AND path=?))`, localID, localID).Scan(&deleted)
+				if err != nil {
+					return err
+				}
+				if deleted > 1 {
+					return fmt.Errorf("%w: public ID %q has multiple deleted allocations", ErrInvalidStore, localID)
+				}
+				if deleted == 1 {
+					return ErrGone
+				}
 				return ErrNotFound
 			}
 			if record == nil {
