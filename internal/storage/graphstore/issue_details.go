@@ -107,11 +107,23 @@ func (s *Store) ReadBeadWithIssueDetailsSelected(ctx context.Context, selector I
 	return record, details, nil
 }
 
+// ReadResourceSelected resolves one current Resource without building the
+// familiar Issue detail projection. Transport adapters use this to keep their
+// dependency boundary and read only the canonical Resource record.
+func (s *Store) ReadResourceSelected(ctx context.Context, path, localID string) (string, any, error) {
+	selected, record, _, err := s.readResourceSelected(ctx, path, localID, workapi.DetailOptions{}, false)
+	return selected, record, err
+}
+
 // ReadResourceWithIssueDetailsSelected resolves a local public ID across the
 // currently supported Bead and Link backings in one checked snapshot. A
 // canonical Scope URL supplies only an exact path. No local spelling is
 // interpreted as a graph path, including beads/ and links/ prefixes.
 func (s *Store) ReadResourceWithIssueDetailsSelected(ctx context.Context, path, localID string, opts workapi.DetailOptions) (string, any, *types.IssueDetails, error) {
+	return s.readResourceSelected(ctx, path, localID, opts, true)
+}
+
+func (s *Store) readResourceSelected(ctx context.Context, path, localID string, opts workapi.DetailOptions, includeDetails bool) (string, any, *types.IssueDetails, error) {
 	if localID == "" {
 		if err := validateResourcePath(path); err != nil {
 			return "", nil, nil, err
@@ -137,10 +149,9 @@ func (s *Store) ReadResourceWithIssueDetailsSelected(ctx context.Context, path, 
 				return err
 			}
 		} else {
-			// Generic Beads and Links still store their public identity as the
-			// path supplied at creation. Admit that exact spelling by backing,
-			// never by its beads/ or links/ syntax. A native Issue with the same
-			// public ID remains a collision, not a precedence rule.
+			// Memory and Link public IDs are their allocated graph paths in this
+			// preview. Bare suffixes remain compatibility shorthand; an Issue's
+			// private graph path is never a second local Issue identity.
 			exactNonIssuePath := ""
 			if validatePath(localID) == nil || validateLinkPath(localID) == nil {
 				var backing string
@@ -152,51 +163,50 @@ func (s *Store) ReadResourceWithIssueDetailsSelected(ctx context.Context, path, 
 					exactNonIssuePath = localID
 				}
 			}
-			issuePath, issue, issueErr := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: localID})
-			if exactNonIssuePath != "" && errors.Is(issueErr, storage.ErrValidation) {
-				// The Issue resolver correctly rejects a local spelling that is
-				// also a graph path. For this mixed read, the exact path may be
-				// the non-Issue's public ID. A slash-bearing spelling cannot be
-				// an Issue abbreviation; check for an exact native ID collision.
-				var count int
-				if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live'`, localID).Scan(&count); err != nil {
-					return err
-				}
-				if count == 0 {
-					issueErr = errNonIssueSelector
-				}
-			}
+			issuePath, issue, issueErr := s.resolveExactLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: localID})
+			exactIssue := issueErr == nil
 			if issueErr != nil && !errors.Is(issueErr, ErrNotFound) && !errors.Is(issueErr, errNonIssueSelector) {
 				return issueErr
 			}
 			if issueErr == nil {
+				if exactNonIssuePath != "" {
+					return fmt.Errorf("%w: public ID %q identifies multiple Resources", storage.ErrValidation, localID)
+				}
 				selectedPath, record = issuePath, issue
+			} else if exactNonIssuePath != "" {
+				selectedPath = exactNonIssuePath
+			} else {
+				// Only after exact public identity misses may shipping Issue
+				// abbreviations and old Bead/Link suffix shorthand participate.
+				issuePath, issue, issueErr = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: localID})
+				if issueErr != nil && !errors.Is(issueErr, ErrNotFound) && !errors.Is(issueErr, errNonIssueSelector) {
+					return issueErr
+				}
+				if issueErr == nil {
+					selectedPath, record = issuePath, issue
+				}
 			}
-			for _, candidate := range []struct{ path, backing string }{{path, "generic"}, {"links/" + localID, "link"}, {exactNonIssuePath, "nonissue"}} {
-				if candidate.path == "" || (candidate.backing == "nonissue" && (candidate.path == path || candidate.path == "links/"+localID)) {
-					continue
+			if exactNonIssuePath == "" && !exactIssue {
+				for _, candidate := range []struct{ path, backing string }{{path, "generic"}, {"links/" + localID, "link"}} {
+					var backing string
+					err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live'`, candidate.path).Scan(&backing)
+					if errors.Is(err, sql.ErrNoRows) {
+						continue
+					}
+					if err != nil {
+						return err
+					}
+					if candidate.backing == "generic" && backing != "generic" {
+						continue
+					}
+					if candidate.backing == "link" && backing != "dependency" && backing != "informational" {
+						continue
+					}
+					if selectedPath != "" {
+						return fmt.Errorf("%w: local shorthand %q identifies multiple Resources; use a public ID or canonical Scope URL", storage.ErrValidation, localID)
+					}
+					selectedPath = candidate.path
 				}
-				var backing string
-				err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live'`, candidate.path).Scan(&backing)
-				if errors.Is(err, sql.ErrNoRows) {
-					continue
-				}
-				if err != nil {
-					return err
-				}
-				if candidate.backing == "generic" && backing != "generic" {
-					continue
-				}
-				if candidate.backing == "link" && backing != "dependency" && backing != "informational" {
-					continue
-				}
-				if candidate.backing == "nonissue" && backing != "generic" && backing != "dependency" && backing != "informational" {
-					continue
-				}
-				if selectedPath != "" {
-					return fmt.Errorf("%w: public ID %q identifies multiple Resources; use a canonical Scope URL", storage.ErrValidation, localID)
-				}
-				selectedPath = candidate.path
 			}
 			if selectedPath == "" {
 				return ErrNotFound
@@ -209,7 +219,7 @@ func (s *Store) ReadResourceWithIssueDetailsSelected(ctx context.Context, path, 
 				}
 			}
 		}
-		if issue, ok := record.(IssueRecord); ok {
+		if issue, ok := record.(IssueRecord); ok && includeDetails {
 			var err error
 			details, err = s.issueDetailsInTx(ctx, tx, selectedPath, issue, opts)
 			return err
@@ -239,14 +249,13 @@ func (s *Store) issueDetailsInTx(ctx context.Context, tx *sql.Tx, path string, r
 		return nil, err
 	}
 	details.Revision = record.Revision
-	// Native Issue IDs are backing keys, not graph selectors. Project every
-	// Issue reference through this same transaction's catalog before the
-	// detail array escapes; a bare backing ID can otherwise resolve to an
-	// unrelated Memory with the same Bead path.
+	// Validate every Issue reference against this snapshot's live catalog.
+	// Public Issue IDs stay literal in the familiar detail projection; the
+	// graph record above still carries its exact canonical Scope URL.
 	if err := s.projectIssueDetailIDsInTx(ctx, tx, details); err != nil {
 		return nil, err
 	}
-	if details.ID != path {
+	if details.ID != record.Properties.ID {
 		return nil, fmt.Errorf("%w: Issue allocation changed during detail projection", ErrInvalidStore)
 	}
 	return details, nil
@@ -257,32 +266,27 @@ func (s *Store) projectIssueDetailIDsInTx(ctx context.Context, tx *sql.Tx, detai
 	if err != nil {
 		return err
 	}
-	paths := map[string]string{}
-	canonicalPath := func(nativeID string) (string, error) {
-		if path, ok := paths[nativeID]; ok {
-			return path, nil
+	validated := map[string]bool{}
+	validateNativeID := func(nativeID string) error {
+		if validated[nativeID] {
+			return nil
 		}
 		var path, kind, typ, state string
 		err := tx.QueryRowContext(ctx, `SELECT path,resource_kind,type_url,allocation_state FROM graph_preview_catalog WHERE backing='issue' AND backing_key=?`, nativeID).Scan(&path, &kind, &typ, &state)
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", fmt.Errorf("%w: unmapped Issue detail ID", ErrInvalidStore)
+			return fmt.Errorf("%w: unmapped Issue detail ID", ErrInvalidStore)
 		}
-		if err != nil {
-			return "", err
-		}
-		if kind != "bead" || typ != issueType || state != "live" || validatePath(path) != nil {
-			return "", fmt.Errorf("%w: invalid Issue detail allocation", ErrInvalidStore)
-		}
-		paths[nativeID] = path
-		return path, nil
-	}
-	projectIssue := func(issue *types.Issue) error {
-		path, err := canonicalPath(issue.ID)
 		if err != nil {
 			return err
 		}
-		issue.ID = path
+		if kind != "bead" || typ != issueType || state != "live" || validatePath(path) != nil {
+			return fmt.Errorf("%w: invalid Issue detail allocation", ErrInvalidStore)
+		}
+		validated[nativeID] = true
 		return nil
+	}
+	projectIssue := func(issue *types.Issue) error {
+		return validateNativeID(issue.ID)
 	}
 	if err := projectIssue(&details.Issue); err != nil {
 		return err
@@ -297,19 +301,15 @@ func (s *Store) projectIssueDetailIDsInTx(ctx context.Context, tx *sql.Tx, detai
 		}
 	}
 	if details.Parent != nil {
-		path, err := canonicalPath(*details.Parent)
-		if err != nil {
+		if err := validateNativeID(*details.Parent); err != nil {
 			return err
 		}
-		details.Parent = &path
 	}
 	for _, comment := range details.Comments {
 		if comment != nil {
-			path, err := canonicalPath(comment.IssueID)
-			if err != nil {
+			if err := validateNativeID(comment.IssueID); err != nil {
 				return err
 			}
-			comment.IssueID = path
 		}
 	}
 	return nil

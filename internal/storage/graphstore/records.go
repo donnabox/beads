@@ -107,6 +107,11 @@ func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r
 	if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
+	if exists, err := publicResourceIDExistsInTx(ctx, tx, req.Path); err != nil {
+		return err
+	} else if exists {
+		return ErrAlreadyExists
+	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
         (path, resource_kind, type_url, revision, allocation_state, backing)
         VALUES (?, 'bead', ?, ?, 'live', 'generic')`, req.Path, r.Type, r.Revision); err != nil {

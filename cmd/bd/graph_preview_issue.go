@@ -185,6 +185,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewApplyIssueCreateProperties(cmd, request.Issue, properties); err != nil {
 		return err
 	}
+	var touchedURL string
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		var record graphstore.IssueRecord
 		if parentSelector != "" {
@@ -209,11 +210,12 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 				return nil, "", err
 			}
 		}
+		touchedURL = record.ID
 		path = graphPreviewDisplayLocalURL(record.ID)
 		return record, fmt.Sprintf("Created %s\n", path), nil
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touchedURL)
 	}
 	return err
 }

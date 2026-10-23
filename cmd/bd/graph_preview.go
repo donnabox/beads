@@ -795,7 +795,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		if shortMode && shownIssue && !versioned && format == "" {
 			legacyShort = true
 			issue := *r.(graphstore.IssueRecord).Properties
-			issue.ID = path
+			issue.ID = r.(graphstore.IssueRecord).Properties.ID
 			return r, formatShortIssue(&issue), nil
 		}
 		if shownIssue && jsonOutput && format == "" && !versioned {
@@ -831,7 +831,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		return graphPrint(result, human, quietFlag)
 	})
 	if err == nil && shownIssue {
-		SetLastTouchedID(path)
+		graphPreviewStoreLastTouchedPath(path)
 	}
 	return err
 }

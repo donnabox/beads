@@ -62,13 +62,13 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			call(args...)
 			call("remember", "private-memory-body", "--id", "beads/plan", "--title", "Plan")
 			call("remember", "private-memory-body", "--id", "beads/context", "--title", "Context")
-			call("create", "Work", "--graph-path", "beads/work", "--priority", "1", "--labels", "release")
-			call("create", "Gate", "--graph-path", "beads/gate", "--priority", "2")
+			createdWork := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work", "--priority", "1", "--labels", "release"))
+			createdGate := graphMixedResult[graphstore.IssueRecord](t, call("create", "Gate", "--graph-path", "beads/gate", "--priority", "2"))
 			related := scope + "types/references"
 			for _, edge := range [][3]string{{"plan", "context", "context"}, {"plan", "work", "work"}, {"context", "gate", "gate"}} {
 				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--type", related)
 			}
-			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
+			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "ready", "--label=", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "blocked", "--label-any=", "--json")
 			// The ordinary ready and blocked predicates now select canonical
@@ -99,7 +99,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				t.Fatalf("linked Memory edit lost payload or owned Links: %+v", memoryEdit)
 			}
 			const description = "Revised Issue in the same Memory/Link journey."
-			issueEdit := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--description", description, "--if-revision", workBefore.Revision))
+			issueEdit := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--description", description, "--if-revision", workBefore.Revision))
 			if !issueEdit.Changed || issueEdit.Issue.ID != workBefore.ID || issueEdit.Issue.Revision == workBefore.Revision || issueEdit.Issue.Properties.Description != description || !reflect.DeepEqual(issueEdit.Issue.Owned, workBefore.Owned) {
 				t.Fatalf("Issue text edit lost payload or owned Dependencies: %+v", issueEdit)
 			}
@@ -137,12 +137,12 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			stable := graphMemoryReadSnapshot(t, work)
 			memoryNoop := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", memoryEdit.Memory.Revision))
-			issueNoop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--description", description, "--if-revision", issueEdit.Issue.Revision))
+			issueNoop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--description", description, "--if-revision", issueEdit.Issue.Revision))
 			if memoryNoop.Changed || memoryNoop.Replaced != nil || !reflect.DeepEqual(memoryNoop.Memory, memoryEdit.Memory) || issueNoop.Changed || !reflect.DeepEqual(issueNoop.Issue, issueEdit.Issue) {
 				t.Fatal("same-value release edits were not no-ops")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", "beads/plan", "--properties", replacement, "--if-revision", planBefore.Revision, "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", "beads/work", "--description", description, "--if-revision", workBefore.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", scope+"beads/work", "--description", description, "--if-revision", workBefore.Revision, "--json")
 			if !reflect.DeepEqual(stable, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("no-op or stale edit changed the whole current snapshot")
 			}
@@ -273,7 +273,9 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				legacyIDs = append(legacyIDs, issue.ID)
 			}
 			slices.Sort(legacyIDs)
-			if !slices.Equal(legacyIDs, []string{"beads/gate", "beads/work"}) {
+			wantIDs := []string{createdWork.Properties.ID, createdGate.Properties.ID}
+			slices.Sort(wantIDs)
+			if !slices.Equal(legacyIDs, wantIDs) {
 				t.Fatalf("legacy Issue list IDs = %v", legacyIDs)
 			}
 			status := graphMixedResult[struct {
@@ -314,10 +316,10 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 					t.Fatalf("query/refusal changed %s", path)
 				}
 			}
-			call("close", "beads/gate")
+			call("close", scope+"beads/gate")
 			assertBlocked(false)
 			assertReady(true, false)
-			call("reopen", "beads/gate")
+			call("reopen", scope+"beads/gate")
 			assertBlocked(true)
 			assertReady(false, true)
 			source := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))

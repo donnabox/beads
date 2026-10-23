@@ -117,6 +117,18 @@ func RemoveDependencyCommitMessage(issueID, dependsOnID string) string {
 // tables. That is why the phase loop and the gate are over the whole request
 // and the plane is decided per edge, one level down.
 func ExecuteAddDependencies(ctx context.Context, tx *sql.Tx, request publicops.AddDependenciesRequest) (publicops.AddDependenciesResult, ChangedTables, error) {
+	return executeAddDependencies(ctx, tx, request, false)
+}
+
+// ExecuteAddDependenciesCheckedLocal is for a caller that resolved every
+// target against the live Issue table in this transaction. Public ID spelling
+// cannot classify a target as external: an opaque ID may contain a different
+// legacy prefix while still naming an Issue in this same Scope.
+func ExecuteAddDependenciesCheckedLocal(ctx context.Context, tx *sql.Tx, request publicops.AddDependenciesRequest) (publicops.AddDependenciesResult, ChangedTables, error) {
+	return executeAddDependencies(ctx, tx, request, true)
+}
+
+func executeAddDependencies(ctx context.Context, tx *sql.Tx, request publicops.AddDependenciesRequest, checkedLocal bool) (publicops.AddDependenciesResult, ChangedTables, error) {
 	// One scoped query for the whole request instead of a probe per edge: a
 	// bulk `bd dep add --file` against a remote Dolt pays WAN latency per
 	// round-trip (GH#3414). Nothing an edge write does moves a source between
@@ -138,7 +150,7 @@ func ExecuteAddDependencies(ctx context.Context, tx *sql.Tx, request publicops.A
 				continue
 			}
 			_, sourceIsWisp := wispSources[edge.IssueID]
-			edgeTables, err := addDependencyEdgeInTx(ctx, tx, request, edge, sourceIsWisp)
+			edgeTables, err := addDependencyEdgeInTx(ctx, tx, request, edge, sourceIsWisp, checkedLocal)
 			if err != nil {
 				return publicops.AddDependenciesResult{}, nil, err
 			}
@@ -168,16 +180,28 @@ func ExecuteAddDependencies(ctx context.Context, tx *sql.Tx, request publicops.A
 // *DependencyTypeConflictError, *DependencyHierarchyConflictError,
 // ErrDependencyCycle, a missing endpoint — is already a complete sentence, and
 // the store's own dependency verb has always surfaced them verbatim.
-func addDependencyEdgeInTx(ctx context.Context, tx *sql.Tx, request publicops.AddDependenciesRequest, edge publicops.DependencyEdge, sourceIsWisp bool) (ChangedTables, error) {
+func addDependencyEdgeInTx(ctx context.Context, tx *sql.Tx, request publicops.AddDependenciesRequest, edge publicops.DependencyEdge, sourceIsWisp, checkedLocal bool) (ChangedTables, error) {
 	sourceTable, _, eventTable, depTable := WispTableRouting(sourceIsWisp)
+	var targetKind *DepTargetKind
+	var checkedTarget *DepTargetPrecheck
+	if checkedLocal {
+		localIssue := DepTargetIssue
+		targetKind = &localIssue
+		checkedTarget = &DepTargetPrecheck{}
+		if err := tx.QueryRowContext(ctx, `SELECT issue_type, status FROM issues WHERE id=?`, edge.DependsOnID).Scan(&checkedTarget.IssueType, &checkedTarget.Status); err != nil {
+			return nil, err
+		}
+	}
 
 	dep := &types.Dependency{IssueID: edge.IssueID, DependsOnID: edge.DependsOnID, Type: edge.Type}
 	eventWritten, err := AddDependencyInTx(ctx, tx, dep, request.Actor, AddDependencyOpts{
-		SourceTable:    sourceTable,
-		WriteTable:     depTable,
-		IsCrossPrefix:  types.ExtractPrefix(edge.IssueID) != types.ExtractPrefix(edge.DependsOnID),
-		SkipCycleCheck: request.SkipPerEdgeCycleCheck,
-		EmitEvent:      true,
+		SourceTable:      sourceTable,
+		WriteTable:       depTable,
+		IsCrossPrefix:    !checkedLocal && types.ExtractPrefix(edge.IssueID) != types.ExtractPrefix(edge.DependsOnID),
+		TargetKind:       targetKind,
+		PrecheckedTarget: checkedTarget,
+		SkipCycleCheck:   request.SkipPerEdgeCycleCheck,
+		EmitEvent:        true,
 	})
 	if err != nil {
 		return nil, err

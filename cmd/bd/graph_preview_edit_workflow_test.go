@@ -39,7 +39,7 @@ func TestGraphPreviewEditWorkflow(t *testing.T) {
 			}
 			call("", nil, initArgs...)
 			call("", nil, "remember", "Memory body", "--id", "beads/memory", "--title", "Memory")
-			original := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "create", "Edit me", "--graph-path", "beads/work", "--description", "Original description", "--notes", "Original notes"))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "create", "Edit me", "--id", "work", "--force", "--description", "Original description", "--notes", "Original notes"))
 			versions := call("", nil, "versions", "work")
 			unchanged := graphMixedResult[graphstore.IssueMutationResult](t, call("", editor("exit 0"), "edit", "work"))
 			if unchanged.Changed || !reflect.DeepEqual(unchanged.Issue, original) || call("", nil, "versions", "work") != versions {

@@ -288,7 +288,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	// and a second row to carry native attribution.
 	run(t, "create", "Issue subject", "--graph-path", "beads/issue", "--actor", author, "--json")
 	run(t, "remember", "Link target", "--id", "beads/target", "--actor", author, "--json")
-	run(t, "update", "beads/issue", "--title", "Issue subject renamed", "--actor", author, "--json")
+	run(t, "update", scope+"beads/issue", "--title", "Issue subject renamed", "--actor", author, "--json")
 	// Memory plane: created, then replaced. Memory records no attribution
 	// status at all, which is a different thing from recording an empty one.
 	run(t, "remember", "Memory body", "--id", "beads/memory", "--title", "Memory subject", "--actor", author, "--json")
@@ -297,7 +297,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	// Link plane: created, changed, then unlinked. The private deletion marker
 	// must not appear among the citable versions. An Issue source leaves this
 	// Link unowned, so these writes do not advance a second subject's history.
-	run(t, "link", "beads/issue", "beads/target", "--id", "links/related", "--type", relatedType, "--actor", author, "--json")
+	run(t, "link", scope+"beads/issue", "beads/target", "--id", "links/related", "--type", relatedType, "--actor", author, "--json")
 	run(t, "update", "links/related", "--properties", `{"note":"changed"}`, "--actor", author, "--json")
 	removedLink := graphMixedResult[graphstore.LinkDeleteResult](t, run(t, "link", "delete", "--force", "links/related", "--actor", author, "--json"))
 

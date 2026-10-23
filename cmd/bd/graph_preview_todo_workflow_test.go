@@ -59,7 +59,7 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 					t.Fatalf("%v listed %+v; expected the open task only", args, got)
 				}
 			}
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "https://example.invalid/todo/"+created.ID, "--format", "graph-json"))
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--format", "graph-json"))
 			_, _, initialVersions, _ := graphVersionsListed(t, call("versions", created.ID))
 			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "todo", "done", created.ID, "--if-revision", "stale", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "todo", "done", created.ID, other.ID, "--if-revision", before.Revision, "--json")
@@ -74,7 +74,7 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 			if raw := call("todo", "done", created.ID, "--if-revision", before.Revision); json.Unmarshal([]byte(raw), &done) != nil || len(done.Closed) != 1 || done.Closed[0] != created.ID || done.Reason != "Completed" {
 				t.Fatalf("guarded TODO completion: %s", raw)
 			}
-			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", "https://example.invalid/todo/"+created.ID, "--format", "graph-json"))
+			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--format", "graph-json"))
 			_, _, versions, _ := graphVersionsListed(t, call("versions", created.ID))
 			if closed.Properties.Status != types.StatusClosed || closed.Properties.CloseReason != "Completed" || len(versions) != 2 || versions[0].Version != closed.Revision {
 				t.Fatalf("TODO close did not retain exactly one native successor: %+v %+v", closed, versions)
@@ -137,7 +137,7 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 					t.Fatalf("batch %q lost successful IDs: %s (%v)", bad, out, err)
 				}
 				for _, id := range result.Closed {
-					record := graphMixedResult[graphstore.IssueRecord](t, call("show", "https://example.invalid/todo/"+id, "--format", "graph-json"))
+					record := graphMixedResult[graphstore.IssueRecord](t, call("show", id, "--format", "graph-json"))
 					_, _, rows, _ := graphVersionsListed(t, call("versions", id))
 					if record.Properties.Status != types.StatusClosed || len(rows) != 2 || rows[0].Version != record.Revision {
 						t.Fatalf("batch target %s did not close with one retained successor: %+v %+v", id, record, rows)

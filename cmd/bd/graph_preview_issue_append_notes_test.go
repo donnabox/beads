@@ -137,14 +137,14 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 		flags    []string
 		code     int
 	}{
-		// Invalid text reaches Issue admission (exit2), rather than falling
-		// through to Memory's unsupported-field refusal (exit5).
-		{"issue-route", "beads/work", []string{"--append-notes=\xff"}, 2},
+		// An opaque local ID needs the catalog before its backing kind is known.
+		// A canonical Issue URL can still reject malformed Issue text pre-store.
+		{"opaque-local-needs-catalog", "beads/work", []string{"--append-notes=\xff"}, 5},
 		{"canonical-issue-route", "https://example.invalid/beads/work", []string{"--append-notes=\xff"}, 2},
 		{"link-route", "links/context", []string{"--append-notes=Progress"}, 5},
 		{"foreign-selector", "https://foreign.invalid/beads/work", []string{"--append-notes=Progress"}, 2},
-		{"unsupported-selector", "alias/work-123", []string{"--append-notes=Progress"}, 2},
-		{"false-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim=false"}, 2},
+		{"unknown-local-needs-catalog", "alias/work-123", []string{"--append-notes=Progress"}, 5},
+		{"false-claim-dispatch", "https://example.invalid/beads/work", []string{"--append-notes=Progress", "--claim=false"}, 2},
 		{"true-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

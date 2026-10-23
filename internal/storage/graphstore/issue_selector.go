@@ -38,8 +38,7 @@ func validateIssueSelector(selector IssueSelector) error {
 }
 
 // Resolve against the checked live catalog in the caller's transaction. A
-// local spelling names a native Issue ID, never a graph path. If it also
-// names another backing's path, refuse rather than choosing by spelling.
+// local spelling names a native Issue ID, never another Issue's graph path.
 // Canonical URLs remain exact paths.
 // This exact pass is the first stage of native abbreviation resolution.
 func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
@@ -57,27 +56,6 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 		}
 		issue, err := s.requireIssueInTx(ctx, tx, selector.Path)
 		return selector.Path, issue, err
-	}
-	backingAt := func(path string) (string, bool, error) {
-		var backing string
-		err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing)
-		if errors.Is(err, sql.ErrNoRows) {
-			return "", false, nil
-		}
-		return backing, err == nil, err
-	}
-	backing, pathExists, err := backingAt(selector.Path)
-	if err != nil {
-		return "", IssueRecord{}, err
-	}
-	legacyPath := ""
-	legacyExists := false
-	if selector.NativeID != selector.Path && validatePath(selector.NativeID) == nil {
-		legacyPath = selector.NativeID
-		_, legacyExists, err = backingAt(legacyPath)
-		if err != nil {
-			return "", IssueRecord{}, err
-		}
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live' LIMIT 2`, selector.NativeID)
 	if err != nil {
@@ -98,18 +76,25 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 	if len(paths) > 1 {
 		return "", IssueRecord{}, fmt.Errorf("%w: native Issue ID has multiple live graph allocations", ErrInvalidStore)
 	}
-	if legacyExists && (len(paths) == 0 || paths[0] != legacyPath) {
-		return "", IssueRecord{}, fmt.Errorf("%w: public Issue ID %q also names a different graph path; use a canonical Scope URL", storage.ErrValidation, selector.NativeID)
-	}
-	if pathExists && ((len(paths) == 0 && backing == "issue") || (len(paths) == 1 && paths[0] != selector.Path)) {
-		return "", IssueRecord{}, fmt.Errorf("%w: public Issue ID %q conflicts with a graph path; use a canonical Scope URL", storage.ErrValidation, selector.NativeID)
-	}
 	if len(paths) == 1 {
 		issue, err := s.requireIssueInTx(ctx, tx, paths[0])
 		return paths[0], issue, err
 	}
-	if pathExists {
+	var backing string
+	err = tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog
+		WHERE path=? AND backing IN ('generic','dependency','informational') AND allocation_state='live'`, selector.NativeID).Scan(&backing)
+	if err == nil {
 		return "", IssueRecord{}, nonIssueSelectorError(backing)
+	}
+	if !errors.Is(err, sql.ErrNoRows) {
+		return "", IssueRecord{}, err
+	}
+	err = tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live'`, selector.Path).Scan(&backing)
+	if err == nil && backing == "generic" {
+		return "", IssueRecord{}, nonIssueSelectorError(backing)
+	}
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return "", IssueRecord{}, err
 	}
 	return "", IssueRecord{}, ErrNotFound
 }
@@ -164,7 +149,7 @@ func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, pa
 		search = strings.TrimPrefix(nativeID, p+"-")
 	}
 	if !validPartialIssueHash(search) {
-		return "", IssueRecord{}, ErrNotFound
+		return selected, issue, selectedErr
 	}
 	type match struct{ path, id string }
 	var normalizedExact []match

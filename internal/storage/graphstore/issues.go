@@ -69,29 +69,6 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		// A public ID that happens to spell an existing graph path still names
-		// that ID literally. Refuse the collision before either identity is
-		// published, regardless of which representation was created first.
-		if request.Issue.ID != "" && validateResourcePath(request.Issue.ID) == nil {
-			var exists int
-			err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, request.Issue.ID).Scan(&exists)
-			if err == nil {
-				return ErrAlreadyExists
-			}
-			if !errors.Is(err, sql.ErrNoRows) {
-				return err
-			}
-		}
-		if path != "" {
-			var exists int
-			err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live'`, path).Scan(&exists)
-			if err == nil {
-				return ErrAlreadyExists
-			}
-			if !errors.Is(err, sql.ErrNoRows) {
-				return err
-			}
-		}
 		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
 		if err != nil {
 			return err
@@ -116,6 +93,18 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		defer unScope()
 		created, _, err := issueops.ExecuteCreate(ctx, tx, request)
 		if err != nil {
+			return err
+		}
+		// The native writer reserves its own ID. Check the other live resource
+		// families before publishing this allocation; the whole transaction
+		// rolls back if another family already uses the same public spelling.
+		var collision int
+		err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE
+			backing IN ('generic','dependency','informational') AND path=? LIMIT 1`, created.Issue.ID).Scan(&collision)
+		if err == nil {
+			return ErrAlreadyExists
+		}
+		if !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
 		if path == "" {

@@ -66,23 +66,23 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			memory := call("remember", "Progress context", "--id", "beads/context", "--title", "Context")
 			call("create", "Record progress", "--graph-path", "beads/work", "--labels", "demo,graph")
 			target := call("create", "Prerequisite", "--graph-path", "beads/gate")
-			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
+			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
-			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim", "--actor", "holder"))
+			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--claim", "--actor", "holder"))
 			if !claimed.Changed || claimed.Issue.Properties.Assignee != "holder" || claimed.Issue.Properties.LeaseExpiresAt == nil {
 				t.Fatalf("claim: %+v", claimed)
 			}
 			current := claimed.Issue
 			state := graphMemoryReadSnapshot(t, work)
-			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--append-notes=", "--if-revision", current.Revision, "--actor", "holder"))
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--append-notes=", "--if-revision", current.Revision, "--actor", "holder"))
 			if noop.Changed || !reflect.DeepEqual(noop.Issue, current) || !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("empty-on-empty append changed state")
 			}
 			notes := ""
 			for _, text := range []string{"  Progress — 雪\r\nnext\t  ", "", "-", "@missing-notes.txt", "repeat", "repeat"} {
 				before := current
-				changed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--append-notes", text, "--if-revision", current.Revision, "--actor", "holder"))
+				changed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--append-notes", text, "--if-revision", current.Revision, "--actor", "holder"))
 				if !changed.Changed {
 					t.Fatal("nonempty-state append was treated as no-op")
 				}
@@ -94,19 +94,19 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 				checkAppend(before, current, notes)
 			}
 			state = graphMemoryReadSnapshot(t, work)
-			refuse("revision_conflict", "update", "beads/work", "--append-notes=", "--if-revision", original.Revision)
-			refuse("permission_denied", "update", "beads/work", "--append-notes=No", "--readonly")
-			refuse("invalid_properties", "update", "beads/work", "--append-notes=No", "--notes=Replacement")
-			refuse("invalid_properties", "update", "beads/work", "--append-notes=No", "--notes=")
-			refuse("capability_unavailable", "update", "beads/work", "--append-notes=No", "--claim")
-			refuse("invalid_properties", "update", "beads/work", "--append-notes=No", "--claim=false")
-			refuse("constraint_violation", "update", "beads/work", "--append-notes=No", "--assignee=thief", "--actor=thief", "--if-revision", current.Revision)
+			refuse("revision_conflict", "update", scope+"beads/work", "--append-notes=", "--if-revision", original.Revision)
+			refuse("permission_denied", "update", scope+"beads/work", "--append-notes=No", "--readonly")
+			refuse("invalid_properties", "update", scope+"beads/work", "--append-notes=No", "--notes=Replacement")
+			refuse("invalid_properties", "update", scope+"beads/work", "--append-notes=No", "--notes=")
+			refuse("capability_unavailable", "update", scope+"beads/work", "--append-notes=No", "--claim")
+			refuse("invalid_properties", "update", scope+"beads/work", "--append-notes=No", "--claim=false")
+			refuse("constraint_violation", "update", scope+"beads/work", "--append-notes=No", "--assignee=thief", "--actor=thief", "--if-revision", current.Revision)
 			refuse("capability_unavailable", "update", "beads/context", "--append-notes=No")
 			refuse("capability_unavailable", "update", "links/context", "--append-notes=No")
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))
 			freeze := filepath.Join(work, "MIGRATION-FREEZE")
 			writeFile(t, freeze, []byte("append-test\t2026-09-29T00:00:00Z\tfreeze\n"))
-			refuse("permission_denied", "update", "beads/work", "--append-notes=No")
+			refuse("permission_denied", "update", scope+"beads/work", "--append-notes=No")
 			if err := os.Remove(freeze); err != nil {
 				t.Fatal(err)
 			}
@@ -127,8 +127,8 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			if engine == "server" {
 				before := current
 				outcomes := graphMutationRacePair(t, bd, work, home, [2][]string{
-					{"update", "beads/work", "--append-notes=first", "--actor=holder", "--if-revision", current.Revision, "--json"},
-					{"update", "beads/work", "--append-notes=second", "--actor=holder", "--if-revision", current.Revision, "--json"},
+					{"update", scope + "beads/work", "--append-notes=first", "--actor=holder", "--if-revision", current.Revision, "--json"},
+					{"update", scope + "beads/work", "--append-notes=second", "--actor=holder", "--if-revision", current.Revision, "--json"},
 				}, map[string]int{"revision_conflict": 4})
 				winner := -1
 				for i, outcome := range outcomes {
@@ -150,10 +150,10 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 				current = changed.Issue
 				checkAppend(before, current, notes)
 			}
-			call("close", "beads/gate", "--reason", "Done", "--actor", "holder")
-			call("close", "beads/work", "--reason", "Done", "--actor", "holder")
+			call("close", scope+"beads/gate", "--reason", "Done", "--actor", "holder")
+			call("close", scope+"beads/work", "--reason", "Done", "--actor", "holder")
 			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
-			changed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--append-notes=Post-completion", "--if-revision", closed.Revision, "--actor", "holder"))
+			changed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--append-notes=Post-completion", "--if-revision", closed.Revision, "--actor", "holder"))
 			if !changed.Changed {
 				t.Fatal("closed append reported no-op")
 			}

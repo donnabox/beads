@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
@@ -36,7 +35,7 @@ func runGraphPreviewTodoAdd(cmd *cobra.Command, args []string) error {
 	}
 	description, _ := cmd.Flags().GetString("description")
 	actor := getActorWithGit()
-	var path string
+	var path, touchedURL string
 	err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		record, err := store.CreateIssue(ctx, "", publicops.CreateRequest{Actor: actor, Issue: &types.Issue{
 			Title: title, Description: description, Priority: priority,
@@ -46,9 +45,10 @@ func runGraphPreviewTodoAdd(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
+		touchedURL = record.ID
 		path = graphPreviewDisplayLocalURL(record.ID)
 		issue := *record.Properties
-		issue.ID = path
+		issue.ID = record.Properties.ID
 		issue.Metadata = record.Metadata
 		return &issue, fmt.Sprintf("Created %s: %s\n", ui.RenderID(path), issue.Title), nil
 	}, func(result any, human string) error {
@@ -59,7 +59,7 @@ func runGraphPreviewTodoAdd(cmd *cobra.Command, args []string) error {
 		return err
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touchedURL)
 	}
 	return err
 }
@@ -93,7 +93,6 @@ func runGraphPreviewTodoList(cmd *cobra.Command) error {
 				return nil, "", fmt.Errorf("%w: TODO query returned a non-task Issue", graphstore.ErrInvalidStore)
 			}
 			issue := *record.Properties
-			issue.ID = graphPreviewDisplayLocalURL(record.ID)
 			issue.Metadata = record.Metadata
 			issues = append(issues, &issue)
 		}
@@ -150,7 +149,7 @@ func runGraphPreviewTodoDone(cmd *cobra.Command, args []string) error {
 	// unguarded batches instead try every selector independently, even after a
 	// malformed or missing ID, and return success with the IDs they closed.
 	if revision != "" {
-		if _, err := graphTodoIssuePath(args[0]); err != nil {
+		if _, err := graphPreviewIssueSelector(args[0]); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
@@ -159,13 +158,13 @@ func runGraphPreviewTodoDone(cmd *cobra.Command, args []string) error {
 		closed := make([]string, 0, len(args))
 		var human strings.Builder
 		for _, selector := range args {
-			path, err := graphTodoIssuePath(selector)
+			selected, err := graphPreviewIssueSelector(selector)
 			if err != nil {
 				graphTodoTargetError(selector, err, true)
 				continue
 			}
 			result, err := store.CloseIssueWithOptions(ctx, graphstore.IssueCloseRequest{
-				Path: path, Reason: reason, Actor: getActorWithGit(), ExpectedRevision: revision,
+				Path: selected.Path, NativeID: selected.NativeID, Reason: reason, Actor: getActorWithGit(), ExpectedRevision: revision,
 			})
 			if err != nil {
 				if revision != "" {
@@ -175,12 +174,12 @@ func runGraphPreviewTodoDone(cmd *cobra.Command, args []string) error {
 				continue
 			}
 			if firstSettled == "" {
-				firstSettled = path
+				firstSettled = result.Issue.ID
 			}
-			closed = append(closed, path)
-			fmt.Fprintf(&human, "Closed %s\n", ui.RenderID(path))
+			closed = append(closed, result.Issue.Properties.ID)
+			fmt.Fprintf(&human, "Closed %s\n", ui.RenderID(result.Issue.Properties.ID))
 			if result.OpenChildren > 0 {
-				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", path, result.OpenChildren)
+				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", result.Issue.Properties.ID, result.OpenChildren)
 			}
 		}
 		return map[string]any{"closed": closed, "reason": reason}, human.String(), nil
@@ -198,17 +197,6 @@ func runGraphPreviewTodoDone(cmd *cobra.Command, args []string) error {
 		SetLastTouchedID(firstSettled)
 	}
 	return nil
-}
-
-func graphTodoIssuePath(selector string) (string, error) {
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
-	if err != nil {
-		return "", err
-	}
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return "", err
-	}
-	return path, nil
 }
 
 func graphTodoTargetError(selector string, err error, lookup bool) {

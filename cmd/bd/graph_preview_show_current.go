@@ -15,7 +15,7 @@ import (
 // may use the last-touched fallback.
 func graphPreviewCurrentIssueID(actor string) (string, error) {
 	if actor == "" || strings.EqualFold(actor, "none") || strings.EqualFold(actor, "null") {
-		return graphPreviewCurrentSelector(GetLastTouchedID()), nil
+		return GetLastTouchedID(), nil
 	}
 	var selected string
 	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
@@ -28,9 +28,8 @@ func graphPreviewCurrentIssueID(actor string) (string, error) {
 				return nil, "", err
 			}
 			if len(page.Items) != 0 {
-				selected, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, page.Items[0].ID)
-				selected = graphPreviewCurrentSelector(selected)
-				return nil, "", err
+				selected = page.Items[0].ID
+				return nil, "", nil
 			}
 		}
 		return nil, "", nil
@@ -41,12 +40,11 @@ func graphPreviewCurrentIssueID(actor string) (string, error) {
 	if selected != "" {
 		return selected, nil
 	}
-	return graphPreviewCurrentSelector(GetLastTouchedID()), nil
+	return GetLastTouchedID(), nil
 }
 
-func graphPreviewCurrentSelector(id string) string {
-	if graph.ValidateBeadPath(id) == nil {
-		return graph.CanonicalURL(graphPreviewConfig.GraphScopeURL, id)
-	}
-	return id
+// Last-touched graph paths are stored as canonical URLs. A bare value in the
+// persisted slot is an opaque public ID, even when it contains beads/.
+func graphPreviewStoreLastTouchedPath(path string) {
+	SetLastTouchedID(graph.CanonicalURL(graphPreviewConfig.GraphScopeURL, path))
 }

@@ -53,13 +53,13 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 			call("remember", "Collision", "--id", "beads/"+before.Properties.ID)
 			versions := call("versions", "beads/work")
 			first := decode(call("comment", workURL, "Starting", "review", "--actor", "alice"))
-			if first.ID == "" || first.IssueID != "beads/work" || first.Author != "alice" || first.Text != "Starting review" {
+			if first.ID == "" || first.IssueID != before.Properties.ID || first.Author != "alice" || first.Text != "Starting review" {
 				t.Fatalf("singular comment did not return stored row: %+v", first)
 			}
 			file := filepath.Join(work, "followup.txt")
 			writeFile(t, file, []byte("Follow-up from file\n"))
 			second := decode(call("comments", "add", workURL, "--file", file, "--author", "bob"))
-			if second.ID == first.ID || second.IssueID != "beads/work" || second.Author != "bob" || second.Text != "Follow-up from file\n" {
+			if second.ID == first.ID || second.IssueID != before.Properties.ID || second.Author != "bob" || second.Text != "Follow-up from file\n" {
 				t.Fatalf("plural comment did not return stored row: %+v", second)
 			}
 			var listed []*types.Comment
@@ -67,7 +67,7 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 			if err := json.Unmarshal([]byte(listedJSON), &listed); err != nil {
 				t.Fatalf("comments --json must retain ordinary array shape: %v\n%s", err, listedJSON)
 			}
-			if len(listed) != 2 || listed[0].ID != first.ID || listed[1].ID != second.ID || listed[0].IssueID != "beads/work" || listed[1].IssueID != "beads/work" {
+			if len(listed) != 2 || listed[0].ID != first.ID || listed[1].ID != second.ID || listed[0].IssueID != before.Properties.ID || listed[1].IssueID != before.Properties.ID {
 				t.Fatalf("comment feed lost or duplicated a row: %+v", listed)
 			}
 			after := read()

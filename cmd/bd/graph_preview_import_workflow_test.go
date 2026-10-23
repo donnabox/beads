@@ -331,12 +331,12 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 				if err := json.Unmarshal([]byte(call("", "", "comments", id)), &comments); err != nil {
 					t.Fatal(err)
 				}
-				// Graph comments expose local graph ownership; the imported
-				// native feed still preserves the source Issue's original ID.
+				// The imported native comment feed keeps the source Issue's
+				// public ID even when its graph allocation path differs.
 				wantComments := make([]*types.Comment, len(source.Comments))
 				for i, original := range source.Comments {
 					comment := *original
-					comment.IssueID = strings.TrimPrefix(id, scope)
+					comment.IssueID = source.ID
 					wantComments[i] = &comment
 				}
 				if !reflect.DeepEqual(wantComments, comments) && !(len(wantComments) == 0 && len(comments) == 0) {

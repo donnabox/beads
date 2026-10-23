@@ -71,10 +71,10 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			memory := call("remember", "Claim context", "--id", "beads/context", "--title", "Context")
 			call("create", "Claim work", "--graph-path", "beads/work", "--labels", "demo,graph", "--actor", "creator")
 			target := call("create", "Prerequisite", "--graph-path", "beads/gate")
-			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
+			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
-			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim", "--actor", "rig.agent"))
+			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--claim", "--actor", "rig.agent"))
 			if !claimed.Changed {
 				t.Fatal("initial claim did not change Issue")
 			}
@@ -82,25 +82,25 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			assertClaim(before, current, "rig.agent")
 			state := graphMemoryReadSnapshot(t, work)
 			for _, actor := range []string{"rig.agent", "rig_agent"} {
-				noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim=true", "--actor", actor))
+				noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--claim=true", "--actor", actor))
 				if noop.Changed || !reflect.DeepEqual(noop.Issue, current) {
 					t.Fatalf("same-holder claim renewed/changed state: %+v", noop)
 				}
 			}
-			refuse("constraint_violation", "update", "beads/work", "--claim", "--actor", "foreign")
-			refuse("invalid_properties", "update", "beads/work", "--claim=false", "--actor", "rig.agent")
-			refuse("invalid_properties", "update", "beads/work", "--claim=false", "--priority=0")
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--priority=0")
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--assignee=other")
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--if-revision", current.Revision)
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--patch=[]")
-			refuse("permission_denied", "update", "beads/work", "--claim", "--readonly")
+			refuse("constraint_violation", "update", scope+"beads/work", "--claim", "--actor", "foreign")
+			refuse("invalid_properties", "update", scope+"beads/work", "--claim=false", "--actor", "rig.agent")
+			refuse("invalid_properties", "update", scope+"beads/work", "--claim=false", "--priority=0")
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--priority=0")
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--assignee=other")
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--if-revision", current.Revision)
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--patch=[]")
+			refuse("permission_denied", "update", scope+"beads/work", "--claim", "--readonly")
 			refuse("invalid_properties", "update", "beads/context", "--claim")
 			refuse("invalid_selector", "update", "links/context", "--claim")
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))
 			freeze := filepath.Join(work, "MIGRATION-FREEZE")
 			writeFile(t, freeze, []byte("claim-test\t2026-09-28T00:00:00Z\tfreeze\n"))
-			refuse("permission_denied", "update", "beads/work", "--claim")
+			refuse("permission_denied", "update", scope+"beads/work", "--claim")
 			if err := os.Remove(freeze); err != nil {
 				t.Fatal(err)
 			}

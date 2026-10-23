@@ -125,7 +125,7 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			call("remember", "private body", "--id", "beads/plan", "--title", "Plan")
 			call("create", "Open work", "--graph-path", "beads/open", "--priority", "1")
 			call("create", "Finished work", "--graph-path", "beads/done", "--priority", "2")
-			call("close", "beads/done")
+			call("close", scope+"beads/done")
 			graphListSeedIssue(t, work, "beads/pin", publicops.CreateRequest{Actor: "test-author", Issue: &publicops.Issue{
 				Title: "Pinned note", Description: "kept", Status: types.StatusPinned, IssueType: types.TypeTask, Priority: 3,
 			}})

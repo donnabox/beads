@@ -118,8 +118,8 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			call(args...)
 			memory := graphMixedResult[graphstore.Record](t, call("remember", "Original body", "--id", "beads/plan", "--title", "Plan"))
 			other := call("remember", "Independent body", "--id", "beads/context", "--title", "Context")
-			call("create", "Ship the release", "--graph-path", "beads/work", "--description", "Original Issue", "--priority", "1")
-			gate := call("create", "Prerequisite", "--graph-path", "beads/gate")
+			call("create", "Ship the release", "--id", "work", "--force", "--description", "Original Issue", "--priority", "1")
+			gate := call("create", "Prerequisite", "--id", "gate", "--force")
 
 			selected := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/plan", "--title", "Selected title", "--if-revision", memory.Revision))
 			if !selected.Changed || selected.Memory.Properties.Body != memory.Properties.Body || selected.Replaced != nil {
@@ -167,7 +167,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			// Type to use instead, and changes neither endpoint.
 			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/references for Memory endpoints: "
 			planBefore, workBefore := call("show", scope+"beads/plan"), call("show", scope+"beads/work")
-			for _, endpoints := range [][2]string{{"beads/plan", "beads/work"}, {"beads/work", "beads/plan"}} {
+			for _, endpoints := range [][2]string{{scope + "beads/plan", scope + "beads/work"}, {scope + "beads/work", scope + "beads/plan"}} {
 				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", "types/dependency", "--json")
 				var diagnostic struct {
 					Code      string `json:"code"`
@@ -183,7 +183,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatal("refused blocking Link changed an endpoint")
 			}
 
-			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
+			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "work", "gate"))
 			readyContains := func(id string) bool {
 				t.Helper()
 				for _, issue := range graphMixedResult[[]graphstore.IssueRecord](t, call("ready")) {
@@ -196,20 +196,20 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			if readyContains("beads/work") {
 				t.Fatal("blocked Issue appeared ready")
 			}
-			call("close", "beads/gate", "--reason", "Done")
+			call("close", "gate", "--reason", "Done")
 			if !readyContains("beads/work") {
 				t.Fatal("closing prerequisite did not unblock Issue")
 			}
 			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--if-source-revision", workIssue.Revision)
-			call("close", "beads/work", "--reason", "Done")
-			call("reopen", "beads/work", "--reason", "One more change")
+			call("close", "work", "--reason", "Done")
+			call("reopen", "work", "--reason", "One more change")
 			workIssue = graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
-			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--description", "Revised Issue", "--if-revision", workIssue.Revision))
+			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--description", "Revised Issue", "--if-revision", workIssue.Revision))
 			if !edited.Changed || edited.Issue.Properties.Description != "Revised Issue" {
 				t.Fatal("Issue text edit was not retained")
 			}
-			refuse("revision_conflict", "update", "beads/work", "--description", "Revised Issue", "--if-revision", workIssue.Revision)
+			refuse("revision_conflict", "update", "work", "--description", "Revised Issue", "--if-revision", workIssue.Revision)
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work")); !reflect.DeepEqual(got, edited.Issue) {
 				t.Fatal("stale same-value Issue update changed state")
 			}

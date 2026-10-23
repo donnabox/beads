@@ -20,8 +20,8 @@ type LegacyIssueListPage struct {
 	HasMore bool
 }
 
-// ListIssuesLegacy reads counted native Issue rows and projects their IDs in
-// one checked graph snapshot. The existing graph Issue list first validates
+// ListIssuesLegacy reads counted native Issue rows and validates their graph
+// allocations in one checked snapshot. The existing graph Issue list first validates
 // every selected record, including the over-fetched pagination probe.
 func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequest) (LegacyIssueListPage, error) {
 	includeComments := request.IncludeComments
@@ -78,17 +78,9 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 			if err := validatePath(path); err != nil {
 				return fmt.Errorf("%w: invalid listed Issue path: %v", ErrInvalidStore, err)
 			}
-			row.ID = path
 			if row.Parent != nil {
-				parent, err := s.canonicalIssuePathInTx(ctx, tx, *row.Parent)
-				if err != nil {
+				if _, err := s.canonicalIssuePathInTx(ctx, tx, *row.Parent); err != nil {
 					return err
-				}
-				row.Parent = &parent
-			}
-			for _, comment := range row.Comments {
-				if comment != nil {
-					comment.IssueID = path
 				}
 			}
 		}

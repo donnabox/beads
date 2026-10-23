@@ -158,6 +158,11 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, path); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
+		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}

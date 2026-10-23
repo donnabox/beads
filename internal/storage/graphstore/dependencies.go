@@ -51,7 +51,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 			return DependencyResult{}, err
 		}
 	}
-	if request.Actor == "" || !utf8.ValidString(request.Actor) || request.SourcePath == request.TargetPath {
+	if request.Actor == "" || !utf8.ValidString(request.Actor) {
 		return DependencyResult{}, fmt.Errorf("%w: Dependency requires an actor and two distinct local Issues", storage.ErrValidation)
 	}
 	nativeType, err := previewDependencyType(request.Type)
@@ -76,16 +76,19 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 				return err
 			}
 		}
-		source, err := s.requireIssueInTx(ctx, tx, request.SourcePath)
+		sourcePath, source, err := s.resolveDependencyOperandInTx(ctx, tx, request.SourcePath, request.SourceNativeID)
 		if err != nil {
 			return err
 		}
 		if request.ExpectedSourceRevision != "" && request.ExpectedSourceRevision != source.Revision {
 			return fmt.Errorf("%w: source revision changed (current %s)", ErrConflict, source.Revision)
 		}
-		target, err := s.requireIssueInTx(ctx, tx, request.TargetPath)
+		targetPath, target, err := s.resolveDependencyOperandInTx(ctx, tx, request.TargetPath, request.TargetNativeID)
 		if err != nil {
 			return err
+		}
+		if sourcePath == targetPath {
+			return fmt.Errorf("%w: Dependency requires two distinct local Issues", storage.ErrValidation)
 		}
 		for _, raw := range source.Owned {
 			var existing LinkRecord
@@ -125,9 +128,14 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if !errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, path); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
+		}
 		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unscope()
-		_, _, err = issueops.ExecuteAddDependencies(ctx, tx, publicops.AddDependenciesRequest{
+		_, _, err = issueops.ExecuteAddDependenciesCheckedLocal(ctx, tx, publicops.AddDependenciesRequest{
 			Actor: request.Actor, Edges: []publicops.DependencyEdge{{IssueID: source.Properties.ID, DependsOnID: target.Properties.ID, Type: nativeType}},
 		})
 		if err != nil {
@@ -167,10 +175,10 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if err := s.afterStage("link-retained"); err != nil {
 			return err
 		}
-		if err := s.recordIssueMappingInTx(ctx, tx, request.SourcePath, source.Properties.ID); err != nil {
+		if err := s.recordIssueMappingInTx(ctx, tx, sourcePath, source.Properties.ID); err != nil {
 			return err
 		}
-		changed, err := s.showIssueInTx(ctx, tx, request.SourcePath)
+		changed, err := s.showIssueInTx(ctx, tx, sourcePath)
 		if err != nil {
 			return err
 		}

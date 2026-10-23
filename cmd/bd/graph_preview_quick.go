@@ -53,12 +53,13 @@ func runGraphPreviewQuick(cmd *cobra.Command, args []string) error {
 		Status: types.StatusOpen, Priority: priority, IssueType: issueType,
 		Labels: utils.NormalizeLabels(labels),
 	}}
-	path := ""
+	path, touchedURL := "", ""
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		record, err := store.CreateIssue(ctx, "", request)
 		if err != nil {
 			return nil, "", err
 		}
+		touchedURL = record.ID
 		path = graphPreviewDisplayLocalURL(record.ID)
 		return record, path, nil
 	}, func(_ any, id string) error {
@@ -66,7 +67,7 @@ func runGraphPreviewQuick(cmd *cobra.Command, args []string) error {
 		return err
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touchedURL)
 	}
 	return err
 }

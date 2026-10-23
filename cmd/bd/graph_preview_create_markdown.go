@@ -75,9 +75,9 @@ func runGraphPreviewCreateMarkdown(cmd *cobra.Command, args []string) error {
 			id := graphPreviewDisplayLocalURL(record.ID)
 			fmt.Fprintf(&summary, "  %s: %s [P%d, %s]\n", id, record.Properties.Title, record.Properties.Priority, record.Properties.IssueType)
 			issue := *record.Properties
-			issue.ID = id
+			issue.ID = record.Properties.ID
 			issues = append(issues, &issue)
-			last = id
+			last = record.ID
 		}
 		return issues, strings.TrimSuffix(summary.String(), "\n"), nil
 	})

@@ -123,8 +123,12 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 				t.Fatalf("count native parent ID: %s", out)
 			}
 			call("remember", "Colliding Memory", "--id", "beads/"+custom.Properties.ID)
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "count", "--id", custom.Properties.ID, "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "count", "--parent", custom.Properties.ID, "--json")
+			if out := call("count", "--id", custom.Properties.ID); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+				t.Fatalf("Memory path shorthand displaced native Issue count: %s", out)
+			}
+			if out := call("count", "--parent", custom.Properties.ID); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+				t.Fatalf("Memory path shorthand displaced native parent count: %s", out)
+			}
 			if out := call("count", "--id", scope+"beads/custom-path"); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
 				t.Fatalf("explicit count path after native-ID collision: %s", out)
 			}

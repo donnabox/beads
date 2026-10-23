@@ -67,6 +67,54 @@ func TestIssueNativeSelectorHeartbeatStateAndReclaim(t *testing.T) {
 		})
 	}
 }
+
+func TestDependencyCreateSelectsOpaqueIssueIDInsideWrite(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			atPath := plainIssue("Path owner")
+			atPath.Issue.ID = "exp-path-owner"
+			if _, err := s.CreateIssue(ctx, "beads/exp-fixed", atPath); err != nil {
+				t.Fatal(err)
+			}
+			literal := plainIssue("Literal ID owner")
+			literal.Issue.ID = "beads/exp-fixed"
+			literal.ForceIDPrefix = true
+			if _, err := s.CreateIssue(ctx, "beads/other", literal); err != nil {
+				t.Fatal(err)
+			}
+			target := plainIssue("Target")
+			target.Issue.ID = "exp-target"
+			if _, err := s.CreateIssue(ctx, "beads/target", target); err != nil {
+				t.Fatal(err)
+			}
+			request := DependencyRequest{
+				SourcePath: "beads/beads/exp-fixed", SourceNativeID: "beads/exp-fixed",
+				TargetPath: "beads/target", Actor: "author",
+			}
+			created, err := s.AddDependency(ctx, request)
+			if err != nil || !created.Changed || created.Source.Properties.ID != "beads/exp-fixed" || created.Link.Source != s.ScopeURL()+"beads/other" {
+				t.Fatalf("opaque source selected graph path owner: %+v %v", created, err)
+			}
+			pathOwner, err := s.ShowIssue(ctx, "beads/exp-fixed")
+			if err != nil || len(pathOwner.Owned) != 0 {
+				t.Fatalf("path owner changed by opaque dependency: %+v %v", pathOwner, err)
+			}
+			state := workflowState(t, ctx, s)
+			request.SourceNativeID = "missing"
+			request.SourcePath = "beads/missing"
+			if _, err := s.AddDependency(ctx, request); !errors.Is(err, ErrNotFound) || !reflect.DeepEqual(state, workflowState(t, ctx, s)) {
+				t.Fatalf("missing public ID changed dependency state: %v", err)
+			}
+		})
+	}
+}
+
 func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
@@ -92,7 +140,7 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 				t.Fatalf("abbreviated mixed read selected wrong Issue: %+v %v", mixed, err)
 			}
 			detail, err := s.ShowIssueDetailsSelected(ctx, selector, workapi.DetailOptions{})
-			if err != nil || detail == nil || detail.ID != "beads/source" || detail.Revision != created.Revision || detail.Title != created.Properties.Title {
+			if err != nil || detail == nil || detail.ID != created.Properties.ID || detail.Revision != created.Revision || detail.Title != created.Properties.Title {
 				t.Fatalf("abbreviated detail read selected wrong Issue: %+v %v", detail, err)
 			}
 			combined, combinedDetail, err := s.ReadBeadWithIssueDetailsSelected(ctx, selector, workapi.DetailOptions{})
@@ -153,7 +201,7 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 				t.Fatalf("explicit path did not stay exact: %+v %v", explicit, err)
 			}
 			detail, err = s.ShowIssueDetailsSelected(ctx, IssueSelector{Path: "beads/source"}, workapi.DetailOptions{})
-			if err != nil || detail == nil || detail.ID != "beads/source" || detail.Title != title {
+			if err != nil || detail == nil || detail.ID != created.Properties.ID || detail.Title != title {
 				t.Fatalf("explicit detail path did not stay exact: %+v %v", detail, err)
 			}
 			mixed, err = s.ReadBeadSelected(ctx, IssueSelector{Path: "beads/a3f8"})
@@ -166,6 +214,45 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 		})
 	}
 }
+
+func TestAllocatedPublicIDResolvesHistoricalTargetsAfterDeletion(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			request := plainIssue("Historical Issue")
+			request.Issue.ID = "exp-historical"
+			if _, err := s.CreateIssue(ctx, "beads/private-allocation", request); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.DeleteIssue(ctx, IssueDeleteRequest{Path: "beads/private-allocation", Unconditional: true}); err != nil {
+				t.Fatal(err)
+			}
+			if path, err := s.ResolveAllocatedResourcePath(ctx, request.Issue.ID); err != nil || path != "beads/private-allocation" {
+				t.Fatalf("deleted Issue public ID: %q %v", path, err)
+			}
+			if _, err := s.ResolveAllocatedResourcePath(ctx, "private-allocation"); !errors.Is(err, ErrNotFound) {
+				t.Fatalf("private Issue path became public shorthand: %v", err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/context", Title: "Historical Memory"}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/context", Unconditional: true}); err != nil {
+				t.Fatal(err)
+			}
+			for _, id := range []string{"beads/context", "context"} {
+				if path, err := s.ResolveAllocatedResourcePath(ctx, id); err != nil || path != "beads/context" {
+					t.Fatalf("deleted Memory selector %q: %q %v", id, path, err)
+				}
+			}
+		})
+	}
+}
+
 func TestOpaqueResourceReadSelectorKeepsPublicIDsSeparateFromGraphPaths(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
@@ -182,7 +269,7 @@ func TestOpaqueResourceReadSelectorKeepsPublicIDsSeparateFromGraphPaths(t *testi
 				t.Fatal(err)
 			}
 			path, record, details, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/exp-beads/literal", "exp-beads/literal", workapi.DetailOptions{})
-			if read, ok := record.(IssueRecord); err != nil || path != "beads/allocation" || !ok || read.Properties.ID != literal.Issue.ID || details == nil || details.ID != "beads/allocation" {
+			if read, ok := record.(IssueRecord); err != nil || path != "beads/allocation" || !ok || read.Properties.ID != literal.Issue.ID || details == nil || details.ID != literal.Issue.ID {
 				t.Fatalf("literal public ID read: path=%q record=%+v details=%+v err=%v", path, record, details, err)
 			}
 			pathOnly := plainIssue("Path only")
@@ -191,11 +278,11 @@ func TestOpaqueResourceReadSelectorKeepsPublicIDsSeparateFromGraphPaths(t *testi
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/beads/path-only", "beads/path-only", workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) {
+			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/beads/path-only", "beads/path-only", workapi.DetailOptions{}); !errors.Is(err, ErrNotFound) {
 				t.Fatalf("local path spelling silently selected an unrelated Issue: %v", err)
 			}
 			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/path-only", "", workapi.DetailOptions{})
-			if read, ok := record.(IssueRecord); err != nil || path != "beads/path-only" || !ok || read.Properties.ID != pathOnly.Issue.ID || details == nil || details.ID != "beads/path-only" {
+			if read, ok := record.(IssueRecord); err != nil || path != "beads/path-only" || !ok || read.Properties.ID != pathOnly.Issue.ID || details == nil || details.ID != pathOnly.Issue.ID {
 				t.Fatalf("canonical path read: path=%q record=%+v details=%+v err=%v", path, record, details, err)
 			}
 			memory, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Notes"})
@@ -208,7 +295,7 @@ func TestOpaqueResourceReadSelectorKeepsPublicIDsSeparateFromGraphPaths(t *testi
 			}
 			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/beads/notes", "beads/notes", workapi.DetailOptions{})
 			if read, ok := record.(Record); err != nil || path != "beads/notes" || !ok || read.ID != memory.ID || details != nil {
-				t.Fatalf("exact Memory public spelling: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+				t.Fatalf("Memory public path spelling: path=%q record=%+v details=%+v err=%v", path, record, details, err)
 			}
 			link, err := s.AddDependency(ctx, DependencyRequest{Path: "links/edge", SourcePath: "beads/allocation", TargetPath: "beads/path-only", Actor: "author"})
 			if err != nil {
@@ -220,20 +307,176 @@ func TestOpaqueResourceReadSelectorKeepsPublicIDsSeparateFromGraphPaths(t *testi
 			}
 			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/links/edge", "links/edge", workapi.DetailOptions{})
 			if read, ok := record.(LinkRecord); err != nil || path != "links/edge" || !ok || read.ID != link.Link.ID || details != nil {
-				t.Fatalf("exact Link public spelling: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+				t.Fatalf("Link public path spelling: path=%q record=%+v details=%+v err=%v", path, record, details, err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/edge", Title: "Same public spelling"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/edge", Title: "Distinct public spelling"}); err != nil {
 				t.Fatal(err)
 			}
 			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) {
-				t.Fatalf("Memory/Link collision silently chose one backing: %v", err)
+				t.Fatalf("Memory/Link shorthand ambiguity silently chose one backing: %v", err)
 			}
 			if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/edge", Actor: "remover", ExpectedRevision: link.Link.Revision, ExpectedSourceRevision: link.Source.Revision}); err != nil {
 				t.Fatal(err)
 			}
 			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{})
-			if read, ok := record.(Record); err != nil || path != "beads/edge" || !ok || read.Properties.Title != "Same public spelling" || details != nil {
+			if read, ok := record.(Record); err != nil || path != "beads/edge" || !ok || read.Properties.Title != "Distinct public spelling" || details != nil {
 				t.Fatalf("removed Link still shadowed live Memory: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			}
+		})
+	}
+}
+
+func TestOpaqueIssueIDsSurvivePrivatePathOverlapInBothCreateOrders(t *testing.T) {
+	for _, order := range [][]string{{"exp-x", "exp-beads/x"}, {"exp-beads/x", "exp-x"}} {
+		t.Run(order[0]+"-first", func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, "embedded")
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			paths := map[string]string{}
+			for _, id := range order {
+				request := plainIssue(id)
+				request.Issue.ID = id
+				created, err := s.CreateIssue(ctx, "", request)
+				if err != nil {
+					t.Fatalf("create literal %q: %v", id, err)
+				}
+				paths[id] = created.ID
+			}
+			if paths[order[0]] == paths[order[1]] {
+				t.Fatal("distinct public IDs shared a graph allocation")
+			}
+			for _, id := range order {
+				selector := IssueSelector{Path: "beads/" + id, NativeID: id}
+				path, record, details, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.Path, id, workapi.DetailOptions{})
+				if issue, ok := record.(IssueRecord); err != nil || !ok || issue.Properties.ID != id || issue.ID != paths[id] || details == nil || details.ID != id || paths[id] != options.Binding.ScopeURL+path {
+					t.Fatalf("literal %q read: path=%q record=%+v details=%+v err=%v", id, path, record, details, err)
+				}
+				closed, err := s.CloseIssueWithOptions(ctx, IssueCloseRequest{Path: selector.Path, NativeID: id, Reason: "done", Actor: "test-author"})
+				if err != nil || !closed.Changed || closed.Issue.Properties.ID != id {
+					t.Fatalf("literal %q close: %+v %v", id, closed, err)
+				}
+			}
+		})
+	}
+}
+
+func TestPublicResourceIDCreationRejectsCrossKindCollisions(t *testing.T) {
+	for _, memoryFirst := range []bool{true, false} {
+		t.Run(map[bool]string{true: "memory-first", false: "issue-first"}[memoryFirst], func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, "embedded")
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			issue := plainIssue("Same public ID")
+			issue.Issue.ID = "beads/exp-shared"
+			issue.ForceIDPrefix = true
+			createIssue := func() error { _, err := s.CreateIssue(ctx, "", issue); return err }
+			createMemory := func() error {
+				_, err := s.Create(ctx, CreateRequest{Path: "beads/exp-shared", Title: "Same public ID"})
+				return err
+			}
+			if memoryFirst {
+				if err := createMemory(); err != nil {
+					t.Fatal(err)
+				}
+				if err := createIssue(); !errors.Is(err, ErrAlreadyExists) {
+					t.Fatalf("Issue reused Memory public ID: %v", err)
+				}
+			} else {
+				if err := createIssue(); err != nil {
+					t.Fatal(err)
+				}
+				if err := createMemory(); !errors.Is(err, ErrAlreadyExists) {
+					t.Fatalf("Memory reused Issue public ID: %v", err)
+				}
+			}
+		})
+	}
+	for _, linkFirst := range []bool{true, false} {
+		t.Run(map[bool]string{true: "link-first", false: "issue-first"}[linkFirst], func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, "embedded")
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			for _, id := range []string{"exp-source", "exp-target"} {
+				request := plainIssue(id)
+				request.Issue.ID = id
+				if _, err := s.CreateIssue(ctx, "", request); err != nil {
+					t.Fatal(err)
+				}
+			}
+			issue := plainIssue("Same public ID")
+			issue.Issue.ID = "links/exp-edge"
+			issue.ForceIDPrefix = true
+			createIssue := func() error { _, err := s.CreateIssue(ctx, "", issue); return err }
+			createLink := func() error {
+				_, err := s.AddDependency(ctx, DependencyRequest{Path: "links/exp-edge", SourcePath: "beads/exp-source", TargetPath: "beads/exp-target", Actor: "test-author"})
+				return err
+			}
+			if linkFirst {
+				if err := createLink(); err != nil {
+					t.Fatal(err)
+				}
+				if err := createIssue(); !errors.Is(err, ErrAlreadyExists) {
+					t.Fatalf("Issue reused Link public ID: %v", err)
+				}
+			} else {
+				if err := createIssue(); err != nil {
+					t.Fatal(err)
+				}
+				if err := createLink(); !errors.Is(err, ErrAlreadyExists) {
+					t.Fatalf("Link reused Issue public ID: %v", err)
+				}
+			}
+		})
+	}
+}
+
+func TestExactIssuePublicIDBeatsMemoryPathShorthand(t *testing.T) {
+	for _, memoryFirst := range []bool{true, false} {
+		t.Run(map[bool]string{true: "memory-first", false: "issue-first"}[memoryFirst], func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, "embedded")
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			request := plainIssue("Issue exp-x")
+			request.Issue.ID = "exp-x"
+			createMemory := func() {
+				t.Helper()
+				if _, err := s.Create(ctx, CreateRequest{Path: "beads/exp-x", Title: "Memory beads/exp-x"}); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if memoryFirst {
+				createMemory()
+			}
+			issuePath := "beads/exp-x-issue"
+			if memoryFirst {
+				issuePath = ""
+			}
+			created, err := s.CreateIssue(ctx, issuePath, request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !memoryFirst {
+				createMemory()
+			}
+			_, record, details, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/exp-x", "exp-x", workapi.DetailOptions{})
+			if got, ok := record.(IssueRecord); err != nil || !ok || got.ID != created.ID || details == nil || details.ID != "exp-x" {
+				t.Fatalf("exact Issue ID lost to Memory shorthand: %+v %+v %v", record, details, err)
+			}
+			_, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/beads/exp-x", "beads/exp-x", workapi.DetailOptions{})
+			if got, ok := record.(Record); err != nil || !ok || got.Properties.Title != "Memory beads/exp-x" || details != nil {
+				t.Fatalf("exact Memory public path selected wrong resource: %+v %+v %v", record, details, err)
 			}
 		})
 	}

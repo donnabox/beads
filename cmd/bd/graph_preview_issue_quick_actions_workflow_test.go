@@ -53,7 +53,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			before := read()
 			priority := issue(call("priority", scope+"beads/work", "0"))
 			current := read()
-			if priority.ID != "beads/work" || priority.Priority != 0 || current.Properties.Priority != 0 || current.Revision == before.Revision || current.Properties.Description != "Keep this" {
+			if priority.ID != current.Properties.ID || priority.Priority != 0 || current.Properties.Priority != 0 || current.Revision == before.Revision || current.Properties.Description != "Keep this" {
 				t.Fatalf("priority write did not preserve Issue shape and fields: %+v %+v", priority, current)
 			}
 			state := graphMemoryReadSnapshot(t, work)
@@ -63,7 +63,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			note := issue(call("note", scope+"beads/work", "Progress", "continues"))
 			after := read()
-			if note.ID != "beads/work" || note.Notes != "Progress continues" || after.Properties.Notes != note.Notes || after.Revision == current.Revision {
+			if note.ID != after.Properties.ID || note.Notes != "Progress continues" || after.Properties.Notes != note.Notes || after.Revision == current.Revision {
 				t.Fatalf("note did not append once: %+v %+v", note, after)
 			}
 			call("note", scope+"beads/work", "Second")
@@ -72,7 +72,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			preAssign := read()
 			assigned := issue(call("assign", scope+"beads/work", "alice", "--if-revision", preAssign.Revision, "--actor", "alice"))
-			if assigned.ID != "beads/work" || assigned.Assignee != "alice" || read().Revision == preAssign.Revision {
+			if assigned.ID != preAssign.Properties.ID || assigned.Assignee != "alice" || read().Revision == preAssign.Revision {
 				t.Fatalf("assign lost canonical identity or failed to version: %+v", assigned)
 			}
 			refuse("revision_conflict", "assign", scope+"beads/work", "bob", "--if-revision", preAssign.Revision)
@@ -102,13 +102,13 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			if custom.Properties.ID == "custom-path" {
 				t.Fatal("fixture needs a native ID distinct from its graph path")
 			}
-			if got := issue(call("priority", custom.Properties.ID, "1")); got.ID != "beads/custom-path" || got.Priority != 1 {
+			if got := issue(call("priority", custom.Properties.ID, "1")); got.ID != custom.Properties.ID || got.Priority != 1 {
 				t.Fatalf("native-ID priority selected the wrong Issue: %+v", got)
 			}
-			if got := issue(call("note", custom.Properties.ID, "Native ID note")); got.ID != "beads/custom-path" || got.Notes != "Native ID note" {
+			if got := issue(call("note", custom.Properties.ID, "Native ID note")); got.ID != custom.Properties.ID || got.Notes != "Native ID note" {
 				t.Fatalf("native-ID note selected the wrong Issue: %+v", got)
 			}
-			if got := issue(call("assign", custom.Properties.ID, "carol")); got.ID != "beads/custom-path" || got.Assignee != "carol" {
+			if got := issue(call("assign", custom.Properties.ID, "carol")); got.ID != custom.Properties.ID || got.Assignee != "carol" {
 				t.Fatalf("native-ID assign selected the wrong Issue: %+v", got)
 			}
 			parts := strings.SplitN(custom.Properties.ID, "-", 2)
@@ -117,13 +117,13 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			abbreviable := graphMixedResult[graphstore.IssueRecord](t, call("create", "Abbreviable", "--id", parts[0]+"-a3f8e9"))
 			partialID := "a3f8"
-			if got := issue(call("priority", partialID, "2")); got.ID != "beads/"+abbreviable.Properties.ID || got.Priority != 2 {
+			if got := issue(call("priority", partialID, "2")); got.ID != abbreviable.Properties.ID || got.Priority != 2 {
 				t.Fatalf("abbreviated priority selected the wrong Issue: %+v", got)
 			}
-			if got := issue(call("note", partialID, "Partial ID note")); got.ID != "beads/"+abbreviable.Properties.ID || got.Notes != "Partial ID note" {
+			if got := issue(call("note", partialID, "Partial ID note")); got.ID != abbreviable.Properties.ID || got.Notes != "Partial ID note" {
 				t.Fatalf("abbreviated note selected the wrong Issue: %+v", got)
 			}
-			if got := issue(call("assign", partialID, "dana")); got.ID != "beads/"+abbreviable.Properties.ID || got.Assignee != "dana" {
+			if got := issue(call("assign", partialID, "dana")); got.ID != abbreviable.Properties.ID || got.Assignee != "dana" {
 				t.Fatalf("abbreviated assign selected the wrong Issue: %+v", got)
 			}
 			var stateResult struct {
@@ -133,12 +133,14 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 				t.Fatalf("abbreviated state selected the wrong Issue: %+v %v", stateResult, err)
 			}
 			call("remember", "Colliding Memory", "--id", "beads/"+custom.Properties.ID)
-			beforeCollision := graphMemoryReadSnapshot(t, work)
-			refuse("invalid_properties", "priority", custom.Properties.ID, "0")
-			refuse("invalid_properties", "note", custom.Properties.ID, "Wrong target")
-			refuse("invalid_properties", "assign", custom.Properties.ID, "wrong")
-			if !reflect.DeepEqual(beforeCollision, graphMemoryReadSnapshot(t, work)) {
-				t.Fatal("ambiguous native ID changed Issue or Memory state")
+			memoryBefore := call("show", scope+"beads/"+custom.Properties.ID)
+			if got := issue(call("priority", custom.Properties.ID, "0")); got.ID != custom.Properties.ID || got.Priority != 0 {
+				t.Fatalf("Memory path shadowed public Issue ID: %+v", got)
+			}
+			issue(call("note", custom.Properties.ID, "Public ID note"))
+			issue(call("assign", custom.Properties.ID, "dana"))
+			if call("show", scope+"beads/"+custom.Properties.ID) != memoryBefore {
+				t.Fatal("public Issue actions changed colliding Memory path")
 			}
 			if got := issue(call("priority", scope+"beads/custom-path", "0")); got.Priority != 0 {
 				t.Fatalf("explicit path did not select custom Issue: %+v", got)

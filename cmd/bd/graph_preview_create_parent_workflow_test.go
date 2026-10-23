@@ -39,8 +39,8 @@ func TestGraphPreviewCreateParentNativeChildAndCanonicalLink(t *testing.T) {
 		Parent *string `json:"parent"`
 	}
 	if err := json.Unmarshal([]byte(call("", "children", parent.ID, "--json")), &children); err != nil ||
-		len(children) != 1 || children[0].ID != "beads/"+child.Properties.ID ||
-		children[0].Parent == nil || *children[0].Parent != "beads/selected-parent" {
+		len(children) != 1 || children[0].ID != child.Properties.ID ||
+		children[0].Parent == nil || *children[0].Parent != parent.Properties.ID {
 		t.Fatalf("native child edge missing from children: %+v %v", children, err)
 	}
 	call("", "remember", "Reserved Memory", "--id", "beads/"+parent.Properties.ID+".2", "--json")

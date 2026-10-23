@@ -36,9 +36,9 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
-			call("create", "Claim work", "--graph-path", "beads/work", "--labels", "demo,graph")
+			call("create", "Claim work", "--id", "work", "--force", "--labels", "demo,graph")
 			assigned := graphMixedResult[graphstore.IssueRecord](t, call("create", "Assigned work", "--graph-path", "beads/assigned", "--assignee", "rig.agent"))
-			openRelease := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "assigned", "--actor", "rig.agent"))
+			openRelease := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", assigned.ID, "--actor", "rig.agent"))
 			if !openRelease.Changed || openRelease.Issue.Properties.Status != types.StatusOpen || openRelease.Issue.Properties.Assignee != "" || openRelease.Issue.Revision == assigned.Revision {
 				t.Fatalf("open assigned Issue did not follow native release: %+v", openRelease)
 			}
@@ -65,7 +65,7 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			if err := json.Unmarshal([]byte(call("comments", "work")), &comments); err != nil {
 				t.Fatalf("decode native comment array: %v", err)
 			}
-			if len(comments) != 1 || comments[0].Text != "handoff" || comments[0].Author != "rig_agent" || comments[0].IssueID != "beads/work" {
+			if len(comments) != 1 || comments[0].Text != "handoff" || comments[0].Author != "rig_agent" || comments[0].IssueID != "work" {
 				t.Fatalf("reason was not a native comment: %+v", comments)
 			}
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "https://example.invalid/unclaim/beads/work")); !reflect.DeepEqual(got, released.Issue) {
@@ -96,7 +96,7 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			}
 			call("create", "Batch one", "--graph-path", "beads/batch-one", "--assignee", "next.agent")
 			call("create", "Batch two", "--graph-path", "beads/batch-two", "--assignee", "next.agent")
-			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("unclaim", "batch-one", "batch-two", "--actor", "next.agent"))
+			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("unclaim", "https://example.invalid/unclaim/beads/batch-one", "https://example.invalid/unclaim/beads/batch-two", "--actor", "next.agent"))
 			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
 				t.Fatalf("batch release failed: %+v", batch)
 			}

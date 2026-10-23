@@ -105,7 +105,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		return nil
 	})
 	if err == nil && firstSelected != "" {
-		SetLastTouchedID(firstSelected)
+		graphPreviewStoreLastTouchedPath(firstSelected)
 	}
 	return err
 }

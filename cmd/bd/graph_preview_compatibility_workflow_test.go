@@ -93,14 +93,14 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if literalChild.Properties.ID != "beads/literal-issue.1" || literalChild.ID != scope+"beads/beads/literal-issue.1" {
 				t.Fatalf("slash-bearing parent ID did not retain dotted child identity: %+v", literalChild)
 			}
-			if many := call("show", "beads/literal-issue", "--id=beads/literal-issue.1"); !strings.Contains(many, `"id": "beads/beads/literal-issue"`) || !strings.Contains(many, `"id": "beads/beads/literal-issue.1"`) {
+			if many := call("show", "beads/literal-issue", "--id=beads/literal-issue.1"); !strings.Contains(many, `"id": "beads/literal-issue"`) || !strings.Contains(many, `"id": "beads/literal-issue.1"`) {
 				t.Fatalf("multi-ID show did not resolve literal parent and child IDs: %s", many)
 			}
-			if children := call("show", "beads/literal-issue", "--children"); !strings.Contains(children, literalChild.ID[len(scope):]) {
+			if children := call("show", "beads/literal-issue", "--children"); !strings.Contains(children, literalChild.Properties.ID) {
 				t.Fatalf("--children did not resolve the literal parent ID: %s", children)
 			}
-			refuse("identity_reserved", "create", "Native ID collides with path", "--id", "beads/fixed-issue", "--force")
-			refuse("identity_reserved", "create", "Path collides with native ID", "--graph-path", "beads/literal-issue")
+			graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal ID distinct from path", "--id", "beads/fixed-issue", "--force"))
+			graphMixedResult[graphstore.IssueRecord](t, call("create", "Graph path distinct from literal ID", "--graph-path", "beads/literal-issue"))
 			collision := graphMixedResult[graphstore.Record](t, call("remember", "Existing Memory", "--id", "beads/compat-collision"))
 			coexistingIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Distinct opaque ID", "--id", "compat-collision"))
 			if coexistingIssue.Properties.ID != "compat-collision" || !strings.HasPrefix(coexistingIssue.ID, scope+"beads/compat-collision-") {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/ui"
 )
@@ -22,10 +23,6 @@ func runGraphPreviewAddComment(cmd *cobra.Command, args []string, plural bool) e
 	} else if err := graphPreviewFlags(cmd, "stdin", "file"); err != nil {
 		return err
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
-	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
 	hint := "use positional args, --stdin, or --file"
 	if plural {
 		hint = "use positional args or -f to read from file"
@@ -33,6 +30,10 @@ func runGraphPreviewAddComment(cmd *cobra.Command, args []string, plural bool) e
 	commentText, err := requireTextFromSources("comment text", hint, cmdTextSources(cmd, args[1:]))
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
+	}
+	path, err := graphPreviewResolvedWritePath(args[0])
+	if err != nil {
+		return err
 	}
 	author := getActorWithGit()
 	if plural {
@@ -46,9 +47,9 @@ func runGraphPreviewAddComment(cmd *cobra.Command, args []string, plural bool) e
 			return nil, "", err
 		}
 		if plural {
-			return comment, "Comment added to " + path + "\n", nil
+			return comment, "Comment added to " + issue.Properties.ID + "\n", nil
 		}
-		return comment, fmt.Sprintf("%s Comment added to %s\n", ui.RenderPass("✓"), formatFeedbackID(path, issue.Properties.Title)), nil
+		return comment, fmt.Sprintf("%s Comment added to %s\n", ui.RenderPass("✓"), formatFeedbackID(issue.Properties.ID, issue.Properties.Title)), nil
 	}, func(result any, human string) error {
 		if jsonOutput {
 			return outputJSON(result)
@@ -60,7 +61,7 @@ func runGraphPreviewAddComment(cmd *cobra.Command, args []string, plural bool) e
 		return err
 	})
 	if err == nil && !plural {
-		SetLastTouchedID(path)
+		SetLastTouchedID(graph.CanonicalURL(graphPreviewConfig.GraphScopeURL, path))
 	}
 	return err
 }

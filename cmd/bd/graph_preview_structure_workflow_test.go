@@ -326,8 +326,15 @@ func TestGraphPreviewChildrenNative(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/native-children/"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	var childID, parentID string
 	for _, id := range []string{"beads/parent", "beads/child", "beads/parent.lookalike"} {
-		graphPolicyCLI(t, bd, work, home, nil, "", "create", id, "--graph-path", id, "--json")
+		created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", id, "--graph-path", id, "--json"))
+		switch id {
+		case "beads/parent":
+			parentID = created.Properties.ID
+		case "beads/child":
+			childID = created.Properties.ID
+		}
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/child", scope+"beads/parent", "--type", "parent-child", "--json")
 	var children []struct {
@@ -339,7 +346,7 @@ func TestGraphPreviewChildrenNative(t *testing.T) {
 	if err := json.Unmarshal([]byte(got), &children); err != nil {
 		t.Fatalf("ordinary children JSON shape: %v: %s", err, got)
 	}
-	if len(children) != 1 || children[0].ID != "beads/child" || children[0].Parent == nil || *children[0].Parent != "beads/parent" || children[0].Title != "beads/child" {
+	if len(children) != 1 || children[0].ID != childID || children[0].Parent == nil || *children[0].Parent != parentID || children[0].Title != "beads/child" {
 		t.Fatalf("native edge membership or ordinary row shape: %+v", children)
 	}
 	if text := graphPolicyCLI(t, bd, work, home, nil, "", "children", scope+"beads/parent"); !strings.Contains(text, "beads/child") || strings.Contains(text, "parent.lookalike") {
@@ -391,7 +398,7 @@ func TestGraphPreviewEpicNativeProgressAndClose(t *testing.T) {
 	if got := call("", "epic", "close-eligible", "--json"); !strings.Contains(got, `"count": 0`) {
 		t.Fatalf("open child permitted epic close: %s", got)
 	}
-	call("", "close", "child", "--reason", "Done", "--json")
+	call("", "close", scope+"beads/child", "--reason", "Done", "--json")
 	statuses = decode(call("", "epic", "status", "--eligible-only", "--json"))
 	if len(statuses) != 1 || statuses[0].ClosedChildren != 1 || !statuses[0].EligibleForClose {
 		t.Fatalf("completed child did not qualify epic: %+v", statuses)
@@ -423,7 +430,7 @@ func TestGraphPreviewEpicCloseEligibleActorAndPartialFailure(t *testing.T) {
 		call("create", owner+" epic", "--graph-path", epic, "--type", "epic", "--assignee", owner, "--actor", owner)
 		call("create", owner+" child", "--graph-path", child)
 		call("dep", "add", scope+child, scope+epic, "--type", "parent-child")
-		call("close", child, "--reason", "Done")
+		call("close", scope+child, "--reason", "Done")
 	}
 	beforeAlice := call("versions", "beads/alice-epic")
 	beforeBob := call("versions", "beads/bob-epic")

@@ -149,13 +149,10 @@ func (s *Store) ListChildrenLegacy(ctx context.Context, parentPath string) ([]*t
 				return fmt.Errorf("%w: invalid counted child row", ErrInvalidStore)
 			}
 			seen[row.ID] = true
-			row.ID = pathByID[row.ID]
 			if row.Parent != nil {
-				parent, err := s.canonicalIssuePathInTx(ctx, tx, *row.Parent)
-				if err != nil {
+				if _, err := s.canonicalIssuePathInTx(ctx, tx, *row.Parent); err != nil {
 					return err
 				}
-				row.Parent = &parent
 			}
 			children = append(children, row)
 		}

@@ -12,8 +12,8 @@ import (
 
 // Resource selection and write policy precede this route. Source ownership is
 // checked in the writer; an Issue source does not require an owned-source guard.
-func runGraphPreviewLinkPropertiesPatch(cmd *cobra.Command, path string) error {
-	request, err := graphPreviewLinkPropertiesPatchRequest(cmd, path)
+func runGraphPreviewLinkPropertiesPatch(cmd *cobra.Command, path string, preparedPatch []byte) error {
+	request, err := graphPreviewLinkPropertiesPatchRequestWithRaw(cmd, path, preparedPatch)
 	if err != nil {
 		return err
 	}
@@ -31,6 +31,10 @@ func runGraphPreviewLinkPropertiesPatch(cmd *cobra.Command, path string) error {
 }
 
 func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.LinkPropertiesPatchRequest, error) {
+	return graphPreviewLinkPropertiesPatchRequestWithRaw(cmd, path, nil)
+}
+
+func graphPreviewLinkPropertiesPatchRequestWithRaw(cmd *cobra.Command, path string, raw []byte) (graphstore.LinkPropertiesPatchRequest, error) {
 	var request graphstore.LinkPropertiesPatchRequest
 	if err := graphPreviewFlags(cmd, "patch", "replace-properties", "source-revision", "target-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return request, err
@@ -58,9 +62,11 @@ func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (gr
 	if err != nil {
 		return request, err
 	}
-	raw, err := graphPreviewPropertyOperations(cmd)
-	if err != nil {
-		return request, graphFailure("invalid_properties", err.Error(), 2)
+	if raw == nil {
+		raw, err = graphPreviewPropertyOperations(cmd)
+		if err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
 	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {

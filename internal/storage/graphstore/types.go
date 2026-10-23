@@ -138,8 +138,12 @@ type DependencyRequest struct {
 	TypeURL                string
 	SourcePath             string
 	TargetPath             string
-	Path                   string
-	Actor                  string
+	// Native IDs select opaque public Issue IDs inside the checked write.
+	// Empty IDs keep canonical graph paths exact for existing callers.
+	SourceNativeID string
+	TargetNativeID string
+	Path           string
+	Actor          string
 }
 
 // LinkRecord projects an authoritative specialized Dependency or generic Link.
