@@ -207,7 +207,7 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err := validateLinkPath(request.Path); err != nil {
 			return LinkDeleteResult{}, err
 		}
-		if request.SourcePath != "" || request.TargetPath != "" || request.TypeURL != "" {
+		if request.SourcePath != "" || request.TargetPath != "" || request.TypeURL != "" || request.SourceLocalID != "" || request.TargetLocalID != "" {
 			return LinkDeleteResult{}, fmt.Errorf("%w: select a Link ID or an exact typed endpoint pair", storage.ErrValidation)
 		}
 	} else {
@@ -215,6 +215,10 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 			if err := validatePath(path); err != nil {
 				return LinkDeleteResult{}, err
 			}
+		}
+		if request.SourceLocalID != "" && request.SourcePath != "beads/"+request.SourceLocalID ||
+			request.TargetLocalID != "" && request.TargetPath != "beads/"+request.TargetLocalID {
+			return LinkDeleteResult{}, fmt.Errorf("%w: local Bead ID does not match its candidate path", storage.ErrValidation)
 		}
 		if err := s.validateLinkType(request.TypeURL, false); err != nil {
 			return LinkDeleteResult{}, err
@@ -226,6 +230,16 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 	var result LinkDeleteResult
 	err := s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
 		var err error
+		if request.Path == "" {
+			request.SourcePath, err = s.resolveLiveBeadWriteSelectorInTx(ctx, tx, request.SourcePath, request.SourceLocalID)
+			if err != nil {
+				return err
+			}
+			request.TargetPath, err = s.resolveLiveBeadWriteSelectorInTx(ctx, tx, request.TargetPath, request.TargetLocalID)
+			if err != nil {
+				return err
+			}
+		}
 		result, err = s.unlinkInTx(ctx, tx, request)
 		return err
 	})

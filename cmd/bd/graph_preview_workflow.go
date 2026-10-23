@@ -179,22 +179,20 @@ func runGraphPreviewRemoveDependency(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 2 {
-		return graphFailure("invalid_selector", "dep remove requires two Issue IDs or beads/PATH arguments", 2)
+		return graphFailure("invalid_selector", "dep remove requires two public Issue IDs or canonical Bead URLs", 2)
 	}
-	sourcePath, err := graphPreviewBeadSelector(args[0])
+	source, err := graphPreviewIssueSelector(args[0])
 	if err != nil {
-		return err
+		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	targetPath, err := graphPreviewBeadSelector(args[1])
+	target, err := graphPreviewIssueSelector(args[1])
 	if err != nil {
-		return err
+		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	request := graphstore.DependencyRemoveRequest{SourcePath: sourcePath, TargetPath: targetPath, Actor: getActorWithGit()}
-	if sourcePath == "beads/"+args[0] {
-		request.SourceNativeID = args[0]
-	}
-	if targetPath == "beads/"+args[1] {
-		request.TargetNativeID = args[1]
+	request := graphstore.DependencyRemoveRequest{
+		SourcePath: source.Path, SourceNativeID: source.NativeID,
+		TargetPath: target.Path, TargetNativeID: target.NativeID,
+		Actor: getActorWithGit(),
 	}
 	return withGraphFamiliarStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		removed, err := store.RemoveDependency(ctx, request)

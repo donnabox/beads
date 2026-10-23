@@ -544,14 +544,16 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	}
 	call("", "dep", "add", scope+"beads/custom-source-path", scope+"beads/custom-target-path", "--id", "links/custom-readded", "--json")
 	call("", "remember", "Colliding Memory", "--id", "beads/"+source.Properties.ID, "--json")
-	beforeAmbiguous := call("", "versions", "beads/custom-source-path", "--json")
-	call("invalid_properties", "dep", "remove", source.Properties.ID, target.Properties.ID, "--json")
-	if after := call("", "versions", "beads/custom-source-path", "--json"); after != beforeAmbiguous {
-		t.Fatalf("ambiguous native selector changed Issue History\nbefore: %s\nafter: %s", beforeAmbiguous, after)
+	memoryURL := scope + "beads/" + source.Properties.ID
+	beforeMemory := call("", "show", memoryURL, "--json")
+	bare := decode(call("", "dep", "remove", source.Properties.ID, target.Properties.ID, "--json"))
+	if !bare.Removed || bare.IssueID != source.Properties.ID || bare.DependsOnID != target.Properties.ID || call("", "show", memoryURL, "--json") != beforeMemory {
+		t.Fatalf("opaque public Issue ID did not win over another Bead's graph path: %+v", bare)
 	}
+	call("", "dep", "add", scope+"beads/custom-source-path", scope+"beads/custom-target-path", "--id", "links/custom-explicit", "--json")
 	explicit := decode(call("", "dep", "remove", scope+"beads/custom-source-path", scope+"beads/custom-target-path", "--json"))
 	if !explicit.Removed || explicit.IssueID != source.Properties.ID || explicit.DependsOnID != target.Properties.ID {
-		t.Fatalf("explicit canonical selectors lost authority after bare-ID collision: %+v", explicit)
+		t.Fatalf("explicit canonical selectors lost authority beside the public-ID collision: %+v", explicit)
 	}
 }
 

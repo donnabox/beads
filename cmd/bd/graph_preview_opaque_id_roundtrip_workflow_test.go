@@ -69,6 +69,34 @@ func TestGraphPreviewOpaqueIssueIDShowUpdateCloseRoundtrip(t *testing.T) {
 				if shown := graphMixedResult[graphstore.IssueRecord](t, call("show", "x", "--format", "graph-json")); len(shown.Owned) != 0 {
 					t.Fatalf("dependency changed other public Issue ID: %+v", shown)
 				}
+				var removed struct {
+					Removed bool   `json:"removed"`
+					IssueID string `json:"issue_id"`
+				}
+				if err := json.Unmarshal([]byte(call("dep", "remove", "beads/x", "target")), &removed); err != nil || !removed.Removed || removed.IssueID != "beads/x" {
+					t.Fatalf("dependency removal selected path owner instead of literal public ID: %+v, %v", removed, err)
+				}
+				if shown := graphMixedResult[graphstore.IssueRecord](t, call("show", "x", "--format", "graph-json")); len(shown.Owned) != 0 {
+					t.Fatalf("dependency removal changed other public Issue ID: %+v", shown)
+				}
+				call("dep", "add", "beads/x", "target")
+				memory := graphMixedResult[graphstore.Record](t, call("remember", "Context", "--id", "beads/context"))
+				info := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/x", "context", "--type", "types/references"))
+				if info.Link.Source != created["beads/x"].ID || info.Link.Source == created["x"].ID {
+					t.Fatalf("informational Link selected path owner instead of literal public ID: %+v", info.Link)
+				}
+				unlinked := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", info.Link.ID, "--force"))
+				if !unlinked.Changed || unlinked.Link.ID != info.Link.ID {
+					t.Fatalf("pair unlink selected the wrong public-ID endpoints: %+v", unlinked)
+				}
+				incoming := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "context", "beads/x", "--type", "types/references"))
+				if incoming.Link.Source != memory.ID || incoming.Link.Target != created["beads/x"].ID {
+					t.Fatalf("informational target selected path owner instead of literal public ID: %+v", incoming.Link)
+				}
+				unlinked = graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", incoming.Link.ID, "--force"))
+				if !unlinked.Changed || unlinked.Link.ID != incoming.Link.ID {
+					t.Fatalf("pair unlink selected the wrong public-ID target: %+v", unlinked)
+				}
 				closed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", "x", "--reason", "done"))
 				if closed.Issue.Properties.ID != "x" || closed.Issue.Properties.Status != types.StatusClosed {
 					t.Fatalf("close targeted the wrong Issue: %+v", closed)

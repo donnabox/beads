@@ -141,7 +141,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			current := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
 			call("link", "beads/plan", "beads/rule", "--type", "types/subject-to", "--id", "links/work", "--if-source-revision", current.Revision)
 			issueBefore := call("show", scope+"beads/work")
-			call("link", "beads/work", "beads/context", "--type", "types/references", "--id", "links/unowned")
+			call("link", scope+"beads/work", "beads/context", "--type", "types/references", "--id", "links/unowned")
 			if call("show", scope+"beads/work") != issueBefore || call("show", scope+"beads/context") != other {
 				t.Fatal("unowned informational Link versioned an endpoint")
 			}

@@ -587,7 +587,7 @@ bd link policy work --type types/references \
 bd links policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
-bd unlink policy-work
+bd link delete --force links/policy-work
 ```
 
 `bd links ID` lists current incident Links with Type first and in-Scope IDs
@@ -600,9 +600,10 @@ Changing an owned Link changes its owner; its target does not change merely
 because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for constraints and exact Evaluation subject rules.
 
-The positional `bd link` write still treats `beads/PATH` as an exact graph
-path. A full same-Scope URL also selects that path. Current `bd show` and
-`bd link show` reads instead treat local spellings as opaque public IDs.
+The positional `bd link` write treats local spellings, including `beads/PATH`,
+as public IDs. A full same-Scope URL selects an exact graph path. Current
+`bd show` and `bd link show` reads use the same public-ID rule for local
+spellings. `bd link delete` selects a Link by its Link ID.
 
 Link updates and removal accept the current Link by default; `--if-revision
 TOKEN` rejects a stale Link. Removal retains the identity and prior snapshots.
@@ -618,16 +619,18 @@ the opposite order. Add `--id links/ID` to `bd dep add` when the Link needs a
 chosen local identity; repeating the same pair with that ID or no ID is a
 no-op, while a different ID refuses. `bd dep remove BLOCKED BLOCKER` (also
 `bd dep rm`) removes the blocking pair through the same Issue writer as
-canonical `bd unlink links/ID`. An absent pair reports `not_found` without
-adding Issue History or a Link tombstone; an actual removal records one native
-dependency event and source version. The target Issue stays unchanged.
-Bare native Issue IDs are resolved within the same removal transaction when
-their graph paths differ. A bare ID that also names a different Bead refuses
-as ambiguous; use the full canonical Scope URL to select an exact graph path.
-`bd unlink` continues to require an exact Link ID and revision guard for a
-blocking Dependency. `bd dep relate` and `bd dep unrelate` are outside this
-graph preview because the ordinary command owns two directed relationships,
-not one Link.
+`bd link delete --force links/ID` by Link ID. An absent pair reports
+`not_found` without adding Issue History or a Link tombstone; an actual
+removal records one native dependency event and source version. The target
+Issue stays unchanged.
+Local public Issue IDs are resolved within the same removal transaction when
+their graph paths differ. The exact public ID wins over a different Bead at
+the compatibility candidate path; use a full canonical Scope URL to select
+that graph path instead. Ambiguous abbreviations refuse without a change.
+`bd link delete` selects a blocking Dependency by Link ID; an explicit
+`--if-revision` guards its observed Link revision. `bd dep relate` and
+`bd dep unrelate` are outside this graph preview because the ordinary command
+owns two directed relationships, not one Link.
 
 ## Claim and release Issue work
 
@@ -722,7 +725,7 @@ Structured graph records carry an `attribution` object only when a principal
 was recorded. This applies to reads such as `bd show`, `bd compare`,
 `bd memories --format records-json` and `bd list --format records-json`, and to
 mutation results from `bd remember`, `bd create`, `bd update`, `bd link`,
-`bd unlink` and `bd delete`, including nested replaced-source records.
+`bd link delete` and `bd delete`, including nested replaced-source records.
 Its `basis` is `writer-supplied` when that version's writer
 supplied the actor, or `unknown` when the relationship to the version cannot
 be established. `basis` describes the source of the value; it does not assert

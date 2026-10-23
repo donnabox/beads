@@ -64,7 +64,7 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			call("create", "Prioritize work", "--graph-path", "beads/work", "--description", "Untouched description")
 			gate := call("create", "Prerequisite", "--graph-path", "beads/gate")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
-			informational := call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references")
+			informational := call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references")
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--priority", "P0", "--assignee", "alice", "--title", "Assigned work", "--if-revision", original.Revision))
 			current := edited.Issue

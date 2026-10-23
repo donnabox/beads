@@ -202,11 +202,14 @@ type LinkCreateRequest struct {
 	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
 	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string
-	SourcePin, TargetPin                EndpointPin
-	Properties                          map[string]any
-	Metadata                            json.RawMessage
-	ExpectedSourceRevision              string
-	UnconditionalSource                 bool
+	// Local IDs resolve against the live public catalog in the Link write transaction.
+	// Empty IDs keep SourcePath and TargetPath as exact canonical paths.
+	SourceLocalID, TargetLocalID string
+	SourcePin, TargetPin         EndpointPin
+	Properties                   map[string]any
+	Metadata                     json.RawMessage
+	ExpectedSourceRevision       string
+	UnconditionalSource          bool
 }
 
 // LinkUpdateRequest changes payload and optional endpoint pins without changing
@@ -254,6 +257,7 @@ func (e *ErrAmbiguousLink) Error() string {
 // LinkDeleteRequest selects an ID or an exact typed endpoint pair, never both.
 type LinkDeleteRequest struct {
 	Path, SourcePath, TargetPath, TypeURL, Actor string
+	SourceLocalID, TargetLocalID                 string
 	ExpectedRevision                             string
 	Unconditional                                bool
 	ExpectedSourceRevision                       string

@@ -329,7 +329,7 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			linked := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
 			changedLink := graphMixedResult[graphstore.LinkMutationResult](t, call("update", "links/owned", "--properties", `{"note":"second"}`, "--if-revision", firstLink.Revision, "--if-source-revision", linked.Revision)).Link
 			current := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
-			survivingLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/survivor", "--type", "types/references")).Link
+			survivingLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/survivor", "--type", "types/references")).Link
 			issueCurrent := call("show", issue.ID)
 			if current.Properties != properties || original.Properties.Body != body || empty.Properties.Body != "" {
 				t.Fatal("fixture did not preserve authored body bytes")
