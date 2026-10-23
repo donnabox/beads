@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -28,9 +29,10 @@ func graphPreviewIssueSelector(selector string) (graphstore.IssueSelector, error
 	return graphstore.IssueSelector{Path: path, NativeID: selector}, nil
 }
 
-// Resolve a local write operand by public ID before passing its immutable
-// allocation path to the existing checked writer. A canonical URL stays an
-// exact graph address. Catalog paths are never recycled within this Scope.
+// Resolve an exact public ID before passing its immutable allocation path to
+// an existing checked writer. A compatibility shorthand can change meaning
+// between this read and the writer's transaction, so it must use a canonical
+// Scope URL (or a writer that resolves shorthand in its own transaction).
 func graphPreviewResolvedWritePath(selector string) (string, error) {
 	path, localID, err := graphPreviewResourceReadSelector(selector)
 	if err != nil {
@@ -40,10 +42,21 @@ func graphPreviewResolvedWritePath(selector string) (string, error) {
 		return path, nil
 	}
 	var selected string
+	var record any
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		selected, _, err = store.ReadResourceSelected(ctx, path, localID)
+		selected, record, err = store.ReadResourceSelected(ctx, path, localID)
 		return nil, "", err
 	}, func(any, string) error { return nil })
+	if err != nil {
+		return "", err
+	}
+	exact := selected == localID // Memory and Link public IDs are their paths.
+	if issue, ok := record.(graphstore.IssueRecord); ok {
+		exact = issue.Properties.ID == localID
+	}
+	if !exact {
+		return "", graphFailure("invalid_selector", fmt.Sprintf("write selector %q is a compatibility shorthand; use the full public ID or canonical Scope URL", localID), 2)
+	}
 	return selected, err
 }
 

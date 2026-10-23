@@ -81,6 +81,12 @@ func TestGraphPreviewOpaqueIssueIDShowUpdateCloseRoundtrip(t *testing.T) {
 				}
 				call("dep", "add", "beads/x", "target")
 				memory := graphMixedResult[graphstore.Record](t, call("remember", "Context", "--id", "beads/context"))
+				beforeMemory := call("show", "beads/context", "--format", "graph-json")
+				graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "update", "context", "--properties", `{"title":"Must refuse"}`, "--json")
+				if afterMemory := call("show", "beads/context", "--format", "graph-json"); afterMemory != beforeMemory {
+					t.Fatalf("shorthand write changed Memory despite pre-transaction selector refusal: %s", afterMemory)
+				}
+				call("update", "beads/context", "--properties", `{"title":"Exact public ID"}`)
 				info := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/x", "context", "--type", "types/references"))
 				if info.Link.Source != created["beads/x"].ID || info.Link.Source == created["x"].ID {
 					t.Fatalf("informational Link selected path owner instead of literal public ID: %+v", info.Link)

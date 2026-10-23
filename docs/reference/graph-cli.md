@@ -52,9 +52,11 @@ candidate in [PR130](https://github.com/donnabox/beads/pull/130). Check the
 integration and qualification status before choosing a build.
 
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
-is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
-still needs an explicit `links/ID` where a command accepts either kind of
-resource. The shorthand does not change stored IDs or HTTP URLs. Omit `--id`
+is under `beads/`. In read and Link-pair arguments, `policy` can abbreviate
+`beads/policy`; a Link still needs an explicit `links/ID` where a command
+accepts either kind of resource. Some mixed writes require the full public ID
+or canonical Scope URL, as noted below. The shorthand does not change stored
+IDs or HTTP URLs. Omit `--id`
 when creating a Bead to allocate an ID, or supply one to use it exactly.
 `bd create` refuses a duplicate ID; `bd remember --id ID` updates an existing
 Memory at that ID unless `--create-only` is supplied. The examples below use
@@ -396,9 +398,9 @@ body and applies them to that Memory. On creation, these flags form its initial
 metadata object.
 
 ```sh
-bd update policy --metadata '{"reviewed":true}'
-bd update policy --unset-metadata team
-bd update policy --replace-metadata '{}'
+bd update beads/policy --metadata '{"reviewed":true}'
+bd update beads/policy --unset-metadata team
+bd update beads/policy --replace-metadata '{}'
 bd update links/policy-work --replace-properties '{}'
 ```
 
@@ -412,10 +414,17 @@ fallback, including at a terminal. `--readonly` does not write the marker.
 
 ```sh
 bd update work --title 'Move the release branch after review'
-bd update policy --properties '{"body":"Land reviewed changes on integration."}'
+bd update beads/policy --properties '{"body":"Land reviewed changes on integration."}'
 bd update work --properties '{"priority":1,"description":"Review the release branch."}'
 bd update work --patch '[{"op":"replace","path":"/description","value":"Reviewed."}]'
 ```
+
+`bd update`, `bd edit` and Issue comment writes resolve a mixed local selector
+before invoking their checked writer. They accept an exact public ID, such as
+Issue `work` or Memory `beads/policy`, and a canonical same-Scope URL for an
+exact graph path. They refuse compatibility suffix shorthand, such as `policy`
+for Memory `beads/policy`, because its meaning could change before the write
+transaction. Reads and Link-pair writes retain their separate selector rules.
 
 `bd close ID...` and `bd reopen ID...` accept one or more local Issues. A
 single `--reason` applies to every close target, repeated reasons map to IDs
