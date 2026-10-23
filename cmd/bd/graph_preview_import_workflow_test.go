@@ -57,7 +57,7 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 				`{"_schema":"beads-jsonl/1"}`,
 				`{"id":"one-a","title":"a"}` + "\n" + `{"id":"two-b","title":"b"}`,
 				strings.Replace(string(fixture), `"depends_on_id":"legacy-a"`, `"depends_on_id":"absent"`, 1),
-				strings.Replace(string(fixture), `"type":"blocks"`, `"type":"parent-child"`, 1),
+				strings.Replace(string(fixture), `"type":"blocks"`, `"type":"`+strings.Repeat("x", types.MaxDependencyTypeLen+1)+`"`, 1),
 				string(fixture) + `{"_type":"issue","id":"bad","title":"bad","history":[]}`,
 				`{"id":"old-a","title":"a","dependencies":[{"depends_on_id":"old-b","type":"blocks"}]}
 {"id":"old-b","title":"b","dependencies":[{"depends_on_id":"old-a","type":"blocks"}]}`,
@@ -122,6 +122,81 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 			}
 			call("", "", "dep", "add", fresh.ID, "legacy-a")
 			call("", "", "dep", "add", "legacy-b", fresh.ID)
+		})
+	}
+}
+
+// Synthetic regression for Donna's five-Issue/two-Memory legacy export. The
+// process boundary must preserve relates-to as a native Dependency and keep a
+// colliding Memory key distinct from the Issue with the same spelling.
+func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	const fixture = `{"_type":"issue","id":"scratch-8b8","title":"Target"}
+{"_type":"issue","id":"scratch-35t","title":"Source","dependencies":[{"issue_id":"scratch-35t","depends_on_id":"scratch-8b8","type":"relates-to","created_by":"source-actor","created_at":"2026-10-23T13:07:20Z","metadata":"{}"},{"issue_id":"scratch-35t","depends_on_id":"scratch-9zj","type":"blocks","metadata":"{}"}]}
+{"_type":"issue","id":"scratch-bip","title":"Other target"}
+{"_type":"issue","id":"scratch-g5r","title":"Unlinked"}
+{"_type":"issue","id":"scratch-9zj","title":"Blocker","dependencies":[{"issue_id":"scratch-9zj","depends_on_id":"scratch-bip","type":"blocks","metadata":"{}"}]}
+{"_type":"memory","key":"scratch-8b8","value":"Colliding key, distinct Memory"}
+{"_type":"memory","key":"hello","value":"Other Memory"}
+`
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			isolateBeadsDirForTest(t)
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/import-mixed-kinds/"
+			call := func(input string, args ...string) string {
+				t.Helper()
+				args = append(args, "--json")
+				return graphPatchProcess(t, bd, work, home, strings.NewReader(input), "", 90*time.Second, args...)
+			}
+			init := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for required shared-server import proof")
+				}
+				init = append(init, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call("", init...)
+			before := call("", "list", "--all", "--format", "records-json")
+			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(fixture, "import", "-", "--dry-run"))
+			if !preview.DryRun || preview.Issues != 5 || preview.Memories != 2 || preview.Dependencies != 3 {
+				t.Fatalf("preview=%+v", preview)
+			}
+			if got := call("", "list", "--all", "--format", "records-json"); got != before {
+				t.Fatal("dry-run reserved or changed data")
+			}
+			result := graphMixedResult[graphstore.LegacyImportResult](t, call(fixture, "import", "-"))
+			if result.DryRun || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || !reflect.DeepEqual(result.DependencyIDs, preview.DependencyIDs) {
+				t.Fatalf("apply identity maps differ from dry-run: %+v / %+v", result, preview)
+			}
+			for pair, kind := range map[string]string{
+				"scratch-35t -> scratch-8b8": "relates-to",
+				"scratch-35t -> scratch-9zj": "blocks",
+				"scratch-9zj -> scratch-bip": "blocks",
+			} {
+				link := graphMixedResult[graphstore.LinkRecord](t, call("", "link", "show", result.DependencyIDs[pair]))
+				ends := strings.Split(pair, " -> ")
+				if link.Type != graphstore.DependencyTypeURL(scope) || link.Properties["dep_type"] != kind || link.Source != result.IDs[ends[0]] || link.Target != result.IDs[ends[1]] {
+					t.Fatalf("dependency type/kind/endpoints changed for %s: %+v", pair, link)
+				}
+				if kind == "relates-to" && (link.Attribution.Actor != "source-actor" || link.Attribution.RecordedAt != "2026-10-23T13:07:20Z") {
+					t.Fatalf("source dependency attribution changed: %+v", link.Attribution)
+				}
+				retained := graphMixedResult[graphstore.LinkRecord](t, call("", "link", "show", link.ID, "--version", link.Revision))
+				if !reflect.DeepEqual(retained, link) {
+					t.Fatalf("initial retained dependency differs: %+v / %+v", retained, link)
+				}
+			}
+			issueID, memoryID := result.IDs["scratch-8b8"], result.MemoryIDs["scratch-8b8"]
+			if issueID != scope+"beads/scratch-8b8" || memoryID == "" || memoryID == issueID || result.MemoryIDs["hello"] != scope+"beads/hello" {
+				t.Fatalf("collision identity mapping=%+v", result)
+			}
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("", "show", issueID, "--format", "graph-json"))
+			memory := graphMixedResult[graphstore.Record](t, call("", "show", memoryID))
+			if issue.Properties.Title != "Target" || memory.Properties.Title != "scratch-8b8" || memory.Properties.Body != "Colliding key, distinct Memory" || memory.Type != graphstore.MemoryTypeURL(scope) {
+				t.Fatalf("colliding Issue/Memory data changed: %+v / %+v", issue, memory)
+			}
 		})
 	}
 }

@@ -154,6 +154,37 @@ func TestLegacyImportUnsupportedRecordState(t *testing.T) {
 	}
 }
 
+// An ordinary export can contain nonblocking and custom native Dependency
+// kinds. Import must preserve that kind rather than reject or reinterpret it.
+func TestLegacyImportDependencyKinds(t *testing.T) {
+	kinds := append(types.WellKnownDependencyTypes(), types.DependencyType("custom-kind"), types.DependencyType(strings.Repeat("x", types.MaxDependencyTypeLen)))
+	for _, kind := range kinds {
+		t.Run(string(kind), func(t *testing.T) {
+			dep := &types.Dependency{IssueID: "scratch-35t", DependsOnID: "scratch-8b8", Type: kind, Metadata: "{}"}
+			input := legacyimport.Batch{Issues: []*types.Issue{
+				{ID: "scratch-35t", Title: "Source", Dependencies: []*types.Dependency{dep}},
+				{ID: "scratch-8b8", Title: "Target"},
+			}}
+			prepared, err := prepareLegacyImport(input, "importer")
+			if err != nil {
+				t.Fatalf("ordinary native Dependency %q refused: %v", kind, err)
+			}
+			if got := prepared.Issues[0].Dependencies[0]; got.Type != kind || got.DependsOnID != dep.DependsOnID || got.IssueID != dep.IssueID {
+				t.Fatalf("native dependency changed: got %+v, want %+v", got, dep)
+			}
+		})
+	}
+	for _, kind := range []types.DependencyType{"", types.DependencyType(strings.Repeat("x", types.MaxDependencyTypeLen+1))} {
+		input := legacyimport.Batch{Issues: []*types.Issue{
+			{ID: "scratch-35t", Title: "Source", Dependencies: []*types.Dependency{{IssueID: "scratch-35t", DependsOnID: "scratch-8b8", Type: kind}}},
+			{ID: "scratch-8b8", Title: "Target"},
+		}}
+		if _, err := prepareLegacyImport(input, "importer"); !errors.Is(err, storage.ErrValidation) {
+			t.Fatalf("invalid native kind %q admitted: %v", kind, err)
+		}
+	}
+}
+
 func TestLegacyImportMemoryPaths(t *testing.T) {
 	keys := []string{"safe", "old-a", "has space", "has%20space", "雪", "%", ".", "..", "a/b", "a//b", "back\\slash", "control\x00", " leading ", "Case", "case", strings.Repeat("long", 300)}
 	// A direct key must retain its address even if it occupies a remap's
@@ -742,7 +773,7 @@ func TestLegacyImportValidationRollsBack(t *testing.T) {
 			})
 			before := legacyImportState(t, operationContext(t), s)
 			for _, input := range []string{
-				strings.Replace(legacyImportFixture, `"type":"blocks"`, `"type":"parent-child"`, 1),
+				strings.Replace(legacyImportFixture, `"type":"blocks"`, `"type":"`+strings.Repeat("x", types.MaxDependencyTypeLen+1)+`"`, 1),
 				strings.Replace(legacyImportFixture, `"depends_on_id":"old-a"`, `"depends_on_id":"old-missing"`, 1),
 				strings.Replace(legacyImportFixture, `"metadata":{"custom":{"flag":true}}`, `"metadata":[1]`, 1),
 				strings.Replace(legacyImportFixture, `"closed_at":"2026-01-02T00:00:00Z"`, `"closed_at":"2026-01-02T00:00:00.123Z"`, 1),
