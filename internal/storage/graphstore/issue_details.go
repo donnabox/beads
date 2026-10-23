@@ -89,7 +89,7 @@ func (s *Store) ReadBeadWithIssueDetailsSelected(ctx context.Context, selector I
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		_, selected, err := s.readBeadSelectedInTx(ctx, tx, selector)
+		selected, err := s.readBeadSelectedInTx(ctx, tx, selector)
 		if err != nil {
 			return err
 		}

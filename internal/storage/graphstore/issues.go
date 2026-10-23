@@ -234,26 +234,25 @@ func (s *Store) ReadBeadSelected(ctx context.Context, selector IssueSelector) (a
 			return err
 		}
 		var err error
-		_, result, err = s.readBeadSelectedInTx(ctx, tx, selector)
+		result, err = s.readBeadSelectedInTx(ctx, tx, selector)
 		return err
 	})
 	return result, err
 }
 
-func (s *Store) readBeadSelectedInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, any, error) {
+func (s *Store) readBeadSelectedInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (any, error) {
 	if selector.NativeID != "" {
-		path, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
 		switch {
 		case err == nil:
-			return path, issue, nil
+			return issue, nil
 		case errors.Is(err, ErrNotFound), errors.Is(err, errNonIssueSelector):
 			// Bare Memory names retain their existing read spelling.
 		default:
-			return "", nil, err
+			return nil, err
 		}
 	}
-	result, err := s.readCurrentVerifiedInTx(ctx, tx, selector.Path)
-	return selector.Path, result, err
+	return s.readCurrentVerifiedInTx(ctx, tx, selector.Path)
 }
 
 func (s *Store) readCurrentVerifiedInTx(ctx context.Context, tx *sql.Tx, path string) (any, error) {
