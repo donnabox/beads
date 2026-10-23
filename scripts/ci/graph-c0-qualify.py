@@ -337,7 +337,7 @@ def verify_memory_deletion_capture(root, summary):
             "deletion envelope changed")
     require_memory_deletion(deletion.get("result"), alpha)
     argv = data("18-memory-delete/receipt.json")["argv"]
-    require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", "beads/alpha", "--force",
+    require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", alpha["id"], "--force",
                      "--if-revision", alpha["revision"], "--json"], "deletion did not use original observed guard")
     require(summary.get("memory_delete") == {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]},
             "Memory deletion summary missing")
