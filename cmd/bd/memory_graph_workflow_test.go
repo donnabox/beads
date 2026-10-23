@@ -27,7 +27,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			call := func(args ...string) string { t.Helper(); return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			legacy := func(args ...string) string { t.Helper(); return call(append(args, "--json")...) }
 			for _, id := range []string{"a", "c"} {
-				legacy("create", id, "--id", id, "--type", "task")
+				legacy("create", id, "--graph-path", "beads/"+id, "--type", "task")
 			}
 			for _, id := range []string{"b", "d", "isolated"} {
 				legacy("create", id, "--id", id, "--type", "types/memory", "--properties", `{"body":"Content","extra":{"keep":true}}`)
