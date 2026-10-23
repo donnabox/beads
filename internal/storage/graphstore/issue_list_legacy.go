@@ -79,7 +79,7 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 				return fmt.Errorf("%w: invalid listed Issue path: %v", ErrInvalidStore, err)
 			}
 			if row.Parent != nil {
-				if _, err := s.canonicalIssuePathInTx(ctx, tx, *row.Parent); err != nil {
+				if err := s.validateCanonicalIssueAllocationInTx(ctx, tx, *row.Parent); err != nil {
 					return err
 				}
 			}
@@ -90,17 +90,17 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 	return result, err
 }
 
-func (s *Store) canonicalIssuePathInTx(ctx context.Context, tx *sql.Tx, nativeID string) (string, error) {
+func (s *Store) validateCanonicalIssueAllocationInTx(ctx context.Context, tx *sql.Tx, nativeID string) error {
 	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
 	if err != nil {
-		return "", err
+		return err
 	}
 	var path, kind, typ, state string
 	if err := tx.QueryRowContext(ctx, `SELECT path,resource_kind,type_url,allocation_state FROM graph_preview_catalog WHERE backing='issue' AND backing_key=?`, nativeID).Scan(&path, &kind, &typ, &state); err != nil {
-		return "", fmt.Errorf("%w: unmapped Issue list parent: %v", ErrInvalidStore, err)
+		return fmt.Errorf("%w: unmapped Issue list parent: %v", ErrInvalidStore, err)
 	}
 	if kind != "bead" || typ != issueType || state != "live" || validatePath(path) != nil {
-		return "", fmt.Errorf("%w: invalid Issue list parent allocation", ErrInvalidStore)
+		return fmt.Errorf("%w: invalid Issue list parent allocation", ErrInvalidStore)
 	}
-	return path, nil
+	return nil
 }

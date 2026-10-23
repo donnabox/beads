@@ -32,7 +32,7 @@ func (s *Store) ShowIssueDetails(ctx context.Context, path string, opts workapi.
 		if err != nil {
 			return err
 		}
-		details, err = s.issueDetailsInTx(ctx, tx, path, record, opts)
+		details, err = s.issueDetailsInTx(ctx, tx, record, opts)
 		return err
 	})
 	return details, err
@@ -53,18 +53,17 @@ func (s *Store) ShowIssueDetailsSelected(ctx context.Context, selector IssueSele
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		path := selector.Path
 		var record IssueRecord
 		var err error
 		if selector.NativeID == "" {
-			path, record, err = s.resolveExactLiveIssueSelectorInTx(ctx, tx, selector)
+			_, record, err = s.resolveExactLiveIssueSelectorInTx(ctx, tx, selector)
 		} else {
-			path, record, err = s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+			_, record, err = s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
 		}
 		if err != nil {
 			return err
 		}
-		details, err = s.issueDetailsInTx(ctx, tx, path, record, opts)
+		details, err = s.issueDetailsInTx(ctx, tx, record, opts)
 		return err
 	})
 	if errors.Is(err, errNonIssueSelector) {
@@ -90,13 +89,13 @@ func (s *Store) ReadBeadWithIssueDetailsSelected(ctx context.Context, selector I
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		path, selected, err := s.readBeadSelectedInTx(ctx, tx, selector)
+		_, selected, err := s.readBeadSelectedInTx(ctx, tx, selector)
 		if err != nil {
 			return err
 		}
 		record = selected
 		if issue, ok := selected.(IssueRecord); ok {
-			details, err = s.issueDetailsInTx(ctx, tx, path, issue, opts)
+			details, err = s.issueDetailsInTx(ctx, tx, issue, opts)
 			return err
 		}
 		return nil
@@ -238,7 +237,7 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 		}
 		if issue, ok := record.(IssueRecord); ok && includeDetails {
 			var err error
-			details, err = s.issueDetailsInTx(ctx, tx, selectedPath, issue, opts)
+			details, err = s.issueDetailsInTx(ctx, tx, issue, opts)
 			return err
 		}
 		return nil
@@ -249,7 +248,7 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 	return selectedPath, record, details, nil
 }
 
-func (s *Store) issueDetailsInTx(ctx context.Context, tx *sql.Tx, path string, record IssueRecord, opts workapi.DetailOptions) (*types.IssueDetails, error) {
+func (s *Store) issueDetailsInTx(ctx context.Context, tx *sql.Tx, record IssueRecord, opts workapi.DetailOptions) (*types.IssueDetails, error) {
 	if record.Properties == nil {
 		return nil, fmt.Errorf("%w: Issue has no properties", ErrInvalidStore)
 	}

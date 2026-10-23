@@ -150,7 +150,7 @@ func (s *Store) ListChildrenLegacy(ctx context.Context, parentPath string) ([]*t
 			}
 			seen[row.ID] = true
 			if row.Parent != nil {
-				if _, err := s.canonicalIssuePathInTx(ctx, tx, *row.Parent); err != nil {
+				if err := s.validateCanonicalIssueAllocationInTx(ctx, tx, *row.Parent); err != nil {
 					return err
 				}
 			}
