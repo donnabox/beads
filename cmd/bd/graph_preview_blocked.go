@@ -16,7 +16,7 @@ import (
 const graphIssueBlockedOutputLimit = 16 << 20
 
 func graphPreviewBlockedInput(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "label", "label-any", "exclude-label"); err != nil {
+	if err := graphPreviewFlags(cmd, "label", "label-any", "exclude-label", "parent"); err != nil {
 		return err
 	}
 	if len(args) != 0 {
@@ -24,6 +24,15 @@ func graphPreviewBlockedInput(cmd *cobra.Command, args []string) error {
 	}
 	if err := graphPreviewLabelFilters(cmd); err != nil {
 		return err
+	}
+	if cmd.Flags().Changed("parent") {
+		parent, _ := cmd.Flags().GetString("parent")
+		if parent == "" {
+			return graphFailure("invalid_selector", "--parent expects a local Issue ID, beads/PATH or canonical Issue URL", 2)
+		}
+		if _, err := graphPreviewIssueSelector(parent); err != nil {
+			return graphFailure("invalid_selector", "--parent expects a local Issue ID, beads/PATH or canonical Issue URL", 2)
+		}
 	}
 	if raw := os.Getenv(maxRowsEnvVar); raw != "" {
 		value, err := strconv.Atoi(raw)
@@ -41,12 +50,15 @@ func runGraphPreviewBlocked(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewBlockedInput(cmd, args); err != nil {
 		return err
 	}
-	// Graph preview rejects --parent at input admission. The shared request
-	// still carries the label flags, which workapi converts for this native
-	// graph-store read without constructing a storage filter in the CLI.
-	filter := workapi.BuildGraphBlockedFilter(blockedRequestFromFlags(cmd))
+	request := blockedRequestFromFlags(cmd)
+	filter := workapi.BuildGraphBlockedFilter(request)
+	var parent *graphstore.IssueSelector
+	if cmd.Flags().Changed("parent") {
+		selected, _ := graphPreviewIssueSelector(request.ParentID) // validated above
+		parent = &selected
+	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		issues, err := s.BlockedIssuesFiltered(ctx, filter)
+		issues, err := s.BlockedIssuesFilteredSelected(ctx, filter, parent)
 		if err != nil {
 			return nil, "", err
 		}

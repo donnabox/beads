@@ -9,12 +9,6 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-type graphDependencyView struct {
-	Root         string                   `json:"root"`
-	Issues       []graphstore.IssueRecord `json:"issues"`
-	Dependencies []graphstore.LinkRecord  `json:"dependencies"`
-}
-
 func graphPreviewDependencySnapshot(ctx context.Context, store *graphstore.Store) (graphDependencyProjection, error) {
 	snapshot, err := store.CurrentSnapshot(ctx)
 	if err != nil {
@@ -25,7 +19,11 @@ func graphPreviewDependencySnapshot(ctx context.Context, store *graphstore.Store
 
 // The blocking view reads a complete snapshot before projecting a component
 // or tree. A positive row cap cannot bound that read, so refuse it up front.
-func graphPreviewRejectDependencyRowCap(cmd *cobra.Command) error {
+func graphPreviewRejectDependencyRowCap(cmd *cobra.Command, subject ...string) error {
+	label := "blocking dependency snapshot"
+	if len(subject) != 0 {
+		label = subject[0]
+	}
 	var maxRows int
 	var source string
 	if cmd.Flags().Changed(maxRowsFlagName) {
@@ -42,49 +40,9 @@ func graphPreviewRejectDependencyRowCap(cmd *cobra.Command) error {
 		maxRows, source = value, envSource
 	}
 	if maxRows > 0 {
-		return graphFailure("capability_unavailable", fmt.Sprintf("blocking dependency snapshot does not enforce %s=%d; unset the cap or use --max-rows=0", source, maxRows), 5)
+		return graphFailure("capability_unavailable", fmt.Sprintf("%s does not enforce %s=%d; unset the cap or use --max-rows=0", label, source, maxRows), 5)
 	}
 	return nil
-}
-
-func runGraphPreviewDependencyGraph(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "max-rows"); err != nil {
-		return err
-	}
-	if err := graphPreviewRejectDependencyRowCap(cmd); err != nil {
-		return err
-	}
-	if jsonOutput {
-		return graphFailure("capability_unavailable", "graph ISSUE --json cannot preserve the native layout and Issue record shape; use the human blocking view or --view generic for explicit graph JSON", 5)
-	}
-	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph requires one local Issue ID; --view generic retains generic Link traversal", 2)
-	}
-	path, err := graphPreviewBeadSelector(args[0])
-	if err != nil {
-		return err
-	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		g, err := graphPreviewDependencySnapshot(ctx, store)
-		if err != nil {
-			return nil, "", err
-		}
-		root := store.ScopeURL() + path
-		if !g.hasIssue(root) {
-			return nil, "", graphstore.ErrNotFound
-		}
-		issues, links := g.component(root)
-		result := graphDependencyView{Root: root, Issues: issues, Dependencies: links}
-		var human strings.Builder
-		fmt.Fprintf(&human, "Blocking dependency graph for %s (%d Issues, %d Dependencies; graph preview)\n", path, len(issues), len(links))
-		for _, issue := range issues {
-			fmt.Fprintf(&human, "%s  %s  %s\n", graphPreviewDisplayLocalURL(issue.ID), issue.Properties.Status, issue.Properties.Title)
-		}
-		for _, link := range links {
-			fmt.Fprintf(&human, "%s depends on %s\n", graphPreviewDisplayLocalURL(link.Source), graphPreviewDisplayLocalURL(link.Target))
-		}
-		return result, strings.TrimSuffix(human.String(), "\n"), nil
-	})
 }
 
 type graphDependencyCheck struct {

@@ -3,6 +3,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "graphstore",
     srcs = [
+        "assessment_availability.go",
         "backend.go",
         "bead_list.go",
         "collection_read.go",
@@ -46,8 +47,13 @@ go_library(
         "link_lifecycle.go",
         "link_properties_patch.go",
         "link_reference.go",
+        "memory_constraint_read.go",
         "memory_delete.go",
+        "memory_family_read.go",
+        "memory_family_read_bounds.go",
         "memory_properties_patch.go",
+        "memory_query_read.go",
+        "memory_query_read_bounds.go",
         "memory_terminal.go",
         "memory_update.go",
         "merge_slot.go",
@@ -69,6 +75,7 @@ go_library(
         "//internal/graphpatch",
         "//internal/legacyimport",
         "//internal/memorycatalog",
+        "//internal/memoryquery",
         "//internal/storage",
         "//internal/storage/dberrors",
         "//internal/storage/depid",
@@ -97,6 +104,7 @@ go_test(
     # bound cumulative embedded initialization without extending that alarm.
     timeout = "eternal",
     srcs = [
+        "assessment_availability_test.go",
         "backend_transaction_policy_test.go",
         "bead_list_store_test.go",
         "bead_list_test.go",
@@ -156,10 +164,13 @@ go_test(
         "link_lifecycle_test.go",
         "link_properties_patch_test.go",
         "link_reference_test.go",
+        "memory_constraint_read_test.go",
         "memory_delete_test.go",
+        "memory_family_read_test.go",
         "memory_patch_test.go",
         "memory_properties_patch_modes_test.go",
         "memory_properties_patch_test.go",
+        "memory_query_read_test.go",
         "memory_update_test.go",
         "merge_slot_test.go",
         "metadata_workflow_test.go",
@@ -187,15 +198,28 @@ go_test(
         "//internal/graphpatch",
         "//internal/legacyimport",
         "//internal/memorycatalog",
+        "//internal/memoryquery",
         "//internal/storage",
         "//internal/storage/domain",
         "//internal/storage/issueops",
+        "//internal/typecatalog",
         "//internal/types",
         "//internal/workapi",
         "//issueops",
         "@com_github_data_dog_go_sqlmock//:go-sqlmock",
         "@com_github_go_sql_driver_mysql//:mysql",
     ],
+)
+
+# Source files linked by the Preview 3 CLI parity root-cause map.
+exports_files(
+    [
+        "backend.go",
+        "issue_close_batch.go",
+        "issue_create_batch.go",
+        "issue_delete.go",
+    ],
+    visibility = ["//test/docsync:__pkg__"],
 )
 
 # --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---

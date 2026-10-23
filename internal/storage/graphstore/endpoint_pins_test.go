@@ -249,7 +249,7 @@ func TestPinnedEndpointValidationBudgetChargesHistoricalPayloads(t *testing.T) {
 func TestOwnedSourcePinsRefuseBeforeAndAfterRetyping(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, backend)
+			ctx, options := assessmentExperimentOptions(t, backend)
 			s, err := OpenExisting(ctx, options)
 			if err != nil {
 				t.Fatal(err)

@@ -144,7 +144,7 @@ func TestHistoricalMemoryUpdateRefusalsAndRollback(t *testing.T) {
 func TestHistoricalMemoryUpdateCurrentTypeAndProtectedEvaluation(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
-			ctx, _, s := memoryDeleteStore(t, engine)
+			ctx, _, s := assessmentMemoryStore(t, engine)
 			original, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", Title: "Before Evaluation", Body: "historical content"})
 			if err != nil {
 				t.Fatal(err)
@@ -276,7 +276,7 @@ func TestHistoricalMemoryRecoveryTerminalGuardAndRollback(t *testing.T) {
 func TestHistoricalMemoryRecoveryProtectedBaselineAndEvaluationLifetime(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
-			ctx, _, s := memoryDeleteStore(t, engine)
+			ctx, _, s := assessmentMemoryStore(t, engine)
 			a, err := s.Create(ctx, CreateRequest{Path: "beads/a", Title: "A"})
 			if err != nil {
 				t.Fatal(err)

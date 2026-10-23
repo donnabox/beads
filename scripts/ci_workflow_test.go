@@ -5887,6 +5887,7 @@ from unittest import mock
 sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location("macos_go", sys.argv.pop(1))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+real_go = sys.argv.pop(1)
 
 FAKE = r'''#!/usr/bin/env python3
 import json, os, sys
@@ -5908,7 +5909,10 @@ if "-list" in args:
     if mode == "empty": sys.exit(0)
     print("TestEmbeddedOld")
     if mode == "excluded-only": sys.exit(0)
-    for name in ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"]: print(name)
+    names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"]
+    if mode == "last-group":
+        names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds", "TestAardvark", "TestZZLast"]
+    for name in names: print(name)
     print("BenchmarkIgnored")
     if mode == "duplicate-name": print("TestNew")
     print("ok  " + graph + " 0.01s")
@@ -5950,20 +5954,22 @@ class DispatchControls(unittest.TestCase):
             if case != "good": return
             plan = json.loads((output / "plan.json").read_text())
             self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
-            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"])
+            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"])
             self.assertEqual(sorted(sum(plan["groups"], [])), expected)
             self.assertEqual(len(sum(plan["groups"], [])), len(expected))
-            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"]))))
-            self.assertEqual(len(summary["groups"]), 4)
+            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"])), m.GRAPHSTORE_GROUPS))
+            self.assertEqual(len(summary["groups"]), m.GRAPHSTORE_GROUPS)
+            self.assertTrue(all(len(group) >= 2 for group in plan["groups"]))
             self.assertTrue(any(g["skipped"] for g in summary["groups"]))
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             self.assertEqual(calls[0], ["list", "-race", "-tags", "gms_pure_go", "./..."])
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 9)
+            self.assertEqual(len(executions), m.GRAPHSTORE_GROUPS + m.GROUPS + 1)
             self.assertEqual(plan["command"]["excluded"], ["TestEmbeddedOld"])
             self.assertEqual(sorted(sum(plan["command"]["groups"], [])), expected)
             self.assertEqual(len(sum(plan["command"]["groups"], [])), len(expected))
-            self.assertEqual(len(summary["commandGroups"]), 4)
+            self.assertEqual(plan["command"]["groups"], m.partition(plan["command"]["discovered"], m.GROUPS))
+            self.assertEqual(len(summary["commandGroups"]), m.GROUPS)
             self.assertTrue(any(g["skipped"] for g in summary["commandGroups"]))
             for call in executions:
                 for flag in ["-race", "-short", "-timeout=30m", "-json"]: self.assertIn(flag, call)
@@ -5979,6 +5985,22 @@ class DispatchControls(unittest.TestCase):
             for index, group in enumerate(plan["command"]["groups"], 1):
                 census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
+
+    def test_eighth_graphstore_group_has_a_real_terminal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            output = root / "evidence"
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "last-group"}):
+                m.execute(root, output, str(fake), scope="graphstore", source_sha="a" * 40)
+            summary = json.loads((output / "summary.json").read_text())
+            self.assertTrue(summary["passed"])
+            self.assertEqual(len(summary["groups"]), 8)
+            last = summary["groups"][-1]
+            self.assertEqual(last["label"], "graphstore-8")
+            self.assertEqual(last["roots"], ["TestZZLast"])
+            self.assertEqual(summary["groups"][0]["roots"], ["ExampleValue", "TestZulu"])
+            self.assertEqual(last["skipped"], [])
+            self.assertEqual(json.loads((output / "graphstore-8-census.json").read_text())["roots"], last["roots"])
 
     def test_macos_scope_policy_stays_distinct_from_pr_core(self):
         source = "a" * 40
@@ -6005,9 +6027,9 @@ class DispatchControls(unittest.TestCase):
             self.assertEqual(proof["scopes"], ["graphstore", "remaining"])
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 9)
-            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), 4)
-            self.assertEqual(sum(call[-1] == m.COMMAND for call in executions), 4)
+            self.assertEqual(len(executions), m.GRAPHSTORE_GROUPS + m.GROUPS + 1)
+            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), m.GRAPHSTORE_GROUPS)
+            self.assertEqual(sum(call[-1] == m.COMMAND for call in executions), m.GROUPS)
             for case in ("missing", "duplicate", "source", "flags", "packages", "raw", "failed", "cleanup", "receipt", "discovery"):
                 with self.subTest(case=case):
                     changed = root / case; shutil.copytree(outputs, changed)
@@ -6060,7 +6082,7 @@ class DispatchControls(unittest.TestCase):
                 eq_spec = importlib.util.spec_from_file_location("equivalence", eq_path)
                 eq = importlib.util.module_from_spec(eq_spec); eq_spec.loader.exec_module(eq)
                 statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", m.COMMAND: "cmd/bd", "github.com/steveyegge/beads/scripts": "scripts"})
-                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"})
+                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"})
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestServer"], "skipped")
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestNew"], "passed")
                 self.assertEqual(statuses["cmd/bd"], statuses["internal/storage/graphstore"])
@@ -6113,7 +6135,7 @@ class DispatchControls(unittest.TestCase):
             runner = m.Runner(root, root)
             # A cold race-enabled Go toolchain can compile this tiny fixture
             # slowly when the Bazel worker is also running the full suite.
-            events = runner.run("framing", ["go", "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 120)
+            events = runner.run("framing", [real_go, "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 120)
             census = m.verify_events(events, ["example.invalid/dispatch-framing"], ["TestFragment"])
             self.assertEqual(census["tests"], 2)
             self.assertEqual(census["skipped"], [])
@@ -6124,9 +6146,38 @@ class DispatchControls(unittest.TestCase):
                      "duplicate-name", "test-failure", "other-failure", "missing-root", "extra-root",
                      "unfinished-child", "duplicate-terminal", "bad-json", "json-fail", "build-fail", "missing-package-terminal", "other-missing-terminal"]:
             with self.subTest(case=case): self.exercise(case)
+    def test_large_partition_is_exhaustive_balanced_and_disjoint(self):
+        # Cover more than one root per group, not just the group-count constant.
+        names = ["TestRoot%03d" % index for index in range(335)] + ["TestEmbeddedOld"]
+        groups = m.partition(names, m.GRAPHSTORE_GROUPS)
+        self.assertEqual(len(groups), 8)
+        self.assertEqual(sorted(sum(groups, [])), sorted(n for n in names if not n.startswith("TestEmbedded")))
+        self.assertEqual(len(set(sum(groups, []))), 335)
+        self.assertLessEqual(max(map(len, groups)) - min(map(len, groups)), 1)
+        self.assertTrue(all(groups))
+        self.assertEqual(groups, m.partition(list(reversed(names)), m.GRAPHSTORE_GROUPS))
+        self.assertTrue(all(len(group) >= 2 for group in groups))
+
+    def test_dispatch_budgets_remain_unchanged(self):
+        self.assertIn("-timeout=30m", m.FLAGS)
+        self.assertEqual(m.GROUP_SECONDS, 2100)
+        self.assertGreater(m.GROUP_SECONDS, 1800)
+        self.assertEqual(m.TOTAL_SECONDS, 6900)
+        self.assertLess(m.TOTAL_SECONDS, 120 * 60)
+        self.assertEqual(m.GROUPS, 4)
+
     def test_partition_refuses_empty_or_duplicate(self):
         for names in [[], ["TestA", "TestA"], ["TestEmbeddedOnly"]]:
             with self.assertRaises(RuntimeError): m.partition(names)
+    def test_partition_counts_and_unchanged_limits(self):
+        for count in (0, -1, None, True, "8", 1.5):
+            with self.subTest(count=count), self.assertRaises(RuntimeError):
+                m.partition(["TestOne"], count)
+        self.assertEqual(len(m.partition(["TestOne"])), 4)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 8)
+        self.assertEqual((m.GROUP_SECONDS, m.TOTAL_SECONDS), (2100, 6900))
+        self.assertIn("-timeout=30m", m.FLAGS)
+
     def test_unexpected_package_refused(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "events"
@@ -6206,7 +6257,7 @@ func TestMacOSGoTestDispatcherControls(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "-c", macOSDispatcherControls,
-		filepath.Join(sourceRepoRoot(t), "scripts", "ci", "macos-go-test.py"))
+		filepath.Join(sourceRepoRoot(t), "scripts", "ci", "macos-go-test.py"), testGo(t))
 	cmd.Env = append(os.Environ(), "PYTHONDONTWRITEBYTECODE=1")
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("offline macOS dispatch controls: %v\n%s", err, output)

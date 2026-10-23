@@ -456,6 +456,23 @@ var proxyCapabilityRegistry = []capabilityRow{
 
 	// Generic graph commands have no proxied-provider route. Graph workspace
 	// admission handles their supported direct embedded/server path first.
+	refusedPath("memory", "proxy.memory.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759").asParentGroup(),
+	refusedPath("memory reference", "proxy.memory.reference.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory supersede", "proxy.memory.supersede.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory requires", "proxy.memory.requires.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory defines", "proxy.memory.defines.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory subject-to", "proxy.memory.subject-to.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory references", "proxy.memory.references.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory referenced-by", "proxy.memory.referenced-by.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory successor", "proxy.memory.successor.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory supersedes", "proxy.memory.supersedes.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory requirements", "proxy.memory.requirements.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory required-by", "proxy.memory.required-by.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory definition", "proxy.memory.definition.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory defined-by", "proxy.memory.defined-by.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory constraints", "proxy.memory.constraints.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+	refusedPath("memory subjects", "proxy.memory.subjects.unsupported", ProxyReasonUnimplemented, "Memory CLI: gastownhall/beads#7759"),
+
 	refusedPath("compare", "proxy.compare.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
 	refusedPath("link create", "proxy.link.create.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
 	refusedPath("link list", "proxy.link.list.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),

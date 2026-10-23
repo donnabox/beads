@@ -335,7 +335,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if (cmd == showCmd || cmd == recallCmd) && cmd.Flags().Changed("version") {
 			return true, graphFailure("capability_unavailable", "--version requires an experimental graph workspace", 5)
 		}
-		if cmd == graphCompareCmd || graphPreviewLinkNamespaceCommand(cmd) {
+		if cmd == graphCompareCmd || graphPreviewLinkNamespaceCommand(cmd) || graphPreviewMemoryNamespaceCommand(cmd) {
 			return true, graphFailure("capability_unavailable", "this command requires an experimental graph workspace", 5)
 		}
 		if cmd == createCmd && (cmd.Flags().Changed("properties") || graphPreviewNominalTypeFlagChanged(cmd)) {
@@ -377,7 +377,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	case supersedeCmd:
 		return true, graphFailure("capability_unavailable", "graph supersede requires one atomic supersedes edge and native close reason; this graph CLI does not provide that journey yet", 5)
 	}
-	if !graphPreviewLinkNamespaceCommand(cmd) && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
+	if !graphPreviewMemoryNamespaceCommand(cmd) && !graphPreviewLinkNamespaceCommand(cmd) && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
 		// runGraphPreviewVersions. Admission suppresses legacy store opening,
@@ -566,8 +566,8 @@ func graphOptions(cfg *configfile.Config) graphstore.Options {
 	}
 	return graphstore.Options{Backend: cfg.DoltMode, DataDir: filepath.Join(graphPreviewDir, "embeddeddolt"), Database: cfg.DoltDatabase, Branch: "main",
 		Binding:        graphstore.Binding{WorkspaceID: cfg.GraphWorkspace, ScopeURL: cfg.GraphScopeURL, AuthorityID: cfg.GraphAuthorityID, SchemaVersion: cfg.GraphSchemaVersion},
-		TypeGeneration: graphPreviewTypeGeneration,
-		ServerHost:     cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
+		TypeGeneration: graphPreviewTypeGeneration, AssessmentsEnabled: cfg.GraphAssessmentsEnabled,
+		ServerHost: cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
 }
 
 func withGraphStore(fn func(context.Context, *graphstore.Store) (any, string, error)) error {
@@ -682,7 +682,30 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if canonicalOutputSelected(cmd) {
 		return runCanonicalShow(cmd, args, false)
 	}
-	if err := graphPreviewFlags(cmd, "version", "format", "include-dependents", "include-comments", "brief-deps"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "current", "refs", "children", "watch", "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
+		return err
+	}
+	idFlags, _ := cmd.Flags().GetStringArray("id")
+	args = append(args, idFlags...)
+	currentMode, _ := cmd.Flags().GetBool("current")
+	if currentMode {
+		if len(args) != 0 {
+			return graphFailure("invalid_selector", "--current cannot be combined with explicit Issue IDs", 2)
+		}
+		currentID, err := graphPreviewCurrentIssueID(getActorWithGit())
+		if err != nil {
+			return err
+		}
+		if currentID == "" {
+			return graphFailure("not_found", "no current Issue found (no in-progress, hooked, or recently touched Issues)", 3)
+		}
+		args = []string{currentID}
+	}
+	shortMode, _ := cmd.Flags().GetBool("short")
+	longMode, _ := cmd.Flags().GetBool("long")
+	localTime, _ := cmd.Flags().GetBool("local-time")
+	commentsTail, _ := cmd.Flags().GetInt("comments-tail")
+	if err := validateCommentsTail(commentsTail); err != nil {
 		return err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -692,8 +715,23 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if format != "" && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags require legacy Issue --json output", 5)
 	}
+	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
+	}
+	watchMode, _ := cmd.Flags().GetBool("watch")
+	if watchMode {
+		return runGraphPreviewShowWatch(cmd, args, format, commentsTail)
+	}
+	showRefs, _ := cmd.Flags().GetBool("refs")
+	showChildren, _ := cmd.Flags().GetBool("children")
+	if showRefs || showChildren {
+		return runGraphPreviewShowRelated(cmd, args, showRefs, shortMode, format)
+	}
+	if len(args) > 1 {
+		return runGraphPreviewShowMany(cmd, args, shortMode, longMode, localTime, commentsTail, format)
+	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
+		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH; use a positional ID or --id", 2)
 	}
 	ref, err := graphPreviewParseReference(args[0])
 	if err != nil {
@@ -716,10 +754,13 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if versioned && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags cannot describe an exact retained version", 5)
 	}
+	if versioned && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+		return graphFailure("capability_unavailable", "Issue display flags require a current Issue", 5)
+	}
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
 		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
-	var shownIssue, legacyIssue bool
+	var shownIssue, legacyIssue, legacyShort bool
 	err = withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
 		var err error
@@ -732,6 +773,12 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		_, shownIssue = r.(graphstore.IssueRecord)
+		if shortMode && shownIssue && !versioned && format == "" {
+			legacyShort = true
+			issue := *r.(graphstore.IssueRecord).Properties
+			issue.ID = path
+			return r, formatShortIssue(&issue), nil
+		}
 		if shownIssue && jsonOutput && format == "" && !versioned {
 			includeDependents, _ := cmd.Flags().GetBool("include-dependents")
 			includeComments, _ := cmd.Flags().GetBool("include-comments")
@@ -743,8 +790,15 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			legacyIssue = true
 			return []*types.IssueDetails{details}, "", nil
 		}
-		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
-			return nil, "", graphFailure("capability_unavailable", "Issue detail flags require an Issue", 5)
+		if shownIssue && !jsonOutput && format == "" && !versioned {
+			details, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: true, IncludeComments: true})
+			if err != nil {
+				return nil, "", err
+			}
+			return details, renderGraphIssueDetails(details, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}), nil
+		}
+		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps") || cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+			return nil, "", graphFailure("capability_unavailable", "Issue detail and display flags require an Issue", 5)
 		}
 		projected, err := graphProjectCompleteRecords(r)
 		if err != nil {
@@ -756,6 +810,10 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		}
 		return r, string(data), nil
 	}, func(result any, human string) error {
+		if legacyShort {
+			_, err := fmt.Fprintln(cmd.OutOrStdout(), human)
+			return err
+		}
 		if legacyIssue {
 			return outputJSON(result)
 		}
@@ -822,7 +880,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"issueListTree": false, "issueListLegacyJSON": true, "issueAssigneeFilter": true, "issueDueDate": true, "issueDueFilter": true, "issueClaim": true, "issueUnclaim": true, "issueTodo": true, "issueHeartbeat": true, "issueReclaim": true, "issueStateRead": true, "issueStateSet": false, "issueStatus": true, "issueGate": false, "issueMergeSlot": true, "issueWorkflows": false,
 					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "versionList": true, "exactVersionRead": true, "exactVersionCompare": true,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone Issue assign, priority and note shortcuts, native Issue comments, quick capture and editor-backed Issue edits, bounded Issue search/count/query with ordinary JSON, and task-Issue todo add/list/done, atomic Issue claims with five-minute leases, node-local history-free heartbeat, native stale-lease reclaim, native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), state-label read, durable Issue status summary and merge-slot create/check/acquire/release. Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with local endpoint pins, same-ID re-pin, shallow property merge and guarded unlink (owned-source pins remain unavailable), blocking Dependencies with canonical-ID unlink or native pair-level dep remove, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake are available. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Human blocking dep list/tree/cycles and graph ISSUE views plus flat graph check are available within their bounded snapshot and format guards. Bounded current all-Bead listing with nominal Bead Type filtering and Issue-only legacy list JSON are available; Issue-specific filters retain the native Issue query and due/assignee filters. Native immediate children has human and ordinary JSON views; tree formatting is not yet available. Fresh graph workspaces admit atomic create --parent with a native dotted child ID and parent-child Link, plus epic status and close-eligible (including dry-run) from native parent-child Links. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, gate, set-state, duplicate/supersede journeys, HTTP History and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone Issue assign, priority and note shortcuts, native Issue comments, quick capture and editor-backed Issue edits, bounded Issue search/count/query with ordinary JSON, and task-Issue todo add/list/done, atomic Issue claims with five-minute leases, node-local history-free heartbeat, native stale-lease reclaim, native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), state-label read, durable Issue status summary and merge-slot create/check/acquire/release. Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with local endpoint pins, same-ID re-pin, shallow property merge and guarded unlink (owned-source pins remain unavailable), blocking Dependencies with canonical-ID unlink or native pair-level dep remove, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake are available. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Human blocking dep list/tree/cycles and flat graph check are available within their bounded snapshot and format guards. Bounded current all-Bead listing with nominal Bead Type filtering and Issue-only legacy list JSON are available; Issue-specific filters retain the native Issue query and due/assignee filters. Native immediate children has human and ordinary JSON views; tree formatting is not yet available. Fresh graph workspaces admit atomic create --parent with a native dotted child ID and parent-child Link, plus epic status and close-eligible (including dry-run) from native parent-child Links. Complete dependency-blocked inspection and bounded current typed Bead graph traversal with Link-Type unions/refinements, canonical JSON and ordinary output formats are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, gate, set-state, duplicate/supersede journeys, HTTP History and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 

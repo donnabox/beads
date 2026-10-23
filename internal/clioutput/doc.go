@@ -1,4 +1,5 @@
-// Package clioutput projects and renders already-selected single Resources.
+// Package clioutput projects and renders already-selected Resources,
+// collections, and complete mutation results.
 // It has no storage, transport, command registration, or process-output side
 // effects. Adapters supply the exact BDP contract and protection descriptor;
 // this package never infers Resource kinds from user properties or fetches

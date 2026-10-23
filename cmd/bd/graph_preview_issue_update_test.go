@@ -15,16 +15,16 @@ func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
 	cmd.Flags().IntP("estimate", "e", 0, "")
-	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "body-file", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
+	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
 		if cmd.Flags().Lookup(name) == nil {
-			if name == "clear-notes" {
+			if name == "clear-notes" || name == "stdin" {
 				cmd.Flags().Bool(name, false, "")
 			} else {
 				cmd.Flags().String(name, "", "")
 			}
 		}
 	}
-	cmd.Flags().Bool("stdin", false, "")
+	cmd.Flags().Bool("allow-empty-description", false, "")
 	cmd.Flags().Bool("claim", false, "")
 	cmd.Flags().Bool("force", false, "")
 	if err := cmd.ParseFlags(args); err != nil {
@@ -84,6 +84,27 @@ func TestGraphPreviewIssuePropertyMerge(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewIssuePropertyInputRejectsDescriptionSourceBeforeReading(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+	}{
+		{"inline-description-and-stdin", []string{`--properties={"description":"Property"}`, "--stdin"}},
+		{"shared-stdin", []string{"--properties=-", "--description=-"}},
+		{"shared-file-alias", []string{"--properties=-", "--body-file=-"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := issueTextCommand(t, tc.args...)
+			input := strings.NewReader("must remain unread")
+			cmd.SetIn(input)
+			_, err := graphPreviewIssuePropertyValues(cmd)
+			if err == nil || input.Len() != len("must remain unread") {
+				t.Fatalf("conflicting input was consumed: remaining=%d, error=%v", input.Len(), err)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewIssueNotesInput(t *testing.T) {
 	for _, tc := range []struct {
 		name       string
@@ -129,10 +150,6 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 		{"invalid-utf8", []string{"--design=\xff"}, 2},
 		{"different-aliases", []string{"--description=a", "--body=b"}, 2},
 		{"workflow", []string{"--design=Design", "--status=closed"}, 5},
-		{"file", []string{"--design=Design", "--body-file=missing"}, 5},
-		{"stdin-flag", []string{"--design=Design", "--stdin"}, 5},
-		{"stdin-description", []string{"--description=-"}, 5},
-		{"stdin-alias", []string{"--body=-"}, 5},
 		{"empty-notes", []string{"--notes="}, 2},
 		// Append still cannot be combined with replacement notes.
 		{"append", []string{"--design=Design", "--append-notes=More", "--notes=Replace"}, 2},
@@ -197,8 +214,6 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 	}
 	for _, args := range [][]string{
 		{"--priority=0", "--status=open"},
-		{"--priority=0", "--body-file=missing"},
-		{"--priority=0", "--stdin=false"},
 	} {
 		t.Run(strings.Join(args, " "), func(t *testing.T) {
 			cmd := issueTextCommand(t, args...)
@@ -210,8 +225,17 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 			}
 		})
 	}
+	request, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--priority=0", "--stdin=false"), "beads/work")
+	if err != nil || request.Priority == nil || *request.Priority != 0 || request.Description != nil {
+		t.Fatalf("false stdin flag changed priority edit: %+v %v", request, err)
+	}
+	_, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--priority=0", "--body-file=missing"), "beads/work")
+	var missing *exitError
+	if !errors.As(err, &missing) || missing.Code != 1 {
+		t.Fatalf("missing body file must refuse before storage: %v", err)
+	}
 	cmd := issueTextCommand(t, "--priority=0", "--properties={}")
-	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	request, err = graphPreviewIssueEditRequest(cmd, "beads/work")
 	if err != nil || !cmd.Flags().Changed("properties") || request.Priority == nil || *request.Priority != 0 {
 		t.Fatalf("mixed priority and empty property merge: %+v %v", request, err)
 	}

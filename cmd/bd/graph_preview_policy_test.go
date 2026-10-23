@@ -355,6 +355,8 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, args := range [][]string{
+		{"graph", "demo-one", "--graph-mode", "dependency", "--link-type", "references"},
+		{"graph", "demo-one", "--graph-mode", "dependency", "--all-link-types"},
 		{"import", "--source-prefix", "web-app"},
 		{"import", "--source-prefix="},
 		{"remember", "--update", "beads/plan", "--title", "Refused"},

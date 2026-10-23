@@ -52,7 +52,7 @@ func TestGraphTypesInventoryUsesSelectedCatalog(t *testing.T) {
 	}
 	original := []string{selected[0].ID(), selected[1].ID(), selected[2].ID()}
 	for _, details := range []bool{false, true} {
-		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, details)
+		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, details, true)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -81,7 +81,7 @@ func TestGraphTypesInventoryUsesSelectedCatalog(t *testing.T) {
 	}
 	// A different membership and parent graph requires no renderer changes.
 	selected = []graph.TypeDescriptor{inventoryDescriptor(t, child, "Independent", graph.KindLink)}
-	inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, false)
+	inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, false, true)
 	if err != nil || len(inventory.BeadTypes) != 0 || len(inventory.LinkTypes) != 1 || strings.Contains(text, "Neutral") {
 		t.Fatalf("catalog replacement failed: %s %v", text, err)
 	}
@@ -98,7 +98,7 @@ func TestGraphTypesInventoryHidesIntrinsicMetatypes(t *testing.T) {
 	selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"types/conforms-to", "An alias", graph.KindLink))
 	selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"types/refines", "Another alias", graph.KindLink))
 	for _, details := range []bool{false, true} {
-		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, details)
+		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, details, true)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -123,7 +123,7 @@ func TestGraphTypesInventoryPreservesIssueAndDependencyClassifications(t *testin
 		inventoryDescriptor(t, graphstore.DependencyTypeURL(typesInventoryScope), "Dependency", graph.KindLink),
 		inventoryDescriptor(t, graphstore.RelatedTypeURL(typesInventoryScope), "Related Memory", graph.KindLink),
 	}
-	inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, []string{"team-review"}, false)
+	inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, []string{"team-review"}, false, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -150,7 +150,7 @@ func TestGraphTypesInventoryPreservesIssueAndDependencyClassifications(t *testin
 	if len(inventory.BeadTypes) != 1 || len(inventory.LinkTypes) != 2 {
 		t.Fatal("classification labels became invented nominal definitions")
 	}
-	details, detailText, err := graphPreviewTypesInventory(typesInventoryScope, selected, []string{"team-review"}, true)
+	details, detailText, err := graphPreviewTypesInventory(typesInventoryScope, selected, []string{"team-review"}, true, true)
 	if err != nil || len(details.BeadTypes) != 1 || strings.Contains(detailText, "team-review") {
 		t.Fatalf("details should describe nominal definitions: %s %v", detailText, err)
 	}
@@ -158,7 +158,7 @@ func TestGraphTypesInventoryPreservesIssueAndDependencyClassifications(t *testin
 
 func TestGraphTypesInventoryEmptyCatalogIsEmpty(t *testing.T) {
 	for _, details := range []bool{false, true} {
-		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, nil, []string{"configured-but-no-issue-definition"}, details)
+		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, nil, []string{"configured-but-no-issue-definition"}, details, true)
 		if err != nil || inventory.BeadTypes == nil || inventory.LinkTypes == nil || len(inventory.BeadTypes) != 0 || len(inventory.LinkTypes) != 0 {
 			t.Fatalf("empty inventory: %+v %v", inventory, err)
 		}
@@ -184,7 +184,7 @@ func TestGraphTypesInventoryKeepsNominalSelectorsAndAbstractDefinitions(t *testi
 	selected := []graph.TypeDescriptor{decision, conformance, issue}
 	var baseline []byte
 	for _, details := range []bool{false, true} {
-		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, details)
+		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, details, true)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -208,5 +208,45 @@ func TestGraphTypesInventoryKeepsNominalSelectorsAndAbstractDefinitions(t *testi
 		if !reflect.DeepEqual(inventoryIDs(t, inventory.LinkTypes), []string{conformance.ID()}) {
 			t.Fatal("abstract public definition was hidden")
 		}
+	}
+}
+
+func TestGraphTypesAssessmentAvailability(t *testing.T) {
+	var selected []graph.TypeDescriptor
+	beadNames := map[string]bool{"memory": true, "evaluation": true, "constraint": true, "policy": true, "decision": true, "procedure": true, "requirement": true, "scenario": true, "specification": true, "issue": true}
+	for _, name := range graphstore.FreshTypeNames() {
+		kind := graph.KindLink
+		if beadNames[name] {
+			kind = graph.KindBead
+		}
+		selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"types/"+name, name, kind))
+	}
+	for _, enabled := range []bool{false, true} {
+		for _, details := range []bool{false, true} {
+			inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, nil, details, enabled)
+			if err != nil {
+				t.Fatal(err)
+			}
+			want := 15
+			if enabled {
+				want = 20
+			}
+			if len(inventory.BeadTypes)+len(inventory.LinkTypes) != want {
+				t.Fatal("wrong available Type census")
+			}
+			raw, err := json.Marshal(inventory)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, name := range []string{"evaluation", "conformance", "addresses", "satisfies", "violates"} {
+				id := typesInventoryScope + "types/" + name
+				if strings.Contains(string(raw), id) != enabled || strings.Contains(text, "types/"+name) != enabled {
+					t.Fatalf("inconsistent text/JSON availability %s", name)
+				}
+			}
+		}
+	}
+	if len(selected) != 20 {
+		t.Fatal("public filtering mutated installed inventory")
 	}
 }

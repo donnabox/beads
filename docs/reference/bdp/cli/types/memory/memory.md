@@ -6,6 +6,27 @@ description: "Candidate contract for using the selected Memory Types through exi
 Memory Types let you store constraints and assessments alongside ordinary work.
 This facade describes how the selected Types fit the existing `bd` commands.
 
+## Preview 3 availability
+
+Assessment authoring is disabled by default in Preview 3. `bd types` omits
+Evaluation, Conformance, Addresses, Satisfies and Violates while the switch is
+off. Creating or editing those objects, restoring Evaluation content from a
+retained revision, recovering a deleted Evaluation, and changing claim endpoint
+pins return capability unavailable. An existing object or installed definition
+does not bypass this restriction.
+
+The definitions, identities and retained data remain intact. Existing objects
+can still be inspected and deleted; valid retyping out of Evaluation follows
+the ordinary incident-Link constraints. Other Memory Types, Constraint/Requires,
+Memory body editing, and Issue/Dependency behavior remain available.
+
+The existing workspace metadata configuration accepts
+`"graph_assessments_enabled": true` to enable the retained assessment model for
+controlled experimental use. An omitted or false value keeps it off. The same
+setting controls Type availability and authoring; it changes neither the stored
+Type installation nor the workspace schema/generation. The assessment examples
+below describe that enabled model, rather than the default Preview 3 surface.
+
 ## Status and scope
 
 Status: **draft CLI contract for the Preview 3 candidate**. The selected Type

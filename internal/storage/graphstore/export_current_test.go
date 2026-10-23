@@ -945,11 +945,15 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			}); err != nil {
 				t.Fatal(err)
 			}
+			// Each independent export proof gets the existing bounded operation
+			// window; fixture setup and earlier proofs must not consume it.
+			ctx = currentReadBudgetContext(t, ctx)
 			before := exportSourceState(t, ctx, s)
 			got, err := s.ExportCurrentSnapshot(ctx)
 			if err != nil || len(got.Snapshot.Records) != 8 {
 				t.Fatalf("distinct decode falsely charged five times: %d %v", len(got.Snapshot.Records), err)
 			}
+			ctx = currentReadBudgetContext(t, ctx)
 			fault := errors.New("after exact endpoint validation")
 			s.afterWrite = func(stage string) error {
 				if stage == "export-endpoints" {
@@ -962,9 +966,12 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			if !errors.Is(err, fault) || !reflect.DeepEqual(got, ExportCurrentState{}) {
 				t.Fatalf("endpoint-stage fault: %+v %v", got, err)
 			}
+			ctx = currentReadBudgetContext(t, ctx)
 			canceled, cancel := context.WithCancel(ctx)
+			cancellationReached := false
 			s.afterWrite = func(stage string) error {
 				if stage == "export-endpoints" {
+					cancellationReached = true
 					cancel()
 				}
 				return nil
@@ -972,9 +979,10 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			got, err = s.ExportCurrentSnapshot(canceled)
 			s.afterWrite = nil
 			cancel()
-			if !errors.Is(err, context.Canceled) || !reflect.DeepEqual(got, ExportCurrentState{}) {
-				t.Fatalf("endpoint-stage cancellation: %+v %v", got, err)
+			if !cancellationReached || !errors.Is(err, context.Canceled) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+				t.Fatalf("endpoint-stage cancellation: reached=%t %+v %v", cancellationReached, got, err)
 			}
+			ctx = currentReadBudgetContext(t, ctx)
 			reached, reachedPreflight := false, false
 			s.afterWrite = func(stage string) error {
 				if stage == "export-preflight" {

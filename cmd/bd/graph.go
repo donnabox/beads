@@ -89,11 +89,7 @@ in total before any individual status trips it.`,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if graphPreviewActive {
-			view, _ := cmd.Flags().GetString("view")
-			if view == "generic" {
-				return runGraphPreviewGeneric(cmd, args)
-			}
-			return runGraphPreviewDependencyGraph(cmd, args)
+			return runGraphPreviewGeneric(cmd, args)
 		}
 		evt := metrics.NewCommandEvent("graph")
 		defer func() {
