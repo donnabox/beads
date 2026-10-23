@@ -765,9 +765,12 @@ locally; current-head hosted CI remains pending.
   graphstore and installed CLI delete workflows, docsync, and diff checks
   passed on the exact composition tree. After substantive review, its exact
   head `495587d59` passed 122 hosted checks with 10 expected skips and no
-  failures. Janet merged it at `430426ea5`; the merge tree equals the reviewed
-  head tree. This delivers those bounded deletion forms, not full shipping
-  `delete` compatibility or opaque-ID selection on every route.
+  failures. Janet merged it at `430426ea5`. Relative to the reviewed head tree,
+  that merge tree differs only in five `engdocs/design` Markdown files inherited
+  from #150's earlier audit merge at `c3675cf9c` (+145/-59 lines); product,
+  build, and test files are identical. This delivers those bounded deletion
+  forms, not full shipping `delete` compatibility or opaque-ID selection on
+  every route.
   A separate assembly `23d96d24a` combines #230 with #250's
   shared Issue selector and admits bare native abbreviations for set deletion.
   All selectors resolve within the deleting transaction; explicit graph paths
