@@ -123,13 +123,14 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			if len(supersedes.Beads) != 2 || len(supersedes.Links) != 1 || (supersedes.Traversal.Roots[0].Depth == nil || *supersedes.Traversal.Roots[0].Depth != 1) {
 				t.Fatalf("replacement inverse: %+v", supersedes)
 			}
-			current := graphMixedResult[graphstore.Record](t, legacy("show", "d"))
+			dURI := supersedes.Traversal.Roots[0].ID
+			current := graphMixedResult[graphstore.Record](t, legacy("show", dURI))
 			legacy("link", "create", "isolated", "d", "--type", "types/references", "--id", "pin", "--target-revision", current.Revision)
 			pinned := read("references", "isolated")
 			if len(pinned.Links) != 1 || pinned.Links[0].Target.Revision != current.Revision {
 				t.Fatalf("current pin erased: %+v", pinned)
 			}
-			legacy("update", "d", "--properties", `{"body":"Next revision"}`)
+			legacy("update", dURI, "--properties", `{"body":"Next revision"}`)
 			for _, tc := range []struct {
 				args []string
 				code string
