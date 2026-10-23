@@ -12,7 +12,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 8
+const SchemaVersion = 9
 
 // TypeGeneration changes when the selected fresh Type installation changes.
 // It is an admission marker, never an automatic migration of existing stores.
