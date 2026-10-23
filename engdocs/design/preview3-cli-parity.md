@@ -3,14 +3,15 @@
 This is the complete command inventory Donna requested for the three prioritized
 CLI families. It compares shipping tag `v1.3.1` (`c1c4b642a`) with the **as-built**
 Preview 3 integration snapshot at `b6d0493ba` (October 21, 2026). The branch
-has since advanced to merge commit `9be7c4894` (October 22, 2026). The first
+has since advanced through merge commit `c3675cf9c` (October 23, 2026). The first
 three columns below retain the fully probed `b6d0493ba` snapshot; the work-status
 column tracks later delivery. Do not read an open candidate as behavior in
-either integration commit. The selected #150/#151/#152/#156/#175 slice landed
+the integration branch. The selected #150/#151/#152/#156/#175 slice landed
 through [#256](https://github.com/donnabox/beads/pull/256) at exact head
 `215b87d05`, whose tree equals merge commit `9be7c4894`. #151/#152/#156/#175
-are marked merged on GitHub. #150 remains open because its later audit and
-delivery-ledger commits through `8fbe9cd1e` are not in #256.
+were marked merged through that composition. #150's later audit-only commits
+landed separately at `c3675cf9c` after exact-head CI passed; they add no
+runtime behavior.
 The detailed, source-backed reports cover all 43 top-level commands and expand
 namespaces and graph-only Link verbs where their behavior differs:
 
@@ -95,8 +96,8 @@ the incident-Link listing form.
    Its full local `TestMemory|TestGraphPreview` sweep passed 314 top-level
    tests with one expected shared-server-gated skip; the installed graph and
    link workflows passed on embedded and real shared-server Dolt. New-head
-   hosted CI and mixed-reader
-   selector migration remain open, so #180 is not delivered behavior. Accepted [BDP #280](https://github.com/gastownhall/bdp/issues/280)
+   hosted CI passed, but the mixed-reader selector migration remains open,
+   so #180 is not delivered behavior. Accepted [BDP #280](https://github.com/gastownhall/bdp/issues/280)
    makes paths Scope-defined and prohibits kind inference from spelling.
    #180 does not implement that future namespace contract. See the
    [A–M evidence](preview3-cli-parity/issue-a-m.md).
@@ -214,7 +215,7 @@ locally; current-head hosted CI remains pending.
 | `duplicate` | Explicit refusal. | Atomic duplicate edge and close is unavailable. | Gap; no repair PR |
 | `duplicates` | Explicit refusal. | Exact-content grouping and optional merge are unavailable. | Gap; no repair PR |
 | `epic` | Status, close-eligible dry run and actual close work in tested flows. | Multiple-epic partial failures were not live-probed. | As-built; multi-epic path unqualified |
-| `graph` | Default is a human blocking-only view; explicit `--view generic` previews bounded mixed traversal; `graph check` reads blocking cycles. | Shipping default formats, JSON and `--all` refuse; Melinda's #176 is draft and unmerged. Clean `graph check` JSON has an empty-array/null difference. | Separate owner: Melinda; #176 draft |
+| `graph` | Default is a human blocking-only view; explicit `--view generic` previews bounded mixed traversal; `graph check` reads blocking cycles. | At the pinned snapshot, shipping default formats, JSON and `--all` refuse. Clean `graph check` JSON has an empty-array/null difference. Later forms need separate qualification. | Separate owner: Melinda; #176 delivered through #217 |
 | `supersede` | Explicit refusal. | Atomic supersedes edge and close is unavailable. | Gap; no repair PR |
 | `swarm` | Namespace help remains visible. | Create/list/status/validate all explicitly refuse in link workspaces. | Gap; no repair PR |
 
@@ -223,8 +224,8 @@ locally; current-head hosted CI remains pending.
 - **First selected slice delivered through #256.** #151 adds familiar current-Issue
   show and positional Link feedback, #152 adds description file/stdin input,
   #156 adds list format aliases, and #175 pins the ready regression. #150's
-  blocked-parent filter fix also landed in #256, while its audit PR remains open
-  with later documentation commits outside that bundle. Other directly
+  blocked-parent filter fix also landed in #256; its later audit-only update
+  landed at `c3675cf9c`. Other directly
   relevant candidates are #159 (`create --silent`), #158 (list sort/long),
   #163 (single-ID `delete --dry-run`), #164 (forced assignee update), #161
   (positional custom Dependency kinds), #174 (native-kind Link collection
@@ -744,9 +745,9 @@ locally; current-head hosted CI remains pending.
   [#7377](https://github.com/gastownhall/beads/pull/7377) is integrated.
   Draft [#258](https://github.com/donnabox/beads/pull/258) composes the
   original linked-delete and set-delete stack through #230 onto the exact
-  Preview 3 target after #257. Its head `6e5c105d1` is a conflict-free merge
-  that preserves the original commits and tests; its tree is identical to the
-  earlier disposable `8b5ced7856` assembly, which passed 30 focused
+  Preview 3 target after #257. Its head `495587d59` is a conflict-free merge
+  that preserves the original commits and tests; its product/test composition
+  matches the earlier disposable `8b5ced7856` assembly, which passed 30 focused
   embedded and real shared-server test/subtest cases without skips. Focused
   graphstore and installed CLI delete workflows, docsync, and diff checks
   passed on the exact composition tree. Hosted CI and human review are pending;
