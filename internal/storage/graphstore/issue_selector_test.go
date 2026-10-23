@@ -439,6 +439,37 @@ func TestPublicResourceIDCreationRejectsCrossKindCollisions(t *testing.T) {
 	}
 }
 
+func TestDeletedIssueAllocationKeepsPublicIDReserved(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = store.Close() })
+			request := plainIssue("Original")
+			request.Issue.ID = "exp-reserved"
+			created, err := store.CreateIssue(ctx, "beads/original", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := store.DeleteIssue(ctx, IssueDeleteRequest{
+				Path: "beads/original", ExpectedRevision: created.Revision, Actor: "deleter",
+			}); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, store)
+			request = plainIssue("Second allocation")
+			request.Issue.ID = "exp-reserved"
+			_, err = store.CreateIssue(ctx, "", request)
+			if !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
+				t.Fatalf("deleted Issue public ID was reused or state changed: %v", err)
+			}
+		})
+	}
+}
+
 func TestExactIssuePublicIDBeatsMemoryPathShorthand(t *testing.T) {
 	for _, memoryFirst := range []bool{true, false} {
 		t.Run(map[bool]string{true: "memory-first", false: "issue-first"}[memoryFirst], func(t *testing.T) {
