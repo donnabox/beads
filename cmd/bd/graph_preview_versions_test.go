@@ -69,7 +69,7 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 			call(initArgs...)
 			call("create", "Source", "--graph-path", "beads/source")
 			call("remember", "Target", "--id", "target")
-			call("link", "source", "target", "--id", "links/edge", "--type", scope+"types/references")
+			call("link", scope+"beads/source", scope+"beads/target", "--id", "links/edge", "--type", scope+"types/references")
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
 			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", "links/edge"))
 			listed := call("versions", "links/edge")

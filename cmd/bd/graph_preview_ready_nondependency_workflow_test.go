@@ -27,9 +27,9 @@ func TestGraphPreviewReadyIgnoresInformationalLinks(t *testing.T) {
 			if got := ready(); len(got) != 1 || got[0].ID != issue.ID {
 				t.Fatalf("fixture Issue is not ready before informational Links: %+v", got)
 			}
-			call("link", "create", "work", "context", "--type", "types/references", "--id", "links/outgoing-context")
-			call("link", "create", "context", "work", "--type", "types/references", "--id", "links/incoming-context")
-			links := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", "work"))
+			call("link", "create", scope+"beads/work", scope+"beads/context", "--type", "types/references", "--id", "links/outgoing-context")
+			call("link", "create", scope+"beads/context", scope+"beads/work", "--type", "types/references", "--id", "links/incoming-context")
+			links := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", scope+"beads/work"))
 			if len(links) != 2 {
 				t.Fatalf("fixture did not create both informational Links: %+v", links)
 			}
