@@ -147,7 +147,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			}
 			refuse("invalid_selector", "link", memory.ID, other.ID, "--type", "types/references", "--id", "beads/edge")
 			call("link", "delete", "--force", "edge", "--if-revision", shortLink.Link.Revision)
-			refuse("gone", "show", "links/edge")
+			refuse("gone", "show", scope+"links/edge")
 			if shown := graphMixedResult[graphstore.Record](t, call("show", "edge")); shown.ID != sameIDBead.ID {
 				t.Fatal("Link-only unlink selected the Bead with the same bare ID")
 			}

@@ -48,7 +48,7 @@ func TestGraphPreviewSelectedEnvironment(t *testing.T) {
 	writeFile(t, envPath, []byte("BD_READONLY=true\n"))
 	env := []string{"BD_READONLY=false", "BEADS_DIR=.beads"}
 	graphPolicyCLI(t, bd, work, home, env, "", "remember", "shell policy", "--id", "beads/allowed", "--title", "Allowed", "--json")
-	graphPolicyCLI(t, bd, work, home, env, "", "show", "beads/allowed", "--json")
+	graphPolicyCLI(t, bd, work, home, env, "", "show", "https://example.invalid/environment/beads/allowed", "--json")
 }
 
 func TestGraphPreviewInitRejectsProxiedRoute(t *testing.T) {

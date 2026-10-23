@@ -154,7 +154,7 @@ func TestGraphPreviewCloseForceAndSessionWorkflow(t *testing.T) {
 			call(nil, "", initArgs...)
 			call(nil, "", "create", "Prerequisite", "--graph-path", "beads/prerequisite")
 			call(nil, "", "create", "Blocked work", "--graph-path", "beads/work")
-			call(nil, "", "dep", "add", "work", "prerequisite")
+			call(nil, "", "dep", "add", "https://example.invalid/close-policy/beads/work", "https://example.invalid/close-policy/beads/prerequisite")
 			before := call(nil, "", "versions", "work")
 			call(nil, "constraint_violation", "close", "work", "--reason", "Not yet")
 			if got := call(nil, "", "versions", "work"); got != before {
@@ -210,7 +210,7 @@ func TestGraphPreviewCloseSuggestNextWorkflow(t *testing.T) {
 			call("", initArgs...)
 			call("", "create", "Prerequisite", "--graph-path", "beads/prerequisite")
 			call("", "create", "Dependent", "--graph-path", "beads/dependent")
-			call("", "dep", "add", "dependent", "prerequisite")
+			call("", "dep", "add", "https://example.invalid/close-suggest/beads/dependent", "https://example.invalid/close-suggest/beads/prerequisite")
 			dependentBefore := call("", "versions", "dependent")
 			prerequisiteBefore := call("", "versions", "prerequisite")
 			call("", "create", "Unrelated", "--graph-path", "beads/unrelated")

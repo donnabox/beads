@@ -61,14 +61,12 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	var path string
-	if linkOnly {
-		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, ref.Identity)
-	} else {
-		path, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, ref.Identity)
-	}
+	path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
+	}
+	if linkOnly && localID == "" && !strings.HasPrefix(path, "links/") {
+		return canonicalFailure(cmd, renderer, "invalid_selector", "link show requires a Link Resource", 2)
 	}
 	version, _ := cmd.Flags().GetString("version")
 	versioned := cmd.Flags().Changed("version")
@@ -83,6 +81,9 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
 		return canonicalFailure(cmd, renderer, "invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
+	if versioned && localID != "" {
+		return canonicalFailure(cmd, renderer, "capability_unavailable", "retained versions require an exact canonical Scope URL", 5)
+	}
 	renderer, err = clioutput.New(canonicalShowDescriptor(path, nil), opts)
 	if err != nil {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
@@ -92,7 +93,17 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 		if versioned {
 			return reader.ResourceVersion(ctx, path, version)
 		}
-		return reader.Resource(ctx, path)
+		var result any
+		path, result, err = reader.ResourceSelected(ctx, path, localID)
+		if err != nil {
+			return nil, err
+		}
+		if linkOnly {
+			if _, ok := result.(bdpwire.LinkRecord); !ok {
+				return nil, graphstore.ErrCapabilityUnavailable
+			}
+		}
+		return result, nil
 	}, func(result any) error {
 		descriptor := canonicalShowDescriptor(path, result)
 		renderer, err := clioutput.New(descriptor, opts)

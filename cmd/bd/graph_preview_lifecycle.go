@@ -77,24 +77,7 @@ var linkShowCmd = &cobra.Command{
 		return cobra.ExactArgs(1)(cmd, args)
 	}, SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if canonicalOutputSelected(cmd) {
-			return runCanonicalShow(cmd, args, true)
-		}
-		ref, err := graphPreviewParseReference(args[0])
-		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, ref.Identity)
-		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		// Keep canonical URLs literal across the shared show's second parse,
-		// including identities whose local path contains a raw @.
-		selector := graphPreviewConfig.GraphScopeURL + path
-		if ref.Explicit {
-			selector = "[" + selector + "]@" + ref.Revision
-		}
-		return runGraphPreviewShow(cmd, []string{selector})
+		return runGraphPreviewShowKind(cmd, args, true)
 	},
 }
 

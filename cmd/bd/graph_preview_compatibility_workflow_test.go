@@ -80,9 +80,24 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if literalIssue.Properties.ID != "beads/literal-issue" || literalIssue.ID != scope+"beads/beads/literal-issue" {
 				t.Fatalf("slash-bearing --id was not kept literal: %+v", literalIssue)
 			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/literal-issue", "--format", "graph-json")); got.ID != literalIssue.ID || got.Properties.ID != literalIssue.Properties.ID {
+				t.Fatalf("local slash-bearing ID selected a graph path instead of the public Issue: %+v", got)
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", literalIssue.ID, "--format", "graph-json")); got.ID != literalIssue.ID {
+				t.Fatalf("canonical Scope URL did not select its exact graph path: %+v", got)
+			}
+			if out := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/literal-issue", "--output-format=json"); !strings.Contains(out, literalIssue.ID) {
+				t.Fatalf("canonical output did not resolve the literal public ID: %s", out)
+			}
 			literalChild := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal child", "--parent", "beads/literal-issue", "--force"))
 			if literalChild.Properties.ID != "beads/literal-issue.1" || literalChild.ID != scope+"beads/beads/literal-issue.1" {
 				t.Fatalf("slash-bearing parent ID did not retain dotted child identity: %+v", literalChild)
+			}
+			if many := call("show", "beads/literal-issue", "--id=beads/literal-issue.1"); !strings.Contains(many, `"id": "beads/beads/literal-issue"`) || !strings.Contains(many, `"id": "beads/beads/literal-issue.1"`) {
+				t.Fatalf("multi-ID show did not resolve literal parent and child IDs: %s", many)
+			}
+			if children := call("show", "beads/literal-issue", "--children"); !strings.Contains(children, literalChild.ID[len(scope):]) {
+				t.Fatalf("--children did not resolve the literal parent ID: %s", children)
 			}
 			refuse("identity_reserved", "create", "Native ID collides with path", "--id", "beads/fixed-issue", "--force")
 			refuse("identity_reserved", "create", "Path collides with native ID", "--graph-path", "beads/literal-issue")

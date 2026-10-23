@@ -43,7 +43,7 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 				t.Fatalf("open assigned Issue did not follow native release: %+v", openRelease)
 			}
 			call("remember", "Context", "--id", "beads/context")
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work"))
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "https://example.invalid/unclaim/beads/work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--claim", "--actor", "rig.agent"))
 			if !claimed.Changed || claimed.Issue.Properties.Status != types.StatusInProgress {
 				t.Fatalf("claim did not start work: %+v", claimed)
@@ -54,7 +54,7 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			refuse("permission_denied", "unclaim", "work", "--actor", "rig.agent", "--readonly")
 			refuse("invalid_properties", "unclaim", "context", "--actor", "rig.agent")
 			refuse("invalid_selector", "unclaim", "links/context", "--actor", "rig.agent")
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, claimed.Issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "https://example.invalid/unclaim/beads/work")); !reflect.DeepEqual(got, claimed.Issue) {
 				t.Fatal("refused releases changed live claim")
 			}
 			released := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "work", "--actor", "rig_agent", "--reason", "handoff"))
@@ -68,11 +68,11 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			if len(comments) != 1 || comments[0].Text != "handoff" || comments[0].Author != "rig_agent" || comments[0].IssueID != "beads/work" {
 				t.Fatalf("reason was not a native comment: %+v", comments)
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, released.Issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "https://example.invalid/unclaim/beads/work")); !reflect.DeepEqual(got, released.Issue) {
 				t.Fatal("comment changed retained Issue read")
 			}
 			for _, record := range []graphstore.IssueRecord{before, claimed.Issue, released.Issue} {
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--version", record.Revision))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", "https://example.invalid/unclaim/beads/work", "--version", record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties

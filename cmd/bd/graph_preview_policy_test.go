@@ -167,7 +167,7 @@ func TestGraphPreviewInitQuiet(t *testing.T) {
 				t.Fatalf("--quiet emitted human output: %q", out)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Persisted after quiet init", "--id", "beads/quiet", "--title", "Quiet", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/quiet", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/quiet/beads/quiet", "--json")
 		})
 	}
 }
@@ -278,8 +278,11 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	created := graphPolicyCLI(t, bd, work, home, nil, "", "remember", "C0 body", "--id", "beads/plan", "--title", "Plan", "--json")
 	// Generic typed creation is now admitted and must stay on the graph writer.
 	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Title", "--properties", `{"description":"Graph only"}`)
+	// The bounded Issue creation fields are now admitted through the graph
+	// writer; the refusal loop below covers operations still outside Preview 3.
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Admitted fields", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json")
 	for _, args := range [][]string{
-		{"create", "Must refuse", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--json"},
+		{"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--json"},
 		// Native upstream label operations must not enter the graph writer.
 		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
 		{"update", "beads/plan", "-l", "new", "--json"},
@@ -306,8 +309,8 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 			t.Fatalf("refused %v changed workspace", args)
 		}
 	}
-	first := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/plan", "--json")
-	second := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/plan", "--json")
+	first := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/c0/beads/plan", "--json")
+	second := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/c0/beads/plan", "--json")
 	if first != created || second != created {
 		t.Fatal("new-process current reads differ from creation")
 	}
