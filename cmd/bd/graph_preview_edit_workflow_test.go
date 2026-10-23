@@ -61,7 +61,7 @@ func TestGraphPreviewEditWorkflow(t *testing.T) {
 			call("invalid_properties", nil, "edit", "work", "--title", "--notes")
 			call("invalid_properties", editor(`printf '   ' > "$1"`), "edit", "work", "--title")
 			call("permission_denied", nil, "edit", "work", "--readonly")
-			call("capability_unavailable", nil, "edit", "memory")
+			call("capability_unavailable", nil, "edit", "beads/memory")
 			if got := call("", nil, "versions", "work"); got != beforeRefusals {
 				t.Fatal("refused edits changed History")
 			}

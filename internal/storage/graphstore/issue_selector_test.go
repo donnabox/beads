@@ -235,6 +235,9 @@ func TestAllocatedPublicIDResolvesHistoricalTargetsAfterDeletion(t *testing.T) {
 			if path, err := s.ResolveAllocatedResourcePath(ctx, request.Issue.ID); err != nil || path != "beads/private-allocation" {
 				t.Fatalf("deleted Issue public ID: %q %v", path, err)
 			}
+			if path, err := s.ResolveExactAllocatedResourcePath(ctx, request.Issue.ID); err != nil || path != "beads/private-allocation" {
+				t.Fatalf("exact deleted Issue public ID: %q %v", path, err)
+			}
 			if _, err := s.ResolveAllocatedResourcePath(ctx, "private-allocation"); !errors.Is(err, ErrNotFound) {
 				t.Fatalf("private Issue path became public shorthand: %v", err)
 			}
@@ -248,6 +251,12 @@ func TestAllocatedPublicIDResolvesHistoricalTargetsAfterDeletion(t *testing.T) {
 				if path, err := s.ResolveAllocatedResourcePath(ctx, id); err != nil || path != "beads/context" {
 					t.Fatalf("deleted Memory selector %q: %q %v", id, path, err)
 				}
+			}
+			if path, err := s.ResolveExactAllocatedResourcePath(ctx, "beads/context"); err != nil || path != "beads/context" {
+				t.Fatalf("exact deleted Memory public ID: %q %v", path, err)
+			}
+			if _, err := s.ResolveExactAllocatedResourcePath(ctx, "context"); !errors.Is(err, ErrNotFound) {
+				t.Fatalf("compatibility suffix became an exact write ID: %v", err)
 			}
 		})
 	}

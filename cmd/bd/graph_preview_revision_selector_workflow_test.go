@@ -228,7 +228,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			// revision, not the replaced predecessor or input guard.
 			call("remember", "Before disclosure", "--id", "beads/disclosure")
 			before := graphMixedResult[graphstore.Record](t, call("show", "disclosure"))
-			human := graphPolicyCLI(t, bd, work, home, nil, "", "update", "disclosure", "--properties", `{ "body":"After disclosure" }`)
+			human := graphPolicyCLI(t, bd, work, home, nil, "", "update", "beads/disclosure", "--properties", `{ "body":"After disclosure" }`)
 			after := graphMixedResult[graphstore.Record](t, call("show", "disclosure"))
 			if !strings.Contains(human, "Current Memory revision: ["+after.ID+"]@"+after.Revision) || !strings.Contains(human, "Replaced Memory "+before.ID+" version "+before.Revision) {
 				t.Fatalf("ambiguous Memory update output: %q", human)
