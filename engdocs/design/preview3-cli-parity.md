@@ -180,7 +180,7 @@ locally; current-head hosted CI remains pending.
 | `edit` | Tested one-field editor no-op works. | Both shipping and graph require an ID despite `[id]` help; combining field flags enters shipping's editor but refuses in graph mode. Actual editor mutation was not requalified; Memory editing refuses. | As-built; mutation unqualified |
 | `gate` | Explicit refusal. | Gate create/check/list/show/resolve/waiter/discovery are unavailable. | Gap; no repair PR |
 | `label` | Explicit refusal. | Label add/remove/list/propagate are unavailable, despite create-time labels and list filters. Draft #254 admits only `label list` through a checked current-Issue detail read; it is unmerged and does not change the pinned build. Label writes and propagation still refuse. | Candidate/open #254 for list; write/propagate gaps remain |
-| `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists at the pinned snapshot. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151's familiar positional feedback landed via #256; #161/#174 and #193–#194 remain unmerged subsets, and draft #246 converges the partial-ID route with graph create. A local assembly proves custom kinds with abbreviated native IDs together; it is not merged. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. | Merged/integration #151 via #256 (familiar positional feedback); candidates/open #161, #174, #193–#194, #246; partial IDs/custom kinds remain |
+| `link` | Positional native dependency creation works for built-in kinds; graph-only `bd link` CRUD exists at the pinned snapshot. | Positional custom kinds and shipping partial-ID lookup refuse in the pinned build; familiar JSON differs. #151's familiar positional feedback landed via #256; #161/#174 and #193–#194 remain unmerged subsets. Draft #259 applies opaque Issue selection inside the native dependency write; stacked draft #261 adapts #194's positional Link workflow and returns familiar target feedback from that transaction. Informational Link endpoints remain path-based. Draft #246 converges the old partial-ID route with graph create. Canonical Link list requires full Type URIs and refuses truncated pages without continuation; see its eight detailed subrows. | Merged/integration #151 via #256 (familiar positional feedback); candidates/open #161, #174, #193–#194, #246, #259–#261; opaque positional Link and custom kinds not yet integrated |
 | `list` | Issue-only `--json` and bounded all-Bead listing work for admitted filters at the pinned snapshot. | Several shipping selectors/presentations refuse: parent/no-parent/ready/ID, sort id, long, tree, `--format=json` at this commit. #156's `--format=json` and `--tree=false` aliases landed via #256; #158/#166/#169–#172, #182 (`--id`), #189–#190 (`--ready`), and #203 (`--ready --parent`) remain unmerged subsets. Donna selected a future shared Type-filter contract with `count`: omitted Type means the Issue family, `--type X` includes refinements, `--exact-type X` does not, and `--type any` selects all Bead Types. None of that contract has landed in the pinned build. | Merged/integration #156 via #256 (`--format=json`, `--tree=false`); candidates/open #158, #166, #169–#172, #182, #189–#190, #203; Type selection implementation unqualified |
 | `merge-slot` | Create/check/acquire/release work in tested flows. | Wrong-holder release refuses with misleading `graph_not_initialized` instead of a holder-mismatch category. | As-built; error-category gap open |
 | `note` | Positional, file and stdin Issue-note append work. | Non-Issue notes and multi-ID note writes are unavailable. Draft #249 proves abbreviated native Issue IDs for the positional form, but is unmerged. | Candidate/open #249; current integration unchanged |
@@ -314,7 +314,16 @@ locally; current-head hosted CI remains pending.
   top-level/subtest passes apiece, no skips); docsync, generated CLI docs,
   freshness and diff checks passed for #194. #193 passed four and #194 passed
   six current-head hosted checks; both review decisions remain pending.
-  Neither is merged.
+  Neither is merged. Their exact-path rule for `beads/PATH` predates Donna's
+  opaque-ID ruling and cannot be landed as written. Draft
+  [#261](https://github.com/donnabox/beads/pull/261) cherry-picks #194's
+  workflow onto #259 and adapts that spelling to a literal public ID. The
+  source commit and attribution are retained. The installed workflow passed
+  embedded and real shared-server Dolt with no skips, including distinct IDs
+  `x` and `beads/x`, unique abbreviations and repeated-pair no-op. It also
+  returns familiar target feedback from the dependency write transaction
+  without changing the JSON shape. Hosted CI and review are pending; #261 is
+  stacked on the draft identity composition, not delivered behavior.
   A disposable checkout combining candidates through #194 and selected #175
   passed the positional Link, ready-list, and Issue type-update workflows plus
   the storage abbreviation regression on embedded and real shared-server
