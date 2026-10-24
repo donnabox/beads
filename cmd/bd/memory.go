@@ -593,7 +593,7 @@ Graph preview workspaces search title/body and show compact summaries.
 Default queries must match at most 50 Memories; narrow the query or use --all
 for complete bounded summaries. --details adds owned-Link counts, never neighboring bodies.
 Use --format records-json for experimental summaries, then recall a selected
-canonical ID with --version TOKEN. Keys, pagination and full Memory JSON are
+canonical ID with --revision TOKEN. Keys, pagination and full Memory JSON are
 unavailable. Reads admit at most 1000 live Resources and 16 MiB per workspace;
 output is capped at 1 MiB, search at 4096 UTF-8 bytes, excerpts at 160 code points.
 A matching body of at most 160 code points appears verbatim in its excerpt.`,
@@ -715,7 +715,7 @@ Examples:
 
 In graph preview workspaces, select one canonical Memory ID or Scope URL.
 Recall prints the body with one trailing newline, including empty
-content. --version TOKEN selects a retained body; --quiet does not suppress it.
+content. --revision TOKEN selects a retained body; --quiet does not suppress it.
 Graph recall --json is unavailable; show --json returns the experimental record.`,
 	GroupID:       "setup",
 	Args:          cobra.ExactArgs(1),

@@ -13,7 +13,7 @@ import (
 // the stored body is empty. Quiet does not suppress the requested body.
 // The structured Memory contract requires fields this preview does not provide.
 func runGraphPreviewRecall(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "version"); err != nil {
+	if err := graphPreviewFlags(cmd, "revision"); err != nil {
 		return err
 	}
 	if jsonOutput {
@@ -22,13 +22,31 @@ func runGraphPreviewRecall(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph recall requires one canonical Memory selector", 2)
 	}
-	version, _ := cmd.Flags().GetString("version")
-	versioned := cmd.Flags().Changed("version")
+	literal, err := graphPreviewResolveMemoryArgument(args[0])
+	if err != nil {
+		return err
+	}
+	ref, err := graphPreviewParseReference(literal)
+	if err != nil {
+		return graphPreviewReferenceFailure(err)
+	}
+	version, _ := cmd.Flags().GetString("revision")
+	versioned := cmd.Flags().Changed("revision")
+	if ref.Explicit && versioned {
+		return graphFailure("invalid_selector", "choose ID@revision or --revision, not both", 2)
+	}
+	ref, err = graphPreviewResolveParsedReference(ref)
+	if err != nil {
+		return graphPreviewReferenceFailure(err)
+	}
+	if ref.Explicit && !ref.currentSelection() {
+		version, versioned = ref.Revision, true
+	}
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
-		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
+		return graphFailure("invalid_selector", "--revision requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		path, err := s.ResolveMemorySelector(ctx, args[0])
+		path, err := s.ResolveMemorySelector(ctx, ref.Identity)
 		if err != nil {
 			return nil, "", err
 		}
