@@ -22,29 +22,47 @@ func (s *Store) resolveLiveBeadWriteSelectorInTx(ctx context.Context, tx *sql.Tx
 	if candidatePath != "beads/"+localID {
 		return "", fmt.Errorf("%w: local Bead ID does not match its candidate path", storage.ErrValidation)
 	}
-	rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE allocation_state='live' AND
-		((backing='issue' AND backing_key=?) OR (backing='generic' AND path=?)) LIMIT 2`, localID, localID)
+	// An exact public ID owns its spelling for the Scope's lifetime. Include
+	// Link and deleted allocations here so neither can fall through to a
+	// different Bead found by compatibility suffix selection below.
+	rows, err := tx.QueryContext(ctx, `SELECT path, resource_kind, allocation_state FROM graph_preview_catalog WHERE
+		((backing='issue' AND backing_key=?) OR
+		 (backing IN ('generic','dependency','informational') AND path=?)) LIMIT 2`, localID, localID)
 	if err != nil {
 		return "", err
 	}
-	var exact string
+	var exact struct{ path, kind, state string }
+	found := false
 	for rows.Next() {
-		var path string
-		if err := rows.Scan(&path); err != nil {
+		var selected struct{ path, kind, state string }
+		if err := rows.Scan(&selected.path, &selected.kind, &selected.state); err != nil {
 			_ = rows.Close()
 			return "", err
 		}
-		if exact != "" {
+		if found {
 			_ = rows.Close()
-			return "", fmt.Errorf("%w: public ID %q has multiple live Bead allocations", ErrInvalidStore, localID)
+			return "", fmt.Errorf("%w: public ID %q has multiple graph allocations", ErrInvalidStore, localID)
 		}
-		exact = path
+		exact, found = selected, true
 	}
 	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
 		return "", err
 	}
-	if exact != "" {
-		return exact, nil
+	if found {
+		switch exact.state {
+		case "deleted":
+			return "", ErrGone
+		case "live":
+			if exact.kind != "bead" {
+				if exact.kind == "link" {
+					return "", fmt.Errorf("%w: public ID %q is a Link, not a Bead", storage.ErrValidation, localID)
+				}
+				return "", fmt.Errorf("%w: public ID %q has invalid Resource kind", ErrInvalidStore, localID)
+			}
+			return exact.path, nil
+		default:
+			return "", fmt.Errorf("%w: public ID %q has invalid allocation state", ErrInvalidStore, localID)
+		}
 	}
 	issuePath, _, issueErr := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: candidatePath, NativeID: localID})
 	if issueErr != nil && !errors.Is(issueErr, ErrNotFound) && !errors.Is(issueErr, ErrGone) && !errors.Is(issueErr, errNonIssueSelector) {
