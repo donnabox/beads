@@ -3,7 +3,6 @@ package graphstore
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -27,16 +26,19 @@ import (
 
 // LegacyImportResult makes each old identity's new graph address explicit.
 type LegacyImportResult struct {
-	IssuePrefix   string            `json:"issue_prefix,omitempty"`
-	Issues        int               `json:"issues"`
-	Memories      int               `json:"memories"`
-	Dependencies  int               `json:"dependencies"`
-	Comments      int               `json:"comments"`
-	IDs           map[string]string `json:"ids"`
-	MemoryIDs     map[string]string `json:"memory_ids"`
-	DependencyIDs map[string]string `json:"dependency_ids"`
-	DryRun        bool              `json:"dry_run"`
-	History       string            `json:"history"`
+	IssuePrefix             string            `json:"issue_prefix,omitempty"`
+	SourceIssuePrefix       string            `json:"source_issue_prefix,omitempty"`
+	IDRoot                  string            `json:"id_root,omitempty"`
+	GeneratedIDsProvisional bool              `json:"generated_ids_provisional"`
+	Issues                  int               `json:"issues"`
+	Memories                int               `json:"memories"`
+	Dependencies            int               `json:"dependencies"`
+	Comments                int               `json:"comments"`
+	IDs                     map[string]string `json:"ids"`
+	MemoryIDs               map[string]string `json:"memory_ids"`
+	DependencyIDs           map[string]string `json:"dependency_ids"`
+	DryRun                  bool              `json:"dry_run"`
+	History                 string            `json:"history"`
 }
 
 // ImportLegacy installs an ordinary export into an empty graph. Every native
@@ -50,15 +52,39 @@ func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, acto
 // ImportLegacyWithPrefix supplies configuration missing from legacy JSONL.
 // A supplied prefix must match every Issue identity exactly; it never rewrites IDs.
 func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.Batch, actor string, dryRun bool, sourcePrefix string) (LegacyImportResult, error) {
-	prepared, err := prepareLegacyImportWithPrefix(input, actor, sourcePrefix)
+	return s.ImportLegacyWithOptions(ctx, input, actor, dryRun, LegacyImportOptions{SourcePrefix: sourcePrefix})
+}
+
+// LegacyImportOptions separates missing source configuration from explicit
+// destination placement. A root applies only to this package, never future creates.
+type LegacyImportOptions struct {
+	SourcePrefix string
+	IDRoot       string
+}
+
+// ImportLegacyWithOptions preserves explicit source identities beneath an optional
+// root. New Link IDs come from the shared allocator; dry-run never reserves them.
+func (s *Store) ImportLegacyWithOptions(ctx context.Context, input legacyimport.Batch, actor string, dryRun bool, options LegacyImportOptions) (LegacyImportResult, error) {
+	prepared, err := prepareLegacyImportWithPrefix(input, actor, options.SourcePrefix)
 	if err != nil {
 		return LegacyImportResult{}, err
 	}
-	batch := prepared.Batch
-	memoryPaths := legacyImportMemoryPaths(batch)
-	result := LegacyImportResult{IssuePrefix: prepared.prefix, Issues: len(batch.Issues), Memories: len(batch.Memories),
-		IDs: map[string]string{}, MemoryIDs: map[string]string{}, DependencyIDs: map[string]string{},
-		DryRun: dryRun, History: "current data only; new initial graph versions; source history is not present in legacy export"}
+	mounted, err := mountLegacyImport(prepared, options.IDRoot)
+	if err != nil {
+		return LegacyImportResult{}, err
+	}
+	batch := mounted.Batch
+	nativeTypes, err := prepareLegacyImportNativeTypes(mounted, s.ScopeURL())
+	if err != nil {
+		return LegacyImportResult{}, err
+	}
+	memories, err := s.prepareLegacyImportMemories(mounted, actor)
+	if err != nil {
+		return LegacyImportResult{}, err
+	}
+	result := LegacyImportResult{SourceIssuePrefix: prepared.prefix, IDRoot: options.IDRoot, Issues: len(batch.Issues), Memories: len(batch.Memories),
+		IDs: map[string]string{}, MemoryIDs: map[string]string{}, DependencyIDs: map[string]string{}, DryRun: dryRun,
+		History: "current data only; new initial graph versions; source history is not present in legacy export"}
 	err = s.withTxPolicy(ctx, txPolicy{mayWrite: true, commit: !dryRun, validateTypes: true}, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
@@ -69,16 +95,18 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
-		// A fresh workspace can safely adopt the sole source prefix. Keep it in
-		// this transaction so dry-run/failure never alters future ID allocation.
+		// A destination root is placement for this import only. Unrooted import
+		// keeps historical source-prefix adoption; rooted import keeps the
+		// destination's configured future-create prefix, including in the result.
+		if err := tx.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`='issue_prefix'").Scan(&result.IssuePrefix); err != nil {
+			return legacyTargetInspectionError(ctx, "config.issue_prefix", err)
+		}
 		if len(batch.Issues) > 0 {
-			prefix := prepared.prefix
-			var previous string
-			if err := tx.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`='issue_prefix'").Scan(&previous); err != nil {
-				return legacyTargetInspectionError(ctx, "config.issue_prefix", err)
-			}
-			if _, err := tx.ExecContext(ctx, "UPDATE config SET value=? WHERE `key`='issue_prefix'", prefix); err != nil {
-				return err
+			if options.IDRoot == "" {
+				if _, err := tx.ExecContext(ctx, "UPDATE config SET value=? WHERE `key`='issue_prefix'", prepared.prefix); err != nil {
+					return err
+				}
+				result.IssuePrefix = prepared.prefix
 			}
 			if err := s.afterStage("import-prefix"); err != nil {
 				return err
@@ -90,7 +118,24 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 		}
 		for _, issue := range batch.Issues {
 			if infra[string(issue.IssueType.Normalize())] {
-				return fmt.Errorf("%w: infrastructure Issue %s is unsupported", storage.ErrValidation, issue.ID)
+				return fmt.Errorf("%w: infrastructure Issue %s is unsupported", storage.ErrValidation, mounted.sourceIssues[issue.ID])
+			}
+		}
+		// Bind every prospective native Type before checking ANY incoming
+		// Resource ID: a later record's Type can collide with an earlier key.
+		for _, id := range nativeTypes.bindings {
+			if err := s.ensureNativeTypeInTx(ctx, tx, id); err != nil {
+				return err
+			}
+		}
+		for _, issue := range batch.Issues {
+			if err := checkLegacyImportPublicIDInTx(ctx, tx, "Issue", mounted.sourceIssues[issue.ID], issue.ID); err != nil {
+				return err
+			}
+		}
+		for _, memory := range batch.Memories {
+			if err := checkLegacyImportPublicIDInTx(ctx, tx, "Memory key", memory.Key, mounted.memoryIDs[memory.Key]); err != nil {
+				return err
 			}
 		}
 		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
@@ -111,26 +156,66 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 				return err
 			}
 		}
+		issuePaths := make(map[string]string, len(batch.Issues))
 		for _, issue := range batch.Issues {
-			path := "beads/" + issue.ID
-			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key) VALUES (?,'bead',?,?,'live','issue',?)`, path, IssueTypeURL(s.options.Binding.ScopeURL), strings.Repeat("0", 32), issue.ID); err != nil {
+			path, err := generatedIssuePath(ctx, tx, issue.ID)
+			if err != nil {
 				return err
 			}
-			result.IDs[issue.ID] = graph.CanonicalURL(s.options.Binding.ScopeURL, path)
+			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key) VALUES (?,'bead',?,?,'live','issue',?)`, path, nativeTypes.issues[issue.ID], strings.Repeat("0", 32), issue.ID); err != nil {
+				return err
+			}
+			issuePaths[issue.ID] = path
+			publicURL, err := graph.CanonicalPublicResourceURL(s.ScopeURL(), issue.ID)
+			if err != nil {
+				return err
+			}
+			result.IDs[mounted.sourceIssues[issue.ID]] = publicURL
 			result.Comments += len(issue.Comments)
 		}
 		if err := s.afterStage("import-issues"); err != nil {
 			return err
 		}
+		// Reserve ALL explicit incoming Memory identities before asking the
+		// generator for Link IDs, so generated names cannot steal a later key.
+		for _, memory := range memories {
+			accepted, err := s.createPreparedMemoryInTx(ctx, tx, memory.request, memory.record, memory.properties)
+			if err != nil {
+				return err
+			}
+			path, err := s.publicResourcePathInTx(ctx, tx, accepted.ID, graph.KindBead)
+			if err != nil {
+				return err
+			}
+			stored, err := s.showMemoryInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			if stored.ID != accepted.ID || stored.PublicID != memory.request.PublicID || stored.Properties.Title != memory.record.Properties.Title || stored.Properties.Body != memory.record.Properties.Body {
+				return fmt.Errorf("%w: Memory %q identity/title/value cannot be preserved exactly", storage.ErrValidation, memory.sourceKey)
+			}
+			result.MemoryIDs[memory.sourceKey] = accepted.ID
+		}
 		for _, issue := range batch.Issues {
 			for _, dep := range issue.Dependencies {
 				key := depid.New(issue.ID, dep.DependsOnID)
-				path := "links/" + key
+				publicID, err := selectGeneratedPublicIDInTx(ctx, tx, options.IDRoot)
+				if err != nil {
+					return err
+				}
+				path, err := preferredPrivateResourcePath(graph.KindLink, publicID)
+				if err != nil {
+					return err
+				}
+				path, err = choosePrivateResourcePathInTx(ctx, tx, path, true, graph.KindLink)
+				if err != nil {
+					return err
+				}
 				revision, err := freshToken()
 				if err != nil {
 					return err
 				}
-				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key) VALUES (?,'link',?,?,'live','dependency',?)`, path, DependencyTypeURL(s.options.Binding.ScopeURL), revision, key); err != nil {
+				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id) VALUES (?,'link',?,?,'live','dependency',?,?)`, path, nativeTypes.dependencies[dep.Type], revision, key, publicID); err != nil {
 					return err
 				}
 				link, err := s.currentLinkForCreationInTx(ctx, tx, path)
@@ -144,20 +229,20 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 				if err := insertPreviewVersionInTx(ctx, tx, path, revision, raw, link.Attribution.Actor); err != nil {
 					return err
 				}
-				result.DependencyIDs[issue.ID+" -> "+dep.DependsOnID] = link.ID
+				pair := mounted.sourceIssues[issue.ID] + " -> " + mounted.sourceIssues[dep.DependsOnID]
+				result.DependencyIDs[pair] = link.ID
 				result.Dependencies++
 			}
 		}
+		result.GeneratedIDsProvisional = dryRun && result.Dependencies > 0
 		if err := s.afterStage("import-links"); err != nil {
 			return err
 		}
 		for _, issue := range batch.Issues {
-			path := "beads/" + issue.ID
-			// Legacy import establishes the first mapping without inventing source context.
+			path := issuePaths[issue.ID]
 			if err := s.recordIssueMappingContextInTx(ctx, tx, path, issue.ID, issueRevisionContext{}); err != nil {
 				return err
 			}
-			// Detect column coercion instead of silently changing source data.
 			stored, err := issueops.HydrateIssueOperationResult(ctx, tx, issue.ID, true)
 			if err != nil {
 				return err
@@ -168,35 +253,6 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 			if _, err := s.showIssueInTx(ctx, tx, path); err != nil {
 				return err
 			}
-		}
-		for _, memory := range batch.Memories {
-			path := memoryPaths[memory.Key]
-			revision, err := freshToken()
-			if err != nil {
-				return err
-			}
-			r := Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: MemoryTypeURL(s.options.Binding.ScopeURL), Revision: revision, Version: revision,
-				Properties: Properties{Title: memory.Key, Body: memory.Value}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{},
-				Attribution: Attribution{Actor: actor, Status: "claimed", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}}
-			properties, err := canonicalJSON(r.Properties)
-			if err != nil {
-				return err
-			}
-			snapshot, err := canonicalJSON(r)
-			if err != nil {
-				return err
-			}
-			if err := s.createInTx(ctx, tx, CreateRequest{Path: path, Actor: actor}, r, properties, snapshot); err != nil {
-				return err
-			}
-			stored, err := s.showMemoryInTx(ctx, tx, path)
-			if err != nil {
-				return err
-			}
-			if stored.Properties.Title != memory.Key || stored.Properties.Body != memory.Value {
-				return fmt.Errorf("%w: Memory %q key/value cannot be preserved exactly", storage.ErrValidation, memory.Key)
-			}
-			result.MemoryIDs[memory.Key] = r.ID
 		}
 		if err := s.afterStage("import-retained"); err != nil {
 			return err
@@ -210,6 +266,17 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 		return LegacyImportResult{}, err
 	}
 	return result, nil
+}
+
+func checkLegacyImportPublicIDInTx(ctx context.Context, tx *sql.Tx, kind, source, id string) error {
+	exists, err := publicResourceIDExistsInTx(ctx, tx, id)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return fmt.Errorf("%w: legacy %s %q maps to reserved public ID %q", storage.ErrValidation, kind, source, id)
+	}
+	return nil
 }
 
 func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
@@ -568,48 +635,6 @@ func legacyImportStringsValid(value reflect.Value) bool {
 		}
 	}
 	return true
-}
-
-// Memory keys are data, not graph paths. Preserve valid direct paths first,
-// then allocate canonical or digest paths without stealing another identity.
-// Sorting only remaps makes allocation independent of export record order.
-// The batch has already been checked for duplicate/non-UTF-8 keys.
-func legacyImportMemoryPaths(batch legacyimport.Batch) map[string]string {
-	paths := make(map[string]string, len(batch.Memories))
-	occupied := make(map[string]bool, len(batch.Issues)+len(batch.Memories))
-	for _, issue := range batch.Issues {
-		occupied["beads/"+issue.ID] = true
-	}
-	var remap []string
-	for _, memory := range batch.Memories {
-		path := "beads/" + memory.Key
-		if len(path) <= 1024 && validatePath(path) == nil && !occupied[path] {
-			paths[memory.Key] = path
-			occupied[path] = true
-		} else {
-			remap = append(remap, memory.Key)
-		}
-	}
-	sort.Strings(remap)
-	for _, key := range remap {
-		// Encoding cannot shorten a key. Avoid allocating an expanded path
-		// for a large key that can only fit under its digest address.
-		path := ""
-		if len(key) <= 1024-len("beads/") {
-			path = "beads/" + graph.CanonicalSegment(key)
-		}
-		if path == "" || validatePath(path) != nil || occupied[path] {
-			digest := sha256.Sum256([]byte(key))
-			base := fmt.Sprintf("beads/imported-memory-%x", digest)
-			path = base
-			for suffix := 1; occupied[path]; suffix++ {
-				path = fmt.Sprintf("%s-%d", base, suffix)
-			}
-		}
-		paths[key] = path
-		occupied[path] = true
-	}
-	return paths
 }
 
 func verifyLegacyIssue(want, got *types.Issue) error {

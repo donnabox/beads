@@ -269,7 +269,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 			// command's corrupt-metadata refusal and its diagnostic context.
 			// A damaged graph workspace must still fail before legacy opening.
 			if !markerPresent && requested != "link" {
-				if (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && cmd.Flags().Changed("source-prefix")) {
+				if (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root"))) {
 					return true, graphFailure("graph_not_initialized", err.Error(), 5)
 				}
 				return false, nil
@@ -305,8 +305,12 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd.Flags().Lookup("exact-type") != nil && cmd.Flags().Changed("exact-type") {
 			return true, graphFailure("capability_unavailable", "--exact-type requires a workspace initialized with graph_mode link", 5)
 		}
-		if cmd == importCmd && cmd.Flags().Changed("source-prefix") {
-			return true, graphFailure("capability_unavailable", "--source-prefix requires a workspace initialized with graph_mode link", 5)
+		if cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root")) {
+			flag := "--source-prefix"
+			if cmd.Flags().Changed("id-root") {
+				flag = "--id-root"
+			}
+			return true, graphFailure("capability_unavailable", flag+" requires a workspace initialized with graph_mode link", 5)
 		}
 		if cmd == doneTodoCmd && cmd.Flags().Changed("if-revision") {
 			return true, graphFailure("capability_unavailable", "todo done --if-revision requires an experimental graph workspace", 5)
