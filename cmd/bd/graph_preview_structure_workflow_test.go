@@ -186,9 +186,9 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/structure/"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--graph-path", "beads/parent", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Work", "--graph-path", "beads/work", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--graph-path", "beads/isolated", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--graph-path", "beads/parent", "--id", "beads/parent", "--force", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Work", "--graph-path", "beads/work", "--id", "beads/work", "--force", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--graph-path", "beads/isolated", "--id", "beads/isolated", "--force", "--json")
 
 	// Only native parent-child edges count. A blocking dependency does not
 	// make an Issue a child.
