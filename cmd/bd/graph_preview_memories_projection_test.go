@@ -66,7 +66,7 @@ func TestGraphPreviewMemoryDiscoveryProjection(t *testing.T) {
 	if !reflect.DeepEqual(got.Items[0].MatchedFields, []string{"body"}) || !reflect.DeepEqual(got.Items[1].MatchedFields, []string{"title", "body"}) || !reflect.DeepEqual(got.Items[2].MatchedFields, []string{"title"}) {
 		t.Fatalf("field provenance: %+v", got.Items)
 	}
-	if got.Items[2].Excerpt == nil || !got.Items[2].Excerpt.Truncated || got.Items[1].Excerpt.Text != both.Properties.Body || got.Items[1].Excerpt.Truncated {
+	if got.Items[2].Excerpt == nil || !got.Items[2].Excerpt.Truncated || utf8.RuneCountInString(got.Items[2].Excerpt.Text) > 160 || got.Items[1].Excerpt.Text != both.Properties.Body || got.Items[1].Excerpt.Truncated {
 		t.Fatalf("excerpt: %+v", got.Items)
 	}
 	raw, _ := json.Marshal(got)
@@ -82,7 +82,7 @@ func TestGraphPreviewMemoryDiscoveryProjection(t *testing.T) {
 		t.Fatalf("queryless: %+v %v", listed, err)
 	}
 	for _, item := range listed.Items {
-		if item.Excerpt == nil || item.Details != nil || len(item.MatchedFields) != 0 {
+		if item.Excerpt == nil || item.Excerpt.Field != "body" || !utf8.ValidString(item.Excerpt.Text) || utf8.RuneCountInString(item.Excerpt.Text) > 160 || item.Details != nil || len(item.MatchedFields) != 0 {
 			t.Fatalf("queryless extra exposure: %+v", item)
 		}
 	}

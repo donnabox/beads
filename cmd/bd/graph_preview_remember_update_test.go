@@ -149,6 +149,12 @@ func TestGraphPreviewRememberSelectedRefusesBeforeInput(t *testing.T) {
 		readonly bool
 		code     int
 	}{
+		{"explicit-empty-guard", []string{"--id=valid", "--if-revision="}, false, 2},
+		{"explicit-invalid-guard", []string{"--id=valid", "--if-revision=\xff"}, false, 2},
+		{"explicit-oversized-guard", []string{"--id=valid", "--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
+		{"derived-empty-guard", []string{"--if-revision="}, false, 2},
+		{"derived-invalid-guard", []string{"--if-revision=\xff"}, false, 2},
+		{"derived-oversized-guard", []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
 		{"empty-guard", []string{"--update=beads/plan", "--if-revision="}, false, 2},
 		{"invalid-guard", []string{"--update=beads/plan", "--if-revision=\xff"}, false, 2},
 		{"oversized-guard", []string{"--update=beads/plan", "--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},

@@ -635,6 +635,15 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewRememberPropertiesReplacement(cmd, args)
 	}
 	explicit := cmd.Flags().Changed("id") || cmd.Flags().Changed("key")
+	if cmd.Flags().Changed("if-revision") {
+		revision, _, err := graphPreviewEditRevisionGuard(cmd)
+		if err != nil {
+			return err
+		}
+		if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
+			return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
+		}
+	}
 	// Pure flag contradictions must not consume a requested body source.
 	if cmd.Flags().Changed("create-only") {
 		enabled, _ := cmd.Flags().GetBool("create-only")
