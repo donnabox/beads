@@ -118,10 +118,15 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	var selectedType string
 	raw, _ := cmd.Flags().GetString("type")
 	if cmd.Flags().Changed("type") && graphPreviewNominalSelector(raw) {
-		if typ, err := graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, raw); err != nil || typ != graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
-			return graphFailure("capability_unavailable", "Dependency creation requires the installed Dependency Type", 5)
+		typ, err := graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, raw)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		raw = string(types.DepBlocks)
+		native, ok := graphPreviewNativeDependencyType(graphPreviewConfig.GraphScopeURL, typ)
+		if !ok {
+			return graphFailure("capability_unavailable", "Dependency creation requires a concrete native Dependency Type", 5)
+		}
+		raw = string(native)
 	}
 	depType := canonicalDependencyType(types.DependencyType(raw))
 	if !depType.IsWellKnown() {
@@ -144,7 +149,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		if cmd.Flags().Changed("if-source-revision") && sourceRevision == "" {
 			return graphFailure("invalid_selector", "--if-source-revision requires a token", 2)
 		}
-		selectedType = graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL)
+		selectedType, _ = graphPreviewDependencyTypeURL(graphPreviewConfig.GraphScopeURL, depType)
 	} else {
 		var ok bool
 		selectedType, ok = graphPreviewDependencyTypeURL(graphPreviewConfig.GraphScopeURL, depType)
@@ -162,18 +167,13 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 
 // The store independently checks the installed Type in the write transaction.
 func graphPreviewDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
-	if native.IsValid() {
-		return graphstore.DependencyTypeURL(scope), true
-	}
-	return "", false
+	id, err := graphstore.NativeDependencyTypeURL(scope, string(native))
+	return id, err == nil
 }
 
 func graphPreviewNativeDependencyType(scope, typeURL string) (types.DependencyType, bool) {
-	if typeURL == graphstore.DependencyTypeURL(scope) {
-		// Identity admission only; --type supplies the native kind.
-		return types.DepBlocks, true
-	}
-	return "", false
+	base, classification, ok := graphstore.NativeTypeClassification(scope, typeURL)
+	return types.DependencyType(classification), ok && base == graphstore.DependencyTypeURL(scope)
 }
 
 // The ordinary dep remove verb addresses an Issue pair, not a Link ID. Pair

@@ -957,13 +957,14 @@ bd link list --output-format jsonl --incident-to beads/plan --direction in
 bd link list --output-format json --unpaged --omit envelope
 ```
 
-`--type` selects an exact canonical absolute HTTP(S) Type URI;
-`--conforms-to` requires the same URI grammar and also admits Types conforming
-to that Type. Use the full Type identity, for example
-`https://example.test/project/types/note`. Canonical selection does not resolve
-Issue classifications such as `bug`, bare names, `types/NAME`, or Dependency
-aliases; those remain available on legacy paths. Link selection accepts
-`--from`, `--to`, and `--incident-to`.
+`--type X` selects X and its refinements; `--exact-type X` selects only X.
+They can be combined to require both predicates, for example
+`bd list --output-format json --unpaged --type issue --exact-type task`.
+`--conforms-to` is an alternative family selector to `--type` and requires a
+canonical absolute HTTP(S) Type URI. Product collection flags also accept
+native names such as `task` and `blocks`; use a full URI when passing a Type
+identity between workspaces. Link selection accepts `--from`, `--to`, and
+`--incident-to`.
 An incident selection can use `--direction in`, `out`, or `both`. These filters
 combine with AND. Canonical collection selection includes every current matching
 Bead, without a default filter for Issue status. It refuses Issue workflow filters, including `--all`, and
