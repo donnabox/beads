@@ -312,7 +312,7 @@ func spawnAndHandoff(
 	stopEpoch string,
 	lock *util.Lock,
 	discovery adoptionResult,
-) (Endpoint, error) {
+) (endpoint Endpoint, resultErr error) {
 	handedOff := false
 	defer func() {
 		if !handedOff {
@@ -340,7 +340,20 @@ func spawnAndHandoff(
 	if err != nil {
 		return Endpoint{}, fmt.Errorf("fork child: %w", err)
 	}
-	defer func() { _ = clearOwnSpawnMarker(rootDir, child.marker) }()
+	defer func() {
+		if cleanupErr := clearOwnSpawnMarker(rootDir, child.marker); cleanupErr != nil {
+			cleanupErr = fmt.Errorf("clear own proxy spawn marker %+v: %w", child.marker, cleanupErr)
+			if resultErr != nil {
+				// Preserve the primary startup cause, especially interruption,
+				// while exposing cleanup failures that can leave Shutdown waiting.
+				resultErr = errors.Join(resultErr, cleanupErr)
+			} else {
+				// An adopted endpoint is already live. Do not report startup as
+				// failed solely because removing the bookkeeping marker failed.
+				log.Printf("dbproxy: %v", cleanupErr)
+			}
+		}
+	}()
 	defer func() {
 		if child.handle != nil {
 			_ = child.handle.Close()
@@ -528,8 +541,11 @@ func forkExecChild(rootDir string, opts OpenOpts, port int, stopEpoch string, lo
 
 	if err := cmd.Start(); err != nil {
 		_ = logFile.Close()
-		_ = clearOwnSpawnMarker(rootDir, marker)
-		return nil, fmt.Errorf("start proxy child: %w", err)
+		startErr := fmt.Errorf("start proxy child: %w", err)
+		if cleanupErr := clearOwnSpawnMarker(rootDir, marker); cleanupErr != nil {
+			return nil, errors.Join(startErr, fmt.Errorf("clear own proxy spawn marker %+v: %w", marker, cleanupErr))
+		}
+		return nil, startErr
 	}
 
 	done := make(chan error, 1)
