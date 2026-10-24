@@ -91,7 +91,7 @@ var linkUpdateCmd = &cobra.Command{
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
+		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -111,7 +111,7 @@ var linkVersionsCmd = &cobra.Command{
 		if canonicalOutputSelected(cmd) {
 			return runGraphPreviewVersions(cmd, args)
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		path, err := graphPreviewResolvedHistoricalPath(args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -126,7 +126,7 @@ var linkCompareCmd = &cobra.Command{
 		if canonicalOutputSelected(cmd) {
 			return runGraphPreviewCompare(cmd, args)
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		path, err := graphPreviewResolvedHistoricalPath(args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -186,7 +186,7 @@ func init() {
 }
 
 func graphPreviewBeadSelector(selector string) (string, error) {
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+	path, err := graphPreviewResolvedHistoricalPath(selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -359,7 +359,7 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
+	path, err := graphPreviewResolvedHistoricalPath(selector)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -402,11 +402,11 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 			return nil, "", graphFailure("revision_conflict", "Link revision differs from --if-revision", 4)
 		}
 		if sourceRevision != "" {
-			sourcePath, kind, local := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, link.Source)
-			if !local || kind != graph.KindBead {
+			_, local := graphPreviewPublicResourceID(graphPreviewConfig.GraphScopeURL, link.Source)
+			if !local {
 				return nil, "", graphFailure("not_authority", "Link source is not a local Bead", 5)
 			}
-			source, err := store.Read(ctx, sourcePath)
+			source, err := store.Read(ctx, link.Source)
 			if err != nil {
 				return nil, "", err
 			}
@@ -444,7 +444,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
+		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}

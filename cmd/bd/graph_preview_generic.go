@@ -56,14 +56,17 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 	}
 	in := graphGenericInput{All: all}
 	if !all {
-		path, err := graphPreviewResourcePath(scope, args[0])
+		address, id, err := graphPreviewResourceReadSelectorIn(scope, args[0])
 		if err != nil {
 			return zero, graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if err := graph.ValidateBeadPath(path); err != nil {
+		if id != "" {
+			address, err = graph.CanonicalPublicResourceURL(scope, id)
+		}
+		if err != nil {
 			return zero, graphFailure("invalid_selector", err.Error(), 2)
 		}
-		in.Root = graph.CanonicalURL(scope, path)
+		in.Root = address
 	}
 	in.AllLinkTypes, _ = cmd.Flags().GetBool("all-link-types")
 	selectors, _ := cmd.Flags().GetStringArray("link-type")

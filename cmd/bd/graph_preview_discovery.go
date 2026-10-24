@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/query"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -471,11 +472,17 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 
 // Explicit scope keeps selector parsing independent of command admission state.
 func graphDiscoveryIssuePath(scopeURL, selector string) (string, error) {
-	path, err := graphPreviewResourcePath(scopeURL, selector)
-	if err != nil || !strings.HasPrefix(path, "beads/") {
-		return "", graphFailure("invalid_selector", fmt.Sprintf("invalid graph Issue selector %q", selector), 2)
+	if strings.HasPrefix(selector, scopeURL) {
+		id, err := graph.ScopeLocalPublicResourceID(scopeURL, selector)
+		if err != nil {
+			return "", graphFailure("invalid_selector", err.Error(), 2)
+		}
+		return id, nil
 	}
-	return path, nil
+	if err := graph.ValidateCanonicalResourceID(selector); err != nil {
+		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	return selector, nil
 }
 
 // The edge wins over dotted-ID inference, just as native ParentID does.

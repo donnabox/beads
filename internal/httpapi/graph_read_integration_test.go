@@ -419,7 +419,7 @@ func TestGraphReadHTTPCommonCanonicalIDs(t *testing.T) {
 				t.Fatal(err)
 			}
 			const scope = "https://authority.example/common/"
-			opts := graphstore.Options{Backend: engine, ServerHost: "127.0.0.1", ServerPort: port, ServerUser: "root", Database: fmt.Sprintf("graph_http_ids_%d", time.Now().UnixNano()), Branch: "main", DataDir: filepath.Join(workspace, "dolt"), Binding: graphstore.Binding{WorkspaceID: workspace, ScopeURL: scope, AuthorityID: "0123456789abcdef0123456789abcdef", SchemaVersion: graphstore.SchemaVersion}}
+			opts := graphstore.Options{IssuePrefix: "issue", Backend: engine, ServerHost: "127.0.0.1", ServerPort: port, ServerUser: "root", Database: fmt.Sprintf("graph_http_ids_%d", time.Now().UnixNano()), Branch: "main", DataDir: filepath.Join(workspace, "dolt"), Binding: graphstore.Binding{WorkspaceID: workspace, ScopeURL: scope, AuthorityID: "0123456789abcdef0123456789abcdef", SchemaVersion: graphstore.SchemaVersion}}
 			if err := graphstore.Init(ctx, opts); err != nil {
 				t.Fatal(err)
 			}

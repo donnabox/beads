@@ -16,7 +16,7 @@ func runGraphPreviewComments(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "local-time"); err != nil {
 		return err
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}

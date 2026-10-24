@@ -20,16 +20,9 @@ import (
 // retained version, tombstone, or coordination write is produced. The generic
 // unlink command keeps its explicit canonical-Link-ID and guard contract.
 func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRequest) (DependencyRemoveResult, error) {
-	for _, path := range []string{request.SourcePath, request.TargetPath} {
-		if err := validatePath(path); err != nil {
+	for _, endpoint := range []struct{ path, id string }{{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID}} {
+		if err := s.validateBeadEndpointOperand(endpoint.path, endpoint.id); err != nil {
 			return DependencyRemoveResult{}, err
-		}
-	}
-	for _, selector := range []struct{ path, nativeID string }{
-		{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID},
-	} {
-		if selector.nativeID != "" && selector.path != "beads/"+selector.nativeID {
-			return DependencyRemoveResult{}, fmt.Errorf("%w: native Issue fallback requires its matching bare selector", storage.ErrValidation)
 		}
 	}
 	if request.Actor == "" || !utf8.ValidString(request.Actor) {

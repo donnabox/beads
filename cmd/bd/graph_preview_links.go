@@ -255,7 +255,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph update requires one canonical links/PATH", 2)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}

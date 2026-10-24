@@ -194,7 +194,11 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 			if err != nil {
 				return nil, "", fmt.Errorf("parent Issue %s: %w", parentSelector, err)
 			}
-			parentPath := strings.TrimPrefix(parent.ID, graphPreviewConfig.GraphScopeURL)
+			identity, err := store.ResolveCanonicalPublicResourceIdentity(ctx, parent.ID)
+			if err != nil {
+				return nil, "", err
+			}
+			parentPath := identity.PrivatePath
 			noInherit, _ := cmd.Flags().GetBool("no-inherit-labels")
 			created, err := store.CreateChildIssue(ctx, graphstore.IssueChildCreateRequest{
 				ParentPath: parentPath, ExpectedParentRevision: parent.Revision,

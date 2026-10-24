@@ -92,7 +92,7 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 	// graphPreviewBeadSelector: Links have versions too, so this accepts
 	// links/PATH as well as beads/PATH. `compare` resolves the same way for
 	// the same reason.
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
