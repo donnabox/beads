@@ -159,6 +159,10 @@ func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 	if slices.Contains(currentFamilyIDs(got), "links/native") {
 		t.Fatal("Dependency selected as References")
 	}
+	wantNativeType, err := NativeIssueTypeURL(s.ScopeURL(), "task")
+	if err != nil {
+		t.Fatal(err)
+	}
 	issues := 0
 	for _, raw := range got.Records {
 		switch r := raw.(type) {
@@ -173,7 +177,7 @@ func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 				assertCurrentOwned(t, r.Owned, []string{s.ScopeURL() + "links/subject"}, []string{s.ScopeURL() + "links/ai2", s.ScopeURL() + "links/i2b"})
 			}
 			issues++
-			if r.Type != IssueTypeURL(s.ScopeURL()) || len(r.Properties.Labels) != 2 {
+			if r.Type != wantNativeType || len(r.Properties.Labels) != 2 {
 				t.Fatal("lost native Issue shape", r)
 			}
 		case Record:
