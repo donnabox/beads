@@ -60,7 +60,7 @@ func setupDependencyUnlink(t *testing.T, backend string, count int) dependencyUn
 }
 
 func dependencyUnlinkRequest(link LinkRecord, source IssueRecord) LinkDeleteRequest {
-	return LinkDeleteRequest{Path: strings.TrimPrefix(link.ID, strings.TrimSuffix(source.ID, "beads/source")), Actor: "remover", ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision}
+	return LinkDeleteRequest{Path: strings.TrimPrefix(link.ID, strings.TrimSuffix(source.ID, source.Properties.ID)), Actor: "remover", ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision}
 }
 
 func dependencyRemovalCount(t *testing.T, f dependencyUnlinkFixture) int {

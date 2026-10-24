@@ -11,7 +11,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -202,7 +201,7 @@ func generatedIssuePath(ctx context.Context, tx *sql.Tx, issueID string) (string
 // Read dispatches the immutable backing selection and reads its authoritative
 // state in one snapshot. Unsupported resource families remain explicit errors.
 func (s *Store) Read(ctx context.Context, path string) (any, error) {
-	if err := validateResourcePath(path); err != nil {
+	if err := s.validateResourceReadAddress(path); err != nil {
 		return nil, err
 	}
 	var result any
@@ -214,6 +213,10 @@ func (s *Store) Read(ctx context.Context, path string) (any, error) {
 			return err
 		}
 		var err error
+		path, err = s.resolveResourceReadAddressInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
 		result, err = s.readCurrentVerifiedInTx(ctx, tx, path)
 		return err
 	})
@@ -385,7 +388,11 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, err
 	}
-	return IssueRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision,
+	publicURL, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	return IssueRecord{ID: publicURL, Type: typ, Revision: revision, Version: revision,
 		Properties: issue, Metadata: metadata, Owned: owned, Attribution: attribution}, nil
 }
 

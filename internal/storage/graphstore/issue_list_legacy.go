@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/workapi"
@@ -74,7 +75,10 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 			if !strings.HasPrefix(canonical, s.ScopeURL()) {
 				return fmt.Errorf("%w: listed Issue escaped graph scope", ErrInvalidStore)
 			}
-			path := strings.TrimPrefix(canonical, s.ScopeURL())
+			path, err := s.publicResourcePathInTx(ctx, tx, canonical, graph.KindBead)
+			if err != nil {
+				return err
+			}
 			if err := validatePath(path); err != nil {
 				return fmt.Errorf("%w: invalid listed Issue path: %v", ErrInvalidStore, err)
 			}

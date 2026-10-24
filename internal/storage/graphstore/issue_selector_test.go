@@ -98,7 +98,7 @@ func TestDependencyCreateSelectsOpaqueIssueIDInsideWrite(t *testing.T) {
 				TargetPath: "beads/target", Actor: "author",
 			}
 			created, err := s.AddDependency(ctx, request)
-			if err != nil || !created.Changed || created.Source.Properties.ID != "beads/exp-fixed" || created.Link.Source != s.ScopeURL()+"beads/other" {
+			if err != nil || !created.Changed || created.Source.Properties.ID != "beads/exp-fixed" || created.Link.Source != s.ScopeURL()+literal.Issue.ID {
 				t.Fatalf("opaque source selected graph path owner: %+v %v", created, err)
 			}
 			pathOwner, err := s.ShowIssue(ctx, "beads/exp-fixed")
@@ -163,7 +163,7 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 				t.Fatalf("combined Memory read fabricated Issue details: %+v %+v %v", combined, combinedDetail, err)
 			}
 			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector})
-			if err != nil || !reflect.DeepEqual(paths, []string{"beads/source"}) {
+			if err != nil || !reflect.DeepEqual(paths, []string{created.Properties.ID}) {
 				t.Fatalf("abbreviated count filter selected wrong path: %v %v", paths, err)
 			}
 			title := "Updated"

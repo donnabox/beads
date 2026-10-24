@@ -6,6 +6,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	"github.com/steveyegge/beads/internal/clirevision"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -13,16 +14,18 @@ import (
 // particular, parsing a pin must not make an unpinned graphstore Link look
 // pinned: persistence and historical validation are separate writer work.
 type graphPreviewReference struct {
-	Identity string
-	Revision string
-	Explicit bool
-	Wrapped  bool
+	Identity        string
+	Revision        string
+	Explicit        bool
+	Wrapped         bool
+	Ordinal         int64
+	LiteralRevision bool
 }
 
 // graphPreviewParseReference uses the existing CLI URL boundary: unwrapped
 // locator forms containing :// stay literal, including @ and IPv6 brackets.
 // Colon-only spellings remain local shorthand, even when they resemble opaque
-// URIs. A canonical Scope URL with a revision uses [URL]@revision.
+// URIs. A canonical Scope URL with a revision uses [URL]@N or [URL]@=TOKEN.
 func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 	if input == "" || !utf8.ValidString(input) {
 		return graphPreviewReference{}, fmt.Errorf("reference must be nonempty UTF-8")
@@ -61,10 +64,7 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 		if !strings.HasPrefix(suffix, "@") || len(suffix) == 1 {
 			return graphPreviewReference{}, fmt.Errorf("bracketed URL requires @revision")
 		}
-		if err := graphPreviewReferenceRevision(suffix[1:]); err != nil {
-			return graphPreviewReference{}, err
-		}
-		return graphPreviewReference{Identity: identity, Revision: suffix[1:], Explicit: true, Wrapped: true}, nil
+		return graphPreviewReferenceSuffix(graphPreviewReference{Identity: identity, Explicit: true, Wrapped: true}, suffix[1:])
 	}
 	if strings.Contains(input, "://") {
 		parsed, err := url.Parse(input)
@@ -78,12 +78,25 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 			return graphPreviewReference{}, fmt.Errorf("local reference requires ID@revision; address an ID containing @ by its full canonical Scope URL")
 		}
 		revision := input[i+1:]
-		if err := graphPreviewReferenceRevision(revision); err != nil {
-			return graphPreviewReference{}, err
-		}
-		return graphPreviewReference{Identity: input[:i], Revision: revision, Explicit: true}, nil
+		return graphPreviewReferenceSuffix(graphPreviewReference{Identity: input[:i], Explicit: true}, revision)
 	}
 	return graphPreviewReference{Identity: input}, nil
+}
+
+func graphPreviewReferenceSuffix(ref graphPreviewReference, suffix string) (graphPreviewReference, error) {
+	selected, err := clirevision.Parse(suffix, graphstore.PreviewVersionTokenLimit)
+	if err != nil {
+		return graphPreviewReference{}, fmt.Errorf("%w; address an ID containing @ by its full canonical Scope URL", err)
+	}
+	ref.Ordinal, ref.Revision, ref.LiteralRevision = selected.Ordinal, selected.Token, selected.Token != ""
+	if selected.Current {
+		ref.Revision = "current"
+	}
+	return ref, nil
+}
+
+func (r graphPreviewReference) currentSelection() bool {
+	return !r.LiteralRevision && r.Ordinal == 0 && r.Revision == "current"
 }
 
 func graphPreviewReferenceRevision(revision string) error {
@@ -109,7 +122,7 @@ func graphPreviewReferenceWithFlag(input, revision string, flagSet bool) (graphP
 		}
 		ref.Revision, ref.Explicit = revision, true
 	}
-	return ref, nil
+	return graphPreviewResolveParsedReference(ref)
 }
 
 func graphPreviewWritableIdentity(input string) (string, error) {

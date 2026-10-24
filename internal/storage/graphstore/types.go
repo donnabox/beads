@@ -12,11 +12,11 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 8
+const SchemaVersion = 11
 
-// TypeGeneration changes when the selected fresh Type installation changes.
-// It is an admission marker, never an automatic migration of existing stores.
-const TypeGeneration = 10
+// TypeGeneration identifies the selected fresh graph contract, including its
+// Type installation and public identity semantics. It never migrates stores.
+const TypeGeneration = 11
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -55,13 +55,20 @@ type Options struct {
 
 // CreateRequest creates a new canonical Memory path; it is not a keyed upsert.
 type CreateRequest struct {
-	TypeURL        string
-	PropertiesJSON json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
-	Path           string
-	Title          string
-	Body           string
-	Actor          string
-	Metadata       json.RawMessage
+	// PublicID is an exact user identity; Path is its private locator. Empty
+	// retains the legacy allocation-path public identity.
+	PublicID string
+	// IDRoot prefixes an automatically generated public ID, never an explicit ID.
+	IDRoot               string
+	generatePublicID     bool
+	privatePathGenerated bool
+	TypeURL              string
+	PropertiesJSON       json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
+	Path                 string
+	Title                string
+	Body                 string
+	Actor                string
+	Metadata             json.RawMessage
 }
 
 // Properties retains the common Memory fields and every other authored property.
@@ -76,6 +83,8 @@ type Properties struct {
 // Record is a complete preview Memory record, including its outgoing owned Links.
 // Version identifies retained state; it is not a local ordinal or timestamp.
 type Record struct {
+	// PublicID is checked allocation data for local CLI projection, not BDP wire.
+	PublicID    string            `json:"-"`
 	ID          string            `json:"id"`
 	Type        string            `json:"type"`
 	Revision    string            `json:"revision"`
@@ -132,6 +141,9 @@ var (
 // in the workspace generation. If both are set, they must agree. Path is an
 // optional never-reused Link allocation; empty allocates a fresh path.
 type DependencyRequest struct {
+	// PublicID is exact public identity; Path is only the private allocation locator.
+	PublicID string
+	IDRoot   string
 	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
 	ExpectedSourceRevision string
 	Type                   types.DependencyType
@@ -166,6 +178,7 @@ type LinkRecord struct {
 type DependencyResult struct {
 	Link    LinkRecord  `json:"link"`
 	Source  IssueRecord `json:"source"`
+	Target  IssueRecord `json:"-"`
 	Changed bool        `json:"changed"`
 }
 
@@ -199,6 +212,9 @@ const PreviewOwnedLinkLimit = 1000
 // LinkCreateRequest allocates an independent informational Link. Equal endpoints
 // do not deduplicate intent; an explicit allocated Path cannot be reused.
 type LinkCreateRequest struct {
+	// PublicID is exact public identity; Path remains a private SQL locator.
+	PublicID string
+	IDRoot   string
 	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
 	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string
@@ -216,6 +232,7 @@ type LinkCreateRequest struct {
 // Type or endpoint identities. Nil pin intent preserves the stored Reference.
 // A guard is mandatory for the Link and, when owned, its source Memory.
 type LinkUpdateRequest struct {
+	FromRevision           string
 	Path, Actor            string
 	SourcePin, TargetPin   *EndpointPin
 	Properties             map[string]any

@@ -33,17 +33,16 @@ func TestMemoryLinkInput(t *testing.T) {
 	for _, op := range memoryLinkOperations {
 		c := memoryLinkTestCommand(t, op, "--"+op.targetFlag+"=b", "--id=relationship", "--if-source-revision=owner-now")
 		r, err := memoryLinkRequest(c, []string{"a"}, scope, op)
-		if err != nil || r.SourcePath != "beads/a" || r.TargetPath != "beads/b" || r.Path != "links/relationship" || r.TypeURL != scope+"types/"+op.family || r.ExpectedSourceRevision != "owner-now" || r.UnconditionalSource {
+		if err != nil || r.SourcePath != "beads/a" || r.TargetPath != "beads/b" || r.PublicID != "relationship" || r.Path != "" || r.TypeURL != scope+"types/"+op.family || r.ExpectedSourceRevision != "owner-now" || r.UnconditionalSource {
 			t.Fatalf("%s: %+v %v", op.name, r, err)
 		}
 	}
 	op := memoryLinkOperations[0]
 	for _, tc := range []struct{ flags, args []string }{
 		{}, {flags: []string{"--to=b"}}, {flags: []string{"--to=b"}, args: []string{"a", "other"}},
-		{flags: []string{"--to="}, args: []string{"a"}}, {flags: []string{"--to=links/b"}, args: []string{"a"}},
-		{flags: []string{"--to=https://foreign.invalid/beads/b"}, args: []string{"a"}},
+		{flags: []string{"--to="}, args: []string{"a"}}, {flags: []string{"--to=" + scope + "a//b"}, args: []string{"a"}},
 		{flags: []string{"--to=b@old", "--target-revision=other"}, args: []string{"a"}},
-		{flags: []string{"--to=b", "--id=beads/wrong"}, args: []string{"a"}},
+		{flags: []string{"--to=b", "--id=beads//wrong"}, args: []string{"a"}},
 	} {
 		c := memoryLinkTestCommand(t, op, tc.flags...)
 		r, err := memoryLinkRequest(c, tc.args, scope, op)

@@ -316,7 +316,11 @@ func renderGraphBeadList(page graphstore.BeadListPage, scope string, all bool, n
 		for _, value := range page.Items {
 			switch record := value.(type) {
 			case graphstore.Record:
-				fmt.Fprintf(&human, "  %s  %s  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(strings.TrimPrefix(record.Type, scope)), graphMemoryDisplayText(record.Properties.Title))
+				displayID := record.PublicID
+				if displayID == "" {
+					displayID = strings.TrimPrefix(record.ID, scope)
+				}
+				fmt.Fprintf(&human, "  %s  %s  %s\n", graphMemoryDisplayText(displayID), graphMemoryDisplayText(strings.TrimPrefix(record.Type, scope)), graphMemoryDisplayText(record.Properties.Title))
 			case graphstore.IssueRecord:
 				fmt.Fprintf(&human, "  %s  Issue   %s  P%d  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(string(record.Properties.Status)), record.Properties.Priority, graphMemoryDisplayText(record.Properties.Title))
 			}

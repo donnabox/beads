@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -149,9 +150,12 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 		return err
 	}
 	jsonl := len(options.Formats) != 0 && options.Formats[0] == "jsonl"
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if cmd.Parent() != nil && cmd.Parent().Name() == "link" {
-		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		path, err = graphPreviewResolvedHistoricalPath(args[0])
+		if err == nil {
+			err = graph.ValidateLinkPath(path)
+		}
 	}
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
@@ -180,11 +184,11 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 			return nil, err
 		}
 		count = len(citable)
-		result := map[string]any{"resource": path, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}
+		result := map[string]any{"resource": history.PublicID, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}
 		if history.CurrentState != nil {
 			result["currentState"] = history.CurrentState
 		}
-		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue) && len(terminals) != 0 {
+		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue || kind == graphstore.KindLink) && len(terminals) != 0 {
 			result["terminal_versions"] = graphVersionRowsJSON(terminals)
 		}
 		return result, nil
@@ -196,7 +200,7 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 			}
 			rows := data["versions"].([]map[string]any)
 			for _, row := range rows {
-				item, err := graphVersionStreamItem(path, data["kind"].(string), row)
+				item, err := graphVersionStreamItem(data["resource"].(string), data["kind"].(string), row)
 				if err != nil {
 					return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
 				}

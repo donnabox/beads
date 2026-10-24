@@ -40,7 +40,7 @@ func graphPreviewReplacementSummary(summary string, replaced *graphstore.Replace
 func graphPreviewMutationSummary(summary string, result any) string {
 	current := func(kind, id, revision string) {
 		if id != "" && revision != "" {
-			summary += fmt.Sprintf("\nCurrent %s revision: [%s]@%s", kind, id, revision)
+			summary += fmt.Sprintf("\nCurrent %s revision: [%s]@=%s", kind, id, revision)
 		}
 	}
 	source := func(value any) {

@@ -35,8 +35,8 @@ func bindMemoryConstraintCapture(read graphstore.CurrentFamilyRead, scope string
 			}
 			n = graphGenericNode{ID: r.ID, Type: r.Type, Version: r.Version, Title: r.Properties.Title, Status: string(r.Properties.Status)}
 		case graphstore.LinkRecord:
-			path, kind, ok := graph.SplitCanonicalURL(scope, r.ID)
-			if !ok || kind != graph.KindLink || c.links[path].ID != "" || r.Type == "" || r.Version == "" {
+			path, ok := graphPreviewPublicResourceID(scope, r.ID)
+			if !ok || c.links[path].ID != "" || r.Type == "" || r.Version == "" {
 				return nil, invalidMemoryConstraintCapture()
 			}
 			c.links[path] = graphGenericLink{ID: r.ID, Type: r.Type, Version: r.Version, Source: r.Source, Target: r.Target, SourceRevision: r.SourceRevision, TargetRevision: r.TargetRevision}
@@ -44,8 +44,8 @@ func bindMemoryConstraintCapture(read graphstore.CurrentFamilyRead, scope string
 		default:
 			return nil, invalidMemoryConstraintCapture()
 		}
-		path, kind, ok := graph.SplitCanonicalURL(scope, n.ID)
-		if !ok || kind != graph.KindBead || c.nodes[path].ID != "" || n.Type == "" || n.Version == "" {
+		path, ok := graphPreviewPublicResourceID(scope, n.ID)
+		if !ok || c.nodes[path].ID != "" || n.Type == "" || n.Version == "" {
 			return nil, invalidMemoryConstraintCapture()
 		}
 		c.nodes[path] = n
@@ -100,7 +100,7 @@ func (c *memoryConstraintCapture) view(v memoryquery.CurrentView) (graphGenericR
 	if err != nil {
 		return r, err
 	}
-	if !nodes[v.Root.Path] || graph.ValidateBeadPath(v.Root.Path) != nil || v.Root.Depth < 0 || v.Root.Depth > graphstore.PreviewSnapshotLimit {
+	if !nodes[v.Root.Path] || graph.ValidateCanonicalResourceID(v.Root.Path) != nil || v.Root.Depth < 0 || v.Root.Depth > graphstore.PreviewSnapshotLimit {
 		return r, invalidMemoryConstraintCapture()
 	}
 	for _, p := range v.Nodes {
@@ -115,8 +115,8 @@ func (c *memoryConstraintCapture) view(v memoryquery.CurrentView) (graphGenericR
 	}
 	for _, p := range v.Links {
 		l, ok := c.links[p]
-		source, _, src := graph.SplitCanonicalURL(c.scope, l.Source)
-		target, _, dst := graph.SplitCanonicalURL(c.scope, l.Target)
+		source, src := graphPreviewPublicResourceID(c.scope, l.Source)
+		target, dst := graphPreviewPublicResourceID(c.scope, l.Target)
 		if !ok || !src || !dst || !nodes[source] || !nodes[target] {
 			return r, invalidMemoryConstraintCapture()
 		}
@@ -216,7 +216,7 @@ func renderMemorySubjectsGraph(read graphstore.CurrentFamilyRead, scope string, 
 			if l.Target != r.Root {
 				return invalidMemoryConstraintCapture()
 			}
-			p, _, _ := graph.SplitCanonicalURL(scope, l.Source)
+			p, _ := graphPreviewPublicResourceID(scope, l.Source)
 			members[p] = true
 		}
 		if !sameMemoryConstraintSet(v.Nodes, members) {
@@ -323,8 +323,8 @@ func renderMemoryConstraintsGraph(read graphstore.CurrentConstraintsRead, scope 
 		}
 		for _, p := range stage.Requires.Links {
 			l, ok := c.links[p]
-			source, _, src := graph.SplitCanonicalURL(scope, l.Source)
-			target, _, dst := graph.SplitCanonicalURL(scope, l.Target)
+			source, src := graphPreviewPublicResourceID(scope, l.Source)
+			target, dst := graphPreviewPublicResourceID(scope, l.Target)
 			if !ok || !src || !dst || !phaseNodes[source] || !phaseNodes[target] {
 				return invalidMemoryConstraintCapture()
 			}

@@ -7,6 +7,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
@@ -62,9 +63,12 @@ func runGraphPreviewCompare(cmd *cobra.Command, args []string) error {
 		}
 		return graphFailure("invalid_selector", message, 2)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if canonical && cmd.Parent() != nil && cmd.Parent().Name() == "link" {
-		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		path, err = graphPreviewResolvedHistoricalPath(args[0])
+		if err == nil {
+			err = graph.ValidateLinkPath(path)
+		}
 	}
 	if err != nil {
 		return invalidSelector(err.Error())

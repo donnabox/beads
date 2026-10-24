@@ -908,8 +908,8 @@ func TestVersionsLinkTerminalClassificationBoundary(t *testing.T) {
 				t.Fatal(err)
 			}
 			_, rows, err := s.Versions(ctx, "links/boundary")
-			if err != nil || len(rows) != 2 || rows[0].Removed || rows[1].Removed {
-				t.Fatalf("live/older Link state marker changed listing contract: %+v %v", rows, err)
+			if err != nil || len(rows) != 2 || rows[0].Removed || !rows[1].Removed {
+				t.Fatalf("older terminal-shaped Link row was not classified separately: %+v %v", rows, err)
 			}
 			if _, err := s.ReadVersion(ctx, "links/boundary", first.Link.Revision); !errors.Is(err, ErrInvalidStore) {
 				t.Fatalf("unexpected Link member became terminal instead of corrupt: %v", err)
@@ -919,8 +919,8 @@ func TestVersionsLinkTerminalClassificationBoundary(t *testing.T) {
 				t.Fatal(err)
 			}
 			_, rows, err = s.Versions(ctx, "links/boundary")
-			if err != nil || len(rows) != 3 || !rows[0].Removed || rows[1].Removed || rows[2].Removed || rows[0].Version != removed.Link.Revision {
-				t.Fatalf("only current deleted Link head may be removed: %+v %v", rows, err)
+			if err != nil || len(rows) != 3 || !rows[0].Removed || rows[1].Removed || !rows[2].Removed || rows[0].Version != removed.Link.Revision {
+				t.Fatalf("all terminal-shaped Link rows must remain separate from citable snapshots: %+v %v", rows, err)
 			}
 		})
 	}

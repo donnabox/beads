@@ -35,7 +35,7 @@ const (
 // an observed wall clock, never the ordering key, and nothing here sorts by it.
 //
 // Removed distinguishes retained terminal evidence from live snapshots. Such a
-// token is listed, but ReadVersion refuses it with ErrGone. Multiple Memory
+// token is listed, but ReadVersion refuses it with ErrGone. Multiple Resource
 // terminal rows can remain after successive recoveries. Native Issue graph
 // history includes graph D while preserving the separate native snapshot order.
 //
@@ -105,7 +105,7 @@ func shippedVersionBounds() versionBounds {
 // reading user-facing output; it is not this reader's answer.
 //
 // It supplies no payload snapshots or diffs. Deleted allocations retain their
-// ordered history. Terminal rows are flagged Removed, including earlier Memory
+// ordered history. Terminal rows are flagged Removed, including earlier Resource
 // deletion states after recovery; live snapshots remain independently citable.
 func (s *Store) Versions(ctx context.Context, path string) (ResourceKind, []VersionRow, error) {
 	return s.versionsWithin(ctx, path, shippedVersionBounds())
@@ -241,12 +241,13 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		// dependency_unlink.go set the catalog revision to the marker's token in
 		// the same transaction that retains the marker row, and readVersionInTx
 		// refuses that exact token with ErrGone. It is therefore both the row
-		// that satisfies the head check and the one row flagged Removed.
+		// that satisfies the head check. Root terminal markers also classify
+		// earlier D rows after same-ID recovery, without hydrating their payloads.
 		marker := ""
 		if state == "deleted" {
 			marker = head
 		}
-		rows, err := previewVersionsInTx(ctx, tx, path, head, marker, false, bounds)
+		rows, err := previewVersionsInTx(ctx, tx, path, head, marker, true, bounds)
 		return KindLink, rows, err
 	}
 	return "", nil, fmt.Errorf("%w: unsupported retained allocation", ErrInvalidStore)

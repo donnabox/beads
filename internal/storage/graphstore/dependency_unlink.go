@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -20,16 +20,9 @@ import (
 // retained version, tombstone, or coordination write is produced. The generic
 // unlink command keeps its explicit canonical-Link-ID and guard contract.
 func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRequest) (DependencyRemoveResult, error) {
-	for _, path := range []string{request.SourcePath, request.TargetPath} {
-		if err := validatePath(path); err != nil {
+	for _, endpoint := range []struct{ path, id string }{{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID}} {
+		if err := s.validateBeadEndpointOperand(endpoint.path, endpoint.id); err != nil {
 			return DependencyRemoveResult{}, err
-		}
-	}
-	for _, selector := range []struct{ path, nativeID string }{
-		{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID},
-	} {
-		if selector.nativeID != "" && selector.path != "beads/"+selector.nativeID {
-			return DependencyRemoveResult{}, fmt.Errorf("%w: native Issue fallback requires its matching bare selector", storage.ErrValidation)
 		}
 	}
 	if request.Actor == "" || !utf8.ValidString(request.Actor) {
@@ -117,8 +110,14 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
 		return LinkDeleteResult{}, err
 	}
-	sourcePath := strings.TrimPrefix(link.Source, s.ScopeURL())
-	targetPath := strings.TrimPrefix(link.Target, s.ScopeURL())
+	sourcePath, err := s.publicResourcePathInTx(ctx, tx, link.Source, graph.KindBead)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	targetPath, err := s.publicResourcePathInTx(ctx, tx, link.Target, graph.KindBead)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
 	source, err := s.requireIssueInTx(ctx, tx, sourcePath)
 	if err != nil {
 		return LinkDeleteResult{}, err
@@ -163,7 +162,9 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: revision, Version: revision, State: "deleted", PreviousVersion: link.Version, Attribution: writeAttribution(request.Actor)}
+	attribution := writeAttribution(request.Actor)
+	attribution.Inception = link.Attribution.Inception
+	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: revision, Version: revision, State: "deleted", PreviousVersion: link.Version, Attribution: attribution}
 	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=?,backing_key=NULL WHERE path=?`, revision, path); err != nil {
 		return LinkDeleteResult{}, err
 	}

@@ -26,6 +26,7 @@ import (
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/graphpatch"
+	"github.com/steveyegge/beads/internal/memoryapi"
 	"github.com/steveyegge/beads/internal/migration"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -40,7 +41,7 @@ const graphPreviewMarker = "graph-preview-format"
 // are not upgraded in place. Changing installed Types changes this marker.
 const (
 	graphPreviewGenerationPrefix = "link-preview-v"
-	graphPreviewGeneration       = "link-preview-v10\n"
+	graphPreviewGeneration       = "link-preview-v11\n"
 )
 
 var graphPreviewSupportedGenerations = []string{graphPreviewGeneration}
@@ -72,7 +73,7 @@ func graphPreviewBlockingTypeURL(scope string) string {
 func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
-	rememberCmd.Flags().String("id", "", "Memory ID or beads/PATH; creates if unused or updates existing Memory (generated when omitted; graph preview only)")
+	rememberCmd.Flags().String("id", "", "Literal public Memory ID; creates or updates the same identity (--key is compatible; omitted ID derives from content in graph mode)")
 	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)")
 	rememberCmd.Flags().String("metadata", "", "Merge a JSON object into an existing Memory, or set initial metadata on create (graph preview only)")
 	rememberCmd.Flags().String("replace-metadata", "", "Replace all Memory metadata with a JSON object on an existing-ID edit (graph preview only)")
@@ -81,7 +82,7 @@ func init() {
 	rememberCmd.Flags().StringArray("set-metadata", nil, "Set Memory metadata key=value (repeatable; graph preview only)")
 	rememberCmd.Flags().StringArray("unset-metadata", nil, "Remove Memory metadata key (repeatable; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
-	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id; refuse an allocated ID (graph preview only)")
+	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id or --key; refuse an allocated ID (graph preview only)")
 	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for an existing-ID update (graph preview only)")
 	rememberCmd.Flags().String("body-file", "", "Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)")
 	rememberCmd.Flags().Bool("stdin", false, "Read graph Memory body from stdin (preview: at most 1 MiB)")
@@ -616,66 +617,83 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "replace-properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "key", "title", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "replace-properties"); err != nil {
 		return err
+	}
+	if cmd.Flags().Changed("id") && cmd.Flags().Changed("key") {
+		return graphFailure("invalid_selector", "choose --id or --key, not both", 2)
 	}
 	if cmd.Flags().Changed("replace-properties") {
 		return runGraphPreviewRememberPropertiesReplacement(cmd, args)
 	}
-	createOnly := cmd.Flags().Changed("create-only")
-	if createOnly {
-		enabled, _ := cmd.Flags().GetBool("create-only")
-		if !enabled {
-			return graphFailure("invalid_selector", "--create-only must be true when supplied", 2)
-		}
-		if !cmd.Flags().Changed("id") || cmd.Flags().Changed("update") || cmd.Flags().Changed("if-revision") {
-			return graphFailure("invalid_selector", "--create-only requires --id and cannot combine with --update or write guards", 2)
-		}
-	}
+	explicit := cmd.Flags().Changed("id") || cmd.Flags().Changed("key")
 	if cmd.Flags().Changed("update") {
-		if cmd.Flags().Changed("id") {
-			return graphFailure("invalid_selector", "remember requires either --id for creation or --update for an existing Memory, not both", 2)
+		if explicit {
+			return graphFailure("invalid_selector", "choose --update or explicit --id/--key, not both", 2)
 		}
 		return runGraphPreviewRememberUpdate(cmd, args)
 	}
-	if cmd.Flags().Changed("id") && !createOnly {
-		return runGraphPreviewRememberUpsert(cmd, args)
-	}
-	if cmd.Flags().Changed("if-revision") {
-		return graphFailure("capability_unavailable", "remember write guards require --id or --update; generated-ID creation does not accept them", 5)
-	}
-	path, err := graphPreviewCreateBeadPath(cmd)
+	title, body, err := graphPreviewRememberPatchInput(cmd, args)
 	if err != nil {
 		return err
 	}
-	if len(args) == 0 && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") && !cmd.Flags().Changed("title") && !cmd.Flags().Changed("properties") {
-		return graphFailure("invalid_properties", "Memory creation requires a body source or --properties with body", 2)
-	}
-	titleInput, bodyInput, err := graphPreviewRememberPatchInput(cmd, args)
-	if err != nil {
-		return err
-	}
-	if titleInput != nil && strings.TrimSpace(*titleInput) == "" {
-		return graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
-	}
-	if bodyInput == nil {
-		return graphFailure("invalid_properties", "Memory creation requires a body source or --properties with body", 2)
-	}
-	title := graphPreviewMemoryTitle(*bodyInput)
-	if titleInput != nil {
-		title = *titleInput
-	}
-	metadata, err := graphPreviewMetadataCreate(cmd)
-	if err != nil {
-		return err
-	}
-	return withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		r, err := s.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: *bodyInput, Actor: getActorWithGit(), Metadata: metadata})
-		if err != nil {
-			return nil, "", err
+	publicID := ""
+	if explicit {
+		name := "id"
+		if cmd.Flags().Changed("key") {
+			name = "key"
 		}
-		return r, fmt.Sprintf("Created %s\n", path), nil
-	})
+		publicID, _ = cmd.Flags().GetString(name)
+		if _, err := memoryapi.ValidateKey(publicID); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+	} else {
+		if body == nil {
+			return graphFailure("invalid_properties", "remember without an explicit ID requires content", 2)
+		}
+		if name, ok := matchesKnownCommand(cmd, *body); ok {
+			return graphFailure("invalid_properties", fmt.Sprintf("%q looks like a command, not content; use an explicit --key to store it", name), 2)
+		}
+		publicID, err = memoryapi.ResolveKey("", *body)
+		if err != nil {
+			return graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if publicID == *body {
+			return withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+				path, err := store.ResolveExactAllocatedResourcePath(ctx, publicID)
+				if err != nil {
+					return nil, "", fmt.Errorf("%w: bare key-like content requires an explicit --key to write", err)
+				}
+				value, err := store.Show(ctx, path)
+				return nil, value.Properties.Body, err
+			}, func(_ any, body string) error { _, err := fmt.Fprintln(cmd.OutOrStdout(), body); return err })
+		}
+	}
+	if cmd.Flags().Changed("create-only") {
+		enabled, _ := cmd.Flags().GetBool("create-only")
+		if !enabled || !explicit || cmd.Flags().Changed("if-revision") {
+			return graphFailure("invalid_selector", "--create-only requires explicit --id/--key and cannot combine with write guards", 2)
+		}
+		if body == nil {
+			return graphFailure("invalid_properties", "Memory creation requires a body", 2)
+		}
+		if title != nil && strings.TrimSpace(*title) == "" {
+			return graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
+		}
+		createTitle := graphPreviewMemoryTitle(*body)
+		if title != nil {
+			createTitle = *title
+		}
+		metadata, err := graphPreviewMetadataCreate(cmd)
+		if err != nil {
+			return err
+		}
+		return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+			r, err := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, Title: createTitle, Body: *body, Actor: getActorWithGit(), Metadata: metadata})
+			return r, fmt.Sprintf("Created %s", publicID), err
+		})
+	}
+	return runGraphPreviewRememberUpsert(cmd, publicID, title, body)
 }
 
 func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
@@ -737,9 +755,26 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph show requires one local public ID or canonical Scope URL; use a positional ID or --id", 2)
 	}
-	ref, err := graphPreviewParseReference(args[0])
+	var literal string
+	var err error
+	if cmd.Flags().Changed("id") {
+		literal, err = graphPreviewResolveLiteralArgument(args[0])
+	} else {
+		literal, err = graphPreviewResolveMemoryArgument(args[0])
+	}
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
+	}
+	ref, err := graphPreviewParseReference(literal)
+	if err != nil {
+		return graphPreviewReferenceFailure(err)
+	}
+	if ref.Explicit && cmd.Flags().Changed("version") {
+		return graphFailure("invalid_selector", "choose ID@revision or --version, not both", 2)
+	}
+	ref, err = graphPreviewResolveParsedReference(ref)
+	if err != nil {
+		return graphPreviewReferenceFailure(err)
 	}
 	version, _ := cmd.Flags().GetString("version")
 	versioned := cmd.Flags().Changed("version")
@@ -747,7 +782,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		if versioned {
 			return graphFailure("invalid_selector", "choose ID@revision or --version, not both", 2)
 		}
-		if ref.Revision != "current" && ref.Revision != "unpinned" {
+		if !ref.currentSelection() {
 			version, versioned = ref.Revision, true
 		}
 	}
@@ -768,6 +803,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		return graphFailure("capability_unavailable", "retained versions require an exact canonical Scope URL", 5)
 	}
 	var shownIssue, legacyIssue, legacyShort bool
+	var touchedID string
 	err = withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
 		var details *types.IssueDetails
@@ -781,7 +817,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 			if !jsonOutput && format == "" {
 				includeDependents, includeComments = true, true
 			}
-			path, r, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, path, localID, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
+			_, r, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, path, localID, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
 		}
 		if err != nil {
 			return nil, "", err
@@ -791,11 +827,12 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 				return nil, "", graphFailure("capability_unavailable", "link show requires a Link Resource", 5)
 			}
 		}
-		_, shownIssue = r.(graphstore.IssueRecord)
+		if selected, ok := r.(graphstore.IssueRecord); ok {
+			shownIssue, touchedID = true, selected.ID
+		}
 		if shortMode && shownIssue && !versioned && format == "" {
 			legacyShort = true
 			issue := *r.(graphstore.IssueRecord).Properties
-			issue.ID = r.(graphstore.IssueRecord).Properties.ID
 			return r, formatShortIssue(&issue), nil
 		}
 		if shownIssue && jsonOutput && format == "" && !versioned {
@@ -808,7 +845,12 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps") || cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
 			return nil, "", graphFailure("capability_unavailable", "Issue detail and display flags require an Issue", 5)
 		}
-		projected, err := graphProjectCompleteRecords(r)
+		humanRecord := r
+		if memory, ok := r.(graphstore.Record); ok && memory.PublicID != "" {
+			memory.ID = memory.PublicID
+			humanRecord = memory
+		}
+		projected, err := graphProjectCompleteRecords(humanRecord)
 		if err != nil {
 			return nil, "", err
 		}
@@ -831,7 +873,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		return graphPrint(result, human, quietFlag)
 	})
 	if err == nil && shownIssue {
-		graphPreviewStoreLastTouchedPath(path)
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }

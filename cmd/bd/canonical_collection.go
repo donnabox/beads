@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/clioutput"
@@ -154,11 +153,8 @@ func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutpu
 			if value == "" {
 				return plan, fmt.Errorf("--%s requires a Bead identity", flag)
 			}
-			// The CLI's established bare-ID convenience is resolved once; the existing
-			// BDP selector validates canonical local IDs and absolute external URIs.
-			if !strings.Contains(value, ":") && !strings.HasPrefix(value, "beads/") && !strings.HasPrefix(value, "links/") {
-				value = "beads/" + value
-			}
+			// Local endpoint IDs retain their exact public spelling; the common
+			// selection boundary supplies Scope without inserting a kind segment.
 			parameters.Set(key, value)
 		}
 		direction, _ := cmd.Flags().GetString("direction")

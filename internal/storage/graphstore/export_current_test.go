@@ -38,7 +38,8 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if err != nil || work.Properties == nil || !strings.HasPrefix(work.Properties.ID, "web-app-") {
 				t.Fatalf("hyphenated native prefix: %+v %v", work, err)
 			}
-			if _, err := s.CreateIssue(ctx, "beads/prereq", plainIssue("Prerequisite")); err != nil {
+			prereq, err := s.CreateIssue(ctx, "beads/prereq", plainIssue("Prerequisite"))
+			if err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "test-author"}); err != nil {
@@ -74,10 +75,10 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			}
 			before := exportSourceState(t, ctx, s)
 			current, err := s.ExportCurrentSnapshot(ctx)
-			if err != nil || current.IssuePrefix != "web-app-" || current.DeletedAllocations != 0 || len(current.Snapshot.Records) != 6 || !reflect.DeepEqual(current.CommentsByIssuePath["beads/work"], wantComments) {
+			if err != nil || current.IssuePrefix != "web-app-" || current.DeletedAllocations != 0 || len(current.Snapshot.Records) != 6 || !reflect.DeepEqual(current.CommentsByIssuePath[work.Properties.ID], wantComments) {
 				t.Fatalf("complete current export: %+v %v", current, err)
 			}
-			if comments, present := current.CommentsByIssuePath["beads/prereq"]; !present || comments == nil || len(comments) != 0 {
+			if comments, present := current.CommentsByIssuePath[prereq.Properties.ID]; !present || comments == nil || len(comments) != 0 {
 				t.Fatal("Issue with no comments was absent or null")
 			}
 			ordinary, err := s.CurrentSnapshot(ctx)
@@ -93,8 +94,8 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			}
 			// Returned feeds are detached: caller mutations cannot affect records
 			// or the next acquisition and survive neither close nor reopen.
-			current.CommentsByIssuePath["beads/work"][0].Text = "caller mutation"
-			delete(current.CommentsByIssuePath, "beads/prereq")
+			current.CommentsByIssuePath[work.Properties.ID][0].Text = "caller mutation"
+			delete(current.CommentsByIssuePath, prereq.Properties.ID)
 			mutatedIssue, mutatedOwned := false, false
 			for _, raw := range current.Snapshot.Records {
 				if issue, ok := raw.(IssueRecord); ok {
@@ -111,7 +112,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			}
 			fresh, err := s.ExportCurrentSnapshot(ctx)
 			freshSnapshot, snapshotErr := canonicalJSON(fresh.Snapshot)
-			if err != nil || snapshotErr != nil || !reflect.DeepEqual(fresh.CommentsByIssuePath["beads/work"], wantComments) || string(freshSnapshot) != string(wantSnapshot) {
+			if err != nil || snapshotErr != nil || !reflect.DeepEqual(fresh.CommentsByIssuePath[work.Properties.ID], wantComments) || string(freshSnapshot) != string(wantSnapshot) {
 				t.Fatalf("same-Store detachment: %+v %v", fresh, err)
 			}
 			// TypeDescriptor fields are private: JSON fingerprints capture only
@@ -122,7 +123,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("same-Store reacquisition changed source rows")
 			}
-			if comments, present := fresh.CommentsByIssuePath["beads/prereq"]; !present || comments == nil || len(comments) != 0 {
+			if comments, present := fresh.CommentsByIssuePath[prereq.Properties.ID]; !present || comments == nil || len(comments) != 0 {
 				t.Fatal("caller deletion affected the next acquisition")
 			}
 			if err := s.Close(); err != nil {
@@ -139,7 +140,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			})
 			reopened, err := s.ExportCurrentSnapshot(ctx)
 			reopenedSnapshot, snapshotErr := canonicalJSON(reopened.Snapshot)
-			if err != nil || snapshotErr != nil || !reflect.DeepEqual(reopened.CommentsByIssuePath["beads/work"], wantComments) || string(reopenedSnapshot) != string(wantSnapshot) || reopened.IssuePrefix != "web-app-" {
+			if err != nil || snapshotErr != nil || !reflect.DeepEqual(reopened.CommentsByIssuePath[work.Properties.ID], wantComments) || string(reopenedSnapshot) != string(wantSnapshot) || reopened.IssuePrefix != "web-app-" {
 				t.Fatalf("reopen preservation: %+v %v", reopened, err)
 			}
 			if !reflect.DeepEqual(reopened.Snapshot.Types, ordinary.Types) {
@@ -164,7 +165,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if err != nil || deleted.DeletedAllocations != 1 || len(deleted.Snapshot.Records) != 6 {
 				t.Fatalf("deleted allocation disclosure: %+v %v", deleted, err)
 			}
-			if _, present := deleted.CommentsByIssuePath["beads/removed"]; present {
+			if _, present := deleted.CommentsByIssuePath[removed.Properties.ID]; present {
 				t.Fatal("deleted Issue acquired as a current comment owner")
 			}
 			var surviving uint64
@@ -494,7 +495,7 @@ func TestExportCurrentSnapshotConcurrentWriter(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			_, err = reader.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			work, err := reader.CreateIssue(ctx, "beads/work", plainIssue("Work"))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -608,12 +609,12 @@ func TestExportCurrentSnapshotConcurrentWriter(t *testing.T) {
 			workers.Wait()
 			reader.afterWrite = nil
 			after, err := reader.ExportCurrentSnapshot(ctx)
-			if err != nil || after.Snapshot.WriterToken == before.Snapshot.WriterToken || after.IssuePrefix != "web-app-" || after.DeletedAllocations != 1 || len(after.CommentsByIssuePath["beads/work"]) != 1 {
+			if err != nil || after.Snapshot.WriterToken == before.Snapshot.WriterToken || after.IssuePrefix != "web-app-" || after.DeletedAllocations != 1 || len(after.CommentsByIssuePath[work.Properties.ID]) != 1 {
 				t.Fatalf("next acquisition did not observe complete writer state: %+v %v", after, err)
 			}
 			var owned int
 			for _, record := range after.Snapshot.Records {
-				if memory, ok := record.(IssueRecord); ok && memory.ID == options.Binding.ScopeURL+"beads/work" {
+				if memory, ok := record.(IssueRecord); ok && memory.ID == work.ID {
 					owned = len(memory.Owned)
 				}
 			}

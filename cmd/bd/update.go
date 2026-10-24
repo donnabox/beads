@@ -115,7 +115,7 @@ pointless).`,
 			return runGraphPreviewUpdate(cmd, args)
 		}
 		if cmd.Flags().Changed("from-revision") {
-			return HandleErrorRespectJSON("--from-revision requires an admitted graph Memory workspace; native Issue historical mapping is not available")
+			return HandleErrorRespectJSON("--from-revision requires a workspace initialized with --graph-mode link")
 		}
 		CheckReadonly("update") // also covers the migration freeze check (dc-6jaq)
 
@@ -1118,13 +1118,8 @@ func init() {
 	updateCmd.Flags().String("if-status", "", "Apply the update only if the current status equals this value; a mismatch writes nothing and exits 13 (vs 1 for other failures). Requires a field update; cannot combine with --claim")
 	// A8 (beads#4682): composes with --if-assignee/--if-status above — all
 	// guards present must hold, or nothing is written.
-	updateCmd.Flags().SetNormalizeFunc(func(_ *pflag.FlagSet, name string) pflag.NormalizedName {
-		if name == "from_revision" {
-			name = "from-revision"
-		}
-		return pflag.NormalizedName(name)
-	})
-	updateCmd.Flags().String("from-revision", "", "Use exact retained same-Bead content as the Update base (graph Memory only)")
+	updateCmd.Flags().SetNormalizeFunc(normalizeHistoricalRevisionFlag)
+	updateCmd.Flags().String("from-revision", "", "Use exact retained same-Resource content as the Update base (admitted graph Types only)")
 	updateCmd.Flags().String("if-revision", "", ifRevisionFlagHelp+" Composes with --if-assignee/--if-status: all guards present must hold.")
 	// --force and --if-assignee are NOT mutually exclusive: --force still
 	// drives the close-policy and notes-overwrite halves (runCommandUpdateMutation),
@@ -1172,4 +1167,11 @@ func templateReadOnlyRefusal(id string, err error) (error, bool) {
 		return nil, false
 	}
 	return &issueops.TemplateReadOnlyError{IssueID: id}, true
+}
+
+func normalizeHistoricalRevisionFlag(_ *pflag.FlagSet, name string) pflag.NormalizedName {
+	if name == "from_revision" {
+		name = "from-revision"
+	}
+	return pflag.NormalizedName(name)
 }

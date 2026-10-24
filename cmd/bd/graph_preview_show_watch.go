@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -23,19 +22,24 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 	if format != "" || cmd.Flags().Changed("version") {
 		return graphFailure("capability_unavailable", "--watch requires a current Issue in the familiar output format", 5)
 	}
-	ref, err := graphPreviewParseReference(args[0])
+	resolve := graphPreviewResolveMemoryArgument
+	if cmd.Flags().Changed("id") {
+		resolve = graphPreviewResolveLiteralArgument
+	}
+	argument, err := resolve(args[0])
+	if err != nil {
+		return err
+	}
+	ref, err := graphPreviewParseReference(argument)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
+	if ref.Explicit && !ref.currentSelection() {
 		return graphFailure("capability_unavailable", "--watch requires a current Issue", 5)
 	}
 	selectorPath, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	if !strings.HasPrefix(selectorPath, "beads/") {
-		return graphFailure("capability_unavailable", "--watch requires an Issue", 5)
 	}
 	// Refuse a Memory or missing Issue before starting a watch. The shared
 	// loop's initial-render failure is otherwise silent by design.
@@ -88,7 +92,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 			if err != nil {
 				return nil, err
 			}
-			path, record, _, readErr := s.ReadResourceWithIssueDetailsSelected(readCtx, selectorPath, localID, workapi.DetailOptions{})
+			_, record, _, readErr := s.ReadResourceWithIssueDetailsSelected(readCtx, selectorPath, localID, workapi.DetailOptions{})
 			closeErr := s.Close()
 			if err := errors.Join(readErr, closeErr); err != nil {
 				return nil, err
@@ -98,7 +102,6 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 				return nil, fmt.Errorf("%w: watched Bead is no longer an Issue", graphstore.ErrCapabilityUnavailable)
 			}
 			selected := *issue.Properties
-			selected.ID = path
 			revision = issue.Revision
 			return &selected, nil
 		},

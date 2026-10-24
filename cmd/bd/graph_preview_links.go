@@ -164,6 +164,10 @@ func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
 }
 
 func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
+	idRoot, _, rootErr := graphPreviewGeneratedIDRoot(cmd)
+	if rootErr != nil {
+		return graphFailure("invalid_selector", rootErr.Error(), 2)
+	}
 	typ, err := graphPreviewLinkType(cmd)
 	if err != nil {
 		return err
@@ -175,9 +179,13 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	pins := make([]graphstore.EndpointPin, 2)
 	for i, endpoint := range []struct{ name, value string }{{"source-revision", args[0]}, {"target-revision", args[1]}} {
 		flag, _ := cmd.Flags().GetString(endpoint.name)
-		ref, err := graphPreviewReferenceWithFlag(endpoint.value, flag, cmd.Flags().Changed(endpoint.name))
+		identity, err := graphPreviewResolveMemoryArgument(endpoint.value)
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
+		}
+		ref, err := graphPreviewReferenceWithFlag(identity, flag, cmd.Flags().Changed(endpoint.name))
+		if err != nil {
+			return graphPreviewReferenceFailure(err)
 		}
 		pins[i] = graphPreviewEndpointPin(ref)
 		resolved[i] = ref.Identity
@@ -192,7 +200,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "properties", "metadata", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "id-root", "properties", "metadata", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 2 {
@@ -201,16 +209,15 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	paths := make([]string, 2)
 	localIDs := make([]string, 2)
 	for i, selector := range args {
-		selected, err := graphPreviewIssueSelector(selector)
+		path, localID, err := graphPreviewResourceReadSelector(selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		paths[i], localIDs[i] = selected.Path, selected.NativeID
+		paths[i], localIDs[i] = path, localID
 	}
-	path, _ := cmd.Flags().GetString("id")
+	publicID, _ := cmd.Flags().GetString("id")
 	if cmd.Flags().Changed("id") {
-		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, path)
-		if err != nil {
+		if err := graph.ValidateCanonicalResourceID(publicID); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
@@ -235,7 +242,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		result, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
-			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourceLocalID: localIDs[0], TargetLocalID: localIDs[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
+			PublicID: publicID, IDRoot: idRoot, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourceLocalID: localIDs[0], TargetLocalID: localIDs[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
 		return graphPreviewReplacementResult(result, fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource, err)
@@ -252,12 +259,12 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph update requires one canonical links/PATH", 2)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
 	if err := graph.ValidateLinkPath(path); err != nil {
-		return graphFailure("capability_unavailable", "this preview updates informational Link properties only", 5)
+		return graphFailure("capability_unavailable", "Link updates require a canonical links/PATH identity", 5)
 	}
 	sourcePin, targetPin, err := graphPreviewLinkPinIntents(cmd)
 	if err != nil {
@@ -300,10 +307,10 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 }
 
 func graphPreviewEndpointPin(ref graphPreviewReference) graphstore.EndpointPin {
-	if !ref.Explicit || ref.Revision == "unpinned" {
+	if !ref.Explicit || (!ref.LiteralRevision && ref.Revision == "unpinned") {
 		return graphstore.EndpointPin{}
 	}
-	if ref.Revision == "current" {
+	if !ref.LiteralRevision && ref.Revision == "current" {
 		return graphstore.EndpointPin{Current: true}
 	}
 	return graphstore.EndpointPin{Revision: ref.Revision}
