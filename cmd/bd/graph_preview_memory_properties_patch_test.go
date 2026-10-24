@@ -85,7 +85,7 @@ func TestGraphPreviewRememberReplacementRequiresOneExistingSelector(t *testing.T
 
 func TestGraphPreviewPropertyReplacementIsRootPatch(t *testing.T) {
 	const value = `{"title":"new","body":"雪","large":1234567890123456}`
-	cmd := memoryPropertiesPatchCommand(t, "--replace-properties="+value, "--if-revision=seen", "--replace-metadata={}")
+	cmd := memoryPropertiesPatchCommand(t, "--replace-properties="+value, "--if-revision==seen", "--replace-metadata={}")
 	request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, "beads/plan")
 	if err != nil {
 		t.Fatal(err)
@@ -198,7 +198,7 @@ func TestGraphPreviewMemoryPropertiesPatchRequest(t *testing.T) {
 	oldActor := actor
 	t.Cleanup(func() { actor = oldActor })
 	actor = "patch-author"
-	for _, flags := range [][]string{{"--if-revision=observed"}, {}} {
+	for _, flags := range [][]string{{"--if-revision==observed"}, {}} {
 		cmd := memoryPropertiesPatchCommand(t, append([]string{"--patch=" + memoryPropertiesPatchExample}, flags...)...)
 		request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, "beads/plan")
 		if err != nil || request.Path != "beads/plan" || request.Actor != "patch-author" || !bytes.Equal(request.Patch, []byte(memoryPropertiesPatchExample)) || request.Unconditional != (len(flags) == 0) || (!request.Unconditional && request.ExpectedRevision != "observed") {

@@ -39,7 +39,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--revision", record.Revision))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--revision", "="+record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
@@ -92,7 +92,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			refuse("invalid_properties", "update", scope+"beads/work", "--claim=false", "--priority=0")
 			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--priority=0")
 			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--assignee=other")
-			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--if-revision", current.Revision)
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--if-revision", "="+current.Revision)
 			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--patch=[]")
 			refuse("permission_denied", "update", scope+"beads/work", "--claim", "--readonly")
 			refuse("invalid_properties", "update", "beads/context", "--claim")

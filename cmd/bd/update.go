@@ -1119,7 +1119,7 @@ func init() {
 	// A8 (beads#4682): composes with --if-assignee/--if-status above — all
 	// guards present must hold, or nothing is written.
 	updateCmd.Flags().SetNormalizeFunc(normalizeHistoricalRevisionFlag)
-	updateCmd.Flags().String("from-revision", "", "Use exact retained same-Resource content as the Update base (admitted graph Types only)")
+	updateCmd.Flags().String("from-revision", "", "Use retained same-Resource revision N or =TOKEN as the Update base (graph mode only)")
 	updateCmd.Flags().String("if-revision", "", ifRevisionFlagHelp+" Composes with --if-assignee/--if-status: all guards present must hold.")
 	// --force and --if-assignee are NOT mutually exclusive: --force still
 	// drives the close-policy and notes-overwrite halves (runCommandUpdateMutation),

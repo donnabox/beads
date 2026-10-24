@@ -168,11 +168,11 @@ func init() {
 		command.Flags().Bool("all-revisions", false, "Ignore endpoint-pin applicability while selecting current live Links")
 	}
 	linkShowCmd.Flags().Bool("long", false, "Include exact revision token and administrative details")
-	linkShowCmd.Flags().String("revision", "", "Read an exact retained Link version")
+	linkShowCmd.Flags().String("revision", "", "Read retained Link revision N or =TOKEN")
 	linkShowCmd.Flags().String("format", "", "Use graph-json for the complete graph record")
 	for _, command := range []*cobra.Command{linkUpdateCmd} {
 		command.Flags().SetNormalizeFunc(normalizeHistoricalRevisionFlag)
-		command.Flags().String("from-revision", "", "Compose editable Link content from this exact retained live revision; recover a deleted Link with the same ID")
+		command.Flags().String("from-revision", "", "Compose Link content from retained live revision N or =TOKEN; recover a deleted Link with the same ID")
 		command.Flags().String("source-revision", "", "Re-pin the source to an exact token or current, or unpin with unpinned; owned source pins refuse")
 		command.Flags().String("target-revision", "", "Re-pin the target to an exact token or current, or unpin with unpinned")
 		command.Flags().String("properties", "", "Merge named Link properties from JSON, @file, or @-")
@@ -182,16 +182,16 @@ func init() {
 		command.Flags().String("replace-metadata", "", "Replace Link metadata from JSON or @file")
 		command.Flags().StringArray("set-metadata", nil, "Set a Link metadata key=value")
 		command.Flags().StringArray("unset-metadata", nil, "Unset a Link metadata key")
-		command.Flags().String("if-revision", "", "Require the Link revision")
+		command.Flags().String("if-revision", "", "Require Link revision N or =TOKEN")
 		command.Flags().String("if-source-revision", "", "Require the owning Bead revision")
 	}
 	linkDeleteCmd.Flags().Bool("force", false, "Apply deletion after preview")
-	linkDeleteCmd.Flags().String("if-revision", "", "Require the Link revision")
+	linkDeleteCmd.Flags().String("if-revision", "", "Require Link revision N or =TOKEN")
 	linkDeleteCmd.Flags().String("if-source-revision", "", "Require the owning Bead revision")
 	linkCompareCmd.Flags().String("from", "", "Exact retained source version token")
 	linkCompareCmd.Flags().String("to", "", "Exact retained destination version token")
 	registerGraphLinkTypeFlag(graphUnlinkCmd)
-	graphUnlinkCmd.Flags().String("if-revision", "", "Require this observed Link revision")
+	graphUnlinkCmd.Flags().String("if-revision", "", "Require Link revision N or =TOKEN")
 	graphUnlinkCmd.Flags().String("if-source-revision", "", "Require this observed owning-source revision")
 	graphLinksCmd.Flags().String("direction", "both", "Incident direction: in, out, or both")
 	registerGraphLinkTypeFlag(graphLinksCmd)
@@ -484,6 +484,12 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	revision, _ := cmd.Flags().GetString("if-revision")
+	if cmd.Flags().Changed("if-revision") {
+		revision, err = graphPreviewRevisionFlag(cmd, "if-revision", path, true)
+		if err != nil {
+			return err
+		}
+	}
 	sourceRevision, _ := cmd.Flags().GetString("if-source-revision")
 	if cmd.Flags().Changed("if-source-revision") && sourceRevision == "" {
 		return graphFailure("invalid_selector", "--if-source-revision requires a token", 2)
@@ -604,11 +610,11 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		}
 	}
 	var err error
-	request.ExpectedRevision, request.Unconditional, err = graphPreviewRevisionGuard(cmd, false)
+	request.ExpectedRevision, request.Unconditional, err = graphPreviewRevisionGuard(cmd, false, request.Path, true)
 	if err != nil {
 		return err
 	}
-	request.ExpectedSourceRevision, request.UnconditionalSource, err = graphPreviewRevisionGuard(cmd, true)
+	request.ExpectedSourceRevision, request.UnconditionalSource, err = graphPreviewRevisionGuard(cmd, true, request.Path, true)
 	if err != nil {
 		return err
 	}

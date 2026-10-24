@@ -63,7 +63,7 @@ func graphPreviewPropertiesJSON(input string, stdin io.Reader) (json.RawMessage,
 	return canonical, nil
 }
 
-func graphPreviewRevisionGuard(cmd *cobra.Command, source bool) (string, bool, error) {
+func graphPreviewRevisionGuard(cmd *cobra.Command, source bool, identity string, privatePath bool) (string, bool, error) {
 	revisionFlag := "if-revision"
 	if source {
 		revisionFlag = "if-source-revision"
@@ -77,19 +77,26 @@ func graphPreviewRevisionGuard(cmd *cobra.Command, source bool) (string, bool, e
 	if revision == "" {
 		return "", false, graphFailure("invalid_selector", "--"+revisionFlag+" requires a nonempty revision token", 2)
 	}
+	if !source {
+		var err error
+		revision, err = graphPreviewRevisionFlag(cmd, revisionFlag, identity, privatePath)
+		if err != nil {
+			return "", false, err
+		}
+	}
 	return revision, false, nil
 }
 
 // Ordinary edits use the current predecessor when no comparison was asked for.
 // The writer still checks a supplied token atomically and records the actual
 // replaced version. Destructive commands retain their separate explicit guard.
-func graphPreviewEditRevisionGuard(cmd *cobra.Command) (string, bool, error) {
+func graphPreviewEditRevisionGuard(cmd *cobra.Command, identity string, privatePath bool) (string, bool, error) {
 	if !cmd.Flags().Changed("if-revision") {
 		return "", true, nil
 	}
-	revision, _ := cmd.Flags().GetString("if-revision")
-	if revision == "" {
-		return "", false, graphFailure("invalid_selector", "--if-revision requires a nonempty revision token", 2)
+	revision, err := graphPreviewRevisionFlag(cmd, "if-revision", identity, privatePath)
+	if err != nil {
+		return "", false, err
 	}
 	return revision, false, nil
 }
@@ -227,7 +234,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true, args[0], false)
 	if err != nil {
 		return err
 	}
@@ -285,11 +292,11 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if !cmd.Flags().Changed("properties") && sourcePin == nil && targetPin == nil {
 		return graphFailure("invalid_properties", "Link update requires --properties or an endpoint revision flag", 2)
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, path, true)
 	if err != nil {
 		return err
 	}

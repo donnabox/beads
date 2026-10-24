@@ -56,7 +56,7 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 			if current.Revision != claim.Issue.Revision || current.Properties.LeaseExpiresAt == nil || current.Properties.HeartbeatAt == nil {
 				t.Fatalf("heartbeat changed retained Issue or lost lease: %+v", current)
 			}
-			call("show", claim.Issue.ID, "--revision", claim.Issue.Revision)
+			call("show", claim.Issue.ID, "--revision", "="+claim.Issue.Revision)
 			refuse("invalid_properties", "reclaim", "--older-than=-1s")
 			refuse("invalid_properties", "reclaim", "--id=")
 			refuse("permission_denied", "reclaim", "--readonly")

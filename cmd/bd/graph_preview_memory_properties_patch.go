@@ -79,7 +79,7 @@ func graphPreviewMemoryPropertiesPatchRequestWithRaw(cmd *cobra.Command, path st
 	if !cmd.Flags().Changed("patch") && !cmd.Flags().Changed("replace-properties") {
 		return request, graphFailure("invalid_properties", "property update requires --patch or --replace-properties", 2)
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return request, err
 	}

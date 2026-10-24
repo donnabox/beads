@@ -226,7 +226,7 @@ try {
     acceptance_criteria: 'The public BDP client sees all four edited fields.\n' };
   const issueArgs = ['update', workID, '--title', issueFields.title,
     '--description', issueFields.description, '--design', issueFields.design,
-    '--acceptance', issueFields.acceptance_criteria, '--if-revision', workBefore.revision, '--json'];
+    '--acceptance', issueFields.acceptance_criteria, '--if-revision', '=' + workBefore.revision, '--json'];
   const issueBinary = digest(await readFile(process.env.BDP_BD));
   let issueExecution;
   let issueExitCode = null;
@@ -338,7 +338,7 @@ try {
   const claimNetworkIndex = network.length - 1;
   await writeFile(join(output, "client-issue-notes-before.body"), claimedHTTP.bytes);
   const noopMutation = await notesCLI('client-cli-issue-append-noop',
-    ['update', workID, '--append-notes=', '--if-revision', claimed.revision, '--actor', notesActor, '--json']);
+    ['update', workID, '--append-notes=', '--if-revision', '=' + claimed.revision, '--actor', notesActor, '--json']);
   assert.equal(noopMutation.result.changed, false);
   assert.deepEqual(noopMutation.result.issue, claimMutation.result.issue);
   const noopRecord = await perform({ kind: 'resource', resource: 'bead', id: workID });
@@ -353,7 +353,7 @@ try {
 
   const appendText = '  Progress — 雪\r\nsecond line\t  ';
   const appendMutation = await notesCLI('client-cli-issue-append',
-    ['update', workID, '--append-notes', appendText, '--if-revision', claimed.revision, '--actor', notesActor, '--json']);
+    ['update', workID, '--append-notes', appendText, '--if-revision', '=' + claimed.revision, '--actor', notesActor, '--json']);
   assert.equal(appendMutation.result.changed, true);
   const appended = await perform({ kind: 'resource', resource: 'bead', id: workID });
   assert.equal(appended.revision, appendMutation.result.issue.revision);
@@ -412,7 +412,7 @@ try {
     assert.equal(first.items[0].id, id('beads/alpha'));
     assert.ok(first.next);
     const args = ['update', 'links/context', '--properties', '{"note":"after page"}',
-      '--if-revision', plan.ownedLinks[ownedType][0].revision,
+      '--if-revision', '=' + plan.ownedLinks[ownedType][0].revision,
       '--if-source-revision', plan.revision, '--json'];
     const beforeBinary = digest(await readFile(process.env.BDP_BD));
     let mutation;
@@ -536,7 +536,7 @@ try {
 
   const memoryProperties = { title: 'Edited plan — 雪', body: 'Updated through the installed CLI.\n' };
   const memoryArgs = ['update', planID, '--properties', JSON.stringify(memoryProperties),
-    '--if-revision', record.revision, '--json'];
+    '--if-revision', '=' + record.revision, '--json'];
   const memoryBinary = digest(await readFile(process.env.BDP_BD));
   let memoryExecution;
   try {
@@ -583,7 +583,7 @@ try {
     assert.equal(retainedFirst.items[0].id, id('beads/alpha'));
     assert.ok(retainedFirst.next);
 
-    const deletionArgs = ['link', 'delete', dependencyID, '--force', '--if-revision', deletionLinkBefore.revision,
+    const deletionArgs = ['link', 'delete', dependencyID, '--force', '--if-revision', '=' + deletionLinkBefore.revision,
       '--if-source-revision', deletionSourceBefore.revision, '--actor', 'bdp-read-dependency-remover', '--json'];
     const deletionBinary = digest(await readFile(process.env.BDP_BD));
     let deletionExecution;
@@ -680,7 +680,7 @@ try {
   const authoredMutation = await notesCLI('client-cli-issue-authoring-edit',
     ['update', authoringID, '--estimate=45', '--external-ref=revised', '--spec-id=revised spec', '--due=2100-01-01T00:00:00Z',
       '--design=Revised', '--acceptance=Accepted', '--append-notes=Progress',
-      '--if-revision', authored.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + authored.revision, '--actor', authoringActor, '--json']);
   assert.equal(authoredMutation.result.changed, true);
   const editedAuthoring = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
   assert.equal(editedAuthoring.revision, authoredMutation.result.issue.revision);
@@ -698,7 +698,7 @@ try {
   await writeFile(join(output, 'client-issue-authoring-edited.body'), editedHTTP.bytes);
   const authoringNoop = await notesCLI('client-cli-issue-authoring-noop',
     ['update', authoringID, '--estimate=45', '--external-ref=revised', '--spec-id=revised spec', '--due=2100-01-01T00:00:00Z',
-      '--if-revision', editedAuthoring.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + editedAuthoring.revision, '--actor', authoringActor, '--json']);
   assert.equal(authoringNoop.result.changed, false);
   assert.deepEqual(authoringNoop.result.issue, authoredMutation.result.issue);
   const authoringNoopIndex = network.length;
@@ -709,7 +709,7 @@ try {
   await writeFile(join(output, 'client-issue-authoring-noop.body'), noopAuthoringHTTP.bytes);
   const clearAuthoring = await notesCLI('client-cli-issue-authoring-clear',
     ['update', authoringID, '--estimate=0', '--external-ref=', '--spec-id=', '--due=',
-      '--if-revision', editedAuthoring.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + editedAuthoring.revision, '--actor', authoringActor, '--json']);
   assert.equal(clearAuthoring.result.changed, true);
   const clearedAuthoring = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
   assert.equal(clearedAuthoring.revision, clearAuthoring.result.issue.revision);

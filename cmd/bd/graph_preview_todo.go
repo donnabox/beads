@@ -134,7 +134,14 @@ func runGraphPreviewTodoDone(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "reason", "if-revision"); err != nil {
 		return err
 	}
-	revision, _, err := graphPreviewEditRevisionGuard(cmd)
+	if cmd.Flags().Changed("if-revision") && len(args) != 1 {
+		return graphFailure("invalid_selector", "todo done --if-revision requires exactly one Issue", 2)
+	}
+	identity := ""
+	if len(args) == 1 {
+		identity = args[0]
+	}
+	revision, _, err := graphPreviewEditRevisionGuard(cmd, identity, false)
 	if err != nil {
 		return err
 	}

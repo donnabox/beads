@@ -38,7 +38,7 @@ func TestGraphPreviewIssueAppendNotesInput(t *testing.T) {
 		{"above-memory-input-limit", strings.Repeat("x", (1<<20)+1)},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := issueTextCommand(t, "--append-notes="+tc.value, "--if-revision=stale-observed-token")
+			cmd := issueTextCommand(t, "--append-notes="+tc.value, "--if-revision==stale-observed-token")
 			appendNotesNoInput(t, cmd)
 			if !graphPreviewIssueEditFlagsChanged(cmd) {
 				t.Fatal("append-only presence did not select the Issue field route")

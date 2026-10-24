@@ -225,8 +225,8 @@ def verify_issue_append_capture(root, summary, binary_hash, network):
     binary = data("02-memory-create/receipt.json")["argv"][0]
     commands = (
         ("client-cli-issue-claim", "claimMutation", ["update", work_id, "--claim", "--actor", actor, "--json"], True, claimed),
-        ("client-cli-issue-append-noop", "noopMutation", ["update", work_id, "--append-notes=", "--if-revision", claimed["revision"], "--actor", actor, "--json"], False, claimed),
-        ("client-cli-issue-append", "appendMutation", ["update", work_id, "--append-notes", text, "--if-revision", claimed["revision"], "--actor", actor, "--json"], True, after),
+        ("client-cli-issue-append-noop", "noopMutation", ["update", work_id, "--append-notes=", "--if-revision", "=" + claimed["revision"], "--actor", actor, "--json"], False, claimed),
+        ("client-cli-issue-append", "appendMutation", ["update", work_id, "--append-notes", text, "--if-revision", "=" + claimed["revision"], "--actor", actor, "--json"], True, after),
     )
     for name, key, args, changed, record in commands:
         receipt, mutation = data(name + ".json"), data(name + ".stdout.log")
@@ -305,7 +305,7 @@ def verify_issue_authoring_capture(root, summary, binary_hash, network):
     ):
         prefix = "client-cli-issue-authoring-" + name
         receipt, mutation = data(prefix + ".json"), data(prefix + ".stdout.log")
-        require(receipt["argv"] == [binary, "update", resource, *flags, "--if-revision", predecessor["revision"], "--actor", actor, "--json"]
+        require(receipt["argv"] == [binary, "update", resource, *flags, "--if-revision", "=" + predecessor["revision"], "--actor", actor, "--json"]
                 and receipt["binarySha256"] == binary_hash and receipt["exitCode"] == 0 and receipt["signal"] is None,
                 "authoring installed command provenance/guard/exit differs")
         for stream in ("stdout", "stderr"):
@@ -344,7 +344,7 @@ def verify_memory_deletion_capture(root, summary):
     require_memory_deletion(deletion.get("result"), alpha)
     argv = data("18-memory-delete/receipt.json")["argv"]
     require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", alpha["id"], "--force",
-                     "--if-revision", alpha["revision"], "--json"], "deletion did not use original observed guard")
+                     "--if-revision", "=" + alpha["revision"], "--json"], "deletion did not use original observed guard")
     require(summary.get("memory_delete") == {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]},
             "Memory deletion summary missing")
     require(summary.get("python_after_delete") == {"passed": True, "beads": 4, "limit": 1,

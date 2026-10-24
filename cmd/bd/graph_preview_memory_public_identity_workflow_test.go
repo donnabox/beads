@@ -64,12 +64,12 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 				if after.Revision != shown.Revision {
 					t.Fatal("conflicting flags changed Memory")
 				}
-				removed := graphMixedResult[graphstore.MemoryDeleteResult](t, call("forget", selector, "--if-revision", shown.Revision))
+				removed := graphMixedResult[graphstore.MemoryDeleteResult](t, call("forget", selector, "--if-revision", "="+shown.Revision))
 				if removed.Terminal == nil {
 					t.Fatal("forget omitted terminal revision")
 				}
 				graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "No auto recovery", "--key", key, "--json")
-				restored := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", selector, "--from-revision", created.Revision, "--if-revision", removed.Terminal.Revision))
+				restored := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", selector, "--from-revision", "="+created.Revision, "--if-revision", "="+removed.Terminal.Revision))
 				if restored.Memory.ID != created.ID || restored.Memory.Properties.Body != body {
 					t.Fatal("restore changed identity or source content")
 				}
@@ -236,11 +236,11 @@ func TestGraphPreviewCommonIdentityIssueDelete(t *testing.T) {
 					t.Fatalf("preview selected wrong allocation: %+v", preview)
 				}
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "delete", issue.ID, "--force", "--if-revision", "stale", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "delete", issue.ID, "--force", "--if-revision", "=stale", "--json")
 			if call("show", issue.ID, "--format", "graph-json") != issueBefore || call("show", memory.ID) != memoryBefore {
 				t.Fatal("preview or stale delete changed Issue or competing Memory")
 			}
-			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issue.Properties.ID, "--force", "--if-revision", issue.Revision))
+			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issue.Properties.ID, "--force", "--if-revision", "="+issue.Revision))
 			if !deleted.Deleted || deleted.Issue.ID != issue.ID || deleted.Terminal == nil || deleted.Terminal.ID != issue.ID {
 				t.Fatalf("delete lost public identity: %+v", deleted)
 			}

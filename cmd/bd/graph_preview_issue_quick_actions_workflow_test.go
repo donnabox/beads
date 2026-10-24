@@ -71,11 +71,11 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 				t.Fatalf("second note overwrote prior text: %q", got.Properties.Notes)
 			}
 			preAssign := read()
-			assigned := issue(call("assign", scope+"beads/work", "alice", "--if-revision", preAssign.Revision, "--actor", "alice"))
+			assigned := issue(call("assign", scope+"beads/work", "alice", "--if-revision", "="+preAssign.Revision, "--actor", "alice"))
 			if assigned.ID != preAssign.Properties.ID || assigned.Assignee != "alice" || read().Revision == preAssign.Revision {
 				t.Fatalf("assign lost canonical identity or failed to version: %+v", assigned)
 			}
-			refuse("revision_conflict", "assign", scope+"beads/work", "bob", "--if-revision", preAssign.Revision)
+			refuse("revision_conflict", "assign", scope+"beads/work", "bob", "--if-revision", "="+preAssign.Revision)
 			state = graphMemoryReadSnapshot(t, work)
 			call("assign", scope+"beads/work", "alice")
 			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {

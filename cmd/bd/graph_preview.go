@@ -84,19 +84,19 @@ func init() {
 	rememberCmd.Flags().StringArray("unset-metadata", nil, "Remove Memory metadata key (repeatable; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
 	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id or --key; refuse an allocated ID (graph preview only)")
-	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for an existing-ID update (graph preview only)")
+	rememberCmd.Flags().String("if-revision", "", "Require Memory revision N or =TOKEN for an existing-ID update (graph preview only)")
 	rememberCmd.Flags().String("body-file", "", "Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)")
 	rememberCmd.Flags().Bool("stdin", false, "Read graph Memory body from stdin (preview: at most 1 MiB)")
 	// delete already has upstream's --if-revision (as do update, close and
 	// assign), which link mode reads through cmd.Flags(); registering it again
 	// panics at init. forget has no upstream flag, so it keeps the preview's own.
-	forgetCmd.Flags().String("if-revision", "", "Require this observed Memory revision (graph preview only)")
+	forgetCmd.Flags().String("if-revision", "", "Require Memory revision N or =TOKEN (graph preview only)")
 	statusCmd.Flags().Bool("graph", false, "Report graph preview capabilities")
 	memoriesCmd.Flags().Bool("all", false, "Return all matching graph Memory summaries within preview bounds")
 	memoriesCmd.Flags().Bool("details", false, "Include Memory versions, attribution and owned-Link counts")
 	memoriesCmd.Flags().String("format", "table", "Graph Memory summaries: table or records-json (preview only)")
-	recallCmd.Flags().String("revision", "", "Recall an exact retained Memory version token (graph preview only)")
-	showCmd.Flags().String("revision", "", "Read an exact retained version token (graph preview only)")
+	recallCmd.Flags().String("revision", "", "Recall retained Memory revision N or =TOKEN (graph preview only)")
+	showCmd.Flags().String("revision", "", "Read retained revision N or =TOKEN (graph preview only)")
 	createCmd.Flags().String("properties", "", "Initialize installed Bead Type properties from a JSON object, @file, or @- (graph preview only)")
 	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
@@ -644,12 +644,9 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	}
 	explicit := cmd.Flags().Changed("id") || cmd.Flags().Changed("key")
 	if cmd.Flags().Changed("if-revision") {
-		revision, _, err := graphPreviewEditRevisionGuard(cmd)
-		if err != nil {
+		raw, _ := cmd.Flags().GetString("if-revision")
+		if _, err := graphPreviewParseRevisionFlag("if-revision", raw); err != nil {
 			return err
-		}
-		if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
-			return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
 		}
 	}
 	// Pure flag contradictions must not consume a requested body source.
@@ -819,6 +816,12 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	}
 	version, _ := cmd.Flags().GetString("revision")
 	versioned := cmd.Flags().Changed("revision")
+	if versioned {
+		version, err = graphPreviewRevisionFlag(cmd, "revision", ref.Identity, false)
+		if err != nil {
+			return err
+		}
+	}
 	if ref.Explicit {
 		if versioned {
 			return graphFailure("invalid_selector", "choose ID@revision or --revision, not both", 2)

@@ -11,7 +11,7 @@ import (
 func TestGraphPreviewIssueReferencesPresence(t *testing.T) {
 	for _, value := range []string{"", "-", "  雪 #42  "} {
 		t.Run(value, func(t *testing.T) {
-			cmd := issueTextCommand(t, "--external-ref="+value, "--spec-id="+value, "--if-revision=observed")
+			cmd := issueTextCommand(t, "--external-ref="+value, "--spec-id="+value, "--if-revision==observed")
 			got, err := graphPreviewIssueEditRequest(cmd, "beads/work")
 			if err != nil || !graphPreviewIssueEditFlagsChanged(cmd) || got.ExternalRef == nil || *got.ExternalRef != value || got.SpecID == nil || *got.SpecID != value || got.ExpectedRevision != "observed" {
 				t.Fatalf("literal presence or guard lost: %+v %v", got, err)

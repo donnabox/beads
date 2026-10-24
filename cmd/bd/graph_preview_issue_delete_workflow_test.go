@@ -44,7 +44,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 				t.Fatal("unguarded --force did not delete the current Issue")
 			}
 			refuse("gone", "show", unguarded.ID)
-			refuse("revision_conflict", "delete", issue.Properties.ID, "--force", "--if-revision", "stale")
+			refuse("revision_conflict", "delete", issue.Properties.ID, "--force", "--if-revision", "=stale")
 			refuse("capability_unavailable", "forget", issue.Properties.ID)
 			call("remember", "Other", "--id", "beads/other")
 			linked := graphMixedResult[graphstore.IssueRecord](t, call("create", "Linked", "--id", "beads/linked", "--force"))
@@ -53,8 +53,8 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			if !linkedPreview.Preview || linkedPreview.Deleted || !reflect.DeepEqual(linkedPreview.Issue, linked) || len(linkedPreview.IncidentLinkIDs) != 1 {
 				t.Fatal("informational Link preview did not disclose its cleanup")
 			}
-			refuse("revision_conflict", "delete", linked.Properties.ID, "--force", "--if-revision", "stale")
-			linkedDelete := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", linked.Properties.ID, "--force", "--if-revision", linked.Revision))
+			refuse("revision_conflict", "delete", linked.Properties.ID, "--force", "--if-revision", "=stale")
+			linkedDelete := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", linked.Properties.ID, "--force", "--if-revision", "="+linked.Revision))
 			if !linkedDelete.Deleted || len(linkedDelete.IncidentLinkIDs) != 1 {
 				t.Fatal("linked Issue deletion omitted Link cleanup")
 			}
@@ -68,7 +68,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", blocker.Properties.ID)); !reflect.DeepEqual(got, blocker) {
 				t.Fatal("dependent refusal changed blocker")
 			}
-			forced := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", blocker.Properties.ID, "--force", "--if-revision", blocker.Revision))
+			forced := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", blocker.Properties.ID, "--force", "--if-revision", "="+blocker.Revision))
 			if !forced.Deleted || len(forced.IncidentLinkIDs) != 1 || forced.IncidentLinkIDs[0] != dependency.Link.ID {
 				t.Fatal("force deletion omitted orphan Link cleanup")
 			}
@@ -77,7 +77,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 
 			final := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", issue.ID))
 			before := call("versions", issue.ID)
-			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issue.Properties.ID, "--force", "--if-revision", final.Revision))
+			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issue.Properties.ID, "--force", "--if-revision", "="+final.Revision))
 			if !deleted.Deleted || deleted.Preview || !reflect.DeepEqual(deleted.Issue, final) {
 				t.Fatal("apply did not disclose final live Issue")
 			}
@@ -95,7 +95,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 				t.Fatal("native deletion lost prior snapshots or distinct D")
 			}
 
-			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", issue.ID, "--revision", final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
+			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", issue.ID, "--revision", "="+final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
 				t.Fatal("final live snapshot unavailable")
 			}
 			call("show", "beads/other")

@@ -36,20 +36,27 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 				t.Fatalf("generated Link/full pin: %+v", linked.Link)
 			}
 			call("update", twoID, "--properties", `{"body":"Changed"}`)
+			currentTwo := call("show", twoID)
+			refuse("revision_conflict", "update", twoID, "--properties", `{"body":"Stale"}`, "--if-revision", "1")
+			if call("show", twoID) != currentTwo {
+				t.Fatal("stale ordinal guard changed the selected Memory")
+			}
 			graphMemoryReadRaw(t, bd, work, home, "", "", "recall", twoID+"@1")
-			graphMemoryReadRaw(t, bd, work, home, "", "", "recall", two.ID, "--revision", two.Revision)
+			graphMemoryReadRaw(t, bd, work, home, "", "", "recall", two.ID, "--revision", "="+two.Revision)
+			graphMemoryReadRaw(t, bd, work, home, "", "", "recall", two.ID, "--revision", "1")
 			graphMemoryReadRaw(t, bd, work, home, "Changed", "", "recall", twoID+"@current")
-			graphMemoryReadRaw(t, bd, work, home, "", "invalid_selector", "recall", twoID+"@1", "--revision", two.Revision)
-			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "recall", two.ID, "--revision", "current")
+			graphMemoryReadRaw(t, bd, work, home, "", "invalid_selector", "recall", twoID+"@1", "--revision", "="+two.Revision)
+			graphMemoryReadRaw(t, bd, work, home, "", "invalid_selector", "recall", two.ID, "--revision", "current")
 			byNumber := call("show", twoID+"@1")
-			if byNumber != call("show", twoID+"@="+two.Revision) || byNumber != call("show", two.ID, "--revision", two.Revision) || byNumber == call("show", twoID+"@current") {
+			if byNumber != call("show", twoID+"@="+two.Revision) || byNumber != call("show", two.ID, "--revision", "="+two.Revision) || byNumber != call("show", two.ID, "--revision", "1") || byNumber == call("show", twoID+"@current") {
 				t.Fatal("ordinal, exact token and current selection disagree")
 			}
 			refuse("revision_unknown", "show", twoID+"@999")
+			refuse("revision_unknown", "show", twoID, "--revision", "=3")
 			refuse("revision_unknown", "link", "create", oneID, twoID+"@999", "--type", "types/references")
-			canonical := func(selector string) json.RawMessage {
+			canonical := func(args ...string) json.RawMessage {
 				t.Helper()
-				out := graphPolicyCLI(t, bd, work, home, nil, "", "show", selector, "--output-format", "json")
+				out := graphPolicyCLI(t, bd, work, home, nil, "", append(append([]string{"show"}, args...), "--output-format", "json")...)
 				var envelope struct {
 					Data json.RawMessage `json:"data"`
 				}
@@ -58,14 +65,14 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 				}
 				return envelope.Data
 			}
-			if string(canonical(twoID+"@1")) != string(canonical(twoID+"@="+two.Revision)) {
+			if string(canonical(twoID+"@1")) != string(canonical(twoID+"@="+two.Revision)) || string(canonical(twoID+"@1")) != string(canonical(two.ID, "--revision", "1")) {
 				t.Fatal("canonical output changed selected revision")
 			}
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Native rooted", "--id-root", "work"))
 			if !strings.HasPrefix(issue.Properties.ID, "work/") || len(strings.TrimPrefix(issue.Properties.ID, "work/")) != 6 {
 				t.Fatalf("native root ID: %+v", issue)
 			}
-			if call("show", issue.Properties.ID+"@1") != call("show", issue.ID, "--revision", issue.Revision) {
+			if call("show", issue.Properties.ID+"@1") != call("show", issue.ID, "--revision", "1") || call("show", issue.ID, "--revision", "1") != call("show", issue.ID, "--revision", "="+issue.Revision) {
 				t.Fatal("native ordinal did not resolve authoritative history")
 			}
 			refuse("invalid_selector", "create", "Bad", "--type", "types/memory", "--id", "explicit", "--id-root", "root")
@@ -88,7 +95,7 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 				t.Fatal("literal sibling shadowed endpoint reference")
 			}
 			gone := graphMixedResult[graphstore.Record](t, call("remember", "Recoverable", "--id", "recovery"))
-			call("delete", "recovery", "--force", "--if-revision", gone.Revision)
+			call("delete", "recovery", "--force", "--if-revision", "1")
 			history := graphMixedResult[struct {
 				CurrentState *graphstore.ResourceTerminalState `json:"currentState"`
 			}](t, call("versions", "recovery"))
@@ -96,9 +103,9 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 				t.Fatalf("deletion history: %+v", history)
 			}
 			refuse("gone", "show", "recovery@2")
-			call("update", "recovery", "--from-revision", gone.Revision, "--if-revision", history.CurrentState.Revision)
+			call("update", "recovery", "--from-revision", "1", "--if-revision", "2")
 			refuse("gone", "show", "recovery@2")
-			if call("show", "recovery@1") != call("show", gone.ID, "--revision", gone.Revision) {
+			if call("show", "recovery@1") != call("show", gone.ID, "--revision", "="+gone.Revision) {
 				t.Fatal("recovery renumbered old state")
 			}
 			if call("show", "recovery@3") != call("show", "recovery") {

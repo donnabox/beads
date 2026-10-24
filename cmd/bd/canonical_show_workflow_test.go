@@ -152,7 +152,7 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 					t.Fatalf("retained owner must preserve selected empty groups without current Links: %s", old)
 				}
 			}
-			equalJSON(old, decode(call("show", scope+"beads/plan", "--revision", initial.Revision, "--output-format=json")))
+			equalJSON(old, decode(call("show", scope+"beads/plan", "--revision", "="+initial.Revision, "--output-format=json")))
 			detail := call("show", scope+"beads/plan", "--output-format=detail", "--omit=/ownedLinks")
 			if !strings.Contains(detail, "Big body & <literal>") {
 				t.Fatalf("human detail escaped or lost body: %s", detail)

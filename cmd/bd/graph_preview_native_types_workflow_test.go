@@ -134,7 +134,7 @@ func TestGraphPreviewNativeConcreteTypeWorkflow(t *testing.T) {
 			if changed.Issue.Type != featureType || changed.Issue.Properties.Title != "Renamed" {
 				t.Fatalf("native setter ignored: %+v", changed)
 			}
-			retained := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", first.ID, "--revision", first.Revision, "--format", "graph-json"))
+			retained := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", first.ID, "--revision", "="+first.Revision, "--format", "graph-json"))
 			if retained.Type != taskType {
 				t.Fatalf("retained affiliation changed: %+v", retained)
 			}
@@ -161,7 +161,7 @@ func TestGraphPreviewNativeConcreteTypeWorkflow(t *testing.T) {
 			if replaced.Issue.Type != bugType || replaced.Issue.Properties.Title != "Replacement" {
 				t.Fatalf("replacement lost affiliation: %+v", replaced)
 			}
-			restored := graphMixedResult[graphstore.IssueMutationResult](t, call("update", first.ID, "--from-revision", first.Revision))
+			restored := graphMixedResult[graphstore.IssueMutationResult](t, call("update", first.ID, "--from-revision", "="+first.Revision))
 			if restored.Issue.Type != taskType {
 				t.Fatalf("historical restore lost affiliation: %+v", restored)
 			}

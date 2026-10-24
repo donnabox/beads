@@ -317,7 +317,10 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if len(targets) == 0 {
 		return graphFailure("invalid_selector", "graph close requires at least one Bead ID or beads/PATH", 2)
 	}
-	revision, _, err := graphPreviewRevisionGuard(cmd, false)
+	if cmd.Flags().Changed("if-revision") && len(targets) != 1 {
+		return graphFailure("invalid_selector", "--if-revision only works when closing a single Issue", 2)
+	}
+	revision, _, err := graphPreviewRevisionGuard(cmd, false, targets[0], false)
 	if err != nil {
 		return err
 	}
@@ -542,7 +545,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 		}
 		ids[i] = id
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, args[0], false)
 	if err != nil {
 		return err
 	}

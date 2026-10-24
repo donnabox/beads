@@ -20,7 +20,7 @@ import (
 func runGraphPreviewRememberUpsert(cmd *cobra.Command, publicID string, title, body *string) error {
 	path := ""
 	var err error
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, publicID, false)
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func runGraphPreviewRememberPropertiesReplacement(cmd *cobra.Command, args []str
 	}
 	var path string
 	var err error
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, selector, false)
 	if err != nil {
 		return err
 	}
@@ -165,7 +165,7 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	}
 	var path string
 	var err error
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, selector, false)
 	if err != nil {
 		return err
 	}

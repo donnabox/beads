@@ -117,7 +117,7 @@ func memoryLinkRequestWithEndpoints(cmd *cobra.Command, scope string, op memoryL
 		}
 		result.PublicID = value
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true, endpoints[0], false)
 	if err != nil {
 		return zero, err
 	}

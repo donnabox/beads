@@ -13,7 +13,7 @@ bd todo list --all includes completed task Issues. bd todo done ID... closes
 any Issue, as in ordinary workspaces, with reason Completed unless --reason
 is supplied. Each unguarded ID is attempted independently; failed targets
 are reported to stderr while successful closes are returned.
-For one Issue, --if-revision TOKEN refuses a stale completion. List and add
+For one Issue, --if-revision =TOKEN refuses a stale completion. List and add
 JSON keep the familiar Issue shape with canonical beads/PATH IDs.
 
 Ordinary Issue workspaces:
@@ -27,7 +27,7 @@ Use bd versions ID to list one Memory, Issue or Link's retained versions newest
 first. Bare ID means beads/ID; use links/PATH for a Link. Every new graph
 Resource has a creation version; do not enable ordinary versioned-history
 recording for this command. Cite the opaque version token with bd show ID
---revision TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
+--revision =TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
 local_revision only orders versions within this store. --json names that field
 local_revision, matching ordinary bd versions. BDP HTTP History is unavailable.
 The human SEQ timeline includes terminal deletion events, which are not live
@@ -50,7 +50,7 @@ Use bd defer ID... to defer one or more Issues. --until accepts ordinary bd
 date and relative-time forms; an undated defer stays deferred until restored.
 --reason appends to Issue notes. A later bd ready wakes due Issues, recording
 one native and graph version per changed Issue. A repeated dateless defer is a
-no-op when neither date nor notes change. Use --if-revision TOKEN for a
+no-op when neither date nor notes change. Use --if-revision =TOKEN for a
 single-Issue stale-write check. Without it, the current revision is accepted.
 
 Ordinary Issue workspaces:
@@ -58,7 +58,7 @@ Ordinary Issue workspaces:
 	undeferCmd.Long = `Graph preview workspaces:
 Use bd undefer ID... to restore one or more deferred Issues to open. It also
 clears a stale defer date on a non-deferred Issue. A repeated undefer is a
-no-op if nothing changes. Use --if-revision TOKEN for a single-Issue
+no-op if nothing changes. Use --if-revision =TOKEN for a single-Issue
 stale-write check. Without it, the current revision is accepted.
 
 Ordinary Issue workspaces:
@@ -97,7 +97,7 @@ To require an existing Memory, keep using --update instead of --id:
 parse revision suffixes. The selected bd update targets refuse revision suffixes.
 Omitted fields remain unchanged on update. Use --body-file PATH or --stdin
 instead of positional body text. An existing-ID update accepts the current
-revision by default; add --if-revision TOKEN to reject a stale update. Read
+revision by default; add --if-revision =TOKEN to reject a stale update. Read
 the token with bd show policy --json. --replace-properties JSON replaces all
 Memory properties where the Type permits it, and --replace-metadata JSON
 replaces all metadata; {} clears the selected document.`},
@@ -105,7 +105,7 @@ replaces all metadata; {} clears the selected document.`},
 Use --all for a complete bounded result, --details for version/Link counts,
 or --format records-json for machine-readable summaries. --json is unavailable;
 use bd recall ID for the exact body.`},
-		{recallCmd, `Use bd recall ID for one exact Memory body. --revision TOKEN
+		{recallCmd, `Use bd recall ID for one exact Memory body. --revision =TOKEN
 selects a retained body; use bd show ID --json for the record. Graph
 recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id ID.
@@ -144,13 +144,14 @@ Issue changes; stop it with Ctrl+C.
 --current selects the actor's first in-progress Issue, then hooked Issue, then
 the last-touched Issue; it cannot combine with an explicit ID.
 ID@N selects the stable store-local revision number N. ID@=TOKEN or
-'[URL]@=TOKEN' selects one exact retained record; --revision TOKEN remains
-an exact-token alternative (not both). @current reads current. Unwrapped URL forms containing :// are
+'[URL]@=TOKEN' selects one exact retained record; --revision N or
+--revision =TOKEN is an alternative (not both). @current reads current. Unwrapped URL forms containing :// are
 literal, including raw @; use the full canonical Scope URL to escape local
 @ shorthand. Colon-only forms such as plan:v1@=TOKEN use local syntax.
 Bracketed operands require canonical HTTP(S) Scope URLs, not opaque URIs.
 Suffixes are rejected on the selected update and deletion targets; use
---if-revision for write comparison. --revision treats current and unpinned as exact tokens.
+--if-revision for write comparison. The flag forms require a positive local
+ordinal N or =TOKEN; a bare token and current are not flag values.
 Endpoint pins remain unavailable. This is not an ordered history listing.
 A current Issue's
 --json uses the ordinary detail array with Scope-relative Bead IDs and its
@@ -163,7 +164,7 @@ showing a Memory or Link does not.`},
 edits. --properties JSON shallowly merges named top-level properties on an
 Issue, Memory, or informational Link, preserving omitted keys. The same flag
 initializes properties on bd create and bd remember. For example:
-  bd update policy --properties '{"body":"Revised text"}' --if-revision TOKEN
+  bd update policy --properties '{"body":"Revised text"}' --if-revision =TOKEN
 An empty merge object is a no-op. --replace-properties JSON replaces all
 writable properties, and --replace-metadata JSON replaces all metadata; {}
 clears the selected document where the Type allows it. The replacement flags
@@ -189,11 +190,11 @@ unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},
 		{deleteCmd, `bd delete ID previews a Memory or Issue without writing.
 Multiple Issue IDs and --from-file select a checked Issue set; --cascade
 includes dependent Issues. Apply with --force, or keep any delete request
-read-only with --dry-run. --if-revision TOKEN optionally rejects stale
+read-only with --dry-run. --if-revision =TOKEN optionally rejects stale
 single-Issue state. Referenced Memories refuse and remain single-ID;
 dotted native Issue IDs refuse set deletion pending citation qualification.`},
 		{forgetCmd, `Use bd forget ID to delete one unreferenced Memory now.
-Add --if-revision TOKEN to reject stale state. Canonical IDs are retained and
+Add --if-revision =TOKEN to reject stale state. Canonical IDs are retained and
 incident Links prevent deletion; no cascade is performed.`},
 		{depCmd, `Use bd dep BLOCKER --blocks BLOCKED to create a blocking
 Dependency between two live Issues. Bare bd dep prints help; the ordinary
@@ -257,7 +258,7 @@ applies to all IDs; repeat it once per ID for positional reasons, or use
 positional reason. A batch reports successful Issues on stdout and per-Issue
 failures on stderr, then exits nonzero if any failed. --force bypasses pinned,
 holder, blocker and open-child policy; --session (or CLAUDE_SESSION_ID) records
-the closing session. On one Issue, --if-revision TOKEN from bd show --json
+the closing session. On one Issue, --if-revision =TOKEN from bd show --json
 rejects a stale close, including an already-closed retry. It cannot be used
 with multiple IDs, --suggest-next or --claim-next. Without it, close accepts
 the current revision. On one Issue, --suggest-next lists Issues that closing it

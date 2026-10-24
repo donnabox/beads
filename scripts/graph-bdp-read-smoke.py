@@ -338,7 +338,7 @@ def main():
         # checks. Use its original observed revision, not a fresh pre-read.
         alpha = records["beads/alpha"]
         deleted = c0.envelope(capture.success("memory-delete", ["delete", scope + "beads/alpha", "--force",
-            "--if-revision", alpha["revision"], "--json"]))
+            "--if-revision", "=" + alpha["revision"], "--json"]))
         c0.require_memory_deletion(deleted, alpha)
         name = "python-after-delete"
         consumer = Process(capture, name, [sys.executable, str(Path(__file__)), "--observe-python",

@@ -141,7 +141,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				if count["count"] != 1 {
 					t.Fatalf("Link collection count = %d, want 1", count["count"])
 				}
-				edited := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", link.Link.ID, "--properties", `{"note":"updated"}`, "--if-revision", link.Link.Revision))
+				edited := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", link.Link.ID, "--properties", `{"note":"updated"}`, "--if-revision", "="+link.Link.Revision))
 				if edited.Link.Type != link.Link.Type {
 					t.Fatal("update changed Type")
 				}
@@ -152,15 +152,15 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					t.Fatalf("%s Link versions: resource=%q kind=%q rows=%+v", spec.typ, resource, kind, versions)
 				}
 				graphVersionsAssertKeys(t, spec.typ, members)
-				old := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", link.Link.ID, "--revision", link.Link.Revision))
+				old := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", link.Link.ID, "--revision", "="+link.Link.Revision))
 				if !reflect.DeepEqual(old, link.Link) {
 					t.Fatal("retained Link changed")
 				}
 				if comparison := call("link", "compare", link.Link.ID, "--from", link.Link.Revision, "--to", edited.Link.Revision); !strings.Contains(comparison, "note") {
 					t.Fatalf("Link comparison omitted changed property: %s", comparison)
 				}
-				call("link", "delete", "--force", link.Link.ID, "--if-revision", edited.Link.Revision)
-				retained := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--revision", owner.Revision))
+				call("link", "delete", "--force", link.Link.ID, "--if-revision", "="+edited.Link.Revision)
+				retained := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--revision", "="+owner.Revision))
 				if !reflect.DeepEqual(retained, owner) {
 					t.Fatal("unlink rewrote old Memory-owned snapshot")
 				}
@@ -176,7 +176,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				t.Fatal("explicit Bead and Link identities were rewritten")
 			}
 			refuse("identity_reserved", "link", memory.ID, other.ID, "--type", "types/references", "--id", "beads/edge")
-			call("link", "delete", "--force", "links/edge", "--if-revision", shortLink.Link.Revision)
+			call("link", "delete", "--force", "links/edge", "--if-revision", "="+shortLink.Link.Revision)
 			refuse("gone", "show", scope+"links/edge")
 			if shown := graphMixedResult[graphstore.Record](t, call("show", "beads/edge")); shown.ID != sameIDBead.ID {
 				t.Fatal("Link-only unlink selected the Bead with the same basename")

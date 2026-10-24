@@ -101,10 +101,19 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	}
 	version, _ := cmd.Flags().GetString("revision")
 	versioned := cmd.Flags().Changed("revision")
-	if ref.Explicit {
-		if versioned {
-			return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --revision, not both", 2)
+	if ref.Explicit && versioned {
+		return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --revision, not both", 2)
+	}
+	if versioned {
+		version, err = graphPreviewRevisionValue("revision", version, ref.Identity, false)
+		if err != nil {
+			if graphPreviewReferenceStorageError(err) {
+				return canonicalReadError(cmd, renderer, err, "route_unavailable")
+			}
+			return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 		}
+	}
+	if ref.Explicit {
 		if !ref.currentSelection() {
 			version, versioned = ref.Revision, true
 		}

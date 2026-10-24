@@ -132,7 +132,7 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 			created := graphMixedResult[graphstore.Record](t, call("remember", "First body", "--id", "beads/plan"))
 			call("update", "beads/plan", "--properties", `{"body":"Second body"}`)
 			const planURL = "https://example.invalid/reference-read/beads/plan"
-			oldByFlag := call("show", planURL, "--revision", created.Revision)
+			oldByFlag := call("show", planURL, "--revision", "="+created.Revision)
 			oldBySuffix := call("show", "["+planURL+"]@="+created.Revision)
 			if got := call("show", "["+planURL+"]@="+created.Revision); got != oldByFlag {
 				t.Fatal("URI@revision did not select exact retained state")
@@ -144,7 +144,7 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 			if oldBySuffix == current || call("show", "["+planURL+"]@current") != current {
 				t.Fatal("exact and floating/current Bead selectors were conflated")
 			}
-			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "show", "["+planURL+"]@="+created.Revision, "--revision", created.Revision, "--json")
+			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "show", "["+planURL+"]@="+created.Revision, "--revision", "="+created.Revision, "--json")
 			// Unknown suffixes must not fall back to the current record. The
 			// existing raw-read helper verifies numeric exit3 and no stdout.
 			for _, selector := range []string{"[" + planURL + "]@=no-such-token"} {
@@ -156,7 +156,7 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 				// The flag is an exact-token escape, even for reserved suffix
 				// words. These words aren't retained tokens in this fixture,
 				// so exact lookup must refuse instead of reading current.
-				graphPolicyCLI(t, bd, work, home, nil, "revision_unknown", "show", planURL, "--revision", word, "--json")
+				graphPolicyCLI(t, bd, work, home, nil, "revision_unknown", "show", planURL, "--revision", "="+word, "--json")
 			}
 			for _, suffix := range []string{"@=" + created.Revision, "@current"} {
 				for _, command := range []string{"update", "delete", "forget"} {
@@ -179,9 +179,9 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 			call("link", "update", "links/context", "--properties", `{"note":"changed"}`)
 			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "links/context@=no-such-token")
 			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "[https://example.invalid/reference-read/links/context]@=no-such-token")
-			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "show", "links/context@="+linked.Link.Revision, "--revision", linked.Link.Revision, "--json")
+			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "show", "links/context@="+linked.Link.Revision, "--revision", "="+linked.Link.Revision, "--json")
 			const linkURL = "https://example.invalid/reference-read/links/context"
-			linkByFlag := call("link", "show", linkURL, "--revision", linked.Link.Revision)
+			linkByFlag := call("link", "show", linkURL, "--revision", "="+linked.Link.Revision)
 			linkBySuffix := call("link", "show", "["+linkURL+"]@="+linked.Link.Revision)
 			if linkBySuffix != linkByFlag || linkBySuffix == call("link", "show", "links/context") {
 				t.Fatal("Link ID@REV did not route to exact retained Link state")
@@ -209,7 +209,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 				t.Fatalf("wrong identity: %+v", got)
 			}
 			call("update", memoryURI, "--properties", `{ "body":"Updated raw at" }`)
-			if got := call("show", "["+memoryURI+"]@="+created.Revision); got != call("show", memoryURI, "--revision", created.Revision) {
+			if got := call("show", "["+memoryURI+"]@="+created.Revision); got != call("show", memoryURI, "--revision", "="+created.Revision) {
 				t.Fatal("canonical raw@ exact read mismatch")
 			}
 			call("create", "Target", "--type", "types/constraint", "--id", "beads/target")
@@ -219,7 +219,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 				t.Fatalf("canonical raw@ Link identity lost: %+v", shown)
 			}
 			call("link", "update", linkURI, "--properties", `{ "note":"Changed" }`)
-			if got := call("link", "show", "["+linkURI+"]@="+shown.Revision); got != call("link", "show", linkURI, "--revision", shown.Revision) {
+			if got := call("link", "show", "["+linkURI+"]@="+shown.Revision); got != call("link", "show", linkURI, "--revision", "="+shown.Revision) {
 				t.Fatal("canonical raw@ Link exact read mismatch")
 			}
 			call("link", "delete", linkURI, "--force")
@@ -279,7 +279,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					call("update", subject, "--properties", `{"body":"Later subject"}`)
 					beforeSubject, beforeSibling := call("show", subject), call("show", sibling)
 					beforeLinks := call("link", "list", "--from", subject)
-					if got := call("show", "["+subject+"]@="+created.Revision); got != call("show", subject, "--revision", created.Revision) {
+					if got := call("show", "["+subject+"]@="+created.Revision); got != call("show", subject, "--revision", "="+created.Revision) {
 						t.Fatal("canonical colon selector did not select the exact retained subject")
 					}
 					for _, prefix := range []string{"beads/"} {
@@ -311,7 +311,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					if call("show", sibling) == beforeSibling || call("show", subject) != beforeSubject {
 						t.Fatal("canonical colon+@ mutation selected the wrong identity")
 					}
-					if got := call("show", "["+sibling+"]@="+literal.Revision); got != call("show", sibling, "--revision", literal.Revision) || got == call("show", sibling) {
+					if got := call("show", "["+sibling+"]@="+literal.Revision); got != call("show", sibling, "--revision", "="+literal.Revision) || got == call("show", sibling) {
 						t.Fatal("canonical colon+@ exact read did not retain the literal sibling")
 					}
 				})
@@ -334,7 +334,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 			const link = scope + "links/context:v1"
 			const literalLink = link + "@unknown-token"
 			beforeLink, beforeLiteralLink := call("link", "show", link), call("link", "show", literalLink)
-			if got := call("link", "show", "["+link+"]@="+linked.Link.Revision); got != call("link", "show", link, "--revision", linked.Link.Revision) {
+			if got := call("link", "show", "["+link+"]@="+linked.Link.Revision); got != call("link", "show", link, "--revision", "="+linked.Link.Revision) {
 				t.Fatal("canonical colon Link selector did not select exact retained Link")
 			}
 			for _, prefix := range []string{"", "links/"} {
@@ -397,16 +397,16 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 				t.Fatalf("creation lost exact pins: %+v", created)
 			}
 			old := call("link", "show", created.Link.ID)
-			changedTarget := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", target.ID, "--properties", `{"body":"Rule two"}`, "--if-revision", target.Revision)).Memory
-			repinned := graphMixedResult[graphstore.LinkMutationResult](t, call("update", created.Link.ID, "--target-revision", "current", "--if-revision", created.Link.Revision))
+			changedTarget := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", target.ID, "--properties", `{"body":"Rule two"}`, "--if-revision", "="+target.Revision)).Memory
+			repinned := graphMixedResult[graphstore.LinkMutationResult](t, call("update", created.Link.ID, "--target-revision", "current", "--if-revision", "="+created.Link.Revision))
 			if !repinned.Changed || repinned.Link.ID != created.Link.ID || repinned.Link.Revision == created.Link.Revision || repinned.Link.SourceRevision != source.Revision || repinned.Link.TargetRevision != changedTarget.Revision || !reflect.DeepEqual(repinned.Link.Properties, created.Link.Properties) || string(repinned.Link.Metadata) != string(created.Link.Metadata) {
 				t.Fatalf("repin lost identity/omissions: %+v", repinned)
 			}
-			if got := call("link", "show", created.Link.ID, "--revision", created.Link.Revision); got != old {
+			if got := call("link", "show", created.Link.ID, "--revision", "="+created.Link.Revision); got != old {
 				t.Fatal("repin changed old retained Link")
 			}
 			for _, expected := range []graphstore.LinkRecord{created.Link, repinned.Link} {
-				raw := graphPolicyCLI(t, bd, work, home, nil, "", "link", "show", expected.ID, "--revision", expected.Revision, "--output-format", "json")
+				raw := graphPolicyCLI(t, bd, work, home, nil, "", "link", "show", expected.ID, "--revision", "="+expected.Revision, "--output-format", "json")
 				var envelope struct {
 					Data bdpwire.LinkRecord `json:"data"`
 				}
@@ -414,38 +414,38 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 					t.Fatalf("canonical retained Link lost exact endpoint References: decode=%v got=%s", err, raw)
 				}
 			}
-			same := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", created.Link.ID, "--target-revision", changedTarget.Revision, "--if-revision", repinned.Link.Revision))
+			same := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", created.Link.ID, "--target-revision", changedTarget.Revision, "--if-revision", "="+repinned.Link.Revision))
 			if same.Changed || !reflect.DeepEqual(same.Link, repinned.Link) {
 				t.Fatal("same full Reference minted a revision")
 			}
 			before := call("link", "show", created.Link.ID)
-			refuse("revision_conflict", "update", created.Link.ID, "--target-revision", changedTarget.Revision, "--if-revision", created.Link.Revision)
+			refuse("revision_conflict", "update", created.Link.ID, "--target-revision", changedTarget.Revision, "--if-revision", "="+created.Link.Revision)
 			refuse("revision_unknown", "update", created.Link.ID, "--target-revision", "missing-retained")
 			refuse("invalid_selector", "update", created.Link.ID, "--target-revision=")
 			if call("link", "show", created.Link.ID) != before {
 				t.Fatal("refused re-pin changed current Link")
 			}
-			merged := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", created.Link.ID, "--source-revision", "unpinned", "--set-metadata", "reviewed=true", "--if-revision", repinned.Link.Revision))
+			merged := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", created.Link.ID, "--source-revision", "unpinned", "--set-metadata", "reviewed=true", "--if-revision", "="+repinned.Link.Revision))
 			if merged.Link.SourceRevision != "" || merged.Link.TargetRevision != changedTarget.Revision || !reflect.DeepEqual(merged.Link.Properties, repinned.Link.Properties) || !strings.Contains(string(merged.Link.Metadata), `"reviewed":true`) {
 				t.Fatalf("pin/metadata merge lost omissions: %+v", merged)
 			}
-			patched := graphMixedResult[graphstore.LinkMutationResult](t, call("update", created.Link.ID, "--target-revision", "unpinned", "--patch", `[{"op":"replace","path":"/note","value":"second"}]`, "--if-revision", merged.Link.Revision))
+			patched := graphMixedResult[graphstore.LinkMutationResult](t, call("update", created.Link.ID, "--target-revision", "unpinned", "--patch", `[{"op":"replace","path":"/note","value":"second"}]`, "--if-revision", "="+merged.Link.Revision))
 			if patched.Link.TargetRevision != "" || patched.Link.SourceRevision != "" || patched.Link.Properties["note"] != "second" || string(patched.Link.Metadata) != string(merged.Link.Metadata) {
 				t.Fatalf("combined ordered patch lost re-pin: %+v", patched)
 			}
 			owned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source", "rule@="+target.Revision, "--type", "types/subject-to", "--id", "obligation", "--if-source-revision", source.Revision))
 			owner := graphMixedSourceRecord(t, owned.Source)
 			oldOwner := call("show", source.ID)
-			ownedNext := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", owned.Link.ID, "--target-revision", "current", "--if-revision", owned.Link.Revision, "--if-source-revision", owner.Revision))
+			ownedNext := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", owned.Link.ID, "--target-revision", "current", "--if-revision", "="+owned.Link.Revision, "--if-source-revision", owner.Revision))
 			ownerNext := graphMixedSourceRecord(t, ownedNext.Source)
 			if ownerNext.Revision == owner.Revision || ownedNext.Link.TargetRevision != changedTarget.Revision {
 				t.Fatalf("owned target re-pin did not mint source: %+v", ownedNext)
 			}
-			if call("show", source.ID, "--revision", owner.Revision) != oldOwner {
+			if call("show", source.ID, "--revision", "="+owner.Revision) != oldOwner {
 				t.Fatal("owned re-pin rewrote old source")
 			}
 			for _, expected := range []graphstore.Record{owner, ownerNext} {
-				raw := graphPolicyCLI(t, bd, work, home, nil, "", "show", expected.ID, "--revision", expected.Revision, "--output-format", "json")
+				raw := graphPolicyCLI(t, bd, work, home, nil, "", "show", expected.ID, "--revision", "="+expected.Revision, "--output-format", "json")
 				var envelope struct {
 					Data bdpwire.BeadRecord `json:"data"`
 				}
@@ -462,7 +462,7 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 				}
 			}
 			before = call("show", source.ID)
-			refuse("capability_unavailable", "update", owned.Link.ID, "--source-revision", "current", "--if-revision", ownedNext.Link.Revision, "--if-source-revision", ownerNext.Revision)
+			refuse("capability_unavailable", "update", owned.Link.ID, "--source-revision", "current", "--if-revision", "="+ownedNext.Link.Revision, "--if-source-revision", ownerNext.Revision)
 			refuse("invalid_selector", "update", source.ID, "--target-revision", "current")
 			if call("show", source.ID) != before {
 				t.Fatal("refused pin changed owner")

@@ -55,7 +55,7 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	if first.Result.Properties.DueAt == nil || first.Result.Properties.DueAt.Format(time.RFC3339) != "2030-01-02T10:04:05Z" {
 		t.Fatal("create dispatcher dropped due instant")
 	}
-	updated := graphPolicyCLI(t, bd, work, home, nil, "", "update", issueURL, "--due=", "--if-revision", first.Result.Revision, "--json")
+	updated := graphPolicyCLI(t, bd, work, home, nil, "", "update", issueURL, "--due=", "--if-revision", "="+first.Result.Revision, "--json")
 	var changed struct {
 		Result graphstore.IssueMutationResult
 	}
@@ -65,10 +65,10 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	if !changed.Result.Changed || changed.Result.Issue.Properties.DueAt != nil || changed.Result.Issue.Revision == first.Result.Revision {
 		t.Fatal("due clear did not reach Issue writer")
 	}
-	if exact := graphPolicyCLI(t, bd, work, home, nil, "", "show", issueURL, "--revision", first.Result.Revision, "--format", "graph-json", "--json"); exact != created {
+	if exact := graphPolicyCLI(t, bd, work, home, nil, "", "show", issueURL, "--revision", "="+first.Result.Revision, "--format", "graph-json", "--json"); exact != created {
 		t.Fatal("clearing due changed initial retained record")
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "", "update", issueURL, "--due=2000-01-01T00:00:00Z", "--if-revision", changed.Result.Issue.Revision, "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "update", issueURL, "--due=2000-01-01T00:00:00Z", "--if-revision", "="+changed.Result.Issue.Revision, "--json")
 	listed := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--format", "records-json", "--due-after=1999-01-01T00:00:00Z", "--due-before=2001-01-01T00:00:00Z", "--overdue", "--all", "--limit=2")
 	var page struct{ Result graphstore.IssueListPage }
 	if err := json.Unmarshal([]byte(listed), &page); err != nil {

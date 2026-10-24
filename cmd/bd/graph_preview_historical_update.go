@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -23,11 +22,11 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 	if !strings.HasPrefix(path, "beads/") {
 		return graphFailure("capability_unavailable", "historical Update requires a Bead or Link identity", 5)
 	}
-	source, _ := cmd.Flags().GetString("from-revision")
-	if source == "" || !utf8.ValidString(source) || len(source) > graphstore.PreviewVersionTokenLimit {
-		return graphFailure("invalid_selector", fmt.Sprintf("--from-revision requires a nonempty UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
+	source, err := graphPreviewRevisionFlag(cmd, "from-revision", path, true)
+	if err != nil {
+		return err
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return err
 	}
