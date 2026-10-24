@@ -525,16 +525,22 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 	if len(args) > 1 && cmd.Flags().Changed("if-revision") {
 		return graphFailure("invalid_selector", "--if-revision applies to one Issue; use separate commands for guarded updates", 2)
 	}
-	paths := make([]string, len(args))
+	// Admit reference grammar for the whole command before any writes, but
+	// resolve allocations per member so a missing sibling cannot abort a batch.
+	ids := make([]string, len(args))
 	for i, selector := range args {
-		path, err := graphPreviewResolvedWritePath(selector)
+		identity, err := graphPreviewWritableIdentity(selector)
 		if err != nil {
-			return err
-		}
-		if err := graph.ValidateBeadPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		paths[i] = path
+		path, id, err := graphPreviewResourceReadSelector(identity)
+		if err == nil && id == "" {
+			id, err = graph.ScopeLocalPublicResourceID(graphPreviewConfig.GraphScopeURL, path)
+		}
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		ids[i] = id
 	}
 	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
 	if err != nil {
@@ -563,15 +569,19 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 		}
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		results := make([]graphstore.IssueMutationResult, 0, len(paths))
+		results := make([]graphstore.IssueMutationResult, 0, len(ids))
 		var human strings.Builder
-		for i, path := range paths {
-			result, err := store.SetIssueDeferred(ctx, graphstore.IssueDeferralRequest{
-				Path: path, Actor: getActorWithGit(), ExpectedRevision: revision,
-				Unconditional: unconditional, Deferred: deferred, Until: until, Reason: reason,
-			})
+		for i, id := range ids {
+			identity, err := store.ResolveAllocatedResourceIdentity(ctx, id)
+			var result graphstore.IssueMutationResult
+			if err == nil {
+				result, err = store.SetIssueDeferred(ctx, graphstore.IssueDeferralRequest{
+					Path: identity.PrivatePath, Actor: getActorWithGit(), ExpectedRevision: revision,
+					Unconditional: unconditional, Deferred: deferred, Until: until, Reason: reason,
+				})
+			}
 			if err != nil {
-				if len(paths) == 1 {
+				if len(ids) == 1 {
 					return nil, "", err
 				}
 				fmt.Fprintf(os.Stderr, "Error changing deferral for %s: %v\n", args[i], err)
@@ -587,7 +597,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 			}
 			fmt.Fprintf(&human, "%s %s\n", verb, result.Issue.ID)
 		}
-		if len(paths) == 1 {
+		if len(ids) == 1 {
 			return results[0], strings.TrimSuffix(human.String(), "\n"), nil
 		}
 		return results, strings.TrimSuffix(human.String(), "\n"), nil
