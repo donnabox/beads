@@ -3,12 +3,43 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
+
+// Capture both channels through the same private command environment as the
+// other graph workflow helpers. Notices must not corrupt canonical JSON or
+// accompany an acquisition/traversal refusal.
+func graphSelectedWorkflowCapture(t *testing.T, bd, work, home, code string, args ...string) (string, string) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+	defer cancel()
+	cmd := graphMemoryReadCommand(ctx, bd, work, home, args...)
+	var out, diagnostics bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &out, &diagnostics
+	err := cmd.Run()
+	if ctx.Err() != nil {
+		t.Fatalf("graph command exceeded deadline: %v args=%v stderr=%s", ctx.Err(), args, diagnostics.String())
+	}
+	if code == "" {
+		if err != nil || !json.Valid(out.Bytes()) {
+			t.Fatalf("graph command did not return structured success: args=%v err=%v stdout=%s stderr=%s", args, err, out.String(), diagnostics.String())
+		}
+	} else {
+		var failure struct{ Code string }
+		if err == nil || out.Len() != 0 || json.Unmarshal(diagnostics.Bytes(), &failure) != nil || failure.Code != code {
+			t.Fatalf("graph refusal lost atomic output: expected=%s err=%v stdout=%s stderr=%s", code, err, out.String(), diagnostics.String())
+		}
+	}
+	return out.String(), diagnostics.String()
+}
 
 // Real subprocess authoring + coherent provider acquisition is the boundary:
 // pure projection tests cannot prove mixed native/generic CLI routing and pins.
@@ -41,6 +72,15 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			if implicit != explicit {
 				t.Fatalf("omitted Dependency differs: %s\n%s", implicit, explicit)
 			}
+			implicitJSON, implicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--json")
+			explicitJSON, explicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--link-type=Dependency", "--json")
+			if implicitJSON != implicit || explicitJSON != implicitJSON || !strings.Contains(implicitNotice, scope+"types/references") || !strings.Contains(implicitNotice, "--link-type any") || strings.Contains(explicitNotice, "omitted Link Types") {
+				t.Fatalf("default disclosure changed stdout or explicit selection: implicit=%s explicit=%s implicit stderr=%s explicit stderr=%s", implicitJSON, explicitJSON, implicitNotice, explicitNotice)
+			}
+			_, refusedNotice := graphSelectedWorkflowCapture(t, bd, work, home, "capability_unavailable", "graph", "i1", "--max-nodes=1", "--json")
+			if strings.Contains(refusedNotice, "omitted Link Types") {
+				t.Fatalf("refusal emitted success disclosure: %s", refusedNotice)
+			}
 			generic := graphSelectedTestSummary(t, call("graph", "i1", "--link-type", "References", "--direction", "out", "--depth", "10"))
 			if len(generic.Nodes) != 4 || len(generic.Links) != 6 || !generic.Complete {
 				t.Fatalf("mixed path or parallel/cycle lost: %+v", generic)
@@ -66,6 +106,27 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			if len(union.Nodes) != 5 || len(union.Links) != 8 {
 				t.Fatalf("repeatable union: %+v", union)
 			}
+			any := graphSelectedTestSummary(t, call("graph", "i1", "--link-type=any"))
+			mixed := graphSelectedTestSummary(t, call("graph", "i1", "--link-type=dependency", "--exact-link-type=references", "--exact-link-type=references"))
+			for name, selected := range map[string]graphGenericResult{"any": any, "family-exact union": mixed} {
+				if !reflect.DeepEqual(selected.Nodes, union.Nodes) || !reflect.DeepEqual(selected.Links, union.Links) {
+					t.Fatalf("%s changed selected population or duplicated Links: %+v expected=%+v", name, selected, union)
+				}
+			}
+			exact := graphSelectedTestSummary(t, call("graph", "i1", "--exact-link-type=references", "--direction=out", "--depth=10"))
+			if !reflect.DeepEqual(exact.Nodes, generic.Nodes) || !reflect.DeepEqual(exact.Links, generic.Links) {
+				t.Fatalf("exact References changed the six stored Reference Links: %+v expected=%+v", exact, generic)
+			}
+			exactIDs := []string{}
+			for _, link := range exact.Links {
+				if link.Type != scope+"types/references" {
+					t.Fatalf("exact References included another Type: %+v", link)
+				}
+				exactIDs = append(exactIDs, strings.TrimPrefix(link.ID, scope))
+			}
+			if !reflect.DeepEqual(exactIDs, []string{"links/a", "links/b", "links/c", "links/cycle", "links/parallel", "links/pin"}) {
+				t.Fatalf("exact References lost direct stored identities: %v", exactIDs)
+			}
 			family := graphSelectedTestSummary(t, call("graph", "i1", "--link-type", "references"))
 			if !reflect.DeepEqual(family.Nodes, generic.Nodes) || !reflect.DeepEqual(family.Links, generic.Links) {
 				t.Fatalf("Association refinements: %+v %+v", family, union)
@@ -90,7 +151,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 				for _, id := range []string{"links/a", "links/parallel", "links/cycle", "links/pin"} {
 					want := id
 					if flag == "" || flag == "--compact" {
-						want = "(" + strings.TrimPrefix(id, "links/") + ")"
+						want = "(" + id + ")"
 					}
 					if !strings.Contains(text, want) {
 						t.Fatalf("%s lost %s", flag, id)

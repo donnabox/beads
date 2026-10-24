@@ -336,12 +336,15 @@ predicates are unavailable in graph preview.`},
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
 		{graphCmd, `Use bd graph BEAD or bd graph --all in a link workspace.
 The default Link selector is Dependency, including its refinements, exactly
-as --link-type Dependency. Repeat --link-type NAME for an OR union, or use
---all-link-types. Excluded Link Types cannot bridge the traversal.
+as --link-type Dependency. Use --exact-link-type NAME for only the declared
+Type, or --link-type any for all Link Types. Repeat either Type flag for an
+OR union. Excluded Link Types cannot bridge the traversal. When the default
+Dependency selection omits other Types encountered at reached Beads, a notice
+is written to stderr; it does not inspect unrelated components.
 One --direction in|out|both (default both) and --depth (default 1000) apply
 to a named-root selection. --all refuses explicit --depth/--direction. Depth counts Link hops to select Beads; every matching
 Link between selected Beads is displayed, including parallels and cycles.
-A frontier explicitly reports depth truncation. Node/Link bounds refuse on
+A depth-limit explanation identifies where traversal stopped. Node/Link bounds refuse on
 exhaustion. Acquisition remains a complete bounded current inventory (at most
 1000 Resources / 16 MiB; serialized output at most 16 MiB), not scalable or arbitrary historical traversal.
 Authored endpoint revision pins remain visible; adjacent Beads are current

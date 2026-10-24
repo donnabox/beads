@@ -141,16 +141,17 @@ func renderGraphRelationshipTreePart(w *graphExportWriter, r graphGenericResult,
 		}
 	}
 	if summary {
-		if !first {
+		if first {
+			t.println("No matching Beads.")
+		} else {
 			t.println("")
+			t.println(fmt.Sprintf("%d Beads, %d Links", len(t.nodes), len(r.Links)))
 		}
-		t.println(fmt.Sprintf("%d Beads, %d Links", len(t.nodes), len(r.Links)))
-		t.println(fmt.Sprintf("Complete: %t; direction: %s; depth: %d; frontier: %d", r.Complete, r.Direction, r.Depth, len(r.Frontier)))
 		for _, id := range r.Frontier {
 			if t.stopped() {
 				break
 			}
-			t.println(fmt.Sprintf("More relationships beyond depth %d: %s", r.Depth, t.label(id)))
+			t.println(graphDepthBoundary(r.Depth, t.label(id)))
 		}
 	}
 	if t.err != nil {
@@ -177,16 +178,17 @@ func (t *graphRelationshipTree) println(line string) {
 }
 
 func (t *graphRelationshipTree) label(value string) string {
-	for _, prefix := range []string{"beads/", "links/", "types/"} {
-		if strings.HasPrefix(value, t.result.Scope+prefix) {
-			value = strings.TrimPrefix(value, t.result.Scope+prefix)
-			break
-		}
-	}
+	value = strings.TrimPrefix(value, t.result.Scope)
 	// Escape data, not tree structure. In particular a title, ID or pin cannot
 	// inject terminal controls or an extra relationship line.
 	quoted := strconv.QuoteToGraphic(value)
 	return quoted[1 : len(quoted)-1]
+}
+
+// The checked traversal supplies the boundary; rendering does not inspect or
+// count unseen relationships. The depth is the same hop limit used by selection.
+func graphDepthBoundary(depth int, id string) string {
+	return fmt.Sprintf("Depth limit %d reached at %s; further relationships are outside this view.", depth, id)
 }
 
 func (t *graphRelationshipTree) nodeLabel(id string) string {
@@ -323,7 +325,7 @@ func (t *graphRelationshipTree) writeLines(lines []graphTreeLine, prefix string)
 		if line.reference == "" {
 			node = t.nodeLabel(line.next)
 		}
-		text := fmt.Sprintf("%s%s%s (%s) %s %s%s", prefix, branch, t.label(l.Type), t.label(l.ID), arrow, node, line.reference)
+		text := fmt.Sprintf("%s%s[%s] (%s) %s %s%s", prefix, branch, t.label(l.Type), t.label(l.ID), arrow, node, line.reference)
 		if l.SourceRevision != "" || l.TargetRevision != "" {
 			text += fmt.Sprintf(" [source revision=%s target revision=%s]", strconv.QuoteToGraphic(l.SourceRevision), strconv.QuoteToGraphic(l.TargetRevision))
 		}

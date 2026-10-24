@@ -243,14 +243,25 @@ replica. `bd set-state` and `bd gate` still refuse in graph mode.
 ## Preview 3 selected-Type graph candidate
 
 The new candidate uses ordinary `bd graph BEAD` or `bd graph --all`.
-Omitting a selector is exactly `--link-type Dependency`, including refinements.
-Repeat `--link-type` for an OR union, or choose `--all-link-types`. Shared
+Omitting a selector selects the Dependency family, including refinements.
+Use `--link-type TYPE` for a family, `--exact-link-type TYPE` for that declared
+Type only, or `--link-type any` for all Link Types. Repeat either Type flag for
+an OR union. A full Type URL selects its identity without interpreting a name
+as the wildcard. Shared
 `--direction in|out|both` (default both) and `--depth` (default 1000) select
 reached Beads; all matching Links among them remain, including cross-links,
 parallel Links and cycles. Excluded Types cannot be traversal bridges.
 
+When the implicit Dependency default leaves out other Link Types actually
+encountered at reached Beads, a notice names them on stderr. The notice uses
+the checked read; it does not scan unrelated components. Explicit Type choices
+do not produce that default-filter notice. Direction and depth still apply
+when selecting all Types.
+
 ```sh
 bd graph work --link-type References --direction out --depth 3
+bd graph work --exact-link-type References --direction out --depth 3
+bd graph work --link-type any
 bd graph policy --link-type Requires --dot > requirements.dot
 bd graph --all --link-type References --html > graph.html
 ```
@@ -271,8 +282,11 @@ traversal metadata. The command's Issue-oriented compact help describes the
 native dependency view. `--open` remains unavailable in link mode. Node/Link bounds
 (default 1000 each), the complete-inventory acquisition limit (1000 Resources /
 16 MiB), and serialized output limit (16 MiB) refuse rather than return a
-successful partial graph. Depth truncation reports `complete: false` and a
-frontier. Pins remain authored on Links; adjacent Bead records are current,
+successful partial graph. Human graph and Memory relationship views label
+Beads and Links with `[Type]`. They preserve literal ID path segments and
+shorten only the exact local Scope URL. Empty results use plain language;
+an actual depth boundary identifies where traversal stopped. JSON retains
+the `complete` and `frontier` context. Pins remain authored on Links; adjacent Bead records are current,
 not a claim about a historical traversal. `--view generic` is optional/deprecated.
 This candidate needs integration and qualification before release adoption;
 it does not change the historical integration ledger below or dependency mode.
@@ -322,7 +336,7 @@ bd dep tree plan --direction both
 bd dep cycles
 bd graph plan
 bd graph check --json
-bd graph plan --all-link-types --direction out --depth 2 --json
+bd graph plan --link-type any --direction out --depth 2 --json
 ```
 
 `dep list --direction up` lists dependents instead; `dep tree` also accepts
