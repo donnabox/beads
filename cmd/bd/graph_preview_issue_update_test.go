@@ -7,13 +7,20 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
 
 func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
+	priorConfig := graphPreviewConfig
+	if graphPreviewConfig == nil {
+		graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/"}
+		t.Cleanup(func() { graphPreviewConfig = priorConfig })
+	}
 	cmd := &cobra.Command{}
+	cmd.Flags().String("type", "", "")
 	cmd.Flags().IntP("estimate", "e", 0, "")
 	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
 		if cmd.Flags().Lookup(name) == nil {
