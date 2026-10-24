@@ -92,7 +92,7 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 			t.Fatalf("invalid kind %q acquired native Type", invalid)
 		}
 	}
-	if _, ok := nativeRelationshipDependencyType(scope, scope+"types/preview-related-v2"); ok {
+	if isNativeRelationshipDependencyType(scope, scope+"types/preview-related-v2") {
 		t.Fatal("informational Link mapped to a native Dependency")
 	}
 }

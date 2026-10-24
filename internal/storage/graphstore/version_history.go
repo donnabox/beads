@@ -150,7 +150,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 	// type it never actually compared.
 	err = tx.QueryRowContext(ctx, `SELECT resource_kind,backing,allocation_state,revision,
  CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key
- FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&kind, &backing, &state, &head, &typ, &key)
+ FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+512, path).Scan(&kind, &backing, &state, &head, &typ, &key)
 	if errors.Is(err, sql.ErrNoRows) {
 		// Retained rows without an allocation are corruption, not an absence.
 		// Same refusal readVersionInTx makes: a History reader must not report
@@ -215,7 +215,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		// name the same Issue the catalog is bound to before it is trusted. The
 		// type URL is compared too: backing alone was never enough to establish
 		// that this allocation is the kind of thing it claims to be.
-		if typ.String != issueType || !key.Valid || key.String == "" {
+		if !nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType) || !key.Valid || key.String == "" {
 			return "", nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
 		rows, err := s.nativeIssueVersionsInTx(ctx, tx, path, key.String, head, bounds)

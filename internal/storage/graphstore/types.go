@@ -112,9 +112,9 @@ type Attribution struct {
 	HistoricalUpdate *HistoricalUpdateContext `json:"historicalUpdate,omitempty"`
 }
 
-// IssueRecord projects the authoritative specialized Issue aggregate. It is a
-// disposable preview, with mutable issue_type classification under one local
-// experimental Type. No public nominal Task/Bug contract is established.
+// IssueRecord projects the authoritative native Issue aggregate. Type is the
+// Scope-local concrete declaration derived from its native issue_type column.
+// Exact retained records use their retained classification, never the current one.
 type IssueRecord struct {
 	ID          string            `json:"id"`
 	Type        string            `json:"type"`
@@ -254,12 +254,12 @@ type LinkMutationResult struct {
 
 // LinksRequest selects complete current incident state in one read transaction.
 // Empty direction means both. Empty TypeURL admits all installed Link Types.
-type LinksRequest struct{ BeadPath, Direction, TypeURL string }
+type LinksRequest struct{ BeadPath, Direction, TypeURL, ConformsTo string }
 
 // LinkCollectionRequest selects current Links without enumerating Beads.
 // An empty selector is unconstrained; the preview refuses an incomplete
 // collection rather than returning a silently truncated page.
-type LinkCollectionRequest struct{ TypeURL, SourcePath, TargetPath, IncidentPath string }
+type LinkCollectionRequest struct{ TypeURL, ConformsTo, SourcePath, TargetPath, IncidentPath string }
 
 // PreviewIncidentLinkLimit bounds this disposable non-paginated reader.
 const PreviewIncidentLinkLimit = 1000

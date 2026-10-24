@@ -137,6 +137,13 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, created.Issue.ID).Scan(&ordinal); err != nil {
 			return err
 		}
+		issueType, err = NativeIssueTypeURL(s.ScopeURL(), string(created.Issue.IssueType))
+		if err != nil {
+			return err
+		}
+		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
+			return err
+		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
             (path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
 			VALUES (?,'bead',?,?,'live','issue',?)`, path, issueType, revision, created.Issue.ID); err != nil {
@@ -323,8 +330,11 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 		}
 		return IssueRecord{}, ErrGone
 	}
-	if kind != "bead" || typ != issueType || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
+	if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
+	}
+	if err := s.requireNativeBindingInTx(ctx, tx, typ); err != nil {
+		return IssueRecord{}, err
 	}
 	// Comments are a separate native Issue feed, outside durable_state and its
 	// retained graph version. Including them here would make a new comment look
@@ -332,6 +342,10 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	issue, err := issueops.HydrateIssueOperationResult(ctx, tx, issueID, false)
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue backing: %v", ErrInvalidStore, err)
+	}
+	actualType, err := NativeIssueTypeURL(s.ScopeURL(), string(issue.IssueType))
+	if err != nil || typ != actualType {
+		return IssueRecord{}, fmt.Errorf("%w: Issue classification and declared Type differ", ErrInvalidStore)
 	}
 	var snapshot, retainedOwned, revisionContext []byte
 	var actor, status string
@@ -403,7 +417,7 @@ func installedIssueTypeURLInTx(ctx context.Context, tx *sql.Tx, scope string) (s
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
 		return "", err
 	}
-	if count != len(previewTypeDefinitions()) {
+	if count < len(previewTypeDefinitions()) || count > len(previewTypeDefinitions())+PreviewSnapshotLimit {
 		return "", fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
 	}
 	return IssueTypeURL(scope), nil

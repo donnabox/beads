@@ -76,7 +76,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 	var typ, key sql.NullString
 	err = tx.QueryRowContext(ctx, `SELECT backing,resource_kind,allocation_state,revision,
  CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key
- FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&backing, &kind, &state, &head, &typ, &key)
+ FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+512, path).Scan(&backing, &kind, &state, &head, &typ, &key)
 	if errors.Is(err, sql.ErrNoRows) {
 		var retained int
 		if err := tx.QueryRowContext(ctx, `SELECT
@@ -133,7 +133,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		}
 	}
 	if backing == "issue" {
-		if kind != "bead" || typ.String != issueType || !key.Valid || key.String == "" {
+		if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType) || !key.Valid || key.String == "" {
 			return nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
 		return s.readNativeIssueRetainedInTx(ctx, tx, path, version, head, key.String)
@@ -307,10 +307,14 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 		return fmt.Errorf("%w: native Dependencies cannot carry endpoint pins", ErrInvalidStore)
 	}
 	depType, hasKind := link.Properties["dep_type"].(string)
+	expectedType, typeErr := NativeDependencyTypeURL(s.ScopeURL(), depType)
 	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) ||
-		!hasKind || len(link.Properties) != 1 || !types.DependencyType(depType).IsValid() ||
+		!hasKind || typeErr != nil || link.Type != expectedType || len(link.Properties) != 1 || !types.DependencyType(depType).IsValid() ||
 		!utf8.ValidString(depType) {
 		return fmt.Errorf("%w: invalid retained Dependency", ErrInvalidStore)
+	}
+	if err := s.requireNativeBindingInTx(ctx, tx, link.Type); err != nil {
+		return err
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {
 		if _, err := s.publicResourcePathInTx(ctx, tx, endpoint, graph.KindBead); err != nil {
@@ -327,7 +331,7 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 	// Retained membership uses the owner's original declared Type, including
 	// positive family ownership. Native payload validation stays native.
 	memoryOwner := s.isMemoryType(ownerType)
-	if !memoryOwner && ownerType != IssueTypeURL(s.ScopeURL()) {
+	if !memoryOwner && !isConcreteNativeIssue(s.ScopeURL(), ownerType) {
 		return fmt.Errorf("%w: unsupported retained owner Type", ErrInvalidStore)
 	}
 	catalog, err := s.selectedTypes()
@@ -340,7 +344,7 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 		if json.Unmarshal(raw, &link) != nil {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
-		owned, err := catalog.types.Owns(typecatalog.Reference{URI: ownerType}, typecatalog.Reference{URI: link.Type})
+		owned, err := catalog.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), ownerType)}, typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), link.Type)})
 		if err != nil || !owned || link.Source != source ||
 			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
@@ -419,6 +423,13 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 		json.Unmarshal(owned, &result.Owned) != nil || !sameVersionJSON(owned, result.Owned) ||
 		!validVersionAttribution(result.Attribution, actor.String) {
 		return IssueRecord{}, fmt.Errorf("%w: invalid retained Issue state", ErrInvalidStore)
+	}
+	result.Type, err = NativeIssueTypeURL(s.ScopeURL(), string(issue.IssueType))
+	if err != nil {
+		return IssueRecord{}, fmt.Errorf("%w: retained Issue classification: %v", ErrInvalidStore, err)
+	}
+	if err := s.requireNativeBindingInTx(ctx, tx, result.Type); err != nil {
+		return IssueRecord{}, err
 	}
 	if err := s.validateVersionOwned(ctx, tx, result.ID, result.Type, result.Owned); err != nil {
 		return IssueRecord{}, err

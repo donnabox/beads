@@ -95,7 +95,7 @@ func TestListInstalledTypesReflectsPersistedInstallation(t *testing.T) {
 		t.Fatal(err)
 	}
 	installed, err := store.ListInstalledTypes(ctx)
-	if err != nil || len(installed) != 20 {
+	if err != nil || len(installed) != len(FreshTypeNames()) {
 		t.Fatalf("fresh installed Types: %d %v", len(installed), err)
 	}
 	rows, err := store.db.QueryContext(ctx, `SELECT descriptor FROM graph_preview_types`)

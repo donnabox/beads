@@ -33,6 +33,8 @@ import (
 // Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                             string
+	TypeURL                                                   string
+	IssueType                                                 *types.IssueType
 	FromRevision                                              string
 	PropertiesPatch                                           []byte
 	NativeID                                                  string
@@ -91,6 +93,24 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := types.CheckFieldLen("assignee", patch.Assignee.Value); err != nil {
 			return IssueMutationResult{}, fmt.Errorf("%w: Issue assignee: %w", storage.ErrValidation, err)
 		}
+	}
+	if request.TypeURL != "" {
+		base, classification, ok := NativeTypeClassification(s.ScopeURL(), request.TypeURL)
+		if !ok || base != IssueTypeURL(s.ScopeURL()) {
+			return IssueMutationResult{}, fmt.Errorf("%w: native reclassification requires a concrete Issue Type", storage.ErrValidation)
+		}
+		native := types.IssueType(classification)
+		if native.Normalize() != native {
+			return IssueMutationResult{}, fmt.Errorf("%w: concrete Issue Type must use its normalized native classification", storage.ErrValidation)
+		}
+		if request.IssueType != nil && request.IssueType.Normalize() != native {
+			return IssueMutationResult{}, fmt.Errorf("%w: declared Type contradicts native classification", storage.ErrValidation)
+		}
+		request.IssueType = &native
+	}
+	if request.IssueType != nil {
+		patch.IssueType = publicops.Field[publicops.IssueType]{Set: true, Value: request.IssueType.Normalize()}
+		count++
 	}
 	if request.Priority != nil {
 		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}

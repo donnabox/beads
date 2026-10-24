@@ -99,10 +99,10 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 	beadTypes := map[string]typecatalog.Reference{}
 	for _, value := range beads {
 		ref := typecatalog.Reference{URI: value.typ}
-		if err := c.types.ValidateDeclaredType(ref, graph.KindBead); err != nil {
+		if err := c.types.ValidateDeclaredType(ref, graph.KindBead); value.backing != "issue" && err != nil {
 			return fmt.Errorf("%w: %v", storage.ErrValidation, err)
 		}
-		beadTypes[value.path] = ref
+		beadTypes[value.path] = typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), value.typ)}
 		if value.backing == "generic" {
 			if !c.memoryType(value.typ) {
 				return fmt.Errorf("%w: unsupported generic Bead Type", ErrInvalidStore)
@@ -113,7 +113,7 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 			if err := s.validateExactSubjectBindings(ctx, tx, c, value.path, value.typ, value.properties); err != nil {
 				return err
 			}
-		} else if value.backing != "issue" || value.typ != IssueTypeURL(s.ScopeURL()) {
+		} else if value.backing != "issue" || !isConcreteNativeIssue(s.ScopeURL(), value.typ) {
 			return fmt.Errorf("%w: unsupported native Bead Type", ErrInvalidStore)
 		}
 	}
@@ -161,7 +161,7 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 			if err != nil {
 				return err
 			}
-			source = typecatalog.Reference{URI: recordType(exact)}
+			source = typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), recordType(exact))}
 			// A later retyping must not turn a historical owned-source
 			// Reference into an unowned claim and bypass the selected deferral.
 			owned, err := c.types.Owns(source, ref)
@@ -177,7 +177,7 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 			if err != nil {
 				return err
 			}
-			target = typecatalog.Reference{URI: recordType(exact)}
+			target = typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), recordType(exact))}
 		}
 		if err := c.types.ValidateEndpoints(ref,
 			typecatalog.EndpointFacts{ResourceKind: "bead", Scope: "same", Type: source},
@@ -299,7 +299,7 @@ func (s *Store) checkRetainedSubjectReference(ctx context.Context, tx *sql.Tx, p
 	var typ, key sql.NullString
 	err := tx.QueryRowContext(ctx, `SELECT resource_kind,backing,allocation_state,
  CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key
- FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&kind, &backing, &state, &typ, &key)
+ FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+512, path).Scan(&kind, &backing, &state, &typ, &key)
 	if errors.Is(err, sql.ErrNoRows) {
 		return ErrNotFound
 	}
@@ -316,7 +316,7 @@ func (s *Store) checkRetainedSubjectReference(ctx context.Context, tx *sql.Tx, p
  AND NOT(CASE WHEN JSON_VALID(CAST(snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END))`, path, revision).Scan(&exists); err != nil {
 			return err
 		}
-	case backing == "issue" && typ.String == IssueTypeURL(s.ScopeURL()) && key.Valid:
+	case backing == "issue" && isConcreteNativeIssue(s.ScopeURL(), typ.String) && key.Valid:
 		if err := tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM graph_preview_issue_versions m
  JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision
  WHERE m.path=? AND m.version=? AND m.issue_id=? AND v.removed_at IS NULL)`, path, revision, key.String).Scan(&exists); err != nil {
@@ -353,7 +353,7 @@ func (s *Store) informationalOwnedPathsInTx(ctx context.Context, tx *sql.Tx, sou
 			_ = rows.Close()
 			return nil, err
 		}
-		owned, err := c.types.Owns(typecatalog.Reference{URI: sourceType}, typecatalog.Reference{URI: typ})
+		owned, err := c.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), sourceType)}, typecatalog.Reference{URI: typ})
 		if err != nil {
 			_ = rows.Close()
 			return nil, fmt.Errorf("%w: invalid persisted informational ownership Type: %v", ErrInvalidStore, err)

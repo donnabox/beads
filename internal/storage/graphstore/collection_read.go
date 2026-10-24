@@ -3,6 +3,7 @@ package graphstore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
@@ -25,6 +26,9 @@ type Snapshot struct {
 	// OwnedLinkTypes captures effective selected ownership beside the checked
 	// installed Types. It is projection metadata, not a public wire descriptor.
 	OwnedLinkTypes map[string][]string
+	// OwnedLinkTypesByResource captures native observed kinds from each exact
+	// owned snapshot, avoiding unrelated empty groups from other Resources.
+	OwnedLinkTypesByResource map[string][]string
 }
 
 // CurrentSnapshot returns a complete bounded current inventory, or zero state
@@ -52,20 +56,26 @@ func (s *Store) currentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Snapshot, 
 	if err := s.checkCollectionMappingsInTx(ctx, tx); err != nil {
 		return Snapshot{}, err
 	}
-	result := Snapshot{Records: []any{}, Types: []graph.TypeDescriptor{}, OwnedLinkTypes: map[string][]string{}}
+	result := Snapshot{Records: []any{}, Types: []graph.TypeDescriptor{}, OwnedLinkTypes: map[string][]string{}, OwnedLinkTypesByResource: map[string][]string{}}
 	if err := tx.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&result.WriterToken); err != nil {
 		return Snapshot{}, err
 	}
 	var err error
-	result.Types, err = installedPreviewTypes(ctx, tx, s.ScopeURL())
+	result.Types, err = s.selectedDescriptorsInTx(ctx, tx)
 	if err != nil {
 		return Snapshot{}, err
+	}
+	var linkTypes []string
+	for _, descriptor := range result.Types {
+		if descriptor.Describes() == graph.KindLink {
+			linkTypes = append(linkTypes, descriptor.ID())
+		}
 	}
 	for _, descriptor := range result.Types {
 		if descriptor.Describes() != graph.KindBead {
 			continue
 		}
-		owned, err := s.SelectedOwnedLinkTypes(descriptor.ID())
+		owned, err := s.SelectedOwnedLinkTypesWithObserved(descriptor.ID(), linkTypes...)
 		if err != nil {
 			return Snapshot{}, err
 		}
@@ -122,6 +132,29 @@ func (s *Store) currentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Snapshot, 
 		if err != nil {
 			return Snapshot{}, err
 		}
+		var id, typ string
+		var owned []json.RawMessage
+		switch value := record.(type) {
+		case Record:
+			id, typ, owned = value.ID, value.Type, value.Owned
+		case IssueRecord:
+			id, typ, owned = value.ID, value.Type, value.Owned
+		}
+		if id != "" {
+			var observed []string
+			for _, raw := range owned {
+				var link LinkRecord
+				if err := json.Unmarshal(raw, &link); err != nil {
+					return Snapshot{}, fmt.Errorf("%w: malformed captured owned Link", ErrInvalidStore)
+				}
+				observed = append(observed, link.Type)
+			}
+			ownedTypes, err := s.SelectedOwnedLinkTypesWithObserved(typ, observed...)
+			if err != nil {
+				return Snapshot{}, err
+			}
+			result.OwnedLinkTypesByResource[id] = ownedTypes
+		}
 		result.Records = append(result.Records, record)
 	}
 	return result, nil
@@ -144,7 +177,12 @@ func (s *Store) checkCollectionMappingsInTx(ctx context.Context, tx *sql.Tx) err
 		return err
 	}
 	infoPlaceholders, args := informationalTypeSQL(ids)
-	depPlaceholders, depArgs := informationalTypeSQL(dependencyLinkTypesForIssueType(s.ScopeURL(), issueType))
+	nativeTypes, err := s.nativeDependencyTypeIDsInTx(ctx, tx)
+	if err != nil {
+		return err
+	}
+	_ = issueType
+	depPlaceholders, depArgs := informationalTypeSQL(nativeTypes)
 	args = append(args, depArgs...)
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND ((backing='informational' AND type_url NOT IN (`+infoPlaceholders+`)) OR (backing='dependency' AND type_url NOT IN (`+depPlaceholders+`)) OR type_url IS NULL)`, args...).Scan(&deletedInvalid); err != nil {
 		return err

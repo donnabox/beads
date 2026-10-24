@@ -51,6 +51,10 @@ func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest)
 				return err
 			}
 		}
+		family, err := s.selectedFamilyIDsInTx(ctx, tx, request.ConformsTo, graph.KindLink)
+		if err != nil {
+			return err
+		}
 		rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog
  WHERE allocation_state='live' AND resource_kind='link' LIMIT ?`, PreviewSnapshotLimit+1)
 		if err != nil {
@@ -77,7 +81,7 @@ func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest)
 			if err != nil {
 				return err
 			}
-			if request.TypeURL != "" && link.Type != request.TypeURL ||
+			if family != nil && !family[link.Type] || request.TypeURL != "" && link.Type != request.TypeURL ||
 				request.SourcePath != "" && !linkEndpointMatches(s.ScopeURL(), link.Source, request.SourcePath) ||
 				request.TargetPath != "" && !linkEndpointMatches(s.ScopeURL(), link.Target, request.TargetPath) ||
 				request.IncidentPath != "" && !linkEndpointMatches(s.ScopeURL(), link.Source, request.IncidentPath) && !linkEndpointMatches(s.ScopeURL(), link.Target, request.IncidentPath) {
@@ -125,7 +129,23 @@ func (s *Store) ListLinks(ctx context.Context, request LinksRequest) ([]LinkReco
 		}
 		var err error
 		links, err = s.incidentLinksInTx(ctx, tx, request, "")
-		return err
+		if err != nil {
+			return err
+		}
+		family, err := s.selectedFamilyIDsInTx(ctx, tx, request.ConformsTo, graph.KindLink)
+		if err != nil {
+			return err
+		}
+		if family != nil {
+			filtered := make([]LinkRecord, 0, len(links))
+			for _, link := range links {
+				if family[link.Type] {
+					filtered = append(filtered, link)
+				}
+			}
+			links = filtered
+		}
+		return nil
 	})
 	if err != nil {
 		return nil, err
@@ -137,7 +157,7 @@ func (s *Store) validateLinkType(typ string, allowEmpty bool) error {
 	if (allowEmpty && typ == "") || IsInformationalTypeURL(s.ScopeURL(), typ) || typ == DependencyTypeURL(s.options.Binding.ScopeURL) {
 		return nil
 	}
-	if _, known := nativeRelationshipDependencyType(s.ScopeURL(), typ); known {
+	if isNativeRelationshipDependencyType(s.ScopeURL(), typ) {
 		return nil // The transaction also checks the installed Type.
 	}
 	return fmt.Errorf("%w: Link Type is not installed in this preview", storage.ErrValidation)
@@ -399,7 +419,11 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 		return err
 	}
 	infoPlaceholders, args := informationalTypeSQL(ids)
-	dependencyTypes := dependencyLinkTypesForIssueType(s.ScopeURL(), issueType)
+	dependencyTypes, err := s.nativeDependencyTypeIDsInTx(ctx, tx)
+	if err != nil {
+		return err
+	}
+	_ = issueType
 	depPlaceholders, depArgs := informationalTypeSQL(dependencyTypes)
 	args = append(args, depArgs...)
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE resource_kind='link' AND allocation_state='live' AND ((backing='informational' AND type_url NOT IN (`+infoPlaceholders+`)) OR (backing='dependency' AND type_url NOT IN (`+depPlaceholders+`)))`, args...).Scan(&invalidTypes); err != nil {
@@ -411,8 +435,8 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 	// The one Link Type cannot identify a native kind. Reject malformed native
 	// kinds here; currentLinkInTx also checks this before projecting dep_type.
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key
- WHERE c.backing='dependency' AND c.allocation_state='live' AND (d.type='' OR OCTET_LENGTH(d.type)>?)`,
-		types.MaxDependencyTypeLen).Scan(&invalidTypes); err != nil {
+ WHERE c.backing='dependency' AND c.allocation_state='live' AND (d.type='' OR OCTET_LENGTH(d.type)>? OR c.type_url<>CONCAT(?,LOWER(HEX(d.type))))`,
+		types.MaxDependencyTypeLen, s.ScopeURL()+"types/native-dependency/").Scan(&invalidTypes); err != nil {
 		return err
 	}
 	if invalidTypes != 0 {

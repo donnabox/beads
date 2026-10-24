@@ -8,8 +8,10 @@ import (
 	"fmt"
 	"strings"
 
+	"encoding/hex"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/memorycatalog"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // Historical identity helpers remain for callers testing refusal. These Types
@@ -41,8 +43,8 @@ type previewTypeDefinition struct {
 	build func(string) (graph.TypeDescriptor, error)
 }
 
-// Fresh workspaces install the selected Memory catalog and the two unchanged
-// native-domain Types. Earlier installations are refused, never upgraded here.
+// Fresh workspaces install the selected Memory catalog, abstract native family
+// bases and fixed concrete native children. Earlier generations are refused.
 func previewTypeDefinitions() []previewTypeDefinition {
 	definitions := make([]previewTypeDefinition, 0, 20)
 	for _, name := range append(append([]string(nil), selectedMemoryBeadNames...), selectedMemoryLinkNames...) {
@@ -50,7 +52,20 @@ func previewTypeDefinitions() []previewTypeDefinition {
 			return selectedMemoryDescriptor(scope, name)
 		}})
 	}
-	return append(definitions, previewTypeDefinition{"issue", issueDescriptor}, previewTypeDefinition{"dependency", dependencyDescriptor})
+	definitions = append(definitions, previewTypeDefinition{"issue", issueDescriptor}, previewTypeDefinition{"dependency", dependencyDescriptor})
+	for _, classification := range append(append([]types.IssueType(nil), types.AllIssueTypes...), types.TypeEvent) {
+		name := "native-issue/" + hex.EncodeToString([]byte(classification))
+		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
+			return nativeConcreteDescriptor(scope, scope+"types/"+name)
+		}})
+	}
+	for _, kind := range types.WellKnownDependencyTypes() {
+		name := "native-dependency/" + hex.EncodeToString([]byte(kind))
+		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
+			return nativeConcreteDescriptor(scope, scope+"types/"+name)
+		}})
+	}
+	return definitions
 }
 
 // selectedMemoryDescriptor is a deliberately partial inventory projection. The
@@ -125,7 +140,7 @@ func installedPreviewTypes(ctx context.Context, tx *sql.Tx, scope string) ([]gra
 		return nil, err
 	}
 	definitions := previewTypeDefinitions()
-	if count != len(definitions) {
+	if count < len(definitions) || count > len(definitions)+PreviewSnapshotLimit {
 		return nil, fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
 	}
 	result := make([]graph.TypeDescriptor, 0, count)
@@ -145,6 +160,11 @@ func installedPreviewTypes(ctx context.Context, tx *sql.Tx, scope string) ([]gra
 		}
 		result = append(result, parsed)
 	}
+	extra, err := installedNativeBindings(ctx, tx, scope, result)
+	if err != nil {
+		return nil, err
+	}
+	result = append(result, extra...)
 	return result, nil
 }
 

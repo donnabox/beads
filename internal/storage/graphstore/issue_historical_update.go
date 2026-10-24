@@ -15,7 +15,7 @@ import (
 // protected initialization and service/lifecycle facts always remain current.
 var historicalIssueEditableMembers = map[string]bool{
 	"title": true, "description": true, "design": true, "acceptance_criteria": true,
-	"priority": true, "estimated_minutes": true, "assignee": true, "notes": true,
+	"issue_type": true, "priority": true, "estimated_minutes": true, "assignee": true, "notes": true,
 	"external_ref": true, "spec_id": true, "due_at": true,
 }
 var historicalIssueCurrentMembers = map[string]bool{
@@ -36,7 +36,7 @@ func historicalIssueField[T any](source T, edit publicops.Field[T]) publicops.Fi
 }
 
 func composeHistoricalIssuePatch(current, source IssueRecord, edit publicops.IssuePatch) (publicops.IssuePatch, error) {
-	if current.Properties == nil || source.Properties == nil || current.ID != source.ID || current.Type != source.Type {
+	if current.Properties == nil || source.Properties == nil || current.ID != source.ID || !sameNativeIssueTypeFamily(current.Type, source.Type) {
 		return publicops.IssuePatch{}, fmt.Errorf("%w: historical Issue source requires the same native subject", ErrCapabilityUnavailable)
 	}
 	objects := make([]map[string]json.RawMessage, 2)
@@ -64,7 +64,7 @@ func composeHistoricalIssuePatch(current, source IssueRecord, edit publicops.Iss
 	patch := publicops.IssuePatch{
 		Title: historicalIssueField(s.Title, edit.Title), Description: historicalIssueField(s.Description, edit.Description),
 		Design: historicalIssueField(s.Design, edit.Design), AcceptanceCriteria: historicalIssueField(s.AcceptanceCriteria, edit.AcceptanceCriteria),
-		Priority: historicalIssueField(s.Priority, edit.Priority), EstimatedMinutes: historicalIssueField(s.EstimatedMinutes, edit.EstimatedMinutes),
+		IssueType: historicalIssueField(s.IssueType, edit.IssueType), Priority: historicalIssueField(s.Priority, edit.Priority), EstimatedMinutes: historicalIssueField(s.EstimatedMinutes, edit.EstimatedMinutes),
 		Assignee: historicalIssueField(s.Assignee, edit.Assignee), Notes: historicalIssueField(s.Notes, edit.Notes),
 		ExternalRef: historicalIssueField(s.ExternalRef, edit.ExternalRef), SpecID: historicalIssueField(s.SpecID, edit.SpecID), DueAt: historicalIssueField(s.DueAt, edit.DueAt),
 	}
