@@ -47,7 +47,7 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	const issueURL = "https://example.invalid/due/beads/work"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "due", "--scope-url", "https://example.invalid/due/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "Due work", "--graph-path", "beads/work", "--due", "2030-01-02T03:04:05-07:00", "--json")
+	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "Due work", "--id", "beads/work", "--force", "--due", "2030-01-02T03:04:05-07:00", "--json")
 	var first struct{ Result graphstore.IssueRecord }
 	if err := json.Unmarshal([]byte(created), &first); err != nil {
 		t.Fatal(err)
@@ -82,10 +82,10 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 		name, code string
 		args       []string
 	}{
-		{"invalid-create", "invalid_properties", []string{"create", "Bad", "--graph-path", "beads/bad", "--due=not-a-date"}},
+		{"invalid-create", "invalid_properties", []string{"create", "Bad", "--id", "beads/bad", "--force", "--due=not-a-date"}},
 		{"invalid-update", "invalid_properties", []string{"update", issueURL, "--due=not-a-date"}},
 		{"defer-held", "capability_unavailable", []string{"update", issueURL, "--due=", "--defer="}},
-		{"create-status-held", "capability_unavailable", []string{"create", "Bad", "--graph-path", "beads/bad", "--due=2030-01-01", "--status=open"}},
+		{"create-status-held", "capability_unavailable", []string{"create", "Bad", "--id", "beads/bad", "--force", "--due=2030-01-01", "--status=open"}},
 		{"readonly-before-parse", "permission_denied", []string{"update", issueURL, "--due=not-a-date", "--readonly"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) { graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...) })

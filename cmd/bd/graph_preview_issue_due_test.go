@@ -108,7 +108,7 @@ func TestGraphPreviewIssueDuePolicyDispatch(t *testing.T) {
 		code  int
 	}{{"true", 5}, {"false", 2}} {
 		t.Run("claim-"+tc.claim, func(t *testing.T) {
-			err := runGraphPreviewUpdate(issueClaimCommand(t, "--claim="+tc.claim, "--due="), []string{"https://example.invalid/beads/work"})
+			err := runGraphPreviewClaimIssue(issueClaimCommand(t, "--claim="+tc.claim, "--due="), "beads/work")
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != tc.code {
 				t.Fatalf("claim mixed with due: %v", err)
