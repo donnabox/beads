@@ -93,6 +93,13 @@ func TestGraphPreviewCloseCanonicalPublicIssue(t *testing.T) {
 				return graphMixedResult[graphstore.IssueRecord](t, call("create", id, "--id", id, "--force"))
 			}
 			first, second, third := create("beads/first"), create("beads/second"), create("beads/third")
+			missing := scope + "beads/missing"
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "close", missing, "--reason", "done", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "close", first.ID, missing, "--reason", "done", "--json")
+			unchanged := graphMixedResult[graphstore.IssueRecord](t, call("show", first.ID, "--format", "graph-json"))
+			if unchanged.Properties.Status == types.StatusClosed {
+				t.Fatalf("failed batch close changed its valid Issue: %+v", unchanged)
+			}
 			closed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", first.ID, "--reason", "done"))
 			if !closed.Changed || closed.Issue.ID != first.ID || closed.Issue.Properties.Status != types.StatusClosed {
 				t.Fatalf("single canonical close selected the wrong Issue: %+v", closed)

@@ -347,7 +347,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 			// that exact path and Issue kind in its own transaction.
 			paths[i], err = graphPreviewCanonicalAllocationPath(selector)
 			if err != nil {
-				return graphStorageError(err)
+				return err
 			}
 			nativeIDs[i] = ""
 		}
