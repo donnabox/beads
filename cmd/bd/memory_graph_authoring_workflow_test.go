@@ -134,7 +134,11 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal(required)
 			}
 			governed := create("subject-to", native.ID, "b", "--id=issue-rule")
-			if governed.Link.Type != scope+"types/subject-to" || governed.Source.Type != scope+"types/issue" || governed.Link.Source.URI != native.ID {
+			nativeTaskType, err := graphstore.NativeIssueTypeURL(scope, "task")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if governed.Link.Type != scope+"types/subject-to" || governed.Source.Type != nativeTaskType || governed.Link.Source.URI != native.ID {
 				t.Fatal(governed)
 			}
 			// The stale guard is enforced atomically by the same writer, before either
