@@ -118,10 +118,10 @@ func renderGraphSelectedBox(w *graphExportWriter, r graphGenericResult) {
 	w.printf("Graph (%d Beads, %d Links)\n", len(r.Nodes), len(r.Links))
 	// A hop-selected set is not an execution schedule. Never label a Memory ready.
 	for _, n := range r.Nodes {
-		w.printf("┌ %s [%s] %s\n│ %q\n└\n", local(n.ID), local(n.Type), local(n.Status), n.Title)
+		w.printf("┌ %s [%s] %s\n│ %q\n└\n", local(n.ID), graphHumanType(r.Scope, n.Type), local(n.Status), n.Title)
 	}
 	for _, l := range r.Links {
-		w.printf("%s --[%s] (%s)--> %s", local(l.Source), local(l.Type), local(l.ID), local(l.Target))
+		w.printf("%s --[%s] (%s)--> %s", local(l.Source), graphHumanType(r.Scope, l.Type), local(l.ID), local(l.Target))
 		if l.SourceRevision != "" || l.TargetRevision != "" {
 			w.printf(" [source revision=%q target revision=%q]", l.SourceRevision, l.TargetRevision)
 		}
@@ -136,10 +136,10 @@ func renderGraphSelectedDOT(w *graphExportWriter, r graphGenericResult) {
 	w.println("digraph beads {")
 	w.println("  rankdir=LR;")
 	for _, n := range r.Nodes {
-		w.printf("  %q [label=%q, shape=box];\n", n.ID, local(n.ID)+" ["+local(n.Type)+"]\n"+n.Title)
+		w.printf("  %q [label=%q, shape=box];\n", n.ID, local(n.ID)+" ["+graphHumanType(r.Scope, n.Type)+"]\n"+n.Title)
 	}
 	for _, l := range r.Links {
-		w.printf("  %q -> %q [id=%q, label=%q, tooltip=%q];\n", l.Source, l.Target, l.ID, "["+local(l.Type)+"]", l.ID+" source revision="+l.SourceRevision+" target revision="+l.TargetRevision)
+		w.printf("  %q -> %q [id=%q, label=%q, tooltip=%q];\n", l.Source, l.Target, l.ID, "["+graphHumanType(r.Scope, l.Type)+"]", l.ID+" source revision="+l.SourceRevision+" target revision="+l.TargetRevision)
 	}
 	if len(r.Frontier) > 0 {
 		w.printf("  graph [label=%q];\n", fmt.Sprintf("Depth limit %d reached; further relationships are outside this view.", r.Depth))
@@ -150,27 +150,38 @@ func renderGraphSelectedHTML(w *graphExportWriter, r graphGenericResult) error {
 	// Existing HTML/D3 template, with neutral Type labels rather than synthetic
 	// Issue status/priority. The Link array retains parallel identities and pins.
 	type neutralNode struct {
-		ID    string `json:"id"`
-		Label string `json:"label"`
-		Title string `json:"title"`
-		Type  string `json:"type"`
-		Layer int    `json:"layer"`
+		ID        string `json:"id"`
+		Label     string `json:"label"`
+		Title     string `json:"title"`
+		Type      string `json:"type"`
+		TypeLabel string `json:"typeLabel"`
+		Layer     int    `json:"layer"`
 	}
 	nodes := make([]neutralNode, 0, len(r.Nodes))
 	for _, n := range r.Nodes {
-		nodes = append(nodes, neutralNode{ID: n.ID, Label: strings.TrimPrefix(n.ID, r.Scope) + " [" + strings.TrimPrefix(n.Type, r.Scope) + "]", Title: n.Title, Type: n.Type})
+		nodes = append(nodes, neutralNode{ID: n.ID, Label: strings.TrimPrefix(n.ID, r.Scope) + " [" + graphHumanType(r.Scope, n.Type) + "]", Title: n.Title, Type: n.Type, TypeLabel: graphHumanType(r.Scope, n.Type)})
 	}
 	rawNodes, err := json.Marshal(nodes)
 	if err != nil {
 		return err
 	}
-	rawLinks, err := json.Marshal(r.Links)
+	// These labels belong only to the private HTML view. Exact canonical Type
+	// identities and every endpoint/pin remain unchanged in the carried data.
+	type neutralLink struct {
+		graphGenericLink
+		TypeLabel string `json:"typeLabel"`
+	}
+	links := make([]neutralLink, 0, len(r.Links))
+	for _, link := range r.Links {
+		links = append(links, neutralLink{graphGenericLink: link, TypeLabel: graphHumanType(r.Scope, link.Type)})
+	}
+	rawLinks, err := json.Marshal(links)
 	if err != nil {
 		return err
 	}
 	template := strings.NewReplacer(
 		`.text(d => d.id + " P" + d.priority)`, `.text(d => d.label)`,
-		`tooltip.append("span").text("Priority: P" + d.priority + " | Type: " + d.type);`, `tooltip.append("span").text("Type: " + d.type);`,
+		`tooltip.append("span").text("Priority: P" + d.priority + " | Type: " + d.type);`, `tooltip.append("span").text("Type: " + d.typeLabel);`,
 		`tooltip.append("span").text("Layer: " + d.layer);`, `tooltip.append("span").text("Current Bead record; inspect Link pins separately");`,
 		`tooltip.append("span").attr("class","tt-status").style("background", statusColors[d.status]||"#555").text(d.status);`, ``,
 		`.attr("refX",20)`, `.attr("refX",10)`,
@@ -217,7 +228,7 @@ function graphLinkPath(d) {
 	// arc groups before constructing that force so grouping uses authored IDs.
 	template = strings.Replace(template, `const simulation = d3.forceSimulation(nodes)`, linkGeometry+`
 const simulation = d3.forceSimulation(nodes)`, 1)
-	const linkTitle = `link.append("title").text(d => d.id + "\n[" + d.type + "]\nsource revision: " + (d.sourceRevision || "unpinned") + "\ntarget revision: " + (d.targetRevision || "unpinned"));
+	const linkTitle = `link.append("title").text(d => d.id + "\n[" + d.typeLabel + "]\nsource revision: " + (d.sourceRevision || "unpinned") + "\ntarget revision: " + (d.targetRevision || "unpinned"));
 const node = g.append("g")`
 	template = strings.Replace(template, `const node = g.append("g")`, linkTitle, 1)
 	title := "Beads graph"

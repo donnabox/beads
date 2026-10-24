@@ -138,11 +138,18 @@ func selectedTypeTestDescriptors(t *testing.T, scope string) []graph.TypeDescrip
 		Bindings: map[memorycatalog.Symbol]memorycatalog.Binding{},
 		Issue:    typecatalog.Reference{URI: graphstore.IssueTypeURL(scope)},
 	}
-	for _, name := range graphstore.FreshTypeNames() {
-		if name == "issue" || name == "dependency" {
-			continue
-		}
-		input.Bindings[memorycatalog.Symbol(name)] = memorycatalog.Binding{
+	// This fixture models the complete selected Memory declaration, independently
+	// of the workspace's fresh installation and native adapter inventories.
+	for _, symbol := range []memorycatalog.Symbol{
+		memorycatalog.Memory, memorycatalog.Evaluation, memorycatalog.Constraint,
+		memorycatalog.Policy, memorycatalog.Decision, memorycatalog.Procedure,
+		memorycatalog.Requirement, memorycatalog.Scenario, memorycatalog.Specification,
+		memorycatalog.References, memorycatalog.SupersededBy, memorycatalog.Requires,
+		memorycatalog.Defines, memorycatalog.SubjectTo, memorycatalog.Conformance,
+		memorycatalog.Addresses, memorycatalog.Satisfies, memorycatalog.Violates,
+	} {
+		name := string(symbol)
+		input.Bindings[symbol] = memorycatalog.Binding{
 			Type: typecatalog.Reference{URI: scope + "types/" + name}, SchemaBase: scope + "schemas/" + name,
 		}
 	}
@@ -158,7 +165,20 @@ func selectedTypeTestDescriptors(t *testing.T, scope string) []graph.TypeDescrip
 		}
 		descriptors = append(descriptors, inventoryDescriptor(t, definition.Binding.Type.URI, string(definition.Symbol), definition.Kind, parents...))
 	}
-	return append(descriptors, inventoryDescriptor(t, graphstore.IssueTypeURL(scope), "Issue", graph.KindBead), inventoryDescriptor(t, graphstore.DependencyTypeURL(scope), "Dependency", graph.KindLink))
+	descriptors = append(descriptors, inventoryDescriptor(t, graphstore.IssueTypeURL(scope), "Issue", graph.KindBead), inventoryDescriptor(t, graphstore.DependencyTypeURL(scope), "Dependency", graph.KindLink))
+	for _, name := range graphstore.FreshTypeNames() {
+		id := scope + "types/" + name
+		base, classification, native := graphstore.NativeTypeClassification(scope, id)
+		if !native {
+			continue
+		}
+		kind := graph.KindBead
+		if base == graphstore.DependencyTypeURL(scope) {
+			kind = graph.KindLink
+		}
+		descriptors = append(descriptors, inventoryDescriptor(t, id, classification, kind, base))
+	}
+	return descriptors
 }
 
 func TestGraphPreviewSelectedGenericProjectionUsesInstalledRefinements(t *testing.T) {
