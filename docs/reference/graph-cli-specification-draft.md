@@ -136,6 +136,208 @@ and conformance tests before either projection is called final. The approved CLI
 `revision` on full Resource records, `version` on retained-list rows and the
 `--version` exact-read flag; BDP History rows retain `revision`.
 
+### Memory and generic graph presentation target
+
+This section records the compact relationship-tree design selected on
+October 21, 2026 for generic Link-mode `bd graph` and the
+[Memory command facades](/reference/bdp/cli/types/memory/memory). It is a
+presentation target, not installed-output evidence. The PR176 candidate's
+current generic text renderer lists Beads and Links separately; it does not
+implement this relationship tree. Native `--graph-mode dependency` renderers,
+Issue workflow semantics and their compatibility behavior remain unchanged.
+
+The shared [selection and output contract](/reference/bdp/cli/selection-and-output)
+owns output framing, projections, errors and machine representations. This
+section defines how to display the selected graph; it adds no second output
+writer or private JSON schema version. Exact alternate-view switches,
+Link-ID visibility controls and flag combinations remain deferred. Memory
+reads use the graph view by default, without a separate `--graph` opt-in.
+
+#### Relationship-tree rules
+
+- Retain the requested roots, including roots with no selected relationships.
+  Display the actual Bead identity, declared Type and short title.
+- Label every relationship with its actual Link Type. Arrows preserve authored
+  source-to-target direction; indentation follows the requested traversal,
+  including incoming traversal. Indentation is not ownership, scheduling or
+  an execution layer.
+- Expand a Bead once per requested root's view. Render each requested root
+  as its own top-level tree even when it appeared under another root. Root
+  views have independent expansion/visited sets; shared display must not
+  import another root's edges, depth or frontier. Mark a repeated reference as a
+  cycle only when it closes an actual directed cycle in the selected graph;
+  otherwise refer to the earlier appearance. Incoming or both-direction
+  traversal, parallel edges and ancestor indentation alone do not establish a
+  directed cycle. Preserve the actual Link in either case.
+- Keep every selected Link, including cross-links, parallel Links and
+  cycle-closing Links. Multiple Links between equal endpoints remain distinct
+  and must not be collapsed for visual convenience. First choose each root's
+  expansion tree from the admitted traversal direction and stages, using stable
+  display order. Only those tree Links expand Beads; a reverse induced Link
+  cannot move a Bead under a different parent. Emit every other selected Link
+  once as a reference to its canonical appearance in that root's tree. For
+  outgoing reads, attach these non-tree Links under their source; for incoming
+  reads, under their target; for both-direction reads, use the first endpoint
+  in canonical tree order. The referenced appearance may come later: use
+  `(shown elsewhere)` rather than falsely saying it was shown above. Preserve
+  authored arrows. Each relationship line represents one Link in that root's result. Counts
+  deduplicate actual Bead and Link identities across the full operation, even
+  when a shared Link is shown in multiple root views.
+- Elide `beads/`, `links/` and `types/` prefixes in human examples only. Do not
+  rewrite canonical identities, endpoint references, retained revision tokens
+  or JSON. Final Link-ID display controls remain open; illustrative elision
+  below does not select a universal identity-hiding rule.
+- Use actual Type labels for Memory records. Do not infer readiness, Issue
+  status, priority or execution order from Memory Type or tree position.
+
+A generic graph selects reached Beads in its admitted direction and hop depth,
+then includes matching Links induced by those Beads in either direction.
+Direction and depth govern reachability only, not induced-edge inclusion. The
+tree is a view of that graph, not a replacement spanning tree: it must retain matching Links
+that were not used to discover a new Bead. It must not cross an excluded
+Link to reach otherwise hidden Beads.
+
+For multiple roots, evaluate each root's graph using its own hop budget in
+the same consistent read view, then aggregate those graphs. Preserve per-root
+membership, witness paths and frontiers. Do not re-induce extra Links across
+the combined Bead union: a Link must belong to at least one root's selected
+graph. Shared identity does not transfer reachability or obligations between
+roots. Print a separate frontier notice for each root, attributed
+to that root even if the boundary Bead is expanded in another root's tree.
+Machine framing of that root context is an integration
+requirement under the common output contract, not a new schema defined here.
+
+The Memory `constraints` view is a staged query: Subject To once from each
+original subject, followed by Requires-family expansion. Its edge scope is
+the admitted path pattern, not all Links from a union of those Types between
+reached Beads. In particular, a secondary Constraint's own Subject To Link
+must not appear as a governing declaration for the original subject. The
+Memory `subjects` lookup likewise selects declarations targeted directly at
+each requested Constraint, excluding secondary Subject To Links between
+reached subjects. These fixed domain questions have explicit edge scopes; they
+do not change the generic graph's induced-Link rule.
+
+#### Proposed output examples
+
+These examples illustrate the selected presentation direction. They are not
+captured command runs or proof that a candidate implements the layout.
+Identifiers are shortened and graph Link IDs elided for readability.
+
+A succession chain:
+
+```text
+$ bd memory successor original
+
+original [memory] Original guidance
+└── superseded-by → revised [memory] Revised guidance
+    └── superseded-by → current [memory] Current guidance
+
+3 Beads, 2 Links
+```
+
+Incoming traversal retains authored arrow direction:
+
+```text
+$ bd memory supersedes current --depth 1000
+
+current [memory] Current guidance
+└── superseded-by ← revised [memory] Revised guidance
+    ├── superseded-by ← original [memory] Original guidance
+    └── superseded-by ← alternative [memory] Alternative guidance
+
+4 Beads, 3 Links
+```
+
+A References cycle closes without another expansion:
+
+```text
+$ bd memory references alpha --depth 1000
+
+alpha [memory] Alpha
+└── references → beta [memory] Beta
+    └── references → gamma [memory] Gamma
+        └── references → alpha [memory] (cycle)
+
+3 Beads, 3 Links
+```
+
+A shared descendant is not an ancestor cycle:
+
+```text
+$ bd memory references alpha --depth 2
+
+alpha [memory] Alpha
+├── references → beta [memory] Beta
+│   └── references → delta [memory] Delta
+└── references → gamma [memory] Gamma
+    └── references → delta [memory] (shown above)
+
+4 Beads, 4 Links
+```
+
+Parallel and reverse induced Links remain visible. Here `link-1` and `link-3`
+are A-to-B Links and `link-2` is B-to-A. These illustrative Link labels explain
+the three separate records; final Link-ID visibility controls remain deferred.
+
+```text
+$ bd memory references a
+
+a [memory] A
+├── references (link-1) → b [memory] B
+│   └── references (link-2) → a [memory] (cycle)
+└── references (link-3) → b [memory] (shown above)
+
+2 Beads, 3 Links
+```
+
+Two roots keep their own depth-one graphs. The fixture has A-to-B, A-to-C,
+B-to-D and C-to-D. The last Link belongs to neither root's depth-one graph,
+so it is absent from the aggregate. Re-expanding B in its own root view does
+not expand it within A's view.
+
+```text
+$ bd memory references a b
+
+Root: a
+a [memory] A
+├── references → b [memory] B
+└── references → c [memory] C
+More relationships for root a beyond depth 1: b, c
+
+Root: b
+b [memory] B
+└── references → d [memory] D
+
+4 Beads, 3 Links
+```
+
+Constraint views keep Scenario, Requirement and Policy labels inline rather
+than moving descendants into global Type groups that obscure their parents.
+The proposed ordering at each Constraint is Defines-family children first,
+then other Requires relationships; stable Type/title/identity ordering within
+those groups and Link identity ordering for parallel edges make repeated
+views predictable. This is display ordering, not a new structural rule or a
+claim that Scenarios are optional. Detailed bodies and optional grouped
+summaries are separate presentation choices.
+
+#### Bounds and completeness
+
+Human output must disclose real frontiers and resource limits without
+confusing a depth-limited direct-neighbor result with a failed query. Proposed
+wording at a depth boundary is:
+
+```text
+2 Beads, 1 Link
+More relationships for root alpha beyond depth 1: beta
+```
+
+That wording remains a presentation proposal; the actual frontier and semantic
+completeness must agree with the common machine contract. A boundary is not a
+terminal successor. A graph walk is not proof of satisfaction or discovery of
+every implicitly applicable Constraint. Results that refuse due to bounds or
+other errors follow the common error/partial-result rules rather than printing
+a misleading complete graph.
+
 ### Implementation ledger and explicit-flag inventory
 
 This table describes the admitted graph-mode surface at the pinned integration
