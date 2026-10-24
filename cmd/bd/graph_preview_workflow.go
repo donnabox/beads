@@ -240,11 +240,11 @@ func graphPreviewInsertDependency(sourcePath, targetPath, sourceNativeID, target
 		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, SourceNativeID: sourceNativeID, TargetNativeID: targetNativeID, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
-				kind := "blocking"
-				if typeURL != "" && typeURL != graphPreviewBlockingTypeURL(graphPreviewConfig.GraphScopeURL) {
-					kind = "native Dependency"
+				hint := "use an informational Link Type for Memory endpoints"
+				if depType == types.DepSupersedes {
+					hint = "use informational Link Type types/superseded-by for Memory succession"
 				}
-				return nil, "", fmt.Errorf("%s Link Type requires two live Issues; use an informational Type such as types/references for Memory endpoints: %w", kind, err)
+				return nil, "", fmt.Errorf("native %s Dependency requires two live Issues; %s: %w", depType, hint, err)
 			}
 			return nil, "", err
 		}
