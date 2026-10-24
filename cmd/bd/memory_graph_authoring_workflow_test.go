@@ -58,11 +58,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			}
 			create := func(verb, src, target string, extra ...string) memoryAuthoredLink {
 				t.Helper()
-				flag := "--to"
-				if verb == "supersede" {
-					flag = "--to"
-				}
-				args := append([]string{"memory", verb, src, flag, target, "--json"}, extra...)
+				args := append([]string{"memory", verb, src, "--to", target, "--json"}, extra...)
 				raw := call(args...)
 				if verb == "supersede" {
 					t.Logf("ACTUAL_EXAMPLE provider=%s args=%q output=%s", engine, args, raw)
@@ -88,6 +84,21 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				if err := json.Unmarshal(out.Bytes(), &frame); err != nil || frame.Outcome != "failure" || len(frame.Data) != 0 {
 					t.Fatalf("refusal not canonical %s %s %v", &out, &stderr, err)
 				}
+			}
+			beforeA, beforeB := snapshot("a"), snapshot("b")
+			beforeLinks := old("link", "list", "--incident-to", "a")
+			for _, op := range memoryLinkOperations {
+				for _, flags := range [][]string{
+					{"--from=a", "--from=a", "--to=b"},
+					{"--from=a", "--from=c", "--to=b"},
+					{"--from=a", "--to=b", "--to=b"},
+					{"--from=a", "--to=b", "--to=c"},
+				} {
+					refuse("invalid_selector", 2, append([]string{"memory", op.name}, flags...)...)
+				}
+			}
+			if snapshot("a") != beforeA || snapshot("b") != beforeB || old("link", "list", "--incident-to", "a") != beforeLinks {
+				t.Fatal("duplicate endpoint flags changed graph state")
 			}
 			first := create("reference", "a", "b", "--title=Context", "--body=Why", "--status=reviewed", "--properties", `{"counter":9007199254740994,"nested":{"x":[true,null]}}`, "--metadata", `{"private":{"tag":"retained"}}`, "--actor=memory-author")
 			if first.Link.Type != scope+"types/references" || first.Link.Source.URI != scope+"beads/a" || first.Link.Target.URI != scope+"beads/b" || string(first.Link.Properties["counter"]) != "9007199254740994" || string(first.Link.Properties["body"]) != `"Why"` || first.Link.Attribution == nil || first.Link.Attribution.Principal != "memory-author" || string(first.Link.Metadata["private"]) != `{"tag":"retained"}` {

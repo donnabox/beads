@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -10,6 +11,9 @@ import (
 // Link creation and the Memory authoring facades. A repeated endpoint is a
 // refusal even when both spellings carry the same value.
 func graphPreviewAuthoringEndpoints(cmd *cobra.Command, args []string) (string, string, error) {
+	if err := canonicalExactOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
+		return "", "", err
+	}
 	fromFlag := cmd.Flags().Changed("from")
 	toFlag := cmd.Flags().Changed("to")
 	from, _ := cmd.Flags().GetString("from")

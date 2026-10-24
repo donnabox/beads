@@ -32,3 +32,25 @@ func TestCanonicalScalarOccurrences(t *testing.T) {
 		})
 	}
 }
+
+func TestCanonicalExactEndpointOccurrences(t *testing.T) {
+	cmd := &cobra.Command{}
+	cmd.Flags().String("from", "", "")
+	cmd.Flags().String("to", "", "")
+	for _, tc := range []struct {
+		args []string
+		bad  bool
+	}{
+		{[]string{"link", "create", "--from=a", "--to=b"}, false},
+		{[]string{"link", "create", "--from=a", "--from=a", "--to=b"}, true},
+		{[]string{"link", "create", "--from=a", "--from=c", "--to=b"}, true},
+		{[]string{"link", "create", "--from=a", "--to=b", "--to=b"}, true},
+		{[]string{"link", "create", "--from=a", "--to=b", "--to=c"}, true},
+		{[]string{"link", "create", "--from=a", "--", "--from=c"}, false},
+	} {
+		err := canonicalExactOccurrences(cmd, tc.args, "from", "to")
+		if (err != nil) != tc.bad {
+			t.Fatalf("args=%v err=%v want refusal=%v", tc.args, err, tc.bad)
+		}
+	}
+}

@@ -81,6 +81,18 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "create", "--type", "memory-preview", "--properties", `{"title":"One","body":"One is the loneliest number."}`)
 			refuse("capability_unavailable", "link", "create", "policy", "work", "--type", "types/missing", "--properties", `{"note":"test"}`)
 			refuse("invalid_selector", "link", "create", "policy", "work", "--from", "policy", "--type", "example-cites")
+			beforeLinks := call("link", "list", "--incident-to", "policy")
+			for _, flags := range [][]string{
+				{"--from=policy", "--from=policy", "--to=work"},
+				{"--from=policy", "--from=rule", "--to=work"},
+				{"--from=policy", "--to=work", "--to=work"},
+				{"--from=policy", "--to=work", "--to=rule"},
+			} {
+				refuse("invalid_selector", append([]string{"link", "create", "--type", "types/references"}, flags...)...)
+			}
+			if call("link", "list", "--incident-to", "policy") != beforeLinks {
+				t.Fatal("duplicate endpoint flags created a Link")
+			}
 			refuse("invalid_properties", "link", memory.ID, other.ID, "--type", "types/dependency")
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "memories")
 			if !strings.Contains(human, "beads/policy") || !strings.Contains(human, "Code flow policy") || strings.Contains(human, scope) || strings.Contains(human, memory.Revision) {
