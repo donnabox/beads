@@ -54,11 +54,13 @@ func TestNativeConcreteTypesWireAndRetainedProjection(t *testing.T) {
 				}
 			})
 			var original graphstore.IssueRecord
+			allocated := make(map[string]graphstore.IssueRecord)
 			for _, path := range []string{"beads/a", "beads/b", "beads/c"} {
 				created, err := s.CreateIssue(ctx, path, issueops.CreateRequest{Actor: "tester", Issue: &issueops.Issue{Title: path, IssueType: "task", Status: "open", Priority: 2}})
 				if err != nil {
 					t.Fatal(err)
 				}
+				allocated[path] = created
 				if path == "beads/a" {
 					original = created
 				}
@@ -84,14 +86,14 @@ func TestNativeConcreteTypesWireAndRetainedProjection(t *testing.T) {
 				t.Fatal(err)
 			}
 			for _, path := range []string{"beads/a", "beads/b", "beads/c"} {
-				value, err := r.Resource(ctx, path)
+				value, err := r.Resource(ctx, allocated[path].ID)
 				if err != nil {
 					t.Fatal(err)
 				}
 				got := value.(bdpwire.BeadRecord)
 				var listed *bdpwire.BeadRecord
 				for i := range inventory.Beads {
-					if inventory.Beads[i].ID == scope+path {
+					if inventory.Beads[i].ID == allocated[path].ID {
 						listed = &inventory.Beads[i]
 						break
 					}
@@ -108,7 +110,7 @@ func TestNativeConcreteTypesWireAndRetainedProjection(t *testing.T) {
 				}
 			}
 			task, _ := graphstore.NativeIssueTypeURL(scope, "task")
-			retained, err := r.ResourceVersion(ctx, "beads/a", original.Revision)
+			retained, err := r.ResourceVersion(ctx, original.ID, original.Revision)
 			if err != nil {
 				t.Fatal(err)
 			}
