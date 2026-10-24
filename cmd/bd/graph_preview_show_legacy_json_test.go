@@ -159,7 +159,7 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "", "comment", created.ID, "First note", "--actor", "alice", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "", "comment", created.ID, "Second note", "--actor", "bob", "--json")
 			tail := graphPolicyCLI(t, bd, work, home, nil, "", "show", created.ID, "--comments-tail", "1")
-			if !strings.Contains(tail, "1 older comment hidden") || !strings.Contains(tail, "Second note") || strings.Contains(tail, "First note") {
+			if !strings.Contains(tail, "1 older comments hidden") || !strings.Contains(tail, "Second note") || strings.Contains(tail, "First note") {
 				t.Fatalf("--comments-tail did not preserve familiar elision: %s", tail)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", created.ID, "--revision", created.Revision, "--long", "--json")
