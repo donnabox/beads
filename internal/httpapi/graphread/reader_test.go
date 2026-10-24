@@ -27,10 +27,11 @@ import (
 func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			// 180s, not 90s: in the -race CI lane (-p 4 -parallel 4) this subtest
-			// measured 82s on a passing run and hit a 90s deadline on two
-			// consecutive runs, while it takes about 40s on a fast local machine.
-			// The deadline exists to catch hangs, not to measure speed.
+			// Bound each stateful phase, not the cumulative five complete catalog
+			// rereads. The -race CI workflow exhausted a shared 180s context in
+			// its final 52-Type comparison after earlier phases had progressed.
+			// Keep the same hang bound per phase and the outer Go test timeout.
+			phaseStarted := time.Now()
 			ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
 			defer cancel()
 			workspace, err := filepath.EvalSymlinks(t.TempDir())
@@ -213,6 +214,11 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if err := s.Close(); err != nil {
 				t.Fatal(err)
 			}
+			t.Logf("current/history/unlink phase completed in %s", time.Since(phaseStarted))
+			cancel()
+			ctx, cancel = context.WithTimeout(context.Background(), 180*time.Second)
+			defer cancel()
+			phaseStarted = time.Now()
 			s, err = graphstore.OpenExisting(ctx, o)
 			if err != nil {
 				t.Fatal(err)
@@ -260,6 +266,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal("Evaluation claim changed its assessed subject")
 			}
 			checkInventory(t, ctx, r, 5, 3)
+			t.Logf("reopen/selection/assessment phase completed in %s", time.Since(phaseStarted))
 		})
 	}
 }
