@@ -331,7 +331,9 @@ func TestIssueBlockedCanonicalOrder(t *testing.T) {
 			expected := make([]BlockedIssue, 0, 2)
 			for index, path := range []string{"beads/a", "beads/z"} {
 				request := plainIssue(path)
-				request.Issue.Priority = 4 - index*4
+				request.Issue.ID = []string{"blocked-z", "blocked-a"}[index]
+				request.ForceIDPrefix = true
+				request.Issue.Priority = index * 4
 				if _, err := s.CreateIssue(ctx, path, request); err != nil {
 					t.Fatal(err)
 				}
@@ -341,6 +343,8 @@ func TestIssueBlockedCanonicalOrder(t *testing.T) {
 				}
 				expected = append(expected, BlockedIssue{Issue: dependency.Source, BlockedBy: []string{target.ID}})
 			}
+			// Public order deliberately opposes the private a/z allocation order.
+			sort.Slice(expected, func(i, j int) bool { return expected[i].Issue.ID < expected[j].Issue.ID })
 			before := reopenState(t, ctx, s)
 			for range 2 {
 				got, err := s.BlockedIssues(ctx)
