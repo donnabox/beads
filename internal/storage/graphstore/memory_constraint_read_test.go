@@ -65,6 +65,10 @@ func exerciseCurrentConstraintReads(t *testing.T, s *Store) {
 		t.Fatal("Subject To replayed in closure", got.Graph.Views[3])
 	}
 	// Canonical actual Type and authored fields remain distinct from family membership.
+	wantNativeType, err := NativeIssueTypeURL(s.ScopeURL(), "task")
+	if err != nil {
+		t.Fatal(err)
+	}
 	issues := 0
 	for _, record := range got.Records {
 		switch r := record.(type) {
@@ -74,7 +78,7 @@ func exerciseCurrentConstraintReads(t *testing.T, s *Store) {
 			if r.Attribution.Actor != "family-author" {
 				t.Fatal("native attribution lost", r.Attribution)
 			}
-			if r.Type != IssueTypeURL(s.ScopeURL()) || r.Properties.Title != "native subject" {
+			if r.Type != wantNativeType || r.Properties.Title != "native subject" {
 				t.Fatal(r)
 			}
 		case Record:
