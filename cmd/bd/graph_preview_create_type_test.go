@@ -145,7 +145,7 @@ func TestGraphPreviewCreateMemoryInput(t *testing.T) {
 		{name: "exact-properties", flags: []string{`--properties={"title":"Property title","body":"Property body"}`}, title: "Property title", body: "Property body"},
 		{name: "properties-body-summary", flags: []string{`--properties={"body":"Property body"}`}, title: "Property body", body: "Property body"},
 		{name: "properties-disjoint-title", args: []string{"Positional title"}, flags: []string{`--properties={"body":"Property body"}`}, title: "Positional title", body: "Property body"},
-		{name: "explicit-empty-body", flags: []string{"--body="}},
+		{name: "explicit-empty-body", flags: []string{"--body="}, title: "Untitled memory"},
 		{name: "no-content", code: 2},
 		{name: "conflicting-titles", args: []string{"Other"}, flags: []string{"--title=Title"}, code: 2},
 		{name: "empty-title", flags: []string{"--title=", "--body=Body"}, code: 2},
