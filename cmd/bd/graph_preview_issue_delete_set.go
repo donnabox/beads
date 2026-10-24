@@ -38,7 +38,7 @@ func runGraphPreviewDeleteIssueSet(cmd *cobra.Command, args []string) error {
 	for _, input := range args {
 		selector, err := graphPreviewWritableResourceArgument(input)
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		selected, err := graphPreviewIssueSelector(selector)
 		if err != nil {

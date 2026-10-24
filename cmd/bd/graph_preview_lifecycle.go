@@ -89,7 +89,7 @@ var linkUpdateCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		selector, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err != nil {
@@ -366,7 +366,7 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 	}
 	selector, err := graphPreviewWritableResourceArgument(args[0])
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
 	path, err := graphPreviewResolvedHistoricalPath(selector)
 	if err != nil {
@@ -451,7 +451,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		}
 		selector, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err != nil {
@@ -465,11 +465,11 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		var err error
 		source, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		target, err := graphPreviewWritableResourceArgument(args[1])
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		sourceSelector, err := graphPreviewIssueSelector(source)
 		if err != nil {

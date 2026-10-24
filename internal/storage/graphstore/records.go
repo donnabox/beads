@@ -106,7 +106,8 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 }
 
 // createInTx preserves the existing path-based importer seam. New public-ID
-// imports use createPreparedMemoryInTx and consume its actual returned locator.
+// imports use createPreparedMemoryInTx and its accepted record. Resolve any
+// needed private locator from the transaction catalog after allocation.
 func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties, snapshot []byte) error {
 	if req.PublicID != "" {
 		return fmt.Errorf("%w: public-ID import requires returned allocation", ErrCapabilityUnavailable)
