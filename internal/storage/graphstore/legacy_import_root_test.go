@@ -3,6 +3,7 @@
 package graphstore
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -98,8 +99,19 @@ func TestLegacyImportRootIdentityAndAtomicity(t *testing.T) {
 					t.Fatal(err)
 				}
 				retained := old.(IssueRecord)
-				if retained.ID != issue.ID || !reflect.DeepEqual(retained.Properties, issue.Properties) || !reflect.DeepEqual(retained.Owned, issue.Owned) {
-					t.Fatal("initial retained rooted Issue differs")
+				currentJSON, err := canonicalJSON(issue)
+				if err != nil {
+					t.Fatal(err)
+				}
+				retainedJSON, err := canonicalJSON(retained)
+				if err != nil {
+					t.Fatal(err)
+				}
+				// Native hydration adds nonserialized ContentHash/RowVersion cache
+				// fields. Compare the complete public record, including Type and
+				// owned state, rather than those current-only implementation fields.
+				if !bytes.Equal(currentJSON, retainedJSON) {
+					t.Fatalf("initial retained rooted Issue differs: current=%s retained=%s", currentJSON, retainedJSON)
 				}
 				if source == "old-b" {
 					if len(issue.Owned) != 1 {
