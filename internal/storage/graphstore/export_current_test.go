@@ -369,7 +369,56 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Title: "Filler", Body: strings.Repeat("m", 12<<10)}); err != nil {
 				t.Fatal(err)
 			}
-			const byteLimit = 64 << 10
+			// The small aggregate quotas predate generation12's fixed32 native
+			// descriptors. Offset only that catalog cost, never variable payload
+			// bytes, preserving the original64/40/88KiB resource windows.
+			expectedNative := map[string]bool{}
+			for _, kind := range append(append([]types.IssueType(nil), types.AllIssueTypes...), types.TypeEvent) {
+				id, err := NativeIssueTypeURL(s.ScopeURL(), string(kind))
+				if err != nil {
+					t.Fatal(err)
+				}
+				expectedNative[strings.TrimPrefix(id, s.ScopeURL()+"types/")] = true
+			}
+			for _, kind := range types.WellKnownDependencyTypes() {
+				id, err := NativeDependencyTypeURL(s.ScopeURL(), string(kind))
+				if err != nil {
+					t.Fatal(err)
+				}
+				expectedNative[strings.TrimPrefix(id, s.ScopeURL()+"types/")] = true
+			}
+			if len(expectedNative) != 32 {
+				t.Fatalf("fixed native catalog = %d, want32", len(expectedNative))
+			}
+			rows, err := s.db.QueryContext(ctx, `SELECT name,OCTET_LENGTH(descriptor),OCTET_LENGTH(fingerprint) FROM graph_preview_types WHERE name LIKE 'native-issue/%' OR name LIKE 'native-dependency/%' ORDER BY name LIMIT 33`)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var nativeCatalogBytes uint64
+			for rows.Next() {
+				var name string
+				var descriptorBytes, fingerprintBytes uint64
+				if err := rows.Scan(&name, &descriptorBytes, &fingerprintBytes); err != nil {
+					t.Fatal(err)
+				}
+				if !expectedNative[name] {
+					t.Fatalf("unexpected/duplicate native catalog Type %q", name)
+				}
+				delete(expectedNative, name)
+				// The reader charges one fixed row overhead plus these persisted
+				// fields for each Type. No Resource row contributes to this offset.
+				nativeCatalogBytes += exportReadRowOverhead + uint64(len(name)) + descriptorBytes + fingerprintBytes
+			}
+			if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+				t.Fatal(err)
+			}
+			if len(expectedNative) != 0 || nativeCatalogBytes == 0 {
+				t.Fatalf("incomplete fixed catalog: %v bytes=%d", expectedNative, nativeCatalogBytes)
+			}
+			byteLimit := uint64(64<<10) + nativeCatalogBytes
+			if byteLimit >= PreviewCurrentReadByteLimit {
+				t.Fatal("fixture quota reached production aggregate limit")
+			}
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				_, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, byteLimit)
 				return err
@@ -402,7 +451,7 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("bounded refusal changed state")
 			}
-			const deletedHeadByteLimit = 40 << 10
+			deletedHeadByteLimit := uint64(40<<10) + nativeCatalogBytes
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				// Match the isolated state used below: the retained filler head
 				// remains charged once, without its live payload or comment feed.
@@ -461,10 +510,10 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 				if err := s.validateDeletedIssueInTx(ctx, tx, "beads/removed"); err != nil {
 					return fmt.Errorf("validate legacy deleted native head: %w", err)
 				}
-				// The <=40 KiB baseline plus one ~40 KiB legacy head fits
+				// After the fixed catalog offset, the <=40KiB baseline plus one ~40KiB legacy head fits
 				// this window; charging that head twice does not. Keep the
 				// stricter refusal below to protect aggregate accounting too.
-				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, 88<<10); err != nil {
+				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, uint64(88<<10)+nativeCatalogBytes); err != nil {
 					return fmt.Errorf("legacy deleted final head charged more than once: %v", err)
 				}
 				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, deletedHeadByteLimit); !errors.Is(err, ErrLimitExceeded) {

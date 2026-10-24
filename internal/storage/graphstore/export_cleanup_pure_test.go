@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"sort"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -47,8 +48,26 @@ func TestExportCurrentSnapshotRollbackCleanup(t *testing.T) {
 				if !errors.Is(err, fault) || !reflect.DeepEqual(state, ExportCurrentState{}) {
 					t.Fatalf("rollback failure leaked state/lost error: %+v %v", state, err)
 				}
-			} else if err != nil || state.IssuePrefix != "web-app-" || len(state.Snapshot.Types) != len(previewTypeDefinitions()) || state.Snapshot.WriterToken != exportCleanupToken || state.CommentsByIssuePath == nil {
-				t.Fatalf("successful acquisition control: %+v %v", state, err)
+			} else {
+				want := ExportCurrentState{IssuePrefix: "web-app-", CommentsByIssuePath: map[string][]types.Comment{}, Snapshot: Snapshot{WriterToken: exportCleanupToken, Records: []any{}, Types: []graph.TypeDescriptor{}, OwnedLinkTypes: map[string][]string{}, OwnedLinkTypesByResource: map[string][]string{}}}
+				for _, descriptor := range d.descriptors {
+					parsed, parseErr := graph.ParseTypeDescriptor(descriptor.CanonicalJSON())
+					if parseErr != nil {
+						t.Fatal(parseErr)
+					}
+					want.Snapshot.Types = append(want.Snapshot.Types, parsed)
+					if parsed.Describes() == graph.KindBead {
+						owned, ownedErr := s.SelectedOwnedLinkTypes(parsed.ID())
+						if ownedErr != nil {
+							t.Fatal(ownedErr)
+						}
+						want.Snapshot.OwnedLinkTypes[parsed.ID()] = owned
+					}
+				}
+				sort.Slice(want.Snapshot.Types, func(i, j int) bool { return want.Snapshot.Types[i].ID() < want.Snapshot.Types[j].ID() })
+				if err != nil || len(want.Snapshot.Types) != 52 || !reflect.DeepEqual(state, want) {
+					t.Fatalf("successful complete acquisition differs: got=%+v want=%+v error=%v", state, want, err)
+				}
 			}
 			exportCleanupTransactionCount(t, s, d)
 		})
@@ -372,8 +391,25 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 		return row([]string{"workspace", "scope", "authority", "schema", "token"}, b.WorkspaceID, b.ScopeURL, b.AuthorityID, int64(b.SchemaVersion), exportCleanupToken), nil
 	case q == "select writer_token from graph_preview_scope where singleton=1":
 		return row([]string{"token"}, exportCleanupToken), nil
-	case strings.HasPrefix(q, "select value from config where `key`"):
+	case q == "select value from config where `key`='issue_prefix'":
+		if len(args) != 0 {
+			return nil, errors.New("literal prefix lookup had arguments")
+		}
 		return row([]string{"value"}, "web-app-"), nil
+	case q == "select value from config where `key` = ?":
+		if len(args) != 1 {
+			return nil, fmt.Errorf("cleanup config lookup arguments: %v", args)
+		}
+		switch args[0].Value {
+		case "issue_prefix":
+			return row([]string{"value"}, "web-app-"), nil
+		case "types.custom":
+			return &exportCleanupRows{columns: []string{"value"}}, nil
+		default:
+			return nil, fmt.Errorf("cleanup fixture unknown config key: %v", args[0].Value)
+		}
+	case q == "select name from custom_types order by name":
+		return &exportCleanupRows{columns: []string{"name"}}, nil
 	case strings.HasPrefix(q, "select id,issue_id,author,text,created_at from comments order by"):
 		return &exportCleanupRows{columns: []string{"id", "issue_id", "author", "text", "created_at"}, values: d.faults.commentValues, closeErr: d.faults.commentClose, nextErr: d.faults.commentNext, closes: &d.commentCloses}, nil
 	case strings.HasSuffix(q, "limit 0"):
