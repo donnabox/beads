@@ -32,7 +32,7 @@ func graphPreviewValidateSelectedType(scope string, installed []graph.TypeDescri
 		if descriptor.ID() != id {
 			continue
 		}
-		if descriptor.Describes() != kind || graphPreviewIntrinsicType(descriptor) {
+		if descriptor.Describes() != kind || (!graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) && graphPreviewIntrinsicType(descriptor)) {
 			return fmt.Errorf("%w: installed Type does not describe the selected Resource kind", graphstore.ErrCapabilityUnavailable)
 		}
 		if !strings.HasPrefix(id, scope+"types/") {

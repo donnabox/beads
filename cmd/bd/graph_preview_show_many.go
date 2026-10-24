@@ -16,7 +16,7 @@ import (
 // The shipping multi-ID form is an Issue detail command. Keep the graph
 // Resource and exact-version presentations on the single-selector route.
 func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longMode, localTime bool, commentsTail int, format string) error {
-	if format != "" || cmd.Flags().Changed("version") {
+	if format != "" || cmd.Flags().Changed("revision") {
 		return graphFailure("capability_unavailable", "multi-ID show supports current Issue details only", 5)
 	}
 	selectors := make([]struct{ path, localID string }, 0, len(args))

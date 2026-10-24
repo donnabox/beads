@@ -72,7 +72,7 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 				t.Fatal("comment changed retained Issue read")
 			}
 			for _, record := range []graphstore.IssueRecord{before, claimed.Issue, released.Issue} {
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", "https://example.invalid/unclaim/beads/work", "--version", record.Revision))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", "https://example.invalid/unclaim/beads/work", "--revision", record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties

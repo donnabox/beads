@@ -93,11 +93,21 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 	issueType := graphstore.IssueTypeURL(scope)
 	dependencyTypes := map[string]bool{graphstore.DependencyTypeURL(scope): true}
 	if len(snapshot.Types) != 0 {
-		if len(snapshot.Types) != len(graphstore.FreshTypeNames()) {
+		if len(snapshot.Types) < len(graphstore.FreshTypeNames()) || len(snapshot.Types) > len(graphstore.FreshTypeNames())+graphstore.PreviewSnapshotLimit {
 			return invalid("unsupported Type installation")
 		}
 		installed := map[string]bool{}
 		for _, descriptor := range snapshot.Types {
+			if installed[descriptor.ID()] {
+				return invalid("duplicate Type installation")
+			}
+			known := false
+			for _, name := range graphstore.FreshTypeNames() {
+				known = known || descriptor.ID() == scope+"types/"+name
+			}
+			if !known && !graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) {
+				return invalid("unsupported extra Type installation")
+			}
 			installed[descriptor.ID()] = true
 		}
 		for _, name := range graphstore.FreshTypeNames() {
@@ -150,8 +160,16 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 			node = graphGenericNode{ID: record.ID, Type: record.Type, Title: record.Properties.Title, Version: record.Version, Attribution: record.Attribution}
 		case graphstore.IssueRecord:
-			if record.Properties == nil || record.Type != issueType {
-				return invalid("unsupported or incomplete Issue")
+			if record.Properties == nil {
+				return invalid("incomplete Issue")
+			}
+			if len(snapshot.Types) == 0 {
+				// Private historical pure fixtures retain the pre-concrete base.
+				if record.Type != issueType {
+					return invalid("unsupported legacy Issue fixture")
+				}
+			} else if expected, err := graphstore.NativeIssueTypeURL(scope, string(record.Properties.IssueType)); err != nil || record.Type != expected {
+				return invalid("Issue classification differs from declared concrete Type")
 			}
 			node = graphGenericNode{ID: record.ID, Type: record.Type, Title: record.Properties.Title, Version: record.Version, Attribution: record.Attribution, Status: string(record.Properties.Status)}
 			switch record.Properties.Status {

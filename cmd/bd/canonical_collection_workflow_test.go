@@ -28,7 +28,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			call := func(args ...string) string { return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			call("remember", "First body", "--id", "beads/first", "--json")
 			call("remember", "Second body", "--id", "beads/second", "--json")
-			call("link", "create", "first", "second", "--type", scope+"types/superseded-by", "--id", "links/related", "--json")
+			call("link", "create", scope+"beads/first", scope+"beads/second", "--type", scope+"types/superseded-by", "--id", "links/related", "--json")
 			var beads struct {
 				SchemaVersion int             `json:"schema_version"`
 				BDPSpec       string          `json:"bdp_spec"`
@@ -49,7 +49,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			if page.Items[0].ID != scope+"beads/first" || len(owned) != 1 || owned[0].ID != scope+"links/related" {
 				t.Fatalf("public current projection lost owned state: %s", raw)
 			}
-			links := call("link", "list", "--output-format", "json", "--unpaged", "--source", "first", "--target", "second", "--omit", "envelope")
+			links := call("link", "list", "--output-format", "json", "--unpaged", "--from", scope+"beads/first", "--to", scope+"beads/second", "--omit", "envelope")
 			var linkPage bdpwire.LinkCollection
 			if err := bdpwire.Unmarshal([]byte(links), &linkPage); err != nil {
 				t.Fatal(err)
@@ -57,7 +57,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			if len(linkPage.Items) != 1 || linkPage.Items[0].Source.URI != scope+"beads/first" || linkPage.Items[0].Target.URI != scope+"beads/second" || linkPage.Next != nil {
 				t.Fatalf("wrong Link projection: %s", links)
 			}
-			stream := call("link", "list", "--output-format", "jsonl", "--incident-to", "second", "--direction", "in")
+			stream := call("link", "list", "--output-format", "jsonl", "--incident-to", scope+"beads/second", "--direction", "in")
 			lines := strings.Split(strings.TrimSpace(stream), "\n")
 			if len(lines) != 3 || !strings.Contains(lines[0], `"record_type":"header"`) || !strings.Contains(lines[2], `"stop_reason":"exhausted"`) {
 				t.Fatalf("wrong finite stream: %s", stream)
@@ -70,7 +70,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 
 			for _, format := range []string{"json", "jsonl"} {
 				for _, raw := range []bool{false, true} {
-					for _, invalid := range [][]string{{"list", "--omit=/revision"}, {"list", "--include=/properties/~bad"}, {"list", "--continue=token"}, {"list", "--paged", "--page-size=1"}, {"list", "unexpected"}, {"link", "list", "unexpected"}, {"list", "--limit=010", "--limit=10"}, {"list", "--all"}, {"list", "--type=bug"}, {"link", "list", "--conforms-to=preview-memory"}} {
+					for _, invalid := range [][]string{{"list", "--omit=/revision"}, {"list", "--include=/properties/~bad"}, {"list", "--continue=token"}, {"list", "--type=any", "--paged", "--page-size=1"}, {"list", "unexpected"}, {"link", "list", "unexpected"}, {"list", "--limit=010", "--limit=10"}, {"list", "--all"}, {"list", "--type=bug", "--conforms-to=" + graphstore.IssueTypeURL(scope)}, {"link", "list", "--conforms-to=preview-memory"}} {
 						args := append(append([]string{}, invalid...), "--output-format="+format)
 						if raw {
 							args = append(args, "--omit=envelope")

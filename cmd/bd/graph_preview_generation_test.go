@@ -18,6 +18,7 @@ func TestGraphPreviewGenerationMarkerClassification(t *testing.T) {
 	}{
 		{"legacy generation", "link-preview-v5\n", false, false},
 		{"prior generation", "link-preview-v7\n", false, false},
+		{"older supported-era generation", "link-preview-v9\n", false, false},
 		{"previous generation", "link-preview-v10\n", false, false},
 		{"current generation", "link-preview-v11\n", true, false},
 		{"next generation", "link-preview-v12\n", false, true},

@@ -39,7 +39,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Revision))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--revision", record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties

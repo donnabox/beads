@@ -149,13 +149,19 @@ func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
 	scope := graphPreviewConfig.GraphScopeURL
 	if !graphPreviewNominalSelector(selector) {
 		if kind := canonicalDependencyType(types.DependencyType(selector)); kind.IsWellKnown() {
-			return graphstore.DependencyTypeURL(scope), nil
+			return graphstore.NativeDependencyTypeURL(scope, string(kind))
 		}
 		return "", graphFailure("capability_unavailable", "Link type is not registered in this preview", 5)
 	}
 	typ, err := graphPreviewTypeURL(scope, selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if _, native := graphPreviewNativeDependencyType(scope, typ); native {
+		return typ, nil
+	}
+	if typ == graphstore.DependencyTypeURL(scope) {
+		return "", graphFailure("invalid_selector", "abstract Dependency cannot be instantiated", 2)
 	}
 	if !graphPreviewSelectedTypeCandidate(scope, typ) {
 		return "", graphFailure("capability_unavailable", "Link Type is not installed in this workspace", 5)
@@ -200,7 +206,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "id-root", "properties", "metadata", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "from", "to", "source-revision", "target-revision", "id", "id-root", "properties", "metadata", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 2 {

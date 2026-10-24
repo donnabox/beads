@@ -95,7 +95,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 				t.Fatal("native deletion lost prior snapshots or distinct D")
 			}
 
-			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", issue.ID, "--version", final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
+			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", issue.ID, "--revision", final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
 				t.Fatal("final live snapshot unavailable")
 			}
 			call("show", "other")
