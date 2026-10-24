@@ -111,3 +111,32 @@ func TestGraphPreviewCloseCanonicalPublicIssue(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewReopenCanonicalBatchPartial(t *testing.T) {
+	isolateBeadsDirForTest(t)
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/reopen-public-batch/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			created := graphMixedResult[graphstore.IssueRecord](t, call("create", "First", "--id", "beads/first", "--force"))
+			call("close", created.ID, "--reason", "done")
+			stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "reopen", created.ID, scope+"beads/missing", "--json")
+			if exit != 1 || !strings.Contains(stderr, "not_found") {
+				t.Fatalf("batch reopen lost partial-failure status: exit=%d stdout=%s stderr=%s", exit, stdout, stderr)
+			}
+			results := graphMixedResult[[]graphstore.IssueMutationResult](t, stdout)
+			if len(results) != 1 || !results[0].Changed || results[0].Issue.ID != created.ID {
+				t.Fatalf("batch reopen lost successful sibling: %+v", results)
+			}
+			shown := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--format", "graph-json"))
+			if shown.Properties.Status == types.StatusClosed {
+				t.Fatalf("successful reopen did not persist: %+v", shown)
+			}
+		})
+	}
+}
