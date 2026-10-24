@@ -635,6 +635,26 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewRememberPropertiesReplacement(cmd, args)
 	}
 	explicit := cmd.Flags().Changed("id") || cmd.Flags().Changed("key")
+	// Pure flag contradictions must not consume a requested body source.
+	if cmd.Flags().Changed("create-only") {
+		enabled, _ := cmd.Flags().GetBool("create-only")
+		if !enabled || !explicit || cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("update") {
+			return graphFailure("invalid_selector", "--create-only requires explicit --id/--key and cannot combine with write guards or --update", 2)
+		}
+	}
+	if explicit {
+		name := "id"
+		if cmd.Flags().Changed("key") {
+			name = "key"
+		}
+		id, _ := cmd.Flags().GetString(name)
+		if _, err := memoryapi.ValidateKey(id); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		if _, err := graphstore.PrepareMemoryIdentity(graphstore.CreateRequest{PublicID: id}); err != nil {
+			return graphStorageError(err)
+		}
+	}
 	if cmd.Flags().Changed("update") {
 		if explicit {
 			return graphFailure("invalid_selector", "choose --update or explicit --id/--key, not both", 2)
@@ -678,10 +698,6 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		}
 	}
 	if cmd.Flags().Changed("create-only") {
-		enabled, _ := cmd.Flags().GetBool("create-only")
-		if !enabled || !explicit || cmd.Flags().Changed("if-revision") {
-			return graphFailure("invalid_selector", "--create-only requires explicit --id/--key and cannot combine with write guards", 2)
-		}
 		if body == nil {
 			return graphFailure("invalid_properties", "Memory creation requires a body", 2)
 		}

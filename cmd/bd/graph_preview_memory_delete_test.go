@@ -52,7 +52,7 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 		{"invalid-guard", "beads/plan", []string{"--if-revision=\xff"}, false, false, 2},
 		{"oversized-guard", "beads/plan", []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, false, 2},
 		{"foreign", "https://foreign.invalid/beads/plan", nil, false, false, 2},
-		{"link", "links/context", nil, false, false, 2},
+		{"malformed-segment", "links//context", nil, false, false, 2},
 		{"bare-bead-id", "plan", nil, false, true, 0},
 		{"cascade", "beads/plan", []string{"--cascade"}, false, false, 5},
 		{"false-cascade", "beads/plan", []string{"--cascade=false"}, false, false, 5},
@@ -73,7 +73,11 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 				}
 				return
 			}
-			if err != nil || got.Path != "beads/plan" || got.Preview != tc.preview || got.Actor != "" {
+			wantPath := "beads/" + tc.selector
+			if strings.HasPrefix(tc.selector, graphPreviewConfig.GraphScopeURL) {
+				wantPath = tc.selector
+			}
+			if err != nil || got.Path != wantPath || got.Preview != tc.preview || got.Actor != "" {
 				t.Fatalf("request=%+v error=%v", got, err)
 			}
 		})

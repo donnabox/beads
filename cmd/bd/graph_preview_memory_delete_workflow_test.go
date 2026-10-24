@@ -63,7 +63,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			}
 			for _, args := range [][]string{
 				{"delete", "beads/empty", "--if-revision="},
-				{"delete", "links/context"},
+				{"delete", "links//context"},
 				{"delete", "https://foreign.invalid/beads/empty"},
 			} {
 				refuse("invalid_selector", args...)
@@ -115,7 +115,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			issue := call("create", "Keep Issue", "--graph-path", "beads/work")
 			issueRecord := graphMixedResult[graphstore.IssueRecord](t, issue)
 			issuePreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issueRecord.Properties.ID))
-			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != scope+"beads/work" {
+			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != issueRecord.ID {
 				t.Fatal("Issue deletion preview did not preserve live Issue")
 			}
 			issueDryRun := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issueRecord.Properties.ID, "--force", "--dry-run", "--readonly"))
@@ -133,7 +133,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				refuse("constraint_violation", "delete", "beads/plan")
 				refuse("constraint_violation", "delete", "beads/plan", "--force", "--if-revision", current.Revision)
 				refuse("constraint_violation", "forget", "beads/plan")
-				if call("show", scope+"beads/plan") != before || call("show", scope+path) != linkBefore || call("show", scope+"beads/other") != other || call("show", scope+"beads/work", "--format", "graph-json") != issue {
+				if call("show", scope+"beads/plan") != before || call("show", scope+path) != linkBefore || call("show", scope+"beads/other") != other || call("show", issueRecord.ID, "--format", "graph-json") != issue {
 					t.Fatal("incident-Link refusal changed Memory, Link or another endpoint")
 				}
 				link := graphMixedResult[graphstore.LinkRecord](t, linkBefore)
@@ -150,7 +150,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			}
 			refuse("gone", "show", scope+"beads/plan")
 			refuse("identity_reserved", "remember", "replacement", "--id", "beads/plan", "--title", "Cannot reuse")
-			if call("show", scope+"beads/other") != other || call("show", scope+"beads/work", "--format", "graph-json") != issue {
+			if call("show", scope+"beads/other") != other || call("show", issueRecord.ID, "--format", "graph-json") != issue {
 				t.Fatal("Memory deletion changed unrelated surviving records")
 			}
 		})
