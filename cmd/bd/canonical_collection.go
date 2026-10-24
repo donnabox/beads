@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
@@ -232,6 +233,9 @@ func canonicalCollectionPreflight(cmd *cobra.Command, links bool, options cliout
 func canonicalCollectionRequestFailure(cmd *cobra.Command, failure canonicalCollectionFailure, err error) error {
 	var endpoint *canonicalCollectionEndpointReadError
 	if errors.As(err, &endpoint) {
+		if errors.Is(endpoint.error, graph.ErrValidation) {
+			return canonicalFailure(cmd, failure, "invalid_selector", endpoint.error.Error(), 2)
+		}
 		return canonicalReadError(cmd, failure, endpoint.error, "route_unavailable")
 	}
 	if errors.Is(err, graphstore.ErrCapabilityUnavailable) {
