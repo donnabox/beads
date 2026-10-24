@@ -196,6 +196,54 @@ func TestLinkUnlinkAndIncidentLifecycle(t *testing.T) {
 	}
 }
 
+func TestLinkCollectionEndpointPinApplicability(t *testing.T) {
+	const scope = "https://example.test/links/"
+	current := map[string]string{"beads/a": "r2", "beads/b": "r1"}
+	link := LinkRecord{Source: scope + "a", Target: scope + "b", SourceRevision: "r1"}
+	for _, tc := range []struct {
+		name string
+		pin  LinkPinSelection
+		all  bool
+		want bool
+	}{
+		{"bare admits every pin", LinkPinSelection{}, false, true},
+		{"old exact admits matching pin", LinkPinSelection{Revision: "r1", Explicit: true}, false, true},
+		{"current excludes old pin", LinkPinSelection{Current: true, Explicit: true}, false, false},
+		{"all revisions overrides applicability", LinkPinSelection{Current: true, Explicit: true}, true, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			request := LinkCollectionRequest{IncidentPath: "beads/a", IncidentURL: scope + "a", IncidentPin: tc.pin, AllRevisions: tc.all}
+			if got := LinkCollectionMatches(link, request, current); got != tc.want {
+				t.Fatalf("matched=%t want %t", got, tc.want)
+			}
+		})
+	}
+	link.SourceRevision = ""
+	for _, pin := range []LinkPinSelection{{Current: true, Explicit: true}, {Revision: "r2", Explicit: true}} {
+		if !LinkCollectionMatches(link, LinkCollectionRequest{IncidentPath: "beads/a", IncidentURL: scope + "a", IncidentPin: pin}, current) {
+			t.Fatalf("current selection lost floating pin: %+v", pin)
+		}
+	}
+	if LinkCollectionMatches(link, LinkCollectionRequest{IncidentPath: "beads/a", IncidentURL: scope + "a", IncidentPin: LinkPinSelection{Revision: "r1", Explicit: true}}, current) {
+		t.Fatal("historical exact selection admitted floating pin")
+	}
+	for _, direction := range []string{"out", "in", "both"} {
+		request := LinkCollectionRequest{SourcePath: "beads/a", SourceURL: scope + "a", TargetPath: "beads/b", TargetURL: scope + "b", PairDirection: direction}
+		if got := LinkCollectionMatches(link, request, current); got != (direction != "in") {
+			t.Fatalf("pair %s matched=%t", direction, got)
+		}
+		link.Source, link.Target = link.Target, link.Source
+		if got := LinkCollectionMatches(link, request, current); got != (direction != "out") {
+			t.Fatalf("reverse pair %s matched=%t", direction, got)
+		}
+		link.Source, link.Target = link.Target, link.Source
+	}
+	link.Source, link.Target = scope+"a", scope+"a"
+	if !LinkCollectionMatches(link, LinkCollectionRequest{SourcePath: "beads/a", SourceURL: scope + "a", TargetPath: "beads/a", TargetURL: scope + "a", PairDirection: "both"}, current) {
+		t.Fatal("bidirectional pair dropped self-Link")
+	}
+}
+
 func TestCollectLinksSelectsCompleteCurrentLinks(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {

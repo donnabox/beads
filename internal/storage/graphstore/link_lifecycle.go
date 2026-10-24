@@ -28,6 +28,10 @@ func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest)
 	if err := s.validateLinkType(request.TypeURL, true); err != nil {
 		return nil, err
 	}
+	if request.PairDirection != "" && (request.PairDirection != "out" && request.PairDirection != "in" && request.PairDirection != "both" ||
+		request.SourcePath == "" || request.TargetPath == "" || request.IncidentPath != "") {
+		return nil, fmt.Errorf("%w: pair selection requires two Beads and direction out, in, or both", storage.ErrValidation)
+	}
 	for _, path := range []string{request.SourcePath, request.TargetPath, request.IncidentPath} {
 		if path != "" {
 			if err := validatePath(path); err != nil {
@@ -54,6 +58,31 @@ func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest)
 		family, err := s.selectedFamilyIDsInTx(ctx, tx, request.ConformsTo, graph.KindLink)
 		if err != nil {
 			return err
+		}
+		// Resolve selected public identities and live endpoint revisions in the
+		// same read transaction as the Link snapshot. A historical token is
+		// stable, but floating-pin applicability depends on current revision.
+		currentRevisions := make(map[string]string)
+		for _, endpoint := range []struct {
+			path string
+			url  *string
+		}{{request.SourcePath, &request.SourceURL}, {request.TargetPath, &request.TargetURL}, {request.IncidentPath, &request.IncidentURL}} {
+			if endpoint.path == "" {
+				continue
+			}
+			publicURL, err := s.publicResourceURLInTx(ctx, tx, endpoint.path)
+			if err != nil {
+				return err
+			}
+			*endpoint.url = publicURL
+			if _, exists := currentRevisions[endpoint.path]; exists {
+				continue
+			}
+			_, revision, err := s.beadEndpointInTx(ctx, tx, endpoint.path)
+			if err != nil {
+				return err
+			}
+			currentRevisions[endpoint.path] = revision
 		}
 		rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog
  WHERE allocation_state='live' AND resource_kind='link' LIMIT ?`, PreviewSnapshotLimit+1)
@@ -82,9 +111,7 @@ func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest)
 				return err
 			}
 			if family != nil && !family[link.Type] || request.TypeURL != "" && link.Type != request.TypeURL ||
-				request.SourcePath != "" && !linkEndpointMatches(s.ScopeURL(), link.Source, request.SourcePath) ||
-				request.TargetPath != "" && !linkEndpointMatches(s.ScopeURL(), link.Target, request.TargetPath) ||
-				request.IncidentPath != "" && !linkEndpointMatches(s.ScopeURL(), link.Source, request.IncidentPath) && !linkEndpointMatches(s.ScopeURL(), link.Target, request.IncidentPath) {
+				!LinkCollectionMatches(link, request, currentRevisions) {
 				continue
 			}
 			result = append(result, link)
@@ -97,7 +124,43 @@ func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest)
 	return result, nil
 }
 
-func linkEndpointMatches(scope, endpoint, path string) bool { return endpoint == scope+path }
+// LinkPinApplies is shared by legacy and canonical CLI collection readers.
+// A selection of the current revision includes floating Links; an older exact
+// revision admits only an exact stored pin. Bare IDs and --all-revisions leave
+// pin applicability unconstrained, without admitting historical Links.
+func LinkPinApplies(pin string, selected LinkPinSelection, current string, allRevisions bool) bool {
+	if allRevisions || !selected.Explicit {
+		return true
+	}
+	wanted := selected.Revision
+	if selected.Current {
+		wanted = current
+	}
+	return pin == wanted || pin == "" && wanted == current
+}
+
+// LinkCollectionMatches applies the CLI's endpoint and pin predicates to one
+// captured current Link. Callers supply revisions from the same read snapshot.
+func LinkCollectionMatches(link LinkRecord, request LinkCollectionRequest, current map[string]string) bool {
+	endpoint := func(uri, pin, path, selectedURL string, selected LinkPinSelection) bool {
+		return path != "" && selectedURL != "" && uri == selectedURL &&
+			LinkPinApplies(pin, selected, current[path], request.AllRevisions)
+	}
+	if request.PairDirection != "" {
+		forward := endpoint(link.Source, link.SourceRevision, request.SourcePath, request.SourceURL, request.SourcePin) &&
+			endpoint(link.Target, link.TargetRevision, request.TargetPath, request.TargetURL, request.TargetPin)
+		reverse := endpoint(link.Source, link.SourceRevision, request.TargetPath, request.TargetURL, request.TargetPin) &&
+			endpoint(link.Target, link.TargetRevision, request.SourcePath, request.SourceURL, request.SourcePin)
+		return request.PairDirection != "in" && forward || request.PairDirection != "out" && reverse
+	}
+	if request.SourcePath != "" && !endpoint(link.Source, link.SourceRevision, request.SourcePath, request.SourceURL, request.SourcePin) ||
+		request.TargetPath != "" && !endpoint(link.Target, link.TargetRevision, request.TargetPath, request.TargetURL, request.TargetPin) {
+		return false
+	}
+	return request.IncidentPath == "" ||
+		endpoint(link.Source, link.SourceRevision, request.IncidentPath, request.IncidentURL, request.IncidentPin) ||
+		endpoint(link.Target, link.TargetRevision, request.IncidentPath, request.IncidentURL, request.IncidentPin)
+}
 
 // ListLinks returns complete, canonically ordered live incident state, or an
 // explicit limit error. It performs no endpoint resolution outside this Scope.

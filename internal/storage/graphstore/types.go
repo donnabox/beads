@@ -256,10 +256,25 @@ type LinkMutationResult struct {
 // Empty direction means both. Empty TypeURL admits all installed Link Types.
 type LinksRequest struct{ BeadPath, Direction, TypeURL, ConformsTo string }
 
+// LinkPinSelection is an optional CLI endpoint-revision applicability test.
+// Revision is an exact retained token; Current requests the live Bead revision.
+type LinkPinSelection struct {
+	Revision string
+	Explicit bool
+	Current  bool
+}
+
 // LinkCollectionRequest selects current Links without enumerating Beads.
 // An empty selector is unconstrained; the preview refuses an incomplete
 // collection rather than returning a silently truncated page.
-type LinkCollectionRequest struct{ TypeURL, ConformsTo, SourcePath, TargetPath, IncidentPath string }
+type LinkCollectionRequest struct {
+	TypeURL, ConformsTo, SourcePath, TargetPath, IncidentPath string
+	// URLs are checked public identities, independent of private path spelling.
+	SourceURL, TargetURL, IncidentURL string
+	SourcePin, TargetPin, IncidentPin LinkPinSelection
+	PairDirection                     string // out, in, or both; empty keeps conjunctive flag filters
+	AllRevisions                      bool
+}
 
 // PreviewIncidentLinkLimit bounds this disposable non-paginated reader.
 const PreviewIncidentLinkLimit = 1000
