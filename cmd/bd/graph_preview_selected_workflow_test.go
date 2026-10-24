@@ -72,7 +72,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			if implicit != explicit {
 				t.Fatalf("omitted Dependency differs: %s\n%s", implicit, explicit)
 			}
-			currentIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "i1"))
+			currentIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "i1", "--format", "graph-json"))
 			historical := []string{"i1@1", "i1@=" + currentIssue.Revision}
 			for _, withLiteralSiblings := range []bool{false, true} {
 				if withLiteralSiblings {
