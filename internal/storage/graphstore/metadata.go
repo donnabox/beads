@@ -28,7 +28,7 @@ func commonMetadata(raw json.RawMessage) (json.RawMessage, error) {
 }
 
 func hasCommonMetadataPatch(p publicops.MetadataPatch) bool {
-	return p.Replace.Set || p.Merge.Set || len(p.Set) > 0 || len(p.Unset) > 0
+	return p.Operations.Set || p.Replace.Set || p.Merge.Set || len(p.Set) > 0 || len(p.Unset) > 0
 }
 
 // Validate every supplied JSON value before the ordinary Issue merge can
