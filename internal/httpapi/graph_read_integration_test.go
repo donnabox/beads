@@ -234,6 +234,17 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 	stopAndWait()
 	// The same canonical HTTP reader exposes native Issue edits. This exercises
 	// real storage and listener calls, without inventing an HTTP Write endpoint.
+	requestURI := func(canonical string) string {
+		t.Helper()
+		if !strings.HasPrefix(canonical, scope) {
+			t.Fatalf("request left canonical Scope: %q", canonical)
+		}
+		u, err := url.Parse(canonical)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return u.RequestURI()
+	}
 	t.Run("issue-priority-assignment", func(t *testing.T) {
 		issue, err := store.CreateIssue(ctx, "beads/work", issueops.CreateRequest{Issue: &issueops.Issue{Title: "HTTP work", Status: "open", IssueType: "task", Priority: 2}, Actor: "creator"})
 		if err != nil {
@@ -248,7 +259,7 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		resp, raw := request("GET", "/read/beads/work", "second-token-longer", "", nil)
+		resp, raw := request("GET", requestURI(edited.Issue.ID), "second-token-longer", "", nil)
 		var record bdpwire.BeadRecord
 		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &record) != nil || record.ID != edited.Issue.ID || record.Revision != edited.Issue.Revision || string(record.Properties["priority"]) != "0" || string(record.Properties["assignee"]) != `"agent.雪"` || record.Attribution == nil || record.Attribution.Principal != "editor" || record.Metadata == nil || len(record.Metadata) != 0 {
 			t.Fatalf("canonical Issue edit not exposed: %d %s", resp.StatusCode, raw)
@@ -278,7 +289,7 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		if err != nil || !cleared.Changed {
 			t.Fatalf("clear: %+v %v", cleared, err)
 		}
-		resp, raw = request("GET", "/read/beads/work", "second-token-longer", "", nil)
+		resp, raw = request("GET", requestURI(cleared.Issue.ID), "second-token-longer", "", nil)
 		record = bdpwire.BeadRecord{}
 		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &record) != nil || record.Revision != cleared.Issue.Revision || string(record.Properties["priority"]) != "0" {
 			t.Fatalf("cleared canonical Issue: %d %s", resp.StatusCode, raw)
@@ -294,7 +305,7 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		}
 		read := func(headers http.Header) (*http.Response, bdpwire.BeadRecord) {
 			t.Helper()
-			resp, raw := request("GET", "/read/beads/work", "second-token-longer", "", headers)
+			resp, raw := request("GET", requestURI(claimed.Issue.ID), "second-token-longer", "", headers)
 			var value bdpwire.BeadRecord
 			if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &value) != nil {
 				t.Fatalf("notes canonical read: %d %s", resp.StatusCode, raw)
@@ -315,7 +326,7 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		if err != nil || noop.Changed || !reflect.DeepEqual(noop.Issue, claimed.Issue) {
 			t.Fatalf("empty append noop: %+v %v", noop, err)
 		}
-		resp, raw := request("GET", "/read/beads/work", "second-token-longer", "", http.Header{"If-None-Match": {etag}})
+		resp, raw := request("GET", requestURI(noop.Issue.ID), "second-token-longer", "", http.Header{"If-None-Match": {etag}})
 		if resp.StatusCode != 304 || len(raw) != 0 || resp.Header.Get("ETag") != etag {
 			t.Fatalf("noop changed ETag: %d %s", resp.StatusCode, raw)
 		}
@@ -346,7 +357,7 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		if after.Attribution == nil || after.Attribution.Principal != "notes-holder" || !reflect.DeepEqual(after, want) {
 			t.Fatal("append changed other HTTP properties, lease or ownership")
 		}
-		resp, raw = request("GET", "/read/beads/work?view=properties", "second-token-longer", "", nil)
+		resp, raw = request("GET", requestURI(appended.Issue.ID+"?view=properties"), "second-token-longer", "", nil)
 		var properties bdpwire.Properties
 		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &properties) != nil || !reflect.DeepEqual(properties, after.Properties) {
 			t.Fatalf("appended properties: %d %s", resp.StatusCode, raw)
