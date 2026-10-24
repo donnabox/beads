@@ -66,6 +66,7 @@ func TestMemoryCurrentInput(t *testing.T) {
 		{name: "missing"}, {name: "malformed", args: []string{"a//b"}},
 		{name: "foreign", args: []string{"https://elsewhere.invalid/beads/a"}},
 		{name: "old-pin", args: []string{"a@=old"}, capability: true},
+		{name: "legacy-token", args: []string{"a@old"}},
 		{name: "negative-depth", flags: []string{"--depth=-1"}, args: []string{"a"}},
 		{name: "too-deep", flags: []string{"--depth=1001"}, args: []string{"a"}},
 		{name: "empty-node-budget", flags: []string{"--max-nodes=0"}, args: []string{"a"}},

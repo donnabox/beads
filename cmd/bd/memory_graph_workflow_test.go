@@ -114,23 +114,6 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			if !strings.Contains(human, "[types/references]") || !strings.HasPrefix(human, "a [types/issue]") || !strings.Contains(human, "(ab)") || strings.Contains(human, scope) {
 				t.Fatalf("literal created IDs lost or Scope prefix retained:\n%s", human)
 			}
-			// Lexical prefixes do not establish kind. An actual allocated Link
-			// still cannot serve as a Bead root, regardless of its flat ID.
-			{
-				ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
-				command := graphMemoryReadCommand(ctx, bd, work, home, "memory", "references", "ab", "--json")
-				var stdout, stderr bytes.Buffer
-				command.Stdout, command.Stderr = &stdout, &stderr
-				err := command.Run()
-				cancel()
-				var failure struct {
-					Outcome string          `json:"outcome"`
-					Data    json.RawMessage `json:"data"`
-				}
-				if err == nil || json.Unmarshal(stdout.Bytes(), &failure) != nil || failure.Outcome != "failure" || (len(failure.Data) != 0 && string(failure.Data) != "null") {
-					t.Fatalf("actual Link root emitted success or lost structured refusal: err=%v stdout=%s stderr=%s", err, stdout.String(), stderr.String())
-				}
-			}
 			legacy("link", "create", "b", "d", "--type", "types/superseded-by", "--id", "retirement")
 			successor := read("successor", "b")
 			if len(successor.Beads) != 2 || len(successor.Links) != 1 || (successor.Traversal.Roots[0].Depth == nil || *successor.Traversal.Roots[0].Depth != 1000) {
@@ -153,12 +136,16 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 				code string
 			}{
 				{[]string{"references", "missing"}, "not_found"},
+				// Kind comes from the allocated record, not an ID prefix. A
+				// selected Link is invalid input, rather than corrupt storage.
+				{[]string{"references", "ab"}, "invalid_properties"},
 				{[]string{"references", "isolated"}, "capability_unavailable"},
 				{[]string{"references", "a", "--max-nodes=1"}, "capability_unavailable"},
 				{[]string{"references", "a", "--include=/beads"}, "capability_unavailable"},
 				{[]string{"references", "a", "--include=/properties/title"}, "invalid_selector"},
 				{[]string{"successor", "a"}, "invalid_properties"},
 				{[]string{"references", "b@=old"}, "capability_unavailable"},
+				{[]string{"references", "b@old"}, "invalid_selector"},
 			} {
 				for _, raw := range []bool{false, true} {
 					args := append(append([]string{"memory"}, tc.args...), "--json")
