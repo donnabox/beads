@@ -1609,10 +1609,9 @@ jobs:
     needs: rbe
     runs-on: ${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-24.04' }}
     if: ${{ (needs.rbe.outputs.enabled == 'true' || needs.rbe.outputs.mode == 'cache') && inputs.integration != 'off' }}
-    # F5 S2 Variant A added the "Nogo: integration library files" step after
-    # `test`; +5 over the previous 85 keeps it headroom without exceeding
-    # TestBazelIntegrationJob's test-step-timeout+15 ceiling (75+15=90).
-    timeout-minutes: 90
+    # Keep 15 minutes beyond the test step for setup, the post-test nogo
+    # check, reports and cleanup (TestBazelIntegrationJob guards the ceiling).
+    timeout-minutes: 105
     outputs:
       result: ${{ steps.result.outputs.result }}
     steps:
@@ -1657,7 +1656,11 @@ jobs:
       # 3-5 for a cmd/bd change, plus up to ~11 more when slow blob reads
       # make Bazel restart the build ("Lost inputs"), and ~30 with the cache
       # closed (the farm's kill switch: everything local, cold), which must
-      # still fit so closing the cache does not turn fork PRs red.
+      # still fit so closing the cache does not turn fork PRs red. PR276's
+      # 2026-10-24 cache-unreachable run exhausted 75 minutes with 178/179
+      # tests complete and the last shard still progressing. Give that
+      # cumulative cold-run cutoff 15 minutes of headroom; individual action
+      # deadlines, target selection and shard counts remain unchanged.
       # Where bazel-cmd-dolt is required, //cmd/bd:bd_test is excluded (see
       # above): on a PR that changes cmd/bd or what it imports, its race
       # link and 16 shards were this step's last ~2-3.5 minutes (runs of
@@ -1665,7 +1668,7 @@ jobs:
       # had finished).
       - name: bazel test //... --config=integration
         id: test
-        timeout-minutes: 75
+        timeout-minutes: 90
         env:
           EXCLUDE_TARGETS: ${{ inputs.cmd-dolt-required == true && '-//cmd/bd:bd_test' || '' }}
         run: |

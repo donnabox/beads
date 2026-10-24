@@ -4417,12 +4417,15 @@ func TestBazelIntegrationJob(t *testing.T) {
 	// (rbe-west's 1200s limit). The job adds setup and log upload. In mode
 	// cache it runs on a 4-CPU GitHub-hosted runner, and with the read-only
 	// cache closed (the farm's kill switch) the whole suite builds and runs
-	// there cold, about 30 minutes simulated: the step keeps twice that.
+	// there cold. PR276 job120799042322 exhausted 75 minutes while the
+	// last shard still progressed after 178/179 tests; reserve 15 minutes
+	// beyond that observed cumulative cutoff without raising action limits.
 	const coldCompileMinutes = 20
-	const cacheClosedMinutes = 30
-	if test.TimeoutMinutes < 2*cacheClosedMinutes {
-		t.Errorf("%s test step timeout-minutes = %d, want at least %d (mode cache with the cache closed: ~%d minutes cold on a GitHub-hosted runner)",
-			bazelIntegJobName, test.TimeoutMinutes, 2*cacheClosedMinutes, cacheClosedMinutes)
+	const observedCutoffMinutes = 75
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; test.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cumulative cutoff plus %d minutes headroom)",
+			bazelIntegJobName, test.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
 	}
 	actionCapMinutes := 0
 	for line := range bazelrcLines(t) {
