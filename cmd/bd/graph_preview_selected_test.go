@@ -618,12 +618,20 @@ func TestGraphPreviewSelectedOrdinaryDefaultKeepsLargeDependencyComponent(t *tes
 	if err != nil {
 		t.Fatal(err)
 	}
+	taskType, err := graphstore.NativeIssueTypeURL(genericTestScope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blocksType, err := graphstore.NativeDependencyTypeURL(genericTestScope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
 	snapshot := graphstore.Snapshot{Types: selectedTypeTestDescriptors(t, genericTestScope)}
 	for i := 0; i < 151; i++ {
 		id := fmt.Sprintf("n%d", i)
-		snapshot.Records = append(snapshot.Records, graphstore.IssueRecord{ID: genericTestScope + "beads/" + id, Type: graphstore.IssueTypeURL(genericTestScope), Version: "v-" + id, Revision: "v-" + id, Properties: &types.Issue{ID: id, Title: id, Status: types.StatusOpen}})
+		snapshot.Records = append(snapshot.Records, graphstore.IssueRecord{ID: genericTestScope + "beads/" + id, Type: taskType, Version: "v-" + id, Revision: "v-" + id, Properties: &types.Issue{ID: "beads/" + id, IssueType: types.TypeTask, Title: id, Status: types.StatusOpen}})
 		if i > 0 {
-			snapshot.Records = append(snapshot.Records, graphstore.LinkRecord{ID: fmt.Sprintf("%slinks/e%d", genericTestScope, i), Type: graphstore.DependencyTypeURL(genericTestScope), Source: fmt.Sprintf("%sbeads/n%d", genericTestScope, i-1), Target: genericTestScope + "beads/" + id, Version: "v-" + id, Revision: "v-" + id})
+			snapshot.Records = append(snapshot.Records, graphstore.LinkRecord{ID: fmt.Sprintf("%slinks/e%d", genericTestScope, i), Type: blocksType, Properties: map[string]any{"dep_type": "blocks"}, Source: fmt.Sprintf("%sbeads/n%d", genericTestScope, i-1), Target: genericTestScope + "beads/" + id, Version: "v-" + id, Revision: "v-" + id})
 		}
 	}
 	result, err := projectGraphGeneric(snapshot, genericTestScope, in)

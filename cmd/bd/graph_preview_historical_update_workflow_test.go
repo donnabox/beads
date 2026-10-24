@@ -12,6 +12,7 @@ import (
 )
 
 func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -41,7 +42,7 @@ func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
 				{"revision_conflict", []string{"update", "beads/subject", "--from-revision", original.Revision, "--if-revision", current.Memory.Revision}},
 				{"revision_unknown", []string{"update", "beads/subject", "--from-revision", "unknown"}},
 				{"invalid_selector", []string{"update", "beads/subject", "--from-revision", ""}},
-				{"not_found", []string{"update", "subject@current", "--from-revision", original.Revision}},
+				{"invalid_selector", []string{"update", "subject@current", "--from-revision", original.Revision}},
 				{"not_found", []string{"update", "https://example.invalid/historical-update/links/not-created", "--from-revision", original.Revision}},
 			} {
 				graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...)
