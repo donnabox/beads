@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "doc.go",
         "errors.go",
+        "generated_resource_id.go",
         "identity.go",
         "laws.go",
         "reader.go",
@@ -21,6 +22,7 @@ go_library(
 go_test(
     name = "graphops_test",
     srcs = [
+        "generated_resource_id_test.go",
         "laws_internal_test.go",
         "laws_test.go",
         "resource_identity_mount_test.go",

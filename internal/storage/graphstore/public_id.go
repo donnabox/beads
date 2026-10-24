@@ -107,7 +107,7 @@ func (s *Store) resolveAllocatedResourcePath(ctx context.Context, id string, all
 		// Issue's private path cannot answer an unqualified local selector.
 		for _, candidate := range []struct{ path, backing string }{{"beads/" + id, "generic"}, {"links/" + id, "link"}} {
 			var backing string
-			err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND (backing<>'generic' OR public_id IS NULL)`, candidate.path).Scan(&backing)
+			err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND public_id IS NULL`, candidate.path).Scan(&backing)
 			if errors.Is(err, sql.ErrNoRows) {
 				continue
 			}

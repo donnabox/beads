@@ -57,7 +57,10 @@ type Options struct {
 type CreateRequest struct {
 	// PublicID is an exact user identity; Path is its private locator. Empty
 	// retains the legacy allocation-path public identity.
-	PublicID             string
+	PublicID string
+	// IDRoot prefixes an automatically generated public ID, never an explicit ID.
+	IDRoot               string
+	generatePublicID     bool
 	privatePathGenerated bool
 	TypeURL              string
 	PropertiesJSON       json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
@@ -140,6 +143,7 @@ var (
 type DependencyRequest struct {
 	// PublicID is exact public identity; Path is only the private allocation locator.
 	PublicID string
+	IDRoot   string
 	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
 	ExpectedSourceRevision string
 	Type                   types.DependencyType
@@ -210,6 +214,7 @@ const PreviewOwnedLinkLimit = 1000
 type LinkCreateRequest struct {
 	// PublicID is exact public identity; Path remains a private SQL locator.
 	PublicID string
+	IDRoot   string
 	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
 	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string

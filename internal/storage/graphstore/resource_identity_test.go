@@ -33,12 +33,14 @@ func TestAllocatedResourceIdentityUsesCatalogKind(t *testing.T) {
 			if err != nil || byURI != want {
 				t.Fatalf("canonical public identity did not select allocation: %+v %v", byURI, err)
 			}
-			// Existing records still expose the old private-locator projection.
-			// This preparatory resolver must not silently accept it as a public ID.
-			if memory.ID == publicURI {
-				t.Fatal("fixture no longer exercises projection mismatch")
+			if memory.ID != publicURI {
+				t.Fatal("record does not expose its canonical public identity")
 			}
-			if _, err := store.ResolveCanonicalPublicResourceIdentity(ctx, memory.ID); !errors.Is(err, ErrNotFound) {
+			if got, err := store.ResolveCanonicalPublicResourceIdentity(ctx, memory.ID); err != nil || got != want {
+				t.Fatalf("record public URI: %+v %v", got, err)
+			}
+			privateURI := store.ScopeURL() + path
+			if _, err := store.ResolveCanonicalPublicResourceIdentity(ctx, privateURI); privateURI != publicURI && !errors.Is(err, ErrNotFound) {
 				t.Fatalf("old private record URI was relabeled as public identity: %v", err)
 			}
 			issueRequest := plainIssue("Catalog Issue kind")
