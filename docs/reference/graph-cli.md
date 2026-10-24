@@ -971,7 +971,10 @@ matching current live Links. One Bead operand selects its incident Links; two
 operands select the first Bead's outgoing Links to the second. With two Beads,
 `--direction in` reverses the pair and `both` includes both directions once
 per Link. A one-Bead or `--incident-to` selection also accepts `in`, `out`, or
-`both`. Positional endpoints cannot be mixed with explicit endpoint flags.
+`both`. One positional Bead can combine with `--from` or `--to` as an
+additional AND filter; `--incident-to` would bind its incidence twice. Two
+positional Beads can combine with `--incident-to`, but `--from` or `--to`
+would bind a pair endpoint twice.
 
 A bare Bead ID includes every endpoint pin. `ID@current` includes floating
 Links and Links pinned to the current Bead revision. `ID@N` and `ID@=TOKEN`
