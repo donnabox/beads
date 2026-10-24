@@ -342,7 +342,14 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 		}
 		paths[i], nativeIDs[i] = selected.Path, selected.NativeID
 		if selected.Exact {
-			paths[i], nativeIDs[i] = selector, ""
+			// Public URI bytes do not spell the private Issue locator. Resolve
+			// the lifetime allocation, then let the checked writer revalidate
+			// that exact path and Issue kind in its own transaction.
+			paths[i], err = graphPreviewCanonicalAllocationPath(selector)
+			if err != nil {
+				return graphStorageError(err)
+			}
+			nativeIDs[i] = ""
 		}
 	}
 	if claimNext || len(paths) > 1 {
