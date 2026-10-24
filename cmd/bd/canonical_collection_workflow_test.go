@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -170,7 +171,10 @@ func TestGraphLinkCollectionPositionalRevisionWorkflow(t *testing.T) {
 				{"flag historical source", []string{"--from", "a@1"}, 1},
 				{"flag current outgoing", []string{"--incident-to", "a@current", "--direction", "out"}, 2},
 				{"flag current incoming", []string{"--to", "a@current"}, 1},
+				{"incident and source intersection", []string{"a", "--from", "b"}, 1},
+				{"incident and target intersection", []string{"a", "--to", "b"}, 3},
 				{"out pair", []string{"a", "b"}, 3},
+				{"pair and incident intersection", []string{"a", "b", "--incident-to", "a@1"}, 1},
 				{"in pair", []string{"a", "b", "--direction", "in"}, 1},
 				{"both pair", []string{"a", "b", "--direction", "both"}, 4},
 				{"self pair empty", []string{"a", "a", "--direction", "both"}, 0},
@@ -190,11 +194,33 @@ func TestGraphLinkCollectionPositionalRevisionWorkflow(t *testing.T) {
 				t.Fatalf("canonical Link list lost pin applicability: %s", raw)
 			}
 			for _, refusal := range []struct {
+				selector string
+				code     string
+			}{
+				{"missing", "not_found"},
+				{"a@=no-such-revision", "revision_unknown"},
+				{"a@", "invalid_selector"},
+			} {
+				ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+				command := graphMemoryReadCommand(ctx, bd, work, home, "link", "list", refusal.selector,
+					"--output-format", "json", "--unpaged", "--omit", "envelope")
+				var stdout, stderr bytes.Buffer
+				command.Stdout, command.Stderr = &stdout, &stderr
+				err := command.Run()
+				cancel()
+				var exit *exec.ExitError
+				wantExit := map[string]int{"not_found": 3, "revision_unknown": 3, "invalid_selector": 2}[refusal.code]
+				if !errors.As(err, &exit) || exit.ExitCode() != wantExit || stdout.Len() != 0 ||
+					strings.Count(stderr.String(), refusal.code+": ") != 1 || strings.Count(stderr.String(), "\n") != 1 {
+					t.Fatalf("canonical Link refusal %q: err=%v stdout=%q stderr=%q", refusal.selector, err, &stdout, &stderr)
+				}
+			}
+			for _, refusal := range []struct {
 				code string
 				args []string
 			}{
-				{"invalid_selector", []string{"link", "list", "a", "--from", "b"}},
-				{"invalid_selector", []string{"link", "count", "a", "b", "--incident-to", "a"}},
+				{"invalid_selector", []string{"link", "list", "a", "--incident-to", "b"}},
+				{"invalid_selector", []string{"link", "list", "a", "b", "--from", "a"}},
 				{"invalid_selector", []string{"link", "list", "--direction", "in"}},
 				{"revision_unknown", []string{"link", "list", "a@=no-such-revision"}},
 			} {

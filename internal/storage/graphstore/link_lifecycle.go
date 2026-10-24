@@ -29,8 +29,11 @@ func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest)
 		return nil, err
 	}
 	if request.PairDirection != "" && (request.PairDirection != "out" && request.PairDirection != "in" && request.PairDirection != "both" ||
-		request.SourcePath == "" || request.TargetPath == "" || request.IncidentPath != "") {
+		request.SourcePath == "" || request.TargetPath == "") {
 		return nil, fmt.Errorf("%w: pair selection requires two Beads and direction out, in, or both", storage.ErrValidation)
+	}
+	if request.IncidentDirection != "" && (request.IncidentPath == "" || request.IncidentDirection != "in" && request.IncidentDirection != "out" && request.IncidentDirection != "both") {
+		return nil, fmt.Errorf("%w: incident direction requires a Bead and direction in, out, or both", storage.ErrValidation)
 	}
 	for _, path := range []string{request.SourcePath, request.TargetPath, request.IncidentPath} {
 		if path != "" {
@@ -151,15 +154,22 @@ func LinkCollectionMatches(link LinkRecord, request LinkCollectionRequest, curre
 			endpoint(link.Target, link.TargetRevision, request.TargetPath, request.TargetURL, request.TargetPin)
 		reverse := endpoint(link.Source, link.SourceRevision, request.TargetPath, request.TargetURL, request.TargetPin) &&
 			endpoint(link.Target, link.TargetRevision, request.SourcePath, request.SourceURL, request.SourcePin)
-		return request.PairDirection != "in" && forward || request.PairDirection != "out" && reverse
+		pair := request.PairDirection != "in" && forward || request.PairDirection != "out" && reverse
+		return pair && linkIncidentMatches(link, request, endpoint)
 	}
 	if request.SourcePath != "" && !endpoint(link.Source, link.SourceRevision, request.SourcePath, request.SourceURL, request.SourcePin) ||
 		request.TargetPath != "" && !endpoint(link.Target, link.TargetRevision, request.TargetPath, request.TargetURL, request.TargetPin) {
 		return false
 	}
-	return request.IncidentPath == "" ||
-		endpoint(link.Source, link.SourceRevision, request.IncidentPath, request.IncidentURL, request.IncidentPin) ||
-		endpoint(link.Target, link.TargetRevision, request.IncidentPath, request.IncidentURL, request.IncidentPin)
+	return linkIncidentMatches(link, request, endpoint)
+}
+
+func linkIncidentMatches(link LinkRecord, request LinkCollectionRequest, endpoint func(string, string, string, string, LinkPinSelection) bool) bool {
+	if request.IncidentPath == "" {
+		return true
+	}
+	return request.IncidentDirection != "in" && endpoint(link.Source, link.SourceRevision, request.IncidentPath, request.IncidentURL, request.IncidentPin) ||
+		request.IncidentDirection != "out" && endpoint(link.Target, link.TargetRevision, request.IncidentPath, request.IncidentURL, request.IncidentPin)
 }
 
 // ListLinks returns complete, canonically ordered live incident state, or an

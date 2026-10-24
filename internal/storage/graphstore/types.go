@@ -273,6 +273,7 @@ type LinkCollectionRequest struct {
 	SourceURL, TargetURL, IncidentURL string
 	SourcePin, TargetPin, IncidentPin LinkPinSelection
 	PairDirection                     string // out, in, or both; empty keeps conjunctive flag filters
+	IncidentDirection                 string // in/out/both relative to IncidentPath, independent of source/target filters
 	AllRevisions                      bool
 }
 
