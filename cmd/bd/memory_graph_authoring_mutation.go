@@ -68,7 +68,7 @@ func runMemoryLinkCommand(cmd *cobra.Command, args []string, op memoryLinkOperat
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	flags := []string{op.targetFlag, "title", "body", "status", "properties", "metadata", "id", "source-revision", "target-revision", "if-source-revision", "json"}
+	flags := []string{"from", "to", "title", "body", "status", "properties", "metadata", "id", "source-revision", "target-revision", "if-source-revision", "json"}
 	if err := canonicalGraphFlags(cmd, renderer, flags...); err != nil {
 		return err
 	}

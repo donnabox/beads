@@ -11,24 +11,25 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-type memoryLinkOperation struct{ name, family, targetFlag, description string }
+type memoryLinkOperation struct{ name, family, description string }
 
 var memoryLinkOperations = []memoryLinkOperation{
-	{"reference", "references", "to", "Record a reference to another Bead"},
-	{"supersede", "superseded-by", "by", "Retire an older Memory in favor of a successor"},
-	{"requires", "requires", "to", "Record a necessary Constraint"},
-	{"defines", "defines", "to", "Record an owned subordinate Constraint"},
-	{"subject-to", "subject-to", "to", "Declare a Constraint governing a Bead"},
+	{"reference", "references", "Record a reference to another Bead"},
+	{"supersede", "superseded-by", "Retire an older Memory in favor of a successor"},
+	{"requires", "requires", "Record a necessary Constraint"},
+	{"defines", "defines", "Record an owned subordinate Constraint"},
+	{"subject-to", "subject-to", "Declare a Constraint governing a Bead"},
 }
 
 // Input construction is separate from execution and shares generic Link parsing,
 // metadata and guards. No facade allocates identities or bypasses Type checks.
 func newMemoryLinkCommand(op memoryLinkOperation) *cobra.Command {
-	cmd := &cobra.Command{Use: op.name + " SOURCE --" + op.targetFlag + " TARGET", Short: op.description,
+	cmd := &cobra.Command{Use: op.name + " [SOURCE TARGET]", Short: op.description,
 		Args: func(*cobra.Command, []string) error { return nil },
 		RunE: func(cmd *cobra.Command, args []string) error { return runMemoryLinkCommand(cmd, args, op) },
 	}
-	cmd.Flags().String(op.targetFlag, "", "Target Bead identity")
+	cmd.Flags().String("from", "", "Source Bead identity")
+	cmd.Flags().String("to", "", "Target Bead identity")
 	for _, flag := range []string{"title", "body", "status"} {
 		cmd.Flags().String(flag, "", "Optional Link "+flag+" property")
 	}
@@ -77,15 +78,12 @@ func memoryLinkProperties(cmd *cobra.Command) (map[string]any, error) {
 
 func memoryLinkRequest(cmd *cobra.Command, args []string, scope string, op memoryLinkOperation) (graphstore.LinkCreateRequest, error) {
 	zero := graphstore.LinkCreateRequest{}
-	if len(args) != 1 || !cmd.Flags().Changed(op.targetFlag) {
-		return zero, fmt.Errorf("%s requires one source and --%s TARGET", op.name, op.targetFlag)
-	}
-	target, _ := cmd.Flags().GetString(op.targetFlag)
-	if target == "" {
-		return zero, fmt.Errorf("--%s requires a Bead identity", op.targetFlag)
+	source, target, err := graphPreviewAuthoringEndpoints(cmd, args)
+	if err != nil {
+		return zero, fmt.Errorf("%s %w", op.name, err)
 	}
 	result := graphstore.LinkCreateRequest{TypeURL: scope + "types/" + op.family}
-	endpoints := []string{args[0], target}
+	endpoints := []string{source, target}
 	paths := make([]string, 2)
 	pins := make([]graphstore.EndpointPin, 2)
 	for i, name := range []string{"source-revision", "target-revision"} {

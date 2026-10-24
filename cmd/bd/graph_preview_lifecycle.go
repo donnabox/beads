@@ -46,15 +46,9 @@ var linkCreateCmd = &cobra.Command{
 		if !cmd.Flags().Changed("type") {
 			return graphFailure("invalid_selector", "link create requires --type", 2)
 		}
-		source, _ := cmd.Flags().GetString("source")
-		target, _ := cmd.Flags().GetString("target")
-		if len(args) == 2 {
-			if cmd.Flags().Changed("source") || cmd.Flags().Changed("target") {
-				return graphFailure("invalid_selector", "choose positional SOURCE TARGET or --source and --target", 2)
-			}
-			source, target = args[0], args[1]
-		} else if len(args) != 0 || source == "" || target == "" {
-			return graphFailure("invalid_selector", "link create requires SOURCE TARGET or --source and --target", 2)
+		source, target, err := graphPreviewAuthoringEndpoints(cmd, args)
+		if err != nil {
+			return graphFailure("invalid_selector", "link create "+err.Error(), 2)
 		}
 		return runGraphPreviewLink(cmd, []string{source, target})
 	},
@@ -137,7 +131,7 @@ var linkCompareCmd = &cobra.Command{
 func init() {
 	linkCmd.AddCommand(linkCreateCmd, linkListCmd, linkShowCmd, linkUpdateCmd, linkDeleteCmd, linkVersionsCmd, linkCompareCmd, linkCountCmd)
 	linkCreateCmd.Flags().String("type", "", "Installed Link Type or built-in Dependency type")
-	for _, flag := range []string{"source", "target"} {
+	for _, flag := range []string{"from", "to"} {
 		linkCreateCmd.Flags().String(flag, "", "Local public Bead ID or canonical Scope URL")
 	}
 	linkCreateCmd.Flags().String("source-revision", "", "Source endpoint revision: exact token, current or unpinned; owned source pins refuse (distinct from --if-source-revision)")
@@ -151,8 +145,8 @@ func init() {
 		if command == linkListCmd {
 			command.Flags().Lookup("type").Usage += "; with --output-format, requires a canonical absolute HTTP(S) Type URI without alias or Dependency-kind resolution"
 		}
-		command.Flags().String("source", "", "Select Links with this local source Bead")
-		command.Flags().String("target", "", "Select Links with this local target Bead")
+		command.Flags().String("from", "", "Select Links with this local source Bead")
+		command.Flags().String("to", "", "Select Links with this local target Bead")
 		command.Flags().String("incident-to", "", "Select Links incident to this local Bead")
 		command.Flags().String("direction", "both", "With --incident-to: in, out, or both")
 	}
@@ -269,7 +263,7 @@ func graphPreviewDisplayLocalURL(url string) string {
 
 func graphPreviewLinkCollectionRequest(cmd *cobra.Command) (graphstore.LinkCollectionRequest, error) {
 	var request graphstore.LinkCollectionRequest
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "incident-to", "direction"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "from", "to", "incident-to", "direction"); err != nil {
 		return request, err
 	}
 	var err error
@@ -281,7 +275,7 @@ func graphPreviewLinkCollectionRequest(cmd *cobra.Command) (graphstore.LinkColle
 		name string
 		dest *string
 	}{
-		{"source", &request.SourcePath}, {"target", &request.TargetPath}, {"incident-to", &request.IncidentPath},
+		{"from", &request.SourcePath}, {"to", &request.TargetPath}, {"incident-to", &request.IncidentPath},
 	} {
 		if !cmd.Flags().Changed(field.name) {
 			continue

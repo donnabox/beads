@@ -60,7 +60,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Helper()
 				flag := "--to"
 				if verb == "supersede" {
-					flag = "--by"
+					flag = "--to"
 				}
 				args := append([]string{"memory", verb, src, flag, target, "--json"}, extra...)
 				raw := call(args...)
@@ -102,7 +102,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal(retired)
 			}
 			before := snapshot("a")
-			refuse("invalid_properties", 2, "memory", "supersede", "a", "--by=b", "--id=another-retirement")
+			refuse("invalid_properties", 2, "memory", "supersede", "a", "--to=b", "--id=another-retirement")
 			if snapshot("a") != before {
 				t.Fatal("repeated supersede revised source")
 			}
