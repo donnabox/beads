@@ -84,6 +84,9 @@ func graphPreviewReopenPath(ctx context.Context, store *graphstore.Store, select
 		if strings.Contains(selector, "://") {
 			return "", fmt.Errorf("%w: reopen requires a canonical URL in this Scope", errGraphListSelector)
 		}
+		if err := graph.ValidateCanonicalResourceID(selector); err != nil {
+			return "", fmt.Errorf("%w: %v", errGraphListSelector, err)
+		}
 		identity, err := store.ResolveAllocatedResourceIdentity(ctx, selector)
 		if err == nil {
 			path = identity.PrivatePath
