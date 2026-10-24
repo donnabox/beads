@@ -46,16 +46,41 @@ func TestGraphPreviewNativeConcreteTypeWorkflow(t *testing.T) {
 			for _, tc := range []struct {
 				flags []string
 				want  int
-			}{{nil, 4}, {[]string{"--type", "issue"}, 4}, {[]string{"--type", "any"}, 5}, {[]string{"--exact-type", "task"}, 1}, {[]string{"--exact-type", taskType}, 1}, {[]string{"--exact-type", "types/issue"}, 0}, {[]string{"--type", "types/memory"}, 1}, {[]string{"--type", "decision"}, 1}, {[]string{"--type", "types/decision"}, 1}} {
+			}{{nil, 4}, {[]string{"--type", "issue"}, 4}, {[]string{"--type", "any"}, 5}, {[]string{"--exact-type", "task"}, 1}, {[]string{"--exact-type", taskType}, 1}, {[]string{"--type", "issue", "--exact-type", "task"}, 1}, {[]string{"--type", "bug", "--exact-type", "task"}, 0}, {[]string{"--exact-type", "types/issue"}, 0}, {[]string{"--type", "types/memory"}, 1}, {[]string{"--type", "decision"}, 1}, {[]string{"--type", "types/decision"}, 1}} {
 				paths, more := graphListBeads(t, bd, work, home, scope, tc.flags...)
 				if more || len(paths) != tc.want {
 					t.Fatalf("list %v: count=%d more=%t want=%d", tc.flags, len(paths), more, tc.want)
 				}
 			}
+			canonicalBeadCount := func(flags ...string) int {
+				t.Helper()
+				out := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list", "--output-format", "json", "--unpaged"}, flags...)...)
+				var frame struct {
+					Data json.RawMessage `json:"data"`
+				}
+				if err := json.Unmarshal([]byte(out), &frame); err != nil {
+					t.Fatal(err)
+				}
+				var page bdpwire.BeadCollection
+				if err := bdpwire.Unmarshal(frame.Data, &page); err != nil {
+					t.Fatal(err)
+				}
+				return len(page.Items)
+			}
+			if got := canonicalBeadCount("--type", "issue", "--exact-type", "task"); got != 1 {
+				t.Fatalf("canonical matching Type intersection returned %d Beads, want 1", got)
+			}
+			if got := canonicalBeadCount("--conforms-to", graphstore.IssueTypeURL(scope), "--exact-type", "task"); got != 1 {
+				t.Fatalf("canonical family alias intersection returned %d Beads, want 1", got)
+			}
+			if got := canonicalBeadCount("--type", "bug", "--exact-type", "task"); got != 0 {
+				t.Fatalf("canonical disjoint Type intersection returned %d Beads, want 0", got)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "issue", "--exact-type", "task", "--status", "open", "--format", "records-json")
 			for _, tc := range []struct {
 				flags []string
 				want  int
-			}{{nil, 4}, {[]string{"--type", "any"}, 5}, {[]string{"--type", "types/memory"}, 1}, {[]string{"--exact-type", "task"}, 1}, {[]string{"--exact-type", "types/issue"}, 0}} {
+			}{{nil, 4}, {[]string{"--type", "any"}, 5}, {[]string{"--type", "types/memory"}, 1}, {[]string{"--exact-type", "task"}, 1}, {[]string{"--type", "issue", "--exact-type", "task"}, 1}, {[]string{"--type", "bug", "--exact-type", "task"}, 0}, {[]string{"--exact-type", "types/issue"}, 0}} {
 				var result struct {
 					Count int `json:"count"`
 				}
@@ -70,14 +95,35 @@ func TestGraphPreviewNativeConcreteTypeWorkflow(t *testing.T) {
 				t.Fatalf("native Link declaration: %+v", linked)
 			}
 			for _, tc := range []struct {
-				flag, value string
-				want        int
-			}{{"--type", "dependency", 1}, {"--exact-type", "parent-child", 1}, {"--exact-type", "types/dependency", 0}} {
-				listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", tc.flag, tc.value))
-				counted := graphMixedResult[map[string]int](t, call("link", "count", tc.flag, tc.value))
+				flags []string
+				want  int
+			}{{[]string{"--type", "dependency"}, 1}, {[]string{"--exact-type", "parent-child"}, 1}, {[]string{"--type", "dependency", "--exact-type", "parent-child"}, 1}, {[]string{"--type", "blocks", "--exact-type", "parent-child"}, 0}, {[]string{"--exact-type", "types/dependency"}, 0}} {
+				listed := graphMixedResult[[]graphstore.LinkRecord](t, call(append([]string{"link", "list"}, tc.flags...)...))
+				counted := graphMixedResult[map[string]int](t, call(append([]string{"link", "count"}, tc.flags...)...))
 				if len(listed) != tc.want || counted["count"] != tc.want {
-					t.Fatalf("Link list/count disagree: %+v %+v", listed, counted)
+					t.Fatalf("Link list/count %v disagree: %+v %+v", tc.flags, listed, counted)
 				}
+			}
+			canonicalLinkCount := func(flags ...string) int {
+				t.Helper()
+				out := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"link", "list", "--output-format", "json", "--unpaged"}, flags...)...)
+				var frame struct {
+					Data json.RawMessage `json:"data"`
+				}
+				if err := json.Unmarshal([]byte(out), &frame); err != nil {
+					t.Fatal(err)
+				}
+				var page bdpwire.LinkCollection
+				if err := bdpwire.Unmarshal(frame.Data, &page); err != nil {
+					t.Fatal(err)
+				}
+				return len(page.Items)
+			}
+			if got := canonicalLinkCount("--type", "dependency", "--exact-type", "parent-child"); got != 1 {
+				t.Fatalf("canonical matching Link Type intersection returned %d, want 1", got)
+			}
+			if got := canonicalLinkCount("--type", "blocks", "--exact-type", "parent-child"); got != 0 {
+				t.Fatalf("canonical disjoint Link Type intersection returned %d, want 0", got)
 			}
 			unknown, _ := graphstore.NativeDependencyTypeURL(scope, "unknown-kind")
 			for _, kind := range []string{"unknown-kind", unknown} {

@@ -19,26 +19,33 @@ func init() {
 // conformsTo predicates. Native bare labels are Beads adapter conveniences;
 // generic BDP relative operands do not use this resolver.
 func graphPreviewCollectionTypes(cmd *cobra.Command, scope string, links bool) (exact, family string, err error) {
-	selected := ""
-	for _, name := range []string{"type", "exact-type", "conforms-to"} {
-		if cmd.Flags().Lookup(name) != nil && cmd.Flags().Changed(name) {
-			if selected != "" {
-				return "", "", fmt.Errorf("--type, --exact-type and --conforms-to are mutually exclusive")
-			}
-			selected = name
-		}
+	changed := func(name string) bool {
+		return cmd.Flags().Lookup(name) != nil && cmd.Flags().Changed(name)
 	}
-	if selected == "" {
+	if changed("type") && changed("conforms-to") {
+		return "", "", fmt.Errorf("--type and --conforms-to both select the Type family; supply only one")
+	}
+	if !changed("type") && !changed("exact-type") && !changed("conforms-to") {
 		if !links {
 			return "", graphstore.IssueTypeURL(scope), nil
 		}
 		return "", "", nil
 	}
-	raw, _ := cmd.Flags().GetString(selected)
-	if raw == "" {
-		return "", "", fmt.Errorf("--%s requires a Type", selected)
+	if changed("exact-type") {
+		raw, _ := cmd.Flags().GetString("exact-type")
+		if raw == "" {
+			return "", "", fmt.Errorf("--exact-type requires a Type")
+		}
+		if raw == "any" {
+			return "", "", fmt.Errorf("any is the --type wildcard, not a Type name")
+		}
+		exact, err = graphPreviewCollectionTypeURL(scope, raw, links)
+		if err != nil {
+			return "", "", err
+		}
 	}
-	if selected == "conforms-to" {
+	if changed("conforms-to") {
+		raw, _ := cmd.Flags().GetString("conforms-to")
 		// Preserve the existing canonical-URI alias; product shorthand belongs
 		// to --type and does not change raw BDP relative-operand semantics.
 		if !strings.Contains(raw, "://") {
@@ -47,22 +54,23 @@ func graphPreviewCollectionTypes(cmd *cobra.Command, scope string, links bool) (
 		if err := graph.ValidateTypeURL(raw); err != nil {
 			return "", "", err
 		}
-		return "", raw, nil
+		return exact, raw, nil
 	}
-	if selected == "type" && raw == "any" {
-		return "", "", nil
+	if !changed("type") {
+		return exact, "", nil
+	}
+	raw, _ := cmd.Flags().GetString("type")
+	if raw == "" {
+		return "", "", fmt.Errorf("--type requires a Type")
 	}
 	if raw == "any" {
-		return "", "", fmt.Errorf("any is the --type wildcard, not a Type name")
+		return exact, "", nil
 	}
-	id, err := graphPreviewCollectionTypeURL(scope, raw, links)
+	family, err = graphPreviewCollectionTypeURL(scope, raw, links)
 	if err != nil {
 		return "", "", err
 	}
-	if selected == "exact-type" {
-		return id, "", nil
-	}
-	return "", id, nil
+	return exact, family, nil
 }
 
 func graphPreviewCollectionTypeURL(scope, raw string, links bool) (string, error) {

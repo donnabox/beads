@@ -66,6 +66,13 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	if plan.refuse {
 		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --type", 5)
 	}
+	intersection := exactType != "" && familyType != ""
+	// The Issue query and its legacy JSON renderer cannot apply both Type
+	// predicates. Use the Bead inventory for an otherwise unfiltered
+	// intersection, and refuse Issue-only filters rather than dropping one.
+	if intersection && (plan.issueQuery || legacyJSON) {
+		return graphFailure("capability_unavailable", "combined --type/--exact-type selection requires a Bead collection read without Issue-only filters or legacy JSON", 5)
+	}
 	if legacyJSON {
 		if !issueFamily || exactType == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 			return graphFailure("capability_unavailable", "legacy list JSON contains Issues only", 5)
@@ -92,7 +99,7 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return nil
 		})
 	}
-	if issueFamily && exactType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+	if issueFamily && exactType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) && !intersection {
 		plan.issueQuery = true
 	}
 	if !plan.issueQuery {

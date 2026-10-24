@@ -31,7 +31,10 @@ func TestNativeConcreteCLICollectionSelection(t *testing.T) {
 		{name: "any-all", flags: []string{"--type=any"}},
 		{name: "compat-family-alias", flags: []string{"--conforms-to=" + task}, family: task},
 		{name: "external-exact-uri", flags: []string{"--exact-type=https://external.test/task"}, exact: "https://external.test/task"},
-		{name: "conflicting-selectors", flags: []string{"--type=task", "--exact-type=task"}, refuses: true},
+		{name: "issue-family-and-task-exact", flags: []string{"--type=issue", "--exact-type=task"}, exact: task, family: graphstore.IssueTypeURL(scope)},
+		{name: "family-alias-and-task-exact", flags: []string{"--conforms-to=" + graphstore.IssueTypeURL(scope), "--exact-type=task"}, exact: task, family: graphstore.IssueTypeURL(scope)},
+		{name: "dependency-family-and-blocks-exact", links: true, flags: []string{"--type=dependency", "--exact-type=blocks"}, exact: blocks, family: graphstore.DependencyTypeURL(scope)},
+		{name: "duplicate-family-bindings", flags: []string{"--type=issue", "--conforms-to=" + graphstore.IssueTypeURL(scope)}, refuses: true},
 		{name: "empty", flags: []string{"--type="}, refuses: true},
 		{name: "exact-wildcard-refused", flags: []string{"--exact-type=any"}, refuses: true},
 	} {

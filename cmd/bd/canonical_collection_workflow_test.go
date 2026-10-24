@@ -70,7 +70,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 
 			for _, format := range []string{"json", "jsonl"} {
 				for _, raw := range []bool{false, true} {
-					for _, invalid := range [][]string{{"list", "--omit=/revision"}, {"list", "--include=/properties/~bad"}, {"list", "--continue=token"}, {"list", "--type=any", "--paged", "--page-size=1"}, {"list", "unexpected"}, {"link", "list", "unexpected"}, {"list", "--limit=010", "--limit=10"}, {"list", "--all"}, {"list", "--type=bug", "--exact-type=bug"}, {"link", "list", "--conforms-to=preview-memory"}} {
+					for _, invalid := range [][]string{{"list", "--omit=/revision"}, {"list", "--include=/properties/~bad"}, {"list", "--continue=token"}, {"list", "--type=any", "--paged", "--page-size=1"}, {"list", "unexpected"}, {"link", "list", "unexpected"}, {"list", "--limit=010", "--limit=10"}, {"list", "--all"}, {"list", "--type=bug", "--conforms-to=" + graphstore.IssueTypeURL(scope)}, {"link", "list", "--conforms-to=preview-memory"}} {
 						args := append(append([]string{}, invalid...), "--output-format="+format)
 						if raw {
 							args = append(args, "--omit=envelope")

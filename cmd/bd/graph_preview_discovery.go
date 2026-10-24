@@ -333,6 +333,12 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	// Native Issue counting can select one classification but cannot intersect
+	// it with an independently selected family. The checked Bead collection
+	// applies both predicates and rejects Issue-only count flags.
+	if exactType != "" && familyType != "" {
+		return runGraphPreviewBeadCount(cmd, exactType, familyType)
+	}
 	selected := familyType
 	if exactType != "" {
 		selected = exactType
