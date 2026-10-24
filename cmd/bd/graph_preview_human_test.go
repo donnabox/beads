@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
@@ -109,5 +110,27 @@ func TestGraphHumanCurrentAdjunctsDiscloseGatesAndCommentBounds(t *testing.T) {
 	}
 	if strings.Contains(got, "A: first") || strings.Contains(got, "B: second") {
 		t.Fatal(got)
+	}
+}
+
+func TestGraphHumanLongTimelineRefusesNativeRoute(t *testing.T) {
+	oldActive, oldReporter := graphPreviewActive, graphFailureReporter
+	graphPreviewActive = false
+	graphFailureReporter = func(code, message string, status int) error {
+		if code != "capability_unavailable" || status != 5 {
+			t.Fatalf("wrong refusal %s %d", code, status)
+		}
+		return &exitError{Code: status}
+	}
+	t.Cleanup(func() { graphPreviewActive = oldActive; graphFailureReporter = oldReporter })
+	for _, command := range []*cobra.Command{versionsCmd, historyCmd} {
+		cmd := &cobra.Command{}
+		cmd.Flags().Bool("long", false, "")
+		if err := cmd.Flags().Set("long", "true"); err != nil {
+			t.Fatal(err)
+		}
+		if err := command.RunE(cmd, []string{"unused"}); err == nil {
+			t.Fatalf("%s silently accepted graph-only long", command.Name())
+		}
 	}
 }
