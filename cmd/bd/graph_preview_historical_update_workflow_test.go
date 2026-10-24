@@ -121,9 +121,16 @@ func TestGraphPreviewHistoricalDependencyLinkWorkflow(t *testing.T) {
 			targetIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--graph-path", "beads/target"))
 			initial := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", sourceIssue.ID, targetIssue.ID, "--id", "links/native"))
 			old := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--properties", `{"dep_type":"blocks"}`, "--replace-metadata", `{"old":true}`))
-			current := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--properties", `{"dep_type":"relates-to"}`, "--replace-metadata", `{"current":true}`))
+			current := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--properties", `{"dep_type":"blocks"}`, "--replace-metadata", `{"current":true}`))
+			beforeRefusal := call("link", "show", initial.Link.ID)
+			beforeHistory := call("link", "versions", initial.Link.ID)
+			beforeSource := call("show", sourceIssue.ID, "--format", "graph-json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "link", "update", initial.Link.ID, "--properties", `{"dep_type":"relates-to"}`, "--if-revision", current.Link.Revision, "--json")
+			if call("link", "show", initial.Link.ID) != beforeRefusal || call("link", "versions", initial.Link.ID) != beforeHistory || call("show", sourceIssue.ID, "--format", "graph-json") != beforeSource {
+				t.Fatal("refused concrete Type change wrote Link, History or owner")
+			}
 			restored := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--from-revision", old.Link.Revision, "--if-revision", current.Link.Revision, "--set-metadata", "explicit=7"))
-			if !restored.Changed || restored.Link.ID != initial.Link.ID || restored.Link.Properties["dep_type"] != "blocks" || string(restored.Link.Metadata) != `{"explicit":7,"old":true}` || restored.Link.Attribution.HistoricalUpdate == nil {
+			if !restored.Changed || restored.Link.ID != initial.Link.ID || restored.Link.Type != initial.Link.Type || restored.Link.Properties["dep_type"] != "blocks" || string(restored.Link.Metadata) != `{"explicit":7,"old":true}` || restored.Link.Attribution.HistoricalUpdate == nil {
 				t.Fatalf("native historical CLI composition: %+v", restored)
 			}
 			noop := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--from_revision", restored.Link.Revision))
@@ -139,8 +146,8 @@ func TestGraphPreviewHistoricalDependencyLinkWorkflow(t *testing.T) {
 			if history.CurrentState == nil || history.CurrentState.Revision != deleted.Link.Revision {
 				t.Fatalf("native D guard missing: %+v", history)
 			}
-			recovered := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--from-revision", old.Link.Revision, "--if-revision", history.CurrentState.Revision, "--patch", `[{"op":"replace","path":"/dep_type","value":"relates-to"}]`))
-			if !recovered.Changed || recovered.Link.ID != initial.Link.ID || recovered.Link.Attribution.Inception != "revert" || recovered.Link.Properties["dep_type"] != "relates-to" || string(recovered.Link.Metadata) != `{"old":true}` {
+			recovered := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--from-revision", old.Link.Revision, "--if-revision", history.CurrentState.Revision, "--patch", `[{"op":"replace","path":"/dep_type","value":"blocks"}]`))
+			if !recovered.Changed || recovered.Link.ID != initial.Link.ID || recovered.Link.Type != initial.Link.Type || recovered.Link.Revision == deleted.Link.Revision || recovered.Link.Attribution.Inception != "revert" || recovered.Link.Properties["dep_type"] != "blocks" || string(recovered.Link.Metadata) != `{"old":true}` {
 				t.Fatalf("native same-ID CLI recovery: %+v", recovered)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", "links/native", "--revision", deleted.Link.Revision, "--json")

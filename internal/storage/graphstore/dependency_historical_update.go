@@ -62,7 +62,7 @@ func nativeDependencyProperties(raw []byte) (types.DependencyType, error) {
 }
 
 func (s *Store) writeNativeLinkPropertiesInTx(ctx context.Context, tx *sql.Tx, request LinkUpdateRequest, properties []byte, patch *graphpatch.Patch, current LinkRecord, terminal *LinkTombstone, head string) (LinkMutationResult, error) {
-	if current.Type != DependencyTypeURL(s.ScopeURL()) {
+	if !isConcreteNativeDependency(s.ScopeURL(), current.Type) {
 		return LinkMutationResult{}, fmt.Errorf("%w: native Link Type cannot be edited", ErrCapabilityUnavailable)
 	}
 	for _, pin := range []*EndpointPin{request.SourcePin, request.TargetPin} {
@@ -137,6 +137,15 @@ func (s *Store) writeNativeLinkPropertiesInTx(ctx context.Context, tx *sql.Tx, r
 	kind, err := nativeDependencyProperties(next)
 	if err != nil {
 		return LinkMutationResult{}, err
+	}
+	// Native classification is part of the immutable concrete Type identity.
+	// Editing metadata or restoring a prior revision cannot reclassify the Link.
+	nextType, err := NativeDependencyTypeURL(s.ScopeURL(), string(kind))
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	if nextType != current.Type {
+		return LinkMutationResult{}, fmt.Errorf("%w: dep_type must preserve the declared native Dependency Type", storage.ErrValidation)
 	}
 	metadata, _, err := issueops.ApplyMetadataPatch(base.Metadata, request.Metadata)
 	if err != nil {

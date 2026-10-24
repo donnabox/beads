@@ -12,11 +12,23 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
 func nativeMetadata(value string) publicops.MetadataPatch {
 	return publicops.MetadataPatch{Replace: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(value)}}
+}
+
+func setupHistoricalNativeKind(t *testing.T, engine string, kind types.DependencyType) dependencyUnlinkFixture {
+	t.Helper()
+	f := setupDependencyUnlink(t, engine, 0)
+	added, err := f.store.AddDependency(f.ctx, DependencyRequest{Path: "links/first", SourcePath: "beads/source", TargetPath: "beads/first", Type: kind, ExpectedSourceRevision: f.source.Revision, Actor: "author"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.source, f.links = added.Source, []LinkRecord{added.Link}
+	return f
 }
 
 func TestHistoricalNativeLinkCompositionRecovery(t *testing.T) {
@@ -33,11 +45,18 @@ func TestHistoricalNativeLinkCompositionRecovery(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			current, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", Properties: map[string]any{"dep_type": "relates-to"}, Metadata: nativeMetadata(`{"current":true}`), ExpectedRevision: metadata.Link.Revision, ExpectedSourceRevision: metadata.Source.(IssueRecord).Revision, Actor: "current-author"})
+			current, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", Properties: map[string]any{"dep_type": "blocks"}, Metadata: nativeMetadata(`{"current":true}`), ExpectedRevision: metadata.Link.Revision, ExpectedSourceRevision: metadata.Source.(IssueRecord).Revision, Actor: "current-author"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			assertDependencyReadiness(t, ctx, s, current.Source.(IssueRecord), true)
+			assertDependencyReadiness(t, ctx, s, current.Source.(IssueRecord), false)
+			// The concrete declared Type is immutable even when its native property
+			// is supplied through the generic Link editor.
+			beforeReclassification := workflowState(t, ctx, s)
+			_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", Properties: map[string]any{"dep_type": "relates-to"}, ExpectedRevision: current.Link.Revision, ExpectedSourceRevision: current.Source.(IssueRecord).Revision, Actor: "refused-reclassification"})
+			if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(beforeReclassification, workflowState(t, ctx, s)) {
+				t.Fatalf("concrete Dependency Type changed or refusal wrote: %v", err)
+			}
 			var ordinal int
 			if err := s.db.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, f.source.Properties.ID).Scan(&ordinal); err != nil {
 				t.Fatal(err)
@@ -57,7 +76,7 @@ func TestHistoricalNativeLinkCompositionRecovery(t *testing.T) {
 				t.Fatal(err)
 			}
 			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM bd_events_journal WHERE issue_id=? AND actor='historical-author' AND op='dep_add'`, f.source.Properties.ID).Scan(&addedEvents); err != nil || removedEvents != 0 || addedEvents != 1 {
-				t.Fatalf("kind replacement must journal one upsert: adds=%d removes=%d %v", addedEvents, removedEvents, err)
+				t.Fatalf("metadata update must journal one upsert: adds=%d removes=%d %v", addedEvents, removedEvents, err)
 			}
 			var nextOrdinal int
 			if err := s.db.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, f.source.Properties.ID).Scan(&nextOrdinal); err != nil || nextOrdinal != ordinal+1 {
@@ -205,7 +224,7 @@ func TestHistoricalNativeLinkRollbackAndCycle(t *testing.T) {
 					}
 					return nil
 				}
-				_, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, Properties: map[string]any{"dep_type": "relates-to"}, ExpectedRevision: f.links[0].Revision, ExpectedSourceRevision: f.source.Revision, Actor: "live-edit"})
+				_, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, Metadata: nativeMetadata(`{"probe":true}`), ExpectedRevision: f.links[0].Revision, ExpectedSourceRevision: f.source.Revision, Actor: "live-edit"})
 				s.afterWrite = nil
 				if !errors.Is(err, liveFailure) || !reflect.DeepEqual(liveBefore, workflowState(t, ctx, s)) {
 					t.Fatalf("%s partial live native update: %v", stage, err)
@@ -230,16 +249,14 @@ func TestHistoricalNativeLinkRollbackAndCycle(t *testing.T) {
 					t.Fatalf("%s partial native recovery: %v", stage, err)
 				}
 			}
-			recovered, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, Properties: map[string]any{"dep_type": "relates-to"}, ExpectedRevision: deleted.Link.Revision, ExpectedSourceRevision: deleted.Source.(IssueRecord).Revision, Actor: "recover"})
-			if err != nil {
-				t.Fatal(err)
-			}
+			// A reverse blocking edge is admissible while the original is deleted.
+			// Recovering the original concrete blocks Type must still detect its cycle.
 			if _, err = s.AddDependency(ctx, DependencyRequest{Path: "links/reverse", SourcePath: "beads/first", TargetPath: "beads/source", ExpectedSourceRevision: f.targets[0].Revision, Actor: "reverse"}); err != nil {
 				t.Fatal(err)
 			}
 			before = workflowState(t, ctx, s)
-			_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, ExpectedRevision: recovered.Link.Revision, ExpectedSourceRevision: recovered.Source.(IssueRecord).Revision, Actor: "cannot-cycle"})
-			if err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+			_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, ExpectedRevision: deleted.Link.Revision, ExpectedSourceRevision: deleted.Source.(IssueRecord).Revision, Actor: "cannot-cycle"})
+			if !errors.Is(err, publicops.ErrDependencyCycle) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("historical native cycle admitted or changed state: %v", err)
 			}
 		})
@@ -300,12 +317,9 @@ func TestHistoricalNativeLinkAttributionAuthority(t *testing.T) {
 func TestHistoricalNativeLinkMetadataReadiness(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
-			f := setupDependencyUnlink(t, engine, 1)
+			f := setupHistoricalNativeKind(t, engine, "waits-for")
 			s, ctx := f.store, f.ctx
-			waiter, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", Properties: map[string]any{"dep_type": "waits-for"}, ExpectedRevision: f.links[0].Revision, ExpectedSourceRevision: f.source.Revision, Actor: "waiter"})
-			if err != nil {
-				t.Fatal(err)
-			}
+			waiter := LinkMutationResult{Link: f.links[0], Source: f.source}
 			assertDependencyReadiness(t, ctx, s, waiter.Source.(IssueRecord), true)
 			for _, path := range []string{"beads/open-child", "beads/closed-child"} {
 				r := plainIssue(path)
@@ -359,33 +373,40 @@ func TestHistoricalNativeLinkMetadataReadiness(t *testing.T) {
 func TestHistoricalNativeLinkHierarchyTransitions(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
-			f := setupDependencyUnlink(t, engine, 1)
-			s, ctx := f.store, f.ctx
-			parent, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, Properties: map[string]any{"dep_type": "parent-child"}, ExpectedRevision: f.links[0].Revision, ExpectedSourceRevision: f.source.Revision, Actor: "parent-kind"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			blocks, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, ExpectedRevision: parent.Link.Revision, ExpectedSourceRevision: parent.Source.(IssueRecord).Revision, Actor: "restore-blocks"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			assertDependencyReadiness(t, ctx, s, blocks.Source.(IssueRecord), false)
-			related, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", Properties: map[string]any{"dep_type": "relates-to"}, ExpectedRevision: blocks.Link.Revision, ExpectedSourceRevision: blocks.Source.(IssueRecord).Revision, Actor: "relates"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			indirect, err := s.AddDependency(ctx, DependencyRequest{SourcePath: "beads/source", TargetPath: "beads/second", Type: "parent-child", ExpectedSourceRevision: related.Source.(IssueRecord).Revision, Actor: "parent"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			if _, err = s.AddDependency(ctx, DependencyRequest{SourcePath: "beads/second", TargetPath: "beads/first", Type: "parent-child", ExpectedSourceRevision: f.targets[1].Revision, Actor: "ancestor"}); err != nil {
-				t.Fatal(err)
-			}
-			before := workflowState(t, ctx, s)
-			_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, ExpectedRevision: related.Link.Revision, ExpectedSourceRevision: indirect.Source.Revision, Actor: "cannot-block-ancestor"})
-			if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("native hierarchy refusal changed state: %v", err)
-			}
+			t.Run("parent-child-history", func(t *testing.T) {
+				f := setupHistoricalNativeKind(t, engine, "parent-child")
+				s, ctx := f.store, f.ctx
+				current, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", MetadataOnly: true, Metadata: nativeMetadata(`{"current":true}`), ExpectedRevision: f.links[0].Revision, ExpectedSourceRevision: f.source.Revision, Actor: "parent-metadata"})
+				if err != nil {
+					t.Fatal(err)
+				}
+				restored, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, ExpectedRevision: current.Link.Revision, ExpectedSourceRevision: current.Source.(IssueRecord).Revision, Actor: "restore-parent-metadata"})
+				if err != nil || !restored.Changed || restored.Link.Type != f.links[0].Type || restored.Link.Properties["dep_type"] != "parent-child" || string(restored.Link.Metadata) != `{}` {
+					t.Fatalf("parent-child history changed concrete Type: %+v %v", restored, err)
+				}
+				assertDependencyOwned(t, restored.Source.(IssueRecord), restored.Link)
+			})
+			t.Run("blocking-ancestor-recovery", func(t *testing.T) {
+				f := setupDependencyUnlink(t, engine, 1)
+				s, ctx := f.store, f.ctx
+				deleted, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/first", ExpectedRevision: f.links[0].Revision, ExpectedSourceRevision: f.source.Revision, Actor: "delete"})
+				if err != nil {
+					t.Fatal(err)
+				}
+				indirect, err := s.AddDependency(ctx, DependencyRequest{SourcePath: "beads/source", TargetPath: "beads/second", Type: "parent-child", ExpectedSourceRevision: deleted.Source.(IssueRecord).Revision, Actor: "parent"})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, err = s.AddDependency(ctx, DependencyRequest{SourcePath: "beads/second", TargetPath: "beads/first", Type: "parent-child", ExpectedSourceRevision: f.targets[1].Revision, Actor: "ancestor"}); err != nil {
+					t.Fatal(err)
+				}
+				before := workflowState(t, ctx, s)
+				_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/first", FromRevision: f.links[0].Revision, ExpectedRevision: deleted.Link.Revision, ExpectedSourceRevision: indirect.Source.Revision, Actor: "cannot-block-ancestor"})
+				var hierarchy *publicops.DependencyHierarchyConflictError
+				if !errors.As(err, &hierarchy) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("native hierarchy refusal changed state: %v", err)
+				}
+			})
 		})
 	}
 }
