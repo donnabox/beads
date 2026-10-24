@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -162,7 +163,15 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			if !strings.Contains(tail, "1 older comments hidden") || !strings.Contains(tail, "Second note") || strings.Contains(tail, "First note") {
 				t.Fatalf("--comments-tail did not preserve familiar elision: %s", tail)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", created.ID, "--revision", created.Revision, "--long", "--json")
+			retainedJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", created.ID, "--revision", created.Revision, "--json")
+			retainedLongJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", created.ID, "--revision", created.Revision, "--long", "--json")
+			retained := graphMixedResult[graphstore.IssueRecord](t, retainedLongJSON)
+			if retainedLongJSON != retainedJSON || !strings.Contains(retainedJSON, `"schemaVersion":1`) || retained.ID != created.ID || retained.Revision != created.Revision || retained.Type != created.Type || !reflect.DeepEqual(retained.Properties, created.Properties) || !reflect.DeepEqual(retained.Metadata, created.Metadata) || !reflect.DeepEqual(retained.Owned, created.Owned) {
+				t.Fatalf("retained --long changed complete stored record: %s", retainedLongJSON)
+			}
+			if strings.Contains(retainedLongJSON, "First note") || strings.Contains(retainedLongJSON, "Second note") || strings.Contains(retainedLongJSON, dependency.Link.ID) || (current.Revision != created.Revision && strings.Contains(retainedLongJSON, current.Revision)) {
+				t.Fatalf("retained --long hydrated current comments, relations or revision: %s", retainedLongJSON)
+			}
 
 			// The old experimental complete-record envelope remains explicitly
 			// addressable, including for a retained version.
