@@ -127,8 +127,8 @@ func TestGraphPreviewCorruptMetadataRefusesBeforeLegacyOpening(t *testing.T) {
 			}
 			for _, args := range [][]string{
 				{"show", "beads/plan", "--json"},
-				{"show", "beads/plan", "--version=observed", "--json"},
-				{"recall", "beads/plan", "--version=observed", "--json"},
+				{"show", "beads/plan", "--revision=observed", "--json"},
+				{"recall", "beads/plan", "--revision=observed", "--json"},
 				{"compare", "beads/plan", "--from=observed", "--to=observed", "--json"},
 				{"memories", "--format=records-json"},
 			} {
@@ -375,8 +375,8 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		// New graph-only source guards still refuse before legacy opening.
 		{"update", "demo-one", "--if-source-revision", "observed"},
 		{"forget", "beads/plan", "--if-revision="},
-		{"show", "beads/plan", "--version=observed"},
-		{"recall", "beads/plan", "--version="},
+		{"show", "beads/plan", "--revision=observed"},
+		{"recall", "beads/plan", "--revision="},
 		{"compare", "beads/plan", "--from=observed", "--to=observed"},
 		{"memories", "--all=false"},
 		{"memories", "--details=false"},

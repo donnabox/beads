@@ -136,7 +136,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					t.Fatalf("%s Link versions: resource=%q kind=%q rows=%+v", spec.typ, resource, kind, versions)
 				}
 				graphVersionsAssertKeys(t, spec.typ, members)
-				old := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", link.Link.ID, "--version", link.Link.Revision))
+				old := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", link.Link.ID, "--revision", link.Link.Revision))
 				if !reflect.DeepEqual(old, link.Link) {
 					t.Fatal("retained Link changed")
 				}
@@ -144,7 +144,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					t.Fatalf("Link comparison omitted changed property: %s", comparison)
 				}
 				call("link", "delete", "--force", link.Link.ID, "--if-revision", edited.Link.Revision)
-				retained := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--version", owner.Revision))
+				retained := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--revision", owner.Revision))
 				if !reflect.DeepEqual(retained, owner) {
 					t.Fatal("unlink rewrote old Memory-owned snapshot")
 				}

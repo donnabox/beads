@@ -164,7 +164,7 @@ func init() {
 		command.Flags().String("incident-to", "", "Select Links incident to this local Bead")
 		command.Flags().String("direction", "both", "With --incident-to: in, out, or both")
 	}
-	linkShowCmd.Flags().String("version", "", "Read an exact retained Link version")
+	linkShowCmd.Flags().String("revision", "", "Read an exact retained Link version")
 	linkShowCmd.Flags().String("format", "", "Use graph-json for the complete graph record")
 	for _, command := range []*cobra.Command{linkUpdateCmd} {
 		command.Flags().SetNormalizeFunc(normalizeHistoricalRevisionFlag)
