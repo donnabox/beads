@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/workapi"
@@ -131,7 +132,11 @@ func (s *Store) ListChildrenLegacy(ctx context.Context, parentPath string) ([]*t
 				return fmt.Errorf("%w: child escaped graph scope or has no Issue", ErrInvalidStore)
 			}
 			ids[i] = child.Properties.ID
-			pathByID[child.Properties.ID] = strings.TrimPrefix(child.ID, s.ScopeURL())
+			path, err := s.publicResourcePathInTx(ctx, tx, child.ID, graph.KindBead)
+			if err != nil {
+				return err
+			}
+			pathByID[child.Properties.ID] = path
 		}
 		rows, err := issueops.SearchIssuesWithCountsInTx(ctx, tx, "", types.IssueFilter{
 			IDs: ids, SkipWisps: true, Limit: len(ids),

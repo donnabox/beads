@@ -46,8 +46,8 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		return DependencyResult{}, err
 	}
 	request.Path = preparedPath
-	for _, path := range []string{request.SourcePath, request.TargetPath} {
-		if err := validatePath(path); err != nil {
+	for _, endpoint := range []struct{ path, id string }{{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID}} {
+		if err := s.validateBeadEndpointOperand(endpoint.path, endpoint.id); err != nil {
 			return DependencyResult{}, err
 		}
 	}

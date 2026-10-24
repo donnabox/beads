@@ -260,11 +260,8 @@ func graphPreviewFilterLinkKind(cmd *cobra.Command, links []graphstore.LinkRecor
 // Only the human view shortens URLs. JSON retains canonical IDs and foreign
 // endpoints are never made to look local.
 func graphPreviewDisplayLocalURL(url string) string {
-	if path, _, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, url); ok {
-		return path
-	}
-	if strings.HasPrefix(url, graphPreviewConfig.GraphScopeURL+"types/") {
-		return strings.TrimPrefix(url, graphPreviewConfig.GraphScopeURL)
+	if id, ok := graphPreviewPublicResourceID(graphPreviewConfig.GraphScopeURL, url); ok {
+		return id
 	}
 	return url
 }

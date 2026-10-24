@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"strings"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -169,7 +168,11 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
-		if link.Source != graph.CanonicalURL(s.ScopeURL(), childPath) || link.Target != parent.ID || link.Type != linkType {
+		childURL, err := s.publicResourceURLInTx(ctx, tx, childPath)
+		if err != nil {
+			return err
+		}
+		if link.Source != childURL || link.Target != parent.ID || link.Type != linkType {
 			return fmt.Errorf("%w: child Link endpoints or Type differ from native Dependency", ErrInvalidStore)
 		}
 		linkBytes, err := canonicalJSON(link)

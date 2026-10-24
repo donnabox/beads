@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"sort"
-	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -286,7 +285,10 @@ func (s *Store) unlinkInTx(ctx context.Context, tx *sql.Tx, request LinkDeleteRe
 	if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
 		return LinkDeleteResult{}, err
 	}
-	sourcePath := strings.TrimPrefix(link.Source, s.options.Binding.ScopeURL)
+	sourcePath, err := s.publicResourcePathInTx(ctx, tx, link.Source, graph.KindBead)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
 	source, revision, err := s.beadEndpointInTx(ctx, tx, sourcePath)
 	if err != nil {
 		return LinkDeleteResult{}, err
@@ -355,9 +357,13 @@ func (s *Store) selectUnlinkPathInTx(ctx context.Context, tx *sql.Tx, request Li
 	if err != nil {
 		return "", err
 	}
+	targetURL, err := s.publicResourceURLInTx(ctx, tx, request.TargetPath)
+	if err != nil {
+		return "", err
+	}
 	candidates := []string{}
 	for _, link := range links {
-		if link.Target == graph.CanonicalURL(s.options.Binding.ScopeURL, request.TargetPath) {
+		if link.Target == targetURL {
 			candidates = append(candidates, link.ID)
 		}
 	}
@@ -367,7 +373,7 @@ func (s *Store) selectUnlinkPathInTx(ctx context.Context, tx *sql.Tx, request Li
 	if len(candidates) > 1 {
 		return "", &ErrAmbiguousLink{CandidateIDs: candidates}
 	}
-	return strings.TrimPrefix(candidates[0], s.options.Binding.ScopeURL), nil
+	return s.publicResourcePathInTx(ctx, tx, candidates[0], graph.KindLink)
 }
 
 // A valid tombstone is distinct from missing or corrupt state. Missing retained

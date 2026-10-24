@@ -372,7 +372,7 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	for _, field := range []string{"endpoint_type", "retained_backing_key"} {
+	for _, field := range []string{"endpoint_type", "endpoint_public_id", "retained_backing_key"} {
 		if !t.Run(field, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 			t.Cleanup(cancel)
@@ -385,7 +385,7 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			request := memoryQueryRequest(rootPath)
 			request.MaxBytes = 32 * 1024
 			switch field {
-			case "endpoint_type":
+			case "endpoint_type", "endpoint_public_id":
 				if _, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "b"}); err != nil {
 					t.Fatal(err)
 				}
@@ -426,6 +426,8 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 					}
 				})
 				mutation, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, strings.Repeat("x", 64*1024), targetPath)
+			case "endpoint_public_id":
+				mutation, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET public_id=? WHERE path=?`, strings.Repeat("x", 64*1024), targetPath)
 			case "retained_backing_key":
 				mutation, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET backing_key=? WHERE path=?`, "invalid-domain-key", rootPath)
 			}

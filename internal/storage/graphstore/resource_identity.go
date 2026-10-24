@@ -83,9 +83,6 @@ const allocatedIdentityColumns = `path,resource_kind,allocation_state,backing,
 // Callers retain private locators for SQL only and acquire allocation bytes
 // under their checked current/retained read or mutation budget.
 func (s *Store) publicResourceURLInTx(ctx context.Context, tx *sql.Tx, path string) (string, error) {
-	if err := checkAllocatedIdentityReadBytes(ctx, tx); err != nil {
-		return "", err
-	}
 	identity, err := allocatedResourceIdentityForPathInTx(ctx, tx, path)
 	if err != nil {
 		return "", err
@@ -98,9 +95,6 @@ func (s *Store) publicResourcePathInTx(ctx context.Context, tx *sql.Tx, uri stri
 	if err != nil {
 		return "", err
 	}
-	if err := checkAllocatedIdentityReadBytes(ctx, tx); err != nil {
-		return "", err
-	}
 	identity, err := resolveAllocatedResourceIdentityInTx(ctx, tx, id)
 	if err != nil {
 		return "", err
@@ -111,13 +105,16 @@ func (s *Store) publicResourcePathInTx(ctx context.Context, tx *sql.Tx, uri stri
 	return identity.PrivatePath, nil
 }
 
-// Retained callers may not have acquired a current snapshot. Charge durable
-// identity facts, including tombstones, before materializing an unbounded ID.
-func checkAllocatedIdentityReadBytes(ctx context.Context, tx *sql.Tx) error {
+// Charge only the selected allocation facts before acquiring their bytes.
+// In particular, a scoped Memory question must not scan unrelated lifetime
+// identities or inherit a whole-Scope retained-history acquisition gate.
+func checkAllocatedIdentityReadBytes(ctx context.Context, tx *sql.Tx, predicate string, args ...any) error {
 	var size uint64
-	err := tx.QueryRowContext(ctx, `SELECT CAST(LEAST(COALESCE(SUM(
+	query := `SELECT CAST(LEAST(COALESCE(SUM(
  4*(256+OCTET_LENGTH(path)+COALESCE(OCTET_LENGTH(backing_key),0)+COALESCE(OCTET_LENGTH(public_id),0))
- ),0),?) AS UNSIGNED) FROM graph_preview_catalog`, PreviewCurrentReadByteLimit+1).Scan(&size)
+ ),0),?) AS UNSIGNED) FROM graph_preview_catalog WHERE ` + predicate
+	parameters := append([]any{PreviewCurrentReadByteLimit + 1}, args...)
+	err := tx.QueryRowContext(ctx, query, parameters...).Scan(&size)
 	if err != nil {
 		return err
 	}
@@ -146,9 +143,6 @@ func (s *Store) resolveResourceReadAddressInTx(ctx context.Context, tx *sql.Tx, 
 	if err != nil {
 		return "", err
 	}
-	if err := checkAllocatedIdentityReadBytes(ctx, tx); err != nil {
-		return "", err
-	}
 	identity, err := resolveAllocatedResourceIdentityInTx(ctx, tx, id)
 	if err != nil {
 		return "", err
@@ -158,10 +152,15 @@ func (s *Store) resolveResourceReadAddressInTx(ctx context.Context, tx *sql.Tx, 
 
 // These transaction helpers require the caller's usual binding and acquisition
 // checks. They do not allocate, rewrite identities, or choose URI encodings.
+const allocatedPublicIdentityPredicate = `(backing='issue' AND backing_key=?) OR
+ (backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)`
+
 func resolveAllocatedResourceIdentityInTx(ctx context.Context, tx *sql.Tx, id string) (AllocatedResourceIdentity, error) {
+	if err := checkAllocatedIdentityReadBytes(ctx, tx, allocatedPublicIdentityPredicate, id, id); err != nil {
+		return AllocatedResourceIdentity{}, err
+	}
 	rows, err := tx.QueryContext(ctx, `SELECT `+allocatedIdentityColumns+` FROM graph_preview_catalog
- WHERE (backing='issue' AND backing_key=?) OR
- (backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?) LIMIT 2`, id, id)
+ WHERE `+allocatedPublicIdentityPredicate+` LIMIT 2`, id, id)
 	if err != nil {
 		return AllocatedResourceIdentity{}, err
 	}
@@ -173,6 +172,9 @@ func resolveAllocatedResourceIdentityInTx(ctx context.Context, tx *sql.Tx, id st
 }
 
 func allocatedResourceIdentityForPathInTx(ctx context.Context, tx *sql.Tx, path string) (AllocatedResourceIdentity, error) {
+	if err := checkAllocatedIdentityReadBytes(ctx, tx, "path=?", path); err != nil {
+		return AllocatedResourceIdentity{}, err
+	}
 	rows, err := tx.QueryContext(ctx, `SELECT `+allocatedIdentityColumns+` FROM graph_preview_catalog WHERE path=? LIMIT 2`, path)
 	if err != nil {
 		return AllocatedResourceIdentity{}, err

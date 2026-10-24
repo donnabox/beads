@@ -116,6 +116,42 @@ func TestMemoryPublicIdentityCrossKindAndAmbiguity(t *testing.T) {
 	}
 }
 
+// A Memory public ID may resemble another allocation's private locator. Issue
+// discovery must compare public identity, never that accidental SQL spelling.
+func TestCommonIdentityIssueSelectionDoesNotAliasMemory(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			request := plainIssue("Unrelated Issue")
+			request.Issue.ID = "exp-real"
+			issue, err := s.CreateIssue(ctx, "beads/chosen", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			memory, err := s.Create(ctx, CreateRequest{PublicID: "chosen", Title: "Memory"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			memoryPath, err := s.ResolveExactAllocatedResourcePath(ctx, "chosen")
+			if err != nil || memoryPath == "beads/chosen" {
+				t.Fatalf("fixture did not separate locator: %q %v", memoryPath, err)
+			}
+			before := workflowState(t, ctx, s)
+			selector := IssueSelector{Path: "beads/chosen", NativeID: "chosen"}
+			if _, err := s.ShowIssueSelected(ctx, selector); !errors.Is(err, ErrCapabilityUnavailable) {
+				t.Fatalf("Memory selected as Issue: %v", err)
+			}
+			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector, {Path: "beads/exp-real", NativeID: "exp-real"}})
+			if err != nil || !reflect.DeepEqual(paths, []string{"chosen", issue.Properties.ID}) {
+				t.Fatalf("count public IDs: %v %v", paths, err)
+			}
+			if memory.ID != s.ScopeURL()+"chosen" || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("selection changed allocation state")
+			}
+		})
+	}
+}
+
 func TestMemoryPublicIdentityIsNotBDPWire(t *testing.T) {
 	record := Record{ID: "https://example.invalid/beads/locator", Type: "https://example.invalid/types/memory", Revision: "r", Version: "r", Properties: Properties{Title: "Title", Body: "Body"}}
 	before, err := canonicalJSON(record)

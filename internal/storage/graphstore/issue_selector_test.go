@@ -163,7 +163,7 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 				t.Fatalf("combined Memory read fabricated Issue details: %+v %+v %v", combined, combinedDetail, err)
 			}
 			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector})
-			if err != nil || !reflect.DeepEqual(paths, []string{"beads/source"}) {
+			if err != nil || !reflect.DeepEqual(paths, []string{created.Properties.ID}) {
 				t.Fatalf("abbreviated count filter selected wrong path: %v %v", paths, err)
 			}
 			title := "Updated"

@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -117,8 +117,14 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
 		return LinkDeleteResult{}, err
 	}
-	sourcePath := strings.TrimPrefix(link.Source, s.ScopeURL())
-	targetPath := strings.TrimPrefix(link.Target, s.ScopeURL())
+	sourcePath, err := s.publicResourcePathInTx(ctx, tx, link.Source, graph.KindBead)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	targetPath, err := s.publicResourcePathInTx(ctx, tx, link.Target, graph.KindBead)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
 	source, err := s.requireIssueInTx(ctx, tx, sourcePath)
 	if err != nil {
 		return LinkDeleteResult{}, err

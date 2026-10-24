@@ -39,8 +39,8 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 			}
 			n = graphGenericNode{ID: r.ID, Type: r.Type, Version: r.Version, Title: r.Properties.Title, Status: string(r.Properties.Status)}
 		case graphstore.LinkRecord:
-			path, kind, ok := graph.SplitCanonicalURL(scope, r.ID)
-			if !ok || kind != graph.KindLink || links[path].ID != "" || r.Type == "" || r.Version == "" {
+			path, ok := graphPreviewPublicResourceID(scope, r.ID)
+			if !ok || links[path].ID != "" || r.Type == "" || r.Version == "" {
 				return "", invalid()
 			}
 			links[path] = graphGenericLink{ID: r.ID, Type: r.Type, Version: r.Version, Source: r.Source, Target: r.Target, SourceRevision: r.SourceRevision, TargetRevision: r.TargetRevision}
@@ -48,8 +48,8 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 		default:
 			return "", invalid()
 		}
-		path, kind, ok := graph.SplitCanonicalURL(scope, n.ID)
-		if !ok || kind != graph.KindBead || nodes[path].ID != "" || n.Type == "" || n.Version == "" {
+		path, ok := graphPreviewPublicResourceID(scope, n.ID)
+		if !ok || nodes[path].ID != "" || n.Type == "" || n.Version == "" {
 			return "", invalid()
 		}
 		nodes[path] = n
@@ -85,7 +85,7 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 	}
 	seenNodes, seenLinks := map[string]bool{}, map[string]bool{}
 	for i, view := range read.Graph.Views {
-		if graph.ValidateBeadPath(view.Root.Path) != nil || view.Root.Depth < 0 || view.Root.Depth > graphstore.PreviewSnapshotLimit {
+		if graph.ValidateCanonicalResourceID(view.Root.Path) != nil || view.Root.Depth < 0 || view.Root.Depth > graphstore.PreviewSnapshotLimit {
 			return "", invalid()
 		}
 		r := graphGenericResult{Scope: scope, Root: graph.CanonicalURL(scope, view.Root.Path), Direction: direction.String(), Depth: view.Root.Depth, Complete: len(view.Frontier) == 0}
@@ -102,8 +102,8 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 		}
 		for _, path := range view.Links {
 			l, ok := links[path]
-			source, _, sourceOK := graph.SplitCanonicalURL(scope, l.Source)
-			target, _, targetOK := graph.SplitCanonicalURL(scope, l.Target)
+			source, sourceOK := graphPreviewPublicResourceID(scope, l.Source)
+			target, targetOK := graphPreviewPublicResourceID(scope, l.Target)
 			if !ok || edges[path] || !sourceOK || !targetOK || !members[source] || !members[target] {
 				return "", invalid()
 			}

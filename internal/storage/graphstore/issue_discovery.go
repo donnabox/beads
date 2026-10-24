@@ -12,8 +12,8 @@ import (
 )
 
 // SearchIssueRows is the checked, read-only Issue discovery seam. It keeps the
-// native Issue filter and count projection, but replaces backing IDs with local
-// graph paths after validating every selected complete graph record in the same
+// native Issue filter and count projection, but replaces backing IDs with exact
+// public IDs after validating every selected complete graph record in the same
 // snapshot. Callers must request durable scope; the preview does not read wisps.
 func (s *Store) SearchIssueRows(ctx context.Context, query string, filter types.IssueFilter) ([]*types.IssueWithCounts, error) {
 	if !filter.SkipWisps || (filter.Ephemeral != nil && *filter.Ephemeral) {
@@ -78,10 +78,11 @@ func (s *Store) SearchIssueRows(ctx context.Context, query string, filter types.
 				if err := validatePath(parentPath); err != nil {
 					return fmt.Errorf("%w: malformed discovered parent Issue", ErrInvalidStore)
 				}
-				if _, err := s.showIssueInTx(ctx, tx, parentPath); err != nil {
+				parent, err := s.showIssueInTx(ctx, tx, parentPath)
+				if err != nil {
 					return err
 				}
-				*row.Parent = parentPath
+				*row.Parent = strings.TrimPrefix(parent.ID, s.ScopeURL())
 			}
 		}
 		if rows == nil {

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -111,7 +112,11 @@ func (s *Store) DeleteIssueSetWithIncidentLinks(ctx context.Context, req IssueDe
 		namedIDs := make([]string, 0, len(paths))
 		namedSet := make(map[string]bool, len(paths))
 		for _, issue := range plan.Issues {
-			byPath[strings.TrimPrefix(issue.ID, s.ScopeURL())] = issue
+			path, err := s.publicResourcePathInTx(ctx, tx, issue.ID, graph.KindBead)
+			if err != nil {
+				return err
+			}
+			byPath[path] = issue
 			if strings.Contains(issue.Properties.ID, ".") {
 				return fmt.Errorf("%w: dotted Issue ID citation rewrite is not qualified for composed deletion", ErrCapabilityUnavailable)
 			}
@@ -163,7 +168,10 @@ func (s *Store) DeleteIssueSetWithIncidentLinks(ctx context.Context, req IssueDe
 			beforeText[neighbor.ID] = [4]string{neighbor.Description, neighbor.Notes, neighbor.Design, neighbor.AcceptanceCriteria}
 		}
 		for _, link := range plan.Links {
-			path := strings.TrimPrefix(link.ID, s.ScopeURL())
+			path, err := s.publicResourcePathInTx(ctx, tx, link.ID, graph.KindLink)
+			if err != nil {
+				return err
+			}
 			if _, err := s.unlinkInTx(ctx, tx, LinkDeleteRequest{Path: path, Actor: req.Actor, ExpectedRevision: link.Revision, UnconditionalSource: true}); err != nil {
 				return err
 			}
@@ -176,7 +184,10 @@ func (s *Store) DeleteIssueSetWithIncidentLinks(ctx context.Context, req IssueDe
 		}
 		final := make([]finalLive, 0, len(plan.Issues))
 		for _, issue := range plan.Issues {
-			path := strings.TrimPrefix(issue.ID, s.ScopeURL())
+			path, err := s.publicResourcePathInTx(ctx, tx, issue.ID, graph.KindBead)
+			if err != nil {
+				return err
+			}
 			current, err := s.showIssueInTx(ctx, tx, path)
 			if err != nil {
 				return err
@@ -239,7 +250,10 @@ func (s *Store) DeleteIssueSetWithIncidentLinks(ctx context.Context, req IssueDe
 }
 
 func (s *Store) retainIssueDeletionInTx(ctx context.Context, tx *sql.Tx, current IssueRecord, generation sql.NullInt64, actor string) (BeadTerminalState, error) {
-	path := strings.TrimPrefix(current.ID, s.ScopeURL())
+	path, err := s.publicResourcePathInTx(ctx, tx, current.ID, graph.KindBead)
+	if err != nil {
+		return BeadTerminalState{}, err
+	}
 	revision, err := freshToken()
 	if err != nil {
 		return BeadTerminalState{}, err

@@ -163,3 +163,10 @@ func graphPreviewCanonicalResourceAddress(scope, address string) bool {
 	_, err := graph.ScopeLocalPublicResourceID(scope, address)
 	return err == nil
 }
+
+// The projection boundary validates URI spelling only. Selected record cases
+// and the checked allocation catalog establish Bead versus Link kind.
+func graphPreviewPublicResourceID(scope, uri string) (string, bool) {
+	id, err := graph.ScopeLocalPublicResourceID(scope, uri)
+	return id, err == nil
+}
