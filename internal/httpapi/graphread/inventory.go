@@ -51,13 +51,13 @@ func projectInventory(snapshot graphstore.Snapshot) (Inventory, error) {
 	for _, record := range snapshot.Records {
 		switch v := record.(type) {
 		case graphstore.Record:
-			projected, err := bead(descriptors[v.Type], v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution, snapshot.OwnedLinkTypes[v.Type])
+			projected, err := bead(descriptors[v.Type], v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution, capturedOwnershipTypes(snapshot, v.ID, v.Type))
 			if err != nil {
 				return Inventory{}, err
 			}
 			result.Beads = append(result.Beads, projected)
 		case graphstore.IssueRecord:
-			projected, err := bead(descriptors[v.Type], v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution, snapshot.OwnedLinkTypes[v.Type])
+			projected, err := bead(descriptors[v.Type], v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution, capturedOwnershipTypes(snapshot, v.ID, v.Type))
 			if err != nil {
 				return Inventory{}, err
 			}
@@ -77,4 +77,12 @@ func projectInventory(snapshot graphstore.Snapshot) (Inventory, error) {
 		}
 	}
 	return result, nil
+}
+
+func capturedOwnershipTypes(snapshot graphstore.Snapshot, id, typ string) []string {
+	if snapshot.OwnedLinkTypesByResource != nil {
+		return snapshot.OwnedLinkTypesByResource[id]
+	}
+	// Pure legacy snapshot fixtures predate the per-Resource native sidecar.
+	return snapshot.OwnedLinkTypes[typ]
 }

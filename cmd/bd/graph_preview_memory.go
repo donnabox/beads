@@ -58,6 +58,17 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		if strings.HasPrefix(path, "links/") {
 			return graphFailure("capability_unavailable", "Link retyping is not supported", 5)
 		}
+		var native bool
+		if err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+			var err error
+			native, err = store.NativeIssueAllocation(ctx, path)
+			return nil, "", err
+		}, func(any, string) error { return nil }); err != nil {
+			return err
+		}
+		if native {
+			return runGraphPreviewUpdateIssue(cmd, path)
+		}
 		return runGraphPreviewUpdateMemory(cmd, path)
 	}
 	if cmd.Flags().Changed("claim") {

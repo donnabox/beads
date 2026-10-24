@@ -14,7 +14,7 @@ import (
 // Historical acquisition/composition is a single storage Update transaction;
 // this adapter never simulates it with a historical read and replacement.
 func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return err
 	}
 	if !strings.HasPrefix(path, "beads/") {
@@ -32,7 +32,11 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
-	request := graphstore.MemoryPatchRequest{Path: path, FromRevision: source, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}
+	typeURL, err := graphPreviewMemoryTypeFlag(cmd)
+	if err != nil {
+		return err
+	}
+	request := graphstore.MemoryPatchRequest{TypeURL: typeURL, Path: path, FromRevision: source, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}
 	if cmd.Flags().Changed("properties") {
 		if cmd.Flags().Changed("patch") || cmd.Flags().Changed("replace-properties") {
 			return graphFailure("invalid_properties", "--properties cannot combine with --patch or --replace-properties", 2)
@@ -60,7 +64,11 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 			return nil, "", err
 		}
 		if native {
-			nativeRequest := graphstore.UpdateIssueRequest{Path: path, FromRevision: source, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata, PropertiesPatch: patch}
+			nativeType, err := graphPreviewNativeIssueTypeFlag(cmd, store.ScopeURL())
+			if err != nil {
+				return nil, "", err
+			}
+			nativeRequest := graphstore.UpdateIssueRequest{TypeURL: nativeType, Path: path, FromRevision: source, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata, PropertiesPatch: patch}
 			nativeRequest.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
 			if request.PropertiesProvided {
 				var values map[string]any
@@ -86,7 +94,7 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 		}
 		var result graphstore.MemoryMutationResult
 		if patch != nil {
-			result, err = store.PatchMemoryProperties(ctx, graphstore.MemoryPropertiesPatchRequest{Path: path, FromRevision: source, Patch: patch, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata})
+			result, err = store.PatchMemoryProperties(ctx, graphstore.MemoryPropertiesPatchRequest{TypeURL: typeURL, Path: path, FromRevision: source, Patch: patch, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata})
 		} else {
 			result, err = store.PatchMemory(ctx, request)
 		}

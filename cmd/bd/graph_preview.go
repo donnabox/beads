@@ -40,7 +40,7 @@ const graphPreviewMarker = "graph-preview-format"
 // are not upgraded in place. Changing installed Types changes this marker.
 const (
 	graphPreviewGenerationPrefix = "link-preview-v"
-	graphPreviewGeneration       = "link-preview-v10\n"
+	graphPreviewGeneration       = "link-preview-v11\n"
 )
 
 var graphPreviewSupportedGenerations = []string{graphPreviewGeneration}
@@ -66,7 +66,8 @@ func graphPreviewIssueTypeURL(scope string) string {
 }
 
 func graphPreviewBlockingTypeURL(scope string) string {
-	return graphstore.DependencyTypeURL(scope)
+	id, _ := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	return id
 }
 
 func init() {
@@ -300,6 +301,9 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
+		if cmd.Flags().Lookup("exact-type") != nil && cmd.Flags().Changed("exact-type") {
+			return true, graphFailure("capability_unavailable", "--exact-type requires a workspace initialized with graph_mode link", 5)
+		}
 		if cmd == importCmd && cmd.Flags().Changed("source-prefix") {
 			return true, graphFailure("capability_unavailable", "--source-prefix requires a workspace initialized with graph_mode link", 5)
 		}

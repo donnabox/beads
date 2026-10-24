@@ -33,7 +33,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if beadType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+	if base, _, native := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, beadType); !native || base != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
 	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
@@ -129,7 +129,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	classification, _ := cmd.Flags().GetString("type")
 	nominalIssue := cmd.Flags().Changed("type") && graphPreviewNominalSelector(classification)
 	if nominalIssue {
-		classification = "task"
+		_, classification, _ = graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, beadType)
 	}
 	if value, ok := properties["issue_type"]; ok {
 		if cmd.Flags().Changed("type") && !nominalIssue {
@@ -138,6 +138,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		text, ok := value.(string)
 		if !ok {
 			return graphFailure("invalid_properties", "Issue issue_type must be a JSON string", 2)
+		}
+		if nominalIssue && types.IssueType(text).Normalize() != types.IssueType(classification) {
+			return graphFailure("invalid_properties", "Issue issue_type conflicts with its declared concrete Type", 2)
 		}
 		classification = text
 	}
@@ -365,9 +368,8 @@ func graphPreviewApplyIssueCreateProperties(cmd *cobra.Command, issue *types.Iss
 }
 
 func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error) {
-	issueType := graphPreviewIssueTypeURL(scope)
 	if !cmd.Flags().Changed("type") {
-		return issueType, nil
+		return graphstore.NativeIssueTypeURL(scope, string(types.TypeTask))
 	}
 	selector, _ := cmd.Flags().GetString("type")
 	if selector == "" {
@@ -375,20 +377,23 @@ func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error
 	}
 	if !graphPreviewNominalSelector(selector) {
 		classification := types.IssueType(selector).Normalize()
-		if !classification.IsBuiltIn() {
-			customTypes, err := resolveWorkspaceCustomTypes(getRootContext())
-			if err != nil {
-				return "", graphStorageError(err)
-			}
-			if !classification.IsValidWithCustom(customTypes) {
-				return "", graphFailure("capability_unavailable", "Bead type is not registered in this workspace: "+selector, 5)
-			}
-		}
-		return issueType, nil
+		// Mapping selects the native writer; its transaction independently checks
+		// current custom-class authorization. A pre-read cannot authorize it.
+		return graphstore.NativeIssueTypeURL(scope, string(classification))
 	}
 	typeURL, err := graphPreviewTypeURL(scope, selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if typeURL == graphstore.IssueTypeURL(scope) || typeURL == graphstore.DependencyTypeURL(scope) {
+		return "", graphFailure("invalid_selector", "abstract native Types cannot be instantiated", 2)
+	}
+	if base, classification, native := graphstore.NativeTypeClassification(scope, typeURL); native && base == graphstore.IssueTypeURL(scope) {
+		if types.IssueType(classification).Normalize() != types.IssueType(classification) {
+			return "", graphFailure("invalid_selector", "concrete Issue Type must use its normalized native classification", 2)
+		}
+		// The native writer authorizes custom classifications in its transaction.
+		return typeURL, nil
 	}
 	if !graphPreviewSelectedTypeCandidate(scope, typeURL) {
 		return "", graphFailure("capability_unavailable", "Type is not installed in this workspace", 5)

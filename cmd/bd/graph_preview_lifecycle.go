@@ -151,6 +151,8 @@ var linkCompareCmd = &cobra.Command{
 
 func init() {
 	linkCmd.AddCommand(linkCreateCmd, linkListCmd, linkShowCmd, linkUpdateCmd, linkDeleteCmd, linkVersionsCmd, linkCompareCmd, linkCountCmd)
+	linkCountCmd.Flags().String("exact-type", "", "Select only the exact declared Link Type")
+	graphLinksCmd.Flags().String("exact-type", "", "Select only the exact declared Link Type")
 	linkCreateCmd.Flags().String("type", "", "Installed Link Type or built-in Dependency type")
 	for _, flag := range []string{"source", "target"} {
 		linkCreateCmd.Flags().String(flag, "", "Local Bead ID or beads/PATH")
@@ -164,7 +166,7 @@ func init() {
 	for _, command := range []*cobra.Command{linkListCmd, linkCountCmd} {
 		registerGraphLinkTypeFlag(command)
 		if command == linkListCmd {
-			command.Flags().Lookup("type").Usage += "; with --output-format, requires a canonical absolute HTTP(S) Type URI without alias or Dependency-kind resolution"
+			command.Flags().Lookup("type").Usage += "; includes refinements (use --exact-type for nominal selection)"
 		}
 		command.Flags().String("source", "", "Select Links with this local source Bead")
 		command.Flags().String("target", "", "Select Links with this local target Bead")
@@ -210,7 +212,7 @@ func graphPreviewBeadSelector(selector string) (string, error) {
 }
 
 func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "direction", "type"); err != nil {
+	if err := graphPreviewFlags(cmd, "direction", "type", "exact-type"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -224,9 +226,9 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 	if direction != "in" && direction != "out" && direction != "both" {
 		return graphFailure("invalid_selector", "direction must be in, out, or both", 2)
 	}
-	typ, err := graphPreviewLinkType(cmd)
+	typ, family, err := graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, true)
 	if err != nil {
-		return err
+		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		if typ != "" {
@@ -234,11 +236,10 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 				return nil, "", err
 			}
 		}
-		result, err := store.ListLinks(ctx, graphstore.LinksRequest{BeadPath: path, Direction: direction, TypeURL: typ})
+		result, err := store.ListLinks(ctx, graphstore.LinksRequest{BeadPath: path, Direction: direction, TypeURL: typ, ConformsTo: family})
 		if err != nil {
 			return nil, "", err
 		}
-		result = graphPreviewFilterLinkKind(cmd, result)
 		var human strings.Builder
 		for _, link := range result {
 			fmt.Fprintf(&human, "%s  %s  %s → %s\n",
@@ -284,13 +285,13 @@ func graphPreviewDisplayLocalURL(url string) string {
 
 func graphPreviewLinkCollectionRequest(cmd *cobra.Command) (graphstore.LinkCollectionRequest, error) {
 	var request graphstore.LinkCollectionRequest
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "incident-to", "direction"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "exact-type", "conforms-to", "source", "target", "incident-to", "direction"); err != nil {
 		return request, err
 	}
 	var err error
-	request.TypeURL, err = graphPreviewLinkType(cmd)
+	request.TypeURL, request.ConformsTo, err = graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, true)
 	if err != nil {
-		return request, err
+		return request, graphFailure("invalid_selector", err.Error(), 2)
 	}
 	for _, field := range []struct {
 		name string
@@ -347,7 +348,6 @@ func runGraphPreviewLinkCollection(cmd *cobra.Command, _ []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		links = graphPreviewFilterLinkKind(cmd, links)
 		if cmd.Name() == "count" {
 			result := map[string]any{"count": len(links)}
 			return result, fmt.Sprintf("%d", len(links)), nil
@@ -493,7 +493,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		if request.TypeURL == "" {
 			return graphFailure("invalid_selector", "pair unlink requires --type", 2)
 		}
-		if request.TypeURL == graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
+		if _, native := graphPreviewNativeDependencyType(graphPreviewConfig.GraphScopeURL, request.TypeURL); native {
 			return graphFailure("capability_unavailable", "remove a Dependency by Link ID or use bd dep remove for a blocking pair", 5)
 		}
 	}

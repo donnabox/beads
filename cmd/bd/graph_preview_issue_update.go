@@ -42,12 +42,17 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "force", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"type", "if-revision", "force", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
-	if !graphPreviewIssueEditFlagsChanged(cmd) && !graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") {
+	if !graphPreviewIssueEditFlagsChanged(cmd) && !graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("type") {
 		return request, graphFailure("invalid_properties", "Issue update requires at least one supported field", 2)
+	}
+	var err error
+	request.TypeURL, err = graphPreviewNativeIssueTypeFlag(cmd, graphPreviewConfig.GraphScopeURL)
+	if err != nil {
+		return request, err
 	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
@@ -272,6 +277,13 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 			continue
 		}
 		switch name {
+		case "issue_type":
+			text, ok := value.(string)
+			if !ok {
+				return graphFailure("invalid_properties", "Issue issue_type must be a JSON string", 2)
+			}
+			classification := types.IssueType(text).Normalize()
+			request.IssueType = &classification
 		case "priority":
 			if request.Priority != nil {
 				return graphFailure("invalid_properties", "Issue priority was supplied by both --properties and --priority", 2)
@@ -360,4 +372,29 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 		SetLastTouchedID(path)
 	}
 	return err
+}
+
+// A native bare classification is a product shorthand, not BDP relative URI
+// resolution. Full nominal identities keep their exact declared meaning.
+func graphPreviewNativeIssueTypeFlag(cmd *cobra.Command, scope string) (string, error) {
+	if !cmd.Flags().Changed("type") {
+		return "", nil
+	}
+	raw, _ := cmd.Flags().GetString("type")
+	if !graphPreviewNominalSelector(raw) {
+		id, err := graphstore.NativeIssueTypeURL(scope, string(types.IssueType(raw).Normalize()))
+		if err != nil {
+			return "", graphFailure("invalid_selector", err.Error(), 2)
+		}
+		return id, nil
+	}
+	id, err := graphPreviewTypeURL(scope, raw)
+	if err != nil {
+		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	base, _, native := graphstore.NativeTypeClassification(scope, id)
+	if !native || base != graphstore.IssueTypeURL(scope) {
+		return "", graphFailure("invalid_selector", "native Issue requires a concrete native Issue Type", 2)
+	}
+	return id, nil
 }

@@ -30,8 +30,9 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error
 			return nil, "", err
 		}
 		if issue, ok := current.(graphstore.IssueRecord); ok {
-			if request.TypeURL != "" {
-				return nil, "", graphFailure("capability_unavailable", "native Issue Type changes require their domain writer", 5)
+			request.TypeURL, err = graphPreviewNativeIssueTypeFlag(cmd, store.ScopeURL())
+			if err != nil {
+				return nil, "", err
 			}
 			result, summary, err := graphPreviewPatchIssueProperties(ctx, store, cmd, request, issue)
 			if err == nil {

@@ -106,7 +106,17 @@ func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties 
 	if err != nil {
 		return bdpwire.BeadRecord{}, err
 	}
-	ownedTypes, err := r.store.SelectedOwnedLinkTypes(typ)
+	// Derive dynamic native ownership from the already captured immutable Links.
+	// Do not reread mutable Link rows after the Bead snapshot.
+	var observed []string
+	for _, raw := range owned {
+		var link graphstore.LinkRecord
+		if err := json.Unmarshal(raw, &link); err != nil {
+			return bdpwire.BeadRecord{}, err
+		}
+		observed = append(observed, link.Type)
+	}
+	ownedTypes, err := r.store.SelectedOwnedLinkTypesWithObserved(typ, observed...)
 	if err != nil {
 		return bdpwire.BeadRecord{}, err
 	}
