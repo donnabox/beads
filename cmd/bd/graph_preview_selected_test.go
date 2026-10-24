@@ -482,7 +482,7 @@ func TestGraphPreviewSelectedInducedLinkLimitAndMissingRecords(t *testing.T) {
 
 func TestGraphPreviewSelectedOrdinaryDefaultKeepsLargeDependencyComponent(t *testing.T) {
 	t.Setenv(maxRowsEnvVar, "")
-	in, err := graphPreviewGenericInput(genericPreviewCommand(t), []string{"n0"}, genericTestScope)
+	in, err := graphPreviewGenericInput(genericPreviewCommand(t), []string{"beads/n0"}, genericTestScope)
 	if err != nil {
 		t.Fatal(err)
 	}

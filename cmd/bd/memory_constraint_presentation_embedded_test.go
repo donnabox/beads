@@ -39,7 +39,7 @@ func TestMemoryConstraintsAndSubjectsEmbeddedCapture(t *testing.T) {
 			}
 		}
 	})
-	if _, err := s.CreateIssue(ctx, "beads/work", publicops.CreateRequest{Actor: "presenter", Issue: &publicops.Issue{Title: "Work", Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}}); err != nil {
+	if _, err := s.CreateIssue(ctx, "beads/work", publicops.CreateRequest{Actor: "presenter", ForceIDPrefix: true, Issue: &publicops.Issue{ID: "beads/work", Title: "Work", Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}}); err != nil {
 		t.Fatal(err)
 	}
 	for _, id := range []string{"a", "b", "c", "d"} {

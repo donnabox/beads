@@ -137,11 +137,7 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 
 func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 	if len(args) == 1 {
-		resolved, err := graphPreviewResolveMemoryArgument(args[0])
-		if err != nil {
-			return err
-		}
-		ref, err := graphPreviewParseReference(resolved)
+		ref, err := graphPreviewParseReference(args[0])
 		if err != nil {
 			return graphPreviewReferenceFailure(err)
 		}
@@ -153,6 +149,18 @@ func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 	in, err := graphPreviewGenericInput(cmd, args, graphPreviewConfig.GraphScopeURL)
 	if err != nil {
 		return err
+	}
+	// Validate the complete request before allocation lookup can open storage.
+	// Reference syntax was parsed lexically above, so allocated sibling names
+	// cannot shadow a revision selector.
+	if !in.All {
+		resolved, err := graphPreviewResolveMemoryArgument(args[0])
+		if err != nil {
+			return err
+		}
+		if resolved != args[0] {
+			in.Root = resolved
+		}
 	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		snapshot, err := s.CurrentSnapshot(ctx)

@@ -27,14 +27,13 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			call := func(args ...string) string { t.Helper(); return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			legacy := func(args ...string) string { t.Helper(); return call(append(args, "--json")...) }
 			for _, id := range []string{"a", "c"} {
-				legacy("create", id, "--graph-path", "beads/"+id, "--type", "task")
+				legacy("create", id, "--id", id, "--type", "task", "--force")
 			}
 			for _, id := range []string{"b", "d", "isolated"} {
 				legacy("create", id, "--id", id, "--type", "types/memory", "--properties", `{"body":"Content","extra":{"keep":true}}`)
 			}
-			endpoint := func(id string) string { return scope + "beads/" + id }
 			for _, e := range [][3]string{{"a", "b", "ab"}, {"b", "c", "bc"}, {"c", "d", "cd"}, {"a", "b", "parallel"}, {"b", "a", "cycle"}} {
-				legacy("link", "create", endpoint(e[0]), endpoint(e[1]), "--id", e[2], "--type", "types/references", "--properties", `{"title":"Authored relationship","status":"active"}`)
+				legacy("link", "create", e[0], e[1], "--id", e[2], "--type", "types/references", "--properties", `{"title":"Authored relationship","status":"active"}`)
 			}
 			decode := func(raw string) memoryGraphResult {
 				t.Helper()
@@ -69,7 +68,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 				}
 			}
 			shallow := read("references", "a")
-			if len(shallow.Beads) != 2 || len(shallow.Links) != 3 || shallow.Traversal.Complete || !slices.Equal(shallow.Traversal.Roots[0].Frontier, []string{scope + "beads/b"}) {
+			if len(shallow.Beads) != 2 || len(shallow.Links) != 3 || shallow.Traversal.Complete || !slices.Equal(shallow.Traversal.Roots[0].Frontier, []string{scope + "b"}) {
 				t.Fatalf("induced reverse/parallel/frontier: %+v", shallow)
 			}
 			inverse := read("referenced-by", "b")
@@ -93,7 +92,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 				t.Fatalf("JSON aliases/raw projection: %+v %v", raw, err)
 			}
 			human := call("memory", "references", "a", "b")
-			for _, want := range []string{"└──", "references", "(links/ab)", "(links/parallel)", "(cycle)", "3 Beads, 4 Links across 2 views"} {
+			for _, want := range []string{"└──", "references", "(ab)", "(parallel)", "(cycle)", "3 Beads, 4 Links across 2 views"} {
 				if !strings.Contains(human, want) {
 					t.Fatalf("human forest lost %q:\n%s", want, human)
 				}
@@ -112,10 +111,27 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 					t.Fatalf("quiet %s wrote output: %s", format, output)
 				}
 			}
-			if !strings.Contains(human, "[types/references]") || !strings.Contains(human, "beads/a") || !strings.Contains(human, "links/ab") || strings.Contains(human, scope) {
-				t.Fatalf("literal kind segments lost or Scope prefix retained:\n%s", human)
+			if !strings.Contains(human, "[types/references]") || !strings.HasPrefix(human, "a [types/issue]") || !strings.Contains(human, "(ab)") || strings.Contains(human, scope) {
+				t.Fatalf("literal created IDs lost or Scope prefix retained:\n%s", human)
 			}
-			legacy("link", "create", endpoint("b"), endpoint("d"), "--type", "types/superseded-by", "--id", "retirement")
+			// Lexical prefixes do not establish kind. An actual allocated Link
+			// still cannot serve as a Bead root, regardless of its flat ID.
+			{
+				ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
+				command := graphMemoryReadCommand(ctx, bd, work, home, "memory", "references", "ab", "--json")
+				var stdout, stderr bytes.Buffer
+				command.Stdout, command.Stderr = &stdout, &stderr
+				err := command.Run()
+				cancel()
+				var failure struct {
+					Outcome string          `json:"outcome"`
+					Data    json.RawMessage `json:"data"`
+				}
+				if err == nil || json.Unmarshal(stdout.Bytes(), &failure) != nil || failure.Outcome != "failure" || (len(failure.Data) != 0 && string(failure.Data) != "null") {
+					t.Fatalf("actual Link root emitted success or lost structured refusal: err=%v stdout=%s stderr=%s", err, stdout.String(), stderr.String())
+				}
+			}
+			legacy("link", "create", "b", "d", "--type", "types/superseded-by", "--id", "retirement")
 			successor := read("successor", "b")
 			if len(successor.Beads) != 2 || len(successor.Links) != 1 || (successor.Traversal.Roots[0].Depth == nil || *successor.Traversal.Roots[0].Depth != 1000) {
 				t.Fatalf("replacement chain: %+v", successor)
@@ -126,7 +142,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			}
 			dURI := supersedes.Traversal.Roots[0].ID
 			current := graphMixedResult[graphstore.Record](t, legacy("show", dURI))
-			legacy("link", "create", endpoint("isolated"), endpoint("d"), "--type", "types/references", "--id", "pin", "--target-revision", current.Revision)
+			legacy("link", "create", "isolated", "d", "--type", "types/references", "--id", "pin", "--target-revision", current.Revision)
 			pinned := read("references", "isolated")
 			if len(pinned.Links) != 1 || pinned.Links[0].Target.Revision != current.Revision {
 				t.Fatalf("current pin erased: %+v", pinned)
@@ -142,7 +158,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 				{[]string{"references", "a", "--include=/beads"}, "capability_unavailable"},
 				{[]string{"references", "a", "--include=/properties/title"}, "invalid_selector"},
 				{[]string{"successor", "a"}, "invalid_properties"},
-				{[]string{"references", "b@old"}, "capability_unavailable"},
+				{[]string{"references", "b@=old"}, "capability_unavailable"},
 			} {
 				for _, raw := range []bool{false, true} {
 					args := append(append([]string{"memory"}, tc.args...), "--json")
