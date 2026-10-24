@@ -3,6 +3,7 @@ package memoryapi
 import (
 	"errors"
 	"maps"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/memoryops"
@@ -125,7 +126,7 @@ func TestValidateKeyReturnsTheKeyUntouched(t *testing.T) {
 			t.Fatalf("ValidateKey(%q) = %v, want ErrValidation", blank, err)
 		}
 	}
-	for _, key := range []string{" padded ", "Has Spaces.✓", "dolt-phantoms", "issue_prefix"} {
+	for _, key := range []string{" padded ", "Has Spaces.✓", "dolt-phantoms", "issue_prefix", "..", "a//b", "\x00"} {
 		got, err := ValidateKey(key)
 		if err != nil {
 			t.Fatalf("ValidateKey(%q) = %v, want success", key, err)
@@ -257,6 +258,19 @@ func TestResolveKeyRefusesAWhitespaceOnlyExplicitKey(t *testing.T) {
 		}
 		if got != key {
 			t.Errorf("ResolveKey(%q) = %q, want it byte for byte: surrounding space is preserved", key, got)
+		}
+	}
+}
+
+func TestTitleFromBodyIndependentOfIdentity(t *testing.T) {
+	for _, tc := range []struct{ body, want string }{
+		{"  First \t line\nrest\n", "First line"},
+		{"", "Untitled memory"},
+		{"  \n", "Untitled memory"},
+		{strings.Repeat("雪", 81), strings.Repeat("雪", 79) + "…"},
+	} {
+		if got := TitleFromBody(tc.body); got != tc.want {
+			t.Fatalf("TitleFromBody(%q)=%q want %q", tc.body, got, tc.want)
 		}
 	}
 }

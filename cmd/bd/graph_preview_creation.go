@@ -3,10 +3,10 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"strings"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/memoryapi"
 )
 
 // Allocate a Memory path once, then let its writer reserve it atomically.
@@ -34,13 +34,7 @@ func graphPreviewCreateBeadPath(cmd *cobra.Command) (string, error) {
 }
 
 // This is a deterministic display summary, not an inferred semantic title.
-// The complete body remains unchanged. Whitespace-only bodies get an empty title.
+// The complete body remains unchanged; an empty summary gets "Untitled memory".
 func graphPreviewMemoryTitle(body string) string {
-	line, _, _ := strings.Cut(strings.TrimSpace(body), "\n")
-	title := []rune(strings.Join(strings.Fields(line), " "))
-	const maxRunes = 80
-	if len(title) > maxRunes {
-		return string(title[:maxRunes-1]) + "…"
-	}
-	return string(title)
+	return memoryapi.TitleFromBody(body)
 }
