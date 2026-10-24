@@ -761,7 +761,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	if format != "" && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags require legacy Issue --json output", 5)
 	}
-	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
 		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
 	}
 	watchMode, _ := cmd.Flags().GetBool("watch")

@@ -48,6 +48,7 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			memory := call("remember", "Private body", "--id", "beads/plan", "--title", "Plan")
 			memoryRevision := graphAssertCompleteRecordRevisionOnly(t, memory)
 			graphAssertCompleteRecordRevisionOnly(t, call("create", "Work", "--graph-path", "beads/work"))
+			graphAssertCompleteRecordRevisionOnly(t, call("create", "Generated work", "--id-root", "work"))
 			call("create", "Rule", "--type", "types/constraint", "--id", "beads/rule")
 			var receipt struct {
 				Link   json.RawMessage `json:"link"`

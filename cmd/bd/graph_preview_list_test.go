@@ -134,11 +134,11 @@ func TestGraphPreviewIssueListOutput(t *testing.T) {
 	if err != nil || human != "Issues (1; more: true; graph preview)\nbeads/work [task] open P2 \"quote\\\"\\n雪\"\nMore matching Issues exist; increase --limit or use --all within preview bounds.\n" {
 		t.Fatalf("human=%q err=%v", human, err)
 	}
-	quiet, err := renderGraphIssueList(page, "", false, true)
+	quiet, err := renderGraphIssueList(page, "", false, true, scope)
 	if err != nil || quiet != "" {
 		t.Fatalf("quiet=%q %v", quiet, err)
 	}
-	output, err := renderGraphIssueList(page, "", true, false)
+	output, err := renderGraphIssueList(page, "", true, false, scope)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,12 +149,12 @@ func TestGraphPreviewIssueListOutput(t *testing.T) {
 	if err := json.Unmarshal([]byte(output), &envelope); err != nil || !envelope.Preview || !envelope.Result.HasMore || len(envelope.Result.Items) != 1 || envelope.Result.Items[0].Properties.Title != page.Items[0].Properties.Title {
 		t.Fatalf("JSON=%s %v", output, err)
 	}
-	empty, err := renderGraphIssueList(graphstore.IssueListPage{Items: []graphstore.IssueRecord{}}, "", false, false)
+	empty, err := renderGraphIssueList(graphstore.IssueListPage{Items: []graphstore.IssueRecord{}}, "", false, false, scope)
 	if err != nil || empty != "Issues (0; more: false; graph preview)\n" {
 		t.Fatalf("empty=%q %v", empty, err)
 	}
 	page.Items[0].Properties.Title = strings.Repeat("x", graphIssueListOutputLimit)
-	if output, err := renderGraphIssueList(page, "", true, false); err == nil || output != "" {
+	if output, err := renderGraphIssueList(page, "", true, false, scope); err == nil || output != "" {
 		t.Fatal("oversized page emitted partial output")
 	}
 }
@@ -292,18 +292,18 @@ func TestGraphPreviewListNoticeRendering(t *testing.T) {
 	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
 	const notice = "Memories are not listed (Issue query selected by: --status)."
 	issues := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: scope + "beads/work", Type: task, Properties: &types.Issue{Title: "Work", Status: types.StatusOpen, Priority: 1}}}}
-	human, err := renderGraphIssueList(issues, notice, false, false)
-	if want := "Issues (1; more: false; graph preview)\n" + notice + "\n" + scope + "beads/work [" + task + "] open P1 \"Work\"\n"; err != nil || human != want {
+	human, err := renderGraphIssueList(issues, notice, false, false, scope)
+	if want := "Issues (1; more: false; graph preview)\n" + notice + "\nbeads/work [task] open P1 \"Work\"\n"; err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
-	if quiet, err := renderGraphIssueList(issues, notice, false, true); err != nil || quiet != "" {
+	if quiet, err := renderGraphIssueList(issues, notice, false, true, scope); err != nil || quiet != "" {
 		t.Fatalf("quiet=%q %v", quiet, err)
 	}
-	withNotice, err := renderGraphIssueList(issues, notice, true, false)
+	withNotice, err := renderGraphIssueList(issues, notice, true, false, scope)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if withoutNotice, err := renderGraphIssueList(issues, "", true, false); err != nil || withNotice != withoutNotice {
+	if withoutNotice, err := renderGraphIssueList(issues, "", true, false, scope); err != nil || withNotice != withoutNotice {
 		t.Fatalf("structured output must not carry the notice: %q vs %q (%v)", withNotice, withoutNotice, err)
 	}
 

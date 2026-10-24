@@ -179,7 +179,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			// operation result, and quiet success never suppresses explicit JSON.
 			human := call("memory", "reference", "d", "--to=b", "--id=human-link")
 			t.Logf("ACTUAL_EXAMPLE provider=%s args=%q output=%s", engine, []string{"memory", "reference", "d", "--to=b", "--id=human-link"}, human)
-			if !strings.Contains(human, scope+"human-link") {
+			if strings.TrimSpace(human) != "human-link [types/references] d → b" {
 				t.Fatalf("human confirmation lost Link identity: %s", human)
 			}
 			var raw memoryAuthoredLink

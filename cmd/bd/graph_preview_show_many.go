@@ -51,6 +51,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		details := make([]*types.IssueDetails, 0, len(selectors))
 		lines := make([]string, 0, len(selectors))
+		captured := make([]graphHumanIssueView, 0, len(selectors))
 		for index, selector := range selectors {
 			opts := workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps}
 			if !jsonOutput {
@@ -79,8 +80,15 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 			if jsonOutput {
 				details = append(details, detail)
 			} else {
-				lines = append(lines, graphHumanDocument(s.ScopeURL(), issue, "", false, longMode)+graphHumanCurrentIssueDetails(s.ScopeURL(), detail, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}))
+				captured = append(captured, graphHumanIssueView{issue, detail})
 			}
+		}
+		// Complete every required content read before spending any budget on
+		// optional presentation aliases. One command budget covers all aliases.
+		if len(captured) != 0 {
+			lines = graphHumanIssueDocuments(ctx, s.ScopeURL(), captured, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}, func(aliasCtx context.Context, id, token string) string {
+				return graphHumanRevision(aliasCtx, s, id, token)
+			})
 		}
 		if len(details)+len(lines) == 0 {
 			return nil, "", fmt.Errorf("%w: no issues found matching the provided IDs", graphstore.ErrNotFound)

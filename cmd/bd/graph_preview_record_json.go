@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"strings"
+	"net/url"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
@@ -150,10 +150,30 @@ func graphIsCompleteRecord(members map[string]json.RawMessage) bool {
 			return false
 		}
 	}
-	var id string
-	if err := json.Unmarshal(members["id"], &id); err != nil {
+	// Public Resource IDs are opaque paths: no bead/link prefix is required.
+	// Recognize the complete storage record envelope and its Bead/Link shape,
+	// rather than interpreting an ID substring as a kind discriminator.
+	for _, key := range []string{"id", "type", "revision", "version"} {
+		var value string
+		if json.Unmarshal(members[key], &value) != nil || value == "" {
+			return false
+		}
+		if key == "id" || key == "type" {
+			u, err := url.Parse(value)
+			if err != nil || (u.Scheme != "https" && u.Scheme != "http") || u.Host == "" {
+				return false
+			}
+		}
+	}
+	if !bytes.Equal(members["revision"], members["version"]) {
 		return false
 	}
-	return (strings.HasPrefix(id, "https://") || strings.HasPrefix(id, "http://")) &&
-		(strings.Contains(id, "/beads/") || strings.Contains(id, "/links/"))
+	properties := bytes.TrimSpace(members["properties"])
+	if len(properties) == 0 || properties[0] != '{' {
+		return false
+	}
+	_, owned := members["owned"]
+	_, source := members["source"]
+	_, target := members["target"]
+	return (owned && !source && !target) || (!owned && source && target)
 }

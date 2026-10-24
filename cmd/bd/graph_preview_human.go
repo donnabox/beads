@@ -213,15 +213,64 @@ func graphHumanCurrentIssueDetails(scope string, details *types.IssueDetails, op
 			fmt.Fprintf(&out, "%s [%s] %s P%d %q\n", graphHumanID(scope, issue.ID), graphMemoryDisplayText(string(issue.IssueType)), graphMemoryDisplayText(string(issue.Status)), issue.Priority, issue.Title)
 		}
 	}
+	if len(details.GatedBy) != 0 {
+		out.WriteString("\n\nCurrent gates\n")
+		for _, gate := range details.GatedBy {
+			kind := gate.Type
+			if kind == "" {
+				kind = "gate"
+			}
+			fmt.Fprintf(&out, "%s [%s]", graphHumanID(scope, gate.ID), graphMemoryDisplayText(kind))
+			if gate.Reason != "" {
+				fmt.Fprintf(&out, ": %s", graphMemoryDisplayText(gate.Reason))
+			}
+			out.WriteByte('\n')
+		}
+	}
 	comments := details.Comments
+	hidden := 0
 	if opts.CommentsTail > 0 && len(comments) > opts.CommentsTail {
-		comments = comments[len(comments)-opts.CommentsTail:]
+		hidden = len(comments) - opts.CommentsTail
+		comments = comments[hidden:]
 	}
 	if len(comments) != 0 {
 		out.WriteString("\n\nCurrent comments\n")
+		if hidden != 0 {
+			fmt.Fprintf(&out, "%d older comments hidden; omit --comments-tail for the full current record.\n", hidden)
+		}
 		for _, comment := range comments {
+			if opts.Long || opts.LocalTime {
+				at := comment.CreatedAt
+				if opts.LocalTime {
+					at = at.Local()
+				}
+				fmt.Fprintf(&out, "%s ", at.Format("2006-01-02 15:04:05 -07:00"))
+			}
 			fmt.Fprintf(&out, "%s: %s\n", graphMemoryDisplayText(comment.Author), graphMemoryDisplayText(comment.Text))
 		}
 	}
 	return strings.TrimSuffix(out.String(), "\n")
+}
+
+type graphHumanIssueView struct {
+	record  graphstore.IssueRecord
+	details *types.IssueDetails
+}
+
+// Views have already been acquired successfully. Alias acquisition has one
+// separate, bounded command budget and can never obstruct a later content read.
+func graphHumanIssueDocuments(ctx context.Context, scope string, views []graphHumanIssueView, opts graphIssueDetailOptions, alias func(context.Context, string, string) string) []string {
+	presentationCtx, cancel := context.WithTimeout(ctx, 250*time.Millisecond)
+	defer cancel()
+	lines := make([]string, 0, len(views))
+	for _, view := range views {
+		revision := "@=" + graphMemoryDisplayText(view.record.Revision)
+		if alias != nil && presentationCtx.Err() == nil {
+			if selected := alias(presentationCtx, view.record.ID, view.record.Revision); selected != "" {
+				revision = selected
+			}
+		}
+		lines = append(lines, graphHumanDocument(scope, view.record, revision, false, opts.Long)+graphHumanCurrentIssueDetails(scope, view.details, opts))
+	}
+	return lines
 }

@@ -251,7 +251,13 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			PublicID: publicID, IDRoot: idRoot, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourceLocalID: localIDs[0], TargetLocalID: localIDs[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
-		return result, graphHumanRow(store.ScopeURL(), result.Link), err
+		if err != nil {
+			return result, "", err
+		}
+		if _, validationErr := graphPreviewReplacementSummary("", result.ReplacedSource); validationErr != nil {
+			return result, "", validationErr
+		}
+		return result, graphHumanRow(store.ScopeURL(), result.Link), nil
 	})
 }
 
