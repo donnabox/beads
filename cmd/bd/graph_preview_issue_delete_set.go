@@ -53,7 +53,10 @@ func runGraphPreviewDeleteIssueSet(cmd *cobra.Command, args []string) error {
 	if len(selectors) > graphstore.PreviewSnapshotLimit {
 		return graphFailure("limit_exceeded", fmt.Sprintf("delete exceeds %d Issue selectors", graphstore.PreviewSnapshotLimit), 2)
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
+	if cmd.Flags().Changed("if-revision") && len(selectors) != 1 {
+		return graphFailure("invalid_selector", "--if-revision requires exactly one Issue", 2)
+	}
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, args[0], false)
 	if err != nil {
 		return err
 	}

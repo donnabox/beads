@@ -104,7 +104,7 @@ func TestGraphPreviewRememberCompatibilityDiagnostics(t *testing.T) {
 						args := []string{"remember", flag, tc.key, "--title", "Changed title", "--json"}
 						if guarded {
 							args = append([]string{"remember", "Guarded changed body"}, args[1:]...)
-							args = append(args, "--if-revision", created.Revision)
+							args = append(args, "--if-revision", "="+created.Revision)
 						}
 						out, stderr, exit := graphGenerationRun(t, bd, work, home, args...)
 						var diagnostic struct {
@@ -125,7 +125,7 @@ func TestGraphPreviewRememberCompatibilityDiagnostics(t *testing.T) {
 					}
 				}
 			}
-			updated := graphMixedResult[graphstore.MemoryMutationResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "remember", "--id", "TWO", "--title", "Independent title", "--if-revision", created.Revision, "--json"))
+			updated := graphMixedResult[graphstore.MemoryMutationResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "remember", "--id", "TWO", "--title", "Independent title", "--if-revision", "="+created.Revision, "--json"))
 			if updated.Memory.ID != created.ID || updated.Memory.Properties.Body != created.Properties.Body || updated.Memory.Properties.Title != "Independent title" {
 				t.Fatal("valid exact ID update changed identity/body", updated)
 			}

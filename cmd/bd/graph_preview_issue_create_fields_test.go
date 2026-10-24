@@ -124,7 +124,7 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--id", "beads/duplicate-properties", "--force", "--title", "Title", "--properties", `{"title":"Title"}`, "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--id", "beads/immutable-properties", "--force", "--properties", `{"title":"Refused","status":"closed"}`, "--json")
-	for _, flags := range [][]string{nil, {"--revision", envelope.Result.Revision}} {
+	for _, flags := range [][]string{nil, {"--revision", "=" + envelope.Result.Revision}} {
 		args := append([]string{"show", "https://example.invalid/create-fields/beads/work", "--format", "graph-json", "--json"}, flags...)
 		if got := graphPolicyCLI(t, bd, work, home, nil, "", args...); got != created {
 			t.Fatal("fresh current/exact read differs from the complete first record")

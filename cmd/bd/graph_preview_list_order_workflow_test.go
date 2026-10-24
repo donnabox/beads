@@ -131,7 +131,7 @@ func TestGraphPreviewListOrderAndCapWorkflow(t *testing.T) {
 
 			// An edit is a new recorded version, so the oldest Bead moves to the front.
 			first := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/first"))
-			call("update", "beads/first", "--properties", `{"title":"First, revised","body":"first body"}`, "--if-revision", first.Revision)
+			call("update", "beads/first", "--properties", `{"title":"First, revised","body":"first body"}`, "--if-revision", "="+first.Revision)
 			edited := []string{"beads/first", "beads/third", "beads/second"}
 			beads, more = structured(nil)
 			expect("after editing the oldest", beads, more, edited, false)

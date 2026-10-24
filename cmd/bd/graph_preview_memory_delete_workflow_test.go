@@ -53,11 +53,11 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if !dryRun.Preview || dryRun.Deleted || !reflect.DeepEqual(dryRun.Memory, original) {
 				t.Fatal("explicit Memory --dry-run changed state or lost the preview")
 			}
-			updated := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/empty", "--title", "Final empty body", "--if-revision", original.Revision)).Memory
+			updated := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/empty", "--title", "Final empty body", "--if-revision", "="+original.Revision)).Memory
 			for _, args := range [][]string{
-				{"delete", "beads/empty", "--if-revision", original.Revision},
-				{"delete", "beads/empty", "--force", "--if-revision", original.Revision},
-				{"forget", "beads/empty", "--if-revision", original.Revision},
+				{"delete", "beads/empty", "--if-revision", "=" + original.Revision},
+				{"delete", "beads/empty", "--force", "--if-revision", "=" + original.Revision},
+				{"forget", "beads/empty", "--if-revision", "=" + original.Revision},
 			} {
 				refuse("revision_conflict", args...)
 			}
@@ -95,7 +95,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.Record](t, call("show", updated.ID)); !reflect.DeepEqual(got, updated) {
 				t.Fatal("refused deletion changed final live state")
 			}
-			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/empty", "--force", "--if-revision", updated.Revision))
+			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/empty", "--force", "--if-revision", "="+updated.Revision))
 			if deleted.Preview || !deleted.Deleted || !reflect.DeepEqual(deleted.Memory, updated) {
 				t.Fatal("delete did not disclose exact final live state")
 			}
@@ -131,13 +131,13 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				linkBefore := call("show", scope+path)
 				current := graphMixedResult[graphstore.Record](t, before)
 				refuse("constraint_violation", "delete", "beads/plan")
-				refuse("constraint_violation", "delete", "beads/plan", "--force", "--if-revision", current.Revision)
+				refuse("constraint_violation", "delete", "beads/plan", "--force", "--if-revision", "="+current.Revision)
 				refuse("constraint_violation", "forget", "beads/plan")
 				if call("show", scope+"beads/plan") != before || call("show", scope+path) != linkBefore || call("show", scope+"beads/other") != other || call("show", issueRecord.ID, "--format", "graph-json") != issue {
 					t.Fatal("incident-Link refusal changed Memory, Link or another endpoint")
 				}
 				link := graphMixedResult[graphstore.LinkRecord](t, linkBefore)
-				args := []string{"link", "delete", "--force", path, "--if-revision", link.Revision}
+				args := []string{"link", "delete", "--force", path, "--if-revision", "=" + link.Revision}
 				if path == "links/outgoing" {
 					args = append(args, "--if-source-revision", current.Revision)
 				}

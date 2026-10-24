@@ -333,7 +333,7 @@ func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
 		}
 	}
 	assertHistoryContext(deleted.Terminal, 1)
-	call("update", "beads/context", "--from-revision", original.Revision, "--if-revision", deleted.Terminal.Revision, "--json")
+	call("update", "beads/context", "--from-revision", "="+original.Revision, "--if-revision", "="+deleted.Terminal.Revision, "--json")
 	// Recovery removes currentState but must not drop the retained terminal.
 	assertHistoryContext(nil, 2)
 	// Admission fails before the provider opens, but must still use the chosen

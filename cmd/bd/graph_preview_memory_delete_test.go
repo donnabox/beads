@@ -43,9 +43,9 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 	}{
 		{"preview", "beads/plan", nil, false, true, 0},
 		{"explicit-preview", "beads/plan", []string{"--force=false"}, false, true, 0},
-		{"guarded-preview", "beads/plan", []string{"--if-revision=observed"}, false, true, 0},
-		{"guarded-apply", "https://example.invalid/delete/beads/plan", []string{"--force", "--if-revision=observed"}, false, false, 0},
-		{"forget", "beads/plan", []string{"--if-revision=observed"}, true, false, 0},
+		{"guarded-preview", "beads/plan", []string{"--if-revision==observed"}, false, true, 0},
+		{"guarded-apply", "https://example.invalid/delete/beads/plan", []string{"--force", "--if-revision==observed"}, false, false, 0},
+		{"forget", "beads/plan", []string{"--if-revision==observed"}, true, false, 0},
 		{"missing-apply-guard", "beads/plan", []string{"--force"}, false, false, 0},
 		{"missing-forget-guard", "beads/plan", nil, true, false, 0},
 		{"empty-guard", "beads/plan", []string{"--if-revision="}, false, false, 2},

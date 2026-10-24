@@ -106,7 +106,7 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 			}
 			recoverable := graphMixedResult[graphstore.Record](t, call("create", "Recovery", "--type", "types/memory", "--id", "recovery", "--json"))
 			call("delete", "recovery", "--force")
-			call("update", "recovery", "--from-revision", recoverable.Revision)
+			call("update", "recovery", "--from-revision", "="+recoverable.Revision)
 			if long := call("versions", "recovery", "--long"); !strings.Contains(long, recoverable.Revision) {
 				t.Fatal(long)
 			}

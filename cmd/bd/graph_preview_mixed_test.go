@@ -121,7 +121,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			call("create", "Ship the release", "--id", "work", "--force", "--description", "Original Issue", "--priority", "1")
 			gate := call("create", "Prerequisite", "--id", "gate", "--force")
 
-			selected := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/plan", "--title", "Selected title", "--if-revision", memory.Revision))
+			selected := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/plan", "--title", "Selected title", "--if-revision", "="+memory.Revision))
 			if !selected.Changed || selected.Memory.Properties.Body != memory.Properties.Body || selected.Replaced != nil {
 				t.Fatal("selected guarded update lost omitted body or claimed unconditional overwrite")
 			}
@@ -130,7 +130,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatal("unconditional Memory replacement omitted predecessor disclosure")
 			}
 			before := call("show", scope+"beads/plan")
-			refuse("revision_conflict", "remember", "--update", "beads/plan", "--title", "Final plan", "--if-revision", memory.Revision)
+			refuse("revision_conflict", "remember", "--update", "beads/plan", "--title", "Final plan", "--if-revision", "="+memory.Revision)
 			if call("show", scope+"beads/plan") != before || call("show", scope+"beads/context") != other || call("show", scope+"gate", "--format", "graph-json") != gate {
 				t.Fatal("stale Memory update changed state")
 			}
@@ -150,13 +150,13 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatalf("Memory incident Links = %d, want 2", len(incident))
 			}
 			current = graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
-			changedLink := graphMixedResult[graphstore.LinkMutationResult](t, call("update", "links/context", "--properties", `{"note":"replaced"}`, "--if-revision", first.Link.Revision, "--if-source-revision", current.Revision))
+			changedLink := graphMixedResult[graphstore.LinkMutationResult](t, call("update", "links/context", "--properties", `{"note":"replaced"}`, "--if-revision", "="+first.Link.Revision, "--if-source-revision", current.Revision))
 			if !changedLink.Changed || changedLink.Link.Properties["note"] != "replaced" {
 				t.Fatal("Link properties were not replaced")
 			}
 			before = call("show", scope+"beads/plan")
 			linkBefore := call("show", scope+"links/context")
-			refuse("revision_conflict", "update", "links/context", "--properties", `{"note":"stale"}`, "--if-revision", first.Link.Revision)
+			refuse("revision_conflict", "update", "links/context", "--properties", `{"note":"stale"}`, "--if-revision", "="+first.Link.Revision)
 			if call("show", scope+"beads/plan") != before || call("show", scope+"links/context") != linkBefore {
 				t.Fatal("stale Link update changed Link or owning Memory")
 			}
@@ -203,22 +203,22 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatal("closing prerequisite did not unblock Issue")
 			}
 			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"work"))
-			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--if-source-revision", workIssue.Revision)
+			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", "="+dependency.Link.Revision, "--if-source-revision", workIssue.Revision)
 			call("close", "work", "--reason", "Done")
 			call("reopen", "work", "--reason", "One more change")
 			workIssue = graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"work"))
-			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--description", "Revised Issue", "--if-revision", workIssue.Revision))
+			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--description", "Revised Issue", "--if-revision", "="+workIssue.Revision))
 			if !edited.Changed || edited.Issue.Properties.Description != "Revised Issue" {
 				t.Fatal("Issue text edit was not retained")
 			}
-			refuse("revision_conflict", "update", "work", "--description", "Revised Issue", "--if-revision", workIssue.Revision)
+			refuse("revision_conflict", "update", "work", "--description", "Revised Issue", "--if-revision", "="+workIssue.Revision)
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"work")); !reflect.DeepEqual(got, edited.Issue) {
 				t.Fatal("stale same-value Issue update changed state")
 			}
 
 			for _, linkPath := range []string{"links/context", "links/work", "links/unowned"} {
 				link := graphMixedResult[graphstore.LinkRecord](t, call("show", scope+linkPath))
-				args := []string{"link", "delete", "--force", linkPath, "--if-revision", link.Revision}
+				args := []string{"link", "delete", "--force", linkPath, "--if-revision", "=" + link.Revision}
 				if linkPath != "links/unowned" {
 					owner := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
 					args = append(args, "--if-source-revision", owner.Revision)

@@ -47,15 +47,15 @@ func TestGraphPreviewCloseGuardWorkflow(t *testing.T) {
 			call("create", "Second", "--id", "beads/second", "--force")
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/first"))
 			versionsBefore := call("versions", "beads/first")
-			refuse(4, "revision_conflict", "close", scope+"beads/first", "--if-revision", "stale", "--reason", "done")
-			refuse(2, "invalid_selector", "close", scope+"beads/first", scope+"beads/second", "--if-revision", before.Revision)
-			refuse(2, "invalid_selector", "close", scope+"beads/first", "--if-revision", before.Revision, "--claim-next")
-			refuse(2, "invalid_selector", "close", scope+"beads/first", "--if-revision", before.Revision, "--suggest-next")
+			refuse(4, "revision_conflict", "close", scope+"beads/first", "--if-revision", "=stale", "--reason", "done")
+			refuse(2, "invalid_selector", "close", scope+"beads/first", scope+"beads/second", "--if-revision", "="+before.Revision)
+			refuse(2, "invalid_selector", "close", scope+"beads/first", "--if-revision", "="+before.Revision, "--claim-next")
+			refuse(2, "invalid_selector", "close", scope+"beads/first", "--if-revision", "="+before.Revision, "--suggest-next")
 			if got := call("versions", "beads/first"); got != versionsBefore {
 				t.Fatal("a refused guard or combination changed the Issue")
 			}
 			closed := graphMixedResult[graphstore.IssueMutationResult](t,
-				call("close", scope+"beads/first", "--if-revision", before.Revision, "--reason", "done"))
+				call("close", scope+"beads/first", "--if-revision", "="+before.Revision, "--reason", "done"))
 			if !closed.Changed || closed.Issue.Properties.Status != types.StatusClosed ||
 				closed.Issue.Revision == before.Revision || closed.Issue.Properties.CloseReason != "done" {
 				t.Fatalf("guarded close did not use the native Issue lifecycle: %+v", closed)
@@ -64,9 +64,9 @@ func TestGraphPreviewCloseGuardWorkflow(t *testing.T) {
 			if versionsClosed == versionsBefore {
 				t.Fatal("guarded close did not retain a successor")
 			}
-			refuse(4, "revision_conflict", "close", scope+"beads/first", "--if-revision", before.Revision, "--reason", "retry")
+			refuse(4, "revision_conflict", "close", scope+"beads/first", "--if-revision", "="+before.Revision, "--reason", "retry")
 			retry := graphMixedResult[graphstore.IssueMutationResult](t,
-				call("close", scope+"beads/first", "--if-revision", closed.Issue.Revision, "--reason", "retry"))
+				call("close", scope+"beads/first", "--if-revision", "="+closed.Issue.Revision, "--reason", "retry"))
 			if retry.Changed || !reflect.DeepEqual(retry.Issue, closed.Issue) || call("versions", "beads/first") != versionsClosed {
 				t.Fatalf("accepted already-closed retry minted another version or changed the first reason: %+v", retry)
 			}

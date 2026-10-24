@@ -18,8 +18,8 @@ func TestGraphPreviewIssueDuePresence(t *testing.T) {
 		want       string
 	}{
 		{"omitted", []string{"--title=Keep"}, false, false, ""},
-		{"clear", []string{"--due=", "--if-revision=observed"}, true, true, ""},
-		{"offset", []string{"--due=2030-01-02T03:04:05-07:00", "--if-revision=observed"}, true, false, "2030-01-02T10:04:05Z"},
+		{"clear", []string{"--due=", "--if-revision==observed"}, true, true, ""},
+		{"offset", []string{"--due=2030-01-02T03:04:05-07:00", "--if-revision==observed"}, true, false, "2030-01-02T10:04:05Z"},
 		{"fraction-preserved-for-storage", []string{"--due=2030-01-02T03:04:05.6Z"}, true, false, "2030-01-02T03:04:05.6Z"},
 		{"mixed", []string{"--due=2030-01-02T03:04:05Z", "--title=New", "--priority=P0"}, true, false, "2030-01-02T03:04:05Z"},
 	} {

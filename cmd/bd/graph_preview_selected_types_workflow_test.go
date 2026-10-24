@@ -70,7 +70,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 				t.Fatal("selected creation/show lost Type or authored extras")
 			}
 			memory := graphMixedResult[graphstore.Record](t, call("create", "--type", "types/memory", "--id", "memory", "--properties", `{"title":"Memory","body":"Original","extra":{"kept":true}}`))
-			edited := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--type", "types/requirement", "--properties", `{"body":"Changed","new":42}`, "--if-revision", memory.Revision))
+			edited := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--type", "types/requirement", "--properties", `{"body":"Changed","new":42}`, "--if-revision", "="+memory.Revision))
 			if !edited.Changed || edited.Memory.Type != scope+"types/requirement" || !strings.Contains(call("show", memory.ID), `"kept"`) {
 				t.Fatal("combined retype/merge lost inherited complete properties")
 			}
@@ -78,8 +78,8 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(retained, memory) {
 				t.Fatal("retype rewrote the original Type/payload/history")
 			}
-			refuse("revision_conflict", "update", memory.ID, "--type", "types/policy", "--if-revision", memory.Revision)
-			patched := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--type", "types/procedure", "--patch", `[{"op":"add","path":"/ordered","value":["one","two"]}]`, "--if-revision", edited.Memory.Revision))
+			refuse("revision_conflict", "update", memory.ID, "--type", "types/policy", "--if-revision", "="+memory.Revision)
+			patched := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--type", "types/procedure", "--patch", `[{"op":"add","path":"/ordered","value":["one","two"]}]`, "--if-revision", "="+edited.Memory.Revision))
 			if patched.Memory.Type != scope+"types/procedure" || !strings.Contains(call("show", memory.ID), `"ordered"`) {
 				t.Fatal("ordered properties and Type did not commit together")
 			}
@@ -98,7 +98,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 			if owned.Link.Type != scope+"types/subject-to" || owned.ReplacedSource == nil {
 				t.Fatal("selected Link creation did not use source ownership")
 			}
-			refuse("invalid_properties", "update", constraint.ID, "--type", "types/memory", "--if-revision", constraint.Revision)
+			refuse("invalid_properties", "update", constraint.ID, "--type", "types/memory", "--if-revision", "="+constraint.Revision)
 			if got := graphMixedResult[graphstore.Record](t, call("show", constraint.ID)); !reflect.DeepEqual(got, constraint) {
 				t.Fatal("incident-Link refusal changed the Bead")
 			}
@@ -200,7 +200,7 @@ func TestGraphPreviewAssessmentAvailabilityWorkflow(t *testing.T) {
 			graphAssessmentSwitch(t, work, false)
 			before, history, link := call("show", eval.ID), call("versions", eval.ID), call("link", "show", claim.Link.ID)
 			refuse("update", eval.ID, "--properties", `{"body":"refused"}`)
-			refuse("update", eval.ID, "--from-revision", eval.Revision)
+			refuse("update", eval.ID, "--from-revision", "="+eval.Revision)
 			refuse("link", "update", claim.Link.ID, "--properties", `{"evidence":"refused"}`)
 			refuse("update", subject.ID, "--type", "types/evaluation", "--properties", string(props))
 			if call("show", eval.ID) != before || call("versions", eval.ID) != history || call("link", "show", claim.Link.ID) != link {

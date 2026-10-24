@@ -95,12 +95,12 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				unrelated[path] = call("show", readSelector(path))
 			}
 			const replacement = `{"title":"Revised plan","body":"private-memory-body — revised"}`
-			memoryEdit := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", planBefore.Revision))
+			memoryEdit := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", "="+planBefore.Revision))
 			if !memoryEdit.Changed || memoryEdit.Replaced != nil || memoryEdit.Memory.ID != planBefore.ID || memoryEdit.Memory.Revision == planBefore.Revision || memoryEdit.Memory.Properties.Title != "Revised plan" || memoryEdit.Memory.Properties.Body != "private-memory-body — revised" || !reflect.DeepEqual(memoryEdit.Memory.Owned, planBefore.Owned) {
 				t.Fatalf("linked Memory edit lost payload or owned Links: %+v", memoryEdit)
 			}
 			const description = "Revised Issue in the same Memory/Link journey."
-			issueEdit := graphMixedResult[graphstore.IssueMutationResult](t, call("update", createdWork.ID, "--description", description, "--if-revision", workBefore.Revision))
+			issueEdit := graphMixedResult[graphstore.IssueMutationResult](t, call("update", createdWork.ID, "--description", description, "--if-revision", "="+workBefore.Revision))
 			if !issueEdit.Changed || issueEdit.Issue.ID != workBefore.ID || issueEdit.Issue.Revision == workBefore.Revision || issueEdit.Issue.Properties.Description != description || !reflect.DeepEqual(issueEdit.Issue.Owned, workBefore.Owned) {
 				t.Fatalf("Issue text edit lost payload or owned Dependencies: %+v", issueEdit)
 			}
@@ -120,7 +120,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			type retainedRead struct{ id, version, format, output string }
 			var retained []retainedRead
 			for _, record := range []graphstore.Record{planBefore, memoryEdit.Memory} {
-				output := call("show", record.ID, "--revision", record.Revision)
+				output := call("show", record.ID, "--revision", "="+record.Revision)
 				if got := graphMixedResult[graphstore.Record](t, output); !reflect.DeepEqual(got, record) {
 					t.Fatalf("Memory predecessor/current retention: %+v want=%+v", got, record)
 				}
@@ -130,20 +130,20 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
-				output := call("show", record.ID, "--revision", record.Revision, "--format", "graph-json")
+				output := call("show", record.ID, "--revision", "="+record.Revision, "--format", "graph-json")
 				if got := graphMixedResult[graphstore.IssueRecord](t, output); !reflect.DeepEqual(got, record) {
 					t.Fatalf("Issue predecessor/current retention: %+v want=%+v", got, record)
 				}
 				retained = append(retained, retainedRead{record.ID, record.Revision, "graph-json", output})
 			}
 			stable := graphMemoryReadSnapshot(t, work)
-			memoryNoop := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", memoryEdit.Memory.Revision))
-			issueNoop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", createdWork.ID, "--description", description, "--if-revision", issueEdit.Issue.Revision))
+			memoryNoop := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", "="+memoryEdit.Memory.Revision))
+			issueNoop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", createdWork.ID, "--description", description, "--if-revision", "="+issueEdit.Issue.Revision))
 			if memoryNoop.Changed || memoryNoop.Replaced != nil || !reflect.DeepEqual(memoryNoop.Memory, memoryEdit.Memory) || issueNoop.Changed || !reflect.DeepEqual(issueNoop.Issue, issueEdit.Issue) {
 				t.Fatal("same-value release edits were not no-ops")
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", "beads/plan", "--properties", replacement, "--if-revision", planBefore.Revision, "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", createdWork.ID, "--description", description, "--if-revision", workBefore.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", "beads/plan", "--properties", replacement, "--if-revision", "="+planBefore.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", createdWork.ID, "--description", description, "--if-revision", "="+workBefore.Revision, "--json")
 			if !reflect.DeepEqual(stable, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("no-op or stale edit changed the whole current snapshot")
 			}
@@ -332,21 +332,21 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			assertBlocked(true)
 			assertReady(false, true)
 			source := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", createdWork.ID))
-			call("link", "delete", "--force", dep.Link.ID, "--if-revision", dep.Link.Revision, "--if-source-revision", source.Revision)
+			call("link", "delete", "--force", dep.Link.ID, "--if-revision", "="+dep.Link.Revision, "--if-source-revision", source.Revision)
 			assertBlocked(false)
 			assertReady(true, true)
 			for _, path := range []string{"links/context", "links/work"} {
 				link := graphMixedResult[graphstore.LinkRecord](t, call("show", readSelector(path)))
 				memory := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
-				call("link", "delete", "--force", path, "--if-revision", link.Revision, "--if-source-revision", memory.Revision)
+				call("link", "delete", "--force", path, "--if-revision", "="+link.Revision, "--if-source-revision", memory.Revision)
 			}
 			memory := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
-			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/plan", "--force", "--if-revision", memory.Revision))
+			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/plan", "--force", "--if-revision", "="+memory.Revision))
 			if !deleted.Deleted || deleted.Preview || !reflect.DeepEqual(deleted.Memory, memory) || memory.Properties != memoryEdit.Memory.Properties || len(memory.Owned) != 0 {
 				t.Fatal("explicit unlink/delete lost the edited final Memory predecessor")
 			}
 			for _, saved := range retained {
-				args := []string{"show", saved.id, "--revision", saved.version}
+				args := []string{"show", saved.id, "--revision", "=" + saved.version}
 				if saved.format != "" {
 					args = append(args, "--format", saved.format)
 				}

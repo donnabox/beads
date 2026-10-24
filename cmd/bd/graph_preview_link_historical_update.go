@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -14,15 +13,15 @@ func runGraphPreviewHistoricalLinkUpdate(cmd *cobra.Command, path string) error 
 	if err := graphPreviewFlags(cmd, "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "source-revision", "target-revision"); err != nil {
 		return err
 	}
-	selected, _ := cmd.Flags().GetString("from-revision")
-	if selected == "" || !utf8.ValidString(selected) || len(selected) > graphstore.PreviewVersionTokenLimit {
-		return graphFailure("invalid_selector", fmt.Sprintf("--from-revision requires a nonempty UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
-	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	selected, err := graphPreviewRevisionFlag(cmd, "from-revision", path, true)
 	if err != nil {
 		return err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
+	if err != nil {
+		return err
+	}
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, path, true)
 	if err != nil {
 		return err
 	}

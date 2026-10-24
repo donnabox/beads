@@ -361,8 +361,8 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if afterNoOp := call("show", source.ID, "--format", "graph-json"); afterNoOp != beforeNoOp {
 						t.Fatal("same-pair no-op changed the source record")
 					}
-					refuse("revision_conflict", "link", "delete", "--force", linkPath, "--if-revision", added.Link.Revision, "--if-source-revision", source.Revision)
-					removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", added.Link.ID, "--if-revision", added.Link.Revision, "--if-source-revision", added.Source.Revision))
+					refuse("revision_conflict", "link", "delete", "--force", linkPath, "--if-revision", "="+added.Link.Revision, "--if-source-revision", source.Revision)
+					removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", added.Link.ID, "--if-revision", "="+added.Link.Revision, "--if-source-revision", added.Source.Revision))
 					if !removed.Changed || removed.Link.Type != typeURL || removed.Link.State != "deleted" {
 						t.Fatalf("canonical unlink did not tombstone typed Link: %+v", removed)
 					}

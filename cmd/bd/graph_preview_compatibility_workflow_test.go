@@ -132,12 +132,12 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if !upserted.Changed || upserted.Replaced == nil || upserted.Memory.ID != fixed.ID || upserted.Memory.Properties.Title != fixed.Properties.Title || upserted.Memory.Properties.Body != "Replacement body" {
 				t.Fatal("existing-ID remember failed to preserve title and disclose predecessor")
 			}
-			guardedUpsert := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--id", "beads/fixed", "--title", "Current policy", "--if-revision", upserted.Memory.Revision))
+			guardedUpsert := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--id", "beads/fixed", "--title", "Current policy", "--if-revision", "="+upserted.Memory.Revision))
 			if !guardedUpsert.Changed || guardedUpsert.Replaced != nil || guardedUpsert.Memory.Properties.Body != "Replacement body" {
 				t.Fatal("guarded existing-ID title edit lost the omitted body or claimed an unconditional predecessor")
 			}
 			refuse("identity_reserved", "remember", "Another body", "--id", "beads/fixed", "--create-only")
-			refuse("revision_conflict", "remember", "Stale body", "--id", "beads/fixed", "--if-revision", fixed.Revision)
+			refuse("revision_conflict", "remember", "Stale body", "--id", "beads/fixed", "--if-revision", "="+fixed.Revision)
 			if current := graphMixedResult[graphstore.Record](t, call("show", fixed.ID)); !reflect.DeepEqual(current, guardedUpsert.Memory) {
 				t.Fatal("create-only or stale guard changed existing Memory")
 			}
@@ -150,9 +150,9 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if noop.Changed || noop.Replaced != nil || !reflect.DeepEqual(noop.Memory, edited.Memory) {
 				t.Fatal("default edit created a no-op version")
 			}
-			refuse("revision_conflict", "remember", "New body", "--update", memory.ID, "--if-revision", memory.Revision)
+			refuse("revision_conflict", "remember", "New body", "--update", memory.ID, "--if-revision", "="+memory.Revision)
 			refuse("invalid_selector", "remember", "No", "--update", memory.ID, "--if-revision=")
-			titled := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", memory.ID, "--title", "New title", "--if-revision", edited.Memory.Revision))
+			titled := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", memory.ID, "--title", "New title", "--if-revision", "="+edited.Memory.Revision))
 			if titled.Memory.Properties.Body != "New body" || titled.Replaced != nil {
 				t.Fatal("guarded title edit lost omitted body")
 			}
@@ -176,21 +176,21 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if !changed.Changed || changed.ReplacedSource == nil {
 				t.Fatal("default source guard did not support Link replacement")
 			}
-			linkNoop := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--properties", `{"note":"current source"}`, "--if-revision", changed.Link.Revision))
+			linkNoop := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--properties", `{"note":"current source"}`, "--if-revision", "="+changed.Link.Revision))
 			if linkNoop.Changed || linkNoop.ReplacedSource != nil || !reflect.DeepEqual(linkNoop.Link, changed.Link) {
 				t.Fatal("default source acceptance disclosed or versioned a no-op")
 			}
-			patched := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--patch", `[{"op":"replace","path":"/note","value":"patched"}]`, "--if-revision", changed.Link.Revision))
+			patched := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--patch", `[{"op":"replace","path":"/note","value":"patched"}]`, "--if-revision", "="+changed.Link.Revision))
 			if !patched.Changed || patched.ReplacedSource == nil {
 				t.Fatal("default source guard did not support ordered Link patch")
 			}
-			refuse("revision_conflict", "update", link.Link.ID, "--properties", `{}`, "--if-revision", link.Link.Revision)
+			refuse("revision_conflict", "update", link.Link.ID, "--properties", `{}`, "--if-revision", "="+link.Link.Revision)
 			preview := graphMixedResult[map[string]any](t, call("link", "delete", mixed.Link.ID))
 			if preview["preview"] != true {
 				t.Fatal("Link deletion did not preview by default")
 			}
-			call("link", "delete", "--force", mixed.Link.ID, "--if-revision", mixed.Link.Revision)
-			call("link", "delete", "--force", link.Link.ID, "--if-revision", patched.Link.Revision)
+			call("link", "delete", "--force", mixed.Link.ID, "--if-revision", "="+mixed.Link.Revision)
+			call("link", "delete", "--force", link.Link.ID, "--if-revision", "="+patched.Link.Revision)
 			issueBefore := call("show", issue.ID)
 			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, memory.ID, "--type", "types/references"))
 			if unowned.ReplacedSource != nil || call("show", issue.ID) != issueBefore {
@@ -200,7 +200,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if !strings.Contains(human, strings.TrimPrefix(unowned.Link.ID, scope)+" [types/references] "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
 				t.Fatalf("links omitted identity-first local display: %q", human)
 			}
-			call("link", "delete", "--force", unowned.Link.ID, "--if-revision", unowned.Link.Revision)
+			call("link", "delete", "--force", unowned.Link.ID, "--if-revision", "="+unowned.Link.Revision)
 			localLinkID := "links/canonical"
 			canonicalID := scope + localLinkID
 			refuse("invalid_selector", "link", issue.ID, other.ID, "--type", "types/references", "--id", canonicalID)
@@ -208,7 +208,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if canonical.Link.ID != canonicalID {
 				t.Fatal("informational Link did not preserve the literal local ID in its canonical URL")
 			}
-			call("link", "delete", "--force", canonicalID, "--if-revision", canonical.Link.Revision)
+			call("link", "delete", "--force", canonicalID, "--if-revision", "="+canonical.Link.Revision)
 			if call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational unlink changed its Issue source")
 			}
@@ -270,13 +270,13 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if shorthandTracks["issue_id"] != otherBlocker.Properties.ID || shorthandTracks["depends_on_id"] != thirdBlocker.Properties.ID || shorthandTracks["type"] != "tracks" {
 				t.Fatalf("positional link lost its explicit Dependency kind: %+v", shorthandTracks)
 			}
-			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", dependency.Link.Revision)
+			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", "="+dependency.Link.Revision)
 			propertyMemory := graphMixedResult[graphstore.Record](t, call("remember", "--id", "beads/property-memory", "--properties", `{"title":"Property title","body":"First body"}`))
-			merged := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{"body":"Second body"}`, "--if-revision", propertyMemory.Revision))
+			merged := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{"body":"Second body"}`, "--if-revision", "="+propertyMemory.Revision))
 			if merged.Memory.Properties.Title != "Property title" || merged.Memory.Properties.Body != "Second body" {
 				t.Fatal("Memory property merge lost an omitted title")
 			}
-			emptyMerge := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{}`, "--if-revision", merged.Memory.Revision))
+			emptyMerge := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{}`, "--if-revision", "="+merged.Memory.Revision))
 			if emptyMerge.Changed || emptyMerge.Memory.Revision != merged.Memory.Revision {
 				t.Fatal("empty Memory property merge created a version")
 			}
@@ -285,11 +285,11 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("remember property merge lost the omitted body")
 			}
 			propertyLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", propertyMemory.ID, constraint.ID, "--type", related, "--properties", `{"note":"keep"}`))
-			linkEmptyMerge := graphMixedResult[graphstore.LinkMutationResult](t, call("update", propertyLink.Link.ID, "--properties", `{}`, "--if-revision", propertyLink.Link.Revision))
+			linkEmptyMerge := graphMixedResult[graphstore.LinkMutationResult](t, call("update", propertyLink.Link.ID, "--properties", `{}`, "--if-revision", "="+propertyLink.Link.Revision))
 			if linkEmptyMerge.Changed || linkEmptyMerge.Link.Revision != propertyLink.Link.Revision || linkEmptyMerge.Link.Properties["note"] != "keep" {
 				t.Fatal("empty Link property merge cleared a field or created a version")
 			}
-			linkCleared := graphMixedResult[graphstore.LinkMutationResult](t, call("update", propertyLink.Link.ID, "--patch", `[{"op":"replace","path":"","value":{}}]`, "--if-revision", propertyLink.Link.Revision))
+			linkCleared := graphMixedResult[graphstore.LinkMutationResult](t, call("update", propertyLink.Link.ID, "--patch", `[{"op":"replace","path":"","value":{}}]`, "--if-revision", "="+propertyLink.Link.Revision))
 			if !linkCleared.Changed || len(linkCleared.Link.Properties) != 0 {
 				t.Fatal("explicit Link root patch did not clear properties")
 			}
@@ -297,15 +297,15 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if propertyIssue.Properties.Title != "Property Issue" || propertyIssue.Properties.Priority != 1 || propertyIssue.Properties.Description != "Initial" || propertyIssue.Properties.EstimatedMinutes == nil || *propertyIssue.Properties.EstimatedMinutes != 7 {
 				t.Fatal("Issue property initialization lost typed values")
 			}
-			issueMerge := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--properties", `{"description":"Revised"}`, "--if-revision", propertyIssue.Revision))
+			issueMerge := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--properties", `{"description":"Revised"}`, "--if-revision", "="+propertyIssue.Revision))
 			if !issueMerge.Changed || issueMerge.Issue.Properties.Title != "Property Issue" || issueMerge.Issue.Properties.Priority != 1 || issueMerge.Issue.Properties.Description != "Revised" {
 				t.Fatal("Issue property merge lost an omitted field")
 			}
-			issueNoop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--properties", `{}`, "--if-revision", issueMerge.Issue.Revision))
+			issueNoop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--properties", `{}`, "--if-revision", "="+issueMerge.Issue.Revision))
 			if issueNoop.Changed || issueNoop.Issue.Revision != issueMerge.Issue.Revision {
 				t.Fatal("empty Issue property merge created a version")
 			}
-			issuePatched := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--patch", `[{"op":"replace","path":"/description","value":"Patched"},{"op":"remove","path":"/estimated_minutes"}]`, "--if-revision", issueMerge.Issue.Revision))
+			issuePatched := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--patch", `[{"op":"replace","path":"/description","value":"Patched"},{"op":"remove","path":"/estimated_minutes"}]`, "--if-revision", "="+issueMerge.Issue.Revision))
 			if !issuePatched.Changed || issuePatched.Issue.Properties.Description != "Patched" || issuePatched.Issue.Properties.EstimatedMinutes != nil {
 				t.Fatal("Issue property patch bypassed native field semantics")
 			}
@@ -319,8 +319,8 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if !forcedPatch.Changed || forcedPatch.Issue.Properties.Notes != "third" {
 				t.Fatal("Issue notes property patch did not honor deliberate force")
 			}
-			refuse("revision_conflict", "update", propertyIssue.ID, "--properties", `{"title":"stale"}`, "--if-revision", propertyIssue.Revision)
-			refuse("invalid_properties", "update", propertyIssue.ID, "--properties", `{"status":"closed"}`, "--if-revision", issuePatched.Issue.Revision)
+			refuse("revision_conflict", "update", propertyIssue.ID, "--properties", `{"title":"stale"}`, "--if-revision", "="+propertyIssue.Revision)
+			refuse("invalid_properties", "update", propertyIssue.ID, "--properties", `{"status":"closed"}`, "--if-revision", "="+issuePatched.Issue.Revision)
 		})
 	}
 }

@@ -23,7 +23,7 @@ func runGraphPreviewAssign(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, args[0], false)
 	if err != nil {
 		return err
 	}

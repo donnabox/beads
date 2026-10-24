@@ -163,8 +163,8 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			if !strings.Contains(tail, "1 older comments hidden") || !strings.Contains(tail, "Second note") || strings.Contains(tail, "First note") {
 				t.Fatalf("--comments-tail did not preserve familiar elision: %s", tail)
 			}
-			retainedJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", created.ID, "--revision", created.Revision, "--json")
-			retainedLongJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", created.ID, "--revision", created.Revision, "--long", "--json")
+			retainedJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", created.ID, "--revision", "="+created.Revision, "--json")
+			retainedLongJSON := graphPolicyCLI(t, bd, work, home, nil, "", "show", created.ID, "--revision", "="+created.Revision, "--long", "--json")
 			retained := graphMixedResult[graphstore.IssueRecord](t, retainedLongJSON)
 			if retainedLongJSON != retainedJSON || !strings.Contains(retainedJSON, `"schemaVersion":1`) || retained.ID != created.ID || retained.Revision != created.Revision || retained.Type != created.Type || !reflect.DeepEqual(retained.Properties, created.Properties) || !reflect.DeepEqual(retained.Metadata, created.Metadata) || !reflect.DeepEqual(retained.Owned, created.Owned) {
 				t.Fatalf("retained --long changed complete stored record: %s", retainedLongJSON)
@@ -175,7 +175,7 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 
 			// The old experimental complete-record envelope remains explicitly
 			// addressable, including for a retained version.
-			for _, args := range [][]string{{"show", created.ID, "--format", "graph-json", "--json"}, {"show", created.ID, "--revision", created.Revision, "--format", "graph-json", "--json"}} {
+			for _, args := range [][]string{{"show", created.ID, "--format", "graph-json", "--json"}, {"show", created.ID, "--revision", "=" + created.Revision, "--format", "graph-json", "--json"}} {
 				var envelope struct{ Result graphstore.IssueRecord }
 				out := graphPolicyCLI(t, bd, work, home, nil, "", args...)
 				if err := json.Unmarshal([]byte(out), &envelope); err != nil || envelope.Result.ID != created.ID || envelope.Result.Revision == "" {

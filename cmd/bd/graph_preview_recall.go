@@ -38,6 +38,12 @@ func runGraphPreviewRecall(cmd *cobra.Command, args []string) error {
 	if ref.Explicit && versioned {
 		return graphFailure("invalid_selector", "choose ID@revision or --revision, not both", 2)
 	}
+	if versioned {
+		version, err = graphPreviewRevisionFlag(cmd, "revision", ref.Identity, false)
+		if err != nil {
+			return err
+		}
+	}
 	ref, err = graphPreviewResolveParsedReference(ref)
 	if err != nil {
 		return graphPreviewReferenceFailure(err)

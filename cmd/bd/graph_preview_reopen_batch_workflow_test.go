@@ -268,7 +268,7 @@ func TestGraphPreviewDeferralPartialBatchWorkflow(t *testing.T) {
 			memoryBefore := call("", "show", memory.ID)
 			for _, command := range []string{"defer", "undefer"} {
 				before := call("", "versions", issue.ID)
-				call("invalid_selector", command, issue.ID, "missing", "--if-revision", issue.Revision)
+				call("invalid_selector", command, issue.ID, "missing", "--if-revision", "="+issue.Revision)
 				call("invalid_selector", command, issue.Properties.ID+"@current", "missing")
 				if got := call("", "versions", issue.ID); got != before {
 					t.Fatal("command-wide refusal changed Issue History")
@@ -291,7 +291,7 @@ func TestGraphPreviewDeferralPartialBatchWorkflow(t *testing.T) {
 				if len(newRows) != len(oldRows)+1 || call("", "show", memory.ID) != memoryBefore {
 					t.Fatal("partial batch lost exact Issue successor or changed wrong-Kind Memory")
 				}
-				call("revision_conflict", command, issue.ID, "--if-revision", issue.Revision)
+				call("revision_conflict", command, issue.ID, "--if-revision", "="+issue.Revision)
 				if call("", "versions", issue.ID) != after {
 					t.Fatal("stale single-member guard changed History")
 				}

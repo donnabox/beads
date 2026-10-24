@@ -41,7 +41,7 @@ func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 }
 
 func TestGraphPreviewIssueTextPresenceAndAliases(t *testing.T) {
-	cmd := issueTextCommand(t, "--title=  Revised 雪  ", "--description=", "--body=", "--message=", "--design=-", "--acceptance=Done", "--if-revision=observed")
+	cmd := issueTextCommand(t, "--title=  Revised 雪  ", "--description=", "--body=", "--message=", "--design=-", "--acceptance=Done", "--if-revision==observed")
 	request, err := graphPreviewIssueEditRequest(cmd, "beads/task")
 	if err != nil {
 		t.Fatal(err)
@@ -61,13 +61,13 @@ func TestGraphPreviewIssuePropertyMerge(t *testing.T) {
 		args      []string
 		wantError bool
 	}{
-		{"empty", []string{"--properties={}", "--if-revision=seen"}, false},
-		{"typed", []string{"--properties={\"title\":\"New\",\"priority\":2,\"estimated_minutes\":7}", "--if-revision=seen"}, false},
-		{"clear-estimate", []string{"--properties={\"estimated_minutes\":null}", "--if-revision=seen"}, false},
-		{"duplicate", []string{"--title=New", "--properties={\"title\":\"New\"}", "--if-revision=seen"}, true},
-		{"duplicate-alias", []string{"--body=New", "--properties={\"description\":\"New\"}", "--if-revision=seen"}, true},
-		{"read-only", []string{"--properties={\"status\":\"closed\"}", "--if-revision=seen"}, true},
-		{"wrong-type", []string{"--properties={\"priority\":\"2\"}", "--if-revision=seen"}, true},
+		{"empty", []string{"--properties={}", "--if-revision==seen"}, false},
+		{"typed", []string{"--properties={\"title\":\"New\",\"priority\":2,\"estimated_minutes\":7}", "--if-revision==seen"}, false},
+		{"clear-estimate", []string{"--properties={\"estimated_minutes\":null}", "--if-revision==seen"}, false},
+		{"duplicate", []string{"--title=New", "--properties={\"title\":\"New\"}", "--if-revision==seen"}, true},
+		{"duplicate-alias", []string{"--body=New", "--properties={\"description\":\"New\"}", "--if-revision==seen"}, true},
+		{"read-only", []string{"--properties={\"status\":\"closed\"}", "--if-revision==seen"}, true},
+		{"wrong-type", []string{"--properties={\"priority\":\"2\"}", "--if-revision==seen"}, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
@@ -120,9 +120,9 @@ func TestGraphPreviewIssueNotesInput(t *testing.T) {
 		wantForce  bool
 		wantAppend bool
 	}{
-		{"replace", []string{"--notes=New", "--force", "--if-revision=seen"}, "New", true, false},
-		{"clear", []string{"--clear-notes", "--if-revision=seen"}, "", false, false},
-		{"append", []string{"--append-notes=Next", "--if-revision=seen"}, "", false, true},
+		{"replace", []string{"--notes=New", "--force", "--if-revision==seen"}, "New", true, false},
+		{"clear", []string{"--clear-notes", "--if-revision==seen"}, "", false, false},
+		{"append", []string{"--append-notes=Next", "--if-revision==seen"}, "", false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
@@ -189,7 +189,7 @@ func TestGraphPreviewIssuePriorityInput(t *testing.T) {
 		{"2suffix", 2},
 	} {
 		t.Run(tc.input, func(t *testing.T) {
-			cmd := issueTextCommand(t, "--priority="+tc.input, "--if-revision=observed")
+			cmd := issueTextCommand(t, "--priority="+tc.input, "--if-revision==observed")
 			if !graphPreviewIssueEditFlagsChanged(cmd) {
 				t.Fatal("priority-only update did not select Issue route")
 			}
@@ -251,7 +251,7 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 func TestGraphPreviewIssueAssigneePresence(t *testing.T) {
 	for _, value := range []string{"", "alice", "  雪 / agent  ", strings.Repeat("雪", types.MaxFieldLen)} {
 		t.Run(fmt.Sprintf("value-%q", value), func(t *testing.T) {
-			cmd := issueTextCommand(t, "--assignee="+value, "--if-revision=observed")
+			cmd := issueTextCommand(t, "--assignee="+value, "--if-revision==observed")
 			request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
 			if err != nil || !graphPreviewIssueEditFlagsChanged(cmd) || request.Assignee == nil || *request.Assignee != value || request.ExpectedRevision != "observed" || request.Unconditional {
 				t.Fatalf("assignment/presence/guard lost: %+v %v", request, err)

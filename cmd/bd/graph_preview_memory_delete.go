@@ -119,7 +119,7 @@ func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget boo
 	force, _ := cmd.Flags().GetBool("force")
 	dryRun, _ := cmd.Flags().GetBool("dry-run")
 	preview := !forget && (dryRun || !force)
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, path, true)
 	if err != nil {
 		return graphstore.MemoryDeleteRequest{}, err
 	}

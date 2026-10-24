@@ -21,7 +21,7 @@ func TestGraphPreviewIssueEstimatePresence(t *testing.T) {
 		{"storage-max", []string{"--estimate=2147483647"}, 2147483647},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := issueTextCommand(t, append(tc.args, "--if-revision=observed")...)
+			cmd := issueTextCommand(t, append(tc.args, "--if-revision==observed")...)
 			got, err := graphPreviewIssueEditRequest(cmd, "beads/work")
 			if err != nil || !graphPreviewIssueEditFlagsChanged(cmd) || got.EstimatedMinutes == nil || *got.EstimatedMinutes != tc.want || got.ExpectedRevision != "observed" {
 				t.Fatalf("estimate presence/route/guard lost: %+v %v", got, err)

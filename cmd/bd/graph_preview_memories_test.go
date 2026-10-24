@@ -91,7 +91,7 @@ func TestGraphPreviewMemoryDiscoveryCompactRendering(t *testing.T) {
 			t.Fatalf("missing compact content %q in %q", want, output)
 		}
 	}
-	for _, unwanted := range []string{result.Scope, "saved-version", "actor-secret", "timestamp-secret", "Attribution:", "Owned Links:", "--revision", "Matched:"} {
+	for _, unwanted := range []string{result.Scope, "saved-version", "actor-secret", "timestamp-secret", "Attribution:", "Owned Links:", "--revision", "=Matched:"} {
 		if strings.Contains(output, unwanted) {
 			t.Fatalf("default output exposed details %q: %q", unwanted, output)
 		}

@@ -48,7 +48,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		if err := graphPreviewFlags(cmd, allowed...); err != nil {
 			return err
 		}
-		revision, _, err := graphPreviewEditRevisionGuard(cmd)
+		revision, _, err := graphPreviewEditRevisionGuard(cmd, selector, false)
 		if err != nil {
 			return err
 		}
@@ -56,7 +56,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
 		}
 		if cmd.Flags().Changed("if-source-revision") {
-			sourceRevision, _, err := graphPreviewRevisionGuard(cmd, true)
+			sourceRevision, _, err := graphPreviewRevisionGuard(cmd, true, selector, false)
 			if err != nil {
 				return err
 			}
@@ -153,7 +153,7 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return err
 	}

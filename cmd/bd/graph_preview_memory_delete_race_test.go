@@ -179,8 +179,8 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 				t.Fatalf("initial retained predecessor: %+v %v", before, err)
 			}
 			commands := [2][]string{
-				{"delete", path, "--force", "--if-revision", original.Revision, "--json"},
-				{"remember", "--update", path, "--title", "Winning edit", "--if-revision", original.Revision, "--json"},
+				{"delete", path, "--force", "--if-revision", "=" + original.Revision, "--json"},
+				{"remember", "--update", path, "--title", "Winning edit", "--if-revision", "=" + original.Revision, "--json"},
 			}
 			if other == "incoming-link" {
 				commands[1] = []string{"link", issue.ID, path, "--id", "links/incoming", "--type", scope + "types/references", "--json"}
@@ -244,9 +244,9 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 			// assertions. Explicit unlink/forget are separate normal operations.
 			if !deleteWon {
 				if other == "incoming-link" {
-					call(t, "link", "delete", "--force", "links/incoming", "--if-revision", link.Revision)
+					call(t, "link", "delete", "--force", "links/incoming", "--if-revision", "="+link.Revision)
 				}
-				call(t, "forget", path, "--if-revision", finalLive.Revision)
+				call(t, "forget", path, "--if-revision", "="+finalLive.Revision)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", path, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "Cannot reuse", "--id", path, "--title", "Reserved", "--json")

@@ -206,7 +206,7 @@ bd todo done beads/TEAM-123 --reason 'Tests landed'
 `bd todo done` accepts any Issue, including one whose type is not `task`.
 Without a revision guard, it tries each supplied ID in order, reports a
 failed target on stderr and still returns the successfully closed IDs with
-exit status zero. For one Issue, `--if-revision TOKEN` from `bd show --json`
+exit status zero. For one Issue, `--if-revision =TOKEN` from `bd show --json`
 refuses a stale close before changing that Issue. An already closed Issue is a
 no-op and retains its original close reason and version.
 
@@ -373,7 +373,7 @@ For a Memory, `bd remember --id ID` changes only the fields you supply if
 that ID already exists. Omitted title or body stays unchanged, and the current
 revision is accepted by default. `--update ID` remains an existing-only
 spelling; it refuses a missing Memory. A title-only update needs no body
-argument. Add `--if-revision TOKEN` to either spelling to reject a stale edit.
+argument. Add `--if-revision =TOKEN` to either spelling to reject a stale edit.
 
 ```sh
 bd remember 'Changes now land on the release branch.' --id policy
@@ -395,7 +395,7 @@ Replacement cannot combine with `--properties`, `--patch`, or Issue field flags.
 Issue property edits still use the native Issue writer and History recorder.
 Use `bd update ID --patch '[{"op":"replace","path":"/name","value":...}]'`
 for ordered property operations, including removal. A patch of an Issue may
-change only its writable scalar properties. A stale `--if-revision TOKEN`
+change only its writable scalar properties. A stale `--if-revision =TOKEN`
 refuses a write; omission accepts the current state. See
 [Versioning and History](#versioning-and-history) for exact-version reads.
 
@@ -461,7 +461,7 @@ reports already-open Issues without adding a version. `--force` overrides the
 native pinned, holder, blocker and open-child close policies; it does not make
 an already-closed Issue change again. `--session ID` records the closing
 session, with `CLAUDE_SESSION_ID` as its fallback. On a single Issue,
-`--if-revision TOKEN` from `bd show ID --json` refuses a stale close, including
+`--if-revision =TOKEN` from `bd show ID --json` refuses a stale close, including
 an already-closed retry. It cannot be combined with multiple IDs,
 `--suggest-next` or `--claim-next`; omission accepts the current revision.
 On a single Issue,
@@ -479,7 +479,7 @@ bd close work review --reason 'Finished the work' --reason 'Review complete'
 bd close blocked-work --force --session review-session --reason 'Override approved'
 bd close blocker --suggest-next --reason 'Dependency finished'
 bd close blocker --claim-next --reason 'Dependency finished and next work claimed'
-bd close work --if-revision "$revision" --reason 'Finished the work'
+bd close work --if-revision "=$revision" --reason 'Finished the work'
 bd reopen work review --reason 'Follow-up needed'
 ```
 
@@ -494,7 +494,7 @@ read from `--from-file`.
 Every named Issue must exist before the set changes. Dotted native Issue IDs
 currently refuse set deletion while citation rewriting is being qualified.
 `bd forget ID` applies Memory deletion
-directly and does not accept Issues. An optional `--if-revision TOKEN` refuses
+directly and does not accept Issues. An optional `--if-revision =TOKEN` refuses
 a stale target; omission accepts the current revision. Any live incoming,
 outgoing or self-Link still makes Memory deletion refuse. Memory refusal names
 the first blocking Link ID and the total count. Issue deletion removes its
@@ -540,7 +540,7 @@ bd ready                       # Wakes work once its defer date has passed
 bd undefer work                 # Or restore it explicitly
 bd defer work another-work      # Set multiple Issues aside indefinitely
 bd show work --json
-bd undefer work --if-revision REVISION_FROM_SHOW
+bd undefer work --if-revision =REVISION_FROM_SHOW
 ```
 
 The graph preview can narrow `bd ready` by priority, Issue classification,
@@ -578,9 +578,9 @@ explicit. To erase notes, use `--clear-notes`: `--notes=` is refused, even with
 
 ```sh
 bd show work --json                     # Read the current revision.
-bd update work --append-notes 'Review started.' --if-revision REVISION_FROM_SHOW
-bd update work --notes 'Revised handoff' --force --if-revision NEW_REVISION
-bd update work --clear-notes --if-revision LATEST_REVISION
+bd update work --append-notes 'Review started.' --if-revision =REVISION_FROM_SHOW
+bd update work --notes 'Revised handoff' --force --if-revision =NEW_REVISION
+bd update work --clear-notes --if-revision =LATEST_REVISION
 ```
 
 `bd assign ID PERSON`, `bd priority ID LEVEL` and `bd note ID TEXT` use the
@@ -602,7 +602,7 @@ bd assign work alice
 An Issue edit accepts the current state by default. A stale `--if-revision`
 refuses even with `--force`; force only authorizes the notes overwrite. An
 identical value or a clear of already-empty notes leaves the revision alone.
-Use `bd versions work` and `bd show work --revision TOKEN` to inspect prior
+Use `bd versions work` and `bd show work --revision =TOKEN` to inspect prior
 snapshots after an accepted change.
 
 ## Create, inspect, edit and remove Links
@@ -736,8 +736,8 @@ portable citations. Resolution refuses an unavailable or incomplete history.
 
 `ID@=TOKEN` selects the exact token, including an all-numeric token or one
 literally named `current`. `@current` selects the current revision. Generated
-local-ID forms need no shell quoting. `--revision TOKEN` remains a literal-token
-alternative and cannot combine with a suffix. Full canonical URLs stay literal;
+local-ID forms need no shell quoting. `--revision N` or `--revision =TOKEN` selects the same retained state
+without a suffix; the two forms cannot combine. Full canonical URLs stay literal;
 use `'[URI]@=TOKEN'` for an adorned URL. Local suffix grammar is interpreted before any whole-ID allocation lookup, so
 allocating a literal sibling never changes a reference's meaning. An ID
 containing literal `@` remains accessible through its unadorned canonical URI
@@ -764,8 +764,8 @@ their chronological order.
 
 ```sh
 bd memories 'code flow' --details
-bd recall policy --revision SAVED_TOKEN
-bd show policy --revision SAVED_TOKEN --json
+bd recall policy --revision =SAVED_TOKEN
+bd show policy --revision =SAVED_TOKEN --json
 bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --json
 bd versions policy
 bd history policy  # same listing in a graph workspace
@@ -773,10 +773,17 @@ bd history policy  # same listing in a graph workspace
 
 | Flag | Current use |
 | --- | --- |
-| `--revision TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`; use a saved `version` token. |
+| `--revision N` or `--revision =TOKEN` | Select a local history ordinal or one exact retained state for `bd show` and `bd recall`. |
+| `--from-revision N` or `--from-revision =TOKEN` | Copy editable content from a retained live state of the same Resource for a historical `bd update` or `bd link update`. |
 | `--from TOKEN --to TOKEN` | Select the two complete states for `bd compare`. |
-| `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has the saved `revision`. In an ordinary workspace, `bd update` and `bd delete` instead read it as the legacy compare-and-swap on a decimal bead `revision`. |
+| `--if-revision N` or `--if-revision =TOKEN` | In a graph workspace, refuse a write if the selected Resource has changed since that ordinal or exact token. In an ordinary workspace, `bd update` and `bd delete` retain the legacy decimal bead compare-and-swap. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
+
+The three graph flag forms above accept only a positive local ordinal `N` or
+an exact `=TOKEN`. Use `=TOKEN` when the token consists only of digits; a bare
+number always means a local ordinal. Bare opaque tokens and `current` are not
+valid values for these flags. Write guards still compare the resolved token in
+the storage transaction, so a stale selection refuses without changing state.
 
 `bd remember` with an existing `--id` or `--update`, `bd update`, `bd link
 update`, Memory/Issue deletion, and Link removal accept the current state when

@@ -221,7 +221,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			}
 			retainedEqual := func(id, revision string, value any) {
 				t.Helper()
-				raw := graphMixedResult[json.RawMessage](t, call("show", id, "--revision", revision))
+				raw := graphMixedResult[json.RawMessage](t, call("show", id, "--revision", "="+revision))
 				graphAssertCompleteRecordRevisionOnly(t, raw)
 				// Reconstitute only the internal alias needed by the production
 				// wire projector; compare the ENTIRE unmodified actual wire object.
@@ -291,7 +291,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				before := memory
 				args := []string{"update", memory.ID, "--patch", input, "--actor", "patch-author", "--json"}
 				if !unconditional {
-					args = append(args, "--if-revision", before.Revision)
+					args = append(args, "--if-revision", "="+before.Revision)
 				}
 				result := graphMixedResult[graphstore.MemoryMutationResult](t, graphPatchProcess(t, bd, work, home, stdin, "", 90*time.Second, args...))
 				if result.Changed != changed {
@@ -315,7 +315,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				before, source := link, memory
 				args := []string{"update", link.ID, "--patch", input, "--actor", "patch-author", "--json"}
 				if !unconditional {
-					args = append(args, "--if-revision", link.Revision)
+					args = append(args, "--if-revision", "="+link.Revision)
 				}
 				if !sourceUnconditional {
 					args = append(args, "--if-source-revision", memory.Revision)
@@ -360,7 +360,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			noopBefore := graphMemoryReadSnapshot(t, work)
 			applyMemory(patch("replace", "/title", want.Title), nil, want, false, false)
 			applyMemory(`[{"op":"replace","path":"/title","value":"temporary"},{"op":"replace","path":"/title","value":"Patch title 雪"}]`, nil, want, true, false)
-			refuse("revision_conflict", "update", memory.ID, "--patch", patch("replace", "/title", want.Title), "--if-revision", initial.Revision)
+			refuse("revision_conflict", "update", memory.ID, "--patch", patch("replace", "/title", want.Title), "--if-revision", "="+initial.Revision)
 			graphPatchEqual(t, graphMemoryReadSnapshot(t, work), noopBefore)
 			want.Body = ""
 			applyMemory("@"+file("empty-body.json", `[{"op":"remove","path":"/body"},{"op":"add","path":"/body","value":""}]`), nil, want, false, true)
@@ -369,7 +369,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			applyMemory("@-", strings.NewReader(patch("replace", "", want)), want, true, true)
 			beforeIntervening := memory
 			applyLink(patch("add", "/note", ""), nil, map[string]any{"note": ""}, false, false, true)
-			refuse("revision_conflict", "update", memory.ID, "--patch", patch("replace", "/title", want.Title), "--if-revision", beforeIntervening.Revision)
+			refuse("revision_conflict", "update", memory.ID, "--patch", patch("replace", "/title", want.Title), "--if-revision", "="+beforeIntervening.Revision)
 			want.Title = "Actual predecessor"
 			applyMemory(patch("replace", "/title", want.Title), nil, want, true, true)
 			applyLink("@"+file("link-patch.json", `[{"op":"replace","path":"/note","value":"  雪\r\n😀  "}]`), nil, map[string]any{"note": "  雪\r\n😀  "}, true, false, true)
@@ -380,7 +380,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			applyLink("@-", strings.NewReader(`[{"op":"remove","path":"/note"}]`), map[string]any{}, false, true, true)
 			applyLink(patch("replace", "", map[string]any{"note": "root"}), nil, map[string]any{"note": "root"}, true, true, true)
 			beforeUnowned := unowned
-			unownedReceipt := call("update", unowned.ID, "--patch", patch("add", "/note", "unowned"), "--if-revision", unowned.Revision, "--actor", "patch-author")
+			unownedReceipt := call("update", unowned.ID, "--patch", patch("add", "/note", "unowned"), "--if-revision", "="+unowned.Revision, "--actor", "patch-author")
 			unownedResult := graphMixedResult[graphstore.LinkMutationResult](t, unownedReceipt)
 			if !unownedResult.Changed || unownedResult.ReplacedSource != nil {
 				t.Fatal("unowned Link patch disclosure/changed")
@@ -434,13 +434,13 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			}
 			graphPatchEqual(t, defaultSourceNoop.Link, link)
 			sourceEqual(defaultSourceNoop.Source, memory)
-			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", beforeIntervening.Revision, "--if-source-revision", memory.Revision)
-			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", link.Revision, "--if-source-revision", beforeIntervening.Revision)
+			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", "="+beforeIntervening.Revision, "--if-source-revision", memory.Revision)
+			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", "="+link.Revision, "--if-source-revision", beforeIntervening.Revision)
 			refuse("revision_conflict", "update", unowned.ID, "--patch", patch("replace", "/note", "unowned"), "--if-source-revision", initial.Revision)
 			refuse("invalid_properties", "update", dependency.Link.ID, "--patch", patch("add", "/note", "unsupported"))
 			refuse("invalid_properties", "update", issue.ID, "--patch", patch("add", "/status", "closed"))
 			early("invalid_selector", memory.ID, "--if-revision", "")
-			early("invalid_selector", memory.ID, "--if-revision", string([]byte{255}))
+			early("invalid_selector", memory.ID, "--if-revision", "="+string([]byte{255}))
 			early("invalid_selector", "beads/")
 			early("capability_unavailable", memory.ID, "--properties", "{}")
 			early("invalid_selector", link.ID, "--if-source-revision", "")
@@ -510,7 +510,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				}()
 				ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
 				defer cancel()
-				cmd := graphMemoryReadCommand(ctx, bd, work, home, "update", memory.ID, "--patch", patch("replace", "/body", "committed before broken pipe"), "--if-revision", memory.Revision, "--actor", "patch-author", "--json")
+				cmd := graphMemoryReadCommand(ctx, bd, work, home, "update", memory.ID, "--patch", patch("replace", "/body", "committed before broken pipe"), "--if-revision", "="+memory.Revision, "--actor", "patch-author", "--json")
 				var stderr bytes.Buffer
 				cmd.Stdout, cmd.Stderr = write, &stderr
 				err := cmd.Run()
@@ -528,7 +528,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			if engine == "server" {
 				for _, race := range []string{"memory-patch-vs-link-write", "link-patch-vs-memory-write"} {
 					before, oldLink := memory, link
-					commands := [2][]string{{"update", memory.ID, "--patch", patch("replace", "/body", race), "--if-revision", memory.Revision, "--actor", "patch-author", "--json"}, {"update", link.ID, "--properties", `{"note":"race"}`, "--if-revision", link.Revision, "--if-source-revision", memory.Revision, "--actor", "patch-author", "--json"}}
+					commands := [2][]string{{"update", memory.ID, "--patch", patch("replace", "/body", race), "--if-revision", "=" + memory.Revision, "--actor", "patch-author", "--json"}, {"update", link.ID, "--properties", `{"note":"race"}`, "--if-revision", "=" + link.Revision, "--if-source-revision", memory.Revision, "--actor", "patch-author", "--json"}}
 					if race == "link-patch-vs-memory-write" {
 						commands[1][2] = "--patch"
 						commands[1][3] = patch("replace", "/note", "second race")
@@ -624,12 +624,12 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			}
 			unchanged()
 			for _, owned := range []graphstore.LinkRecord{link, twin, peer} {
-				call("link", "delete", "--force", owned.ID, "--if-revision", owned.Revision, "--if-source-revision", memory.Revision)
+				call("link", "delete", "--force", owned.ID, "--if-revision", "="+owned.Revision, "--if-source-revision", memory.Revision)
 				memory = showMemory()
 				retain(memory.ID, memory.Revision, memory)
 			}
 			final := memory
-			call("delete", memory.ID, "--force", "--if-revision", memory.Revision)
+			call("delete", memory.ID, "--force", "--if-revision", "="+memory.Revision)
 			refuse("gone", "update", memory.ID, "--patch", patch("replace", "/title", "no resurrection"))
 			refuse("gone", "update", link.ID, "--patch", patch("add", "/note", "no resurrection"))
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "no reuse", "--id", "beads/plan", "--title", "Reserved", "--json")
@@ -637,7 +637,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				index := strings.LastIndex(key, "@")
 				retainedEqual(key[:index], key[index+1:], value)
 			}
-			graphMemoryReadRaw(t, bd, work, home, final.Properties.Body, "", "recall", final.ID, "--revision", final.Revision)
+			graphMemoryReadRaw(t, bd, work, home, final.Properties.Body, "", "recall", final.ID, "--revision", "="+final.Revision)
 			if call("show", issue.ID, "--format", "graph-json") != issueCurrent || call("show", target.ID, "--format", "graph-json") != targetCurrent {
 				t.Fatal("deletion changed Issue survivors")
 			}
