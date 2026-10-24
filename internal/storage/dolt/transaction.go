@@ -1075,18 +1075,16 @@ func (t *doltTransaction) RemoveDependencyWithOptions(ctx context.Context, issue
 
 // AddLabel adds a label within the transaction
 func (t *doltTransaction) AddLabel(ctx context.Context, issueID, label, actor string) error {
-	table := "labels"
-	eventTable := "events"
-	if t.isActiveWisp(ctx, issueID) {
-		table = "wisp_labels"
-		eventTable = "wisp_events"
-	}
-
-	if err := issueops.AddLabelInTx(ctx, t.txFor(table), table, eventTable, issueID, label, actor); err != nil {
+	issueTable, labelTable, eventTable, _ := issueops.WispTableRouting(t.isActiveWisp(ctx, issueID))
+	changed, err := issueops.AddLabelInTxWithResult(ctx, t.txFor(labelTable), labelTable, eventTable, issueID, label, actor)
+	if err != nil {
 		return wrapExecError("add label in tx", err)
 	}
-	t.dirty.MarkDirty(table)
-	t.dirty.MarkDirty(eventTable)
+	if changed {
+		t.dirty.MarkDirty(issueTable)
+		t.dirty.MarkDirty(labelTable)
+		t.dirty.MarkDirty(eventTable)
+	}
 	return nil
 }
 
@@ -1115,18 +1113,16 @@ func (t *doltTransaction) GetLabels(ctx context.Context, issueID string) ([]stri
 
 // RemoveLabel removes a label within the transaction
 func (t *doltTransaction) RemoveLabel(ctx context.Context, issueID, label, actor string) error {
-	table := "labels"
-	eventTable := "events"
-	if t.isActiveWisp(ctx, issueID) {
-		table = "wisp_labels"
-		eventTable = "wisp_events"
-	}
-
-	if err := issueops.RemoveLabelInTx(ctx, t.txFor(table), table, eventTable, issueID, label, actor); err != nil {
+	issueTable, labelTable, eventTable, _ := issueops.WispTableRouting(t.isActiveWisp(ctx, issueID))
+	changed, err := issueops.RemoveLabelInTxWithResult(ctx, t.txFor(labelTable), labelTable, eventTable, issueID, label, actor)
+	if err != nil {
 		return wrapExecError("remove label in tx", err)
 	}
-	t.dirty.MarkDirty(table)
-	t.dirty.MarkDirty(eventTable)
+	if changed {
+		t.dirty.MarkDirty(issueTable)
+		t.dirty.MarkDirty(labelTable)
+		t.dirty.MarkDirty(eventTable)
+	}
 	return nil
 }
 
