@@ -3,6 +3,7 @@ package graphread
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
@@ -76,5 +77,9 @@ func projectInventory(snapshot graphstore.Snapshot) (Inventory, error) {
 			return Inventory{}, fmt.Errorf("%w: unsupported Resource projection", graphstore.ErrInvalidStore)
 		}
 	}
+	// Public ordering follows canonical identities after private-locator projection.
+	sort.Slice(result.Beads, func(i, j int) bool { return graph.CompareCodeUnits(result.Beads[i].ID, result.Beads[j].ID) < 0 })
+	sort.Slice(result.Links, func(i, j int) bool { return graph.CompareCodeUnits(result.Links[i].ID, result.Links[j].ID) < 0 })
+	sort.Slice(result.Types, func(i, j int) bool { return graph.CompareCodeUnits(result.Types[i].ID, result.Types[j].ID) < 0 })
 	return result, nil
 }
