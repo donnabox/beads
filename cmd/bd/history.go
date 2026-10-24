@@ -1,0 +1,205 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+
+	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/metrics"
+	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/ui"
+	"github.com/steveyegge/beads/internal/utils"
+)
+
+var (
+	historyLimit  int
+	historyEvents bool
+)
+
+var historyCmd = &cobra.Command{
+	Use:     "history <id>",
+	GroupID: "views",
+	Short:   "Show version history for an issue",
+	Long: `Show the complete version history of an issue, including all commits
+where the issue was modified.
+
+Examples:
+  bd history bd-123           # Show all history for issue bd-123
+  bd history bd-123 --limit 5 # Show last 5 changes
+  bd history bd-123 --events  # Show database audit events`,
+	Args:          cobra.ExactArgs(1),
+	SilenceUsage:  true,
+	SilenceErrors: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		// `bd history` means Dolt COMMITS on the native plane and that meaning
+		// is unchanged in ordinary workspaces. A graph workspace exposes no
+		// Dolt-commit view at all, so there is no collision: aliasing it to
+		// the per-Resource version list is the answer a reader asking for "the
+		// history of this bead" wants, and it keeps the operator ruling that
+		// `bd versions` is the verb (2026-09-21) intact rather than renaming it.
+		//
+		// DO NOT REMOVE THIS DISPATCH WITHOUT ALSO REMOVING historyCmd FROM THE
+		// ADMISSION LIST in graph_preview.go. The two are COUPLED. Admission
+		// stops a command from opening the legacy store, so a graph-mode
+		// history with no dispatch does not degrade to a refusal -- it reaches
+		// the code below and PANICS with a nil pointer dereference into a store
+		// that was never opened. Verified by deleting this block: the failure is
+		// a panic, not capability_unavailable.
+		// TestGraphPreviewVersionsCLI/history-aliases-versions is the only thing
+		// guarding that coupling.
+		if graphPreviewActive {
+			return runGraphPreviewVersions(cmd, args)
+		}
+
+		evt := metrics.NewCommandEvent("history")
+		defer func() {
+			if c := metrics.Global(); c != nil {
+				c.CloseEventAndAdd(evt)
+			}
+		}()
+
+		issueID := args[0]
+
+		if usesProxiedServer() {
+			// Proxied mode has no local store to resolve against, so partial-ID
+			// resolution is unavailable here -- pass the raw ID through and let
+			// the proxied server's own lookup handle it.
+			return runHistoryProxiedServer(rootCtx, issueID, historyLimit, historyEvents)
+		}
+
+		if resolved, err := utils.ResolvePartialID(rootCtx, store, issueID); err == nil {
+			issueID = resolved
+		} else if errors.Is(err, utils.ErrAmbiguousID) {
+			return HandleErrorRespectJSON("%v", err)
+		}
+		// Not-found IDs fall through unchanged -- the queries below just find
+		// nothing and hit the existing "No history found" path (GH#3502), so we
+		// don't hard-error on an id that never existed.
+
+		return runHistory(rootCtx, store, issueID, historyLimit, historyEvents)
+	},
+}
+
+type historyBackend interface {
+	History(ctx context.Context, id string) ([]*storage.HistoryEntry, error)
+	IterEvents(ctx context.Context, id string, limit int) (storage.Iter[types.Event], error)
+}
+
+func runHistory(ctx context.Context, backend historyBackend, issueID string, limit int, showEvents bool) error {
+	if showEvents {
+		events, err := collectHistoryEvents(ctx, backend, issueID, limit)
+		if err != nil {
+			return HandleErrorRespectJSON("failed to get history events: %v", err)
+		}
+		if jsonOutput {
+			return outputJSON(events)
+		}
+		printHistoryEvents(issueID, events)
+		return nil
+	}
+
+	history, err := backend.History(ctx, issueID)
+	if err != nil {
+		return HandleErrorRespectJSON("failed to get history: %v", err)
+	}
+
+	if len(history) == 0 {
+		if jsonOutput {
+			return outputJSON(history)
+		}
+		fmt.Printf("No history found for issue %s\n", issueID)
+		return nil
+	}
+
+	if limit > 0 && limit < len(history) {
+		history = history[:limit]
+	}
+
+	if jsonOutput {
+		return outputJSON(history)
+	}
+
+	fmt.Printf("\n%s History for %s (%d entries)\n\n",
+		ui.RenderAccent("📜"), issueID, len(history))
+
+	for i, entry := range history {
+		fmt.Printf("%s %s\n",
+			ui.RenderMuted(entry.CommitHash),
+			ui.RenderMuted(entry.CommitDate.Format("2006-01-02 15:04:05")))
+		fmt.Printf("  Author: %s\n", entry.Committer)
+
+		if entry.Issue != nil {
+			statusIcon := ui.GetStatusIcon(string(entry.Issue.Status))
+			fmt.Printf("  %s %s: %s [P%d - %s]\n",
+				statusIcon,
+				entry.Issue.ID,
+				entry.Issue.Title,
+				entry.Issue.Priority,
+				entry.Issue.Status)
+		}
+
+		if i < len(history)-1 {
+			fmt.Println()
+		}
+	}
+	fmt.Println()
+	return nil
+}
+
+func init() {
+	historyCmd.Flags().IntVar(&historyLimit, "limit", 0, "Limit number of history entries (0 = all)")
+	historyCmd.Flags().BoolVar(&historyEvents, "events", false, "Show database audit events instead of commit snapshots")
+	historyCmd.ValidArgsFunction = issueIDCompletion
+	rootCmd.AddCommand(historyCmd)
+}
+
+func collectHistoryEvents(ctx context.Context, backend historyBackend, issueID string, limit int) ([]types.Event, error) {
+	iter, err := backend.IterEvents(ctx, issueID, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = iter.Close() }()
+
+	var events []types.Event
+	for iter.Next(ctx) {
+		event := iter.Value()
+		if event != nil {
+			events = append(events, *event)
+		}
+	}
+	if err := iter.Err(); err != nil {
+		return nil, err
+	}
+	return events, nil
+}
+
+func printHistoryEvents(issueID string, events []types.Event) {
+	if len(events) == 0 {
+		fmt.Printf("No history events found for issue %s\n", issueID)
+		return
+	}
+
+	fmt.Printf("\n%s History events for %s (%d entries)\n\n",
+		ui.RenderAccent("📜"), issueID, len(events))
+	for i, event := range events {
+		fmt.Printf("%s %s by %s\n",
+			ui.RenderMuted(event.CreatedAt.Format("2006-01-02 15:04:05")),
+			event.EventType,
+			event.Actor)
+		if event.OldValue != nil && *event.OldValue != "" {
+			fmt.Printf("  Old: %s\n", *event.OldValue)
+		}
+		if event.NewValue != nil && *event.NewValue != "" {
+			fmt.Printf("  New: %s\n", *event.NewValue)
+		}
+		if event.Comment != nil && *event.Comment != "" {
+			fmt.Printf("  Comment: %s\n", *event.Comment)
+		}
+		if i < len(events)-1 {
+			fmt.Println()
+		}
+	}
+	fmt.Println()
+}
