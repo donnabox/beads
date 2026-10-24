@@ -60,12 +60,12 @@ func graphListNewestFirst(t *testing.T, beads []graphListedBead) bool {
 }
 
 // graphListHumanPaths names the Beads of a human list in row order: each Bead
-// row starts with its local ID after a two-space indent.
+// row starts with its local ID followed by its bracketed Type.
 func graphListHumanPaths(output string) []string {
 	paths := []string{}
 	for _, line := range strings.Split(output, "\n") {
-		if strings.HasPrefix(line, "  ") {
-			paths = append(paths, strings.Fields(line)[0])
+		if fields := strings.Fields(line); len(fields) >= 2 && strings.HasPrefix(fields[1], "[") {
+			paths = append(paths, fields[0])
 		}
 	}
 	return paths
@@ -103,6 +103,9 @@ func TestGraphPreviewListOrderAndCapWorkflow(t *testing.T) {
 			}
 			structured := func(extraEnv []string, extra ...string) ([]graphListedBead, bool) {
 				t.Helper()
+				if !slices.Contains(extra, "--type") && !slices.Contains(extra, "--exact-type") {
+					extra = append(extra, "--type", "any")
+				}
 				return graphListDecode(t, graphPolicyCLI(t, bd, work, home, extraEnv, "", append([]string{"list", "--format", "records-json"}, extra...)...))
 			}
 			pathsOf := func(beads []graphListedBead) []string {
@@ -121,7 +124,7 @@ func TestGraphPreviewListOrderAndCapWorkflow(t *testing.T) {
 
 			// A Memory, an Issue and a Memory, each recorded by its own process.
 			call("remember", "first body", "--id", "beads/first", "--title", "First")
-			call("create", "Second", "--graph-path", "beads/second")
+			call("create", "Second", "--id", "beads/second", "--force")
 			call("remember", "third body", "--id", "beads/third", "--title", "Third")
 			beads, more := structured(nil)
 			expect("creation order", beads, more, []string{"beads/third", "beads/second", "beads/first"}, false)
@@ -138,7 +141,7 @@ func TestGraphPreviewListOrderAndCapWorkflow(t *testing.T) {
 			expect("Memory Type", beads, more, []string{"beads/first", "beads/third"}, false)
 			beads, more = structured(nil, "--type", "types/issue")
 			expect("Issue Type", beads, more, []string{"beads/second"}, false)
-			if got := graphListHumanPaths(graphPolicyCLI(t, bd, work, home, nil, "", "list")); !slices.Equal(got, edited) {
+			if got := graphListHumanPaths(graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", "any")); !slices.Equal(got, edited) {
 				t.Fatalf("human rows %v follow a different order than the structured list %v", got, edited)
 			}
 
@@ -149,15 +152,15 @@ func TestGraphPreviewListOrderAndCapWorkflow(t *testing.T) {
 			expect("cap of three", beads, more, edited, false)
 			beads, more = structured([]string{"BEADS_MAX_ROWS=2"}, "--limit", "2")
 			expect("limit at the cap", beads, more, edited[:2], true)
-			diagnostic := graphListRefusal(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "list")
+			diagnostic := graphListRefusal(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "list", "--type", "any")
 			for _, want := range []string{"BEADS_MAX_ROWS=2", "page of 3 Beads", "--limit"} {
 				if !strings.Contains(diagnostic, want) {
 					t.Fatalf("refusal must name %q: %s", want, diagnostic)
 				}
 			}
 			// Structured output refuses with the same typed code.
-			graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "capability_unavailable", "list", "--format", "records-json")
-			graphListRefusal(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "list", "--limit", "3")
+			graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "capability_unavailable", "list", "--type", "any", "--format", "records-json")
+			graphListRefusal(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "list", "--type", "any", "--limit", "3")
 		})
 	}
 }
