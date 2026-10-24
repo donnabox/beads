@@ -38,21 +38,21 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 			}
 			uri := func(id string) string { return scope + "beads/" + id }
 			call(args...)
-			call("create", "First", "--graph-path", "beads/first")
-			call("create", "Second", "--graph-path", "beads/second")
+			call("create", "First", "--id", "beads/first", "--force")
+			call("create", "Second", "--id", "beads/second", "--force")
 			closed := graphMixedResult[[]graphstore.IssueMutationResult](t, call("close", uri("first"), uri("second"), "--reason", "First done", "--reason", "Second done"))
 			if len(closed) != 2 || !closed[0].Changed || !closed[1].Changed ||
 				closed[0].Issue.Properties.Status != types.StatusClosed || closed[1].Issue.Properties.Status != types.StatusClosed {
 				t.Fatalf("batch did not close both Issues in input order: %+v", closed)
 			}
-			firstBefore, secondBefore := call("versions", "first"), call("versions", "second")
+			firstBefore, secondBefore := call("versions", "beads/first"), call("versions", "beads/second")
 
 			reopened := graphMixedResult[[]graphstore.IssueMutationResult](t, call("reopen", uri("first"), uri("second"), "--reason", "More work"))
 			if len(reopened) != 2 || !reopened[0].Changed || !reopened[1].Changed ||
 				reopened[0].Issue.Properties.Status != types.StatusOpen || reopened[1].Issue.Properties.Status != types.StatusOpen {
 				t.Fatalf("batch did not reopen both Issues in input order: %+v", reopened)
 			}
-			if call("versions", "first") == firstBefore || call("versions", "second") == secondBefore {
+			if call("versions", "beads/first") == firstBefore || call("versions", "beads/second") == secondBefore {
 				t.Fatal("batch reopen did not retain both Issue successors")
 			}
 
@@ -97,12 +97,12 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 			if len(changed) != 1 || !changed[0].Changed || changed[0].Issue.Properties.Status != types.StatusOpen {
 				t.Fatalf("partial batch hid the successful reopen: %+v", changed)
 			}
-			call("create", "Third", "--graph-path", "beads/third")
-			thirdBefore := call("versions", "third")
+			call("create", "Third", "--id", "beads/third", "--force")
+			thirdBefore := call("versions", "beads/third")
 			if output := runMixedBatch(3, `"code":"not_found"`, "close", uri("third"), "missing"); output != "" {
 				t.Fatalf("missing close selector emitted a successful sibling: %s", output)
 			}
-			if got := call("versions", "third"); got != thirdBefore {
+			if got := call("versions", "beads/third"); got != thirdBefore {
 				t.Fatal("missing close selector changed a sibling Issue")
 			}
 			// Ordinary direct defer/undefer pre-resolves all IDs and rejects a
@@ -122,7 +122,7 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 			if !positional.Changed || positional.Issue.Properties.CloseReason != "Positional reason" {
 				t.Fatalf("done alias lost its positional reason: %+v", positional)
 			}
-			call("create", "Fourth", "--graph-path", "beads/fourth")
+			call("create", "Fourth", "--id", "beads/fourth", "--force")
 			reasonFile := filepath.Join(work, "close-reason.txt")
 			if err := os.WriteFile(reasonFile, []byte("Reason from file\n"), 0o600); err != nil {
 				t.Fatal(err)
@@ -156,31 +156,31 @@ func TestGraphPreviewCloseForceAndSessionWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, extraEnv, code, append(args, "--json")...)
 			}
 			call(nil, "", initArgs...)
-			call(nil, "", "create", "Prerequisite", "--graph-path", "beads/prerequisite")
-			call(nil, "", "create", "Blocked work", "--graph-path", "beads/work")
+			call(nil, "", "create", "Prerequisite", "--id", "beads/prerequisite", "--force")
+			call(nil, "", "create", "Blocked work", "--id", "beads/work", "--force")
 			call(nil, "", "dep", "add", "https://example.invalid/close-policy/beads/work", "https://example.invalid/close-policy/beads/prerequisite")
-			before := call(nil, "", "versions", "work")
+			before := call(nil, "", "versions", "beads/work")
 			call(nil, "constraint_violation", "close", "https://example.invalid/close-policy/beads/work", "--reason", "Not yet")
-			if got := call(nil, "", "versions", "work"); got != before {
+			if got := call(nil, "", "versions", "beads/work"); got != before {
 				t.Fatal("refused blocked close recorded a version")
 			}
 			closed := graphMixedResult[graphstore.IssueMutationResult](t, call(nil, "", "close", "https://example.invalid/close-policy/beads/work", "--force", "--reason", "Override", "--session", "session-one"))
 			if !closed.Changed || closed.Issue.Properties.Status != types.StatusClosed || closed.Issue.Properties.CloseReason != "Override" || closed.Issue.Properties.ClosedBySession != "session-one" {
 				t.Fatalf("forced close lost native state or session: %+v", closed)
 			}
-			closedVersions := call(nil, "", "versions", "work")
+			closedVersions := call(nil, "", "versions", "beads/work")
 			if closedVersions == before {
 				t.Fatal("forced close did not retain its Issue successor")
 			}
 			repeated := graphMixedResult[graphstore.IssueMutationResult](t, call(nil, "", "close", "https://example.invalid/close-policy/beads/work", "--force", "--reason", "Must not replace", "--session", "session-two"))
-			if repeated.Changed || repeated.Issue.Properties.CloseReason != "Override" || repeated.Issue.Properties.ClosedBySession != "session-one" || call(nil, "", "versions", "work") != closedVersions {
+			if repeated.Changed || repeated.Issue.Properties.CloseReason != "Override" || repeated.Issue.Properties.ClosedBySession != "session-one" || call(nil, "", "versions", "beads/work") != closedVersions {
 				t.Fatalf("re-close changed the first close or retained a successor: %+v", repeated)
 			}
 
-			call(nil, "", "create", "Assigned work", "--graph-path", "beads/assigned", "--assignee", "foreign-holder")
-			assignedBefore := call(nil, "", "versions", "assigned")
+			call(nil, "", "create", "Assigned work", "--id", "beads/assigned", "--force", "--assignee", "foreign-holder")
+			assignedBefore := call(nil, "", "versions", "beads/assigned")
 			call(nil, "invalid_properties", "close", "https://example.invalid/close-policy/beads/assigned")
-			if call(nil, "", "versions", "assigned") != assignedBefore {
+			if call(nil, "", "versions", "beads/assigned") != assignedBefore {
 				t.Fatal("refused foreign-holder close recorded a version")
 			}
 			forced := graphMixedResult[graphstore.IssueMutationResult](t, call([]string{"CLAUDE_SESSION_ID=session-from-env"}, "", "close", "https://example.invalid/close-policy/beads/assigned", "--force"))
@@ -212,15 +212,15 @@ func TestGraphPreviewCloseSuggestNextWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call("", initArgs...)
-			call("", "create", "Prerequisite", "--graph-path", "beads/prerequisite")
-			call("", "create", "Dependent", "--graph-path", "beads/dependent")
+			call("", "create", "Prerequisite", "--id", "beads/prerequisite", "--force")
+			call("", "create", "Dependent", "--id", "beads/dependent", "--force")
 			call("", "dep", "add", "https://example.invalid/close-suggest/beads/dependent", "https://example.invalid/close-suggest/beads/prerequisite")
-			dependentBefore := call("", "versions", "dependent")
-			prerequisiteBefore := call("", "versions", "prerequisite")
-			call("", "create", "Unrelated", "--graph-path", "beads/unrelated")
-			unrelatedBefore := call("", "versions", "unrelated")
+			dependentBefore := call("", "versions", "beads/dependent")
+			prerequisiteBefore := call("", "versions", "beads/prerequisite")
+			call("", "create", "Unrelated", "--id", "beads/unrelated", "--force")
+			unrelatedBefore := call("", "versions", "beads/unrelated")
 			call("invalid_selector", "close", "https://example.invalid/close-suggest/beads/prerequisite", "https://example.invalid/close-suggest/beads/unrelated", "--suggest-next")
-			if call("", "versions", "prerequisite") != prerequisiteBefore || call("", "versions", "unrelated") != unrelatedBefore {
+			if call("", "versions", "beads/prerequisite") != prerequisiteBefore || call("", "versions", "beads/unrelated") != unrelatedBefore {
 				t.Fatal("multi-target suggestion refusal changed an Issue")
 			}
 			type suggestion struct {
@@ -232,15 +232,15 @@ func TestGraphPreviewCloseSuggestNextWorkflow(t *testing.T) {
 				len(first.Unblocked) != 1 || first.Unblocked[0].ID != "https://example.invalid/close-suggest/beads/dependent" {
 				t.Fatalf("close did not name newly unblocked Issue: %+v", first)
 			}
-			if call("", "versions", "dependent") != dependentBefore {
+			if call("", "versions", "beads/dependent") != dependentBefore {
 				t.Fatal("suggestion changed or claimed the dependent Issue")
 			}
-			closedVersions := call("", "versions", "prerequisite")
+			closedVersions := call("", "versions", "beads/prerequisite")
 			if closedVersions == prerequisiteBefore {
 				t.Fatal("close did not retain its Issue successor")
 			}
 			again := graphMixedResult[suggestion](t, call("", "close", "https://example.invalid/close-suggest/beads/prerequisite", "--suggest-next", "--reason", "Different"))
-			if len(again.Unblocked) != 1 || call("", "versions", "prerequisite") != closedVersions {
+			if len(again.Unblocked) != 1 || call("", "versions", "beads/prerequisite") != closedVersions {
 				t.Fatalf("idempotent close lost suggestion or minted a version: %+v", again)
 			}
 			alone := graphMixedResult[graphstore.IssueMutationResult](t, call("", "close", "https://example.invalid/close-suggest/beads/unrelated", "--suggest-next"))

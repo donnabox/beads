@@ -25,7 +25,7 @@ func TestGraphPreviewQuickCaptureWorkflow(t *testing.T) {
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", append(initArgs, "--json")...)
 			created := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "q", "Quick", "capture", "--priority", "P1", "--type", "bug", "--labels", "triage", "--json"))
-			if !strings.HasPrefix(created, "beads/quick-") || strings.Contains(created, "\n") {
+			if !strings.HasPrefix(created, "quick-") || strings.Contains(created, "\n") {
 				t.Fatalf("quick capture did not print exactly one canonical ID: %q", created)
 			}
 			record := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/quick-capture/"+created, "--format", "graph-json"))

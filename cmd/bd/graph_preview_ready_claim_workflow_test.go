@@ -33,9 +33,9 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			call(initArgs...)
-			call("create", "Release task", "--graph-path", "beads/release", "--priority", "1", "--labels", "release", "--metadata", `{"team":"delivery"}`)
-			call("create", "Docs task", "--graph-path", "beads/docs", "--priority", "2", "--labels", "docs")
-			call("create", "Blocked task", "--graph-path", "beads/blocked", "--priority", "0", "--labels", "release")
+			call("create", "Release task", "--id", "beads/release", "--force", "--priority", "1", "--labels", "release", "--metadata", `{"team":"delivery"}`)
+			call("create", "Docs task", "--id", "beads/docs", "--force", "--priority", "2", "--labels", "docs")
+			call("create", "Blocked task", "--id", "beads/blocked", "--force", "--priority", "0", "--labels", "release")
 			call("dep", "add", scope+"beads/blocked", scope+"beads/docs")
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/release"))
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--label", "release")); len(got) != 1 || got[0].ID != before.ID {
@@ -79,7 +79,7 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/release")); !reflect.DeepEqual(got, current) {
 				t.Fatalf("fresh process did not see claimed record: %+v", got)
 			}
-			_, kind, versions, _ := graphVersionsListed(t, call("versions", "release"))
+			_, kind, versions, _ := graphVersionsListed(t, call("versions", "beads/release"))
 			if kind != "issue" || len(versions) != 2 || versions[0].Version != current.Revision || versions[1].Version != before.Revision {
 				t.Fatalf("ready claim did not mint exactly one retained version: %+v", versions)
 			}
@@ -95,11 +95,11 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/release")); !reflect.DeepEqual(got, current) {
 				t.Fatal("empty claims changed the existing lease or revision")
 			}
-			if _, _, again, _ := graphVersionsListed(t, call("versions", "release")); !reflect.DeepEqual(again, versions) {
+			if _, _, again, _ := graphVersionsListed(t, call("versions", "beads/release")); !reflect.DeepEqual(again, versions) {
 				t.Fatal("empty claims added retained versions")
 			}
-			call("create", "Sleeping task", "--graph-path", "beads/sleeping", "--labels", "sleeping")
-			sleeping := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "sleeping", "--until", "2000-01-01"))
+			call("create", "Sleeping task", "--id", "beads/sleeping", "--force", "--labels", "sleeping")
+			sleeping := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "beads/sleeping", "--until", "2000-01-01"))
 			if sleeping.Issue.Properties.Status != types.StatusDeferred {
 				t.Fatalf("setup did not defer sleeping Issue: %+v", sleeping)
 			}
@@ -110,11 +110,11 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			if woken.Revision == sleeping.Issue.Revision || woken.Properties.Status != types.StatusOpen || woken.Properties.DeferUntil != nil || woken.Properties.LeaseExpiresAt != nil {
 				t.Fatalf("empty claim did not retain the separate native defer wake: %+v", woken)
 			}
-			if _, _, wakeVersions, _ := graphVersionsListed(t, call("versions", "sleeping")); len(wakeVersions) != 3 || wakeVersions[0].Version != woken.Revision {
+			if _, _, wakeVersions, _ := graphVersionsListed(t, call("versions", "beads/sleeping")); len(wakeVersions) != 3 || wakeVersions[0].Version != woken.Revision {
 				t.Fatalf("empty claim did not retain one defer-wake version: %+v", wakeVersions)
 			}
 			if engine == "server" {
-				call("create", "Race task", "--graph-path", "beads/race", "--labels", "race")
+				call("create", "Race task", "--id", "beads/race", "--force", "--labels", "race")
 				outcomes := graphMutationRacePair(t, bd, work, home, [2][]string{
 					{"ready", "--claim", "--label", "race", "--actor", "first", "--json"},
 					{"ready", "--claim", "--label", "race", "--actor", "second", "--json"},
@@ -131,7 +131,7 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 				if winners != 1 {
 					t.Fatalf("concurrent ready claim has %d winners: %+v", winners, outcomes)
 				}
-				if _, _, raceVersions, _ := graphVersionsListed(t, call("versions", "race")); len(raceVersions) != 2 {
+				if _, _, raceVersions, _ := graphVersionsListed(t, call("versions", "beads/race")); len(raceVersions) != 2 {
 					t.Fatalf("concurrent claim minted unexpected versions: %+v", raceVersions)
 				}
 			}

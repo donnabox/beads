@@ -76,6 +76,8 @@ func graphListSeedIssue(t *testing.T, work, path string, request publicops.Creat
 			t.Error(err)
 		}
 	}()
+	request.Issue.ID = path
+	request.ForceIDPrefix = true
 	if _, err := s.CreateIssue(ctx, path, request); err != nil {
 		t.Fatal(err)
 	}
@@ -113,18 +115,24 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			}
 			list := func(extra ...string) ([]string, bool) {
 				t.Helper()
+				if !slices.Contains(extra, "--type") && !slices.Contains(extra, "--exact-type") {
+					extra = append(extra, "--type", "any")
+				}
 				return graphListBeads(t, bd, work, home, scope, extra...)
 			}
 			human := func(extra ...string) string {
 				t.Helper()
+				if !slices.Contains(extra, "--type") && !slices.Contains(extra, "--exact-type") {
+					extra = append(extra, "--type", "any")
+				}
 				return graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list"}, extra...)...)
 			}
 			// A piped process has no default row limit; a configured one is how the
 			// default limit becomes visible to it.
 			graphListConfig(t, work, "list:\n  limit: 2\n")
 			call("remember", "private body", "--id", "beads/plan", "--title", "Plan")
-			call("create", "Open work", "--graph-path", "beads/open", "--priority", "1")
-			call("create", "Finished work", "--graph-path", "beads/done", "--priority", "2")
+			call("create", "Open work", "--id", "beads/open", "--force", "--priority", "1")
+			call("create", "Finished work", "--id", "beads/done", "--force", "--priority", "2")
 			call("close", scope+"beads/done")
 			graphListSeedIssue(t, work, "beads/pin", publicops.CreateRequest{Actor: "test-author", Issue: &publicops.Issue{
 				Title: "Pinned note", Description: "kept", Status: types.StatusPinned, IssueType: types.TypeTask, Priority: 3,
@@ -148,8 +156,10 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			everything := []string{"beads/done", "beads/open", "beads/pin", "beads/plan"}
 			issues := []string{"beads/done", "beads/open", "beads/pin"}
 
+			defaultIDs, defaultMore := graphListBeads(t, bd, work, home, scope)
+			expect("default Issue family excludes Memories", defaultIDs, defaultMore, []string{"beads/open"}, false)
 			got, more := list()
-			expect("bare list hides the closed and the pinned Issue", got, more, []string{"beads/open", "beads/plan"}, false)
+			expect("all-Type list hides the closed and the pinned Issue", got, more, []string{"beads/open", "beads/plan"}, false)
 			got, more = list("--type", "types/issue")
 			expect("Issue Type hides them too", got, more, []string{"beads/open"}, false)
 			got, more = list("--type", "types/memory")
@@ -171,7 +181,7 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			// The human rows carry an Issue's status and priority, and the hint
 			// offers --all only while it would still help.
 			rows := human("--all")
-			for _, want := range []string{"  beads/done  Issue   closed  P2  Finished work\n", "  beads/open  Issue   open  P1  Open work\n", "  beads/pin  Issue   pinned  P3  Pinned note\n", "  beads/plan  types/memory  Plan\n"} {
+			for _, want := range []string{"beads/done [task] closed P2 \"Finished work\"\n", "beads/open [task] open P1 \"Open work\"\n", "beads/pin [task] pinned P3 \"Pinned note\"\n", "beads/plan [types/memory] \"Plan\"\n"} {
 				if !strings.Contains(rows, want) {
 					t.Fatalf("human rows lack %q: %s", want, rows)
 				}
@@ -182,7 +192,7 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			if out := human("--limit", "1"); !strings.Contains(out, "More Beads exist; increase --limit or use --all within preview bounds.") {
 				t.Fatalf("hint without --all must offer it: %s", out)
 			}
-			if out := human(); !strings.HasPrefix(out, "Beads (2; more: false; graph preview)\n") || strings.Contains(out, "beads/done") || strings.Contains(out, "beads/pin") || !strings.Contains(out, "  beads/plan  types/memory  Plan\n") {
+			if out := human(); !strings.HasPrefix(out, "Beads (2; more: false; graph preview)\n") || strings.Contains(out, "beads/done") || strings.Contains(out, "beads/pin") || !strings.Contains(out, "beads/plan [types/memory] \"Plan\"\n") {
 				t.Fatalf("default human list: %s", out)
 			}
 		})
