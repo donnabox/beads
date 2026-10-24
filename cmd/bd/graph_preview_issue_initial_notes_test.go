@@ -155,7 +155,7 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 			writeFile(t, gitconfig, []byte(gitText))
 			env := []string{"BEADS_ACTOR=" + tc.beadsActor, "BD_ACTOR=" + tc.oldActor, "GIT_AUTHOR_EMAIL=" + tc.ownerEnv}
 			path := "beads/" + tc.name
-			args := []string{"create", "Authored Issue", "--graph-path", path, "--notes", "  Initial 雪\r\n ", "--assignee", "assigned-worker", "--json"}
+			args := []string{"create", "Authored Issue", "--id", path, "--force", "--notes", "  Initial 雪\r\n ", "--assignee", "assigned-worker", "--json"}
 			if tc.flagActor != "" {
 				args = append(args, "--actor", tc.flagActor)
 			}
@@ -188,10 +188,10 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 	for _, key := range []string{"BEADS_ACTOR", "GIT_AUTHOR_EMAIL"} {
 		t.Run("overlong-"+key, func(t *testing.T) {
 			env := []string{key + "=" + strings.Repeat("雪", 256)}
-			graphPolicyCLI(t, bd, work, home, env, "invalid_properties", "create", "Refused", "--graph-path", "beads/refused", "--notes=No allocation", "--json")
+			graphPolicyCLI(t, bd, work, home, env, "invalid_properties", "create", "Refused", "--id", "beads/refused", "--force", "--notes=No allocation", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 		})
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--graph-path", "beads/refused", "--notes", "must not allocate", "--readonly", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--id", "beads/refused", "--force", "--notes", "must not allocate", "--readonly", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 }
