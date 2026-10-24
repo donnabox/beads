@@ -159,9 +159,10 @@ func FilterMemories(all map[string]string, search string) map[string]string {
 	return out
 }
 
-// TitleFromBody derives an independent Memory title from the first nonempty
-// trimmed body line, collapsing whitespace and limiting the title to 80 runes.
-// It does not change body bytes or derive, resolve, or overwrite an identity.
+// TitleFromBody is the existing deterministic display summary, not an inferred
+// semantic title. It summarizes the first trimmed body line, collapses spacing,
+// and caps the title at 80 runes including any ellipsis. Whitespace-only bodies
+// yield an empty title. The complete body and its identity remain unchanged.
 func TitleFromBody(body string) string {
 	line, _, _ := strings.Cut(strings.TrimSpace(body), "\n")
 	title := []rune(strings.Join(strings.Fields(line), " "))
