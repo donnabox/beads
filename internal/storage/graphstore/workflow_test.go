@@ -242,12 +242,25 @@ func TestNativeDependencyKindsShareTypeAndCanonicalUnlink(t *testing.T) {
 					}
 					typeURL, _ := relationshipDependencyTypeURL(options.Binding.ScopeURL, native)
 					request := DependencyRequest{SourcePath: "beads/from-" + string(native), TargetPath: "beads/to-" + string(native), Type: native, TypeURL: typeURL, Actor: "author", ExpectedSourceRevision: from.Revision}
+					// The trusted native writer installs a new custom binding after
+					// its guards; an explicit TypeURL requires it to exist already.
+					if native == "custom" {
+						before := workflowState(t, ctx, store)
+						if got, err := store.AddDependency(ctx, request); !errors.Is(err, ErrCapabilityUnavailable) || !reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
+							t.Fatalf("explicit uninstalled custom Type was not an atomic refusal: %+v %v", got, err)
+						}
+						request.TypeURL = ""
+					}
 					added, err := store.AddDependency(ctx, request)
 					if err != nil || !added.Changed || added.Link.Type != typeURL || added.Link.Properties["dep_type"] != string(native) || added.Link.Source != from.ID || added.Link.Target != to.ID || len(added.Source.Owned) != 1 {
 						t.Fatalf("native relationship add: %+v, %v", added, err)
 					}
+					linkPath, err := store.ResolveAllocatedResourcePath(ctx, strings.TrimPrefix(added.Link.ID, store.ScopeURL()))
+					if err != nil {
+						t.Fatal(err)
+					}
 					var nativeKind string
-					if err := store.db.QueryRowContext(ctx, `SELECT d.type FROM dependencies d JOIN graph_preview_catalog c ON c.backing_key=d.id WHERE c.path=?`, strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL)).Scan(&nativeKind); err != nil || nativeKind != string(native) {
+					if err := store.db.QueryRowContext(ctx, `SELECT d.type FROM dependencies d JOIN graph_preview_catalog c ON c.backing_key=d.id WHERE c.path=?`, linkPath).Scan(&nativeKind); err != nil || nativeKind != string(native) {
 						t.Fatalf("native dependency kind = %q, %v", nativeKind, err)
 					}
 					countVersions := func() (int, int) {
@@ -275,15 +288,17 @@ func TestNativeDependencyKindsShareTypeAndCanonicalUnlink(t *testing.T) {
 					if n, g := countVersions(); n != 2 || g != 2 {
 						t.Fatalf("no-op recorded %d native and %d graph versions", n, g)
 					}
-					request.Type = types.DepBlocks
-					if _, err := store.AddDependency(ctx, request); !errors.Is(err, storage.ErrValidation) {
-						t.Fatalf("same pair with another kind was admitted: %v", err)
+					otherKind := request
+					otherKind.Type = types.DepBlocks
+					otherKind.TypeURL = RelationshipBlockingTypeURL(store.ScopeURL())
+					beforeConflict := workflowState(t, ctx, store)
+					if got, err := store.AddDependency(ctx, otherKind); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() || !reflect.DeepEqual(beforeConflict, workflowState(t, ctx, store)) {
+						t.Fatalf("same pair with another kind was not an atomic refusal: %+v %v", got, err)
 					}
-					request.Type = native
-					if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL), Actor: "remover", ExpectedRevision: added.Link.Revision, ExpectedSourceRevision: from.Revision}); !errors.Is(err, ErrConflict) {
+					if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: linkPath, Actor: "remover", ExpectedRevision: added.Link.Revision, ExpectedSourceRevision: from.Revision}); !errors.Is(err, ErrConflict) {
 						t.Fatalf("stale unlink source guard was admitted: %v", err)
 					}
-					removed, err := store.Unlink(ctx, LinkDeleteRequest{Path: strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL), Actor: "remover", ExpectedRevision: added.Link.Revision, ExpectedSourceRevision: added.Source.Revision})
+					removed, err := store.Unlink(ctx, LinkDeleteRequest{Path: linkPath, Actor: "remover", ExpectedRevision: added.Link.Revision, ExpectedSourceRevision: added.Source.Revision})
 					removedSource, isIssue := removed.Source.(IssueRecord)
 					if err != nil || !removed.Changed || removed.Link.Type != typeURL || !isIssue || len(removedSource.Owned) != 0 {
 						t.Fatalf("canonical native relationship unlink: %+v, %v", removed, err)
@@ -291,7 +306,7 @@ func TestNativeDependencyKindsShareTypeAndCanonicalUnlink(t *testing.T) {
 					if n, g := countVersions(); n != 3 || g != 3 {
 						t.Fatalf("unlink recorded %d native and %d graph versions; want 3 each", n, g)
 					}
-					if _, err := store.ShowLink(ctx, strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL)); !errors.Is(err, ErrGone) {
+					if _, err := store.ShowLink(ctx, linkPath); !errors.Is(err, ErrGone) {
 						t.Fatalf("canonical Link identity was not tombstoned: %v", err)
 					}
 				})
