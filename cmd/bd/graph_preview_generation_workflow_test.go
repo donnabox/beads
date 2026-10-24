@@ -191,10 +191,10 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("marker %q: refused read changed workspace", marker)
 		}
 	}
-	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n", "link-preview-v10\n"} {
+	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n", "link-preview-v10\n", "link-preview-v11\n"} {
 		refuse(old, graphGenerationFirstGateRefusal)
 	}
-	refuse("link-preview-v12\n", "graph_mode workspace format link-preview-v12 is newer than this bd supports (link-preview-v11); upgrade bd; no database was opened")
+	refuse("link-preview-v13\n", "graph_mode workspace format link-preview-v13 is newer than this bd supports (link-preview-v12); upgrade bd; no database was opened")
 	refuse("link-preview-v9", graphGenerationFirstGateRefusal)
 	refuse("link-preview-v9x\n", graphGenerationFirstGateRefusal)
 
