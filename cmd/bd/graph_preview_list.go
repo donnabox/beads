@@ -352,11 +352,7 @@ func renderGraphBeadList(page graphstore.BeadListPage, scope string, all bool, n
 	return output.String(), nil
 }
 
-func renderGraphIssueList(page graphstore.IssueListPage, notice string, structured, quiet bool, scopes ...string) (string, error) {
-	scope := ""
-	if len(scopes) != 0 {
-		scope = scopes[0]
-	}
+func renderGraphIssueList(page graphstore.IssueListPage, notice string, structured, quiet bool, scope string) (string, error) {
 	var human strings.Builder
 	if !structured && !quiet {
 		fmt.Fprintf(&human, "Issues (%d; more: %t; graph preview)\n", len(page.Items), page.HasMore)

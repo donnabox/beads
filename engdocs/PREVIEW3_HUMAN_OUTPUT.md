@@ -7,7 +7,7 @@ creation commands use the generic Link row. They print JSON only when requested.
 
 Human output removes only this workspace's exact Scope URL prefix. Literal
 `beads/`, `links/`, and `types/` ID segments remain intact. Foreign references
-remain absolute. Native Issue and Dependency Types use their authoritative
+remain absolute. In these row and document views, native Issue and Dependency Types use their authoritative
 classification labels (for example `task` and `blocks`), not abstract base Types.
 
 `bd show` and `bd link show` use the same document layout for current and exact

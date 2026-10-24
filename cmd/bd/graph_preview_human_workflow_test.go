@@ -65,6 +65,26 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 			if got := call("list", "--type", "any"); !strings.Contains(got, strings.TrimSpace(create)) || !strings.Contains(got, strings.TrimSpace(issue)) {
 				t.Fatal(got)
 			}
+			native := graphMixedResult[graphstore.IssueRecord](t, call("create", "Commented", "--id-root", "current", "--json"))
+			peer := graphMixedResult[graphstore.IssueRecord](t, call("create", "Peer", "--id-root", "current", "--json"))
+			many := call("show", native.Properties.ID, peer.Properties.ID)
+			if strings.Count(many, "Revision: @1 (current)") != 2 || strings.Contains(many, native.Revision) || strings.Contains(many, peer.Revision) {
+				t.Fatal(many)
+			}
+			call("comments", "add", native.Properties.ID, "First comment")
+			call("comments", "add", native.Properties.ID, "Second comment")
+			tail := call("show", native.Properties.ID, "--comments-tail", "1", "--long", "--local-time")
+			if !strings.Contains(tail, "1 older comments hidden") || !strings.Contains(tail, "Second comment") || strings.Contains(tail, "First comment") {
+				t.Fatal(tail)
+			}
+			if past := call("show", native.Properties.ID+"@1"); strings.Contains(past, "Current comments") || strings.Contains(past, "Second comment") {
+				t.Fatal(past)
+			}
+			gate := graphMixedResult[graphstore.IssueRecord](t, call("create", "Approval gate", "--type", "gate", "--id-root", "gates", "--json"))
+			call("dep", "add", native.Properties.ID, gate.Properties.ID)
+			if current := call("show", native.Properties.ID); !strings.Contains(current, "Current gates") || !strings.Contains(current, gate.Properties.ID+" [gate]") {
+				t.Fatal(current)
+			}
 			// All five authoring facades use the generic Link row. Constraints admit
 			// the three constraint relationships without bypassing their real writer.
 			for i, op := range memoryLinkOperations {
