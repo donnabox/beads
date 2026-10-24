@@ -112,6 +112,7 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 }
 
 func TestGraphPreviewCommonIdentityGraphAndNativeLinkWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -142,7 +143,11 @@ func TestGraphPreviewCommonIdentityGraphAndNativeLinkWorkflow(t *testing.T) {
 			if one.ID != scope+one.Properties.ID || two.ID != scope+two.Properties.ID {
 				t.Fatal("Issue ID acquired a kind prefix")
 			}
-			dependency := graphMixedResult[graphstore.DependencyResult](t, call("link", "create", "--from", one.ID, "--to", two.ID, "--type", "types/dependency", "--id", "dependency-rootless"))
+			blocksType, err := graphstore.NativeDependencyTypeURL(scope, "blocks")
+			if err != nil {
+				t.Fatal(err)
+			}
+			dependency := graphMixedResult[graphstore.DependencyResult](t, call("link", "create", "--from", one.ID, "--to", two.ID, "--type", blocksType, "--id", "dependency-rootless"))
 			if dependency.Link.ID != scope+"dependency-rootless" || dependency.Link.Source != one.ID || dependency.Link.Target != two.ID {
 				t.Fatal("native Link identity changed", dependency)
 			}
@@ -248,6 +253,7 @@ func TestGraphPreviewCommonIdentityIssueDelete(t *testing.T) {
 }
 
 func TestGraphPreviewCommonIdentityLiteralIssueAdapters(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -260,9 +266,9 @@ func TestGraphPreviewCommonIdentityLiteralIssueAdapters(t *testing.T) {
 			one := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal Issue", "--id", "work@literal", "--force"))
 			two := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other Issue"))
 			for _, args := range [][]string{
-				{"show", one.Properties.ID, two.Properties.ID},
+				{"show", one.ID, two.Properties.ID},
 				{"show", "--id", one.Properties.ID, "--id", two.Properties.ID},
-				{"show", one.Properties.ID, "--id", two.Properties.ID},
+				{"show", one.ID, "--id", two.Properties.ID},
 			} {
 				var rows []map[string]any
 				if err := json.Unmarshal([]byte(call(args...)), &rows); err != nil {
@@ -273,7 +279,7 @@ func TestGraphPreviewCommonIdentityLiteralIssueAdapters(t *testing.T) {
 				}
 			}
 			for _, flag := range []string{"--refs", "--children"} {
-				for _, selector := range [][]string{{one.Properties.ID}, {"--id", one.Properties.ID}} {
+				for _, selector := range [][]string{{one.ID}, {"--id", one.Properties.ID}} {
 					var rows map[string]json.RawMessage
 					if err := json.Unmarshal([]byte(call(append([]string{"show", flag}, selector...)...)), &rows); err != nil {
 						t.Fatal(err)
@@ -284,12 +290,12 @@ func TestGraphPreviewCommonIdentityLiteralIssueAdapters(t *testing.T) {
 				}
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "--refs", "--id", "work@no-such-key", "--json")
-			empty := graphPolicyCLI(t, bd, work, home, nil, "", "comments", one.Properties.ID)
+			empty := graphPolicyCLI(t, bd, work, home, nil, "", "comments", one.ID)
 			if strings.TrimSpace(empty) != "No comments on "+one.Properties.ID {
 				t.Fatalf("empty comments leaked private locator: %s", empty)
 			}
-			call("comments", "add", one.Properties.ID, "A native comment")
-			comments := graphPolicyCLI(t, bd, work, home, nil, "", "comments", one.Properties.ID)
+			call("comments", "add", one.ID, "A native comment")
+			comments := graphPolicyCLI(t, bd, work, home, nil, "", "comments", one.ID)
 			if !strings.Contains(comments, "Comments on "+one.Properties.ID+":") || strings.Contains(comments, "beads/"+one.Properties.ID) {
 				t.Fatalf("comments leaked private locator: %s", comments)
 			}
@@ -297,7 +303,7 @@ func TestGraphPreviewCommonIdentityLiteralIssueAdapters(t *testing.T) {
 			if err := os.WriteFile(editor, []byte("#!/bin/sh\nprintf 'Edited native title\\n' > \"$1\"\n"), 0700); err != nil {
 				t.Fatal(err)
 			}
-			edited := graphPolicyCLI(t, bd, work, home, []string{"EDITOR=" + editor}, "", "edit", one.Properties.ID, "--title")
+			edited := graphPolicyCLI(t, bd, work, home, []string{"EDITOR=" + editor}, "", "edit", one.ID, "--title")
 			if !strings.Contains(edited, one.Properties.ID) || strings.Contains(edited, "beads/"+one.Properties.ID) {
 				t.Fatalf("editor feedback leaked private locator: %s", edited)
 			}
