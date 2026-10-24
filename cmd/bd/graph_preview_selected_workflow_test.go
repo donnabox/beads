@@ -53,8 +53,15 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			for _, id := range []string{"i1", "i2", "isolated-issue"} {
+			for _, id := range []string{"i1", "i2"} {
 				call("create", id, "--id", id, "--type", "task", "--force")
+			}
+			// This Issue intentionally separates its private path from its
+			// generated public identity. Use the actual graph create record,
+			// never a canonical URL reconstructed from its private path.
+			pathCreated := graphMixedResult[graphstore.IssueRecord](t, call("create", "isolated-issue", "--graph-path", "beads/isolated-issue", "--type", "task"))
+			if !strings.HasPrefix(pathCreated.ID, scope) || pathCreated.ID == scope+"beads/isolated-issue" {
+				t.Fatalf("path-only creation did not expose its distinct public identity: %+v", pathCreated)
 			}
 			for _, id := range []string{"m1", "m2", "isolated-memory"} {
 				call("create", id, "--id", id, "--type", "types/memory")
@@ -63,7 +70,8 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 				call("link", "create", edge[0], edge[1], "--id", edge[2], "--type", "types/references")
 			}
 			call("dep", "add", "i1", "i2")
-			call("dep", "add", "i2", "isolated-issue")
+			call("dep", "add", "i2", pathCreated.ID)
+			graphSelectedWorkflowCapture(t, bd, work, home, "not_found", "graph", scope+"beads/isolated-issue", "--json")
 			pin := graphMixedResult[graphstore.Record](t, call("show", "m2"))
 			call("link", "create", "m1", "m2", "--id", "pin", "--type", "types/references", "--target-revision", pin.Revision)
 			call("update", "m2", "--properties", `{"title":"New current title"}`)
