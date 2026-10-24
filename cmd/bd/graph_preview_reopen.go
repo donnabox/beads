@@ -84,19 +84,21 @@ func graphPreviewReopenPath(ctx context.Context, store *graphstore.Store, select
 		if strings.Contains(selector, "://") {
 			return "", fmt.Errorf("%w: reopen requires a canonical URL in this Scope", errGraphListSelector)
 		}
-		if err := graph.ValidateCanonicalResourceID(selector); err != nil {
+		// Local @ syntax is parsed before any allocation lookup. A later
+		// literal ID@revision allocation cannot change this write selector.
+		literal, parseErr := graphPreviewWritableIdentity(selector)
+		if parseErr != nil {
+			return "", fmt.Errorf("%w: %v", errGraphListSelector, parseErr)
+		}
+		if err := graph.ValidateCanonicalResourceID(literal); err != nil {
 			return "", fmt.Errorf("%w: %v", errGraphListSelector, err)
 		}
-		identity, err := store.ResolveAllocatedResourceIdentity(ctx, selector)
+		identity, err := store.ResolveAllocatedResourceIdentity(ctx, literal)
 		if err == nil {
 			path = identity.PrivatePath
 		} else {
 			if !errors.Is(err, graphstore.ErrNotFound) {
 				return "", err
-			}
-			literal, parseErr := graphPreviewWritableIdentity(selector)
-			if parseErr != nil {
-				return "", fmt.Errorf("%w: %v", errGraphListSelector, parseErr)
 			}
 			path, err = store.ResolveExactAllocatedResourcePath(ctx, literal)
 			if err != nil {

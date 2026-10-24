@@ -140,3 +140,50 @@ func TestGraphPreviewReopenCanonicalBatchPartial(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewReopenLocalRevisionCannotBecomeLiteralID(t *testing.T) {
+	isolateBeadsDirForTest(t)
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/reopen-revision-identity/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			show := func(id string) graphstore.IssueRecord {
+				t.Helper()
+				return graphMixedResult[graphstore.IssueRecord](t, call("show", id, "--format", "graph-json"))
+			}
+			refuse := func() {
+				t.Helper()
+				stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "reopen", "task@1", "--json")
+				if exit != 2 || stdout != "" || !strings.Contains(stderr, "invalid_selector") {
+					t.Fatalf("revision-qualified reopen: exit=%d stdout=%q stderr=%q", exit, stdout, stderr)
+				}
+			}
+			base := graphMixedResult[graphstore.IssueRecord](t, call("create", "Base", "--id", "task", "--force"))
+			call("close", base.ID)
+			closedBase := show(base.ID)
+			refuse()
+			if after := show(base.ID); after.Revision != closedBase.Revision || after.Properties.Status != types.StatusClosed {
+				t.Fatalf("rejected suffix changed base: %+v", after)
+			}
+			literal := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal", "--id", "task@1", "--force"))
+			call("close", literal.ID)
+			closedLiteral := show(literal.ID)
+			refuse()
+			if after := show(base.ID); after.Revision != closedBase.Revision || after.Properties.Status != types.StatusClosed {
+				t.Fatalf("allocated sibling changed suffix meaning for base: %+v", after)
+			}
+			if after := show(literal.ID); after.Revision != closedLiteral.Revision || after.Properties.Status != types.StatusClosed {
+				t.Fatalf("allocated sibling was reopened by suffix: %+v", after)
+			}
+			reopened := graphMixedResult[graphstore.IssueMutationResult](t, call("reopen", literal.ID))
+			if !reopened.Changed || reopened.Issue.ID != literal.ID || reopened.Issue.Properties.Status != types.StatusOpen {
+				t.Fatalf("full URI did not select literal @ ID: %+v", reopened)
+			}
+		})
+	}
+}
