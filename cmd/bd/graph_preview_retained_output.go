@@ -184,7 +184,7 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 		if history.CurrentState != nil {
 			result["currentState"] = history.CurrentState
 		}
-		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue) && len(terminals) != 0 {
+		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue || kind == graphstore.KindLink) && len(terminals) != 0 {
 			result["terminal_versions"] = graphVersionRowsJSON(terminals)
 		}
 		return result, nil

@@ -19,7 +19,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_properties", "--replace-properties cannot combine with --properties, --patch or Issue property flags", 2)
 	}
 	if len(args) == 0 && cmd.Flags().Changed("from-revision") {
-		return graphFailure("invalid_selector", "historical Update requires an explicit Bead ID", 2)
+		return graphFailure("invalid_selector", "historical Update requires an explicit Bead or Link ID", 2)
 	}
 	if len(args) == 0 {
 		if graphPreviewLinkPinFlagsChanged(cmd) || cmd.Flags().Changed("properties") || cmd.Flags().Changed("replace-properties") || cmd.Flags().Changed("patch") || cmd.Flags().Changed("type") {

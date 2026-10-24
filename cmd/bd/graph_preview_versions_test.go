@@ -73,8 +73,11 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
 			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", "links/edge"))
 			listed := call("versions", "links/edge")
-			if result := graphMixedResult[map[string]any](t, listed); result["terminal_versions"] != nil || result["currentState"] != nil {
-				t.Fatal("Memory recovery carrier leaked into existing Link history")
+			result := graphMixedResult[map[string]any](t, listed)
+			state, ok := result["currentState"].(map[string]any)
+			terminals, terminalOK := result["terminal_versions"].([]any)
+			if !ok || state["revision"] != removed.Link.Revision || state["type"] != removed.Link.Type || !terminalOK || len(terminals) != 1 {
+				t.Fatalf("Link deletion guard carrier missing: %s", listed)
 			}
 			_, kind, rows, members := graphVersionsListed(t, listed)
 			if kind != "link" || len(rows) != 2 {
@@ -343,11 +346,15 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 			t.Fatalf("create/update should retain two citable Link versions, got %d: %+v", len(rows), rows)
 		}
 		if removedLink.Link.Version == "" {
-			t.Fatal("unlink did not report its private deletion token")
+			t.Fatal("unlink did not report its terminal deletion revision")
 		}
 		human := run(t, "versions", "links/related")
-		if strings.Contains(human, removedLink.Link.Version) {
-			t.Fatalf("non-citable deletion token appeared in human version list:\n%s", human)
+		live, terminal, found := strings.Cut(human, "\nCurrent state: deleted\n")
+		if !found || !strings.Contains(terminal, "deletion revision: "+removedLink.Link.Version) {
+			t.Fatalf("removed Link has no separate terminal deletion descriptor:\n%s", human)
+		}
+		if strings.Contains(live, removedLink.Link.Version) {
+			t.Fatalf("non-citable deletion revision appeared in live version list:\n%s", human)
 		}
 		if !strings.Contains(human, "This Link has been removed.") {
 			t.Fatalf("removed Link has no human state notice:\n%s", human)

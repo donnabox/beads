@@ -207,7 +207,9 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: revision, Version: revision, State: "deleted", PreviousVersion: link.Version, Attribution: writeAttribution(request.Actor)}
+	attribution := writeAttribution(request.Actor)
+	attribution.Inception = link.Attribution.Inception
+	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: revision, Version: revision, State: "deleted", PreviousVersion: link.Version, Attribution: attribution}
 	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=?,backing_key=NULL WHERE path=?`, revision, path); err != nil {
 		return LinkDeleteResult{}, err
 	}

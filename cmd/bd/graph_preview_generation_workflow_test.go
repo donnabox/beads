@@ -156,11 +156,11 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err != nil || cfg == nil {
 		t.Fatalf("read initialized binding: %v", err)
 	}
-	if cfg.GraphSchemaVersion != 8 {
-		t.Fatalf("graph_schema_version = %d, want 8", cfg.GraphSchemaVersion)
+	if cfg.GraphSchemaVersion != 9 {
+		t.Fatalf("graph_schema_version = %d, want 9", cfg.GraphSchemaVersion)
 	}
-	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 8 {
-		t.Fatalf("persisted schema_version = %d, want 8", persisted)
+	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 9 {
+		t.Fatalf("persisted schema_version = %d, want 9", persisted)
 	}
 	// Availability changes discovery, not the immutable installed catalog.
 	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 20 {

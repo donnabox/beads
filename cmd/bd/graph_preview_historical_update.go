@@ -14,11 +14,14 @@ import (
 // Historical acquisition/composition is a single storage Update transaction;
 // this adapter never simulates it with a historical read and replacement.
 func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
+	if strings.HasPrefix(path, "links/") {
+		return runGraphPreviewHistoricalLinkUpdate(cmd, path)
+	}
 	if err := graphPreviewFlags(cmd, "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return err
 	}
 	if !strings.HasPrefix(path, "beads/") {
-		return graphFailure("capability_unavailable", "historical Link Update/recovery is not supported", 5)
+		return graphFailure("capability_unavailable", "historical Update requires a Bead or Link identity", 5)
 	}
 	source, _ := cmd.Flags().GetString("from-revision")
 	if source == "" || !utf8.ValidString(source) || len(source) > graphstore.PreviewVersionTokenLimit {

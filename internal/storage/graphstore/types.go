@@ -12,7 +12,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 8
+const SchemaVersion = 9
 
 // TypeGeneration changes when the selected fresh Type installation changes.
 // It is an admission marker, never an automatic migration of existing stores.
@@ -209,6 +209,7 @@ type LinkCreateRequest struct {
 // Type or endpoint identities. Nil pin intent preserves the stored Reference.
 // A guard is mandatory for the Link and, when owned, its source Memory.
 type LinkUpdateRequest struct {
+	FromRevision           string
 	Path, Actor            string
 	SourcePin, TargetPin   *EndpointPin
 	Properties             map[string]any
