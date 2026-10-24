@@ -37,11 +37,12 @@ func TestGraphPreviewOutputFailures(t *testing.T) {
 
 func TestGraphPreviewCompleteRecordJSONUsesRevisionOnly(t *testing.T) {
 	record := map[string]any{
-		"id": "https://example.invalid/scope/beads/plan", "type": "https://example.invalid/scope/types/memory",
+		"id": "https://example.invalid/scope/work/bd_abc", "type": "https://example.invalid/scope/types/memory",
 		"revision": "opaque", "version": "opaque",
 		"properties": map[string]any{"version": "user value", "large": json.Number("9007199254740993")},
 		"owned": []any{map[string]any{
-			"id": "https://example.invalid/scope/links/context", "type": "https://example.invalid/scope/types/related",
+			"id": "https://example.invalid/scope/edge/lk_xyz", "type": "https://example.invalid/scope/types/related",
+			"source": "https://example.invalid/scope/work/a", "target": "https://example.invalid/scope/work/b",
 			"revision": "link-token", "version": "link-token", "properties": map[string]any{"version": "link property"},
 		}},
 	}
@@ -50,7 +51,7 @@ func TestGraphPreviewCompleteRecordJSONUsesRevisionOnly(t *testing.T) {
 		"versions": []any{map[string]any{"version": "retained-token", "local_revision": 2}},
 		"removed":  map[string]any{"id": "links/old", "type": "related", "revision": "deletion-marker", "version": "deletion-marker", "state": "deleted"},
 		"changes": []any{
-			map[string]any{"area": "owned", "to": map[string]any{"present": true, "value": map[string]any{"id": "https://example.invalid/scope/links/context", "type": "related", "revision": "owned", "version": "owned", "properties": map[string]any{}}}},
+			map[string]any{"area": "owned", "to": map[string]any{"present": true, "value": map[string]any{"id": "https://example.invalid/scope/edge/lk_xyz", "type": "https://example.invalid/scope/related", "source": "https://example.invalid/scope/work/a", "target": "https://example.invalid/scope/work/b", "revision": "owned", "version": "owned", "properties": map[string]any{}}}},
 			map[string]any{"area": "properties", "to": map[string]any{"present": true, "value": map[string]any{"id": "user", "type": "user", "revision": "user", "version": "user", "properties": map[string]any{}}}},
 		},
 	}
@@ -82,5 +83,17 @@ func TestGraphPreviewCompleteRecordJSONUsesRevisionOnly(t *testing.T) {
 	}
 	if bytes.Contains(envelope.Result["changes"], []byte(`"version":"owned"`)) || !bytes.Contains(envelope.Result["changes"], []byte(`"version":"user"`)) {
 		t.Fatalf("owned comparison or arbitrary property value changed: %s", out.String())
+	}
+}
+
+func TestGraphPreviewRecordShapeDoesNotProjectArbitraryObjects(t *testing.T) {
+	for _, value := range []string{
+		`{"id":"https://example.invalid/scope/work/a","type":"https://example.invalid/scope/type/a","revision":"one","version":"one","properties":{}}`,
+		`{"id":"https://example.invalid/scope/work/a","type":"https://example.invalid/scope/type/a","revision":"one","version":"two","properties":{},"owned":[]}`,
+	} {
+		raw, err := graphProjectRecordJSON(json.RawMessage(`{"nested":` + value + `}`))
+		if err != nil || !bytes.Contains(raw, []byte(`"version":`)) {
+			t.Fatalf("arbitrary nested object lost version: %s (%v)", raw, err)
+		}
 	}
 }
