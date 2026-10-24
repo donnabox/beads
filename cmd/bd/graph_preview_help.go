@@ -349,9 +349,9 @@ exhaustion. Acquisition remains a complete bounded current inventory (at most
 1000 Resources / 16 MiB; serialized output at most 16 MiB), not scalable or arbitrary historical traversal.
 Authored endpoint revision pins remain visible; adjacent Beads are current
 records and are not silently substituted for those pinned revisions.
---all with the Dependency selector retains open Issues, including isolated
-ones. Other selectors show matching components/endpoints, excluding unrelated
-isolates. A named root stays visible without matching Links. --open remains unavailable in link mode; dependency mode retains its existing view. --json carries complete canonical Beads/Links
+--all with only the Dependency-family selector retains open Issues, including
+isolates. Other selections, including --exact-link-type Dependency, show matching
+Link endpoints without unrelated isolates. A named root stays visible without matching Links. --open remains unavailable in link mode; dependency mode retains its existing view. --json carries complete canonical Beads/Links
 and separate traversal metadata; --dot, --html, --compact and --box also work.
 --view generic is optional/deprecated. bd graph check retains its existing
 blocking-dependency consistency report.`},

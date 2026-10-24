@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/steveyegge/beads/internal/types"
@@ -175,6 +176,119 @@ func TestGraphPreviewSelectedOpenIssuePopulationRetainsOmittedEvidence(t *testin
 	assertGenericSelection(t, got, []string{"open"}, []string{}, []string{})
 	if !reflect.DeepEqual(got.OmittedLinkTypes, []string{genericTestScope + "types/references"}) {
 		t.Fatalf("open-Issue filtering erased authorized incidence: %+v", got)
+	}
+}
+
+func TestGraphPreviewSelectedAllDependencyPopulationIsSelectorSpecific(t *testing.T) {
+	snapshot := graphstore.Snapshot{Types: selectedTypeTestDescriptors(t, genericTestScope)}
+	for _, id := range []string{"open", "closed", "isolated"} {
+		status := types.StatusOpen
+		if id == "closed" {
+			status = types.StatusClosed
+		}
+		snapshot.Records = append(snapshot.Records, graphstore.IssueRecord{ID: genericTestScope + "beads/" + id, Type: graphstore.IssueTypeURL(genericTestScope), Version: "v1", Properties: &types.Issue{Title: id, Status: status}})
+	}
+	snapshot.Records = append(snapshot.Records,
+		graphstore.Record{ID: genericTestScope + "beads/m", Type: graphstore.MemoryTypeURL(genericTestScope), Version: "v1"},
+		graphstore.LinkRecord{ID: genericTestScope + "links/dep", Type: graphstore.DependencyTypeURL(genericTestScope), Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/closed"},
+		graphstore.LinkRecord{ID: genericTestScope + "links/ref", Type: genericTestScope + "types/references", Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/m"},
+	)
+	family := genericTestInput("", "both", 1000)
+	family.All, family.OpenIssuesOnly = true, true
+	family.LinkTypes = []string{graphstore.DependencyTypeURL(genericTestScope)}
+	got, err := projectGraphGeneric(snapshot, genericTestScope, family)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Sole family Dependency is the familiar open-Issue population, including
+	// isolates. Exact Dependency instead uses the general matching endpoints.
+	assertGenericSelection(t, got, []string{"isolated", "open"}, []string{}, []string{})
+	exact := family
+	exact.OpenIssuesOnly = false
+	exact.LinkTypes = nil
+	exact.ExactLinkTypes = []string{graphstore.DependencyTypeURL(genericTestScope)}
+	got, err = projectGraphGeneric(snapshot, genericTestScope, exact)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertGenericSelection(t, got, []string{"closed", "open"}, []string{"dep"}, []string{})
+	wildcard := exact
+	wildcard.ExactLinkTypes = nil
+	wildcard.AllLinkTypes = true
+	got, err = projectGraphGeneric(snapshot, genericTestScope, wildcard)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertGenericSelection(t, got, []string{"closed", "m", "open"}, []string{"dep", "ref"}, []string{})
+}
+
+func TestGraphPreviewSelectedExportLabelsAndDepthBoundary(t *testing.T) {
+	for _, format := range []string{"box", "dot", "html"} {
+		for _, truncated := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/truncated=%t", format, truncated), func(t *testing.T) {
+				r := graphTreeTestResult("a", "out", []string{"a", "b"}, genericTestEdge{"ab", "a", "b"})
+				r.Depth = 3
+				if truncated {
+					r.Complete, r.Frontier = false, []string{r.Nodes[1].ID}
+				}
+				var out bytes.Buffer
+				writer := &graphExportWriter{out: &out}
+				switch format {
+				case "box":
+					renderGraphSelectedBox(writer, r)
+				case "dot":
+					renderGraphSelectedDOT(writer, r)
+				case "html":
+					if err := renderGraphSelectedHTML(writer, r); err != nil {
+						t.Fatal(err)
+					}
+				}
+				if err := writer.wrapError("graph"); err != nil {
+					t.Fatal(err)
+				}
+				text := out.String()
+				if !strings.Contains(text, "beads/a [types/memory]") {
+					t.Fatalf("%s lost node identity/Type label: %s", format, text)
+				}
+				if format == "html" {
+					// HTML keeps exact Link Types in data; the tooltip explicitly
+					// brackets that Type rather than changing its wire identity.
+					if !strings.Contains(text, `"type":"`+genericTestScope+`types/references"`) || !strings.Contains(text, `"\n[" + d.type + "]\nsource revision: "`) {
+						t.Fatal("HTML lost typed Link data/tooltip", text)
+					}
+				} else if !strings.Contains(text, "[types/references]") {
+					t.Fatalf("%s lost Link Type label: %s", format, text)
+				}
+				boundary := "Depth limit 3 reached"
+				if format == "html" {
+					boundary = "depth limit 3 reached"
+				}
+				if strings.Contains(text, boundary) != truncated {
+					t.Fatalf("%s depth warning did not match checked frontier: %s", format, text)
+				}
+				for _, bookkeeping := range []string{"complete:", "Complete:", "complete true", "complete false", "frontier:", "frontier 0", "frontier 1", "direction out"} {
+					if strings.Contains(text, bookkeeping) {
+						t.Fatalf("%s emitted routine bookkeeping %q", format, bookkeeping)
+					}
+				}
+			})
+		}
+	}
+	var empty bytes.Buffer
+	renderGraphSelectedBox(&graphExportWriter{out: &empty}, graphGenericResult{})
+	if empty.String() != "No matching Beads.\n" {
+		t.Fatalf("empty Box: %q", empty.String())
+	}
+}
+
+func TestGraphPreviewSelectedBoxEscapesStatus(t *testing.T) {
+	r := graphTreeTestResult("a", "out", []string{"a"})
+	r.Nodes[0].Status = "open\n└── forged\x1b[2J"
+	before := r.Nodes[0].Status
+	var out bytes.Buffer
+	renderGraphSelectedBox(&graphExportWriter{out: &out}, r)
+	if strings.Contains(out.String(), "\x1b") || strings.Contains(out.String(), "\n└── forged") || !strings.Contains(out.String(), `open\n└── forged\x1b[2J`) || r.Nodes[0].Status != before {
+		t.Fatalf("Box injected controls or changed captured Status: %q", out.String())
 	}
 }
 

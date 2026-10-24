@@ -77,6 +77,10 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			if implicitJSON != implicit || explicitJSON != implicitJSON || !strings.Contains(implicitNotice, scope+"types/references") || !strings.Contains(implicitNotice, "--link-type any") || strings.Contains(explicitNotice, "omitted Link Types") {
 				t.Fatalf("default disclosure changed stdout or explicit selection: implicit=%s explicit=%s implicit stderr=%s explicit stderr=%s", implicitJSON, explicitJSON, implicitNotice, explicitNotice)
 			}
+			quietJSON, quietNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--quiet", "--json")
+			if quietJSON != implicitJSON || quietNotice != "" {
+				t.Fatalf("quiet graph changed JSON or emitted an advisory: stdout=%s stderr=%s", quietJSON, quietNotice)
+			}
 			_, refusedNotice := graphSelectedWorkflowCapture(t, bd, work, home, "capability_unavailable", "graph", "i1", "--max-nodes=1", "--json")
 			if strings.Contains(refusedNotice, "omitted Link Types") {
 				t.Fatalf("refusal emitted success disclosure: %s", refusedNotice)

@@ -19,7 +19,7 @@ func init() {
 	graphCmd.Flags().String("view", "", "Deprecated: generic is the ordinary graph view in link mode")
 	graphCmd.Flags().String("direction", "both", "Generic Link direction: in, out or both (graph_mode link workspaces only)")
 	graphCmd.Flags().Int("depth", 1000, "Link hop depth (0..1000); frontier reports depth truncation (link mode only)")
-	graphCmd.Flags().StringArray("link-type", nil, "Select a Link Type including refinements (repeatable OR union; default Dependency; link mode only)")
+	graphCmd.Flags().StringArray("link-type", nil, "Select a Link Type family, or any for all Types (repeatable OR union; default Dependency; link mode only)")
 	graphCmd.Flags().StringArray("exact-link-type", nil, "Select exactly a Link Type, without refinements (repeatable OR union; link mode only)")
 	graphCmd.Flags().Int("max-nodes", 1000, "Generic emitted Bead bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
 	graphCmd.Flags().Int("max-links", 1000, "Generic emitted Link bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
@@ -166,10 +166,10 @@ func writeGraphGenericSelection(out, diagnostics io.Writer, output string, omitt
 }
 
 func writeGraphGenericOmittedNotice(out io.Writer, omitted []string) error {
-	if len(omitted) == 0 {
+	if len(omitted) == 0 || quietFlag {
 		return nil
 	}
-	return writeGraphGeneric(out, fmt.Sprintf("Graph uses the default Dependency family; reached Beads also have omitted Link Types: %s. Use --link-type any to select all Link Types; direction and depth still apply.\n", strings.Join(omitted, ", ")))
+	return writeGraphGeneric(out, fmt.Sprintf("Graph uses the default Dependency family; reached Beads also have omitted Link Types: %s. Use --link-type any to select all Link Types; direction and depth still apply. With --all, that selects Link endpoints and omits isolated Beads.\n", strings.Join(omitted, ", ")))
 }
 
 func writeGraphGeneric(out io.Writer, output string) error {

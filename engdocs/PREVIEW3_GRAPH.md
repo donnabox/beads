@@ -9,7 +9,8 @@ bd graph work                       # Dependency family, both directions
 bd graph work --link-type Dependency # Exactly the same selection and defaults
 bd graph work --link-type References --direction out --depth 3
 bd graph policy --link-type Requires --link-type Subject-To --depth 2
-bd graph work --all-link-types --dot > graph.dot
+bd graph work --link-type any --dot > graph.dot
+bd graph work --exact-link-type References
 bd graph --all --link-type References --html > graph.html
 ```
 
@@ -26,9 +27,11 @@ URL in this workspace. Bare installed names are case-insensitive; use the
 exact canonical path for path/URL forms. `Requires` includes `Defines`.
 Use `bd types` to inspect the actual installed catalog.
 
-Omitting the selector means exactly `--link-type Dependency`. An explicit
-selection replaces this default. `--all-link-types` selects every installed
-public Link Type and cannot be combined with `--link-type`. An excluded Link
+Omitting the selector selects the Dependency family. An explicit selection
+replaces this default. `--exact-link-type NAME` selects that declared Type
+without refinements. Repeat either flag for an OR union; `--link-type any`
+selects every installed public Link Type and can join that union. The `any`
+keyword is lowercase; a full Type URL selects its literal identity. An excluded Link
 cannot act as a hidden bridge to another Bead.
 
 One `--direction in|out|both` and one `--depth` apply to the whole selection.
@@ -43,9 +46,10 @@ that Link was unnecessary to discover a Bead: cross-links, parallel Links,
 and cycles remain visible. Cycles terminate through visited Bead identities.
 A named root remains visible when no selected Link matches.
 
-`--all` takes no root. With the Dependency default, it retains the familiar
-open/in-progress/blocked native Issue population, including isolated Issues.
-Other selections include matching Links and their endpoint Beads, including
+`--all` takes no root. With only the Dependency-family selector, implicit or
+explicit, it retains the familiar open/in-progress/blocked native Issue
+population, including isolated Issues. Other selections, including
+`--exact-link-type Dependency`, include matching Links and their endpoint Beads, including
 disconnected components, without unrelated isolated Beads. `--all` already
 selects the entire eligible population; explicitly combining it with
 `--direction` or `--depth` refuses instead of ignoring those settings.
@@ -59,10 +63,12 @@ selected Link appears once, including parallel and cross-Links. A Bead expands
 once, under its canonical shortest-hop parent in the admitted direction;
 non-tree Links cannot change that parent. References retain identity and Type,
 including for a canonical appearance later in the view. All non-tree references
-say `shown elsewhere`; `cycle` additionally marks a selected directed loop. Counts distinguish unique Beads
-from actual Links, and a depth boundary retains its root and discloses its
-frontier. Display prefixes are elided only in the human tree; pins and JSON
-remain unchanged. `--box` retains its flat Bead/Link view. Generic views do not
+say `shown elsewhere`; `cycle` additionally marks a selected directed loop.
+Counts distinguish unique Beads from actual Links. At a depth limit, the view
+names the reached Beads whose further relationships are outside this view,
+without routine completion/frontier bookkeeping. Human views keep
+literal path segments and shorten only the local Scope URL; pins and JSON
+remain unchanged. Beads and relationships use `[Type]` labels. `--box` retains its flat Bead/Link view. Generic views do not
 assign Memory priority, readiness or workflow status. HTML uses the existing
 D3 browser visualization and requires its D3 CDN to be reachable.
 

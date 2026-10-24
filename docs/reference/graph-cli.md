@@ -246,7 +246,7 @@ The new candidate uses ordinary `bd graph BEAD` or `bd graph --all`.
 Omitting a selector selects the Dependency family, including refinements.
 Use `--link-type TYPE` for a family, `--exact-link-type TYPE` for that declared
 Type only, or `--link-type any` for all Link Types. Repeat either Type flag for
-an OR union. A full Type URL selects its identity without interpreting a name
+an OR union. The `any` selector keyword is lowercase. A full Type URL selects its identity without interpreting a name
 as the wildcard. Shared
 `--direction in|out|both` (default both) and `--depth` (default 1000) select
 reached Beads; all matching Links among them remain, including cross-links,
@@ -266,9 +266,12 @@ bd graph policy --link-type Requires --dot > requirements.dot
 bd graph --all --link-type References --html > graph.html
 ```
 
-`--all` uses matching endpoint components for non-Dependency selectors,
-excluding unrelated isolates. Dependency `--all` retains open native Issues,
-including isolates. Explicit depth/direction with `--all` refuses. A named root
+With `--all`, only the sole Dependency-family selector (implicit or explicit
+`--link-type Dependency`) retains open native Issues, including isolates.
+Every other selection uses matching Link endpoint components and excludes
+unrelated isolates; this includes `--exact-link-type Dependency`, which can
+include closed Issues when they are matching endpoints.
+Explicit depth/direction with `--all` refuses. A named root
 remains without matching Links. Default text and `--compact` both render a
 relationship tree with actual Bead/Link Types, authored arrows and individual
 Link IDs. Canonical shortest-hop parents are chosen before placing cross-links;
@@ -276,8 +279,8 @@ only those tree Links expand Beads. References retain every parallel and
 cross-Link, including a reference to a sibling that appears later. A `cycle`
 marker witnesses a directed cycle in the selected graph. Every non-tree
 reference says `shown elsewhere`; a cycle adds its own marker. `--box` retains its flat Bead/Link view; DOT
-and HTML remain available. Human trees elide `beads/`, `links/` and `types/`
-display prefixes; `--json` retains complete canonical Beads/Links and separate
+and HTML remain available. Human trees keep literal `beads/`, `links/` and
+`types/` path segments and shorten only the local Scope URL; `--json` retains complete canonical Beads/Links and separate
 traversal metadata. The command's Issue-oriented compact help describes the
 native dependency view. `--open` remains unavailable in link mode. Node/Link bounds
 (default 1000 each), the complete-inventory acquisition limit (1000 Resources /

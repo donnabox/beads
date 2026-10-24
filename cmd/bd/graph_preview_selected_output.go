@@ -118,7 +118,7 @@ func renderGraphSelectedBox(w *graphExportWriter, r graphGenericResult) {
 	w.printf("Graph (%d Beads, %d Links)\n", len(r.Nodes), len(r.Links))
 	// A hop-selected set is not an execution schedule. Never label a Memory ready.
 	for _, n := range r.Nodes {
-		w.printf("┌ %s [%s] %s\n│ %q\n└\n", local(n.ID), local(n.Type), n.Status, n.Title)
+		w.printf("┌ %s [%s] %s\n│ %q\n└\n", local(n.ID), local(n.Type), local(n.Status), n.Title)
 	}
 	for _, l := range r.Links {
 		w.printf("%s --[%s] (%s)--> %s", local(l.Source), local(l.Type), local(l.ID), local(l.Target))
