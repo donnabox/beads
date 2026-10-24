@@ -78,6 +78,13 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issue.ID).Scan(&ordinal); err != nil {
 				return err
 			}
+			issueType, err = NativeIssueTypeURL(s.ScopeURL(), string(issue.IssueType))
+			if err != nil {
+				return err
+			}
+			if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
+				return err
+			}
 			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
 				(path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
 				VALUES (?,'bead',?,?,'live','issue',?)`, path, issueType, revision, issue.ID); err != nil {

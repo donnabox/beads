@@ -71,11 +71,6 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if !ok || (request.TypeURL != "" && request.TypeURL != linkType) {
 			return fmt.Errorf("%w: selected native Dependency Link Type is unavailable in this workspace generation", ErrCapabilityUnavailable)
 		}
-		if request.TypeURL != "" {
-			if err := s.selectedLinkTypeInTx(ctx, tx, linkType); err != nil {
-				return err
-			}
-		}
 		source, err := s.requireIssueInTx(ctx, tx, request.SourcePath)
 		if err != nil {
 			return err
@@ -145,6 +140,9 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		}
 		revision, err := freshToken()
 		if err != nil {
+			return err
+		}
+		if err := s.ensureNativeTypeInTx(ctx, tx, linkType); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key) VALUES (?,'link',?,?,'live','dependency',?)`, path, linkType, revision, key); err != nil {
@@ -250,9 +248,9 @@ func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (L
 	var sourcePath, targetPath, depType, metadata, thread, actor string
 	var at time.Time
 	err = tx.QueryRowContext(ctx, `SELECT src.path,dst.path,d.type,d.metadata,d.thread_id,d.created_by,d.created_at
- FROM dependencies d JOIN graph_preview_catalog src ON src.backing='issue' AND src.backing_key=d.issue_id AND src.allocation_state='live' AND src.resource_kind='bead' AND src.type_url=?
- JOIN graph_preview_catalog dst ON dst.backing='issue' AND dst.backing_key=d.depends_on_issue_id AND dst.allocation_state='live' AND dst.resource_kind='bead' AND dst.type_url=?
- WHERE d.id=? AND d.depends_on_wisp_id IS NULL AND d.depends_on_external IS NULL`, issueType, issueType, key).Scan(&sourcePath, &targetPath, &depType, &metadata, &thread, &actor, &at)
+ FROM dependencies d JOIN issues si ON si.id=d.issue_id JOIN issues ti ON ti.id=d.depends_on_issue_id JOIN graph_preview_catalog src ON src.backing='issue' AND src.backing_key=d.issue_id AND src.allocation_state='live' AND src.resource_kind='bead' AND src.type_url=CONCAT(?,LOWER(HEX(si.issue_type)))
+ JOIN graph_preview_catalog dst ON dst.backing='issue' AND dst.backing_key=d.depends_on_issue_id AND dst.allocation_state='live' AND dst.resource_kind='bead' AND dst.type_url=CONCAT(?,LOWER(HEX(ti.issue_type)))
+ WHERE d.id=? AND d.depends_on_wisp_id IS NULL AND d.depends_on_external IS NULL`, s.ScopeURL()+"types/native-issue/", s.ScopeURL()+"types/native-issue/", key).Scan(&sourcePath, &targetPath, &depType, &metadata, &thread, &actor, &at)
 	if err != nil {
 		return LinkRecord{}, fmt.Errorf("%w: Dependency backing: %v", ErrInvalidStore, err)
 	}
@@ -260,6 +258,9 @@ func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (L
 	expectedType, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), issueType, nativeType)
 	if !ok || !utf8.ValidString(depType) || typ != expectedType || metadata != "{}" || thread != "" {
 		return LinkRecord{}, fmt.Errorf("%w: Dependency exceeds preview", ErrInvalidStore)
+	}
+	if err := s.requireNativeBindingInTx(ctx, tx, typ); err != nil {
+		return LinkRecord{}, err
 	}
 	status := "unknown"
 	if actor != "" {
@@ -270,25 +271,26 @@ func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (L
 		Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
 }
 
-// One native Dependency Type covers every native-valid kind. Its kind is read
-// from dependencies.type and projected as the Link's dep_type property.
+// Concrete native kinds refine the abstract Dependency family.
 func nativeDependencyTypeURLForIssueType(scope, issueType string, native types.DependencyType) (string, bool) {
-	if issueType == IssueTypeURL(scope) && native.IsValid() {
-		return DependencyTypeURL(scope), true
+	if (issueType == IssueTypeURL(scope) || isConcreteNativeIssue(scope, issueType)) && native.IsValid() {
+		return relationshipDependencyTypeURL(scope, native)
 	}
 	return "", false
 }
-
 func isNativeDependencyLinkType(scope, issueType, linkType string) bool {
-	return issueType == IssueTypeURL(scope) &&
-		linkType == DependencyTypeURL(scope)
+	return (issueType == IssueTypeURL(scope) || isConcreteNativeIssue(scope, issueType)) && isConcreteNativeDependency(scope, linkType)
 }
-
 func dependencyLinkTypesForIssueType(scope, issueType string) []string {
-	if issueType == IssueTypeURL(scope) {
-		return []string{DependencyTypeURL(scope)}
+	if issueType != IssueTypeURL(scope) && !isConcreteNativeIssue(scope, issueType) {
+		return nil
 	}
-	return nil
+	var ids []string
+	for _, kind := range types.WellKnownDependencyTypes() {
+		id, _ := NativeDependencyTypeURL(scope, string(kind))
+		ids = append(ids, id)
+	}
+	return ids
 }
 
 func (s *Store) showLinkInTx(ctx context.Context, tx *sql.Tx, path string) (LinkRecord, error) {
@@ -417,6 +419,23 @@ func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, p
 	}
 	revision, err := freshToken()
 	if err != nil {
+		return err
+	}
+	var classification string
+	if err := tx.QueryRowContext(ctx, `SELECT issue_type FROM issues WHERE id=?`, issueID).Scan(&classification); err != nil {
+		return err
+	}
+	declaredType, err := NativeIssueTypeURL(s.ScopeURL(), classification)
+	if err != nil {
+		return err
+	}
+	if err := s.ensureNativeTypeInTx(ctx, tx, declaredType); err != nil {
+		return err
+	}
+	// Native mutation and its derived affiliation are one authority in this
+	// transaction. Publish the new affiliation to internal ownership readers
+	// before capturing Links; no partial state escapes a rollback.
+	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=? AND backing='issue'`, declaredType, path); err != nil {
 		return err
 	}
 	owned, err := s.ownedLinksInTx(ctx, tx, issueID)

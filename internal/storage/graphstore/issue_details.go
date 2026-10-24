@@ -81,7 +81,7 @@ func (s *Store) projectIssueDetailIDsInTx(ctx context.Context, tx *sql.Tx, detai
 		if err != nil {
 			return "", err
 		}
-		if kind != "bead" || typ != issueType || state != "live" || validatePath(path) != nil {
+		if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || state != "live" || validatePath(path) != nil {
 			return "", fmt.Errorf("%w: invalid Issue detail allocation", ErrInvalidStore)
 		}
 		paths[nativeID] = path

@@ -107,7 +107,7 @@ func (s *Store) canonicalIssuePathInTx(ctx context.Context, tx *sql.Tx, nativeID
 	if err := tx.QueryRowContext(ctx, `SELECT path,resource_kind,type_url,allocation_state FROM graph_preview_catalog WHERE backing='issue' AND backing_key=?`, nativeID).Scan(&path, &kind, &typ, &state); err != nil {
 		return "", fmt.Errorf("%w: unmapped Issue list parent: %v", ErrInvalidStore, err)
 	}
-	if kind != "bead" || typ != issueType || state != "live" || validatePath(path) != nil {
+	if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || state != "live" || validatePath(path) != nil {
 		return "", fmt.Errorf("%w: invalid Issue list parent allocation", ErrInvalidStore)
 	}
 	return path, nil
