@@ -25,13 +25,17 @@ func TestGraphPreviewCreateParentNativeChildAndCanonicalLink(t *testing.T) {
 	child := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Child", "--parent", parent.ID,
 		"--labels", "own", "--json"))
 	if !strings.HasPrefix(child.Properties.ID, parent.Properties.ID+".") ||
-		child.ID != scope+"beads/"+child.Properties.ID || len(child.Owned) != 1 ||
+		child.ID != scope+child.Properties.ID || len(child.Owned) != 1 ||
 		!reflect.DeepEqual(child.Properties.Labels, []string{"inherited", "own"}) {
 		t.Fatalf("child ID, owner Link or inherited labels: %+v", child)
 	}
+	nativeParentType, err := graphstore.NativeDependencyTypeURL(scope, "parent-child")
+	if err != nil {
+		t.Fatal(err)
+	}
 	var link graphstore.LinkRecord
 	if err := json.Unmarshal(child.Owned[0], &link); err != nil || link.Source != child.ID ||
-		link.Target != parent.ID || link.Type != scope+"types/dependency" || link.Properties["dep_type"] != "parent-child" {
+		link.Target != parent.ID || link.Type != nativeParentType || link.Properties["dep_type"] != "parent-child" {
 		t.Fatalf("child has no canonical parent-child Link: %+v %v", link, err)
 	}
 	var children []struct {
@@ -43,15 +47,22 @@ func TestGraphPreviewCreateParentNativeChildAndCanonicalLink(t *testing.T) {
 		children[0].Parent == nil || *children[0].Parent != parent.Properties.ID {
 		t.Fatalf("native child edge missing from children: %+v %v", children, err)
 	}
-	call("", "remember", "Reserved Memory", "--id", "beads/"+parent.Properties.ID+".2", "--json")
-	second := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Second child", "--parent", scope+"beads/selected-parent",
+	second := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Second child", "--parent", parent.ID,
 		"--no-inherit-labels", "--labels", "own", "--json"))
-	if second.Properties.ID != parent.Properties.ID+".2" || second.ID == scope+"beads/"+second.Properties.ID ||
-		!strings.HasPrefix(second.ID, scope+"beads/"+second.Properties.ID+"-") ||
+	if second.Properties.ID != parent.Properties.ID+".2" || second.ID != scope+second.Properties.ID ||
 		!reflect.DeepEqual(second.Properties.Labels, []string{"own"}) {
-		t.Fatalf("second child ID or label opt-out: %+v", second.Properties)
+		t.Fatalf("second child ID or label opt-out: %+v", second)
 	}
 	before := call("", "children", parent.ID, "--json")
+	call("", "remember", "Reserved Memory", "--id", parent.Properties.ID+".3", "--json")
+	// A deterministic native child ID cannot be silently renamed when a
+	// Memory has reserved that spelling. The writer must roll back the child
+	// counter, native Issue and parent Link together.
+	call("identity_reserved", "create", "Third child", "--parent", parent.ID,
+		"--no-inherit-labels", "--labels", "own", "--json")
+	if after := call("", "children", parent.ID, "--json"); after != before {
+		t.Fatalf("reserved child ID changed parent children\nbefore: %s\nafter: %s", before, after)
+	}
 	call("invalid_selector", "create", "Refused", "--parent", parent.ID, "--id", "beads/explicit", "--json")
 	call("invalid_selector", "create", "Refused", "--parent=", "--json")
 	call("invalid_selector", "create", "Refused", "--no-inherit-labels", "--json")
