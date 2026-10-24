@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/memorycatalog"
@@ -192,16 +191,21 @@ func (r *memoryQueryReader) Resolve(ctx context.Context, ref graph.Ref) (graph.B
 	if len(r.records) >= r.request.Limits.MaxNodes {
 		return graph.Bead{}, fmt.Errorf("%w: scoped Memory node acquisition", memoryquery.ErrLimitExceeded)
 	}
-	count, err := r.charge(ctx, `SELECT CAST(LEAST(COALESCE(SUM(4*(256+OCTET_LENGTH(path)+OCTET_LENGTH(type_url)+OCTET_LENGTH(revision)+OCTET_LENGTH(resource_kind)+OCTET_LENGTH(allocation_state)+OCTET_LENGTH(backing)+COALESCE(OCTET_LENGTH(backing_key),0))),0),?) AS UNSIGNED),COUNT(*) FROM graph_preview_catalog WHERE path=?`, ref.Path())
+	count, err := r.charge(ctx, `SELECT CAST(LEAST(COALESCE(SUM(4*(256+OCTET_LENGTH(path)+OCTET_LENGTH(type_url)+OCTET_LENGTH(revision)+OCTET_LENGTH(resource_kind)+OCTET_LENGTH(allocation_state)+OCTET_LENGTH(backing)+COALESCE(OCTET_LENGTH(backing_key),0)+COALESCE(OCTET_LENGTH(public_id),0))),0),?) AS UNSIGNED),COUNT(*) FROM graph_preview_catalog WHERE (backing='issue' AND backing_key=?) OR (backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)`, ref.Path(), ref.Path())
 	if err != nil {
 		return graph.Bead{}, err
 	}
 	if count != 1 {
 		return graph.Bead{}, ErrNotFound
 	}
+	identity, err := resolveAllocatedResourceIdentityInTx(ctx, r.tx, ref.Path())
+	if err != nil {
+		return graph.Bead{}, err
+	}
+	privatePath := identity.PrivatePath
 	var kind, typ, head, state, backing string
 	var key sql.NullString
-	if err := r.tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, ref.Path()).Scan(&kind, &typ, &head, &state, &backing, &key); err != nil {
+	if err := r.tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, privatePath).Scan(&kind, &typ, &head, &state, &backing, &key); err != nil {
 		return graph.Bead{}, err
 	}
 	if state == "deleted" {
@@ -219,7 +223,7 @@ func (r *memoryQueryReader) Resolve(ctx context.Context, ref graph.Ref) (graph.B
 		return graph.Bead{}, err
 	}
 	// Charge the retained object before any JSON payload is acquired or decoded.
-	count, err = r.charge(ctx, `SELECT CAST(LEAST(COALESCE(SUM(2*(256+OCTET_LENGTH(snapshot)+OCTET_LENGTH(actor))),0),?) AS UNSIGNED),COUNT(*) FROM graph_preview_versions WHERE path=? AND version=?`, ref.Path(), selected)
+	count, err = r.charge(ctx, `SELECT CAST(LEAST(COALESCE(SUM(2*(256+OCTET_LENGTH(snapshot)+OCTET_LENGTH(actor))),0),?) AS UNSIGNED),COUNT(*) FROM graph_preview_versions WHERE path=? AND version=?`, privatePath, selected)
 	if err != nil {
 		return graph.Bead{}, err
 	}
@@ -230,7 +234,7 @@ func (r *memoryQueryReader) Resolve(ctx context.Context, ref graph.Ref) (graph.B
 		return graph.Bead{}, ErrVersionUnknown
 	}
 	var owned sql.NullInt64
-	if err := r.tx.QueryRowContext(ctx, `SELECT CASE WHEN JSON_VALID(CAST(snapshot AS CHAR)) THEN JSON_LENGTH(JSON_EXTRACT(CAST(snapshot AS CHAR),'$.owned')) ELSE NULL END FROM graph_preview_versions WHERE path=? AND version=?`, ref.Path(), selected).Scan(&owned); err != nil {
+	if err := r.tx.QueryRowContext(ctx, `SELECT CASE WHEN JSON_VALID(CAST(snapshot AS CHAR)) THEN JSON_LENGTH(JSON_EXTRACT(CAST(snapshot AS CHAR),'$.owned')) ELSE NULL END FROM graph_preview_versions WHERE path=? AND version=?`, privatePath, selected).Scan(&owned); err != nil {
 		return graph.Bead{}, err
 	}
 	if !owned.Valid || owned.Int64 < 0 {
@@ -241,16 +245,16 @@ func (r *memoryQueryReader) Resolve(ctx context.Context, ref graph.Ref) (graph.B
 	}
 	var record Record
 	if selected == head {
-		if _, err := r.charge(ctx, `SELECT CAST(LEAST(COALESCE(SUM(2*(256+OCTET_LENGTH(properties)+COALESCE(OCTET_LENGTH(metadata),0))),0),?) AS UNSIGNED),COUNT(*) FROM graph_preview_payloads WHERE path=?`, ref.Path()); err != nil {
+		if _, err := r.charge(ctx, `SELECT CAST(LEAST(COALESCE(SUM(2*(256+OCTET_LENGTH(properties)+COALESCE(OCTET_LENGTH(metadata),0))),0),?) AS UNSIGNED),COUNT(*) FROM graph_preview_payloads WHERE path=?`, privatePath); err != nil {
 			return graph.Bead{}, err
 		}
-		if err := r.chargeCurrentLinks(ctx, ref.Path()); err != nil {
+		if err := r.chargeCurrentLinks(ctx, privatePath); err != nil {
 			return graph.Bead{}, err
 		}
-		record, err = r.store.showMemoryInTx(ctx, r.tx, ref.Path())
+		record, err = r.store.showMemoryInTx(ctx, r.tx, privatePath)
 	} else {
 		var value any
-		value, err = r.store.readVersionInTx(ctx, r.tx, ref.Path(), selected)
+		value, err = r.store.readVersionInTx(ctx, r.tx, privatePath, selected)
 		if err == nil {
 			var ok bool
 			record, ok = value.(Record)
@@ -325,7 +329,10 @@ func (r *memoryQueryReader) Outgoing(ctx context.Context, source graph.Ref, allo
 		if err != nil {
 			return nil, err
 		}
-		path := strings.TrimPrefix(link.ID, r.store.ScopeURL())
+		path, err := graph.ScopeLocalPublicResourceID(r.store.ScopeURL(), link.ID)
+		if err != nil {
+			return nil, err
+		}
 		value, err := graph.NewLink(graph.LinkSpec{Path: path, TypeURL: link.Type, Revision: revision, Source: src, Target: target, Properties: properties})
 		if err != nil {
 			return nil, err

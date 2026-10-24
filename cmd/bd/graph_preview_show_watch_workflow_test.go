@@ -45,7 +45,7 @@ func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer stderr.Close()
-			watch := exec.Command(bd, "show", "beads/work", "--watch")
+			watch := exec.Command(bd, "show", created.ID, "--watch")
 			watch.Dir = work
 			watch.Env = []string{
 				"PATH=" + os.Getenv("PATH"), "HOME=" + home,

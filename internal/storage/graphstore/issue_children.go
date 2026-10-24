@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/workapi"
@@ -112,11 +113,24 @@ func (s *Store) requireRelationshipGenerationInTx(ctx context.Context, tx *sql.T
 // The edge read and row projection share a transaction so no concurrent
 // writer can change the family between the two views.
 func (s *Store) ListChildrenLegacy(ctx context.Context, parentPath string) ([]*types.IssueWithCounts, error) {
-	if err := validatePath(parentPath); err != nil {
+	return s.ListChildrenLegacySelected(ctx, IssueSelector{Path: parentPath, Exact: true})
+}
+
+// ListChildrenLegacySelected resolves public Issue identity in the same checked
+// snapshot as the native parent-child edge read. Private callers stay explicit.
+func (s *Store) ListChildrenLegacySelected(ctx context.Context, selector IssueSelector) ([]*types.IssueWithCounts, error) {
+	if err := validateIssueSelector(selector); err != nil {
 		return nil, err
 	}
 	children := []*types.IssueWithCounts{}
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		parentPath, _, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		if err != nil {
+			return err
+		}
 		checked, err := s.listChildrenInTx(ctx, tx, parentPath)
 		if err != nil {
 			return err
@@ -131,7 +145,11 @@ func (s *Store) ListChildrenLegacy(ctx context.Context, parentPath string) ([]*t
 				return fmt.Errorf("%w: child escaped graph scope or has no Issue", ErrInvalidStore)
 			}
 			ids[i] = child.Properties.ID
-			pathByID[child.Properties.ID] = strings.TrimPrefix(child.ID, s.ScopeURL())
+			path, err := s.publicResourcePathInTx(ctx, tx, child.ID, graph.KindBead)
+			if err != nil {
+				return err
+			}
+			pathByID[child.Properties.ID] = path
 		}
 		rows, err := issueops.SearchIssuesWithCountsInTx(ctx, tx, "", types.IssueFilter{
 			IDs: ids, SkipWisps: true, Limit: len(ids),

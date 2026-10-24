@@ -59,7 +59,10 @@ func renderGraphMemoryDiscovery(result graphMemoryDiscoveryResult, structured, q
 	if !structured && !quiet {
 		fmt.Fprintf(&human, "Memories (%d):\n\n", len(result.Items))
 		for _, item := range result.Items {
-			id := strings.TrimPrefix(item.ID, result.Scope)
+			id := item.ID
+			if !item.HasPublicID {
+				id = strings.TrimPrefix(id, result.Scope)
+			}
 			fmt.Fprintf(&human, "  %s  %s\n", graphMemoryDisplayText(id), graphMemoryDisplayText(item.Title))
 			if item.Excerpt != nil {
 				label := "excerpt"

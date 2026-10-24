@@ -129,7 +129,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key) VALUES (?,'link',?,?,'live','dependency',?)`, path, DependencyTypeURL(s.options.Binding.ScopeURL), revision, key); err != nil {
 					return err
 				}
-				link, err := s.currentLinkInTx(ctx, tx, path)
+				link, err := s.currentLinkForCreationInTx(ctx, tx, path)
 				if err != nil {
 					return err
 				}

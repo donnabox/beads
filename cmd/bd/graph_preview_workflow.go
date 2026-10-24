@@ -76,7 +76,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "from", "to", "source-revision", "target-revision", "id", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "from", "to", "source-revision", "target-revision", "id", "id-root", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
 		return err
 	}
 	// Keep the ordinary single-edge spellings. Native --blocked-by wins if both
@@ -110,6 +110,9 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 		paths[i], nativeIDs[i] = selected.Path, selected.NativeID
+		if selected.Exact {
+			paths[i], nativeIDs[i] = selector, ""
+		}
 	}
 	var sourceRevision string
 	var selectedType string
@@ -128,7 +131,8 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("id") {
 		selector, _ := cmd.Flags().GetString("id")
 		var err error
-		linkPath, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
+		linkPath = selector
+		err = graph.ValidateCanonicalResourceID(selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -149,7 +153,11 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		}
 	}
 	familiarLink := cmd.Name() == "link" && !cmd.Flags().Changed("id") && !cmd.Flags().Changed("if-source-revision")
-	return graphPreviewInsertDependency(paths[0], paths[1], nativeIDs[0], nativeIDs[1], selectedType, depType, linkPath, sourceRevision, args[0], args[1], familiarLink)
+	idRoot, _, err := graphPreviewGeneratedIDRoot(cmd)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	return graphPreviewInsertDependencyWithRoot(paths[0], paths[1], nativeIDs[0], nativeIDs[1], selectedType, depType, linkPath, sourceRevision, args[0], args[1], familiarLink, idRoot)
 }
 
 // The store independently checks the installed Type in the write transaction.
@@ -188,6 +196,12 @@ func runGraphPreviewRemoveDependency(cmd *cobra.Command, args []string) error {
 	target, err := graphPreviewIssueSelector(args[1])
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if source.Exact {
+		source.Path, source.NativeID = args[0], ""
+	}
+	if target.Exact {
+		target.Path, target.NativeID = args[1], ""
 	}
 	request := graphstore.DependencyRemoveRequest{
 		SourcePath: source.Path, SourceNativeID: source.NativeID,
@@ -232,12 +246,22 @@ func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	if source.Exact {
+		source.Path, source.NativeID = blocked, ""
+	}
+	if target.Exact {
+		target.Path, target.NativeID = args[0], ""
+	}
 	return graphPreviewInsertDependency(source.Path, target.Path, source.NativeID, target.NativeID, "", types.DepBlocks, "", "", blocked, args[0], false)
 }
 
 func graphPreviewInsertDependency(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool) error {
+	return graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL, depType, linkPath, sourceRevision, sourceLabel, targetLabel, familiarLink, "")
+}
+
+func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool, idRoot string) error {
 	write := func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, SourceNativeID: sourceNativeID, TargetNativeID: targetNativeID, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
+		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{PublicID: linkPath, IDRoot: idRoot, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, SourceNativeID: sourceNativeID, TargetNativeID: targetNativeID, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
 				kind := "blocking"
@@ -251,13 +275,7 @@ func graphPreviewInsertDependency(sourcePath, targetPath, sourceNativeID, target
 		if familiarLink {
 			fromID, fromTitle := result.Source.Properties.ID, result.Source.Properties.Title
 			SetLastTouchedID(result.Source.ID)
-			toID, toTitle := targetLabel, ""
-			resolvedTarget, _, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, result.Link.Target)
-			if ok {
-				if target, err := store.ShowIssue(ctx, resolvedTarget); err == nil && target.Properties != nil {
-					toID, toTitle = target.Properties.ID, target.Properties.Title
-				}
-			}
+			toID, toTitle := result.Target.Properties.ID, result.Target.Properties.Title
 			return map[string]string{
 					"status": "added", "issue_id": fromID, "depends_on_id": toID, "type": string(depType),
 				}, fmt.Sprintf("%s Linked: %s depends on %s (%s)",
@@ -330,6 +348,9 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 		paths[i], nativeIDs[i] = selected.Path, selected.NativeID
+		if selected.Exact {
+			paths[i], nativeIDs[i] = selector, ""
+		}
 	}
 	if claimNext || len(paths) > 1 {
 		return runGraphPreviewCloseBatch(paths, nativeIDs, targets, reasons, session, force, claimNext, suggestNext)
@@ -355,7 +376,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 			}
 			results = append(results, result)
 			if firstSettled == "" {
-				firstSettled = path
+				firstSettled = result.Issue.ID
 			}
 			if result.OpenChildren > 0 {
 				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], result.OpenChildren)
@@ -386,7 +407,9 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	graphPreviewStoreLastTouchedPath(firstSettled)
+	if firstSettled != "" {
+		SetLastTouchedID(firstSettled)
+	}
 	if hadError {
 		return SilentExit()
 	}
@@ -426,7 +449,7 @@ func runGraphPreviewCloseBatch(paths, nativeIDs, targets, reasons []string, sess
 				Issue: outcome.Issue, Changed: outcome.Changed, OpenChildren: outcome.OpenChildren,
 			})
 			if firstSettled == "" {
-				firstSettled = paths[i]
+				firstSettled = outcome.Issue.ID
 			}
 			if outcome.OpenChildren > 0 {
 				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], outcome.OpenChildren)
@@ -472,7 +495,9 @@ func runGraphPreviewCloseBatch(paths, nativeIDs, targets, reasons []string, sess
 	if claimedID != "" {
 		SetLastTouchedID(claimedID)
 	} else {
-		graphPreviewStoreLastTouchedPath(firstSettled)
+		if firstSettled != "" {
+			SetLastTouchedID(firstSettled)
+		}
 	}
 	if hadError {
 		if claimedID != "" {
@@ -502,9 +527,9 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 	}
 	paths := make([]string, len(args))
 	for i, selector := range args {
-		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+		path, err := graphPreviewResolvedWritePath(selector)
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		if err := graph.ValidateBeadPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)

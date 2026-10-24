@@ -56,14 +56,17 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 	}
 	in := graphGenericInput{All: all}
 	if !all {
-		path, err := graphPreviewResourcePath(scope, args[0])
+		address, id, err := graphPreviewResourceReadSelectorIn(scope, args[0])
 		if err != nil {
 			return zero, graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if err := graph.ValidateBeadPath(path); err != nil {
+		if id != "" {
+			address, err = graph.CanonicalPublicResourceURL(scope, id)
+		}
+		if err != nil {
 			return zero, graphFailure("invalid_selector", err.Error(), 2)
 		}
-		in.Root = graph.CanonicalURL(scope, path)
+		in.Root = address
 	}
 	in.AllLinkTypes, _ = cmd.Flags().GetBool("all-link-types")
 	selectors, _ := cmd.Flags().GetStringArray("link-type")
@@ -117,6 +120,20 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 }
 
 func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
+	if len(args) == 1 {
+		resolved, err := graphPreviewResolveMemoryArgument(args[0])
+		if err != nil {
+			return err
+		}
+		ref, err := graphPreviewParseReference(resolved)
+		if err != nil {
+			return graphPreviewReferenceFailure(err)
+		}
+		if ref.Explicit && !ref.currentSelection() {
+			return graphFailure("capability_unavailable", "current graph traversal accepts bare identity or @current roots", 5)
+		}
+		args = []string{ref.Identity}
+	}
 	in, err := graphPreviewGenericInput(cmd, args, graphPreviewConfig.GraphScopeURL)
 	if err != nil {
 		return err

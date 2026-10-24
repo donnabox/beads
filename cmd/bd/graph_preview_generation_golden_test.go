@@ -13,6 +13,7 @@ import (
 var graphPreviewGoldenTypes = map[string][]string{
 	"link-preview-v9\n":  {"memory", "issue", "dependency", "related", "example-follows", "example-cites"},
 	"link-preview-v10\n": {"memory", "evaluation", "constraint", "policy", "decision", "procedure", "requirement", "scenario", "specification", "references", "superseded-by", "requires", "defines", "subject-to", "conformance", "addresses", "satisfies", "violates", "issue", "dependency"},
+	"link-preview-v11\n": {"memory", "evaluation", "constraint", "policy", "decision", "procedure", "requirement", "scenario", "specification", "references", "superseded-by", "requires", "defines", "subject-to", "conformance", "addresses", "satisfies", "violates", "issue", "dependency"},
 }
 
 // An older bd checks only the marker (and a schema version that names the

@@ -106,7 +106,7 @@ func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 		currentFamilyCreate(t, s, name, "constraint")
 	}
 	for _, name := range []string{"i1", "i2"} {
-		if _, err := s.CreateIssue(currentFamilyContext(t), "beads/"+name, plainIssue(name)); err != nil {
+		if _, err := s.CreateIssue(currentFamilyContext(t), "beads/"+name, plainIssueAtPublicID(name, "beads/"+name)); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -372,7 +372,7 @@ func TestMemoryCurrentFamilySuccessionPinsAndScope(t *testing.T) {
 	if err != nil || len(got.Graph.Nodes) != 3 || len(got.Graph.Links) != 2 {
 		t.Fatal(got, err)
 	}
-	if _, err := s.CreateIssue(currentFamilyContext(t), "beads/issue", plainIssue("issue")); err != nil {
+	if _, err := s.CreateIssue(currentFamilyContext(t), "beads/issue", plainIssueAtPublicID("issue", "beads/issue")); err != nil {
 		t.Fatal(err)
 	}
 	r.Roots[0].Path = "beads/issue"
@@ -461,7 +461,7 @@ func TestMemoryCurrentFamilyScopedBytesAndIntegrity(t *testing.T) {
 	s := currentFamilyStore(t)
 	currentFamilyCreate(t, s, "root", "memory")
 	currentFamilyCreate(t, s, "second", "memory")
-	if _, err := s.CreateIssue(currentFamilyContext(t), "beads/native", plainIssue("scoped native")); err != nil {
+	if _, err := s.CreateIssue(currentFamilyContext(t), "beads/native", plainIssueAtPublicID("scoped native", "beads/native")); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.Create(currentFamilyContext(t), CreateRequest{Path: "beads/large", Title: "large", Body: strings.Repeat("z", PreviewCurrentReadByteLimit/2+1024)}); err != nil {
@@ -532,7 +532,7 @@ func TestMemoryCurrentFamilyServer(t *testing.T) {
 		}
 	})
 	for _, name := range []string{"i1", "i2"} {
-		if _, err := s.CreateIssue(ctx, "beads/"+name, plainIssue(name)); err != nil {
+		if _, err := s.CreateIssue(ctx, "beads/"+name, plainIssueAtPublicID(name, "beads/"+name)); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -552,5 +552,47 @@ func TestMemoryCurrentFamilyServer(t *testing.T) {
 	got, err = s.ReadCurrentFamily(ctx, req)
 	if err != nil || len(got.Graph.Nodes) != 4 || len(got.Graph.Links) != 3 {
 		t.Fatal(got, err)
+	}
+}
+
+func TestMemoryCurrentFamilyCommonPublicIdentity(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			request := plainIssue("Native root")
+			request.Issue.ID = "exp-root"
+			issue, err := s.CreateIssue(ctx, "beads/private-root", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			memory, err := s.Create(ctx, CreateRequest{PublicID: "links/context", Title: "Memory"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "beads/reference", TypeURL: s.ScopeURL() + "types/references", SourcePath: issue.ID, TargetPath: memory.ID, UnconditionalSource: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			req := currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: request.Issue.ID, Depth: 1})
+			read, err := s.ReadCurrentFamily(ctx, req)
+			if err != nil || len(read.Graph.Nodes) != 2 || !reflect.DeepEqual(currentFamilyIDs(read), []string{"beads/reference"}) {
+				t.Fatalf("public identity graph: %+v %v", read.Graph, err)
+			}
+			nodes := map[string]bool{}
+			for _, node := range read.Graph.Nodes {
+				nodes[node.Path] = true
+			}
+			if !nodes["exp-root"] || !nodes["links/context"] {
+				t.Fatalf("private locator leaked: %+v", nodes)
+			}
+			retained, err := s.ReadVersion(ctx, link.Link.ID, link.Link.Revision)
+			if err != nil {
+				t.Fatal(err)
+			}
+			exact := retained.(LinkRecord)
+			if exact.ID != link.Link.ID || exact.Source != issue.ID || exact.Target != memory.ID {
+				t.Fatal("retained endpoint identity changed", exact)
+			}
+		})
 	}
 }

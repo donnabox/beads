@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
-	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -177,11 +176,8 @@ func (t *graphRelationshipTree) println(line string) {
 }
 
 func (t *graphRelationshipTree) label(value string) string {
-	for _, prefix := range []string{"beads/", "links/", "types/"} {
-		if strings.HasPrefix(value, t.result.Scope+prefix) {
-			value = strings.TrimPrefix(value, t.result.Scope+prefix)
-			break
-		}
+	if id, ok := graphPreviewPublicResourceID(t.result.Scope, value); ok {
+		value = id
 	}
 	// Escape data, not tree structure. In particular a title, ID or pin cannot
 	// inject terminal controls or an extra relationship line.

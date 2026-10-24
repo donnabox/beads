@@ -38,7 +38,7 @@ func (r *currentFamilyReader) chargeInformational(ctx context.Context, predicate
  LEFT JOIN graph_preview_versions v ON v.path=c.path AND v.version=c.revision
  LEFT JOIN graph_preview_catalog src ON src.path=l.source_path
  LEFT JOIN graph_preview_catalog dst ON dst.path=l.target_path WHERE `+predicate,
-		`l.path,l.source_path,l.target_path,l.source_revision,l.target_revision,l.properties,l.metadata,l.attribution,c.path,c.type_url,c.revision,c.resource_kind,c.allocation_state,c.backing,c.backing_key,v.snapshot,v.actor,src.path,src.resource_kind,src.type_url,src.revision,src.allocation_state,src.backing,src.backing_key,dst.path,dst.resource_kind,dst.type_url,dst.revision,dst.allocation_state,dst.backing,dst.backing_key`, 4, args...)
+		`l.path,l.source_path,l.target_path,l.source_revision,l.target_revision,l.properties,l.metadata,l.attribution,c.path,c.type_url,c.revision,c.resource_kind,c.allocation_state,c.backing,c.backing_key,c.public_id,v.snapshot,v.actor,src.path,src.resource_kind,src.type_url,src.revision,src.allocation_state,src.backing,src.backing_key,src.public_id,dst.path,dst.resource_kind,dst.type_url,dst.revision,dst.allocation_state,dst.backing,dst.backing_key,dst.public_id`, 4, args...)
 	return err
 }
 
@@ -48,7 +48,7 @@ func (r *currentFamilyReader) chargeNative(ctx context.Context, predicate string
  LEFT JOIN graph_preview_versions v ON v.path=c.path AND v.version=c.revision
  LEFT JOIN graph_preview_catalog src ON src.backing='issue' AND src.backing_key=d.issue_id
  LEFT JOIN graph_preview_catalog dst ON dst.backing='issue' AND dst.backing_key=d.depends_on_issue_id WHERE `+predicate,
-		`d.id,d.issue_id,d.depends_on_issue_id,d.depends_on_wisp_id,d.depends_on_external,d.type,d.created_by,d.metadata,d.thread_id,c.path,c.type_url,c.revision,c.resource_kind,c.allocation_state,c.backing,c.backing_key,v.snapshot,v.actor,src.path,src.resource_kind,src.type_url,src.allocation_state,src.backing,dst.path,dst.resource_kind,dst.type_url,dst.allocation_state,dst.backing`, 4, args...)
+		`d.id,d.issue_id,d.depends_on_issue_id,d.depends_on_wisp_id,d.depends_on_external,d.type,d.created_by,d.metadata,d.thread_id,c.path,c.type_url,c.revision,c.resource_kind,c.allocation_state,c.backing,c.backing_key,c.public_id,v.snapshot,v.actor,src.path,src.resource_kind,src.type_url,src.allocation_state,src.backing,src.backing_key,src.public_id,dst.path,dst.resource_kind,dst.type_url,dst.allocation_state,dst.backing,dst.backing_key,dst.public_id`, 4, args...)
 	return err
 }
 

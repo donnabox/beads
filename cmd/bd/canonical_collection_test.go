@@ -91,9 +91,10 @@ func TestCanonicalCollectionExistingBDPSelection(t *testing.T) {
 		{"beads", false, []string{"--type", note}, 2},
 		{"type-family", false, []string{"--conforms-to", note}, 2},
 		{"unknown-type", false, []string{"--type", scope + "types/missing"}, 0},
-		{"source-and-target", true, []string{"--from", "a", "--to", "beads/b"}, 1},
-		{"incident-in", true, []string{"--incident-to", "b", "--direction", "in"}, 1},
-		{"incident-out-empty", true, []string{"--incident-to", "b", "--direction", "out"}, 0},
+		{"source-and-target", true, []string{"--from", "beads/a", "--to", "beads/b"}, 1},
+		{"no-kind-prefix-insertion", true, []string{"--from", "a", "--to", "beads/b"}, 0},
+		{"incident-in", true, []string{"--incident-to", "beads/b", "--direction", "in"}, 1},
+		{"incident-out-empty", true, []string{"--incident-to", "beads/b", "--direction", "out"}, 0},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd, _, _ := canonicalCollectionTestCommand(t, tc.links, append([]string{"--output-format", "json", "--unpaged"}, tc.args...)...)

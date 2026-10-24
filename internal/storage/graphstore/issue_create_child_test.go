@@ -91,7 +91,7 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 				t.Fatal(err)
 			}
 			if !strings.HasPrefix(created.Child.Properties.ID, parent.Properties.ID+".") ||
-				created.Child.ID != options.Binding.ScopeURL+"beads/"+created.Child.Properties.ID ||
+				created.Child.ID != options.Binding.ScopeURL+created.Child.Properties.ID ||
 				created.Link.Source != created.Child.ID || created.Link.Target != parent.ID ||
 				created.Link.Type != DependencyTypeURL(options.Binding.ScopeURL) ||
 				created.Link.Properties["dep_type"] != string(types.DepParentChild) ||
@@ -101,7 +101,7 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 			if created.Child.Attribution.Inception != "create" || created.Child.Attribution.HistoricalUpdate != nil {
 				t.Fatalf("child initial context: %+v", created.Child.Attribution)
 			}
-			retained, err := store.ReadVersion(ctx, strings.TrimPrefix(created.Child.ID, options.Binding.ScopeURL), created.Child.Revision)
+			retained, err := store.ReadVersion(ctx, created.Child.ID, created.Child.Revision)
 			if err != nil {
 				t.Fatal(err)
 			}

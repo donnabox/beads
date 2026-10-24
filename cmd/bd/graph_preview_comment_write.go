@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/ui"
 )
@@ -41,11 +40,13 @@ func runGraphPreviewAddComment(cmd *cobra.Command, args []string, plural bool) e
 			author = override
 		}
 	}
+	var touchedID string
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		comment, issue, err := store.AddIssueCommentWithIssue(ctx, path, author, commentText)
 		if err != nil {
 			return nil, "", err
 		}
+		touchedID = issue.ID
 		if plural {
 			return comment, "Comment added to " + issue.Properties.ID + "\n", nil
 		}
@@ -61,7 +62,7 @@ func runGraphPreviewAddComment(cmd *cobra.Command, args []string, plural bool) e
 		return err
 	})
 	if err == nil && !plural {
-		SetLastTouchedID(graph.CanonicalURL(graphPreviewConfig.GraphScopeURL, path))
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }

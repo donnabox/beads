@@ -142,11 +142,11 @@ the familiar human view or Issue-ID-keyed JSON object.
 Issue changes; stop it with Ctrl+C.
 --current selects the actor's first in-progress Issue, then hooked Issue, then
 the last-touched Issue; it cannot combine with an explicit ID.
-ID@TOKEN or '[URL]@TOKEN' selects
-one exact retained record; --version TOKEN remains an alternative (not both).
-@current and @unpinned read current. Unwrapped URL forms containing :// are
+ID@N selects the stable store-local revision number N. ID@=TOKEN or
+'[URL]@=TOKEN' selects one exact retained record; --version TOKEN remains
+an exact-token alternative (not both). @current reads current. Unwrapped URL forms containing :// are
 literal, including raw @; use the full canonical Scope URL to escape local
-@ shorthand. Colon-only forms such as plan:v1@TOKEN use local syntax.
+@ shorthand. Colon-only forms such as plan:v1@=TOKEN use local syntax.
 Bracketed operands require canonical HTTP(S) Scope URLs, not opaque URIs.
 Suffixes are rejected on the selected update and deletion targets; use
 --if-revision for write comparison. --version treats current and unpinned as exact tokens.

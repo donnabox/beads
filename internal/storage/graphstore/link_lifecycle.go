@@ -4,11 +4,9 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
-	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -287,7 +285,10 @@ func (s *Store) unlinkInTx(ctx context.Context, tx *sql.Tx, request LinkDeleteRe
 	if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
 		return LinkDeleteResult{}, err
 	}
-	sourcePath := strings.TrimPrefix(link.Source, s.options.Binding.ScopeURL)
+	sourcePath, err := s.publicResourcePathInTx(ctx, tx, link.Source, graph.KindBead)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
 	source, revision, err := s.beadEndpointInTx(ctx, tx, sourcePath)
 	if err != nil {
 		return LinkDeleteResult{}, err
@@ -306,7 +307,9 @@ func (s *Store) unlinkInTx(ctx context.Context, tx *sql.Tx, request LinkDeleteRe
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: deletionRevision, Version: deletionRevision, State: "deleted", PreviousVersion: link.Version, Attribution: writeAttribution(request.Actor)}
+	attribution := writeAttribution(request.Actor)
+	attribution.Inception = link.Attribution.Inception
+	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: deletionRevision, Version: deletionRevision, State: "deleted", PreviousVersion: link.Version, Attribution: attribution}
 	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=? WHERE path=?`, deletionRevision, path); err != nil {
 		return LinkDeleteResult{}, err
 	}
@@ -354,9 +357,13 @@ func (s *Store) selectUnlinkPathInTx(ctx context.Context, tx *sql.Tx, request Li
 	if err != nil {
 		return "", err
 	}
+	targetURL, err := s.publicResourceURLInTx(ctx, tx, request.TargetPath)
+	if err != nil {
+		return "", err
+	}
 	candidates := []string{}
 	for _, link := range links {
-		if link.Target == graph.CanonicalURL(s.options.Binding.ScopeURL, request.TargetPath) {
+		if link.Target == targetURL {
 			candidates = append(candidates, link.ID)
 		}
 	}
@@ -366,56 +373,15 @@ func (s *Store) selectUnlinkPathInTx(ctx context.Context, tx *sql.Tx, request Li
 	if len(candidates) > 1 {
 		return "", &ErrAmbiguousLink{CandidateIDs: candidates}
 	}
-	return strings.TrimPrefix(candidates[0], s.options.Binding.ScopeURL), nil
+	return s.publicResourcePathInTx(ctx, tx, candidates[0], graph.KindLink)
 }
 
 // A valid tombstone is distinct from missing or corrupt state. Missing retained
 // deletion/previous state must not be disguised as ordinary gone.
 func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path string) error {
-	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	_, _, err := s.deletedLinkStateInTx(ctx, tx, path)
 	if err != nil {
 		return err
-	}
-	var kind, typ, revision, backing string
-	var key sql.NullString
-	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &backing, &key); err != nil {
-		return err
-	}
-	if !s.validDeletedLinkAllocation(kind, typ, backing, key, issueType) || !authorityID.MatchString(revision) {
-		return fmt.Errorf("%w: invalid deleted allocation", ErrInvalidStore)
-	}
-	var snapshot []byte
-	var actor string
-	if err := tx.QueryRowContext(ctx, `SELECT snapshot,actor FROM graph_preview_versions WHERE path=? AND version=?`, path, revision).Scan(&snapshot, &actor); err != nil {
-		return fmt.Errorf("%w: missing deletion state: %v", ErrInvalidStore, err)
-	}
-	var tombstone LinkTombstone
-	if err := json.Unmarshal(snapshot, &tombstone); err != nil {
-		return fmt.Errorf("%w: malformed deletion state", ErrInvalidStore)
-	}
-	canonical, err := canonicalJSON(tombstone)
-	at, timeErr := time.Parse(time.RFC3339Nano, tombstone.Attribution.RecordedAt)
-	if err != nil || !bytes.Equal(snapshot, canonical) || tombstone.ID != graph.CanonicalURL(s.options.Binding.ScopeURL, path) || tombstone.Type != typ || tombstone.State != "deleted" || tombstone.Revision != revision || tombstone.Version != revision || !authorityID.MatchString(tombstone.PreviousVersion) || tombstone.PreviousVersion == revision || actor != tombstone.Attribution.Actor || !utf8.ValidString(actor) || timeErr != nil || at.UTC().Format(time.RFC3339Nano) != tombstone.Attribution.RecordedAt || (actor == "" && tombstone.Attribution.Status != "unknown") || (actor != "" && tombstone.Attribution.Status != "claimed") {
-		return fmt.Errorf("%w: inconsistent deletion state", ErrInvalidStore)
-	}
-	var previous []byte
-	var previousActor string
-	if err := tx.QueryRowContext(ctx, `SELECT snapshot,actor FROM graph_preview_versions WHERE path=? AND version=?`, path, tombstone.PreviousVersion).Scan(&previous, &previousActor); err != nil {
-		return fmt.Errorf("%w: missing previous Link state: %v", ErrInvalidStore, err)
-	}
-	var link LinkRecord
-	if json.Unmarshal(previous, &link) != nil || link.ID != tombstone.ID || link.Type != typ || link.Revision != tombstone.PreviousVersion || link.Version != tombstone.PreviousVersion {
-		return fmt.Errorf("%w: invalid previous Link state", ErrInvalidStore)
-	}
-	if err := s.validateVersionLink(ctx, tx, link, previous, previousActor); err != nil {
-		return err
-	}
-	var count int
-	if err := tx.QueryRowContext(ctx, `SELECT (SELECT COUNT(*) FROM graph_preview_links WHERE path=?) + (SELECT COUNT(*) FROM graph_preview_payloads WHERE path=?)`, path, path).Scan(&count); err != nil {
-		return err
-	}
-	if count != 0 {
-		return fmt.Errorf("%w: deleted Link has current payload", ErrInvalidStore)
 	}
 	return ErrGone
 }
@@ -479,14 +445,13 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 
 // Retained references are validated as stored selectors, never by joining live
 // endpoints. A deleted Link's historical evidence must remain independently readable.
-func (s *Store) validateRetainedInformational(link LinkRecord, snapshot []byte, actor string) error {
+func (s *Store) validateRetainedInformational(ctx context.Context, tx *sql.Tx, link LinkRecord, snapshot []byte, actor string) error {
 	canonical, err := canonicalJSON(link)
 	if err != nil || !bytes.Equal(canonical, snapshot) || link.Properties == nil {
 		return fmt.Errorf("%w: noncanonical retained Link", ErrInvalidStore)
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {
-		path := strings.TrimPrefix(endpoint, s.options.Binding.ScopeURL)
-		if validatePath(path) != nil || graph.CanonicalURL(s.options.Binding.ScopeURL, path) != endpoint {
+		if _, err := s.publicResourcePathInTx(ctx, tx, endpoint, graph.KindBead); err != nil {
 			return fmt.Errorf("%w: invalid retained Link endpoint", ErrInvalidStore)
 		}
 	}

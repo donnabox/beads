@@ -10,6 +10,43 @@ that has been replaced. These commands require a workspace initialized with
 `--graph-mode link`. They read the current graph; they do not assess whether a
 policy or requirement has been satisfied.
 
+## Keep identity separate from content
+
+A Memory's ID names it. Its title summarizes its content; changing title or body
+does not change an explicitly selected ID. The compatibility flag `--key` means
+`--id`, and the two flags cannot be combined.
+
+```sh
+bd remember "Use the checked dependency writer." --key dependency-policy
+bd remember "Use the checked dependency writer and retain history." --id dependency-policy
+bd recall dependency-policy
+bd memories dependency-policy
+```
+
+The second write updates the same Memory and preserves its omitted title. On
+creation, `--title` supplies the title; otherwise the first body line is trimmed,
+whitespace is collapsed, and the summary is limited to 80 characters including
+an ellipsis. The stored body remains exact. `memories` displays ID, title and a
+body summary, and searches all three.
+
+Without either identity flag, `remember` uses the existing content-derived key
+algorithm and overwrite behavior. Bare existing key-like content recalls rather
+than overwrites; use an explicit identity flag to write such content. Ordinary
+`create --type types/memory` remains create-only and uses the common allocator
+when no ID was supplied.
+
+IDs preserve case, spaces, Unicode and punctuation. They must be nonblank UTF-8.
+Private locator layout does not rename the public ID. A public ID remains
+reserved after deletion; restore that identity explicitly with `update
+--from-revision`, rather than creating it again. An ID already allocated to an
+Issue or Link is a conflict, including after deletion.
+
+Bare selectors that could mean both an exact public ID and a different canonical
+locator refuse to guess. The existing `show --id ID` form selects literal ID data.
+Canonical graph record JSON continues to carry its canonical URI and established
+BDP fields; the local `memories --format records-json` summary displays the public
+ID. This change adds no JSON format or protocol field.
+
 ## Find related knowledge
 
 ```sh

@@ -35,7 +35,7 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 		{"config WHERE `key`='issue_prefix'", "value", 1},
 		// Exact reads inspect allocation metadata before refusing deleted/invalid
 		// states. Include tombstones; deleted Memory final heads are charged below.
-		{"graph_preview_catalog c", "c.path,c.type_url,c.revision,c.resource_kind,c.backing,c.backing_key", 1},
+		{"graph_preview_catalog c", "c.path,c.type_url,c.revision,c.resource_kind,c.backing,c.backing_key,c.public_id", 1},
 		{"graph_preview_payloads p JOIN graph_preview_catalog c ON c.path=p.path WHERE " + live, "p.properties,p.metadata", 1},
 		// A live Link is read as a top-level Resource and at most once as source-owned
 		// state. The owner's retained snapshot/owned JSON is charged separately.
@@ -44,7 +44,7 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 		// slice before the existing mapping/authority refusal.
 		{"graph_preview_links l", "l.path,l.source_path,l.target_path,l.source_revision,l.target_revision,l.properties,l.metadata,l.attribution", 2},
 		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE " + live + " AND c.resource_kind='bead'", "v.snapshot,v.actor", 1},
-		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE " + live + " AND c.resource_kind='link'", "v.snapshot,v.actor", 2},
+		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE " + live + " AND c.resource_kind='link'", "v.snapshot,v.actor,v.native_attribution", 2},
 		// Deleted Memory current-state validation inspects the preserved final
 		// live head; charge those bytes too, while older snapshots stay excluded.
 		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE c.allocation_state='deleted' AND c.backing='generic'", "v.snapshot,v.actor", 1},

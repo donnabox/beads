@@ -423,7 +423,7 @@ func (s *Store) preserveRetainedEvaluationGroup(ctx context.Context, tx *sql.Tx,
 			return err
 		}
 		if versions[i].Removed {
-			if _, err := s.decodeMemoryTerminal(path, version, raw, actor); err != nil {
+			if _, err := s.decodeMemoryTerminal(ctx, tx, path, version, raw, actor); err != nil {
 				return err
 			}
 			continue

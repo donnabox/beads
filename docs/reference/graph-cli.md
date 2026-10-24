@@ -87,18 +87,26 @@ This distinguishes a Memory Decision from an Issue classification named
 The [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory) gives
 property, retyping and refusal details for the Preview 3 candidate.
 
-When an Issue is created without `--id`, its canonical `beads/` ID uses the
-Issue ID allocated under the workspace prefix set by `bd init --prefix`. For
-example, a generated `mp-53` Issue is `beads/mp-53` locally. An explicitly
-supplied `--id` is the literal native Issue ID, even if it contains slashes;
-its ordinary preview path is `beads/` followed by that whole ID. Use the
-separate Preview 3 `--graph-path beads/PATH` option to choose only a graph path
-and let the native Issue writer allocate its ID. Generated Memory IDs remain
-random `beads/` paths; generated Link IDs remain under `links/`.
-Current `bd show` and `bd link show` resolve local public IDs as opaque within
-the Scope, including slash-bearing IDs. A canonical same-Scope URL selects an
-exact graph path. Other write and historical routes retain their documented
-selector limits.
+When an Issue is created without `--id`, its public ID uses the native
+workspace-prefix allocator. Memory and Link creation generate six-character
+lowercase URL-safe public IDs, retrying complete-name collisions and lengthening
+when necessary. A generated name is reserved across Resource kinds for the
+Scope's lifetime, including deleted allocations. Independently written copies
+can still produce conflicts when combined; short names are not a promise of
+global collision-free disconnected allocation.
+
+Use `--id-root notes/team` on `bd create` or `bd link create` to put an
+automatically generated ID beneath that literal prefix. For example, a result
+might be `notes/team/abz277`. The root uses the same canonical path grammar as
+import's root. It adds no Type or ownership meaning. `--id` and `--id-root`
+cannot be combined. Native Issue creation with a root still uses the normal
+authoritative Issue writer and its validation. Ordinary non-graph Issue
+creation keeps its existing allocator.
+
+Explicit IDs preserve every segment: no `beads/`, `links/` or `types/` segment
+is silently added or stripped. Local public IDs are opaque within the Scope;
+Resource kind comes from stored facts. A canonical same-Scope URL selects the
+same allocation. Private storage locators are not alternative public IDs.
 
 ```sh
 bd create 'Move the release branch' --id work --type task
@@ -609,15 +617,24 @@ Changing an owned Link changes its owner; its target does not change merely
 because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for constraints and exact Evaluation subject rules.
 
-The positional `bd link` write treats local spellings, including `beads/PATH`,
-as public IDs. A full same-Scope URL selects an exact graph path. Current
-`bd show` and `bd link show` reads use the same public-ID rule for local
-spellings. `bd link delete` selects a Link by its Link ID.
+For the shipping two-operand form, `bd link BLOCKED BLOCKER --type KIND`
+stores a native Issue Dependency kind literally when `KIND` is nonempty UTF-8
+of at most 32 bytes. `depends-on` and `blocked-by` therefore remain custom,
+nonblocking kinds here; neither becomes `blocks`. `bd dep add --type` treats
+those two spellings as aliases for `blocks` and admits only built-in kinds.
+Canonical `bd link create --type` selects an installed Link Type, so it does
+not accept a custom native Dependency kind. Both native and informational
+positional `bd link` forms treat local endpoint spellings, including
+`beads/PATH`, as public IDs. A full same-Scope URL selects an exact graph
+path. In the two-operand native Issue form, a bare Issue ID may be abbreviated
+when it uniquely identifies a live Issue; ambiguous abbreviations refuse.
+Current `bd show` and `bd link show` reads use the same public-ID rule for
+local spellings. `bd link delete` selects a Link by its Link ID.
 
 Link updates and removal accept the current Link by default; `--if-revision
 TOKEN` rejects a stale Link. Removal retains the identity and prior snapshots.
 Native Dependency remains
-restricted to live Issues and retains its existing blocking and unlink rules.
+restricted to live unpinned Issues. Its `dep_type` string and common metadata can be edited, including through a retained historical base; native cycle, hierarchy and readiness checks still apply. Historical recovery preserves the Link ID and refuses a pair already asserted under another Link ID. The source receives one native version.
 
 For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
 The native `bd dep add BLOCKED --blocked-by BLOCKER` and `--depends-on BLOCKER`
@@ -684,11 +701,31 @@ unchanged.
 
 ## Versioning and History
 
-The [revision-aware CLI reference speclet](/reference/bdp/cli/references)
-defines this candidate's `ID@TOKEN` and `'[URI]@TOKEN'` inputs, exact `show`
-reads, and refusal of unsupported endpoint pins. Use a full canonical URI for
-an existing ID containing raw `@`. JSON and stored identities keep revision
-separate. These additions require candidate qualification before release.
+For everyday exact reads, use the stable store-local revision number:
+
+```sh
+bd show policy@4
+bd show policy@current
+bd link create notes policy@4 --type types/references
+bd show policy@=84fbc901cc4c906468f97a65b6263b32
+```
+
+`ID@N` resolves a positive decimal local ordinal to the full retained token.
+It is not a row index: deletion events consume numbers and recovery never
+renumbers earlier events. A deletion ordinal can identify terminal evidence,
+but cannot supply live content to `show` or historical recovery. The local
+number is specific to this store/history authority, so use the full token for
+portable citations. Resolution refuses an unavailable or incomplete history.
+
+`ID@=TOKEN` selects the exact token, including an all-numeric token or one
+literally named `current`. `@current` selects the current revision. Generated
+local-ID forms need no shell quoting. `--version TOKEN` remains a literal-token
+alternative and cannot combine with a suffix. Full canonical URLs stay literal;
+use `'[URI]@=TOKEN'` for an adorned URL. Local suffix grammar is interpreted before any whole-ID allocation lookup, so
+allocating a literal sibling never changes a reference's meaning. An ID
+containing literal `@` remains accessible through its unadorned canonical URI
+or explicit literal `--id` selector. Pins are stored as full tokens,
+never as local ordinals. JSON and canonical stored references remain unchanged.
 
 
 **Revision** names the current state of one Bead or Link. A complete graph
@@ -752,9 +789,12 @@ the local revision number. Human output calls the number `REV`, matching
 ordinary `bd versions`; graph JSON uses `local_revision`. It orders versions
 within this store and is not a stable cross-clone address. `change_at` is not
 the ordering authority. A removed Link still lists its prior citable versions;
-the private deletion marker is not a Resource version and is omitted. Memory
-deletion also adds no version. There is still no
-BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
+terminal deletion revisions appear separately in `terminal_versions`, and a
+currently deleted Resource exposes its deletion guard in `currentState`.
+These markers are never citable live snapshots, including after same-ID recovery.
+Memory, admitted native Issue, and Link recovery,
+use [checked historical Update](/reference/bdp/cli/historical-update).
+BDP HTTP History and as-of selection remain unavailable. `bd status --graph` reports
 `versionList: true`; `historyExact: false` refers to the unavailable HTTP
 History profile. The [technical reference](/reference/graph-cli-specification-draft#list-a-resources-versions)
 details ordering and refusal behavior.
@@ -857,7 +897,7 @@ accepts a Link identity. Both use the same BDP Resource representation:
 ```sh
 bd show beads/plan --output-format json
 bd link show links/note --output-format json
-bd show beads/plan@REVISION --output-format json
+bd show plan@4 --output-format json
 bd show beads/plan --output-format detail --omit /metadata
 bd show beads/plan --output-format json --include /properties/title
 bd show beads/plan --output-format json --omit envelope

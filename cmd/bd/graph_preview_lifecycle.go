@@ -82,18 +82,21 @@ var linkShowCmd = &cobra.Command{
 }
 
 var linkUpdateCmd = &cobra.Command{
-	Use: "update LINK", Short: "Update an informational Link",
+	Use: "update LINK", Short: "Update a Link or recover it from a retained revision",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		selector, err := graphPreviewWritableIdentity(args[0])
+		selector, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
+			return err
+		}
+		path, err := graphPreviewResolvedHistoricalPath(selector)
+		if err != nil {
+			return err
+		}
+		if err := graph.ValidateLinkPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
-		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		return runGraphPreviewUpdate(cmd, []string{graphPreviewConfig.GraphScopeURL + path})
+		return runGraphPreviewUpdate(cmd, []string{selector})
 	},
 }
 
@@ -109,11 +112,14 @@ var linkVersionsCmd = &cobra.Command{
 		if canonicalOutputSelected(cmd) {
 			return runGraphPreviewVersions(cmd, args)
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		path, err := graphPreviewResolvedHistoricalPath(args[0])
 		if err != nil {
+			return err
+		}
+		if err := graph.ValidateLinkPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return runGraphPreviewVersions(cmd, []string{path})
+		return runGraphPreviewVersions(cmd, args)
 	},
 }
 
@@ -124,11 +130,14 @@ var linkCompareCmd = &cobra.Command{
 		if canonicalOutputSelected(cmd) {
 			return runGraphPreviewCompare(cmd, args)
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
+		path, err := graphPreviewResolvedHistoricalPath(args[0])
 		if err != nil {
+			return err
+		}
+		if err := graph.ValidateLinkPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return runGraphPreviewCompare(cmd, []string{path})
+		return runGraphPreviewCompare(cmd, args)
 	},
 }
 
@@ -140,6 +149,7 @@ func init() {
 	}
 	linkCreateCmd.Flags().String("source-revision", "", "Source endpoint revision: exact token, current or unpinned; owned source pins refuse (distinct from --if-source-revision)")
 	linkCreateCmd.Flags().String("target-revision", "", "Target endpoint revision: exact token, current or unpinned (informational Links only)")
+	linkCreateCmd.Flags().String("id-root", "", "Prefix for an automatically generated Link ID")
 	linkCreateCmd.Flags().String("id", "", "Optional local Link ID or links/PATH")
 	linkCreateCmd.Flags().String("properties", "", "Initial informational Link properties as JSON, @file, or @-")
 	linkCreateCmd.Flags().String("metadata", "", "Initial informational Link metadata as JSON or @file")
@@ -157,6 +167,8 @@ func init() {
 	linkShowCmd.Flags().String("version", "", "Read an exact retained Link version")
 	linkShowCmd.Flags().String("format", "", "Use graph-json for the complete graph record")
 	for _, command := range []*cobra.Command{linkUpdateCmd} {
+		command.Flags().SetNormalizeFunc(normalizeHistoricalRevisionFlag)
+		command.Flags().String("from-revision", "", "Compose editable Link content from this exact retained live revision; recover a deleted Link with the same ID")
 		command.Flags().String("source-revision", "", "Re-pin the source to an exact token or current, or unpin with unpinned; owned source pins refuse")
 		command.Flags().String("target-revision", "", "Re-pin the target to an exact token or current, or unpin with unpinned")
 		command.Flags().String("properties", "", "Merge named Link properties from JSON, @file, or @-")
@@ -182,9 +194,9 @@ func init() {
 }
 
 func graphPreviewBeadSelector(selector string) (string, error) {
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+	path, err := graphPreviewResolvedHistoricalPath(selector)
 	if err != nil {
-		return "", graphFailure("invalid_selector", err.Error(), 2)
+		return "", err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
@@ -256,11 +268,8 @@ func graphPreviewFilterLinkKind(cmd *cobra.Command, links []graphstore.LinkRecor
 // Only the human view shortens URLs. JSON retains canonical IDs and foreign
 // endpoints are never made to look local.
 func graphPreviewDisplayLocalURL(url string) string {
-	if path, _, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, url); ok {
-		return path
-	}
-	if strings.HasPrefix(url, graphPreviewConfig.GraphScopeURL+"types/") {
-		return strings.TrimPrefix(url, graphPreviewConfig.GraphScopeURL)
+	if id, ok := graphPreviewPublicResourceID(graphPreviewConfig.GraphScopeURL, url); ok {
+		return id
 	}
 	return url
 }
@@ -354,13 +363,13 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "force", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
-	selector, err := graphPreviewWritableIdentity(args[0])
+	selector, err := graphPreviewWritableResourceArgument(args[0])
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
-	path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
+	path, err := graphPreviewResolvedHistoricalPath(selector)
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
 	revision, _ := cmd.Flags().GetString("if-revision")
 	sourceRevision, _ := cmd.Flags().GetString("if-source-revision")
@@ -401,11 +410,11 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 			return nil, "", graphFailure("revision_conflict", "Link revision differs from --if-revision", 4)
 		}
 		if sourceRevision != "" {
-			sourcePath, kind, local := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, link.Source)
-			if !local || kind != graph.KindBead {
+			_, local := graphPreviewPublicResourceID(graphPreviewConfig.GraphScopeURL, link.Source)
+			if !local {
 				return nil, "", graphFailure("not_authority", "Link source is not a local Bead", 5)
 			}
-			source, err := store.Read(ctx, sourcePath)
+			source, err := store.Read(ctx, link.Source)
 			if err != nil {
 				return nil, "", err
 			}
@@ -439,13 +448,13 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		if graphPreviewLinkTypeChanged(cmd) {
 			return graphFailure("invalid_selector", "--type is only used for pair selection", 2)
 		}
-		selector, err := graphPreviewWritableIdentity(args[0])
+		selector, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
-		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, selector)
+		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		if err := graph.ValidateLinkPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
@@ -453,13 +462,13 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		request.Path = path
 	} else {
 		var err error
-		source, err := graphPreviewWritableIdentity(args[0])
+		source, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
-		target, err := graphPreviewWritableIdentity(args[1])
+		target, err := graphPreviewWritableResourceArgument(args[1])
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		sourceSelector, err := graphPreviewIssueSelector(source)
 		if err != nil {

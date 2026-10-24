@@ -176,7 +176,7 @@ func (s *Store) issueTerminalInTx(ctx context.Context, tx *sql.Tx, path, version
 	if err != nil {
 		return nil, generation, err
 	}
-	terminal, err := s.decodeMemoryTerminal(path, version, raw, actor)
+	terminal, err := s.decodeMemoryTerminal(ctx, tx, path, version, raw, actor)
 	if err != nil {
 		return nil, generation, err
 	}

@@ -294,8 +294,11 @@ func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, 
 			if ref.Revision == "" || seen[ref] != "" {
 				continue
 			}
-			path := strings.TrimPrefix(ref.URI, s.ScopeURL())
-			if !strings.HasPrefix(ref.URI, s.ScopeURL()) || validatePath(path) != nil || validateVersionToken(ref.Revision) != nil {
+			path, err := s.publicResourcePathInTx(ctx, tx, ref.URI, graph.KindBead)
+			if err != nil {
+				return err
+			}
+			if validateVersionToken(ref.Revision) != nil {
 				return fmt.Errorf("%w: invalid exact export endpoint Reference", ErrInvalidStore)
 			}
 			// This shared availability check rejects removed native Issue editions
@@ -379,7 +382,8 @@ func exportSnapshotClosure(scope string, snapshot Snapshot) (map[string]string, 
 		default:
 			return nil, fmt.Errorf("%w: unknown acquired record", ErrInvalidStore)
 		}
-		if ids[id] || !strings.HasPrefix(id, scope) || validateResourcePath(strings.TrimPrefix(id, scope)) != nil {
+		_, identityErr := graph.ScopeLocalPublicResourceID(scope, id)
+		if ids[id] || identityErr != nil {
 			return nil, fmt.Errorf("%w: duplicate or noncanonical acquired identity", ErrInvalidStore)
 		}
 		ids[id] = true

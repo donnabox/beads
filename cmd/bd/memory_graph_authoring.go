@@ -77,40 +77,45 @@ func memoryLinkProperties(cmd *cobra.Command) (map[string]any, error) {
 }
 
 func memoryLinkRequest(cmd *cobra.Command, args []string, scope string, op memoryLinkOperation) (graphstore.LinkCreateRequest, error) {
-	zero := graphstore.LinkCreateRequest{}
 	source, target, err := graphPreviewAuthoringEndpoints(cmd, args)
 	if err != nil {
-		return zero, fmt.Errorf("%s %w", op.name, err)
+		return graphstore.LinkCreateRequest{}, fmt.Errorf("%s %w", op.name, err)
 	}
+	return memoryLinkRequestWithEndpoints(cmd, scope, op, source, target)
+}
+
+func memoryLinkRequestWithEndpoints(cmd *cobra.Command, scope string, op memoryLinkOperation, source, target string) (graphstore.LinkCreateRequest, error) {
+	zero := graphstore.LinkCreateRequest{}
 	result := graphstore.LinkCreateRequest{TypeURL: scope + "types/" + op.family}
 	endpoints := []string{source, target}
 	paths := make([]string, 2)
 	pins := make([]graphstore.EndpointPin, 2)
+	localIDs := make([]string, 2)
 	for i, name := range []string{"source-revision", "target-revision"} {
 		flag, _ := cmd.Flags().GetString(name)
 		ref, err := graphPreviewReferenceWithFlag(endpoints[i], flag, cmd.Flags().Changed(name))
 		if err != nil {
 			return zero, err
 		}
-		path, err := graphPreviewResourcePath(scope, ref.Identity)
+		path, localID, err := graphPreviewResourceReadSelectorIn(scope, ref.Identity)
 		if err != nil {
 			return zero, err
 		}
-		if err := graph.ValidateBeadPath(path); err != nil {
-			return zero, err
+		if localID == "" && graph.ValidateBeadPath(path) != nil && !graphPreviewCanonicalResourceAddress(scope, path) {
+			return zero, fmt.Errorf("relationship endpoint must be a Bead")
 		}
-		paths[i] = path
+		paths[i], localIDs[i] = path, localID
 		pins[i] = graphPreviewEndpointPin(ref)
 	}
 	result.SourcePath, result.TargetPath = paths[0], paths[1]
+	result.SourceLocalID, result.TargetLocalID = localIDs[0], localIDs[1]
 	result.SourcePin, result.TargetPin = pins[0], pins[1]
 	if cmd.Flags().Changed("id") {
 		value, _ := cmd.Flags().GetString("id")
-		path, err := graphPreviewLinkPath(scope, value)
-		if err != nil {
+		if err := graph.ValidateCanonicalResourceID(value); err != nil {
 			return zero, err
 		}
-		result.Path = path
+		result.PublicID = value
 	}
 	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true)
 	if err != nil {

@@ -30,8 +30,8 @@ func validateMemoryCurrentCapture(read graphstore.CurrentFamilyRead, scope strin
 			}
 			id, typ, revision, version = r.ID, r.Type, r.Revision, r.Version
 		case graphstore.LinkRecord:
-			path, kind, ok := graph.SplitCanonicalURL(scope, r.ID)
-			if !ok || kind != graph.KindLink || links[path].ID != "" || r.Type == "" || r.Revision == "" || r.Version != r.Revision {
+			path, ok := graphPreviewPublicResourceID(scope, r.ID)
+			if !ok || links[path].ID != "" || r.Type == "" || r.Revision == "" || r.Version != r.Revision {
 				return invalid()
 			}
 			links[path] = r
@@ -39,8 +39,8 @@ func validateMemoryCurrentCapture(read graphstore.CurrentFamilyRead, scope strin
 		default:
 			return invalid()
 		}
-		path, kind, ok := graph.SplitCanonicalURL(scope, id)
-		if !ok || kind != graph.KindBead || nodes[path].revision != "" || typ == "" || revision == "" || version != revision {
+		path, ok := graphPreviewPublicResourceID(scope, id)
+		if !ok || nodes[path].revision != "" || typ == "" || revision == "" || version != revision {
 			return invalid()
 		}
 		nodes[path] = nodeRecord{typ, revision}
@@ -81,9 +81,9 @@ func validateMemoryCurrentCapture(read graphstore.CurrentFamilyRead, scope strin
 		}
 		for _, path := range view.Links {
 			l, ok := links[path]
-			source, sk, sourceOK := graph.SplitCanonicalURL(scope, l.Source)
-			target, tk, targetOK := graph.SplitCanonicalURL(scope, l.Target)
-			if !ok || edges[path] || !sourceOK || !targetOK || sk != graph.KindBead || tk != graph.KindBead || !members[source] || !members[target] {
+			source, sourceOK := graphPreviewPublicResourceID(scope, l.Source)
+			target, targetOK := graphPreviewPublicResourceID(scope, l.Target)
+			if !ok || edges[path] || !sourceOK || !targetOK || !members[source] || !members[target] {
 				return invalid()
 			}
 			edges[path] = true

@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"reflect"
-	"strings"
 	"testing"
 
 	publicops "github.com/steveyegge/beads/issueops"
@@ -63,10 +62,7 @@ func TestGraphIssueCreateBatchAtomicMappingAndInitialVersions(t *testing.T) {
 				t.Fatalf("successful batch: records=%+v err=%v", records, err)
 			}
 			for _, record := range records {
-				path := strings.TrimPrefix(record.ID, options.Binding.ScopeURL)
-				if path == record.ID {
-					t.Fatalf("batch ID is outside workspace Scope: %s", record.ID)
-				}
+				path := fixtureResourcePath(t, ctx, s, record.ID)
 				var nativeCount, mappingCount, ordinal, current int
 				if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM issue_versions WHERE issue_id=?`, record.Properties.ID).Scan(&nativeCount); err != nil {
 					t.Fatal(err)

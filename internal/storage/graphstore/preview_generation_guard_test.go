@@ -88,16 +88,16 @@ func TestUnspecifiedStoreGenerationRequiresCompleteFreshTypes(t *testing.T) {
 	}
 }
 
-// The common-metadata and endpoint-pin columns change the preview storage
-// layout and require SchemaVersion 8. Older workspaces remain pinned to their original binary;
+// Common public identity changes canonical snapshot semantics and requires
+// SchemaVersion 11. Older workspaces remain pinned to their original binary;
 // this binary refuses them rather than silently upgrading their data. The
 // workspace marker generation still describes the installed Type set.
 //
 // Counting Types is plain SQL over graph_preview_types and identical on both
 // engines, so only the embedded engine is exercised here.
 func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
-	if SchemaVersion != 8 {
-		t.Fatalf("SchemaVersion is %d, want 8 for endpoint pins", SchemaVersion)
+	if SchemaVersion != 11 {
+		t.Fatalf("SchemaVersion is %d, want 11 for common canonical public identity", SchemaVersion)
 	}
 	ctx, o := issueExperimentOptions(t, "embedded")
 	s, err := OpenExisting(ctx, o)
@@ -109,6 +109,19 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 			t.Error(err)
 		}
 	})
+	rows, err := s.db.QueryContext(ctx, `SELECT native_attribution FROM graph_preview_versions LIMIT 0`)
+	if err != nil {
+		t.Fatalf("missing native Link attribution authority: %v", err)
+	}
+	if err := rows.Close(); err != nil {
+		t.Fatal(err)
+	}
+	old := o
+	old.Binding.SchemaVersion = 10
+	if prior, err := OpenExisting(ctx, old); err == nil {
+		_ = prior.Close()
+		t.Fatal("schema-10 binding was silently adopted")
+	}
 	installed := func() (int, error) {
 		tx, err := s.db.BeginTx(ctx, nil)
 		if err != nil {

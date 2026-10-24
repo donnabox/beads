@@ -184,7 +184,7 @@ func TestIssueBlockedIsNotNotReady(t *testing.T) {
 			}
 			assertReadyIDs(t, ctx, s, wantReady...)
 			for _, record := range records {
-				current, err := s.ShowIssue(ctx, strings.TrimPrefix(record.ID, s.ScopeURL()))
+				current, err := s.ShowIssue(ctx, fixtureResourcePath(t, ctx, s, record.ID))
 				if err != nil || !sameBlockedJSON(t, current, record) {
 					t.Fatalf("inspection changed fixture: %v", err)
 				}
@@ -431,7 +431,7 @@ func TestIssueBlockedDependencySubjectStatuses(t *testing.T) {
 				t.Fatal(err)
 			}
 			for _, record := range []IssueRecord{source, target, closed, pinned} {
-				path := strings.TrimPrefix(record.ID, s.ScopeURL())
+				path := fixtureResourcePath(t, ctx, s, record.ID)
 				current, err := s.ShowIssue(ctx, path)
 				if err != nil || !sameBlockedJSON(t, current, record) {
 					t.Fatalf("read changed complete subject: %v", err)

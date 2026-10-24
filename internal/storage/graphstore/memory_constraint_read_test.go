@@ -33,7 +33,7 @@ func exerciseCurrentConstraintReads(t *testing.T, s *Store) {
 		currentFamilyCreate(t, s, []string{"a", "b", "c", "d", "e"}[i], typ)
 	}
 	currentFamilyCreate(t, s, "m", "memory")
-	if _, err := s.CreateIssue(currentFamilyContext(t), "beads/i", plainIssue("native subject")); err != nil {
+	if _, err := s.CreateIssue(currentFamilyContext(t), "beads/i", plainIssueAtPublicID("native subject", "beads/i")); err != nil {
 		t.Fatal(err)
 	}
 	for _, e := range [][4]string{{"ab", "subject-to", "a", "b"}, {"ab2", "subject-to", "a", "b"}, {"ac", "subject-to", "a", "c"}, {"ba", "requires", "b", "a"}, {"cb", "requires", "c", "b"}, {"defab", "defines", "a", "b"}, {"ad", "requires", "a", "d"}, {"de", "subject-to", "d", "e"}, {"ia", "subject-to", "i", "a"}, {"mc", "subject-to", "m", "c"}} {

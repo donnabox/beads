@@ -20,20 +20,26 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		return graphFailure("capability_unavailable", "multi-ID show supports current Issue details only", 5)
 	}
 	selectors := make([]struct{ path, localID string }, 0, len(args))
-	for _, arg := range args {
-		ref, err := graphPreviewParseReference(arg)
+	literalIDs, _ := cmd.Flags().GetStringArray("id")
+	for index, arg := range args {
+		resolve := graphPreviewResolveMemoryArgument
+		if index >= len(args)-len(literalIDs) {
+			resolve = graphPreviewResolveLiteralArgument
+		}
+		argument, err := resolve(arg)
+		if err != nil {
+			return err
+		}
+		ref, err := graphPreviewParseReference(argument)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
+		if ref.Explicit && !ref.currentSelection() {
 			return graphFailure("capability_unavailable", "multi-ID show supports current Issue details only", 5)
 		}
 		path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		if !strings.HasPrefix(path, "beads/") {
-			return graphFailure("capability_unavailable", "multi-ID show supports current Issues only", 5)
 		}
 		selectors = append(selectors, struct{ path, localID string }{path, localID})
 	}
@@ -50,7 +56,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 			if !jsonOutput {
 				opts = workapi.DetailOptions{IncludeDependents: true, IncludeComments: true}
 			}
-			path, record, detail, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.path, selector.localID, opts)
+			_, record, detail, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.path, selector.localID, opts)
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -63,11 +69,10 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 				return nil, "", graphFailure("capability_unavailable", "multi-ID show supports current Issues only", 5)
 			}
 			if firstSelected == "" {
-				firstSelected = path
+				firstSelected = issue.ID
 			}
 			if shortMode {
 				shorthand := *issue.Properties
-				shorthand.ID = path
 				lines = append(lines, formatShortIssue(&shorthand))
 				continue
 			}
@@ -105,7 +110,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		return nil
 	})
 	if err == nil && firstSelected != "" {
-		graphPreviewStoreLastTouchedPath(firstSelected)
+		SetLastTouchedID(firstSelected)
 	}
 	return err
 }

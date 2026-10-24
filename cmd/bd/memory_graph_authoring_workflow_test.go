@@ -34,11 +34,11 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string { t.Helper(); return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			old := func(args ...string) string { t.Helper(); return call(append(args, "--json")...) }
-			snapshot := func(id string) string { t.Helper(); return old("show", scope+"beads/"+id) }
+			snapshot := func(id string) string { t.Helper(); return old("show", scope+id) }
 			for _, id := range []string{"a", "b", "c", "d"} {
 				old("create", id, "--id", id, "--type", "types/constraint")
 			}
-			old("create", "native", "--graph-path", "beads/i", "--type", "task")
+			native := graphMixedResult[graphstore.IssueRecord](t, old("create", "native", "--graph-path", "beads/i", "--type", "task"))
 			decode := func(raw string) memoryAuthoredLink {
 				t.Helper()
 				var frame struct {
@@ -101,7 +101,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("duplicate endpoint flags changed graph state")
 			}
 			first := create("reference", "a", "b", "--title=Context", "--body=Why", "--status=reviewed", "--properties", `{"counter":9007199254740994,"nested":{"x":[true,null]}}`, "--metadata", `{"private":{"tag":"retained"}}`, "--actor=memory-author")
-			if first.Link.Type != scope+"types/references" || first.Link.Source.URI != scope+"beads/a" || first.Link.Target.URI != scope+"beads/b" || string(first.Link.Properties["counter"]) != "9007199254740994" || string(first.Link.Properties["body"]) != `"Why"` || first.Link.Attribution == nil || first.Link.Attribution.Principal != "memory-author" || string(first.Link.Metadata["private"]) != `{"tag":"retained"}` {
+			if first.Link.Type != scope+"types/references" || first.Link.Source.URI != scope+"a" || first.Link.Target.URI != scope+"b" || string(first.Link.Properties["counter"]) != "9007199254740994" || string(first.Link.Properties["body"]) != `"Why"` || first.Link.Attribution == nil || first.Link.Attribution.Principal != "memory-author" || string(first.Link.Metadata["private"]) != `{"tag":"retained"}` {
 				t.Fatalf("authored fields lost: %+v", first)
 			}
 			parallel := create("reference", "a", "b")
@@ -109,7 +109,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("parallel references deduplicated")
 			}
 			retired := create("supersede", "a", "b", "--id=retirement")
-			if retired.Link.Source.URI != scope+"beads/a" || retired.Link.Target.URI != scope+"beads/b" || retired.Link.Type != scope+"types/superseded-by" {
+			if retired.Link.Source.URI != scope+"a" || retired.Link.Target.URI != scope+"b" || retired.Link.Type != scope+"types/superseded-by" {
 				t.Fatal(retired)
 			}
 			before := snapshot("a")
@@ -118,7 +118,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("repeated supersede revised source")
 			}
 			parent := create("defines", "b", "c", "--id=definition")
-			if parent.Link.Type != scope+"types/defines" || parent.Source.ID != scope+"beads/b" || len(parent.ReplacedSource) == 0 {
+			if parent.Link.Type != scope+"types/defines" || parent.Source.ID != scope+"b" || len(parent.ReplacedSource) == 0 {
 				t.Fatal(parent)
 			}
 			beforeC := snapshot("c")
@@ -133,8 +133,8 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			if required.Link.Type != scope+"types/requires" {
 				t.Fatal(required)
 			}
-			governed := create("subject-to", "i", "b", "--id=issue-rule")
-			if governed.Link.Type != scope+"types/subject-to" || governed.Source.Type != scope+"types/issue" || governed.Link.Source.URI != scope+"beads/i" {
+			governed := create("subject-to", native.ID, "b", "--id=issue-rule")
+			if governed.Link.Type != scope+"types/subject-to" || governed.Source.Type != scope+"types/issue" || governed.Link.Source.URI != native.ID {
 				t.Fatal(governed)
 			}
 			// The stale guard is enforced atomically by the same writer, before either
@@ -175,12 +175,12 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			// operation result, and quiet success never suppresses explicit JSON.
 			human := call("memory", "reference", "d", "--to=b", "--id=human-link")
 			t.Logf("ACTUAL_EXAMPLE provider=%s args=%q output=%s", engine, []string{"memory", "reference", "d", "--to=b", "--id=human-link"}, human)
-			if !strings.Contains(human, scope+"links/human-link") {
+			if !strings.Contains(human, scope+"human-link") {
 				t.Fatalf("human confirmation lost Link identity: %s", human)
 			}
 			var raw memoryAuthoredLink
 			output := call("memory", "reference", "d", "--to=b", "--id=raw-link", "--json", "--omit=envelope", "--quiet")
-			if err := json.Unmarshal([]byte(output), &raw); err != nil || !raw.Changed || raw.Link.ID != scope+"links/raw-link" {
+			if err := json.Unmarshal([]byte(output), &raw); err != nil || !raw.Changed || raw.Link.ID != scope+"raw-link" {
 				t.Fatalf("raw mutation: %s %v", output, err)
 			}
 		})

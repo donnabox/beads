@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 )
 
@@ -17,6 +18,9 @@ import (
 type IssueSelector struct {
 	Path     string
 	NativeID string
+	// Exact is used after a canonical public URL or explicit literal-ID form.
+	// It disables shipping Issue abbreviation fallback, not revision guarding.
+	Exact bool
 }
 
 // A non-Issue selection has a different user-visible state-read refusal from
@@ -82,7 +86,7 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 	}
 	var backing string
 	err = tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog
-		WHERE path=? AND backing IN ('generic','dependency','informational') AND allocation_state='live'`, selector.NativeID).Scan(&backing)
+		WHERE COALESCE(public_id,path)=? AND backing IN ('generic','dependency','informational') AND allocation_state='live'`, selector.NativeID).Scan(&backing)
 	if err == nil {
 		return "", IssueRecord{}, nonIssueSelectorError(backing)
 	}
@@ -112,15 +116,47 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 // observe the same live catalog. Canonical URLs stay exact through Path-only
 // selectors; local beads/PATH spelling is an opaque public ID.
 func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
+	if selector.Exact {
+		return s.resolveExactLiveIssueSelectorInTx(ctx, tx, selector)
+	}
 	return s.resolveDependencyOperandInTx(ctx, tx, selector.Path, selector.NativeID)
 }
 
 // Dependency requests predate IssueSelector as a request field. Keep this
 // adapter until those request types are migrated to the common selector.
 func (s *Store) resolveDependencyOperandInTx(ctx context.Context, tx *sql.Tx, path, nativeID string) (string, IssueRecord, error) {
+	if strings.HasPrefix(path, s.ScopeURL()) {
+		if nativeID != "" {
+			return "", IssueRecord{}, fmt.Errorf("%w: canonical endpoint cannot also supply a local-ID selector", storage.ErrValidation)
+		}
+		var err error
+		path, err = s.publicResourcePathInTx(ctx, tx, path, graph.KindBead)
+		if err != nil {
+			return "", IssueRecord{}, err
+		}
+	}
 	if nativeID == "" {
 		issue, err := s.requireIssueInTx(ctx, tx, path)
 		return path, issue, err
+	}
+	if path != "beads/"+nativeID {
+		return "", IssueRecord{}, fmt.Errorf("%w: local Issue ID does not match its candidate path", storage.ErrValidation)
+	}
+	// An exact lifetime public identity must not fall through to a different
+	// native Issue found by abbreviation, even when the exact allocation is a
+	// Memory, Link, or tombstone.
+	identity, identityErr := resolveAllocatedResourceIdentityInTx(ctx, tx, nativeID)
+	if identityErr == nil {
+		if identity.State == "deleted" {
+			return "", IssueRecord{}, ErrGone
+		}
+		if identity.Kind != graph.KindBead {
+			return "", IssueRecord{}, nonIssueSelectorError(string(identity.Kind))
+		}
+		return s.resolveExactLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: identity.PrivatePath, Exact: true})
+	}
+	if !errors.Is(identityErr, ErrNotFound) {
+		return "", IssueRecord{}, identityErr
 	}
 	switch strings.ToLower(strings.TrimSpace(nativeID)) {
 	case "", "null", "undefined", "none", "nil":
@@ -307,8 +343,10 @@ func (s *Store) ShowIssueSelected(ctx context.Context, selector IssueSelector) (
 }
 
 // ResolveIssuePaths resolves count filters against the checked Issue catalog.
-// Missing and non-Issue IDs retain their literal graph path so a count can
-// return zero, as the ordinary command does. Ambiguous bare IDs fail.
+// Results are public IDs, matching SearchIssueRows. Missing and non-Issue IDs
+// retain their exact public spelling so a count returns zero without matching
+// an unrelated allocation whose private locator happens to share that spelling.
+// Ambiguous bare IDs fail.
 func (s *Store) ResolveIssuePaths(ctx context.Context, selectors []IssueSelector) ([]string, error) {
 	if len(selectors) == 0 {
 		return []string{}, nil
@@ -324,16 +362,30 @@ func (s *Store) ResolveIssuePaths(ctx context.Context, selectors []IssueSelector
 			return err
 		}
 		for i, selector := range selectors {
-			path, _, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+			path, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+			literal := selector.NativeID
+			if literal == "" {
+				identity, lookupErr := allocatedResourceIdentityForPathInTx(ctx, tx, selector.Path)
+				if lookupErr == nil {
+					literal = identity.PublicID
+				} else if !errors.Is(lookupErr, ErrNotFound) {
+					return lookupErr
+				} else {
+					literal = selector.Path
+				}
+			}
 			switch {
 			case errors.Is(err, ErrNotFound):
-				paths[i] = selector.Path
+				paths[i] = literal
 			case errors.Is(err, errNonIssueSelector):
-				paths[i] = selector.Path
+				paths[i] = literal
 			case err != nil:
 				return err
 			default:
-				paths[i] = path
+				paths[i], err = graph.ScopeLocalPublicResourceID(s.ScopeURL(), issue.ID)
+				if err != nil {
+					return fmt.Errorf("%w: Issue at %q has invalid public identity: %v", ErrInvalidStore, path, err)
+				}
 			}
 		}
 		return nil

@@ -39,14 +39,14 @@ var previewDDL = []string{
         path VARBINARY(1024) PRIMARY KEY, resource_kind VARBINARY(16) NOT NULL,
         type_url LONGBLOB NOT NULL, revision VARBINARY(32) NOT NULL,
         allocation_state VARBINARY(16) NOT NULL, backing VARBINARY(32) NOT NULL,
-        backing_key VARBINARY(255) NULL, UNIQUE KEY one_backing (backing, backing_key))`,
+        backing_key VARBINARY(255) NULL, public_id LONGBLOB NULL, UNIQUE KEY one_backing (backing, backing_key))`,
 	`CREATE TABLE graph_preview_payloads (
         path VARBINARY(1024) PRIMARY KEY, properties LONGBLOB NOT NULL,
         metadata LONGBLOB NULL)`,
 	`CREATE TABLE graph_preview_versions (
         path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,
         snapshot LONGBLOB NOT NULL, actor LONGBLOB NOT NULL,
-        ordinal BIGINT NOT NULL, change_at DATETIME(6) NOT NULL, native_participation_generation BIGINT NULL,
+        ordinal BIGINT NOT NULL, change_at DATETIME(6) NOT NULL, native_participation_generation BIGINT NULL, native_attribution LONGBLOB NULL,
         PRIMARY KEY (path, version), UNIQUE KEY one_path_ordinal (path, ordinal))`,
 	`CREATE TABLE graph_preview_issue_versions (
         path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,
@@ -75,7 +75,7 @@ func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
 		ID: DependencyTypeURL(scope), Name: "Dependency", Describes: graph.KindLink,
-		Description: "Issue-owned native Dependency with live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; no other properties or metadata edits are supported. One ordered Issue pair has at most one Dependency.",
+		Description: "Issue-owned native Dependency with live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; common metadata is editable; no other properties are supported. One ordered Issue pair has at most one Dependency.",
 		Source:      &endpoint, Target: &endpoint,
 	})
 }
@@ -264,10 +264,10 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	}
 	// Reject incomplete bootstrap on open, even before a caller selects a row.
 	for _, query := range []string{
-		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key FROM graph_preview_catalog LIMIT 0`,
+		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key, public_id FROM graph_preview_catalog LIMIT 0`,
 		`SELECT path, properties, metadata FROM graph_preview_payloads LIMIT 0`,
 		`SELECT path, source_path, target_path, source_revision, target_revision, properties, metadata, attribution FROM graph_preview_links LIMIT 0`,
-		`SELECT path, version, snapshot, actor, ordinal, change_at, native_participation_generation FROM graph_preview_versions LIMIT 0`,
+		`SELECT path, version, snapshot, actor, ordinal, change_at, native_participation_generation, native_attribution FROM graph_preview_versions LIMIT 0`,
 		`SELECT path, version, issue_id, issue_revision, owned, revision_context, history_ordinal FROM graph_preview_issue_versions LIMIT 0`,
 		`SELECT issue_id, revision, durable_state, attribution_status FROM issue_versions LIMIT 0`,
 	} {
