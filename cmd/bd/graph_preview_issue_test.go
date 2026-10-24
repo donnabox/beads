@@ -39,7 +39,7 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 			if r.Type != wantType {
 				t.Fatalf("concrete feature Type: got %q want %q", r.Type, wantType)
 			}
-			if r.ID != "https://example.invalid/issues/"+r.Properties.ID || r.ID == "https://example.invalid/issues/beads/work" || r.Type == "" || r.Revision == "" || r.Version != r.Revision || r.Owned == nil {
+			if r.ID != "https://example.invalid/issues/"+r.Properties.ID || r.ID == "https://example.invalid/issues/beads/work" || r.Type == "" || r.Revision == "" || r.Version != "" || strings.Contains(created, `"version":`) || r.Owned == nil {
 				t.Fatalf("incomplete Issue graph record: %s", created)
 			}
 			if r.Properties.Title != "A real Issue" || r.Properties.Description != "Preserve this body — 雪" || r.Properties.IssueType != types.TypeFeature || r.Properties.Priority != 1 || !strings.HasPrefix(r.Properties.ID, "demo-") || !reflect.DeepEqual(r.Properties.Labels, []string{"demo", "other"}) {

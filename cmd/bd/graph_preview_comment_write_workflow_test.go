@@ -17,7 +17,7 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			work, home := t.TempDir(), t.TempDir()
-			const workURL = "https://example.invalid/comments/beads/work"
+			var workURL string
 			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/comments/", "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
@@ -47,11 +47,15 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 				return comment
 			}
 			call(args...)
-			call("create", "Comment target", "--graph-path", "beads/work")
+			created := graphMixedResult[graphstore.IssueRecord](t, call("create", "Comment target", "--graph-path", "beads/work"))
+			workURL = created.ID
+			if workURL != "https://example.invalid/comments/"+created.Properties.ID || workURL == "https://example.invalid/comments/beads/work" {
+				t.Fatal("fixture lost public/private identity separation")
+			}
 			call("remember", "Context", "--id", "beads/memory")
 			before := read()
 			call("remember", "Collision", "--id", "beads/"+before.Properties.ID)
-			versions := call("versions", "beads/work")
+			versions := call("versions", workURL)
 			first := decode(call("comment", workURL, "Starting", "review", "--actor", "alice"))
 			if first.ID == "" || first.IssueID != before.Properties.ID || first.Author != "alice" || first.Text != "Starting review" {
 				t.Fatalf("singular comment did not return stored row: %+v", first)
@@ -71,7 +75,7 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 				t.Fatalf("comment feed lost or duplicated a row: %+v", listed)
 			}
 			after := read()
-			if after.Revision != before.Revision || call("versions", "beads/work") != versions {
+			if after.Revision != before.Revision || call("versions", workURL) != versions {
 				t.Fatal("comments minted an Issue Resource version")
 			}
 			for _, command := range [][]string{

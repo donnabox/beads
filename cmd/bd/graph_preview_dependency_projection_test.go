@@ -11,32 +11,45 @@ import (
 
 func TestGraphDependencyProjectionUsesMappedBlockingLinks(t *testing.T) {
 	const scope = "https://example.invalid/structure/"
+	taskType, err := graphstore.NativeIssueTypeURL(scope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blocksType, err := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	tracksType, err := graphstore.NativeDependencyTypeURL(scope, "tracks")
+	if err != nil {
+		t.Fatal(err)
+	}
 	issue := func(id string) graphstore.IssueRecord {
-		return graphstore.IssueRecord{ID: scope + "beads/" + id, Properties: &types.Issue{ID: "native-" + id}}
+		return graphstore.IssueRecord{ID: scope + "native-" + id, Type: taskType, Properties: &types.Issue{ID: "native-" + id, IssueType: types.TypeTask}}
 	}
 	link := func(id, source, target string) graphstore.LinkRecord {
-		return graphstore.LinkRecord{ID: scope + "links/" + id, Type: graphstore.DependencyTypeURL(scope), Source: scope + "beads/" + source, Target: scope + "beads/" + target, Properties: map[string]any{"dep_type": "blocks"}}
+		return graphstore.LinkRecord{ID: scope + "links/" + id, Type: blocksType, Source: scope + "native-" + source, Target: scope + "native-" + target, Properties: map[string]any{"dep_type": "blocks"}}
 	}
 	nonblocking := link("custom", "a", "d")
+	nonblocking.Type = tracksType
 	nonblocking.Properties = map[string]any{"dep_type": "tracks"}
 	snapshot := graphstore.Snapshot{Records: []any{
 		issue("d"), issue("c"), issue("a"), issue("b"),
 		link("a-b", "a", "b"), link("b-c", "b", "c"),
 		nonblocking,
-		graphstore.LinkRecord{ID: scope + "links/related", Type: graphstore.RelatedTypeURL(scope), Source: scope + "beads/a", Target: scope + "beads/d"},
+		graphstore.LinkRecord{ID: scope + "links/related", Type: graphstore.RelatedTypeURL(scope), Source: scope + "native-a", Target: scope + "native-d"},
 	}}
 	g, err := projectGraphDependencies(snapshot, scope)
 	if err != nil {
 		t.Fatal(err)
 	}
-	issues, links := g.component(scope + "beads/b")
-	if len(issues) != 3 || len(links) != 2 || issues[0].ID != scope+"beads/a" || issues[2].ID != scope+"beads/c" {
+	issues, links := g.component(scope + "native-b")
+	if len(issues) != 3 || len(links) != 2 || issues[0].ID != scope+"native-a" || issues[2].ID != scope+"native-c" {
 		t.Fatalf("component included a nonblocking link or lost a blocker: issues=%+v links=%+v", issues, links)
 	}
-	if down := g.tree(scope+"beads/a", "down", 2); len(down) != 2 || down[0].Depth != 0 || down[1].ParentID != scope+"beads/a" {
+	if down := g.tree(scope+"native-a", "down", 2); len(down) != 2 || down[0].Depth != 0 || down[1].ParentID != scope+"native-a" {
 		t.Fatalf("bounded downward tree: %+v", down)
 	}
-	if up := g.tree(scope+"beads/c", "up", 3); len(up) != 3 || up[2].Issue.ID != scope+"beads/a" {
+	if up := g.tree(scope+"native-c", "up", 3); len(up) != 3 || up[2].Issue.ID != scope+"native-a" {
 		t.Fatalf("upward tree: %+v", up)
 	}
 	if cycles := g.cycles(); len(cycles) != 0 {
@@ -53,7 +66,7 @@ func TestGraphDependencyProjectionUsesMappedBlockingLinks(t *testing.T) {
 	if native, err := g.nativeCycleIDs(); err != nil || !reflect.DeepEqual(native, [][]string{{"native-a", "native-b", "native-c"}}) {
 		t.Fatalf("familiar check must use native Issue IDs: cycles=%v err=%v", native, err)
 	}
-	if canonical := g.cycles(); !reflect.DeepEqual(canonical, [][]string{{scope + "beads/a", scope + "beads/b", scope + "beads/c"}}) {
+	if canonical := g.cycles(); !reflect.DeepEqual(canonical, [][]string{{scope + "native-a", scope + "native-b", scope + "native-c"}}) {
 		t.Fatalf("graph-specific cycles lost canonical IDs: %v", canonical)
 	}
 	snapshot.Records = append(snapshot.Records, link("unmapped", "a", "missing"))

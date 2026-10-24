@@ -68,8 +68,12 @@ func TestGraphPreviewSelectedTypeRefusesIntrinsicsAndKeepsConformance(t *testing
 }
 
 func TestGraphPreviewSelectedTypeKeepsNativeDecisionClassification(t *testing.T) {
+	nativeDecision, err := graphstore.NativeIssueTypeURL(typesInventoryScope, "decision")
+	if err != nil {
+		t.Fatal(err)
+	}
 	for _, test := range []struct{ value, want string }{
-		{"decision", graphstore.IssueTypeURL(typesInventoryScope)},
+		{"decision", nativeDecision},
 		{"types/decision", typesInventoryScope + "types/decision"},
 	} {
 		got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, []string{"--type=" + test.value}), typesInventoryScope)
