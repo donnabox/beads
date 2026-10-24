@@ -226,6 +226,40 @@ func (w genericFailWriter) Write(p []byte) (int, error) {
 	return 0, w.err
 }
 
+func TestGraphPreviewGenericOmittedNoticeWriters(t *testing.T) {
+	oldQuiet := quietFlag
+	quietFlag = false
+	t.Cleanup(func() { quietFlag = oldQuiet })
+	var out, diagnostics bytes.Buffer
+	omitted := []string{genericTestScope + "types/references"}
+	if err := writeGraphGenericSelection(&out, &diagnostics, "graph\n", omitted); err != nil {
+		t.Fatal(err)
+	}
+	if out.String() != "graph\n" || !strings.Contains(diagnostics.String(), "--link-type any") || !strings.Contains(diagnostics.String(), omitted[0]) {
+		t.Fatalf("notice/output channels mixed: stdout=%q stderr=%q", out.String(), diagnostics.String())
+	}
+	for _, caveat := range []string{"--all", "endpoints", "isolated"} {
+		if !strings.Contains(diagnostics.String(), caveat) {
+			t.Fatalf("notice omitted the wildcard population caveat %q: %s", caveat, diagnostics.String())
+		}
+	}
+	diagnostics.Reset()
+	if err := writeGraphGenericSelection(genericFailWriter{err: io.ErrClosedPipe}, &diagnostics, "graph\n", omitted); !errors.Is(err, io.ErrClosedPipe) || diagnostics.Len() != 0 {
+		t.Fatalf("output failure emitted success notice: stderr=%q err=%v", diagnostics.String(), err)
+	}
+	if err := writeGraphGenericOmittedNotice(genericFailWriter{short: true}, omitted); !errors.Is(err, io.ErrShortWrite) {
+		t.Fatalf("notice short-write lost: %v", err)
+	}
+	if err := writeGraphGenericOmittedNotice(&diagnostics, nil); err != nil || diagnostics.Len() != 0 {
+		t.Fatalf("empty evidence emitted: %q %v", diagnostics.String(), err)
+	}
+	quietFlag = true
+	out.Reset()
+	if err := writeGraphGenericSelection(&out, &diagnostics, "{\"graph\":true}\n", omitted); err != nil || diagnostics.Len() != 0 || out.String() != "{\"graph\":true}\n" {
+		t.Fatalf("quiet changed structured output or emitted notice: stdout=%q stderr=%q err=%v", out.String(), diagnostics.String(), err)
+	}
+}
+
 func TestGraphPreviewGenericOutput(t *testing.T) {
 	result, err := projectGraphGeneric(genericTestSnapshot(t, genericTestEdge{"ab", "a", "b"}), genericTestScope, genericTestInput("a", "out", 0))
 	if err != nil {

@@ -93,7 +93,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 				t.Fatalf("JSON aliases/raw projection: %+v %v", raw, err)
 			}
 			human := call("memory", "references", "a", "b")
-			for _, want := range []string{"└──", "references", "(ab)", "(parallel)", "(cycle)", "Aggregate: 3 unique Beads, 4 unique Links across 2 root views"} {
+			for _, want := range []string{"└──", "references", "(links/ab)", "(links/parallel)", "(cycle)", "3 Beads, 4 Links across 2 views"} {
 				if !strings.Contains(human, want) {
 					t.Fatalf("human forest lost %q:\n%s", want, human)
 				}
@@ -112,8 +112,8 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 					t.Fatalf("quiet %s wrote output: %s", format, output)
 				}
 			}
-			if strings.Contains(human, "types/") || strings.Contains(human, "beads/") || strings.Contains(human, "links/") {
-				t.Fatalf("display prefixes retained:\n%s", human)
+			if !strings.Contains(human, "[types/references]") || !strings.Contains(human, "beads/a") || !strings.Contains(human, "links/ab") || strings.Contains(human, scope) {
+				t.Fatalf("literal kind segments lost or Scope prefix retained:\n%s", human)
 			}
 			legacy("link", "create", endpoint("b"), endpoint("d"), "--type", "types/superseded-by", "--id", "retirement")
 			successor := read("successor", "b")

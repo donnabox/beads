@@ -76,7 +76,7 @@ func TestMemoryConstraintsAndSubjectsEmbeddedCapture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(text, `work [issue] (open) "Work"`) || !strings.Contains(text, `target revision="`+b.Revision+`"`) || !strings.Contains(text, "defines (ad) → d [policy]") || strings.Contains(text, "not-replayed") || !strings.Contains(text, "Aggregate: 4 unique Beads, 3 unique Links across 1 root views") {
+	if !strings.Contains(text, `beads/work [types/issue] (open) "Work"`) || !strings.Contains(text, `target revision="`+b.Revision+`"`) || !strings.Contains(text, "[types/defines] (links/ad) → beads/d [types/policy]") || strings.Contains(text, "not-replayed") || !strings.Contains(text, "4 Beads, 3 Links across 1 views") {
 		t.Fatal(text)
 	}
 	t.Logf("actual staged capture after Close:\n%s", text)
@@ -84,7 +84,7 @@ func TestMemoryConstraintsAndSubjectsEmbeddedCapture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(text, "subject-to (subject) ← work [issue]") || !strings.Contains(text, "fixed direct incoming Subject To scope") || strings.Contains(text, "requires") || strings.Contains(text, "depth") {
+	if !strings.Contains(text, "[types/subject-to] (links/subject) ← beads/work [types/issue]") || strings.Contains(text, "complete:") || strings.Contains(text, "frontier:") || strings.Contains(text, "requires") || strings.Contains(text, "depth") {
 		t.Fatal(text)
 	}
 	t.Logf("actual direct capture after Close:\n%s", text)

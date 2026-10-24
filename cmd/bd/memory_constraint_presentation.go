@@ -191,7 +191,7 @@ func renderMemoryConstraintCapture(read graphstore.CurrentFamilyRead, scope stri
 	if err := line(""); err != nil {
 		return "", err
 	}
-	if err := line(fmt.Sprintf("Aggregate: %d unique Beads, %d unique Links across %d root views", len(nodes), len(links), len(read.Graph.Views))); err != nil {
+	if err := line(fmt.Sprintf("%d Beads, %d Links across %d views", len(nodes), len(links), len(read.Graph.Views))); err != nil {
 		return "", err
 	}
 	return out.String(), nil
@@ -237,7 +237,9 @@ func renderMemorySubjectsGraph(read graphstore.CurrentFamilyRead, scope string, 
 			rows = append(rows, row)
 		}
 		t.writeLines(rows, "")
-		t.println(fmt.Sprintf("Root %s: fixed direct incoming Subject To scope; complete: true", t.label(r.Root)))
+		if len(rows) == 0 {
+			t.println("No explicitly declared subjects.")
+		}
 		if t.err != nil {
 			return t.err
 		}
@@ -363,9 +365,11 @@ func renderMemoryConstraintsGraph(read graphstore.CurrentConstraintsRead, scope 
 			return invalidMemoryConstraintCapture()
 		}
 		t.writeLines(rows, "")
-		t.println(fmt.Sprintf("Root %s: fixed Subject To then Requires scope; Requires complete: %t; bound: %d; frontier: %d", t.label(r.Root), len(phaseFrontier) == 0, stage.Root.RequiresDepth, len(phaseFrontier)))
+		if len(rows) == 0 {
+			t.println("No explicitly declared constraints.")
+		}
 		for _, p := range stage.Requires.Frontier {
-			t.println(fmt.Sprintf("Root %s: more Requires relationships beyond bound %d: %s", t.label(r.Root), stage.Root.RequiresDepth, t.label(graph.CanonicalURL(scope, p))))
+			t.println(fmt.Sprintf("For %s: Requires %s", t.label(r.Root), graphDepthBoundary(stage.Root.RequiresDepth, t.label(graph.CanonicalURL(scope, p)))))
 		}
 		if t.err != nil {
 			return t.err
