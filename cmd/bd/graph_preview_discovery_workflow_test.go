@@ -112,7 +112,7 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "query", "type=task", "--offset", "1", "--sort", "priority", "--json")
 
 			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path"))
-			call("create", "Dotted child", "--graph-path", "beads/custom-path.child")
+			call("create", "Dotted child", "--id", custom.Properties.ID+".child", "--force")
 			if custom.Properties.ID == "custom-path" {
 				t.Fatal("fixture needs a native ID distinct from its graph path")
 			}
