@@ -3,11 +3,13 @@
 package graphstore
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	publicops "github.com/steveyegge/beads/issueops"
 )
@@ -239,8 +241,12 @@ func TestHistoricalLinkTerminalPrivacyBudgetAndMissingEndpoint(t *testing.T) {
 func TestHistoricalLinkCumulativeCurrentSourceAndPinBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
-			ctx, _, s, owner, _, initial := disclosureFixture(t, engine)
-			ctx = currentReadBudgetContext(t, ctx)
+			fixture, _, s, owner, _, initial := disclosureFixture(t, engine)
+			// Several multi-MiB retained snapshots exercise the cumulative byte
+			// budget. Coverage and race instrumentation need more than the shared
+			// fixture's 90s; retain a bounded test context without changing limits.
+			ctx, cancel := context.WithTimeout(context.WithoutCancel(fixture), 5*time.Minute)
+			t.Cleanup(cancel)
 			first, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/out", Properties: map[string]any{"note": strings.Repeat("h", 2<<20)}, ExpectedRevision: initial.Link.Revision, ExpectedSourceRevision: owner.Revision})
 			if err != nil {
 				t.Fatal(err)
