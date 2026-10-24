@@ -309,6 +309,13 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				args := append([]string{"memories", search, "--format", "records-json", "--all", "--details"}, extra...)
 				return graphMixedResult[graphMemoryDiscoveryResult](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
 			}
+			ownedLinkValue := func(link graphstore.LinkRecord) graphstore.VersionValue {
+				// The CLI receipt carries revision only. Reconstitute the storage
+				// alias on this expected-value copy before the public-wire oracle
+				// projects it; the saved record and every other field stay intact.
+				link.Version = link.Revision
+				return graphMemoryReadValue(t, link)
+			}
 			recall := func(want string, args ...string) {
 				t.Helper()
 				graphMemoryReadRaw(t, bd, work, home, want, "", append([]string{"recall"}, args...)...)
@@ -401,8 +408,8 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			}
 			compare(edited, original, reverse)
 			compare(current, current, []graphstore.VersionChange{})
-			compare(edited, linked, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: graphstore.VersionValue{}, To: graphMemoryReadValue(t, firstLink)}})
-			compare(linked, current, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: graphMemoryReadValue(t, firstLink), To: graphMemoryReadValue(t, changedLink)}})
+			compare(edited, linked, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: graphstore.VersionValue{}, To: ownedLinkValue(firstLink)}})
+			compare(linked, current, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: ownedLinkValue(firstLink), To: ownedLinkValue(changedLink)}})
 			linkComparison := call("compare", firstLink.ID, "--from", firstLink.Revision, "--to", changedLink.Revision)
 			graphMemoryReadComparison(t, linkComparison, graphstore.VersionComparison{Resource: graphstore.VersionComparisonResource{ID: firstLink.ID, Type: firstLink.Type, Source: firstLink.Source, Target: firstLink.Target}, From: graphstore.VersionComparisonEndpoint{Version: firstLink.Revision, Attribution: firstLink.Attribution}, To: graphstore.VersionComparisonEndpoint{Version: changedLink.Revision, Attribution: changedLink.Attribution}, Compared: []string{"properties", "metadata", "endpoints"}, Unsupported: []string{}, Changes: []graphstore.VersionChange{{Area: "properties", Member: "note", From: graphMemoryReadValue(t, "first"), To: graphMemoryReadValue(t, "second")}}})
 			graphMemoryReadComparison(t, call("compare", issue.ID, "--from", issue.Revision, "--to", issue.Revision), graphstore.VersionComparison{Resource: graphstore.VersionComparisonResource{ID: issue.ID, Type: issue.Type}, From: graphstore.VersionComparisonEndpoint{Version: issueOld.Revision, Attribution: issueOld.Attribution}, To: graphstore.VersionComparisonEndpoint{Version: issueOld.Revision, Attribution: issueOld.Attribution}, Compared: []string{"properties", "metadata", "owned"}, Unsupported: []string{}, Changes: []graphstore.VersionChange{}})
@@ -467,7 +474,7 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			if len(final.Owned) != 0 || final.Properties != current.Properties {
 				t.Fatal("unlink did not preserve final live body")
 			}
-			removed := []graphstore.VersionChange{{Area: "owned", ID: changedLink.ID, From: graphMemoryReadValue(t, changedLink), To: graphstore.VersionValue{}}}
+			removed := []graphstore.VersionChange{{Area: "owned", ID: changedLink.ID, From: ownedLinkValue(changedLink), To: graphstore.VersionValue{}}}
 			compare(current, final, removed)
 			call("delete", final.ID, "--force", "--if-revision", final.Revision)
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", final.ID, "--json")
@@ -483,7 +490,7 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				recall(memory.Properties.Body, memory.ID, "--revision", memory.Revision, "--readonly", "--quiet")
 			}
 			compare(current, final, removed)
-			compare(final, current, []graphstore.VersionChange{{Area: "owned", ID: changedLink.ID, From: graphstore.VersionValue{}, To: graphMemoryReadValue(t, changedLink)}})
+			compare(final, current, []graphstore.VersionChange{{Area: "owned", ID: changedLink.ID, From: graphstore.VersionValue{}, To: ownedLinkValue(changedLink)}})
 			compare(final, final, []graphstore.VersionChange{})
 			for _, link := range []graphstore.LinkRecord{firstLink, changedLink, survivingLink} {
 				if got := graphMixedResult[graphstore.LinkRecord](t, call("show", link.ID, "--revision", link.Revision)); !reflect.DeepEqual(got, link) {
