@@ -251,3 +251,26 @@ func graphHumanCurrentIssueDetails(scope string, details *types.IssueDetails, op
 	}
 	return strings.TrimSuffix(out.String(), "\n")
 }
+
+type graphHumanIssueView struct {
+	record  graphstore.IssueRecord
+	details *types.IssueDetails
+}
+
+// Views have already been acquired successfully. Alias acquisition has one
+// separate, bounded command budget and can never obstruct a later content read.
+func graphHumanIssueDocuments(ctx context.Context, scope string, views []graphHumanIssueView, opts graphIssueDetailOptions, alias func(context.Context, string, string) string) []string {
+	presentationCtx, cancel := context.WithTimeout(ctx, 250*time.Millisecond)
+	defer cancel()
+	lines := make([]string, 0, len(views))
+	for _, view := range views {
+		revision := "@=" + graphMemoryDisplayText(view.record.Revision)
+		if alias != nil && presentationCtx.Err() == nil {
+			if selected := alias(presentationCtx, view.record.ID, view.record.Revision); selected != "" {
+				revision = selected
+			}
+		}
+		lines = append(lines, graphHumanDocument(scope, view.record, revision, false, opts.Long)+graphHumanCurrentIssueDetails(scope, view.details, opts))
+	}
+	return lines
+}

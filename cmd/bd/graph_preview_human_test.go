@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -132,5 +133,23 @@ func TestGraphHumanLongTimelineRefusesNativeRoute(t *testing.T) {
 		if err := command.RunE(cmd, []string{"unused"}); err == nil {
 			t.Fatalf("%s silently accepted graph-only long", command.Name())
 		}
+	}
+}
+
+func TestGraphHumanMultiDocumentAliasBudgetCannotLoseCapturedContent(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	views := make([]graphHumanIssueView, 121)
+	for i := range views {
+		views[i].record = graphstore.IssueRecord{ID: fmt.Sprintf("https://example.invalid/scope/%d", i), Revision: fmt.Sprintf("token-%d", i), Properties: &types.Issue{Title: fmt.Sprintf("Issue %d", i)}}
+	}
+	lookups := 0
+	lines := graphHumanIssueDocuments(ctx, "https://example.invalid/scope/", views, graphIssueDetailOptions{}, func(aliasCtx context.Context, id, token string) string {
+		lookups++
+		<-aliasCtx.Done()
+		return "@=" + token
+	})
+	if len(lines) != 121 || lookups != 1 || ctx.Err() != nil || !strings.Contains(lines[120], "Revision: @=token-120") || !strings.Contains(lines[120], "Issue 120") {
+		t.Fatalf("captured=%d lookups=%d parent=%v last=%s", len(lines), lookups, ctx.Err(), lines[len(lines)-1])
 	}
 }
