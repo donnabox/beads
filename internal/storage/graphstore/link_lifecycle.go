@@ -439,14 +439,13 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 
 // Retained references are validated as stored selectors, never by joining live
 // endpoints. A deleted Link's historical evidence must remain independently readable.
-func (s *Store) validateRetainedInformational(link LinkRecord, snapshot []byte, actor string) error {
+func (s *Store) validateRetainedInformational(ctx context.Context, tx *sql.Tx, link LinkRecord, snapshot []byte, actor string) error {
 	canonical, err := canonicalJSON(link)
 	if err != nil || !bytes.Equal(canonical, snapshot) || link.Properties == nil {
 		return fmt.Errorf("%w: noncanonical retained Link", ErrInvalidStore)
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {
-		path := strings.TrimPrefix(endpoint, s.options.Binding.ScopeURL)
-		if validatePath(path) != nil || graph.CanonicalURL(s.options.Binding.ScopeURL, path) != endpoint {
+		if _, err := s.publicResourcePathInTx(ctx, tx, endpoint, graph.KindBead); err != nil {
 			return fmt.Errorf("%w: invalid retained Link endpoint", ErrInvalidStore)
 		}
 	}

@@ -18,9 +18,9 @@ func TestGraphPreviewGenerationMarkerClassification(t *testing.T) {
 	}{
 		{"legacy generation", "link-preview-v5\n", false, false},
 		{"prior generation", "link-preview-v7\n", false, false},
-		{"previous generation", "link-preview-v9\n", false, false},
-		{"current generation", "link-preview-v10\n", true, false},
-		{"next generation", "link-preview-v11\n", false, true},
+		{"previous generation", "link-preview-v10\n", false, false},
+		{"current generation", "link-preview-v11\n", true, false},
+		{"next generation", "link-preview-v12\n", false, true},
 		{"numeric not lexical order", "link-preview-v100\n", false, true},
 		{"two digits above current", "link-preview-v99\n", false, true},
 		{"largest uint64", "link-preview-v18446744073709551615\n", false, true},
@@ -64,16 +64,16 @@ func TestGraphPreviewGenerationMarkerClassification(t *testing.T) {
 		})
 	}
 
-	// Exactly generation 10 is accepted and exactly those above 10 are
+	// Exactly generation 11 is accepted and exactly those above 11 are
 	// newer, however the numbers are written in the ordinary decimal form.
 	for generation := range 300 {
 		marker := []byte("link-preview-v" + strconv.Itoa(generation) + "\n")
-		wantSupported := generation == 10
+		wantSupported := generation == 11
 		if got := graphPreviewGenerationSupported(marker); got != wantSupported {
 			t.Errorf("supported(generation %d) = %t, want %t", generation, got, wantSupported)
 		}
-		if got := graphPreviewGenerationNewer(marker); got != (generation > 10) {
-			t.Errorf("newer(generation %d) = %t, want %t", generation, got, generation > 10)
+		if got := graphPreviewGenerationNewer(marker); got != (generation > 11) {
+			t.Errorf("newer(generation %d) = %t, want %t", generation, got, generation > 11)
 		}
 	}
 

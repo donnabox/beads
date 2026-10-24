@@ -5,10 +5,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	graph "github.com/steveyegge/beads/graphops"
 	"strings"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 )
 
@@ -18,8 +18,27 @@ import (
 // continue to publish their original path. The writer_token coordination fence
 // serializes check-and-insert reservations; no suffix alias is reserved.
 func publicResourceIDExistsInTx(ctx context.Context, tx *sql.Tx, id string) (bool, error) {
+	if err := validatePublicID(id); err != nil {
+		return false, err
+	}
+	// The discovery document and installed descriptors already own these
+	// exact public URLs. Prefix families are not reserved: spelling never
+	// establishes Resource kind.
+	if id == "bdp.json" {
+		return true, nil
+	}
+	var authority int
+	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_types
+ WHERE CAST(JSON_UNQUOTE(JSON_EXTRACT(CAST(descriptor AS CHAR),'$.id')) AS BINARY) =
+ CONCAT((SELECT CAST(scope_url AS BINARY) FROM graph_preview_scope WHERE singleton=1),CAST(? AS BINARY)) LIMIT 1`, id).Scan(&authority)
+	if err == nil {
+		return true, nil
+	}
+	if !errors.Is(err, sql.ErrNoRows) {
+		return false, err
+	}
 	var exists int
-	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog
+	err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog
 		WHERE (
 			(backing='issue' AND backing_key=?) OR
 			(backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)
@@ -112,11 +131,15 @@ func (s *Store) resolveAllocatedResourcePath(ctx context.Context, id string, all
 	return selected, err
 }
 
-// validatePublicID deliberately imposes no path syntax, case folding or trim.
-// Existing acquisition budgets bound bytes before materializing stored IDs.
+// validatePublicID is the common Preview 3 admission boundary. Legacy key
+// acceptance is broader; incompatible inputs name their exact spelling and
+// reason rather than being renamed, encoded, trimmed or truncated.
 func validatePublicID(id string) error {
 	if !utf8.ValidString(id) || strings.TrimSpace(id) == "" {
-		return fmt.Errorf("%w: public ID must be nonblank UTF-8", storage.ErrValidation)
+		return fmt.Errorf("%w: incompatible public ID %q: expected nonblank UTF-8", storage.ErrValidation, id)
+	}
+	if err := graph.ValidateCanonicalResourceID(id); err != nil {
+		return fmt.Errorf("%w: incompatible public ID %q: %w", storage.ErrValidation, id, err)
 	}
 	return nil
 }
@@ -132,23 +155,76 @@ func PrepareMemoryIdentity(req CreateRequest) (CreateRequest, error) {
 		return CreateRequest{}, err
 	}
 	if req.Path == "" {
-		// Preserve the established canonical layout when it is a valid private
-		// address. The public bytes are independent and never normalized.
-		req.Path = req.PublicID
-		if validatePath(req.Path) != nil {
-			req.Path = "beads/" + req.PublicID
-		}
-		if validatePath(req.Path) != nil {
-			token, err := freshToken()
-			if err != nil {
-				return CreateRequest{}, err
-			}
-			req.Path = "beads/" + token
+		var err error
+		req.Path, err = preferredPrivateResourcePath(graph.KindBead, req.PublicID)
+		if err != nil {
+			return CreateRequest{}, err
 		}
 		req.privatePathGenerated = true
 	}
 
 	return req, nil
+}
+
+func preferredPrivateResourcePath(kind graph.ResourceKind, publicID string) (string, error) {
+	if err := validatePublicID(publicID); err != nil {
+		return "", err
+	}
+	root, validate := "beads/", validatePath
+	if kind == graph.KindLink {
+		root, validate = "links/", validateLinkPath
+	} else if kind != graph.KindBead {
+		return "", fmt.Errorf("%w: invalid private allocation kind", storage.ErrValidation)
+	}
+	for _, path := range []string{publicID, root + publicID} {
+		if validate(path) == nil {
+			return path, nil
+		}
+	}
+	token, err := freshToken()
+	if err != nil {
+		return "", err
+	}
+	return root + token, nil
+}
+
+func prepareLinkIdentity(path, publicID string) (string, bool, error) {
+	if publicID == "" {
+		return path, false, nil
+	}
+	if err := validatePublicID(publicID); err != nil {
+		return "", false, err
+	}
+	if path != "" {
+		return path, false, validateLinkPath(path)
+	}
+	path, err := preferredPrivateResourcePath(graph.KindLink, publicID)
+	return path, true, err
+}
+
+func choosePrivateResourcePathInTx(ctx context.Context, tx *sql.Tx, path string, generated bool, kind graph.ResourceKind) (string, error) {
+	for attempt := 0; ; attempt++ {
+		var occupied int
+		err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&occupied)
+		if errors.Is(err, sql.ErrNoRows) {
+			return path, nil
+		}
+		if err != nil {
+			return "", err
+		}
+		if !generated || attempt >= 8 {
+			return "", ErrAlreadyExists
+		}
+		token, err := freshToken()
+		if err != nil {
+			return "", err
+		}
+		root := "beads/"
+		if kind == graph.KindLink {
+			root = "links/"
+		}
+		path = root + token
+	}
 }
 
 func memoryPublicIDInTx(ctx context.Context, tx *sql.Tx, path string) (string, error) {
@@ -172,10 +248,21 @@ func memoryPublicIDInTx(ctx context.Context, tx *sql.Tx, path string) (string, e
 	return id.String, nil
 }
 
-// ResolveMemorySelector separates literal public identity from canonical locator
-// syntax. If both interpretations name different allocations, it refuses rather
-// than guessing. Returned allocation paths never change or become reusable.
+// ResolveMemorySelector accepts an exact admitted public ID or its complete
+// canonical Scope URL. Those syntaxes are disjoint under the common grammar.
+// Returned private allocation paths never change or become reusable.
 func (s *Store) ResolveMemorySelector(ctx context.Context, selector string) (string, error) {
+	id := selector
+	if strings.HasPrefix(selector, s.ScopeURL()) {
+		var err error
+		id, err = graph.ScopeLocalPublicResourceID(s.ScopeURL(), selector)
+		if err != nil {
+			return "", err
+		}
+	}
+	if err := validatePublicID(id); err != nil {
+		return "", err
+	}
 	var selected string
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
@@ -184,50 +271,18 @@ func (s *Store) ResolveMemorySelector(ctx context.Context, selector string) (str
 		if err := checkCurrentReadBytes(ctx, tx); err != nil {
 			return err
 		}
-		if err := validatePublicID(selector); err != nil {
-			return err
-		}
-		var backing string
-		rows, err := tx.QueryContext(ctx, `SELECT path,backing FROM graph_preview_catalog WHERE
- (backing='issue' AND backing_key=?) OR
- (backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?) LIMIT 2`, selector, selector)
+		identity, err := resolveAllocatedResourceIdentityInTx(ctx, tx, id)
 		if err != nil {
 			return err
 		}
-		for rows.Next() {
-			if selected != "" {
-				_ = rows.Close()
-				return fmt.Errorf("%w: public ID has multiple allocations", ErrInvalidStore)
-			}
-			if err := rows.Scan(&selected, &backing); err != nil {
-				_ = rows.Close()
-				return err
-			}
-		}
-		if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		var backing string
+		if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, identity.PrivatePath).Scan(&backing); err != nil {
 			return err
-		}
-
-		locator, kind, canonical := graph.SplitCanonicalURL(s.ScopeURL(), selector)
-		if canonical && kind == graph.KindBead {
-			var locatorBacking string
-			e := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, locator).Scan(&locatorBacking)
-			if e != nil && !errors.Is(e, sql.ErrNoRows) {
-				return e
-			}
-			if e == nil {
-				if selected != "" && selected != locator {
-					return fmt.Errorf("%w: selector names both a public ID and a different canonical locator", storage.ErrValidation)
-				}
-				selected, backing = locator, locatorBacking
-			}
-		}
-		if selected == "" {
-			return ErrNotFound
 		}
 		if backing != "generic" {
 			return fmt.Errorf("%w: selected public ID is not a Memory", ErrCapabilityUnavailable)
 		}
+		selected = identity.PrivatePath
 		return nil
 	})
 	return selected, err

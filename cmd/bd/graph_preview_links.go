@@ -211,10 +211,9 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 		}
 		paths[i], localIDs[i] = path, localID
 	}
-	path, _ := cmd.Flags().GetString("id")
+	publicID, _ := cmd.Flags().GetString("id")
 	if cmd.Flags().Changed("id") {
-		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, path)
-		if err != nil {
+		if err := graph.ValidateCanonicalResourceID(publicID); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
@@ -239,7 +238,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		result, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
-			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourceLocalID: localIDs[0], TargetLocalID: localIDs[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
+			PublicID: publicID, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourceLocalID: localIDs[0], TargetLocalID: localIDs[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
 		return graphPreviewReplacementResult(result, fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource, err)

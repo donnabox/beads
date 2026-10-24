@@ -22,9 +22,9 @@ func canonicalLinkProtection() *clioutput.Protection {
 	return &clioutput.Protection{Required: []string{"id", "type", "revision", "source", "target"}}
 }
 
-func canonicalShowDescriptor(path string, record any) clioutput.Descriptor {
+func canonicalShowDescriptor(_ string, record any) clioutput.Descriptor {
 	descriptor := canonicalResourceDescriptor()
-	if strings.HasPrefix(path, "links/") {
+	if _, isLink := record.(bdpwire.LinkRecord); isLink {
 		descriptor.Protection = canonicalLinkProtection()
 	}
 	if bead, ok := record.(bdpwire.BeadRecord); ok {
@@ -83,7 +83,7 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	if linkOnly && localID == "" && !strings.HasPrefix(path, "links/") {
+	if linkOnly && localID == "" && !strings.HasPrefix(path, graphPreviewConfig.GraphScopeURL) && !strings.HasPrefix(path, "links/") {
 		return canonicalFailure(cmd, renderer, "invalid_selector", "link show requires a Link Resource", 2)
 	}
 	version, _ := cmd.Flags().GetString("version")
@@ -108,11 +108,12 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	}
 	return canonicalReadWithGraphStore(cmd, renderer, func(ctx context.Context, store *graphstore.Store) (any, error) {
 		reader := graphread.New(store)
-		if versioned {
-			return reader.ResourceVersion(ctx, path, version)
-		}
 		var result any
-		path, result, err = reader.ResourceSelected(ctx, path, localID)
+		if versioned {
+			result, err = reader.ResourceVersion(ctx, path, version)
+		} else {
+			path, result, err = reader.ResourceSelected(ctx, path, localID)
+		}
 		if err != nil {
 			return nil, err
 		}

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -14,20 +13,17 @@ import (
 // A local Issue ID is opaque: even beads/PATH spelling first names that whole
 // native ID. Only a canonical Scope URL selects an exact graph path.
 func graphPreviewIssueSelector(selector string) (graphstore.IssueSelector, error) {
-	if path, kind, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, selector); ok {
-		if kind != graph.KindBead || graph.ValidateBeadPath(path) != nil {
-			return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or canonical Bead URL")
+	if strings.HasPrefix(selector, graphPreviewConfig.GraphScopeURL) {
+		id, err := graph.ScopeLocalPublicResourceID(graphPreviewConfig.GraphScopeURL, selector)
+		if err != nil {
+			return graphstore.IssueSelector{}, err
 		}
-		return graphstore.IssueSelector{Path: path}, nil
+		return graphstore.IssueSelector{Path: "beads/" + id, NativeID: id, Exact: true}, nil
 	}
-	if strings.Contains(selector, "://") {
-		return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or canonical Bead URL")
+	if err := graph.ValidateCanonicalResourceID(selector); err != nil {
+		return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or canonical Scope URL")
 	}
-	path := "beads/" + selector
-	if graph.ValidateBeadPath(path) != nil {
-		return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or canonical Bead URL")
-	}
-	return graphstore.IssueSelector{Path: path, NativeID: selector}, nil
+	return graphstore.IssueSelector{Path: "beads/" + selector, NativeID: selector}, nil
 }
 
 // Resolve an exact public ID before passing its immutable allocation path to
@@ -45,7 +41,7 @@ func graphPreviewResolvedWritePath(selector string) (string, error) {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
 	if localID == "" {
-		return path, nil
+		return graphPreviewCanonicalAllocationPath(path)
 	}
 	var selected string
 	var record any
@@ -80,7 +76,7 @@ func graphPreviewResolvedHistoricalPath(selector string) (string, error) {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
 	if localID == "" {
-		return path, nil
+		return graphPreviewCanonicalAllocationPath(path)
 	}
 	var selected string
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
@@ -97,40 +93,41 @@ func graphPreviewResourceReadSelector(selector string) (path, localID string, er
 }
 
 func graphPreviewResourceReadSelectorIn(scope, selector string) (path, localID string, err error) {
-	if path, kind, ok := graph.SplitCanonicalURL(scope, selector); ok {
-		if (kind == graph.KindBead && graph.ValidateBeadPath(path) == nil) || (kind == graph.KindLink && graph.ValidateLinkPath(path) == nil) {
-			return path, "", nil
+	if strings.HasPrefix(selector, scope) {
+		if _, err := graph.ScopeLocalPublicResourceID(scope, selector); err != nil {
+			return "", "", err
 		}
-		return "", "", errors.New("expected a local Resource ID or canonical Scope URL")
+		return selector, "", nil
 	}
-	if !utf8.ValidString(selector) || strings.TrimSpace(selector) == "" {
+	if err := graph.ValidateCanonicalResourceID(selector); err != nil {
 		return "", "", errors.New("expected a local Resource ID or canonical Scope URL")
 	}
 	return "beads/" + selector, selector, nil
 }
 
-// Resolve an allocated literal Memory ID before interpreting optional reference
-// syntax. The allocation is immutable; ambiguity with another canonical locator
-// refuses. Unknown/non-Memory inputs keep the established general parser.
+// Resolve an exact allocated public ID before interpreting optional revision
+// syntax. Full Scope URLs and literal IDs are disjoint under the common grammar;
+// no kind or alternative allocation is inferred from a rooted spelling.
 func graphPreviewResolveMemoryArgument(selector string) (string, error) {
+	if strings.HasPrefix(selector, graphPreviewConfig.GraphScopeURL) {
+		return selector, nil
+	}
+	// URL reference syntax is disjoint from admitted local IDs. Leave foreign
+	// URLs to the command's reference/Scope validation, never a key codec.
+	if strings.Contains(selector, "://") {
+		return selector, nil
+	}
 	resolved := selector
 	err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		_, err := store.ResolveExactAllocatedResourcePath(ctx, selector)
+		identity, err := store.ResolveAllocatedResourceIdentity(ctx, selector)
 		if errors.Is(err, graphstore.ErrNotFound) {
 			return nil, "", nil
 		}
 		if err != nil {
 			return nil, "", err
 		}
-		path, err := store.ResolveMemorySelector(ctx, selector)
-		if errors.Is(err, graphstore.ErrCapabilityUnavailable) {
-			return nil, "", nil
-		}
-		if err != nil {
-			return nil, "", err
-		}
-		resolved = store.ScopeURL() + path
-		return nil, "", nil
+		resolved, err = graph.CanonicalPublicResourceURL(store.ScopeURL(), identity.PublicID)
+		return nil, "", err
 	}, func(any, string) error { return nil })
 	return resolved, err
 }
@@ -140,11 +137,29 @@ func graphPreviewResolveMemoryArgument(selector string) (string, error) {
 func graphPreviewResolveLiteralArgument(selector string) (string, error) {
 	var resolved string
 	err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		path, err := store.ResolveExactAllocatedResourcePath(ctx, selector)
-		if err == nil {
-			resolved = store.ScopeURL() + path
+		identity, err := store.ResolveAllocatedResourceIdentity(ctx, selector)
+		if err != nil {
+			return nil, "", err
 		}
+		resolved, err = graph.CanonicalPublicResourceURL(store.ScopeURL(), identity.PublicID)
 		return nil, "", err
 	}, func(any, string) error { return nil })
 	return resolved, err
+}
+
+func graphPreviewCanonicalAllocationPath(uri string) (string, error) {
+	var path string
+	err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		identity, err := store.ResolveCanonicalPublicResourceIdentity(ctx, uri)
+		if err == nil {
+			path = identity.PrivatePath
+		}
+		return nil, "", err
+	}, func(any, string) error { return nil })
+	return path, err
+}
+
+func graphPreviewCanonicalResourceAddress(scope, address string) bool {
+	_, err := graph.ScopeLocalPublicResourceID(scope, address)
+	return err == nil
 }

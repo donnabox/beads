@@ -156,11 +156,11 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err != nil || cfg == nil {
 		t.Fatalf("read initialized binding: %v", err)
 	}
-	if cfg.GraphSchemaVersion != 10 {
-		t.Fatalf("graph_schema_version = %d, want 10", cfg.GraphSchemaVersion)
+	if cfg.GraphSchemaVersion != 11 {
+		t.Fatalf("graph_schema_version = %d, want 11", cfg.GraphSchemaVersion)
 	}
-	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 10 {
-		t.Fatalf("persisted schema_version = %d, want 10", persisted)
+	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 11 {
+		t.Fatalf("persisted schema_version = %d, want 11", persisted)
 	}
 	// Availability changes discovery, not the immutable installed catalog.
 	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 20 {
@@ -191,10 +191,10 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("marker %q: refused read changed workspace", marker)
 		}
 	}
-	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n"} {
+	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n", "link-preview-v10\n"} {
 		refuse(old, graphGenerationFirstGateRefusal)
 	}
-	refuse("link-preview-v11\n", "graph_mode workspace format link-preview-v11 is newer than this bd supports (link-preview-v10); upgrade bd; no database was opened")
+	refuse("link-preview-v12\n", "graph_mode workspace format link-preview-v12 is newer than this bd supports (link-preview-v11); upgrade bd; no database was opened")
 	refuse("link-preview-v9", graphGenerationFirstGateRefusal)
 	refuse("link-preview-v9x\n", graphGenerationFirstGateRefusal)
 
@@ -285,7 +285,7 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	const scope = "https://example.invalid/typed-relationships/"
 	for _, engine := range []string{"embedded", "server"} {
-		t.Run("v10-"+engine, func(t *testing.T) {
+		t.Run("v11-"+engine, func(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string {
 				t.Helper()

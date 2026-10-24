@@ -124,7 +124,7 @@ func (s *Store) ReadResourceWithIssueDetailsSelected(ctx context.Context, path, 
 
 func (s *Store) readResourceSelected(ctx context.Context, path, localID string, opts workapi.DetailOptions, includeDetails bool) (string, any, *types.IssueDetails, error) {
 	if localID == "" {
-		if err := validateResourcePath(path); err != nil {
+		if err := s.validateResourceReadAddress(path); err != nil {
 			return "", nil, nil, err
 		}
 	} else if path != "beads/"+localID || validatePublicID(localID) != nil {
@@ -141,9 +141,12 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 			return err
 		}
 		if localID == "" {
-			selectedPath = path
 			var err error
-			record, err = s.readCurrentVerifiedInTx(ctx, tx, path)
+			selectedPath, err = s.resolveResourceReadAddressInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			record, err = s.readCurrentVerifiedInTx(ctx, tx, selectedPath)
 			if err != nil {
 				return err
 			}

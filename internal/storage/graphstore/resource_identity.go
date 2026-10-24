@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
 )
@@ -78,6 +79,83 @@ func (s *Store) ResolveCanonicalPublicResourceIdentity(ctx context.Context, uri 
 const allocatedIdentityColumns = `path,resource_kind,allocation_state,backing,
  CASE WHEN backing='issue' THEN backing_key ELSE COALESCE(public_id,path) END`
 
+// publicResourceURLInTx is the single record/reference identity projection.
+// Callers retain private locators for SQL only and acquire allocation bytes
+// under their checked current/retained read or mutation budget.
+func (s *Store) publicResourceURLInTx(ctx context.Context, tx *sql.Tx, path string) (string, error) {
+	if err := checkAllocatedIdentityReadBytes(ctx, tx); err != nil {
+		return "", err
+	}
+	identity, err := allocatedResourceIdentityForPathInTx(ctx, tx, path)
+	if err != nil {
+		return "", err
+	}
+	return graph.CanonicalPublicResourceURL(s.ScopeURL(), identity.PublicID)
+}
+
+func (s *Store) publicResourcePathInTx(ctx context.Context, tx *sql.Tx, uri string, kind graph.ResourceKind) (string, error) {
+	id, err := graph.ScopeLocalPublicResourceID(s.ScopeURL(), uri)
+	if err != nil {
+		return "", err
+	}
+	if err := checkAllocatedIdentityReadBytes(ctx, tx); err != nil {
+		return "", err
+	}
+	identity, err := resolveAllocatedResourceIdentityInTx(ctx, tx, id)
+	if err != nil {
+		return "", err
+	}
+	if identity.Kind != kind {
+		return "", fmt.Errorf("%w: public identity is not a %s", graph.ErrValidation, kind)
+	}
+	return identity.PrivatePath, nil
+}
+
+// Retained callers may not have acquired a current snapshot. Charge durable
+// identity facts, including tombstones, before materializing an unbounded ID.
+func checkAllocatedIdentityReadBytes(ctx context.Context, tx *sql.Tx) error {
+	var size uint64
+	err := tx.QueryRowContext(ctx, `SELECT CAST(LEAST(COALESCE(SUM(
+ 4*(256+OCTET_LENGTH(path)+COALESCE(OCTET_LENGTH(backing_key),0)+COALESCE(OCTET_LENGTH(public_id),0))
+ ),0),?) AS UNSIGNED) FROM graph_preview_catalog`, PreviewCurrentReadByteLimit+1).Scan(&size)
+	if err != nil {
+		return err
+	}
+	if size > PreviewCurrentReadByteLimit {
+		return fmt.Errorf("%w: allocation identities exceed acquisition budget", ErrLimitExceeded)
+	}
+	return nil
+}
+
+// Private locators remain explicit internal addresses. A complete canonical
+// Scope URL is a disjoint public address and resolves only exact allocation
+// identity; it never enables abbreviation or private suffix compatibility.
+func (s *Store) validateResourceReadAddress(address string) error {
+	if strings.HasPrefix(address, s.ScopeURL()) {
+		_, err := graph.ScopeLocalPublicResourceID(s.ScopeURL(), address)
+		return err
+	}
+	return validateResourcePath(address)
+}
+
+func (s *Store) resolveResourceReadAddressInTx(ctx context.Context, tx *sql.Tx, address string) (string, error) {
+	if !strings.HasPrefix(address, s.ScopeURL()) {
+		return address, nil
+	}
+	id, err := graph.ScopeLocalPublicResourceID(s.ScopeURL(), address)
+	if err != nil {
+		return "", err
+	}
+	if err := checkAllocatedIdentityReadBytes(ctx, tx); err != nil {
+		return "", err
+	}
+	identity, err := resolveAllocatedResourceIdentityInTx(ctx, tx, id)
+	if err != nil {
+		return "", err
+	}
+	return identity.PrivatePath, nil
+}
+
 // These transaction helpers require the caller's usual binding and acquisition
 // checks. They do not allocate, rewrite identities, or choose URI encodings.
 func resolveAllocatedResourceIdentityInTx(ctx context.Context, tx *sql.Tx, id string) (AllocatedResourceIdentity, error) {
@@ -142,4 +220,31 @@ func readAllocatedIdentityRows(rows *sql.Rows) (AllocatedResourceIdentity, error
 		return AllocatedResourceIdentity{}, ErrNotFound
 	}
 	return result, nil
+}
+
+// Public canonical endpoints are exact catalog addresses. Compatibility
+// operands keep their existing checked path/local-ID agreement rules.
+func (s *Store) validateBeadEndpointOperand(path, localID string) error {
+	if strings.HasPrefix(path, s.ScopeURL()) {
+		if localID != "" {
+			return fmt.Errorf("%w: canonical endpoint cannot also supply a local-ID selector", graph.ErrValidation)
+		}
+		_, err := graph.ScopeLocalPublicResourceID(s.ScopeURL(), path)
+		return err
+	}
+	return validateBeadWriteOperand(path, localID)
+}
+
+func (s *Store) resolveBeadEndpointOperandInTx(ctx context.Context, tx *sql.Tx, path, localID string) (string, error) {
+	if strings.HasPrefix(path, s.ScopeURL()) {
+		if localID != "" {
+			return "", fmt.Errorf("%w: canonical endpoint cannot also supply a local-ID selector", graph.ErrValidation)
+		}
+		var err error
+		path, err = s.publicResourcePathInTx(ctx, tx, path, graph.KindBead)
+		if err != nil {
+			return "", err
+		}
+	}
+	return s.resolveLiveBeadWriteSelectorInTx(ctx, tx, path, localID)
 }

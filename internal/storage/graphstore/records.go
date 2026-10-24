@@ -46,7 +46,15 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if err != nil {
 		return Record{}, err
 	}
-	r := Record{PublicID: req.PublicID, ID: graph.CanonicalURL(s.options.Binding.ScopeURL, req.Path),
+	publicID := req.PublicID
+	if publicID == "" {
+		publicID = req.Path
+	}
+	publicURL, err := graph.CanonicalPublicResourceURL(s.ScopeURL(), publicID)
+	if err != nil {
+		return Record{}, err
+	}
+	r := Record{PublicID: publicID, ID: publicURL,
 		Type: MemoryTypeURL(s.options.Binding.ScopeURL), Revision: revision, Version: revision,
 		Properties: Properties{Title: req.Title, Body: req.Body}, Metadata: metadata, Owned: []json.RawMessage{}}
 	if req.TypeURL != "" {
@@ -130,32 +138,24 @@ func (s *Store) createPreparedMemoryInTx(ctx context.Context, tx *sql.Tx, req Cr
 	} else if exists {
 		return Record{}, ErrAlreadyExists
 	}
-	for attempt := 0; ; attempt++ {
-		var occupied int
-		err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, req.Path).Scan(&occupied)
-		if errors.Is(err, sql.ErrNoRows) {
-			break
-		}
-		if err != nil {
-			return Record{}, err
-		}
-		if !req.privatePathGenerated || attempt >= 8 {
-			return Record{}, ErrAlreadyExists
-		}
-		token, err := freshToken()
-		if err != nil {
-			return Record{}, err
-		}
-		req.Path = "beads/" + token
+	privatePath, err := choosePrivateResourcePathInTx(ctx, tx, req.Path, req.privatePathGenerated, graph.KindBead)
+	if err != nil {
+		return Record{}, err
 	}
-	r.ID = graph.CanonicalURL(s.ScopeURL(), req.Path)
+	req.Path = privatePath
+	publicURL, err := graph.CanonicalPublicResourceURL(s.ScopeURL(), publicID)
+	if err != nil {
+		return Record{}, err
+	}
+	r.ID = publicURL
+	r.PublicID = publicID
 	snapshot, err := canonicalJSON(r)
 	if err != nil {
 		return Record{}, err
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
         (path, resource_kind, type_url, revision, allocation_state, backing, public_id)
-        VALUES (?, 'bead', ?, ?, 'live', 'generic', ?)`, req.Path, r.Type, r.Revision, nullableMemoryPublicID(req.PublicID)); err != nil {
+        VALUES (?, 'bead', ?, ?, 'live', 'generic', ?)`, req.Path, r.Type, r.Revision, publicID); err != nil {
 		return Record{}, err
 	}
 	if err := s.afterStage("allocation"); err != nil {
@@ -262,7 +262,11 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if err := tx.QueryRowContext(ctx, `SELECT snapshot, actor FROM graph_preview_versions WHERE path = ? AND version = ?`, path, revision).Scan(&snapshot, &actor); err != nil {
 		return Record{}, fmt.Errorf("%w: missing retained state: %v", ErrInvalidStore, err)
 	}
-	record = Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ,
+	publicURL, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return Record{}, err
+	}
+	record = Record{ID: publicURL, Type: typ,
 		Revision: revision, Version: revision, Owned: []json.RawMessage{}}
 	var retained Record
 	if err := json.Unmarshal(snapshot, &retained); err != nil {
@@ -304,6 +308,9 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	record.PublicID, err = memoryPublicIDInTx(ctx, tx, path)
 	if err != nil {
 		return Record{}, err
+	}
+	if record.PublicID == "" {
+		record.PublicID = path
 	}
 	return record, nil
 }

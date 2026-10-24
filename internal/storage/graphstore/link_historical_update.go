@@ -32,10 +32,14 @@ func historicalLinkReadBytes(ctx context.Context, tx *sql.Tx, path, head, source
 	return size, nil
 }
 
-func (s *Store) decodeLinkTerminal(path, typ, revision string, raw []byte, actor string) (LinkTombstone, error) {
+func (s *Store) decodeLinkTerminal(ctx context.Context, tx *sql.Tx, path, typ, revision string, raw []byte, actor string) (LinkTombstone, error) {
+	expectedID, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return LinkTombstone{}, err
+	}
 	var terminal LinkTombstone
 	if json.Unmarshal(raw, &terminal) != nil || !sameVersionJSON(raw, terminal) ||
-		terminal.ID != s.ScopeURL()+path || terminal.Type != typ || terminal.Revision != revision || terminal.Version != revision ||
+		terminal.ID != expectedID || terminal.Type != typ || terminal.Revision != revision || terminal.Version != revision ||
 		terminal.State != "deleted" || !authorityID.MatchString(revision) || !authorityID.MatchString(terminal.PreviousVersion) || terminal.PreviousVersion == revision ||
 		terminal.Attribution.HistoricalUpdate != nil || !validVersionAttribution(terminal.Attribution, actor) {
 		return LinkTombstone{}, fmt.Errorf("%w: invalid retained Link deletion marker", ErrInvalidStore)
@@ -69,7 +73,7 @@ func (s *Store) deletedLinkStateInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkRecord{}, nil, err
 	}
-	terminal, err := s.decodeLinkTerminal(path, typ, revision, raw, actor)
+	terminal, err := s.decodeLinkTerminal(ctx, tx, path, typ, revision, raw, actor)
 	if err != nil {
 		return LinkRecord{}, nil, err
 	}

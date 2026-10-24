@@ -26,10 +26,14 @@ type ResourceTerminalState struct {
 type BeadTerminalState = ResourceTerminalState
 type MemoryTerminalState = ResourceTerminalState
 
-func (s *Store) decodeMemoryTerminal(path, version string, raw []byte, actor string) (MemoryTerminalState, error) {
+func (s *Store) decodeMemoryTerminal(ctx context.Context, tx *sql.Tx, path, version string, raw []byte, actor string) (MemoryTerminalState, error) {
+	expectedID, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return MemoryTerminalState{}, err
+	}
 	var terminal MemoryTerminalState
 	if json.Unmarshal(raw, &terminal) != nil || !sameVersionJSON(raw, terminal) ||
-		terminal.ID != s.ScopeURL()+path || terminal.Revision != version || terminal.Version != version ||
+		terminal.ID != expectedID || terminal.Revision != version || terminal.Version != version ||
 		terminal.Type != "" || terminal.State != "deleted" || !authorityID.MatchString(version) ||
 		!authorityID.MatchString(terminal.PreviousVersion) || terminal.PreviousVersion == version ||
 		terminal.Attribution.HistoricalUpdate != nil || !validVersionAttribution(terminal.Attribution, actor) {
@@ -66,7 +70,7 @@ func (s *Store) deletedMemoryStateInTx(ctx context.Context, tx *sql.Tx, path str
 	var terminal *MemoryTerminalState
 	baselineRevision := revision
 	if marker.State != "" {
-		decoded, err := s.decodeMemoryTerminal(path, revision, raw, actor)
+		decoded, err := s.decodeMemoryTerminal(ctx, tx, path, revision, raw, actor)
 		if err != nil {
 			return Record{}, nil, err
 		}
@@ -165,13 +169,13 @@ func (s *Store) resourceTerminalDescriptorInTx(ctx context.Context, tx *sql.Tx, 
 		return nil, err
 	}
 	if strings.HasPrefix(path, "links/") {
-		descriptor, err := s.decodeLinkTerminal(path, typ, head, raw, actor)
+		descriptor, err := s.decodeLinkTerminal(ctx, tx, path, typ, head, raw, actor)
 		if err != nil {
 			return nil, err
 		}
 		return &ResourceTerminalState{ID: descriptor.ID, Type: descriptor.Type, Revision: descriptor.Revision, Version: descriptor.Version, State: descriptor.State, PreviousVersion: descriptor.PreviousVersion, Attribution: descriptor.Attribution}, nil
 	}
-	descriptor, err := s.decodeMemoryTerminal(path, head, raw, actor)
+	descriptor, err := s.decodeMemoryTerminal(ctx, tx, path, head, raw, actor)
 	if err != nil {
 		return nil, err
 	}

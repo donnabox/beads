@@ -7,8 +7,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
@@ -73,7 +73,14 @@ func (s *Store) writeNativeLinkPropertiesInTx(ctx context.Context, tx *sql.Tx, r
 	if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, head, true, "Link"); err != nil {
 		return LinkMutationResult{}, err
 	}
-	sourcePath, targetPath := strings.TrimPrefix(current.Source, s.ScopeURL()), strings.TrimPrefix(current.Target, s.ScopeURL())
+	sourcePath, err := s.publicResourcePathInTx(ctx, tx, current.Source, graph.KindBead)
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	targetPath, err := s.publicResourcePathInTx(ctx, tx, current.Target, graph.KindBead)
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
 	source, err := s.requireIssueInTx(ctx, tx, sourcePath)
 	if err != nil {
 		return LinkMutationResult{}, err

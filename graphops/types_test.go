@@ -227,8 +227,8 @@ func TestRef(t *testing.T) {
 		in.URL(scope) != "https://beads.example/acme/beads/task-42" {
 		t.Fatalf("in-Scope ref: %+v", in)
 	}
-	if _, err := graphops.NewInScopeRef("links/x", ""); !errors.Is(err, graphops.ErrValidation) {
-		t.Fatalf("a Link path is not an endpoint: %v", err)
+	if ref, err := graphops.NewInScopeRef("links/x", ""); err != nil || ref.Path() != "links/x" {
+		t.Fatalf("endpoint spelling cannot establish kind: %+v %v", ref, err)
 	}
 	if _, err := graphops.NewInScopeRef("beads/caf%c3%a9", ""); !errors.Is(err, graphops.ErrValidation) {
 		t.Fatalf("a noncanonical path is refused, not trimmed: %v", err)
@@ -258,15 +258,15 @@ func TestRef(t *testing.T) {
 		{"https://beads.example/acme/beads/caf%c3%a9", false, "", "", true},
 		{"https://beads.example/acme/beads/task-42?x=1", false, "", "", true},
 		{"https://beads.example/acme/beads/task-42#f", false, "", "", true},
-		// Under the Scope but not a Bead.
-		{"https://beads.example/acme/links/l1", false, "", "", true},
-		{"https://beads.example/acme/alias/x", false, "", "", true},
+		// In-Scope public identity is independent of kind-root spelling.
+		{"https://beads.example/acme/links/l1", true, "links/l1", "", false},
+		{"https://beads.example/acme/alias/x", true, "alias/x", "", false},
 		{"https://beads.example/acme/", false, "", "", true},
-		{"https://beads.example/acme/other/x", false, "", "", true},
+		{"https://beads.example/acme/other/x", true, "other/x", "", false},
 		{"https://beads.example/acme/beads/", false, "", "", true},
-		// Local spellings that are not Bead IDs.
-		{"links/l1", false, "", "", true},
-		{"alias/x", false, "", "", true},
+		// Local public identity spelling does not establish kind.
+		{"links/l1", true, "links/l1", "", false},
+		{"alias/x", true, "alias/x", "", false},
 		{"beads/x?y", false, "", "", true},
 		{"beads/", false, "", "", true},
 		{"", false, "", "", true},
@@ -276,7 +276,7 @@ func TestRef(t *testing.T) {
 		{"https://beads.example/acme/beads/a b", false, "", "", true},
 		{"urn:isbn:0451450523 x", false, "", "", true},
 		{"ht_tp://x", false, "", "", true},
-		{"1abc:xyz", false, "", "", true},
+		{"1abc:xyz", true, "1abc:xyz", "", false},
 		{"urn:x%2", false, "", "", true},
 		{"urn:x%zz", false, "", "", true},
 		// Aliases through an empty port and through dot segments at the end.
@@ -415,7 +415,6 @@ func TestBeadAndLink(t *testing.T) {
 	}
 	for name, spec := range map[string]graphops.BeadSpec{
 		"bad path":      {Path: "beads/x/", TypeURL: "https://work.example/types/task", Revision: rev},
-		"link path":     {Path: "links/x", TypeURL: "https://work.example/types/task", Revision: rev},
 		"bad type":      {Path: "beads/x", TypeURL: "https://Work.example/types/task", Revision: rev},
 		"zero revision": {Path: "beads/x", TypeURL: "https://work.example/types/task"},
 	} {
@@ -455,7 +454,7 @@ func TestBeadAndLink(t *testing.T) {
 		t.Fatalf("external source with an in-Scope target: %v %+v", err, extSource)
 	}
 	for name, spec := range map[string]graphops.LinkSpec{
-		"bad path":      {Path: "beads/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source, Target: target},
+		"bad path":      {Path: "x//y", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source, Target: target},
 		"bad type":      {Path: "links/x", TypeURL: "work.example/types/cites", Revision: rev, Source: source, Target: target},
 		"zero revision": {Path: "links/x", TypeURL: "https://work.example/types/cites", Source: source, Target: target},
 		"both external": {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: external, Target: external},

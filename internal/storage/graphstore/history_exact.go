@@ -33,7 +33,7 @@ const PreviewVersionTokenLimit = 4096
 // Issue fields excluded from Jim's JSON snapshot (including the current row-lock
 // token and content hash) remain zero; they cannot be recovered from current state.
 func (s *Store) ReadVersion(ctx context.Context, path, version string) (any, error) {
-	if err := validateResourcePath(path); err != nil {
+	if err := s.validateResourceReadAddress(path); err != nil {
 		return nil, err
 	}
 	if err := validateVersionToken(version); err != nil {
@@ -45,6 +45,10 @@ func (s *Store) ReadVersion(ctx context.Context, path, version string) (any, err
 			return err
 		}
 		var err error
+		path, err = s.resolveResourceReadAddressInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
 		result, err = s.readVersionInTx(ctx, tx, path, version)
 		return err
 	})
@@ -154,7 +158,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 			State string `json:"state"`
 		}
 		if json.Unmarshal(raw, &marker) == nil && marker.State == "deleted" {
-			if _, err := s.decodeLinkTerminal(path, typ.String, version, raw, actor); err != nil {
+			if _, err := s.decodeLinkTerminal(ctx, tx, path, typ.String, version, raw, actor); err != nil {
 				return nil, err
 			}
 			return nil, ErrGone
@@ -162,7 +166,11 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 	}
 	if kind == "link" {
 		var link LinkRecord
-		if json.Unmarshal(raw, &link) != nil || link.ID != s.ScopeURL()+path || link.Type != typ.String ||
+		expectedID, err := s.publicResourceURLInTx(ctx, tx, path)
+		if err != nil {
+			return nil, err
+		}
+		if json.Unmarshal(raw, &link) != nil || link.ID != expectedID || link.Type != typ.String ||
 			link.Revision != version || link.Version != version {
 			return nil, fmt.Errorf("%w: retained Link identity differs", ErrInvalidStore)
 		}
@@ -192,7 +200,7 @@ func (s *Store) decodeExactMemoryVersion(ctx context.Context, tx *sql.Tx, path, 
 		State string `json:"state"`
 	}
 	if json.Unmarshal(raw, &marker) == nil && marker.State != "" {
-		if _, err := s.decodeMemoryTerminal(path, version, raw, actor); err != nil {
+		if _, err := s.decodeMemoryTerminal(ctx, tx, path, version, raw, actor); err != nil {
 			return Record{}, err
 		}
 		return Record{}, ErrGone
@@ -201,8 +209,12 @@ func (s *Store) decodeExactMemoryVersion(ctx context.Context, tx *sql.Tx, path, 
 }
 
 func (s *Store) decodeMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, version string, raw []byte, actor string) (Record, error) {
+	expectedID, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return Record{}, err
+	}
 	var memory Record
-	if json.Unmarshal(raw, &memory) != nil || !sameVersionJSON(raw, memory) || memory.ID != s.ScopeURL()+path ||
+	if json.Unmarshal(raw, &memory) != nil || !sameVersionJSON(raw, memory) || memory.ID != expectedID ||
 		!s.isMemoryType(memory.Type) || (typ != "" && memory.Type != typ) || memory.Revision != version || memory.Version != version ||
 		!utf8.ValidString(memory.Properties.Title) || !utf8.ValidString(memory.Properties.Body) ||
 		!validVersionAttribution(memory.Attribution, actor) {
@@ -276,8 +288,8 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 	if metadataErr != nil || !bytes.Equal(metadata, link.Metadata) {
 		return fmt.Errorf("%w: invalid retained Link metadata", ErrInvalidStore)
 	}
-	path := strings.TrimPrefix(link.ID, s.ScopeURL())
-	if validateLinkPath(path) != nil || s.ScopeURL()+path != link.ID || !authorityID.MatchString(link.Revision) ||
+	_, identityErr := s.publicResourcePathInTx(ctx, tx, link.ID, graph.KindLink)
+	if identityErr != nil || !authorityID.MatchString(link.Revision) ||
 		link.Version != link.Revision || !sameVersionJSON(raw, link) || !validVersionAttribution(link.Attribution, actor) {
 		return fmt.Errorf("%w: invalid retained Link", ErrInvalidStore)
 	}
@@ -285,7 +297,7 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 		if err := s.informationalTypeInTx(ctx, tx, link.Type); err != nil {
 			return err
 		}
-		return s.validateRetainedInformational(link, raw, actor)
+		return s.validateRetainedInformational(ctx, tx, link, raw, actor)
 	}
 	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
 	if err != nil {
@@ -301,8 +313,7 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 		return fmt.Errorf("%w: invalid retained Dependency", ErrInvalidStore)
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {
-		path := strings.TrimPrefix(endpoint, s.ScopeURL())
-		if validatePath(path) != nil || s.ScopeURL()+path != endpoint {
+		if _, err := s.publicResourcePathInTx(ctx, tx, endpoint, graph.KindBead); err != nil {
 			return fmt.Errorf("%w: invalid retained endpoint", ErrInvalidStore)
 		}
 	}
@@ -394,7 +405,11 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 	if err != nil {
 		return IssueRecord{}, err
 	}
-	result := IssueRecord{ID: s.ScopeURL() + path, Type: issueType, Revision: version, Version: version,
+	publicURL, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	result := IssueRecord{ID: publicURL, Type: issueType, Revision: version, Version: version,
 		Attribution: Attribution{Actor: actor.String, Status: status.String, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}
 	result.Attribution, err = applyIssueRevisionContext(result.Attribution, revisionContext)
 	if err != nil {

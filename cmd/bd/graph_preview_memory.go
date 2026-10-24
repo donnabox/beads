@@ -44,13 +44,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	// fail before opening the selected workspace or consuming patch input.
 	if !cmd.Flags().Changed("from-revision") && (cmd.Flags().Changed("patch") || cmd.Flags().Changed("replace-properties")) {
 		allowed := []string{"type", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force", "source-revision", "target-revision", "if-source-revision"}
-		if _, kind, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, selector); ok {
-			if kind == graph.KindLink {
-				allowed = []string{"patch", "replace-properties", "source-revision", "target-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"}
-			} else {
-				allowed = []string{"type", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"}
-			}
-		}
+
 		if err := graphPreviewFlags(cmd, allowed...); err != nil {
 			return err
 		}
@@ -111,7 +105,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewUpdateMetadataOnly(cmd, path)
 	}
 	if strings.HasPrefix(path, "links/") {
-		return runGraphPreviewUpdateLink(cmd, []string{graph.CanonicalURL(graphPreviewConfig.GraphScopeURL, path)})
+		return runGraphPreviewUpdateLink(cmd, []string{selector})
 	}
 	if graphPreviewIssueEditFlagsChanged(cmd) {
 		return runGraphPreviewUpdateIssue(cmd, path)

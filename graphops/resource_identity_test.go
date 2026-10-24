@@ -50,3 +50,29 @@ func TestCanonicalResourceIdentityRetainsSegmentGrammar(t *testing.T) {
 		}
 	}
 }
+
+func TestCanonicalResourceConstructorsDoNotInferKind(t *testing.T) {
+	const scope = "https://example.invalid/work/"
+	revision, err := graphops.NewRevision("opaque")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []string{"rootless", "beads/x", "links/x", "types/x", "alias/x", "a@b", "urn:local-id"} {
+		bead, err := graphops.NewBead(graphops.BeadSpec{Path: id, TypeURL: scope + "types/memory", Revision: revision})
+		if err != nil || bead.Path() != id {
+			t.Fatalf("Bead %q: %+v %v", id, bead, err)
+		}
+		ref, err := graphops.NewInScopeRef(id, "pinned")
+		if err != nil {
+			t.Fatal(err)
+		}
+		parsed, err := graphops.ParseRef(scope, scope+id, "pinned")
+		if err != nil || !parsed.Equal(ref) {
+			t.Fatalf("canonical reference changed %q: %+v %v", id, parsed, err)
+		}
+		link, err := graphops.NewLink(graphops.LinkSpec{Path: id, TypeURL: scope + "types/references", Revision: revision, Source: ref, Target: ref})
+		if err != nil || link.Path() != id {
+			t.Fatalf("Link %q: %+v %v", id, link, err)
+		}
+	}
+}

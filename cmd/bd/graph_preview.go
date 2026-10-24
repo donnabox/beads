@@ -41,7 +41,7 @@ const graphPreviewMarker = "graph-preview-format"
 // are not upgraded in place. Changing installed Types changes this marker.
 const (
 	graphPreviewGenerationPrefix = "link-preview-v"
-	graphPreviewGeneration       = "link-preview-v10\n"
+	graphPreviewGeneration       = "link-preview-v11\n"
 )
 
 var graphPreviewSupportedGenerations = []string{graphPreviewGeneration}

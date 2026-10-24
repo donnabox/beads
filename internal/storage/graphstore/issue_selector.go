@@ -17,6 +17,9 @@ import (
 type IssueSelector struct {
 	Path     string
 	NativeID string
+	// Exact is used after a canonical public URL or explicit literal-ID form.
+	// It disables shipping Issue abbreviation fallback, not revision guarding.
+	Exact bool
 }
 
 // A non-Issue selection has a different user-visible state-read refusal from
@@ -112,6 +115,9 @@ func (s *Store) resolveExactLiveIssueSelectorInTx(ctx context.Context, tx *sql.T
 // observe the same live catalog. Canonical URLs stay exact through Path-only
 // selectors; local beads/PATH spelling is an opaque public ID.
 func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
+	if selector.Exact {
+		return s.resolveExactLiveIssueSelectorInTx(ctx, tx, selector)
+	}
 	return s.resolveDependencyOperandInTx(ctx, tx, selector.Path, selector.NativeID)
 }
 

@@ -16,15 +16,18 @@ func TestMemoryPublicIdentityExactLifecycle(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s := memoryDeleteStore(t, engine)
-			keys := []string{"plain", " plain ", "PLAIN", "雪/%@?#", "é", "é", "beads/plain", "beads/free", strings.Repeat("long", 600)}
+			keys := []string{"plain", "PLAIN", "snow/%E9%9B%AA", "%C3%A9", "e%CC%81", "beads/plain", "beads/free", "links/memory", "types/memory-copy", "a@b", strings.Repeat("long", 600)}
 			for _, key := range keys {
 				body := "  Exact body\n雪\n"
 				created, err := s.Create(ctx, CreateRequest{PublicID: key, Title: "Independent title", Body: body})
 				if err != nil {
 					t.Fatal(err)
 				}
-				path := strings.TrimPrefix(created.ID, s.ScopeURL())
-				if created.PublicID != key || created.Properties.Body != body {
+				path, err := s.ResolveExactAllocatedResourcePath(ctx, key)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if created.ID != s.ScopeURL()+key || created.PublicID != key || created.Properties.Body != body {
 					t.Fatalf("identity/content changed: %+v", created)
 				}
 				selected, err := s.ResolveExactAllocatedResourcePath(ctx, key)
@@ -35,7 +38,7 @@ func TestMemoryPublicIdentityExactLifecycle(t *testing.T) {
 				if err != nil || !reflect.DeepEqual(read, created) {
 					t.Fatalf("read %q: %+v %v", key, read, err)
 				}
-				retained, err := s.ReadVersion(ctx, path, created.Revision)
+				retained, err := s.ReadVersion(ctx, created.ID, created.Revision)
 				if err != nil || !reflect.DeepEqual(retained, created) {
 					t.Fatalf("retained %q: %+v %v", key, retained, err)
 				}
@@ -84,24 +87,30 @@ func TestMemoryPublicIdentityCrossKindAndAmbiguity(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			two, err := s.Create(ctx, CreateRequest{PublicID: one.ID, Title: "URL-shaped key"})
-			if err != nil {
-				t.Fatal(err)
-			}
 			before = workflowState(t, ctx, s)
-			_, mismatch := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/mismatched", TypeURL: s.ScopeURL() + "types/references", SourcePath: "beads/another", SourceLocalID: "one", TargetPath: strings.TrimPrefix(two.ID, s.ScopeURL())})
+			for _, key := range []string{one.ID, "..", "a//b", "\x00", "雪", "a?b", "%61", "%2F"} {
+				_, err := s.Create(ctx, CreateRequest{PublicID: key, Title: "Rejected key"})
+				if !errors.Is(err, storage.ErrValidation) {
+					t.Fatalf("nonrepresentable key %q: %v", key, err)
+				}
+				if !strings.Contains(err.Error(), key) && !strings.Contains(err.Error(), "\\x00") {
+					t.Fatalf("key refusal omitted offending key %q: %v", key, err)
+				}
+				if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatal("rejected identity changed state")
+				}
+			}
+			_, mismatch := s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "mismatched", TypeURL: s.ScopeURL() + "types/references", SourcePath: "beads/another", SourceLocalID: "one", TargetPath: one.ID})
 			if !errors.Is(mismatch, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatal("mismatched path/public ID did not refuse atomically", mismatch)
 			}
-			if _, err := s.ResolveMemorySelector(ctx, one.ID); !errors.Is(err, storage.ErrValidation) {
-				t.Fatalf("ambiguous selector chose target: %v", err)
-			}
-			selected, err := s.ResolveExactAllocatedResourcePath(ctx, one.ID)
-			if err != nil || s.ScopeURL()+selected != two.ID {
-				t.Fatalf("explicit literal selection: %s %v", selected, err)
+			selected, err := s.ResolveMemorySelector(ctx, one.ID)
+			literal, literalErr := s.ResolveMemorySelector(ctx, "one")
+			if err != nil || literalErr != nil || selected != literal {
+				t.Fatalf("canonical/exact selection disagree: %s %s %v %v", selected, literal, err, literalErr)
 			}
 			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatal("ambiguity changed state")
+				t.Fatal("selection changed state")
 			}
 		})
 	}

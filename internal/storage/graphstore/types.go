@@ -12,7 +12,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 10
+const SchemaVersion = 11
 
 // TypeGeneration changes when the selected fresh Type installation changes.
 // It is an admission marker, never an automatic migration of existing stores.
@@ -138,6 +138,8 @@ var (
 // in the workspace generation. If both are set, they must agree. Path is an
 // optional never-reused Link allocation; empty allocates a fresh path.
 type DependencyRequest struct {
+	// PublicID is exact public identity; Path is only the private allocation locator.
+	PublicID string
 	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
 	ExpectedSourceRevision string
 	Type                   types.DependencyType
@@ -205,6 +207,8 @@ const PreviewOwnedLinkLimit = 1000
 // LinkCreateRequest allocates an independent informational Link. Equal endpoints
 // do not deduplicate intent; an explicit allocated Path cannot be reused.
 type LinkCreateRequest struct {
+	// PublicID is exact public identity; Path remains a private SQL locator.
+	PublicID string
 	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
 	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string

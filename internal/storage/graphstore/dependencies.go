@@ -41,6 +41,11 @@ func validateLinkPath(path string) error {
 // Reasserting the same pair is an exact no-op; it never invokes the legacy
 // same-pair metadata updater. This is not generic Link multiedge policy.
 func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (DependencyResult, error) {
+	preparedPath, generatedPath, err := prepareLinkIdentity(request.Path, request.PublicID)
+	if err != nil {
+		return DependencyResult{}, err
+	}
+	request.Path = preparedPath
 	for _, path := range []string{request.SourcePath, request.TargetPath} {
 		if err := validatePath(path); err != nil {
 			return DependencyResult{}, err
@@ -99,8 +104,17 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 				if existing.Type != linkType || existing.Properties["dep_type"] != string(nativeType) {
 					return fmt.Errorf("%w: Dependency pair already has a different kind", storage.ErrValidation)
 				}
-				if request.Path != "" && existing.ID != graph.CanonicalURL(s.options.Binding.ScopeURL, request.Path) {
+				if request.PublicID != "" && existing.ID != s.ScopeURL()+request.PublicID {
 					return fmt.Errorf("%w: Dependency pair already has canonical Link %s", storage.ErrValidation, existing.ID)
+				}
+				if request.Path != "" && !generatedPath {
+					allocated, err := s.publicResourcePathInTx(ctx, tx, existing.ID, graph.KindLink)
+					if err != nil {
+						return err
+					}
+					if allocated != request.Path {
+						return fmt.Errorf("%w: Dependency pair already has canonical Link %s", storage.ErrValidation, existing.ID)
+					}
 				}
 				result = DependencyResult{Link: existing, Source: source, Changed: false}
 				return nil
@@ -119,19 +133,20 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 				return err
 			}
 			path = "links/" + token
+			generatedPath = true
 		}
-		var exists int
-		err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
-		if err == nil {
-			return ErrAlreadyExists
+		publicID := request.PublicID
+		if publicID == "" {
+			publicID = path
 		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-		if exists, err := publicResourceIDExistsInTx(ctx, tx, path); err != nil {
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
 			return err
 		} else if exists {
 			return ErrAlreadyExists
+		}
+		path, err = choosePrivateResourcePathInTx(ctx, tx, path, generatedPath, graph.KindLink)
+		if err != nil {
+			return err
 		}
 		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unscope()
@@ -155,7 +170,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key) VALUES (?,'link',?,?,'live','dependency',?)`, path, linkType, revision, key); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id) VALUES (?,'link',?,?,'live','dependency',?,?)`, path, linkType, revision, key, publicID); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-catalog"); err != nil {
@@ -300,8 +315,20 @@ func (s *Store) currentLinkProjectionInTx(ctx context.Context, tx *sql.Tx, path 
 	if err != nil {
 		return LinkRecord{}, err
 	}
-	return LinkRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision,
-		Source: graph.CanonicalURL(s.options.Binding.ScopeURL, sourcePath), Target: graph.CanonicalURL(s.options.Binding.ScopeURL, targetPath), Properties: map[string]any{"dep_type": depType}, Metadata: canonicalMetadata,
+	publicURL, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return LinkRecord{}, err
+	}
+	sourceURL, err := s.publicResourceURLInTx(ctx, tx, sourcePath)
+	if err != nil {
+		return LinkRecord{}, err
+	}
+	targetURL, err := s.publicResourceURLInTx(ctx, tx, targetPath)
+	if err != nil {
+		return LinkRecord{}, err
+	}
+	return LinkRecord{ID: publicURL, Type: typ, Revision: revision, Version: revision,
+		Source: sourceURL, Target: targetURL, Properties: map[string]any{"dep_type": depType}, Metadata: canonicalMetadata,
 		Attribution: attribution}, nil
 }
 

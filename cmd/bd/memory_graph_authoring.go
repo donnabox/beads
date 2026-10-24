@@ -103,7 +103,7 @@ func memoryLinkRequestWithTarget(cmd *cobra.Command, args []string, scope string
 		if err != nil {
 			return zero, err
 		}
-		if localID == "" && graph.ValidateBeadPath(path) != nil {
+		if localID == "" && graph.ValidateBeadPath(path) != nil && !graphPreviewCanonicalResourceAddress(scope, path) {
 			return zero, fmt.Errorf("relationship endpoint must be a Bead")
 		}
 		paths[i], localIDs[i] = path, localID
@@ -114,11 +114,10 @@ func memoryLinkRequestWithTarget(cmd *cobra.Command, args []string, scope string
 	result.SourcePin, result.TargetPin = pins[0], pins[1]
 	if cmd.Flags().Changed("id") {
 		value, _ := cmd.Flags().GetString("id")
-		path, err := graphPreviewLinkPath(scope, value)
-		if err != nil {
+		if err := graph.ValidateCanonicalResourceID(value); err != nil {
 			return zero, err
 		}
-		result.Path = path
+		result.PublicID = value
 	}
 	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true)
 	if err != nil {
