@@ -23,9 +23,13 @@ not promise migration or that every target operation already runs.
 
 The new `bd graph` candidate is documented in the
 [task guide](/reference/graph-cli#preview-3-selected-type-graph-candidate).
-It uses repeatable Link-Type union/refinement selection, default Dependency,
-shared direction/depth, induced matching Links, explicit frontier and canonical
-graph JSON, with ordinary output options. `--view generic` is optional.
+It uses repeatable family (`--link-type`) and nominal (`--exact-link-type`)
+selection, the Dependency-family default and `--link-type any` wildcard,
+shared direction/depth, induced matching Links and canonical graph JSON.
+Human views use `[Type]` labels and plain depth-boundary explanations; JSON
+retains frontier/completeness context. An implicit-default omission notice on
+stderr requires actual reached-incidence evidence from the checked read,
+without an additional diagnostic scan. `--view generic` is optional.
 `--open` remains refused in link mode. This candidate supersedes the old
 summary-only graph route after integration/qualification; it does not silently
 rewrite the exact historical implementation ledger or assert it has shipped.

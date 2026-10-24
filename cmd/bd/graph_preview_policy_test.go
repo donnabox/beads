@@ -356,7 +356,8 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, args := range [][]string{
 		{"graph", "demo-one", "--graph-mode", "dependency", "--link-type", "references"},
-		{"graph", "demo-one", "--graph-mode", "dependency", "--all-link-types"},
+		{"graph", "demo-one", "--graph-mode", "dependency", "--link-type", "any"},
+		{"graph", "demo-one", "--graph-mode", "dependency", "--exact-link-type", "references"},
 		{"import", "--source-prefix", "web-app"},
 		{"import", "--source-prefix="},
 		{"remember", "--update", "beads/plan", "--title", "Refused"},

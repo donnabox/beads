@@ -65,7 +65,7 @@ func TestMemoryCurrentGraphEmbeddedCapture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(text, `work [issue] (open) "Native work"`) || !strings.Contains(text, `rail [policy] "Memory rail"`) || !strings.Contains(text, `target revision="`+policy.Revision+`"`) || strings.Count(text, "Aggregate: 2 unique Beads, 1 unique Links across 2 root views") != 1 {
+	if !strings.Contains(text, `beads/work [types/issue] (open) "Native work"`) || !strings.Contains(text, `beads/rail [types/policy] "Memory rail"`) || !strings.Contains(text, `target revision="`+policy.Revision+`"`) || strings.Count(text, "2 Beads, 1 Links across 2 views") != 1 {
 		t.Fatal(text)
 	}
 	t.Logf("actual captured read after store close:\n%s", text)
