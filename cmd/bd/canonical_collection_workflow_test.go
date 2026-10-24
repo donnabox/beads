@@ -31,6 +31,19 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			call("remember", "First body", "--id", "beads/first", "--json")
 			call("remember", "Second body", "--id", "beads/second", "--json")
 			call("link", "create", scope+"beads/first", scope+"beads/second", "--type", scope+"types/superseded-by", "--id", "links/related", "--json")
+			// Allocation succeeds for this selector, but the selected resource is
+			// a Link rather than a Bead endpoint. Keep that refusal a selector
+			// error after the store-bound identity lookup.
+			ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
+			wrongKind := exec.CommandContext(ctx, bd, "link", "list", "--from", "links/related", "--output-format=json")
+			wrongKind.Dir = work
+			wrongKind.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "BD_DISABLE_METRICS=1", "BD_DISABLE_EVENT_FLUSH=1", "BD_NON_INTERACTIVE=1", "BEADS_DOLT_AUTO_START=0", "DOLT_METRICS_DISABLED=1"}
+			wrongOutput, wrongErr := wrongKind.Output()
+			cancel()
+			var wrongExit *exec.ExitError
+			if !errors.As(wrongErr, &wrongExit) || wrongExit.ExitCode() != 2 || !strings.Contains(string(wrongOutput), `"code":"invalid_selector"`) {
+				t.Fatalf("Link as Bead endpoint: exit=%v output=%s", wrongErr, wrongOutput)
+			}
 			var beads struct {
 				SchemaVersion int             `json:"schema_version"`
 				BDPSpec       string          `json:"bdp_spec"`
