@@ -31,6 +31,17 @@ func publicResourceIDExistsInTx(ctx context.Context, tx *sql.Tx, id string) (boo
 // its checked writer can compare the terminal revision and restore content.
 // An exact public ID wins over old Bead/Link suffix shorthand.
 func (s *Store) ResolveAllocatedResourcePath(ctx context.Context, id string) (string, error) {
+	return s.resolveAllocatedResourcePath(ctx, id, true)
+}
+
+// ResolveExactAllocatedResourcePath excludes compatibility suffixes for a
+// write that will commit in a later transaction. The returned allocation is
+// stable for this Scope's lifetime, including across deletion and recovery.
+func (s *Store) ResolveExactAllocatedResourcePath(ctx context.Context, id string) (string, error) {
+	return s.resolveAllocatedResourcePath(ctx, id, false)
+}
+
+func (s *Store) resolveAllocatedResourcePath(ctx context.Context, id string, allowShorthand bool) (string, error) {
 	if id == "" || validatePath("beads/"+id) != nil || validateLinkPath("links/"+id) != nil {
 		return "", fmt.Errorf("%w: invalid local Resource ID", storage.ErrValidation)
 	}
@@ -65,6 +76,9 @@ func (s *Store) ResolveAllocatedResourcePath(ctx context.Context, id string) (st
 		}
 		if selected != "" {
 			return nil
+		}
+		if !allowShorthand {
+			return ErrNotFound
 		}
 		// Suffixes are compatibility syntax, never public identity. A native
 		// Issue's private path cannot answer an unqualified local selector.

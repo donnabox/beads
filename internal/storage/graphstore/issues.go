@@ -79,6 +79,16 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
+		// Explicit IDs can remain reserved by a deleted graph allocation even
+		// after the native Issue row has been removed. Refuse before the native
+		// writer can collide with retained History for that ID.
+		if request.Issue.ID != "" {
+			if exists, err := publicResourceIDExistsInTx(ctx, tx, request.Issue.ID); err != nil {
+				return err
+			} else if exists {
+				return ErrAlreadyExists
+			}
+		}
 		if path != "" {
 			var exists int
 			err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
@@ -95,17 +105,13 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err != nil {
 			return err
 		}
-		// The native writer reserves its own ID. Check the other live resource
-		// families before publishing this allocation; the whole transaction
-		// rolls back if another family already uses the same public spelling.
-		var collision int
-		err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE
-			backing IN ('generic','dependency','informational') AND path=? LIMIT 1`, created.Issue.ID).Scan(&collision)
-		if err == nil {
-			return ErrAlreadyExists
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
+		// The generated ID is known only after the native writer runs. Check
+		// every lifetime allocation before publishing it; refusal rolls the
+		// native create and its first retained version back together.
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
 			return err
+		} else if exists {
+			return ErrAlreadyExists
 		}
 		if path == "" {
 			// The graph path is a separate address from the opaque native ID.

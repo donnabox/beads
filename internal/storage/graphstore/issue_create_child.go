@@ -100,6 +100,14 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
+		// The native counter allocated this ID, but another Resource may have
+		// reserved its public spelling. Refusal must roll the counter, Issue,
+		// and native parent edge back in this same transaction.
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
+		}
 		if !sameIssueCreateFields(create.Issue, created.Issue, create.Actor) || issueops.IsWisp(created.Issue) ||
 			!strings.HasPrefix(created.Issue.ID, parent.Properties.ID+".") {
 			return fmt.Errorf("%w: native child Issue cannot be represented exactly", storage.ErrValidation)

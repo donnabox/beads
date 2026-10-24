@@ -278,7 +278,7 @@ def main():
         capture.success("memory-constraint-link", ["link", "beads/plan", "beads/constraint", "--type", owned_type,
             "--id", "links/context", "--properties", '{"note":"before page"}', "--metadata", '{"origin":"manual"}',
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
-        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--type", "types/references",
+        capture.success("issue-memory-link", ["link", scope + "beads/work", scope + "beads/plan", "--type", "types/references",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
         dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", scope + "beads/work", scope + "beads/prereq", "--json"]))
         for path in [*records, "links/context", "links/back", dependency["link"]["id"]]:

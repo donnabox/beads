@@ -17,7 +17,8 @@ var graphUnlinkCmd = &cobra.Command{
 	Short: "Remove a Link in an experimental graph workspace",
 	Long: `Remove one informational Link or blocking Dependency by canonical Link ID.
 Informational Links also accept an unambiguous source/target pair selected with
---type; bare endpoint IDs mean beads/ID. Requires a Link revision guard. Source revision protection is
+--type; local endpoint spellings select public Bead IDs, while canonical Scope
+URLs select exact graph paths. Requires a Link revision guard. Source revision protection is
 optional for Memory-owned Links and required for blocking Dependencies. The ID
 stays reserved and prior snapshots remain retained. Blocking pair selection is
 not supported by unlink; use bd dep remove ISSUE BLOCKER for the native pair
@@ -30,7 +31,8 @@ var graphLinksCmd = &cobra.Command{
 	Use: "links BEAD", GroupID: "issues",
 	Short: "Inspect incident Links in an experimental graph workspace",
 	Long: `List current informational Links and blocking Dependencies incident to a
-Bead ID (bare ID or beads/PATH). Direction is relative to that Bead; default is both. This bounded
+public Bead ID (including a literal beads/PATH spelling) or canonical Scope URL.
+Direction is relative to that Bead; default is both. This bounded
 preview returns a complete result or refuses above its advertised limit. It does
 not paginate, read historical state, or resolve remote targets.`,
 	SilenceUsage: true, SilenceErrors: true,
@@ -136,7 +138,7 @@ func init() {
 	linkCmd.AddCommand(linkCreateCmd, linkListCmd, linkShowCmd, linkUpdateCmd, linkDeleteCmd, linkVersionsCmd, linkCompareCmd, linkCountCmd)
 	linkCreateCmd.Flags().String("type", "", "Installed Link Type or built-in Dependency type")
 	for _, flag := range []string{"source", "target"} {
-		linkCreateCmd.Flags().String(flag, "", "Local Bead ID or beads/PATH")
+		linkCreateCmd.Flags().String(flag, "", "Local public Bead ID or canonical Scope URL")
 	}
 	linkCreateCmd.Flags().String("source-revision", "", "Source endpoint revision: exact token, current or unpinned; owned source pins refuse (distinct from --if-source-revision)")
 	linkCreateCmd.Flags().String("target-revision", "", "Target endpoint revision: exact token, current or unpinned (informational Links only)")
@@ -461,14 +463,16 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		request.SourcePath, err = graphPreviewBeadSelector(source)
+		sourceSelector, err := graphPreviewIssueSelector(source)
 		if err != nil {
-			return err
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		request.TargetPath, err = graphPreviewBeadSelector(target)
+		targetSelector, err := graphPreviewIssueSelector(target)
 		if err != nil {
-			return err
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
+		request.SourcePath, request.SourceLocalID = sourceSelector.Path, sourceSelector.NativeID
+		request.TargetPath, request.TargetLocalID = targetSelector.Path, targetSelector.NativeID
 		request.TypeURL, err = graphPreviewLinkType(cmd)
 		if err != nil {
 			return err

@@ -29,11 +29,11 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				t.Helper()
 				graphPatchProcess(t, bd, work, home, nil, code, 90*time.Second, append(args, "--json")...)
 			}
-			call("create", "Source", "--graph-path", "beads/source")
+			call("create", "Source", "--id", "source", "--force")
 			call("remember", "Target", "--id", "beads/target")
-			call("create", "Native target", "--graph-path", "beads/native-target")
+			call("create", "Native target", "--id", "native-target", "--force")
 			sourceBefore := call("show", scope+"beads/source")
-			linksBefore := call("link", "list", "--source", "beads/source")
+			linksBefore := call("link", "list", "--source", scope+"beads/source")
 			for _, tc := range []struct {
 				name, source, target string
 				flags                []string
@@ -49,7 +49,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 					if got := call("show", scope+"beads/source"); got != sourceBefore {
 						t.Fatal("refused Link creation changed the owning source")
 					}
-					if got := call("link", "list", "--source", "beads/source"); got != linksBefore {
+					if got := call("link", "list", "--source", scope+"beads/source"); got != linksBefore {
 						t.Fatal("refused Link creation inserted an endpoint or Link")
 					}
 				})
@@ -73,7 +73,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				if got := call("show", scope+"beads/source"); got != sourceBefore {
 					t.Fatal("refused shorthand Link creation changed the source")
 				}
-				if got := call("link", "list", "--source", "beads/source"); got != linksBefore {
+				if got := call("link", "list", "--source", scope+"beads/source"); got != linksBefore {
 					t.Fatal("refused shorthand Link creation changed Links")
 				}
 			}
@@ -228,7 +228,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			// revision, not the replaced predecessor or input guard.
 			call("remember", "Before disclosure", "--id", "beads/disclosure")
 			before := graphMixedResult[graphstore.Record](t, call("show", "disclosure"))
-			human := graphPolicyCLI(t, bd, work, home, nil, "", "update", "disclosure", "--properties", `{ "body":"After disclosure" }`)
+			human := graphPolicyCLI(t, bd, work, home, nil, "", "update", "beads/disclosure", "--properties", `{ "body":"After disclosure" }`)
 			after := graphMixedResult[graphstore.Record](t, call("show", "disclosure"))
 			if !strings.Contains(human, "Current Memory revision: ["+after.ID+"]@"+after.Revision) || !strings.Contains(human, "Replaced Memory "+before.ID+" version "+before.Revision) {
 				t.Fatalf("ambiguous Memory update output: %q", human)
