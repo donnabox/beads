@@ -125,7 +125,14 @@ func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		args = []string{resolved}
+		ref, err := graphPreviewParseReference(resolved)
+		if err != nil {
+			return graphPreviewReferenceFailure(err)
+		}
+		if ref.Explicit && !ref.currentSelection() {
+			return graphFailure("capability_unavailable", "current graph traversal accepts bare identity or @current roots", 5)
+		}
+		args = []string{ref.Identity}
 	}
 	in, err := graphPreviewGenericInput(cmd, args, graphPreviewConfig.GraphScopeURL)
 	if err != nil {

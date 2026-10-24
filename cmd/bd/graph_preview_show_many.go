@@ -34,7 +34,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
+		if ref.Explicit && !ref.currentSelection() {
 			return graphFailure("capability_unavailable", "multi-ID show supports current Issue details only", 5)
 		}
 		path, localID, err := graphPreviewResourceReadSelector(ref.Identity)

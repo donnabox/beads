@@ -76,7 +76,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "id-root", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
 		return err
 	}
 	// Keep the ordinary single-edge spellings. Native --blocked-by wins if both
@@ -153,7 +153,11 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		}
 	}
 	familiarLink := cmd.Name() == "link" && !cmd.Flags().Changed("id") && !cmd.Flags().Changed("if-source-revision")
-	return graphPreviewInsertDependency(paths[0], paths[1], nativeIDs[0], nativeIDs[1], selectedType, depType, linkPath, sourceRevision, args[0], args[1], familiarLink)
+	idRoot, _, err := graphPreviewGeneratedIDRoot(cmd)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	return graphPreviewInsertDependencyWithRoot(paths[0], paths[1], nativeIDs[0], nativeIDs[1], selectedType, depType, linkPath, sourceRevision, args[0], args[1], familiarLink, idRoot)
 }
 
 // The store independently checks the installed Type in the write transaction.
@@ -252,8 +256,12 @@ func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 }
 
 func graphPreviewInsertDependency(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool) error {
+	return graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL, depType, linkPath, sourceRevision, sourceLabel, targetLabel, familiarLink, "")
+}
+
+func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool, idRoot string) error {
 	write := func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{PublicID: linkPath, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, SourceNativeID: sourceNativeID, TargetNativeID: targetNativeID, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
+		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{PublicID: linkPath, IDRoot: idRoot, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, SourceNativeID: sourceNativeID, TargetNativeID: targetNativeID, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
 				kind := "blocking"

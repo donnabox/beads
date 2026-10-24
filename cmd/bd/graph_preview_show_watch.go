@@ -34,7 +34,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
+	if ref.Explicit && !ref.currentSelection() {
 		return graphFailure("capability_unavailable", "--watch requires a current Issue", 5)
 	}
 	selectorPath, localID, err := graphPreviewResourceReadSelector(ref.Identity)
