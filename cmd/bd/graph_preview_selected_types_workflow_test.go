@@ -31,8 +31,32 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			inventory := graphMixedResult[graphTypeInventory](t, call("types"))
-			if len(inventory.BeadTypes) != 10 || len(inventory.LinkTypes) != 10 {
-				t.Fatalf("selected catalog not installed: %+v", inventory)
+			// Native concrete declarations extend the inventory; the fixed
+			// selected catalog must still contain its original ten per Kind.
+			baseCount := func(descriptors []json.RawMessage, nativeBase string) int {
+				t.Helper()
+				count := 0
+				for _, raw := range descriptors {
+					var descriptor struct {
+						ID, Name   string
+						ConformsTo []string
+					}
+					if err := json.Unmarshal(raw, &descriptor); err != nil {
+						t.Fatal(err)
+					}
+					base, classification, native := graphstore.NativeTypeClassification(scope, descriptor.ID)
+					if !native {
+						count++
+						continue
+					}
+					if base != nativeBase || descriptor.Name != classification || len(descriptor.ConformsTo) != 1 || descriptor.ConformsTo[0] != nativeBase {
+						t.Fatalf("native descriptor lost its identity or family: %s", raw)
+					}
+				}
+				return count
+			}
+			if beads, links := baseCount(inventory.BeadTypes, graphstore.IssueTypeURL(scope)), baseCount(inventory.LinkTypes, graphstore.DependencyTypeURL(scope)); beads != 10 || links != 10 {
+				t.Fatalf("selected catalog not installed: BeadTypes=%d LinkTypes=%d", beads, links)
 			}
 			for _, descriptor := range append(inventory.BeadTypes, inventory.LinkTypes...) {
 				for _, absent := range []string{"types/preview-", "types/example-", "types/Type", "types/BeadType", "types/LinkType", "types/ConformsTo", "types/refines"} {
