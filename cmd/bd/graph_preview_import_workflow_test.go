@@ -175,14 +175,14 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 				}
 			}
 			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(fixture, "import", "-", "--dry-run"))
-			if !preview.DryRun || preview.Issues != 5 || preview.Memories != 2 || preview.Dependencies != 3 {
+			if !preview.DryRun || !preview.GeneratedIDsProvisional || preview.Issues != 5 || preview.Memories != 2 || preview.Dependencies != 3 {
 				t.Fatalf("preview=%+v", preview)
 			}
 			if got := call("", "list", "--all", "--format", "records-json"); got != before {
 				t.Fatal("dry-run reserved or changed data")
 			}
 			result := graphMixedResult[graphstore.LegacyImportResult](t, call(fixture, "import", "-"))
-			if result.DryRun || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || result.GeneratedIDsProvisional || len(result.DependencyIDs) != len(preview.DependencyIDs) {
+			if result.DryRun || result.GeneratedIDsProvisional || !graphLegacyImportSameExplicitResults(preview, result) {
 				t.Fatalf("apply identity maps differ from dry-run: %+v / %+v", result, preview)
 			}
 			memory := graphMixedResult[graphstore.Record](t, call("", "show", result.MemoryIDs["scratch-memory"]))
@@ -401,14 +401,14 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 			}
 			reversed := string(bytes.Join(lines, []byte{'\n'})) + "\n"
 			reordered := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-", "--dry-run"))
-			if !preview.DryRun || preview.IssuePrefix != "web-app" || preview.Issues != len(issues) || preview.Memories != len(memories) || preview.Dependencies != 1 || preview.Comments != 1 || !graphLegacyImportSameExplicitResults(preview, reordered) {
+			if !preview.DryRun || !preview.GeneratedIDsProvisional || !reordered.DryRun || !reordered.GeneratedIDsProvisional || preview.IssuePrefix != "web-app" || preview.Issues != len(issues) || preview.Memories != len(memories) || preview.Dependencies != 1 || preview.Comments != 1 || !graphLegacyImportSameExplicitResults(preview, reordered) {
 				t.Fatalf("dry-run counts or order-dependent remapping: %+v %+v", preview, reordered)
 			}
 			if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
 				t.Fatal("completeness dry-run reserved data")
 			}
 			result := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-", "--source-prefix", "web-app"))
-			if result.DryRun || len(result.DependencyIDs) != 1 || result.IssuePrefix != preview.IssuePrefix || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || result.GeneratedIDsProvisional || len(result.DependencyIDs) != len(preview.DependencyIDs) {
+			if result.DryRun || result.GeneratedIDsProvisional || !graphLegacyImportSameExplicitResults(preview, result) {
 				t.Fatalf("apply did not preserve dry-run identity maps: %+v", result)
 			}
 			allocated := map[string]bool{}
@@ -585,5 +585,8 @@ func graphLegacyImportSameExplicitResults(a, b graphstore.LegacyImportResult) bo
 		}
 	}
 	a.DependencyIDs, b.DependencyIDs = nil, nil
+	// Execution mode and provisional generated IDs vary; source facts do not.
+	a.DryRun, b.DryRun = false, false
+	a.GeneratedIDsProvisional, b.GeneratedIDsProvisional = false, false
 	return reflect.DeepEqual(a, b)
 }

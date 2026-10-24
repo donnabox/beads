@@ -220,6 +220,7 @@ func TestLegacyImportRootAndAuthorityRefusals(t *testing.T) {
 {"id":"old-b","title":"B"}`, LegacyImportOptions{IDRoot: "external:x"}},
 				{`{"id":"old-a","title":"A"}`, LegacyImportOptions{IDRoot: strings.Repeat("r", 250)}},
 				{`{"_type":"memory","key":"a//b","value":"incompatible"}`, LegacyImportOptions{IDRoot: "root"}},
+				{`{"_type":"memory","key":"issue","value":"root creates a reserved identity"}`, LegacyImportOptions{IDRoot: "types"}},
 				{`{"id":"old-a","title":"A"}
 {"_type":"memory","key":"types/native-issue/7461736b","value":"reserved native task Type"}`, LegacyImportOptions{}},
 				{`{"id":"types/native-issue/7461736b","title":"Issue colliding with its own Type"}`, LegacyImportOptions{SourcePrefix: "types/native"}},
@@ -266,6 +267,73 @@ func TestLegacyImportRootAndAuthorityRefusals(t *testing.T) {
 						t.Fatal("refusal changed caller input")
 					}
 				}
+			}
+		})
+	}
+}
+
+func TestLegacyImportNativeIDBoundaryAndRootedAuthorityKey(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := store.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			input := parseLegacyFixture(t, `{"id":"old-a","title":"Exact native backing limit"}
+{"_type":"memory","key":"types/issue","value":"literal key relocated away from authority"}`)
+			root := strings.Repeat("r", 249)
+			publicID := root + "/old-a"
+			if len(publicID) != 255 {
+				t.Fatal("fixture must exercise exactly 255 UTF-8 bytes")
+			}
+			before := legacyImportState(t, ctx, store)
+			preview, err := store.ImportLegacyWithOptions(ctx, input, "importer", true, LegacyImportOptions{IDRoot: root})
+			if err != nil || !preview.DryRun || !reflect.DeepEqual(before, legacyImportState(t, ctx, store)) {
+				t.Fatalf("255-byte dry-run failed or changed state: %+v %v", preview, err)
+			}
+			result, err := store.ImportLegacyWithOptions(ctx, input, "importer", false, LegacyImportOptions{IDRoot: root})
+			if err != nil || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) {
+				t.Fatalf("255-byte apply changed source mapping: %+v %v", result, err)
+			}
+			uri := store.ScopeURL() + publicID
+			identity, err := store.ResolveCanonicalPublicResourceIdentity(ctx, uri)
+			if err != nil || result.IDs["old-a"] != uri {
+				t.Fatalf("255-byte identity not preserved: %+v %v", result, err)
+			}
+			current, err := store.ShowIssue(ctx, identity.PrivatePath)
+			if err != nil || current.Properties.ID != publicID {
+				t.Fatalf("255-byte native ID lost: %+v %v", current, err)
+			}
+			retained, err := store.ReadVersion(ctx, identity.PrivatePath, current.Revision)
+			if err != nil {
+				t.Fatal(err)
+			}
+			currentJSON, err := canonicalJSON(current)
+			if err != nil {
+				t.Fatal(err)
+			}
+			retainedJSON, err := canonicalJSON(retained)
+			if err != nil || !bytes.Equal(currentJSON, retainedJSON) {
+				t.Fatalf("255-byte retained record differs: %s %s %v", currentJSON, retainedJSON, err)
+			}
+			var size int
+			if err := store.db.QueryRowContext(ctx, `SELECT OCTET_LENGTH(backing_key) FROM graph_preview_catalog WHERE path=?`, identity.PrivatePath).Scan(&size); err != nil || size != 255 {
+				t.Fatalf("native catalog boundary: %d %v", size, err)
+			}
+			memoryURI := store.ScopeURL() + root + "/types/issue"
+			selected, err := store.ResolveCanonicalPublicResourceIdentity(ctx, memoryURI)
+			if err != nil || result.MemoryIDs["types/issue"] != memoryURI {
+				t.Fatalf("root failed to relocate a reserved spelling: %+v %v", result, err)
+			}
+			memory, err := store.Show(ctx, selected.PrivatePath)
+			if err != nil || memory.ID != memoryURI || memory.Properties.Body != "literal key relocated away from authority" {
+				t.Fatalf("relocated literal key lost: %+v %v", memory, err)
 			}
 		})
 	}

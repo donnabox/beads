@@ -74,14 +74,9 @@ func (s *Store) ImportLegacyWithOptions(ctx context.Context, input legacyimport.
 		return LegacyImportResult{}, err
 	}
 	batch := mounted.Batch
-	nativeTypes, err := prepareLegacyImportNativeTypes(batch, s.ScopeURL())
+	nativeTypes, err := prepareLegacyImportNativeTypes(mounted, s.ScopeURL())
 	if err != nil {
 		return LegacyImportResult{}, err
-	}
-	if len(nativeTypes.dependencies) > 0 {
-		if err := graph.ValidateGeneratedResourceIDRoot(options.IDRoot); err != nil {
-			return LegacyImportResult{}, fmt.Errorf("%w: legacy generated Link ID root: %v", storage.ErrValidation, err)
-		}
 	}
 	memories, err := s.prepareLegacyImportMemories(mounted, actor)
 	if err != nil {
