@@ -75,6 +75,9 @@ func runMemoryLinkCommand(cmd *cobra.Command, args []string, op memoryLinkOperat
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], flags...); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	if err := canonicalExactOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
 	request, err := memoryLinkRequest(cmd, args, graphPreviewConfig.GraphScopeURL, op)
 	if err != nil {
 		var exit *exitError

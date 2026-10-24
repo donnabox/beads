@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"unicode/utf8"
 
@@ -45,6 +46,9 @@ var linkCreateCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if !cmd.Flags().Changed("type") {
 			return graphFailure("invalid_selector", "link create requires --type", 2)
+		}
+		if err := canonicalExactOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
+			return graphFailure("invalid_selector", "link create "+err.Error(), 2)
 		}
 		source, target, err := graphPreviewAuthoringEndpoints(cmd, args)
 		if err != nil {
