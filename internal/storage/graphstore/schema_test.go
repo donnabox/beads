@@ -1,6 +1,7 @@
 package graphstore
 
 import (
+	"encoding/hex"
 	"slices"
 	"testing"
 
@@ -58,6 +59,14 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 		t.Fatal("a built-in Type has a duplicate or versioned identity")
 	}
 	want := []string{"memory", "evaluation", "constraint", "policy", "decision", "procedure", "requirement", "scenario", "specification", "references", "superseded-by", "requires", "defines", "subject-to", "conformance", "addresses", "satisfies", "violates", "issue", "dependency"}
+	// Fixed native children are distinct concrete Types, not aliases for the
+	// two abstract families. Keep this census independent of the installer.
+	for _, classification := range []string{"bug", "feature", "task", "epic", "chore", "decision", "message", "molecule", "gate", "spike", "story", "milestone", "event"} {
+		want = append(want, "native-issue/"+hex.EncodeToString([]byte(classification)))
+	}
+	for _, kind := range []string{"blocks", "parent-child", "conditional-blocks", "waits-for", "related", "discovered-from", "replies-to", "relates-to", "duplicates", "supersedes", "authored-by", "assigned-to", "approved-by", "attests", "tracks", "until", "caused-by", "validates", "delegated-from"} {
+		want = append(want, "native-dependency/"+hex.EncodeToString([]byte(kind)))
+	}
 	if got := FreshTypeNames(); !slices.Equal(got, want) {
 		t.Fatalf("fresh Type set = %v, want %v", got, want)
 	}
@@ -66,19 +75,22 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, ok := issue.Owns(DependencyTypeURL(scope)); !ok {
-		t.Fatal("Issue must own the one native Dependency Link Type")
+		t.Fatal("Issue must own the abstract native Dependency family")
 	}
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "tracks"} {
 		id, ok := relationshipDependencyTypeURL(scope, native)
-		if !ok || id != DependencyTypeURL(scope) {
-			t.Fatalf("native %q must use the one Dependency Type: %q, %t", native, id, ok)
+		if !ok || id != scope+"types/native-dependency/"+hex.EncodeToString([]byte(native)) || id == DependencyTypeURL(scope) {
+			t.Fatalf("native %q must use its concrete Dependency Type: %q, %t", native, id, ok)
+		}
+		if base, kind, valid := NativeTypeClassification(scope, id); !valid || base != DependencyTypeURL(scope) || kind != string(native) {
+			t.Fatalf("concrete Type lost native classification: %q %q %t", base, kind, valid)
 		}
 		link, err := relationshipDependencyDescriptor(scope, native)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if link.ID() != id {
-			t.Fatalf("descriptor ID %q, want %q", link.ID(), id)
+		if link.ID() != id || link.Describes() != graph.KindLink || !slices.Equal(link.ConformsTo(), []string{DependencyTypeURL(scope)}) {
+			t.Fatalf("concrete descriptor lost identity, kind or family: %s", link.CanonicalJSON())
 		}
 		for _, endpoint := range []func() (graph.EndpointConstraint, bool){link.Source, link.Target} {
 			constraint, present := endpoint()
