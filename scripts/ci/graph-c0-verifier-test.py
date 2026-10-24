@@ -190,14 +190,24 @@ class RequiredEngineControls(unittest.TestCase):
 
 class RequiredGroupedExecution(unittest.TestCase):
     def exercise(self, mode):
+        call = next(c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[3]) == "storage")
+        groups = ast.literal_eval(next(k.value for k in call.keywords if k.arg == "groups"))
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            names = ["Test" + letter for letter in "ABCDEFGH"]
+            names = [f"TestStorageFixture{index:03d}" for index in range(420)]
             source = root / "storage_test.go"
             source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
             q = module.Qualification.__new__(module.Qualification)
             q.output, q.counts = root, {}
-            q.server = without_server
+            opened, closed = [], []
+            @contextlib.contextmanager
+            def server(label):
+                opened.append(label)
+                try:
+                    yield
+                finally:
+                    closed.append(label)
+            q.server = server
             calls = []
             def run(args, label, **kwargs):
                 calls.append((args, label, kwargs))
@@ -205,6 +215,7 @@ class RequiredGroupedExecution(unittest.TestCase):
                     listed = names + ([names[0]] if mode == "duplicate-discovery" else [])
                     return ("\n".join(listed) + "\n").encode()
                 selected = args[args.index("-run") + 1][2:-2].split("|")
+                self.assertLessEqual(len(selected), 53, "storage group recreates cumulative package-alarm exposure")
                 if mode == "missing": selected = selected[1:]
                 if mode == "duplicate": selected += selected[:1]
                 events = []
@@ -218,10 +229,11 @@ class RequiredGroupedExecution(unittest.TestCase):
                 return raw
             with mock.patch.object(q, "run", run):
                 if mode == "good":
-                    q.tests("./fixture", "^Test", [source], "storage", groups=4)
+                    q.tests("./fixture", "^Test", [source], "storage", groups=groups)
                 else:
                     with self.assertRaises((RuntimeError, subprocess.TimeoutExpired)):
-                        q.tests("./fixture", "^Test", [source], "storage", groups=4)
+                        q.tests("./fixture", "^Test", [source], "storage", groups=groups)
+            self.assertEqual(opened, closed)
             if mode == "duplicate-discovery":
                 self.assertEqual(len(calls), 1)
                 return
@@ -229,7 +241,8 @@ class RequiredGroupedExecution(unittest.TestCase):
             self.assertEqual(plan["complete"], mode == "good")
             self.assertEqual(plan["sourceRoots"], sorted(names))
             self.assertEqual(plan["compiledRoots"], sorted(names))
-            self.assertEqual(len(plan["groups"]), 4)
+            self.assertEqual(len(plan["groups"]), 8)
+            self.assertEqual(sorted(len(group["roots"]) for group in plan["groups"]), [52] * 4 + [53] * 4)
             parts = [root / (group["label"] + ".stdout") for group in plan["groups"]]
             self.assertEqual((root / "storage.stdout").read_bytes(), b"".join(path.read_bytes() for path in parts if path.exists()))
             for args, label, kwargs in calls[1:]:
@@ -239,10 +252,10 @@ class RequiredGroupedExecution(unittest.TestCase):
                 self.assertIn("-parallel=1", args)
                 self.assertEqual(kwargs["timeout"], 960)
             if mode == "good":
-                self.assertEqual(q.counts, {"storage": 8})
+                self.assertEqual(q.counts, {"storage": 420})
                 self.assertTrue(all(group["passed"] for group in plan["groups"]))
-                self.assertEqual(len(calls), 5)
-                self.assertEqual(module.verify_tests([json.loads(line) for line in (root / "storage.stdout").read_bytes().splitlines()], set(names)), 8)
+                self.assertEqual(len(calls), 9)
+                self.assertEqual(module.verify_tests([json.loads(line) for line in (root / "storage.stdout").read_bytes().splitlines()], set(names)), 420)
                 self.assertEqual(plan["stdoutSHA256"], module.digest(root / "storage.stdout"))
             else:
                 self.assertEqual(q.counts, {})
@@ -646,6 +659,12 @@ finally:
 
 
 class LaneShape(unittest.TestCase):
+    def test_storage_runs_as_eight_bounded_groups(self):
+        [call] = [c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[0]) == "./internal/storage/graphstore"]
+        self.assertEqual(ast.literal_eval(call.args[1]), "^Test")
+        self.assertEqual(ast.literal_eval(call.args[3]), "storage")
+        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 8})
+
     def test_cmd_bd_graph_tests_run_as_twenty_bounded_groups(self):
         [call] = [c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[0]) == "./cmd/bd"]
         self.assertEqual(ast.literal_eval(call.args[1]), "^Test(GraphModeCLI|GraphPreview)")
