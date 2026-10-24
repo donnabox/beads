@@ -159,7 +159,7 @@ def verify_http_capture(root, binary_hash):
     require(summary.get("passed") is True and summary.get("failure") is None
             and summary.get("active_children") == 0 and summary.get("cli_commands") == 18,
             "incomplete installed HTTP capture")
-    require(summary.get("client_pin") == "de99030d13a57e77f4f2660b91ea3c39b82823cb"
+    require(summary.get("client_pin") == "bad780f19761e5714873aa3a85adeb75bc885928"
             and summary.get("installed_binary_sha256") == binary_hash, "HTTP source/binary provenance mismatch")
     require(summary.get("python") == {"passed": True, "beads": 5, "limit": 1,
             "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"},
