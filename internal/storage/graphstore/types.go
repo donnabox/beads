@@ -174,6 +174,7 @@ type LinkRecord struct {
 type DependencyResult struct {
 	Link    LinkRecord  `json:"link"`
 	Source  IssueRecord `json:"source"`
+	Target  IssueRecord `json:"-"`
 	Changed bool        `json:"changed"`
 }
 

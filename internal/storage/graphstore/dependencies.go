@@ -116,7 +116,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 						return fmt.Errorf("%w: Dependency pair already has canonical Link %s", storage.ErrValidation, existing.ID)
 					}
 				}
-				result = DependencyResult{Link: existing, Source: source, Changed: false}
+				result = DependencyResult{Link: existing, Source: source, Target: target, Changed: false}
 				return nil
 			}
 		}
@@ -197,7 +197,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if err != nil {
 			return err
 		}
-		result = DependencyResult{Link: link, Source: changed, Changed: true}
+		result = DependencyResult{Link: link, Source: changed, Target: target, Changed: true}
 		return nil
 	})
 	if err != nil {
