@@ -250,3 +250,52 @@ func TestGraphPreviewCloseSuggestNextWorkflow(t *testing.T) {
 		})
 	}
 }
+
+// Selector resolution belongs to each partial-batch member, while command-wide
+// syntax and revision-guard admission must still refuse before any writes.
+func TestGraphPreviewDeferralPartialBatchWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/defer-partial/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(code string, args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Work", "--graph-path", "beads/private-work"))
+			memory := graphMixedResult[graphstore.Record](t, call("", "remember", "Context", "--id", "context"))
+			memoryBefore := call("", "show", memory.ID)
+			for _, command := range []string{"defer", "undefer"} {
+				before := call("", "versions", issue.ID)
+				call("invalid_selector", command, issue.ID, "missing", "--if-revision", issue.Revision)
+				call("invalid_selector", command, issue.Properties.ID+"@current", "missing")
+				if got := call("", "versions", issue.ID); got != before {
+					t.Fatal("command-wide refusal changed Issue History")
+				}
+				stdout, stderr, exit := graphGenerationRun(t, bd, work, home, command, "missing", issue.ID, memory.ID, "--json")
+				if exit != 0 || !strings.Contains(stderr, "Error changing deferral for missing:") || !strings.Contains(stderr, "Error changing deferral for "+memory.ID+":") || strings.Contains(stderr, `"code":`) {
+					t.Fatalf("%s partial batch lost per-member warnings: exit=%d stdout=%s stderr=%s", command, exit, stdout, stderr)
+				}
+				results := graphMixedResult[[]graphstore.IssueMutationResult](t, stdout)
+				want := types.StatusDeferred
+				if command == "undefer" {
+					want = types.StatusOpen
+				}
+				if len(results) != 1 || !results[0].Changed || results[0].Issue.ID != issue.ID || results[0].Issue.Properties.Status != want {
+					t.Fatalf("%s lost successful sibling: %+v", command, results)
+				}
+				_, _, oldRows, _ := graphVersionsListed(t, before)
+				after := call("", "versions", issue.ID)
+				_, _, newRows, _ := graphVersionsListed(t, after)
+				if len(newRows) != len(oldRows)+1 || call("", "show", memory.ID) != memoryBefore {
+					t.Fatal("partial batch lost exact Issue successor or changed wrong-Kind Memory")
+				}
+				call("revision_conflict", command, issue.ID, "--if-revision", issue.Revision)
+				if call("", "versions", issue.ID) != after {
+					t.Fatal("stale single-member guard changed History")
+				}
+			}
+		})
+	}
+}
