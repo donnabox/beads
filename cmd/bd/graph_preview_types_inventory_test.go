@@ -150,8 +150,22 @@ func TestGraphTypesInventoryPreservesIssueAndDependencyClassifications(t *testin
 	if len(inventory.BeadTypes) != 1 || len(inventory.LinkTypes) != 2 {
 		t.Fatal("classification labels became invented nominal definitions")
 	}
+	for _, want := range []string{
+		"Bead Types (1):", "  types/issue", "Issue classifications (", "  task",
+		"Link Types (2):", "  types/dependency", "Dependency kinds (", "  blocks",
+	} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("missing distinct Type or classification row %q: %s", want, text)
+		}
+	}
+	if !(strings.Index(text, "Bead Types (1):") < strings.Index(text, "Issue classifications (") &&
+		strings.Index(text, "Issue classifications (") < strings.Index(text, "Link Types (2):") &&
+		strings.Index(text, "Link Types (2):") < strings.Index(text, "Dependency kinds (")) {
+		t.Fatalf("Type IDs and classifications are mixed: %s", text)
+	}
 	details, detailText, err := graphPreviewTypesInventory(typesInventoryScope, selected, []string{"team-review"}, true, true)
-	if err != nil || len(details.BeadTypes) != 1 || strings.Contains(detailText, "team-review") {
+	if err != nil || len(details.BeadTypes) != 1 || strings.Contains(detailText, "team-review") ||
+		strings.Contains(detailText, "Issue classifications (") || strings.Contains(detailText, "Dependency kinds (") {
 		t.Fatalf("details should describe nominal definitions: %s %v", detailText, err)
 	}
 }

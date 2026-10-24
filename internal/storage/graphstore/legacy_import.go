@@ -101,6 +101,10 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 				if errors.Is(err, domain.ErrDependencyCycle) {
 					return fmt.Errorf("%w: legacy dependencies contain a cycle", storage.ErrValidation)
 				}
+				var hierarchy *domain.DependencyHierarchyConflictError
+				if errors.As(err, &hierarchy) {
+					return fmt.Errorf("%w: legacy dependency hierarchy conflict: %w", storage.ErrValidation, err)
+				}
 				return err
 			}
 			if err := s.afterStage("import-native"); err != nil {
@@ -429,8 +433,11 @@ func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix
 				}
 				dep.Metadata = "{}"
 			}
-			if dep.IssueID != issue.ID || dep.Type != types.DepBlocks || dep.DependsOnID == issue.ID || dep.ThreadID != "" {
-				return invalid("Issue %s supports only local blocks dependencies without edge metadata or threads", issue.ID)
+			if !dep.Type.IsValid() {
+				return invalid("dependency kind for %s must be nonempty and at most %d bytes", issue.ID, types.MaxDependencyTypeLen)
+			}
+			if dep.IssueID != issue.ID || dep.DependsOnID == issue.ID || dep.ThreadID != "" {
+				return invalid("Issue %s supports only local dependencies without edge metadata or threads", issue.ID)
 			}
 			if pairs[dep.DependsOnID] {
 				return invalid("duplicate dependency %s -> %s", issue.ID, dep.DependsOnID)

@@ -26,7 +26,7 @@ var importCmd = &cobra.Command{
 
 In a graph workspace, import accepts the existing ordinary export format only,
 into an empty fresh workspace, in one atomic transaction. IDs become local
-Bead paths, blocks dependencies become Links, comments remain a separate feed,
+Bead paths, dependencies become Links preserving their native kind, comments remain a separate feed,
 and legacy key/value memories become Memory Beads. Unsupported records or
 relationships refuse the whole import. --dry-run validates through the same
 transaction and rolls it back. Repeat imports refuse an occupied workspace;
