@@ -250,6 +250,13 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if requested != "" && requested != "link" && requested != "dependency" {
 		return true, graphFailure("invalid_selector", "unknown graph_mode; expected dependency or link", 2)
 	}
+
+	// Informational commands use the root hook's ordinary no-store path. Keep
+	// its global output/config setup without requiring a workspace engine or
+	// weakening admission for any operational command.
+	if cmd == versionCmd || (cmd.Name() == "help" && cmd.Parent() == cmd.Root()) {
+		return false, nil
+	}
 	dir, err := graphCandidateDir(cmd)
 	if err != nil {
 		return true, graphFailure("graph_not_initialized", err.Error(), 5)
