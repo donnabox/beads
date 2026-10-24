@@ -345,6 +345,19 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 		return row([]string{"branch"}, "main"), nil
 	case q == "select count(*) from graph_preview_types":
 		return row([]string{"count"}, int64(len(d.descriptors))), nil
+	case q == "select name,case when octet_length(descriptor)<=? then descriptor else null end,fingerprint from graph_preview_types":
+		if len(args) != 1 || args[0].Value != int64(len(d.options.Binding.ScopeURL)*4+8192) {
+			return nil, fmt.Errorf("cleanup bounded descriptor arguments: %v", args)
+		}
+		rows := &exportCleanupRows{columns: []string{"name", "descriptor", "fingerprint"}}
+		for name, descriptor := range d.descriptors {
+			var raw driver.Value
+			if int64(len(descriptor.CanonicalJSON())) <= args[0].Value.(int64) {
+				raw = descriptor.CanonicalJSON()
+			}
+			rows.values = append(rows.values, []driver.Value{name, raw, descriptor.Fingerprint()})
+		}
+		return rows, nil
 	case strings.HasPrefix(q, "select descriptor, fingerprint from graph_preview_types where name=?"):
 		if len(args) != 2 {
 			return nil, fmt.Errorf("cleanup descriptor lookup arguments: %v", args)

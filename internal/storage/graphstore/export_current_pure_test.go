@@ -211,6 +211,21 @@ func TestExportReadProjectionIncludesUnjoinedComments(t *testing.T) {
 func TestExportSnapshotClosurePreservesEndpointPins(t *testing.T) {
 	const scope = "https://example.test/graph/"
 	snapshot := exportClosureFixture(t, scope)
+	// Native ownership is concrete: keep the complete baseline owned set
+	// valid before testing the informational Link's selected endpoint edition.
+	blocking := snapshot.Records[3].(LinkRecord)
+	var err error
+	blocking.Type, err = NativeDependencyTypeURL(scope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot.Records[3] = blocking
+	work := snapshot.Records[1].(IssueRecord)
+	work.Owned[0], err = canonicalJSON(blocking)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot.Records[1] = work
 	link := snapshot.Records[4].(LinkRecord)
 	link.TargetRevision = "old-target-version"
 	snapshot.Records[4] = link
