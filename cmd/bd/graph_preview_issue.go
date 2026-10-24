@@ -230,8 +230,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 			}
 		}
 		touchedURL = record.ID
-		path = graphPreviewDisplayLocalURL(record.ID)
-		return record, fmt.Sprintf("Created %s\n", path), nil
+		return record, graphHumanRow(store.ScopeURL(), record), nil
 	})
 	if err == nil {
 		SetLastTouchedID(touchedURL)
@@ -482,8 +481,7 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		displayID := record.PublicID
-		return record, fmt.Sprintf("Created %s\n", displayID), nil
+		return record, graphHumanRow(store.ScopeURL(), record), nil
 	})
 }
 

@@ -133,7 +133,7 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue || kind == graphstore.KindLink) && len(terminalRows) != 0 {
 			result["terminal_versions"] = graphVersionRowsJSON(terminalRows)
 		}
-		summary := renderGraphVersions(args[0], kind, citable, removed, history.CurrentState != nil)
+		summary := renderGraphVersions(args[0], kind, rows, removed, history.CurrentState != nil)
 		if history.CurrentState != nil {
 			summary += fmt.Sprintf("\nCurrent state: deleted\n  deletion revision: %s\n", history.CurrentState.Revision)
 		}
@@ -190,7 +190,7 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 
 	var b strings.Builder
 	fmt.Fprintf(&b, "Versions of %s (%d)\n\n", selector, len(rows))
-	fmt.Fprintf(&b, "  REV  WHEN                        WHO                  ATTRIB\n")
+	fmt.Fprintf(&b, "  SEQ  WHEN                        WHO                  ATTRIB\n")
 	for _, r := range rows {
 		attrib := r.Attribution
 		if attrib == "" {
@@ -208,12 +208,16 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 			r.ChangeAt.UTC().Format("2006-01-02 15:04:05.000000"),
 			r.Actor,
 			attrib)
-		fmt.Fprintf(&b, "       %s\n", r.Version)
+		event := ""
+		if r.Removed {
+			event = " (deleted; not a live snapshot)"
+		}
+		fmt.Fprintf(&b, "       %s%s\n", r.Version, event)
 	}
 
-	b.WriteString("\nREV is local to this store and is NOT a citable address: two\n")
+	b.WriteString("\nSEQ is local to this store. Use ID@N for a live snapshot here; two\n")
 	b.WriteString("clones can hold a different local revision for the same state. Cite the token\n")
-	b.WriteString("under each row instead:\n\n")
+	b.WriteString("under each row for an exact portable reference:\n\n")
 	if kind == graphstore.KindLink {
 		fmt.Fprintf(&b, "  bd link show %s --revision <token>\n", selector)
 		fmt.Fprintf(&b, "  bd link compare %s --from <token> --to <token>\n", selector)

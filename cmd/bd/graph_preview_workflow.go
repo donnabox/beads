@@ -162,7 +162,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	return graphPreviewInsertDependencyWithRoot(paths[0], paths[1], nativeIDs[0], nativeIDs[1], selectedType, depType, linkPath, sourceRevision, args[0], args[1], familiarLink, idRoot)
+	return graphPreviewInsertDependencyWithRoot(paths[0], paths[1], nativeIDs[0], nativeIDs[1], selectedType, depType, linkPath, sourceRevision, familiarLink, idRoot)
 }
 
 // The store independently checks the installed Type in the write transaction.
@@ -252,14 +252,14 @@ func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 	if target.Exact {
 		target.Path, target.NativeID = args[0], ""
 	}
-	return graphPreviewInsertDependency(source.Path, target.Path, source.NativeID, target.NativeID, "", types.DepBlocks, "", "", blocked, args[0], false)
+	return graphPreviewInsertDependency(source.Path, target.Path, source.NativeID, target.NativeID, "", types.DepBlocks, "", "", false)
 }
 
-func graphPreviewInsertDependency(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool) error {
-	return graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL, depType, linkPath, sourceRevision, sourceLabel, targetLabel, familiarLink, "")
+func graphPreviewInsertDependency(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL string, depType types.DependencyType, linkPath, sourceRevision string, familiarLink bool) error {
+	return graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL, depType, linkPath, sourceRevision, familiarLink, "")
 }
 
-func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL string, depType types.DependencyType, linkPath, sourceRevision, sourceLabel, targetLabel string, familiarLink bool, idRoot string) error {
+func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID, targetNativeID, typeURL string, depType types.DependencyType, linkPath, sourceRevision string, familiarLink bool, idRoot string) error {
 	write := func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{PublicID: linkPath, IDRoot: idRoot, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, SourceNativeID: sourceNativeID, TargetNativeID: targetNativeID, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
@@ -281,14 +281,7 @@ func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID
 				}, fmt.Sprintf("%s Linked: %s depends on %s (%s)",
 					ui.RenderPass("✓"), formatFeedbackIDParen(fromID, fromTitle), formatFeedbackIDParen(toID, toTitle), depType), nil
 		}
-		verb := "Created"
-		if !result.Changed {
-			verb = "Unchanged"
-		}
-		if depType == types.DepBlocks {
-			return result, graphPreviewMutationSummary(fmt.Sprintf("%s %s: %s depends on %s", verb, result.Link.ID, sourceLabel, targetLabel), result), nil
-		}
-		return result, graphPreviewMutationSummary(fmt.Sprintf("%s %s: %s → %s", verb, result.Link.ID, sourceLabel, targetLabel), result), nil
+		return result, graphHumanRow(store.ScopeURL(), result.Link), nil
 	}
 	if familiarLink {
 		return withGraphFamiliarStore(write)

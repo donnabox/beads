@@ -127,9 +127,11 @@ func TestGraphPreviewIssueListReplayPreservesFlags(t *testing.T) {
 }
 
 func TestGraphPreviewIssueListOutput(t *testing.T) {
-	page := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: "https://example.invalid/a/beads/work", Properties: &types.Issue{Title: "quote\"\n雪", Status: types.StatusOpen, Priority: 2}}}, HasMore: true}
-	human, err := renderGraphIssueList(page, "", false, false)
-	if err != nil || human != "Issues (1; more: true; graph preview)\n\"https://example.invalid/a/beads/work\" \"open\" P2 \"quote\\\"\\n雪\"\nMore matching Issues exist; increase --limit or use --all within preview bounds.\n" {
+	const scope = "https://example.invalid/a/"
+	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
+	page := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: "https://example.invalid/a/beads/work", Type: task, Properties: &types.Issue{Title: "quote\"\n雪", Status: types.StatusOpen, Priority: 2}}}, HasMore: true}
+	human, err := renderGraphIssueList(page, "", false, false, scope)
+	if err != nil || human != "Issues (1; more: true; graph preview)\nbeads/work [task] open P2 \"quote\\\"\\n雪\"\nMore matching Issues exist; increase --limit or use --all within preview bounds.\n" {
 		t.Fatalf("human=%q err=%v", human, err)
 	}
 	quiet, err := renderGraphIssueList(page, "", false, true)
@@ -159,19 +161,17 @@ func TestGraphPreviewIssueListOutput(t *testing.T) {
 
 func TestGraphPreviewBeadListOutput(t *testing.T) {
 	const scope = "https://example.invalid/a/"
+	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
 	page := graphstore.BeadListPage{Items: []any{
-		graphstore.IssueRecord{ID: scope + "beads/work", Properties: &types.Issue{Title: "Ship the release", Status: types.StatusOpen, Priority: 1}},
+		graphstore.IssueRecord{ID: scope + "beads/work", Type: task, Properties: &types.Issue{Title: "Ship the release", Status: types.StatusOpen, Priority: 1}},
 		graphstore.Record{ID: scope + "beads/plan", Type: scope + "types/memory", Properties: graphstore.Properties{Title: "Release plan"}},
-		graphstore.IssueRecord{ID: scope + "beads/odd", Properties: &types.Issue{Title: "quote\"\n雪", Status: "on-ice", Priority: 4}},
+		graphstore.IssueRecord{ID: scope + "beads/odd", Type: task, Properties: &types.Issue{Title: "quote\"\n雪", Status: "on-ice", Priority: 4}},
 	}}
 
 	// An Issue row adds its status and priority between the kind and the title;
 	// the Memory row and the header keep their layout.
 	human, err := renderGraphBeadList(page, scope, false, "", false, false)
-	want := "Beads (3; more: false; graph preview)\n" +
-		"  beads/work  Issue   open  P1  Ship the release\n" +
-		"  beads/plan  types/memory  Release plan\n" +
-		"  beads/odd  Issue   on-ice  P4  quote\"\\n雪\n"
+	want := "Beads (3; more: false; graph preview)\nbeads/work [task] open P1 \"Ship the release\"\nbeads/plan [types/memory] \"Release plan\"\nbeads/odd [task] on-ice P4 \"quote\\\"\\n雪\"\n"
 	if err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
@@ -186,7 +186,7 @@ func TestGraphPreviewBeadListOutput(t *testing.T) {
 		{true, "More Beads exist; increase --limit within preview bounds.\n"},
 	} {
 		got, err := renderGraphBeadList(page, scope, tc.all, "", false, false)
-		if err != nil || !strings.HasPrefix(got, "Beads (3; more: true; graph preview)\n") || !strings.HasSuffix(got, "P4  quote\"\\n雪\n"+tc.hint) {
+		if err != nil || !strings.HasPrefix(got, "Beads (3; more: true; graph preview)\n") || !strings.HasSuffix(got, "P4 \"quote\\\"\\n雪\"\n"+tc.hint) {
 			t.Fatalf("all=%t: %q %v", tc.all, got, err)
 		}
 	}
@@ -289,10 +289,11 @@ func TestGraphPreviewIssueListSelection(t *testing.T) {
 // The notice is one line directly under the header, in human output only.
 func TestGraphPreviewListNoticeRendering(t *testing.T) {
 	const scope = "https://example.invalid/a/"
+	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
 	const notice = "Memories are not listed (Issue query selected by: --status)."
-	issues := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: scope + "beads/work", Properties: &types.Issue{Title: "Work", Status: types.StatusOpen, Priority: 1}}}}
+	issues := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: scope + "beads/work", Type: task, Properties: &types.Issue{Title: "Work", Status: types.StatusOpen, Priority: 1}}}}
 	human, err := renderGraphIssueList(issues, notice, false, false)
-	if want := "Issues (1; more: false; graph preview)\n" + notice + "\n\"" + scope + "beads/work\" \"open\" P1 \"Work\"\n"; err != nil || human != want {
+	if want := "Issues (1; more: false; graph preview)\n" + notice + "\n" + scope + "beads/work [" + task + "] open P1 \"Work\"\n"; err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
 	if quiet, err := renderGraphIssueList(issues, notice, false, true); err != nil || quiet != "" {
@@ -309,7 +310,7 @@ func TestGraphPreviewListNoticeRendering(t *testing.T) {
 	const labelNotice = "directory.labels \"frontend\" is not applied to this Bead Type."
 	beads := graphstore.BeadListPage{Items: []any{graphstore.Record{ID: scope + "beads/plan", Type: scope + "types/memory", Properties: graphstore.Properties{Title: "Plan"}}}}
 	human, err = renderGraphBeadList(beads, scope, false, labelNotice, false, false)
-	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\n  beads/plan  types/memory  Plan\n"; err != nil || human != want {
+	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\nbeads/plan [types/memory] \"Plan\"\n"; err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
 	if quiet, err := renderGraphBeadList(beads, scope, false, labelNotice, false, true); err != nil || quiet != "" {
