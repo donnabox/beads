@@ -4,7 +4,6 @@ package graphstore
 
 import (
 	"context"
-	"crypto/sha256"
 	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
@@ -16,7 +15,6 @@ import (
 	"testing"
 	"time"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/legacyimport"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
@@ -186,48 +184,30 @@ func TestLegacyImportDependencyKinds(t *testing.T) {
 }
 
 func TestLegacyImportMemoryPaths(t *testing.T) {
-	keys := []string{"safe", "old-a", "has space", "has%20space", "雪", "%", ".", "..", "a/b", "a//b", "back\\slash", "control\x00", " leading ", "Case", "case", strings.Repeat("long", 300)}
-	// A direct key must retain its address even if it occupies a remap's
-	// preferred hash path. Remap allocation must not depend on input order.
-	digest := sha256.Sum256([]byte("."))
-	reserved := fmt.Sprintf("imported-memory-%x", digest)
-	keys = append(keys, reserved)
-	batch := legacyimport.Batch{Issues: []*types.Issue{{ID: "old-a", Title: "Issue"}}}
-	for _, key := range keys {
-		batch.Memories = append(batch.Memories, legacyimport.Memory{Key: key, Value: ""})
-	}
-	prepared, err := prepareLegacyImport(batch, "importer")
-	if err != nil {
-		t.Fatal(err)
-	}
-	paths := legacyImportMemoryPaths(prepared)
-	seen := map[string]bool{"beads/old-a": true}
-	for _, key := range keys {
-		path := paths[key]
-		if err := validatePath(path); err != nil || seen[path] {
-			t.Fatalf("key=%q path=%q duplicate=%v err=%v", key, path, seen[path], err)
+	// Previously encoded, hashed or renamed keys now have an explicit
+	// compatibility disposition. Accepted canonical spellings stay exact.
+	for _, key := range []string{"safe", "has%20space", "%E9%9B%AA", "a/b", "Case", "case", "beads/literal", strings.Repeat("long", 300)} {
+		prepared, err := prepareLegacyImportWithPrefix(legacyimport.Batch{Memories: []legacyimport.Memory{{Key: key}}}, "importer", "")
+		if err != nil {
+			t.Fatal(err)
 		}
-		seen[path] = true
-	}
-	for _, key := range []string{"safe", "has%20space", "a/b", "Case", "case", reserved} {
-		if paths[key] != "beads/"+key {
-			t.Fatalf("safe direct mapping changed: %q -> %q", key, paths[key])
+		mounted, err := mountLegacyImport(prepared, "")
+		if err != nil || mounted.memoryIDs[key] != key {
+			t.Fatalf("canonical key %q changed: %+v %v", key, mounted, err)
 		}
 	}
-	if paths["雪"] != "beads/"+graph.CanonicalSegment("雪") || paths["has space"] == paths["has%20space"] {
-		t.Fatal("encoded keys collide or Unicode path is not canonical")
+	for _, key := range []string{"old-a", "has space", "雪", "%", ".", "..", "a//b", "back\\slash", "control\x00", " leading "} {
+		input := legacyimport.Batch{Issues: []*types.Issue{{ID: "old-a", Title: "Issue"}}, Memories: []legacyimport.Memory{{Key: key}}}
+		prepared, err := prepareLegacyImportWithPrefix(input, "importer", "old")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := mountLegacyImport(prepared, ""); !errors.Is(err, storage.ErrValidation) {
+			t.Fatalf("incompatible or colliding key %q admitted: %v", key, err)
+		}
 	}
-	if paths["."] != "beads/"+reserved+"-1" {
-		t.Fatalf("fallback displaced direct key: %q", paths["."])
-	}
-	for i, j := 0, len(prepared.Memories)-1; i < j; i, j = i+1, j-1 {
-		prepared.Memories[i], prepared.Memories[j] = prepared.Memories[j], prepared.Memories[i]
-	}
-	if got := legacyImportMemoryPaths(prepared); !reflect.DeepEqual(paths, got) {
-		t.Fatalf("order changed mappings: %v -> %v", paths, got)
-	}
-	batch.Memories = append(batch.Memories, legacyimport.Memory{Key: "safe", Value: "different"})
-	if _, err := prepareLegacyImport(batch, "importer"); err == nil {
+	duplicate := legacyimport.Batch{Memories: []legacyimport.Memory{{Key: "safe"}, {Key: "safe", Value: "different"}}}
+	if _, err := prepareLegacyImport(duplicate, "importer"); err == nil {
 		t.Fatal("duplicate memory key admitted")
 	}
 	for _, memory := range []legacyimport.Memory{{Key: ""}, {Key: "bad\xff"}, {Key: "valid", Value: "bad\xff"}} {
@@ -308,7 +288,7 @@ func parseLegacyFixture(t *testing.T, input string) legacyimport.Batch {
 func legacyImportState(t *testing.T, ctx context.Context, s *Store) map[string]string {
 	t.Helper()
 	state := reopenState(t, ctx, s)
-	for _, table := range []string{"labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "wisp_events", "wisp_child_counters", "provenance_events", "issue_snapshots", "compaction_snapshots", "issue_counter", "epoch_minted_addresses", "store_epoch", "interactions", "config"} {
+	for _, table := range []string{"graph_preview_types", "labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "wisp_events", "wisp_child_counters", "provenance_events", "issue_snapshots", "compaction_snapshots", "issue_counter", "epoch_minted_addresses", "store_epoch", "interactions", "config"} {
 		rows, err := s.db.QueryContext(ctx, "SELECT * FROM "+table)
 		if err != nil {
 			t.Fatal(err)
@@ -576,7 +556,11 @@ func TestLegacyImportNativeHierarchyAndKinds(t *testing.T) {
 			for pair, kind := range map[string]string{
 				"old-a -> old-b": "parent-child", "old-a -> old-c": "blocks", "old-c -> old-b": "custom-kind",
 			} {
-				link, err := store.ShowLink(ctx, strings.TrimPrefix(result.DependencyIDs[pair], store.ScopeURL()))
+				identity, err := store.ResolveCanonicalPublicResourceIdentity(ctx, result.DependencyIDs[pair])
+				if err != nil {
+					t.Fatal(err)
+				}
+				link, err := store.ShowLink(ctx, identity.PrivatePath)
 				if err != nil || link.Type != DependencyTypeURL(store.ScopeURL()) || link.Properties["dep_type"] != kind {
 					t.Fatalf("native kind %s not preserved: %+v, %v", pair, link, err)
 				}

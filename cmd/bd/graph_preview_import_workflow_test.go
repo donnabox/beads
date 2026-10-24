@@ -17,6 +17,7 @@ import (
 	"time"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/memoryapi"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
@@ -92,7 +93,7 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 				t.Fatal(err)
 			}
 			result := graphMixedResult[graphstore.LegacyImportResult](t, call("", "", "import", "--input", file))
-			if result.DryRun || result.IDs["legacy-b"] != scope+"beads/legacy-b" || result.MemoryIDs["fixture-key"] != scope+"beads/fixture-key" {
+			if result.DryRun || result.IDs["legacy-b"] != scope+"legacy-b" || result.MemoryIDs["fixture-key"] != scope+"fixture-key" {
 				t.Fatalf("result=%+v", result)
 			}
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", "legacy-b", "--format", "graph-json"))
@@ -100,7 +101,7 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 				t.Fatalf("issue=%+v", issue)
 			}
 			memory := graphMixedResult[graphstore.Record](t, call("", "", "show", "fixture-key"))
-			if memory.Properties.Title != "fixture-key" || memory.Properties.Body != "Remembered context" {
+			if memory.Properties.Title != "Remembered context" || memory.Properties.Body != "Remembered context" {
 				t.Fatalf("memory=%+v", memory)
 			}
 			comments := call("", "", "comments", "legacy-b")
@@ -130,8 +131,8 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 }
 
 // Synthetic regression for Donna's five-Issue/two-Memory legacy export. The
-// process boundary must preserve relates-to as a native Dependency and keep a
-// colliding Memory key distinct from the Issue with the same spelling.
+// process boundary must preserve relates-to as a native Dependency and refuse a
+// truly colliding Memory key without partially importing the package.
 func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	const fixture = `{"_type":"issue","id":"scratch-8b8","title":"Target"}
@@ -139,7 +140,7 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 {"_type":"issue","id":"scratch-bip","title":"Other target"}
 {"_type":"issue","id":"scratch-g5r","title":"Unlinked"}
 {"_type":"issue","id":"scratch-9zj","title":"Blocker","dependencies":[{"issue_id":"scratch-9zj","depends_on_id":"scratch-bip","type":"blocks","metadata":"{}"}]}
-{"_type":"memory","key":"scratch-8b8","value":"Colliding key, distinct Memory"}
+{"_type":"memory","key":"scratch-memory","value":"Independent Memory"}
 {"_type":"memory","key":"hello","value":"Other Memory"}
 `
 	for _, engine := range []string{"embedded", "server"} {
@@ -162,6 +163,17 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 			}
 			call("", init...)
 			before := call("", "list", "--all", "--format", "records-json")
+			collision := strings.Replace(fixture, `"key":"scratch-memory"`, `"key":"scratch-8b8"`, 1)
+			for _, dry := range []bool{true, false} {
+				args := []string{"import", "-"}
+				if dry {
+					args = append(args, "--dry-run")
+				}
+				graphLegacyImportRefusal(t, bd, work, home, collision, "collides with Issue", args...)
+				if got := call("", "list", "--all", "--format", "records-json"); got != before {
+					t.Fatal("true key collision partially imported package")
+				}
+			}
 			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(fixture, "import", "-", "--dry-run"))
 			if !preview.DryRun || preview.Issues != 5 || preview.Memories != 2 || preview.Dependencies != 3 {
 				t.Fatalf("preview=%+v", preview)
@@ -170,10 +182,10 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 				t.Fatal("dry-run reserved or changed data")
 			}
 			result := graphMixedResult[graphstore.LegacyImportResult](t, call(fixture, "import", "-"))
-			if result.DryRun || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || !reflect.DeepEqual(result.DependencyIDs, preview.DependencyIDs) {
+			if result.DryRun || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || result.GeneratedIDsProvisional || len(result.DependencyIDs) != len(preview.DependencyIDs) {
 				t.Fatalf("apply identity maps differ from dry-run: %+v / %+v", result, preview)
 			}
-			memory := graphMixedResult[graphstore.Record](t, call("", "show", result.MemoryIDs["scratch-8b8"]))
+			memory := graphMixedResult[graphstore.Record](t, call("", "show", result.MemoryIDs["scratch-memory"]))
 			for pair, kind := range map[string]string{
 				"scratch-35t -> scratch-8b8": "relates-to",
 				"scratch-35t -> scratch-9zj": "blocks",
@@ -198,15 +210,15 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 					t.Fatalf("initial retained dependency differs: %+v / %+v", retained, link)
 				}
 			}
-			issueID, memoryID := result.IDs["scratch-8b8"], result.MemoryIDs["scratch-8b8"]
-			if issueID != scope+"beads/scratch-8b8" || memoryID == "" || memoryID == issueID || result.MemoryIDs["hello"] != scope+"beads/hello" {
+			issueID, memoryID := result.IDs["scratch-8b8"], result.MemoryIDs["scratch-memory"]
+			if issueID != scope+"scratch-8b8" || memoryID == "" || memoryID == issueID || result.MemoryIDs["hello"] != scope+"hello" {
 				t.Fatalf("collision identity mapping=%+v", result)
 			}
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("", "show", issueID, "--format", "graph-json"))
 			if memory.ID != memoryID {
 				t.Fatalf("Memory read returned wrong identity: %+v", memory)
 			}
-			if issue.Properties.Title != "Target" || memory.Properties.Title != "scratch-8b8" || memory.Properties.Body != "Colliding key, distinct Memory" || memory.Type != graphstore.MemoryTypeURL(scope) {
+			if issue.Properties.Title != "Target" || memory.Properties.Title != "Independent Memory" || memory.Properties.Body != "Independent Memory" || memory.Type != graphstore.MemoryTypeURL(scope) {
 				t.Fatalf("colliding Issue/Memory data changed: %+v / %+v", issue, memory)
 			}
 		})
@@ -264,6 +276,33 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 	if memories["empty-value"] != "" {
 		t.Fatal("producer empty value changed")
 	}
+	originalFixture := append([]byte(nil), fixture...)
+	issueIDs := map[string]bool{}
+	for _, issue := range issues {
+		issueIDs[issue.ID] = true
+	}
+	rejectedRows := map[string]string{}
+	admitted := make([]byte, 0, len(fixture))
+	for _, line := range bytes.Split(bytes.TrimSpace(fixture), []byte{'\n'}) {
+		var item struct {
+			Kind string `json:"_type"`
+			Key  string `json:"key"`
+		}
+		if err := json.Unmarshal(line, &item); err != nil {
+			t.Fatal(err)
+		}
+		if item.Kind == "memory" && (graph.ValidateCanonicalResourceID(item.Key) != nil || issueIDs[item.Key]) {
+			rejectedRows[item.Key] = string(line)
+			delete(memories, item.Key)
+			continue
+		}
+		admitted = append(admitted, line...)
+		admitted = append(admitted, '\n')
+	}
+	fixture = admitted
+	if len(memories) != 5 || len(rejectedRows) != 11 {
+		t.Fatalf("unexpected producer classification: admitted=%d rejected=%d", len(memories), len(rejectedRows))
+	}
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			isolateBeadsDirForTest(t)
@@ -290,8 +329,24 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 			}
 			call("", "", init...)
 			before := call("", "", "list", "--all", "--format", "records-json")
+			// The untouched old export now receives an honest compatibility
+			// refusal; every excluded producer row is also exercised alone.
+			refuse(string(originalFixture), "legacy Memory key", "import", "-", "--dry-run")
+			for _, record := range rejectedRows {
+				input := string(fixture) + record + "\n"
+				for _, dry := range []bool{true, false} {
+					args := []string{"import", "-"}
+					if dry {
+						args = append(args, "--dry-run")
+					}
+					refuse(input, "legacy Memory key", args...)
+					if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
+						t.Fatal("incompatible producer row changed inventory")
+					}
+				}
+			}
 			for _, invalid := range []struct{ record, message string }{
-				{`{"_type":"memory","key":"has space","value":"duplicate"}`, "duplicate memory key"},
+				{`{"_type":"memory","key":"fixture-key","value":"duplicate"}`, "duplicate memory key"},
 				{`{"_type":"memory","key":"new-key","value":null}`, "null is unsupported for legacy string"},
 				{`{"_type":"issue","id":"web-api-123","title":"Different source prefix"}`, "requires one Issue ID prefix"},
 			} {
@@ -316,13 +371,13 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 			}
 			refuse(string(ambiguous), "source Issue prefix is ambiguous", "import", "-", "--dry-run")
 			explicit := graphMixedResult[graphstore.LegacyImportResult](t, call(string(ambiguous), "", "import", "-", "--source-prefix", "web-app", "--dry-run"))
-			if explicit.IssuePrefix != "web-app" || explicit.IDs["web-app-abcdef"] != scope+"beads/web-app-abcdef" {
+			if explicit.IssuePrefix != "web-app" || explicit.IDs["web-app-abcdef"] != scope+"web-app-abcdef" {
 				t.Fatalf("explicit prefix remapped original ID: %+v", explicit)
 			}
 			refuse(string(ambiguous), "requires one Issue ID prefix", "import", "-", "--source-prefix", "other", "--dry-run")
 			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--dry-run"))
 			configuredPreview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--source-prefix", "web-app", "--dry-run"))
-			if !reflect.DeepEqual(preview, configuredPreview) {
+			if !graphLegacyImportSameExplicitResults(preview, configuredPreview) {
 				t.Fatalf("inferred and explicit prefix dry-runs differ: %+v %+v", preview, configuredPreview)
 			}
 			// Exported counts are projections, not authoritative imported state.
@@ -336,7 +391,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 				t.Fatal("producer corpus lacks expected comment-count projection")
 			}
 			countPreview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(wrongCounts), "", "import", "-", "--source-prefix", "web-app", "--dry-run"))
-			if !reflect.DeepEqual(preview, countPreview) {
+			if !graphLegacyImportSameExplicitResults(preview, countPreview) {
 				t.Fatalf("exported projections changed import result: %+v %+v", preview, countPreview)
 			}
 			lines := bytes.Split(bytes.TrimSpace(fixture), []byte{'\n'})
@@ -345,20 +400,20 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 			}
 			reversed := string(bytes.Join(lines, []byte{'\n'})) + "\n"
 			reordered := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-", "--dry-run"))
-			if !preview.DryRun || preview.IssuePrefix != "web-app" || preview.Issues != len(issues) || preview.Memories != len(memories) || preview.Dependencies != 1 || preview.Comments != 1 || !reflect.DeepEqual(preview, reordered) {
+			if !preview.DryRun || preview.IssuePrefix != "web-app" || preview.Issues != len(issues) || preview.Memories != len(memories) || preview.Dependencies != 1 || preview.Comments != 1 || !graphLegacyImportSameExplicitResults(preview, reordered) {
 				t.Fatalf("dry-run counts or order-dependent remapping: %+v %+v", preview, reordered)
 			}
 			if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
 				t.Fatal("completeness dry-run reserved data")
 			}
 			result := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-", "--source-prefix", "web-app"))
-			if result.DryRun || len(result.DependencyIDs) != 1 || result.IssuePrefix != preview.IssuePrefix || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || !reflect.DeepEqual(result.DependencyIDs, preview.DependencyIDs) {
+			if result.DryRun || len(result.DependencyIDs) != 1 || result.IssuePrefix != preview.IssuePrefix || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) || result.GeneratedIDsProvisional || len(result.DependencyIDs) != len(preview.DependencyIDs) {
 				t.Fatalf("apply did not preserve dry-run identity maps: %+v", result)
 			}
 			allocated := map[string]bool{}
 			for _, source := range issues {
 				id := result.IDs[source.ID]
-				if id != scope+"beads/"+source.ID {
+				if id != scope+source.ID {
 					t.Fatalf("Issue identity changed: %q -> %q", source.ID, id)
 				}
 				allocated[id] = true
@@ -435,18 +490,18 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 				if !strings.HasPrefix(id, scope) || allocated[id] {
 					t.Fatalf("memory %q has absent or colliding graph identity %q", key, id)
 				}
-				if err := graph.ValidateBeadPath(strings.TrimPrefix(id, scope)); err != nil {
-					t.Fatalf("memory %q has invalid graph path: %v", key, err)
+				if err := graph.ValidateCanonicalResourceID(strings.TrimPrefix(id, scope)); err != nil {
+					t.Fatalf("memory %q has invalid public ID: %v", key, err)
 				}
 				allocated[id] = true
 				got := graphMixedResult[graphstore.Record](t, call("", "", "show", id))
 				retained := graphMixedResult[graphstore.Record](t, call("", "", "show", id, "--version", got.Revision))
-				if got.ID != id || got.Revision == "" || got.Properties.Title != key || got.Properties.Body != value || !reflect.DeepEqual(got.Properties, retained.Properties) {
+				if got.ID != id || got.Revision == "" || got.Properties.Title != memoryapi.TitleFromBody(value) || got.Properties.Body != value || !reflect.DeepEqual(got.Properties, retained.Properties) {
 					t.Fatalf("memory %q lost original key/value or retained state: %+v %+v", key, got, retained)
 				}
 			}
 			for _, key := range []string{"fixture-key", "has%20space", "%E8%A8%98%E6%86%B6", "path/part", "empty-value"} {
-				if result.MemoryIDs[key] != scope+"beads/"+key {
+				if result.MemoryIDs[key] != scope+key {
 					t.Fatalf("safe free memory path changed for %q", key)
 				}
 			}
@@ -466,7 +521,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 			// Full catalog/config/history rollback belongs to lower store tests;
 			// sample all three Resource families across the installed boundary.
 			histories := map[string]string{}
-			for _, id := range []string{result.IDs["web-app-b2c"], result.MemoryIDs["has space"], result.DependencyIDs["web-app-b2c -> web-app-a1b"]} {
+			for _, id := range []string{result.IDs["web-app-b2c"], result.MemoryIDs["fixture-key"], result.DependencyIDs["web-app-b2c -> web-app-a1b"]} {
 				histories[id] = call("", "", "versions", id)
 			}
 			for _, dry := range []bool{false, true} {
@@ -514,4 +569,19 @@ func graphLegacyImportRefusal(t *testing.T, bd, work, home, input, message strin
 	if ctx.Err() != nil || !errors.As(err, &exit) || exit.ExitCode() != 2 || stdout.Len() != 0 || json.Unmarshal(stderr.Bytes(), &diagnostic) != nil || diagnostic.Code != "invalid_properties" || diagnostic.Retryable == nil || *diagnostic.Retryable || !strings.Contains(diagnostic.Message, message) {
 		t.Fatalf("import refusal %v want %q: err=%v stdout=%s stderr=%s", args, message, err, stdout.String(), stderr.String())
 	}
+}
+
+// Compare every declared source fact while allowing genuinely generated Link
+// names to vary across independent rollback-only allocations. Keep key coverage.
+func graphLegacyImportSameExplicitResults(a, b graphstore.LegacyImportResult) bool {
+	if len(a.DependencyIDs) != a.Dependencies || len(b.DependencyIDs) != b.Dependencies || len(a.DependencyIDs) != len(b.DependencyIDs) {
+		return false
+	}
+	for pair := range a.DependencyIDs {
+		if _, ok := b.DependencyIDs[pair]; !ok {
+			return false
+		}
+	}
+	a.DependencyIDs, b.DependencyIDs = nil, nil
+	return reflect.DeepEqual(a, b)
 }
