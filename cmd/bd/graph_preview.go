@@ -635,6 +635,35 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewRememberPropertiesReplacement(cmd, args)
 	}
 	explicit := cmd.Flags().Changed("id") || cmd.Flags().Changed("key")
+	if cmd.Flags().Changed("if-revision") {
+		revision, _, err := graphPreviewEditRevisionGuard(cmd)
+		if err != nil {
+			return err
+		}
+		if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
+			return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
+		}
+	}
+	// Pure flag contradictions must not consume a requested body source.
+	if cmd.Flags().Changed("create-only") {
+		enabled, _ := cmd.Flags().GetBool("create-only")
+		if !enabled || !explicit || cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("update") {
+			return graphFailure("invalid_selector", "--create-only requires explicit --id/--key and cannot combine with write guards or --update", 2)
+		}
+	}
+	if explicit {
+		name := "id"
+		if cmd.Flags().Changed("key") {
+			name = "key"
+		}
+		id, _ := cmd.Flags().GetString(name)
+		if _, err := memoryapi.ValidateKey(id); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		if _, err := graphstore.PrepareMemoryIdentity(graphstore.CreateRequest{PublicID: id}); err != nil {
+			return graphStorageError(err)
+		}
+	}
 	if cmd.Flags().Changed("update") {
 		if explicit {
 			return graphFailure("invalid_selector", "choose --update or explicit --id/--key, not both", 2)
@@ -678,10 +707,6 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		}
 	}
 	if cmd.Flags().Changed("create-only") {
-		enabled, _ := cmd.Flags().GetBool("create-only")
-		if !enabled || !explicit || cmd.Flags().Changed("if-revision") {
-			return graphFailure("invalid_selector", "--create-only requires explicit --id/--key and cannot combine with write guards", 2)
-		}
 		if body == nil {
 			return graphFailure("invalid_properties", "Memory creation requires a body", 2)
 		}
@@ -745,7 +770,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	if format != "" && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags require legacy Issue --json output", 5)
 	}
-	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
 		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
 	}
 	watchMode, _ := cmd.Flags().GetBool("watch")

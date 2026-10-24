@@ -159,6 +159,10 @@ func runGraphPreviewRememberPropertiesReplacement(cmd *cobra.Command, args []str
 // a guard, manufactures an unconditional replacement from stale content, or retries.
 func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	selector, _ := cmd.Flags().GetString("update")
+	// Lexical admission is independent of catalog kind and precedes any body read.
+	if _, _, err := graphPreviewResourceReadSelector(selector); err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
 	var path string
 	var err error
 	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)

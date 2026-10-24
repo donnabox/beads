@@ -349,12 +349,12 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 			t.Fatal("unlink did not report its terminal deletion revision")
 		}
 		human := run(t, "versions", "links/related")
-		live, terminal, found := strings.Cut(human, "\nCurrent state: deleted\n")
-		if !found || !strings.Contains(terminal, "deletion revision: "+removedLink.Link.Version) {
-			t.Fatalf("removed Link has no separate terminal deletion descriptor:\n%s", human)
+		if !strings.Contains(human, "(deleted; not a live snapshot)") || strings.Contains(human, removedLink.Link.Version) {
+			t.Fatalf("default timeline lost deletion or leaked long token: %s", human)
 		}
-		if strings.Contains(live, removedLink.Link.Version) {
-			t.Fatalf("non-citable deletion revision appeared in live version list:\n%s", human)
+		detailed := run(t, "versions", "links/related", "--long")
+		if !strings.Contains(detailed, "deletion revision: "+removedLink.Link.Version) {
+			t.Fatalf("long timeline lost terminal descriptor: %s", detailed)
 		}
 		if !strings.Contains(human, "This Link has been removed.") {
 			t.Fatalf("removed Link has no human state notice:\n%s", human)

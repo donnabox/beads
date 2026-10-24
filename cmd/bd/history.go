@@ -52,6 +52,9 @@ Examples:
 		if graphPreviewActive {
 			return runGraphPreviewVersions(cmd, args)
 		}
+		if cmd.Flags().Changed("long") {
+			return graphFailure("capability_unavailable", "--long is available for graph Resource timelines only", 5)
+		}
 
 		evt := metrics.NewCommandEvent("history")
 		defer func() {

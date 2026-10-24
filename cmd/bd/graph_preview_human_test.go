@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
@@ -41,7 +43,7 @@ func TestGraphHumanIdentityRowsAndDocuments(t *testing.T) {
 
 func TestGraphHumanTimelineKeepsDeletionSequence(t *testing.T) {
 	rows := []graphstore.VersionRow{{Ordinal: 3, Version: "restored", ChangeAt: time.Unix(3, 0)}, {Ordinal: 2, Version: "deletion-token-long", Removed: true, ChangeAt: time.Unix(2, 0)}, {Ordinal: 1, Version: "initial", ChangeAt: time.Unix(1, 0)}}
-	got := renderGraphVersions("beads/a", graphstore.KindMemory, rows, true, false)
+	got := renderGraphVersions("beads/a", graphstore.KindMemory, rows, true, false, false)
 	for _, text := range []string{"SEQ", "(deleted; not a live snapshot)", "  3", "  2", "  1"} {
 		if !strings.Contains(got, text) {
 			t.Fatalf("missing %q: %s", text, got)
@@ -91,9 +93,63 @@ func TestGraphHumanMetadataPrecisionAndLongTimeline(t *testing.T) {
 		}
 	}
 	rows := []graphstore.VersionRow{{Ordinal: 2, Version: "exact-deletion-token", Removed: true}, {Ordinal: 1, Version: "exact-live-token"}}
-	short := renderGraphVersions("M", graphstore.KindMemory, rows, true, true)
+	short := renderGraphVersions("M", graphstore.KindMemory, rows, true, true, false)
 	detail := renderGraphVersions("M", graphstore.KindMemory, rows, true, true, true)
 	if strings.Contains(short, "exact-deletion-token") || strings.Contains(short, "exact-live-token") || !strings.Contains(detail, "exact-deletion-token") || !strings.Contains(detail, "exact-live-token") {
 		t.Fatalf("short=%s detail=%s", short, detail)
+	}
+}
+
+func TestGraphHumanCurrentAdjunctsDiscloseGatesAndCommentBounds(t *testing.T) {
+	at := time.Date(2026, 10, 23, 12, 30, 0, 0, time.UTC)
+	details := &types.IssueDetails{GatedBy: []types.GateRef{{ID: "https://example.invalid/scope/g", Type: "human", Reason: "approval required"}}, Comments: []*types.Comment{{Author: "A", Text: "first", CreatedAt: at}, {Author: "B", Text: "second", CreatedAt: at}, {Author: "C", Text: "third", CreatedAt: at}}}
+	got := graphHumanCurrentIssueDetails("https://example.invalid/scope/", details, graphIssueDetailOptions{CommentsTail: 1, Long: true, LocalTime: true})
+	for _, text := range []string{"Current gates", "g [human]: approval required", "2 older comments hidden", at.Local().Format("2006-01-02 15:04:05 -07:00"), "C: third"} {
+		if !strings.Contains(got, text) {
+			t.Fatal(got)
+		}
+	}
+	if strings.Contains(got, "A: first") || strings.Contains(got, "B: second") {
+		t.Fatal(got)
+	}
+}
+
+func TestGraphHumanLongTimelineRefusesNativeRoute(t *testing.T) {
+	oldActive, oldReporter := graphPreviewActive, graphFailureReporter
+	graphPreviewActive = false
+	graphFailureReporter = func(code, message string, status int) error {
+		if code != "capability_unavailable" || status != 5 {
+			t.Fatalf("wrong refusal %s %d", code, status)
+		}
+		return &exitError{Code: status}
+	}
+	t.Cleanup(func() { graphPreviewActive = oldActive; graphFailureReporter = oldReporter })
+	for _, command := range []*cobra.Command{versionsCmd, historyCmd} {
+		cmd := &cobra.Command{}
+		cmd.Flags().Bool("long", false, "")
+		if err := cmd.Flags().Set("long", "true"); err != nil {
+			t.Fatal(err)
+		}
+		if err := command.RunE(cmd, []string{"unused"}); err == nil {
+			t.Fatalf("%s silently accepted graph-only long", command.Name())
+		}
+	}
+}
+
+func TestGraphHumanMultiDocumentAliasBudgetCannotLoseCapturedContent(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	views := make([]graphHumanIssueView, 121)
+	for i := range views {
+		views[i].record = graphstore.IssueRecord{ID: fmt.Sprintf("https://example.invalid/scope/%d", i), Revision: fmt.Sprintf("token-%d", i), Properties: &types.Issue{Title: fmt.Sprintf("Issue %d", i)}}
+	}
+	lookups := 0
+	lines := graphHumanIssueDocuments(ctx, "https://example.invalid/scope/", views, graphIssueDetailOptions{}, func(aliasCtx context.Context, id, token string) string {
+		lookups++
+		<-aliasCtx.Done()
+		return "@=" + token
+	})
+	if len(lines) != 121 || lookups != 1 || ctx.Err() != nil || !strings.Contains(lines[120], "Revision: @=token-120") || !strings.Contains(lines[120], "Issue 120") {
+		t.Fatalf("captured=%d lookups=%d parent=%v last=%s", len(lines), lookups, ctx.Err(), lines[len(lines)-1])
 	}
 }
