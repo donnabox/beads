@@ -156,14 +156,22 @@ func TestGraphPreviewSelectedOmittedIncidence(t *testing.T) {
 }
 
 func TestGraphPreviewSelectedOpenIssuePopulationRetainsOmittedEvidence(t *testing.T) {
+	taskType, err := graphstore.NativeIssueTypeURL(genericTestScope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blocksType, err := graphstore.NativeDependencyTypeURL(genericTestScope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
 	snapshot := graphstore.Snapshot{Types: selectedTypeTestDescriptors(t, genericTestScope)}
 	for _, status := range []types.Status{types.StatusOpen, types.StatusClosed} {
 		id := string(status)
-		snapshot.Records = append(snapshot.Records, graphstore.IssueRecord{ID: genericTestScope + "beads/" + id, Type: graphstore.IssueTypeURL(genericTestScope), Version: "v1", Properties: &types.Issue{Title: id, Status: status}})
+		snapshot.Records = append(snapshot.Records, graphstore.IssueRecord{ID: genericTestScope + "beads/" + id, Type: taskType, Revision: "v1", Version: "v1", Properties: &types.Issue{ID: "beads/" + id, Title: id, Status: status, IssueType: types.TypeTask}})
 	}
 	snapshot.Records = append(snapshot.Records,
 		graphstore.Record{ID: genericTestScope + "beads/m", Type: graphstore.MemoryTypeURL(genericTestScope), Version: "v1"},
-		graphstore.LinkRecord{ID: genericTestScope + "links/dep", Type: graphstore.DependencyTypeURL(genericTestScope), Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/closed"},
+		graphstore.LinkRecord{ID: genericTestScope + "links/dep", Type: blocksType, Revision: "v1", Version: "v1", Properties: map[string]any{"dep_type": "blocks"}, Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/closed"},
 		graphstore.LinkRecord{ID: genericTestScope + "links/ref", Type: genericTestScope + "types/references", Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/m"},
 	)
 	in := genericTestInput("", "both", 1000)
@@ -180,17 +188,25 @@ func TestGraphPreviewSelectedOpenIssuePopulationRetainsOmittedEvidence(t *testin
 }
 
 func TestGraphPreviewSelectedAllDependencyPopulationIsSelectorSpecific(t *testing.T) {
+	taskType, err := graphstore.NativeIssueTypeURL(genericTestScope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blocksType, err := graphstore.NativeDependencyTypeURL(genericTestScope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
 	snapshot := graphstore.Snapshot{Types: selectedTypeTestDescriptors(t, genericTestScope)}
 	for _, id := range []string{"open", "closed", "isolated"} {
 		status := types.StatusOpen
 		if id == "closed" {
 			status = types.StatusClosed
 		}
-		snapshot.Records = append(snapshot.Records, graphstore.IssueRecord{ID: genericTestScope + "beads/" + id, Type: graphstore.IssueTypeURL(genericTestScope), Version: "v1", Properties: &types.Issue{Title: id, Status: status}})
+		snapshot.Records = append(snapshot.Records, graphstore.IssueRecord{ID: genericTestScope + "beads/" + id, Type: taskType, Revision: "v1", Version: "v1", Properties: &types.Issue{ID: "beads/" + id, Title: id, Status: status, IssueType: types.TypeTask}})
 	}
 	snapshot.Records = append(snapshot.Records,
 		graphstore.Record{ID: genericTestScope + "beads/m", Type: graphstore.MemoryTypeURL(genericTestScope), Version: "v1"},
-		graphstore.LinkRecord{ID: genericTestScope + "links/dep", Type: graphstore.DependencyTypeURL(genericTestScope), Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/closed"},
+		graphstore.LinkRecord{ID: genericTestScope + "links/dep", Type: blocksType, Revision: "v1", Version: "v1", Properties: map[string]any{"dep_type": "blocks"}, Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/closed"},
 		graphstore.LinkRecord{ID: genericTestScope + "links/ref", Type: genericTestScope + "types/references", Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/m"},
 	)
 	family := genericTestInput("", "both", 1000)
@@ -201,12 +217,20 @@ func TestGraphPreviewSelectedAllDependencyPopulationIsSelectorSpecific(t *testin
 		t.Fatal(err)
 	}
 	// Sole family Dependency is the familiar open-Issue population, including
-	// isolates. Exact Dependency instead uses the general matching endpoints.
+	// isolates. Exact abstract Dependency cannot match concrete blocks Links.
 	assertGenericSelection(t, got, []string{"isolated", "open"}, []string{}, []string{})
 	exact := family
 	exact.OpenIssuesOnly = false
 	exact.LinkTypes = nil
 	exact.ExactLinkTypes = []string{graphstore.DependencyTypeURL(genericTestScope)}
+	got, err = projectGraphGeneric(snapshot, genericTestScope, exact)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertGenericSelection(t, got, []string{}, []string{}, []string{})
+	// Exact concrete blocks selects its general matching endpoints, including
+	// a closed Issue, rather than inheriting the familiar open-Issue population.
+	exact.ExactLinkTypes = []string{blocksType}
 	got, err = projectGraphGeneric(snapshot, genericTestScope, exact)
 	if err != nil {
 		t.Fatal(err)

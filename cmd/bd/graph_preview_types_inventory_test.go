@@ -200,26 +200,18 @@ func TestGraphTypesInventoryKeepsNominalSelectorsAndAbstractDefinitions(t *testi
 }
 
 func TestGraphTypesAssessmentAvailability(t *testing.T) {
-	var selected []graph.TypeDescriptor
-	beadNames := map[string]bool{"memory": true, "evaluation": true, "constraint": true, "policy": true, "decision": true, "procedure": true, "requirement": true, "scenario": true, "specification": true, "issue": true}
-	for _, name := range graphstore.FreshTypeNames() {
-		kind := graph.KindLink
-		if beadNames[name] {
-			kind = graph.KindBead
-		}
-		selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"types/"+name, name, kind))
-	}
+	selected := selectedTypeTestDescriptors(t, typesInventoryScope)
 	for _, enabled := range []bool{false, true} {
 		for _, details := range []bool{false, true} {
 			inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, details, enabled)
 			if err != nil {
 				t.Fatal(err)
 			}
-			want := 15
+			wantBeads, wantLinks := 22, 25
 			if enabled {
-				want = 20
+				wantBeads, wantLinks = 23, 29
 			}
-			if len(inventory.BeadTypes)+len(inventory.LinkTypes) != want {
+			if len(inventory.BeadTypes) != wantBeads || len(inventory.LinkTypes) != wantLinks {
 				t.Fatal("wrong available Type census")
 			}
 			raw, err := json.Marshal(inventory)
@@ -234,7 +226,7 @@ func TestGraphTypesAssessmentAvailability(t *testing.T) {
 			}
 		}
 	}
-	if len(selected) != 20 {
+	if len(selected) != 52 {
 		t.Fatal("public filtering mutated installed inventory")
 	}
 }
