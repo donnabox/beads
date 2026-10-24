@@ -842,6 +842,12 @@ bd types --json
 
 All three formats use the same public visibility rules. `--details` may show
 a partial description; it does not promise a complete HTTP Type descriptor.
+In the default text, Bead Types and Link Types list their installed Type IDs
+(`types/issue`, `types/dependency`, and other `types/NAME` values). Separate
+Issue classifications (`task`, `bug`, and configured names) and Dependency
+kinds (`blocks`, `parent-child`, and others) remain visible under their own
+headings. Those classification names are properties of native Types, not
+additional Type IDs. `--details` and `--json` describe installed Types.
 The Preview 3 `--json` shape has no Preview 3-to-Preview 4 compatibility
 guarantee. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for the exact typedef source and candidate qualification boundary. Ordinary

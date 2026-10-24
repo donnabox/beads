@@ -51,7 +51,8 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				}
 			}
 			visible := graphPolicyCLI(t, bd, work, home, nil, "", "types")
-			if !strings.Contains(visible, "Bead Types (21):") || !strings.Contains(visible, "Link Types (24):") ||
+			if !strings.Contains(visible, "Bead Types (9):") || !strings.Contains(visible, "Issue classifications (") ||
+				!strings.Contains(visible, "Link Types (6):") || !strings.Contains(visible, "Dependency kinds (") ||
 				!strings.Contains(visible, "task") || !strings.Contains(visible, "Task Issue") ||
 				!strings.Contains(visible, "blocks") || !strings.Contains(visible, "Blocking Dependency") ||
 				!strings.Contains(visible, "types/subject-to") ||

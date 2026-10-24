@@ -47,6 +47,16 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			if issueops.ResolveInfraTypesInTx(ctx, tx)[string(item.Issue.IssueType.Normalize())] {
 				return issueops.CreateBatchItemError(index, fmt.Errorf("%w: infrastructure Issue types are not admitted by the graph preview", storage.ErrValidation))
 			}
+			// Explicit IDs may remain reserved by another Resource or a deleted
+			// allocation after the native Issue row is gone. Check before the
+			// native batch writer can reuse retained History for that spelling.
+			if item.Issue.ID != "" {
+				if exists, err := publicResourceIDExistsInTx(ctx, tx, item.Issue.ID); err != nil {
+					return issueops.CreateBatchItemError(index, err)
+				} else if exists {
+					return issueops.CreateBatchItemError(index, ErrAlreadyExists)
+				}
+			}
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
@@ -65,6 +75,13 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 		for index, issue := range created.Issues {
 			if !sameIssueCreateFields(request.Items[index].Issue, issue, request.Actor) || issueops.IsWisp(issue) {
 				return fmt.Errorf("%w: markdown item %d cannot be represented exactly as a durable graph Issue", storage.ErrValidation, index)
+			}
+			// Generated IDs are known only after the native batch writer runs.
+			// Roll every item back if any public ID is already allocated.
+			if exists, err := publicResourceIDExistsInTx(ctx, tx, issue.ID); err != nil {
+				return issueops.CreateBatchItemError(index, err)
+			} else if exists {
+				return issueops.CreateBatchItemError(index, ErrAlreadyExists)
 			}
 			path, err := generatedIssuePath(ctx, tx, issue.ID)
 			if err != nil {
