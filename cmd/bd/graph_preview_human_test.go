@@ -40,9 +40,9 @@ func TestGraphHumanIdentityRowsAndDocuments(t *testing.T) {
 }
 
 func TestGraphHumanTimelineKeepsDeletionSequence(t *testing.T) {
-	rows := []graphstore.VersionRow{{Ordinal: 3, Version: "restored", ChangeAt: time.Unix(3, 0)}, {Ordinal: 2, Version: "deleted", Removed: true, ChangeAt: time.Unix(2, 0)}, {Ordinal: 1, Version: "initial", ChangeAt: time.Unix(1, 0)}}
+	rows := []graphstore.VersionRow{{Ordinal: 3, Version: "restored", ChangeAt: time.Unix(3, 0)}, {Ordinal: 2, Version: "deletion-token-long", Removed: true, ChangeAt: time.Unix(2, 0)}, {Ordinal: 1, Version: "initial", ChangeAt: time.Unix(1, 0)}}
 	got := renderGraphVersions("beads/a", graphstore.KindMemory, rows, true, false)
-	for _, text := range []string{"SEQ", "deleted (deleted; not a live snapshot)", "  3", "  2", "  1"} {
+	for _, text := range []string{"SEQ", "(deleted; not a live snapshot)", "  3", "  2", "  1"} {
 		if !strings.Contains(got, text) {
 			t.Fatalf("missing %q: %s", text, got)
 		}
@@ -79,5 +79,21 @@ func TestGraphHumanPreservesDomainProperties(t *testing.T) {
 		if !strings.Contains(got, text) {
 			t.Fatal(got)
 		}
+	}
+}
+
+func TestGraphHumanMetadataPrecisionAndLongTimeline(t *testing.T) {
+	raw := json.RawMessage(`{"integer":9007199254740993,"decimal":0.12345678901234567890123456789}`)
+	got := graphHumanDocument("https://example.invalid/scope/", graphstore.Record{ID: "https://example.invalid/scope/M", Metadata: raw}, "@1", false, false)
+	for _, text := range []string{"9007199254740993", "0.12345678901234567890123456789"} {
+		if !strings.Contains(got, text) {
+			t.Fatal(got)
+		}
+	}
+	rows := []graphstore.VersionRow{{Ordinal: 2, Version: "exact-deletion-token", Removed: true}, {Ordinal: 1, Version: "exact-live-token"}}
+	short := renderGraphVersions("M", graphstore.KindMemory, rows, true, true)
+	detail := renderGraphVersions("M", graphstore.KindMemory, rows, true, true, true)
+	if strings.Contains(short, "exact-deletion-token") || strings.Contains(short, "exact-live-token") || !strings.Contains(detail, "exact-deletion-token") || !strings.Contains(detail, "exact-live-token") {
+		t.Fatalf("short=%s detail=%s", short, detail)
 	}
 }

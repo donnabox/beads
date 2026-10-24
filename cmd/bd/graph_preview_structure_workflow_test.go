@@ -260,7 +260,9 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "list", scope+"beads/work"); !strings.Contains(got, "beads/work depends on beads/parent") {
 		t.Fatalf("missing human dependency summary: %q", got)
 	}
-	if view := graphPolicyCLI(t, bd, work, home, nil, "", "graph", scope+"beads/work"); !strings.Contains(view, "work [issue]") || !strings.Contains(view, "2 Beads, 1 Links") || !strings.Contains(view, "└── dependency") {
+	taskType, _ := graphstore.NativeIssueTypeURL(scope, "task")
+	blocksType, _ := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	if view := graphPolicyCLI(t, bd, work, home, nil, "", "graph", scope+"beads/work"); !strings.Contains(view, "beads/work ["+strings.TrimPrefix(taskType, scope)+"]") || !strings.Contains(view, "2 Beads, 1 Links") || !strings.Contains(view, "└── ["+strings.TrimPrefix(blocksType, scope)+"]") {
 		t.Fatalf("blocking graph lost its component: %q", view)
 	}
 	var check graphDependencyCheck

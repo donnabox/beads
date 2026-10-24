@@ -87,8 +87,11 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 			recoverable := graphMixedResult[graphstore.Record](t, call("create", "Recovery", "--type", "types/memory", "--id", "recovery", "--json"))
 			call("delete", "recovery", "--force")
 			call("update", "recovery", "--from-revision", recoverable.Revision)
+			if long := call("versions", "recovery", "--long"); !strings.Contains(long, recoverable.Revision) {
+				t.Fatal(long)
+			}
 			timeline := call("versions", "recovery")
-			if !strings.Contains(timeline, "  SEQ  WHEN") || !strings.Contains(timeline, "  2") || !strings.Contains(timeline, "(deleted; not a live snapshot)") || !strings.Contains(timeline, "  3") {
+			if !strings.Contains(timeline, "  SEQ  WHEN") || !strings.Contains(timeline, "  2") || !strings.Contains(timeline, "(deleted; not a live snapshot)") || !strings.Contains(timeline, "  3") || strings.Contains(timeline, recoverable.Revision) {
 				t.Fatal(timeline)
 			}
 		})

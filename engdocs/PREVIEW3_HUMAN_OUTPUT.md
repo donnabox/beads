@@ -24,6 +24,8 @@ The human versions timeline is headed `SEQ`, includes actual terminal deletion
 events after recovery and never renumbers them. A deletion event is not a readable
 live snapshot. `ID@N` is a store-local convenience; exact tokens remain the
 portable references and all structured Resource identities/tokens stay complete.
+Use `versions --long` (or `history --long` / `link versions --long`) to include
+the exact token lines in the human timeline.
 
 These human projections do not change legacy JSON, canonical projection/masking,
 BDP records, mutation postimages, selection or filtering behavior.

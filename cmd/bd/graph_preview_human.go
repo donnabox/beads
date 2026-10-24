@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -150,13 +151,12 @@ func graphHumanDocument(scope string, value any, revision string, retained, long
 		section("Properties", string(data))
 	}
 	if len(metadata) != 0 && string(metadata) != "null" && string(metadata) != "{}" {
-		var pretty strings.Builder
-		var v any
-		if json.Unmarshal(metadata, &v) == nil {
-			b, _ := json.MarshalIndent(v, "", "  ")
-			pretty.Write(b)
+		var pretty bytes.Buffer
+		if err := json.Indent(&pretty, metadata, "", "  "); err == nil {
+			section("Metadata", pretty.String())
+		} else {
+			section("Metadata", string(metadata))
 		}
-		section("Metadata", pretty.String())
 	}
 	if len(owned) != 0 {
 		data, _ := json.MarshalIndent(owned, "", "  ")
