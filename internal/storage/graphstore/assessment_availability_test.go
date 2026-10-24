@@ -105,8 +105,21 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 				}
 			})
 			gotTypes, err := off.ListInstalledTypes(ctx)
-			if err != nil || len(gotTypes) != 20 || !reflect.DeepEqual(installed, gotTypes) {
-				t.Fatalf("gate changed installed definitions: %v", err)
+			if err != nil || len(gotTypes) != 52 || !reflect.DeepEqual(installed, gotTypes) {
+				t.Fatalf("gate changed installed definitions: enabled=%d disabled=%d error=%v", len(installed), len(gotTypes), err)
+			}
+			if !enabled.AssessmentsEnabled() || off.AssessmentsEnabled() {
+				t.Fatal("Store did not capture the requested availability gate")
+			}
+			for _, name := range []string{"evaluation", "conformance", "addresses", "satisfies", "violates"} {
+				id := off.ScopeURL() + "types/" + name
+				present := false
+				for _, descriptor := range gotTypes {
+					present = present || descriptor.ID() == id
+				}
+				if !present || AssessmentTypeAvailable(off.ScopeURL(), id, off.AssessmentsEnabled()) || !AssessmentTypeAvailable(off.ScopeURL(), id, enabled.AssessmentsEnabled()) {
+					t.Fatalf("%s definition visibility was conflated with authoring availability", id)
+				}
 			}
 			if got, err := off.Show(ctx, "beads/eval"); err != nil || !reflect.DeepEqual(got, eval) {
 				t.Fatalf("disabled read lost owned claims: %v", err)
