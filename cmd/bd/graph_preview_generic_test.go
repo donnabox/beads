@@ -169,6 +169,9 @@ func TestGraphPreviewGenericLegacyAdmission(t *testing.T) {
 		t.Run(flag, func(t *testing.T) {
 			graphCmd = oldCmd
 			cmd := genericPreviewCommand(t, flag)
+			cmd.Use = "graph"
+			parent := &cobra.Command{Use: "bd"}
+			parent.AddCommand(cmd)
 			graphCmd = cmd
 			handled, err := admitGraphPreview(cmd)
 			var exit *exitError
@@ -179,6 +182,9 @@ func TestGraphPreviewGenericLegacyAdmission(t *testing.T) {
 	}
 	graphCmd = oldCmd
 	cmd := genericPreviewCommand(t)
+	cmd.Use = "graph"
+	parent := &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	graphCmd = cmd
 	if handled, err := admitGraphPreview(cmd); handled || err != nil {
 		t.Fatalf("bare legacy graph was hijacked: %t %v", handled, err)
@@ -188,6 +194,9 @@ func TestGraphPreviewGenericLegacyAdmission(t *testing.T) {
 	}
 	graphCmd = oldCmd
 	cmd = genericPreviewCommand(t, "--view=generic")
+	cmd.Use = "graph"
+	parent = &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	graphCmd = cmd
 	var handled bool
 	var err error

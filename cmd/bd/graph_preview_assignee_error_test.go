@@ -61,6 +61,8 @@ func TestLegacyImportSourcePrefixAdmissionBeforeLegacyOpen(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cmd := &cobra.Command{Use: "import"}
+			parent := &cobra.Command{Use: "bd"}
+			parent.AddCommand(cmd)
 			cmd.Flags().String("source-prefix", "", "")
 			if test.supplied {
 				if err := cmd.Flags().Set("source-prefix", test.value); err != nil {
@@ -103,6 +105,8 @@ func TestLegacyImportSourcePrefixAdmissionBeforeLegacyOpen(t *testing.T) {
 		t.Fatal(err)
 	}
 	cmd := &cobra.Command{Use: "import"}
+	parent := &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	cmd.Flags().String("source-prefix", "", "")
 	if err := cmd.Flags().Set("source-prefix", ""); err != nil {
 		t.Fatal(err)
