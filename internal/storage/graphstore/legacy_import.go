@@ -74,6 +74,15 @@ func (s *Store) ImportLegacyWithOptions(ctx context.Context, input legacyimport.
 		return LegacyImportResult{}, err
 	}
 	batch := mounted.Batch
+	nativeTypes, err := prepareLegacyImportNativeTypes(batch, s.ScopeURL())
+	if err != nil {
+		return LegacyImportResult{}, err
+	}
+	if len(nativeTypes.dependencies) > 0 {
+		if err := graph.ValidateGeneratedResourceIDRoot(options.IDRoot); err != nil {
+			return LegacyImportResult{}, fmt.Errorf("%w: legacy generated Link ID root: %v", storage.ErrValidation, err)
+		}
+	}
 	memories, err := s.prepareLegacyImportMemories(mounted, actor)
 	if err != nil {
 		return LegacyImportResult{}, err
@@ -117,8 +126,13 @@ func (s *Store) ImportLegacyWithOptions(ctx context.Context, input legacyimport.
 				return fmt.Errorf("%w: infrastructure Issue %s is unsupported", storage.ErrValidation, mounted.sourceIssues[issue.ID])
 			}
 		}
-		// All prospective native Type bindings must be established before these
-		// reservations when the concrete native-Type adapter is composed.
+		// Bind every prospective native Type before checking ANY incoming
+		// Resource ID: a later record's Type can collide with an earlier key.
+		for _, id := range nativeTypes.bindings {
+			if err := s.ensureNativeTypeInTx(ctx, tx, id); err != nil {
+				return err
+			}
+		}
 		for _, issue := range batch.Issues {
 			if err := checkLegacyImportPublicIDInTx(ctx, tx, "Issue", mounted.sourceIssues[issue.ID], issue.ID); err != nil {
 				return err
@@ -153,7 +167,7 @@ func (s *Store) ImportLegacyWithOptions(ctx context.Context, input legacyimport.
 			if err != nil {
 				return err
 			}
-			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key) VALUES (?,'bead',?,?,'live','issue',?)`, path, IssueTypeURL(s.ScopeURL()), strings.Repeat("0", 32), issue.ID); err != nil {
+			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key) VALUES (?,'bead',?,?,'live','issue',?)`, path, nativeTypes.issues[issue.ID], strings.Repeat("0", 32), issue.ID); err != nil {
 				return err
 			}
 			issuePaths[issue.ID] = path
@@ -206,7 +220,7 @@ func (s *Store) ImportLegacyWithOptions(ctx context.Context, input legacyimport.
 				if err != nil {
 					return err
 				}
-				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id) VALUES (?,'link',?,?,'live','dependency',?,?)`, path, DependencyTypeURL(s.ScopeURL()), revision, key, publicID); err != nil {
+				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id) VALUES (?,'link',?,?,'live','dependency',?,?)`, path, nativeTypes.dependencies[dep.Type], revision, key, publicID); err != nil {
 					return err
 				}
 				link, err := s.currentLinkForCreationInTx(ctx, tx, path)

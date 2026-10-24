@@ -561,7 +561,8 @@ func TestLegacyImportNativeHierarchyAndKinds(t *testing.T) {
 					t.Fatal(err)
 				}
 				link, err := store.ShowLink(ctx, identity.PrivatePath)
-				if err != nil || link.Type != DependencyTypeURL(store.ScopeURL()) || link.Properties["dep_type"] != kind {
+				base, classification, concrete := NativeTypeClassification(store.ScopeURL(), link.Type)
+				if err != nil || !concrete || base != DependencyTypeURL(store.ScopeURL()) || classification != kind || link.Properties["dep_type"] != kind {
 					t.Fatalf("native kind %s not preserved: %+v, %v", pair, link, err)
 				}
 			}

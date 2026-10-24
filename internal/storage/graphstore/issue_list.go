@@ -304,7 +304,11 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 		return err
 	}
 	dependencyTypes := map[string]bool{}
-	for _, id := range dependencyLinkTypesForIssueType(s.ScopeURL(), issueType) {
+	nativeTypes, err := s.nativeDependencyTypeIDsInTx(ctx, tx)
+	if err != nil {
+		return err
+	}
+	for _, id := range nativeTypes {
 		dependencyTypes[id] = true
 	}
 	ids, err := s.installedInformationalTypes(ctx, tx)
@@ -346,7 +350,7 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 		case "generic":
 			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && s.isMemoryType(typ) && !key.Valid && memoryExists
 		case "issue":
-			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && typ == issueType && key.Valid && key.String != "" && issueExists
+			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) && key.Valid && key.String != "" && issueExists
 		case "dependency":
 			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && dependencyTypes[typ] && key.Valid && key.String != "" && dependencyExists
 		case "informational":

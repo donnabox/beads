@@ -72,7 +72,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
-		if parent.Type != issueType {
+		if !nativeIssueTypeMatches(s.ScopeURL(), parent.Type, issueType) {
 			return fmt.Errorf("%w: parent is not an Issue of the installed relationship Type", storage.ErrValidation)
 		}
 		if parent.Revision != request.ExpectedParentRevision {
@@ -120,6 +120,13 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		}
 		childRevision, err := freshToken()
 		if err != nil {
+			return err
+		}
+		issueType, err = NativeIssueTypeURL(s.ScopeURL(), string(created.Issue.IssueType))
+		if err != nil {
+			return err
+		}
+		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog

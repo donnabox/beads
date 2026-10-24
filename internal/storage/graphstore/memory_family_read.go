@@ -146,7 +146,7 @@ func (r *currentFamilyReader) materialize(ctx context.Context, g memoryquery.Cur
 		}
 		out.Records = append(out.Records, record)
 	}
-	out.Types, err = installedPreviewTypes(ctx, r.tx, r.store.ScopeURL())
+	out.Types, err = r.store.selectedDescriptorsInTx(ctx, r.tx)
 	if err != nil {
 		return CurrentFamilyRead{}, err
 	}
@@ -187,7 +187,7 @@ func (r *currentFamilyReader) matches(ctx context.Context, id string) (bool, err
 }
 func (r *currentFamilyReader) family(family typecatalog.Reference) func(context.Context, string) (bool, error) {
 	return func(_ context.Context, id string) (bool, error) {
-		d, ok := r.catalog.types.Definition(id)
+		d, ok := r.catalog.types.Definition(nativeFamilyReference(r.store.ScopeURL(), id))
 		if !ok || d.Kind != graph.KindLink {
 			return false, fmt.Errorf("%w: unknown current Link Type", ErrInvalidStore)
 		}
@@ -195,7 +195,7 @@ func (r *currentFamilyReader) family(family typecatalog.Reference) func(context.
 	}
 }
 func (r *currentFamilyReader) isConstraint(id string) bool {
-	d, ok := r.catalog.types.Definition(id)
+	d, ok := r.catalog.types.Definition(nativeFamilyReference(r.store.ScopeURL(), id))
 	return ok && d.Kind == graph.KindBead && r.catalog.types.Conforms(d.Identity, typecatalog.Reference{URI: r.catalog.projectionBinding(memorycatalog.Constraint)})
 }
 
@@ -232,7 +232,7 @@ func (r *currentFamilyReader) Current(ctx context.Context, path string) (memoryq
 	if state != "live" || kind != "bead" || !authorityID.MatchString(version) {
 		return memoryquery.CurrentNode{}, fmt.Errorf("%w: unsupported current allocation", ErrInvalidStore)
 	}
-	if !((backing == "generic" && !key.Valid && r.catalog.memoryType(typ)) || (backing == "issue" && key.Valid && key.String != "" && typ == IssueTypeURL(r.store.ScopeURL()))) {
+	if !((backing == "generic" && !key.Valid && r.catalog.memoryType(typ)) || (backing == "issue" && key.Valid && key.String != "" && isConcreteNativeIssue(r.store.ScopeURL(), typ))) {
 		return memoryquery.CurrentNode{}, fmt.Errorf("%w: current read supports live Memory/native Issue", ErrCapabilityUnavailable)
 	}
 	n := memoryquery.CurrentNode{Path: path, TypeURL: typ, Version: version}
