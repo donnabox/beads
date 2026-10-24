@@ -709,7 +709,7 @@ class Qualification:
             self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage",
                        tuple("TestLinkUnlinkDefaultSourceReadBudget/" + engine + "/" + case
                              for engine in ("embedded", "server")
-                             for case in ("id-default", "pair-default", "id-explicit")), groups=4)
+                             for case in ("id-default", "pair-default", "id-explicit")), groups=8)
             self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
             self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
                        (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
