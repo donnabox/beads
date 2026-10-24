@@ -106,7 +106,7 @@ jobs:
         env:
           BEADS_TEST_BD_BINARY: ${{ github.workspace }}/bd
           GOCACHE: ${{ runner.temp }}/go-cache/race
-        timeout-minutes: 120
+        timeout-minutes: 200
         # Keep every existing test and the 30m per-process alarm. Graphstore and
         # cmd/bd use exhaustive discovered groups instead of one oversized
         # package process. The dispatcher records every terminal.

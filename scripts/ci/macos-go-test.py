@@ -32,7 +32,10 @@ GRAPHSTORE_GROUPS = 8
 DISCOVERY_SECONDS = 900
 GROUP_SECONDS = 2100
 OTHER_SECONDS = 3600
-TOTAL_SECONDS = 6900  # Finish cleanup before the workflow's 120-minute ceiling.
+# The 420-root graphstore race census passed six of eight sequential groups on
+# both Linux and macOS at dd69a572 before the old 115-minute scope deadline
+# stopped group seven. Keep the deadline finite and below each 200-minute step.
+TOTAL_SECONDS = 10800
 CLEANUP_SECONDS = 5
 _deferred_signals = 0
 _pending_signal = None

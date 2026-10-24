@@ -6174,24 +6174,24 @@ class DispatchControls(unittest.TestCase):
         self.assertEqual(groups, m.partition(list(reversed(names)), m.GRAPHSTORE_GROUPS))
         self.assertTrue(all(len(group) >= 2 for group in groups))
 
-    def test_dispatch_budgets_remain_unchanged(self):
+    def test_dispatch_preserves_per_group_alarm_with_finite_scope_budget(self):
         self.assertIn("-timeout=30m", m.FLAGS)
         self.assertEqual(m.GROUP_SECONDS, 2100)
         self.assertGreater(m.GROUP_SECONDS, 1800)
-        self.assertEqual(m.TOTAL_SECONDS, 6900)
-        self.assertLess(m.TOTAL_SECONDS, 120 * 60)
+        self.assertEqual(m.TOTAL_SECONDS, 10800)
+        self.assertLess(m.TOTAL_SECONDS, 200 * 60)
         self.assertEqual(m.GROUPS, 4)
 
     def test_partition_refuses_empty_or_duplicate(self):
         for names in [[], ["TestA", "TestA"], ["TestEmbeddedOnly"]]:
             with self.assertRaises(RuntimeError): m.partition(names)
-    def test_partition_counts_and_unchanged_limits(self):
+    def test_partition_counts_and_limits(self):
         for count in (0, -1, None, True, "8", 1.5):
             with self.subTest(count=count), self.assertRaises(RuntimeError):
                 m.partition(["TestOne"], count)
         self.assertEqual(len(m.partition(["TestOne"])), 4)
         self.assertEqual(m.GRAPHSTORE_GROUPS, 8)
-        self.assertEqual((m.GROUP_SECONDS, m.TOTAL_SECONDS), (2100, 6900))
+        self.assertEqual((m.GROUP_SECONDS, m.TOTAL_SECONDS), (2100, 10800))
         self.assertIn("-timeout=30m", m.FLAGS)
 
     def test_unexpected_package_refused(self):

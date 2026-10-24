@@ -39,7 +39,7 @@ func TestForkMacOSLane(t *testing.T) {
 	assertStepRunsExactly(t, job, "Test", testCommand)
 	assertStepsBefore(t, job, []string{"Build"}, []string{"Test"})
 	assertStepEnvValue(t, job, "Test", "BEADS_TEST_BD_BINARY", workspaceBDBinary)
-	if step := job.step(t, "Test"); step.TimeoutMinutes != 120 || step.ContinueOnError != nil || step.If != "" {
+	if step := job.step(t, "Test"); step.TimeoutMinutes != 200 || step.ContinueOnError != nil || step.If != "" {
 		t.Error("macOS dispatch must remain bounded, unconditional and failure-propagating")
 	}
 	upload := job.step(t, "Upload macOS test evidence")
