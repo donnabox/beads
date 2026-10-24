@@ -28,6 +28,13 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	idRoot, idRootSet, rootErr := graphPreviewGeneratedIDRoot(cmd)
+	if rootErr != nil {
+		return graphFailure("invalid_selector", rootErr.Error(), 2)
+	}
+	if idRootSet && (cmd.Flags().Changed("parent") || cmd.Flags().Changed("graph-path") || cmd.Flags().Changed("file")) {
+		return graphFailure("invalid_selector", "--id-root cannot combine with --parent, --graph-path or --file", 2)
+	}
 	if cmd.Flags().Changed("graph-path") && cmd.Flags().Changed("file") {
 		return graphFailure("invalid_selector", "--graph-path cannot be combined with --file", 2)
 	}
@@ -44,7 +51,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		}
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "id", "graph-path", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "id-root", "graph-path", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
@@ -210,7 +217,11 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 			record = created.Child
 		} else {
 			var err error
-			record, err = store.CreateIssue(ctx, path, request)
+			if idRootSet {
+				record, err = store.CreateIssueWithIDRoot(ctx, idRoot, request)
+			} else {
+				record, err = store.CreateIssue(ctx, path, request)
+			}
 			if err != nil {
 				return nil, "", err
 			}
@@ -440,16 +451,14 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	publicID := ""
-	path := ""
+	idRoot, _, err := graphPreviewGeneratedIDRoot(cmd)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
 	if cmd.Flags().Changed("id") {
 		publicID, _ = cmd.Flags().GetString("id")
 		if _, err := memoryapi.ValidateKey(publicID); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-	} else {
-		path, err = graphPreviewCreateBeadPath(cmd)
-		if err != nil {
-			return err
 		}
 	}
 	metadata, err := graphPreviewMetadataCreate(cmd)
@@ -464,14 +473,11 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 		if err := graphPreviewRequireInstalledType(ctx, store, typeURL, graph.KindBead, true); err != nil {
 			return nil, "", err
 		}
-		record, err := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, Path: path, TypeURL: typeURL, PropertiesJSON: properties, Actor: getActorWithGit(), Metadata: metadata})
+		record, err := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, IDRoot: idRoot, TypeURL: typeURL, PropertiesJSON: properties, Actor: getActorWithGit(), Metadata: metadata})
 		if err != nil {
 			return nil, "", err
 		}
-		displayID := publicID
-		if displayID == "" {
-			displayID = path
-		}
+		displayID := record.PublicID
 		return record, fmt.Sprintf("Created %s\n", displayID), nil
 	})
 }
@@ -479,7 +485,7 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 // Inline text only: validate aliases and explicit presence before the ordinary
 // description helper can read stdin. Issue-only flags cannot be silently lost.
 func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, string, error) {
-	if err := graphPreviewFlags(cmd, "type", "id", "title", "description", "body", "message", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "id", "id-root", "title", "description", "body", "message", "metadata", "properties"); err != nil {
 		return "", "", err
 	}
 	properties, err := graphPreviewCreateProperties(cmd)
@@ -558,7 +564,7 @@ func graphPreviewCreateMemoryInputValues(cmd *cobra.Command, args []string, prop
 // title/body shorthand fields are decoded; the selected writer validates the
 // complete object, including extras and exact subject References.
 func graphPreviewCreateMemoryPropertiesJSON(cmd *cobra.Command, args []string) (json.RawMessage, error) {
-	if err := graphPreviewFlags(cmd, "type", "id", "title", "description", "body", "message", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "id", "id-root", "title", "description", "body", "message", "metadata", "properties"); err != nil {
 		return nil, err
 	}
 	values := map[string]json.RawMessage{}

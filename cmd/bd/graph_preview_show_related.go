@@ -39,7 +39,7 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
+		if ref.Explicit && !ref.currentSelection() {
 			return graphFailure("capability_unavailable", "--refs and --children require current Issues", 5)
 		}
 		path, localID, err := graphPreviewResourceReadSelector(ref.Identity)

@@ -64,7 +64,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if request.Path != "" || request.PublicID != "" {
 			return LinkMutationResult{}, fmt.Errorf("%w: ID root cannot accompany an explicit ID", storage.ErrValidation)
 		}
-		if err := graph.ValidateCanonicalResourceID(request.IDRoot); err != nil {
+		if err := graph.ValidateGeneratedResourceIDRoot(request.IDRoot); err != nil {
 			return LinkMutationResult{}, err
 		}
 	}

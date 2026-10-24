@@ -117,9 +117,9 @@ func graphPreviewResourceReadSelectorIn(scope, selector string) (path, localID s
 	return "beads/" + selector, selector, nil
 }
 
-// Resolve an exact allocated public ID before interpreting optional revision
-// syntax. Full Scope URLs and literal IDs are disjoint under the common grammar;
-// no kind or alternative allocation is inferred from a rooted spelling.
+// Reference grammar is lexical, never dependent on allocated sibling names.
+// Full Scope URLs remain literal; local @ suffixes must reach the reference
+// parser before any whole-string lookup. Literal @ IDs use --id or their URL.
 func graphPreviewResolveMemoryArgument(selector string) (string, error) {
 	if strings.HasPrefix(selector, graphPreviewConfig.GraphScopeURL) {
 		return selector, nil
@@ -127,6 +127,9 @@ func graphPreviewResolveMemoryArgument(selector string) (string, error) {
 	// URL reference syntax is disjoint from admitted local IDs. Leave foreign
 	// URLs to the command's reference/Scope validation, never a key codec.
 	if strings.Contains(selector, "://") {
+		return selector, nil
+	}
+	if strings.Contains(selector, "@") {
 		return selector, nil
 	}
 	// Non-ID reference syntax cannot name an allocated literal ID. Let the

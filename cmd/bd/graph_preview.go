@@ -767,7 +767,14 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	}
 	ref, err := graphPreviewParseReference(literal)
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return graphPreviewReferenceFailure(err)
+	}
+	if ref.Explicit && cmd.Flags().Changed("version") {
+		return graphFailure("invalid_selector", "choose ID@revision or --version, not both", 2)
+	}
+	ref, err = graphPreviewResolveParsedReference(ref)
+	if err != nil {
+		return graphPreviewReferenceFailure(err)
 	}
 	version, _ := cmd.Flags().GetString("version")
 	versioned := cmd.Flags().Changed("version")
@@ -775,7 +782,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		if versioned {
 			return graphFailure("invalid_selector", "choose ID@revision or --version, not both", 2)
 		}
-		if ref.Revision != "current" && ref.Revision != "unpinned" {
+		if !ref.currentSelection() {
 			version, versioned = ref.Revision, true
 		}
 	}

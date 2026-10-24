@@ -64,6 +64,9 @@ var createCmd = &cobra.Command{
 		if cmd.Flags().Changed("graph-path") {
 			return HandleError("--graph-path requires graph preview")
 		}
+		if cmd.Flags().Changed("id-root") {
+			return HandleError("--id-root requires a graph workspace")
+		}
 		CheckReadonly("create") // also covers the migration freeze check (dc-6jaq)
 
 		evt := metrics.NewCommandEvent("create")
@@ -943,6 +946,7 @@ func init() {
 	createCmd.Flags().String("context", "", "Additional context for the issue")
 	createCmd.Flags().StringSlice("label", []string{}, "Alias for --labels")
 	_ = createCmd.Flags().MarkHidden("label") // Only fails if flag missing (caught in tests)
+	createCmd.Flags().String("id-root", "", "Prefix for an automatically generated public ID (graph workspace)")
 	createCmd.Flags().String("id", "", "Explicit issue ID (e.g., 'bd-42' for partitioning)")
 	createCmd.Flags().String("graph-path", "", "Preview 3 only: explicit graph path for Issue creation (e.g., beads/PATH)")
 	createCmd.Flags().String("parent", "", "Parent issue ID for hierarchical child (e.g., 'bd-a3f8e9')")

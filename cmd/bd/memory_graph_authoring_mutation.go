@@ -93,7 +93,7 @@ func runMemoryLinkCommand(cmd *cobra.Command, args []string, op memoryLinkOperat
 		if errors.As(err, &exit) {
 			return err
 		}
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return graphPreviewReferenceFailure(err)
 	}
 	request.Properties, err = memoryLinkProperties(cmd)
 	if err != nil {

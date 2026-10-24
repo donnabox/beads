@@ -77,6 +77,19 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	}
 	ref, err := graphPreviewParseReference(literal)
 	if err != nil {
+		if graphPreviewReferenceStorageError(err) {
+			return canonicalReadError(cmd, renderer, err, "route_unavailable")
+		}
+		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
+	}
+	if ref.Explicit && cmd.Flags().Changed("version") {
+		return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --version, not both", 2)
+	}
+	ref, err = graphPreviewResolveParsedReference(ref)
+	if err != nil {
+		if graphPreviewReferenceStorageError(err) {
+			return canonicalReadError(cmd, renderer, err, "route_unavailable")
+		}
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
 	path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
@@ -92,7 +105,7 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 		if versioned {
 			return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --version, not both", 2)
 		}
-		if ref.Revision != "current" && ref.Revision != "unpinned" {
+		if !ref.currentSelection() {
 			version, versioned = ref.Revision, true
 		}
 	}

@@ -3,6 +3,7 @@
 package graphstore
 
 import (
+	"context"
 	"errors"
 	"strings"
 	"testing"
@@ -27,6 +28,9 @@ func TestGeneratedResourceIDsAreCanonicalShortAndRooted(t *testing.T) {
 			}
 			onePath := fixtureResourcePath(t, ctx, s, one.ID)
 			twoPath := fixtureResourcePath(t, ctx, s, two.ID)
+			if onePath != "beads/"+one.PublicID || twoPath != "beads/"+two.PublicID {
+				t.Fatalf("locator not derived from accepted ID: %q %q", onePath, twoPath)
+			}
 			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{IDRoot: "notes/refs", SourcePath: onePath, TargetPath: twoPath, TypeURL: s.ScopeURL() + "types/references", UnconditionalSource: true})
 			if err != nil {
 				t.Fatal(err)
@@ -53,5 +57,24 @@ func TestGeneratedResourceIDsAreCanonicalShortAndRooted(t *testing.T) {
 				t.Fatal("Link ID+root accepted")
 			}
 		})
+	}
+}
+
+// Invalid roots must fail before even opening a transaction or reading endpoints.
+func TestGeneratedResourceRootBudgetPreflight(t *testing.T) {
+	s := &Store{}
+	ctx := context.Background()
+	root := strings.Repeat("a", graph.GeneratedResourceIDRootMaxBytes+1)
+	if _, err := s.Create(ctx, CreateRequest{IDRoot: root}); !errors.Is(err, graph.ErrValidation) {
+		t.Fatalf("Memory root: %v", err)
+	}
+	if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{IDRoot: root}); !errors.Is(err, graph.ErrValidation) {
+		t.Fatalf("Link root: %v", err)
+	}
+	if _, err := s.AddDependency(ctx, DependencyRequest{IDRoot: root}); !errors.Is(err, graph.ErrValidation) {
+		t.Fatalf("Dependency root: %v", err)
+	}
+	if _, err := s.CreateIssueWithIDRoot(ctx, root, plainIssue("Root")); !errors.Is(err, graph.ErrValidation) {
+		t.Fatalf("Issue root: %v", err)
 	}
 }

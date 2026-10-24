@@ -119,7 +119,7 @@ func memoryCurrentRequest(cmd *cobra.Command, args []string, scope string, op me
 		if err != nil {
 			return zero, err
 		}
-		if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
+		if ref.Explicit && !ref.currentSelection() {
 			return zero, fmt.Errorf("%w: Memory relationship reads select current roots only", graphstore.ErrCapabilityUnavailable)
 		}
 		path := ref.Identity

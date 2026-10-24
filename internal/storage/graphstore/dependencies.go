@@ -45,7 +45,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if request.Path != "" || request.PublicID != "" {
 			return DependencyResult{}, fmt.Errorf("%w: ID root cannot accompany an explicit ID", storage.ErrValidation)
 		}
-		if err := graph.ValidateCanonicalResourceID(request.IDRoot); err != nil {
+		if err := graph.ValidateGeneratedResourceIDRoot(request.IDRoot); err != nil {
 			return DependencyResult{}, err
 		}
 	}

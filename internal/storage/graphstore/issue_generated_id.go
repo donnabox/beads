@@ -18,11 +18,11 @@ func (s *Store) CreateIssueWithIDRoot(ctx context.Context, root string, req publ
 	if req.Issue == nil || req.Issue.ID != "" {
 		return IssueRecord{}, fmt.Errorf("%w: ID root requires generated Issue identity", graph.ErrValidation)
 	}
-	if err := graph.ValidateCanonicalResourceID(root); err != nil {
+	if err := graph.ValidateGeneratedResourceIDRoot(root); err != nil {
 		return IssueRecord{}, err
 	}
 	for length := graph.GeneratedResourceIDInitialLength; length <= graph.GeneratedResourceIDMaxLength; length++ {
-		for attempt := 0; attempt < 8; attempt++ {
+		for attempt := 0; attempt < generatedIDAttemptsPerLength; attempt++ {
 			if err := ctx.Err(); err != nil {
 				return IssueRecord{}, err
 			}

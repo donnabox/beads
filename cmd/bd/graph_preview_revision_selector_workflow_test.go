@@ -38,8 +38,8 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				name, source, target string
 				flags                []string
 			}{
-				{"source exact suffix", "source@observed", "target", nil},
-				{"target exact suffix", "source", "target@observed", nil},
+				{"source exact suffix", "source@=observed", "target", nil},
+				{"target exact suffix", "source", "target@=observed", nil},
 				{"source exact flag", "source", "target", []string{"--source-revision", "observed"}},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
@@ -55,8 +55,8 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				})
 			}
 			for _, args := range [][]string{
-				{"link", "create", "source@unpinned", "target", "--type", "types/references", "--source-revision", "unpinned"},
-				{"link", "create", "source", "target@observed", "--type", "types/references", "--target-revision", "observed"},
+				{"link", "create", "source@current", "target", "--type", "types/references", "--source-revision", "unpinned"},
+				{"link", "create", "source", "target@=observed", "--type", "types/references", "--target-revision", "observed"},
 			} {
 				refuse("invalid_selector", args...)
 			}
@@ -64,8 +64,8 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				code string
 				args []string
 			}{
-				{"invalid_selector", []string{"link", "source", "[https://external.example/item]@r7", "--type", "types/references"}},
-				{"revision_unknown", []string{"link", "source", "target@observed", "--type", "types/references"}},
+				{"invalid_selector", []string{"link", "source", "[https://external.example/item]@=r7", "--type", "types/references"}},
+				{"revision_unknown", []string{"link", "source", "target@=observed", "--type", "types/references"}},
 				{"capability_unavailable", []string{"link", "source", "native-target@current", "--type", "blocks"}},
 				{"capability_unavailable", []string{"link", "source", "native-target", "--type", "blocks", "--target-revision", "observed"}},
 			} {
@@ -83,7 +83,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				flags                    []string
 			}{
 				{"bare", "source", "target", "links/bare", nil},
-				{"explicit suffix floating", "source@unpinned", "target@unpinned", "links/suffix-floating", nil},
+				{"implicit floating", "source", "target", "links/suffix-floating", nil},
 				{"explicit flag floating", "source", "target", "links/flag-floating", []string{"--source-revision", "unpinned", "--target-revision", "unpinned"}},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
@@ -105,11 +105,11 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 					t.Fatalf("lost current endpoint pins: %+v", created)
 				}
 			}
-			shorthand := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source@unpinned", "target", "--type", "types/references", "--id", "links/shorthand-floating", "--target-revision", "unpinned"))
+			shorthand := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source", "target", "--type", "types/references", "--id", "links/shorthand-floating", "--target-revision", "unpinned"))
 			if shorthand.Link.ID != scope+"links/shorthand-floating" || shorthand.Link.Source != scope+"source" || shorthand.Link.Target != scope+"target" {
 				t.Fatalf("shorthand floating Link changed endpoint identity: %+v", shorthand.Link)
 			}
-			call("link", "["+scope+"source]@unpinned", scope+"native-target", "--type", "blocks", "--target-revision", "unpinned")
+			call("link", scope+"source", scope+"native-target", "--type", "blocks", "--target-revision", "unpinned")
 			bare := call("link", "show", "links/bare")
 			refuse("invalid_selector", "link", "update", "links/bare@stale", "--properties", `{"note":"wrong target"}`)
 			refuse("invalid_selector", "link", "delete", "links/bare@stale", "--force")
@@ -133,32 +133,32 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 			call("update", "beads/plan", "--properties", `{"body":"Second body"}`)
 			const planURL = "https://example.invalid/reference-read/beads/plan"
 			oldByFlag := call("show", planURL, "--version", created.Revision)
-			oldBySuffix := call("show", "["+planURL+"]@"+created.Revision)
-			if got := call("show", "["+planURL+"]@"+created.Revision); got != oldByFlag {
+			oldBySuffix := call("show", "["+planURL+"]@="+created.Revision)
+			if got := call("show", "["+planURL+"]@="+created.Revision); got != oldByFlag {
 				t.Fatal("URI@revision did not select exact retained state")
 			}
 			if oldBySuffix != oldByFlag {
 				t.Fatal("canonical URL@REV did not select the same retained Bead revision as --version")
 			}
 			current := call("show", planURL)
-			if oldBySuffix == current || call("show", "["+planURL+"]@current") != current || call("show", "["+planURL+"]@unpinned") != current {
+			if oldBySuffix == current || call("show", "["+planURL+"]@current") != current {
 				t.Fatal("exact and floating/current Bead selectors were conflated")
 			}
-			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "show", "["+planURL+"]@"+created.Revision, "--version", created.Revision, "--json")
+			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "show", "["+planURL+"]@="+created.Revision, "--version", created.Revision, "--json")
 			// Unknown suffixes must not fall back to the current record. The
 			// existing raw-read helper verifies numeric exit3 and no stdout.
-			for _, selector := range []string{"[" + planURL + "]@no-such-token"} {
+			for _, selector := range []string{"[" + planURL + "]@=no-such-token"} {
 				graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "show", selector)
 			}
-			graphMemoryReadRaw(t, bd, work, home, "", "capability_unavailable", "show", "beads/plan@no-such-token")
-			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "show", "beads/plan@"+created.Revision, "--include-dependents", "--json")
+			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "show", "beads/plan@=no-such-token")
+			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "show", "beads/plan@="+created.Revision, "--include-dependents", "--json")
 			for _, word := range []string{"current", "unpinned"} {
 				// The flag is an exact-token escape, even for reserved suffix
 				// words. These words aren't retained tokens in this fixture,
 				// so exact lookup must refuse instead of reading current.
 				graphPolicyCLI(t, bd, work, home, nil, "revision_unknown", "show", planURL, "--version", word, "--json")
 			}
-			for _, suffix := range []string{"@" + created.Revision, "@current", "@unpinned"} {
+			for _, suffix := range []string{"@=" + created.Revision, "@current"} {
 				for _, command := range []string{"update", "delete", "forget"} {
 					args := []string{command, "beads/plan" + suffix}
 					if command == "update" {
@@ -177,12 +177,12 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 			call("create", "Target", "--type", "types/constraint", "--id", "beads/target")
 			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "beads/plan", "beads/target", "--type", "types/subject-to", "--id", "links/context"))
 			call("link", "update", "links/context", "--properties", `{"note":"changed"}`)
-			graphMemoryReadRaw(t, bd, work, home, "", "capability_unavailable", "link", "show", "links/context@no-such-token")
-			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "[https://example.invalid/reference-read/links/context]@no-such-token")
-			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "show", "links/context@"+linked.Link.Revision, "--version", linked.Link.Revision, "--json")
+			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "links/context@=no-such-token")
+			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "[https://example.invalid/reference-read/links/context]@=no-such-token")
+			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "show", "links/context@="+linked.Link.Revision, "--version", linked.Link.Revision, "--json")
 			const linkURL = "https://example.invalid/reference-read/links/context"
 			linkByFlag := call("link", "show", linkURL, "--version", linked.Link.Revision)
-			linkBySuffix := call("link", "show", "["+linkURL+"]@"+linked.Link.Revision)
+			linkBySuffix := call("link", "show", "["+linkURL+"]@="+linked.Link.Revision)
 			if linkBySuffix != linkByFlag || linkBySuffix == call("link", "show", "links/context") {
 				t.Fatal("Link ID@REV did not route to exact retained Link state")
 			}
@@ -209,7 +209,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 				t.Fatalf("wrong identity: %+v", got)
 			}
 			call("update", memoryURI, "--properties", `{ "body":"Updated raw at" }`)
-			if got := call("show", "["+memoryURI+"]@"+created.Revision); got != call("show", memoryURI, "--version", created.Revision) {
+			if got := call("show", "["+memoryURI+"]@="+created.Revision); got != call("show", memoryURI, "--version", created.Revision) {
 				t.Fatal("canonical raw@ exact read mismatch")
 			}
 			call("create", "Target", "--type", "types/constraint", "--id", "beads/target")
@@ -219,7 +219,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 				t.Fatalf("canonical raw@ Link identity lost: %+v", shown)
 			}
 			call("link", "update", linkURI, "--properties", `{ "note":"Changed" }`)
-			if got := call("link", "show", "["+linkURI+"]@"+shown.Revision); got != call("link", "show", linkURI, "--version", shown.Revision) {
+			if got := call("link", "show", "["+linkURI+"]@="+shown.Revision); got != call("link", "show", linkURI, "--version", shown.Revision) {
 				t.Fatal("canonical raw@ Link exact read mismatch")
 			}
 			call("link", "delete", linkURI, "--force")
@@ -234,13 +234,13 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			before := graphMixedResult[graphstore.Record](t, call("show", "beads/disclosure"))
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "update", "beads/disclosure", "--properties", `{ "body":"After disclosure" }`)
 			after := graphMixedResult[graphstore.Record](t, call("show", "beads/disclosure"))
-			if !strings.Contains(human, "Current Memory revision: ["+after.ID+"]@"+after.Revision) || !strings.Contains(human, "Replaced Memory "+before.ID+" version "+before.Revision) {
+			if !strings.Contains(human, "Current Memory revision: ["+after.ID+"]@="+after.Revision) || !strings.Contains(human, "Replaced Memory "+before.ID+" version "+before.Revision) {
 				t.Fatalf("ambiguous Memory update output: %q", human)
 			}
 			human = graphPolicyCLI(t, bd, work, home, nil, "", "link", "beads/disclosure", "beads/target", "--type", "types/subject-to", "--id", "links/disclosed")
 			owner := graphMixedResult[graphstore.Record](t, call("show", "beads/disclosure"))
 			linked := graphMixedResult[graphstore.LinkRecord](t, call("show", scope+"links/disclosed"))
-			if !strings.Contains(human, "Current Link revision: ["+linked.ID+"]@"+linked.Revision) || !strings.Contains(human, "Current source revision: ["+owner.ID+"]@"+owner.Revision) {
+			if !strings.Contains(human, "Current Link revision: ["+linked.ID+"]@="+linked.Revision) || !strings.Contains(human, "Current source revision: ["+owner.ID+"]@="+owner.Revision) {
 				t.Fatalf("Link write omitted current source revision: %q", human)
 			}
 			call("link", "create", "beads/disclosure", "beads/target", "--type", "types/subject-to", "--id", "links/guarded", "--if-source-revision", owner.Revision)
@@ -250,7 +250,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 }
 
 // Colon-only spellings are local selectors even when net/url would call them
-// opaque URIs. Exact allocated literal-@ IDs win before revision parsing;
+// opaque URIs. Revision grammar is lexical before any allocation lookup;
 // bracketed canonical references remain the exact retained-state escape.
 func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
@@ -279,12 +279,12 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					call("update", subject, "--properties", `{"body":"Later subject"}`)
 					beforeSubject, beforeSibling := call("show", subject), call("show", sibling)
 					beforeLinks := call("link", "list", "--source", subject)
-					if got := call("show", "["+subject+"]@"+created.Revision); got != call("show", subject, "--version", created.Revision) {
+					if got := call("show", "["+subject+"]@="+created.Revision); got != call("show", subject, "--version", created.Revision) {
 						t.Fatal("canonical colon selector did not select the exact retained subject")
 					}
 					for _, prefix := range []string{"beads/"} {
-						selector := prefix + tc.id + "@no-such-revision"
-						graphMemoryReadRaw(t, bd, work, home, "", "capability_unavailable", "show", selector)
+						selector := prefix + tc.id + "@=no-such-revision"
+						graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "show", selector)
 						for _, command := range []string{"update", "delete", "forget"} {
 							args := []string{command, selector}
 							if command == "update" {
@@ -311,7 +311,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					if call("show", sibling) == beforeSibling || call("show", subject) != beforeSubject {
 						t.Fatal("canonical colon+@ mutation selected the wrong identity")
 					}
-					if got := call("show", "["+sibling+"]@"+literal.Revision); got != call("show", sibling, "--version", literal.Revision) || got == call("show", sibling) {
+					if got := call("show", "["+sibling+"]@="+literal.Revision); got != call("show", sibling, "--version", literal.Revision) || got == call("show", sibling) {
 						t.Fatal("canonical colon+@ exact read did not retain the literal sibling")
 					}
 				})
@@ -334,12 +334,16 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 			const link = scope + "links/context:v1"
 			const literalLink = link + "@unknown-token"
 			beforeLink, beforeLiteralLink := call("link", "show", link), call("link", "show", literalLink)
-			if got := call("link", "show", "["+link+"]@"+linked.Link.Revision); got != call("link", "show", link, "--version", linked.Link.Revision) {
+			if got := call("link", "show", "["+link+"]@="+linked.Link.Revision); got != call("link", "show", link, "--version", linked.Link.Revision) {
 				t.Fatal("canonical colon Link selector did not select exact retained Link")
 			}
 			for _, prefix := range []string{"", "links/"} {
-				selector := prefix + "context:v1@no-such-revision"
-				graphMemoryReadRaw(t, bd, work, home, "", "capability_unavailable", "link", "show", selector)
+				selector := prefix + "context:v1@=no-such-revision"
+				code := "revision_unknown"
+				if prefix == "" {
+					code = "not_found"
+				}
+				graphMemoryReadRaw(t, bd, work, home, "", code, "link", "show", selector)
 				refuse("invalid_selector", "link", "update", selector, "--properties", `{"note":"Must not land"}`)
 				refuse("invalid_selector", "link", "delete", selector, "--force")
 			}
@@ -353,10 +357,10 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 			beforeSubject := call("show", "beads/plan:v1")
 			beforeLinks := call("link", "list", "--source", "beads/plan:v1")
 			for _, tc := range []struct{ name, selector string }{
-				{"opaque bracket", "[urn:x@y]@unpinned"},
-				{"no authority bracket", "[https:///beads/plan:v1]@unpinned"},
-				{"malformed bracket", "[https://[broken/beads/plan:v1]@unpinned"},
-				{"foreign bracket", "[https://foreign.example/beads/plan:v1]@unpinned"},
+				{"opaque bracket", "[urn:x@y]@current"},
+				{"no authority bracket", "[https:///beads/plan:v1]@current"},
+				{"malformed bracket", "[https://[broken/beads/plan:v1]@current"},
+				{"foreign bracket", "[https://foreign.example/beads/plan:v1]@current"},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
 					refuse("invalid_selector", "show", tc.selector)
@@ -388,7 +392,7 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 			}
 			source := graphMixedResult[graphstore.Record](t, call("remember", "Source", "--id", "source"))
 			target := graphMixedResult[graphstore.Record](t, call("create", "Rule one", "--id", "rule", "--type", "types/constraint"))
-			created := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "source@"+source.Revision, "rule@"+target.Revision, "--type", "types/references", "--id", "citation", "--properties", `{"note":"keep"}`, "--metadata", `{"origin":"manual"}`))
+			created := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "source@="+source.Revision, "rule@="+target.Revision, "--type", "types/references", "--id", "citation", "--properties", `{"note":"keep"}`, "--metadata", `{"origin":"manual"}`))
 			if created.Link.SourceRevision != source.Revision || created.Link.TargetRevision != target.Revision {
 				t.Fatalf("creation lost exact pins: %+v", created)
 			}
@@ -429,7 +433,7 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 			if patched.Link.TargetRevision != "" || patched.Link.SourceRevision != "" || patched.Link.Properties["note"] != "second" || string(patched.Link.Metadata) != string(merged.Link.Metadata) {
 				t.Fatalf("combined ordered patch lost re-pin: %+v", patched)
 			}
-			owned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source", "rule@"+target.Revision, "--type", "types/subject-to", "--id", "obligation", "--if-source-revision", source.Revision))
+			owned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source", "rule@="+target.Revision, "--type", "types/subject-to", "--id", "obligation", "--if-source-revision", source.Revision))
 			owner := graphMixedSourceRecord(t, owned.Source)
 			oldOwner := call("show", source.ID)
 			ownedNext := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", owned.Link.ID, "--target-revision", "current", "--if-revision", owned.Link.Revision, "--if-source-revision", owner.Revision))
@@ -469,11 +473,12 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 			if literalPin.Link.Source != literal.ID || literalPin.Link.SourceRevision != literal.Revision {
 				t.Fatal("canonical URL literal at resolved wrong source")
 			}
-			literalBare := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "plan:v1@draft", "rule", "--type", "types/references", "--id", "literal-bare"))
+			literalBare := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", literal.ID, "rule", "--type", "types/references", "--id", "literal-bare"))
 			if literalBare.Link.Source != literal.ID || literalBare.Link.SourceRevision != "" {
-				t.Fatal("exact allocated local ID with @ did not remain a floating literal endpoint")
+				t.Fatal("canonical literal-@ URL did not remain a floating endpoint")
 			}
-			refuse("revision_unknown", "link", "create", "plan:v1@no-such-revision", "rule", "--type", "types/references")
+			refuse("invalid_selector", "link", "create", "plan:v1@draft", "rule", "--type", "types/references")
+			refuse("revision_unknown", "link", "create", "plan:v1@=no-such-revision", "rule", "--type", "types/references")
 			if got := graphMixedResult[graphstore.Record](t, call("show", sibling.ID)); !reflect.DeepEqual(got, sibling) {
 				t.Fatal("literal canonical fallback changed sibling")
 			}
