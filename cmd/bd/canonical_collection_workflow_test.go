@@ -49,7 +49,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			if page.Items[0].ID != scope+"beads/first" || len(owned) != 1 || owned[0].ID != scope+"links/related" {
 				t.Fatalf("public current projection lost owned state: %s", raw)
 			}
-			links := call("link", "list", "--output-format", "json", "--unpaged", "--source", "first", "--target", "second", "--omit", "envelope")
+			links := call("link", "list", "--output-format", "json", "--unpaged", "--from", "first", "--to", "second", "--omit", "envelope")
 			var linkPage bdpwire.LinkCollection
 			if err := bdpwire.Unmarshal([]byte(links), &linkPage); err != nil {
 				t.Fatal(err)

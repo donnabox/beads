@@ -80,7 +80,19 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "types/missing")
 			refuse("capability_unavailable", "create", "--type", "memory-preview", "--properties", `{"title":"One","body":"One is the loneliest number."}`)
 			refuse("capability_unavailable", "link", "create", "policy", "work", "--type", "types/missing", "--properties", `{"note":"test"}`)
-			refuse("invalid_selector", "link", "create", "policy", "work", "--source", "policy", "--type", "example-cites")
+			refuse("invalid_selector", "link", "create", "policy", "work", "--from", "policy", "--type", "example-cites")
+			beforeLinks := call("link", "list", "--incident-to", "policy")
+			for _, flags := range [][]string{
+				{"--from=policy", "--from=policy", "--to=work"},
+				{"--from=policy", "--from=rule", "--to=work"},
+				{"--from=policy", "--to=work", "--to=work"},
+				{"--from=policy", "--to=work", "--to=rule"},
+			} {
+				refuse("invalid_selector", append([]string{"link", "create", "--type", "types/references"}, flags...)...)
+			}
+			if call("link", "list", "--incident-to", "policy") != beforeLinks {
+				t.Fatal("duplicate endpoint flags created a Link")
+			}
 			refuse("invalid_properties", "link", memory.ID, other.ID, "--type", "types/dependency")
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "memories")
 			if !strings.Contains(human, "beads/policy") || !strings.Contains(human, "Code flow policy") || strings.Contains(human, scope) || strings.Contains(human, memory.Revision) {
@@ -94,7 +106,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			for index, spec := range []struct{ typ, target string }{{"types/superseded-by", other.ID}, {"types/subject-to", constraint.ID}} {
 				args := []string{"link", "create", "policy", strings.TrimPrefix(spec.target, scope+"beads/"), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
 				if index == 1 {
-					args = []string{"link", "create", "--source", "policy", "--target", strings.TrimPrefix(spec.target, scope+"beads/"), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
+					args = []string{"link", "create", "--from", "policy", "--to", strings.TrimPrefix(spec.target, scope+"beads/"), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
 				}
 				link := graphMixedResult[graphstore.LinkMutationResult](t, call(args...))
 				if link.Link.Type != scope+spec.typ || link.Link.Source != memory.ID || link.Link.Target != spec.target || link.ReplacedSource == nil {

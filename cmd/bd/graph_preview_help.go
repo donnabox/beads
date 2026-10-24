@@ -221,7 +221,7 @@ that bare name. These native pair operands retain literal Issue-ID semantics,
 including @. For Link-ID removal use bd link delete ID --force.`},
 		{linkCmd, `The canonical graph Link namespace is bd link
 create/list/show/update/delete/versions/compare/count. Create requires
---type and SOURCE TARGET (or --source and --target); list and count query complete current
+--type and SOURCE TARGET (or SOURCE --to TARGET, or --from SOURCE --to TARGET); list and count query complete current
 Link collections within the preview's advertised bounds. Delete previews
 by default and --force applies the checked mutation.
 
@@ -232,7 +232,7 @@ pins and @current are supported, while native Dependency endpoints remain
 floating. bd dep add/remove keep literal Issue IDs, so the input
 syntaxes are not interchangeable. To create any native Dependency
 kind through the canonical namespace, use
-  bd link create --type blocks --source ISSUE --target ISSUE
+  bd link create --type blocks --from ISSUE --to ISSUE
 Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.
 For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:

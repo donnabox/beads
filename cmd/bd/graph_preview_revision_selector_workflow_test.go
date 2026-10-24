@@ -33,7 +33,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 			call("remember", "Target", "--id", "beads/target")
 			call("create", "Native target", "--id", "native-target", "--force")
 			sourceBefore := call("show", scope+"beads/source")
-			linksBefore := call("link", "list", "--source", scope+"beads/source")
+			linksBefore := call("link", "list", "--from", scope+"beads/source")
 			for _, tc := range []struct {
 				name, source, target string
 				flags                []string
@@ -49,7 +49,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 					if got := call("show", scope+"beads/source"); got != sourceBefore {
 						t.Fatal("refused Link creation changed the owning source")
 					}
-					if got := call("link", "list", "--source", scope+"beads/source"); got != linksBefore {
+					if got := call("link", "list", "--from", scope+"beads/source"); got != linksBefore {
 						t.Fatal("refused Link creation inserted an endpoint or Link")
 					}
 				})
@@ -73,7 +73,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				if got := call("show", scope+"beads/source"); got != sourceBefore {
 					t.Fatal("refused shorthand Link creation changed the source")
 				}
-				if got := call("link", "list", "--source", scope+"beads/source"); got != linksBefore {
+				if got := call("link", "list", "--from", scope+"beads/source"); got != linksBefore {
 					t.Fatal("refused shorthand Link creation changed Links")
 				}
 			}
@@ -97,7 +97,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 			}
 			for i, args := range [][]string{
 				{"link", "create", "source@current", "target@current", "--type", "types/references", "--id", "links/pinned-current"},
-				{"link", "create", "--source", "source", "--target", "target", "--source-revision", "current", "--target-revision", "current", "--type", "types/references", "--id", "links/pinned-flags"},
+				{"link", "create", "--from", "source", "--to", "target", "--source-revision", "current", "--target-revision", "current", "--type", "types/references", "--id", "links/pinned-flags"},
 				{"link", "source", "target", "--source-revision", "current", "--type", "types/references", "--id", "links/source-pin"},
 			} {
 				created := graphMixedResult[graphstore.LinkMutationResult](t, call(args...))
@@ -273,7 +273,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					literal := graphMixedResult[graphstore.Record](t, call("remember", "Literal sibling", "--id", "beads/"+tc.id+"@"+tc.unknown))
 					call("update", subject, "--properties", `{"body":"Later subject"}`)
 					beforeSubject, beforeSibling := call("show", subject), call("show", sibling)
-					beforeLinks := call("link", "list", "--source", subject)
+					beforeLinks := call("link", "list", "--from", subject)
 					if got := call("show", "["+subject+"]@"+created.Revision); got != call("show", subject, "--version", created.Revision) {
 						t.Fatal("canonical colon selector did not select the exact retained subject")
 					}
@@ -293,7 +293,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 						refuse("revision_unknown", "link", "create", selector, "target", "--type", "types/subject-to")
 						refuse("revision_unknown", "link", "create", "target", selector, "--type", "types/subject-to")
 					}
-					if call("show", subject) != beforeSubject || call("show", sibling) != beforeSibling || call("link", "list", "--source", subject) != beforeLinks {
+					if call("show", subject) != beforeSubject || call("show", sibling) != beforeSibling || call("link", "list", "--from", subject) != beforeLinks {
 						t.Fatal("a refused colon selector changed subject, literal sibling or Links")
 					}
 					// Canonical URL fallback addresses the literal colon+@ identity
@@ -342,7 +342,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 				t.Fatal("canonical colon+@ Link mutation selected the wrong identity")
 			}
 			beforeSubject := call("show", "plan:v1")
-			beforeLinks := call("link", "list", "--source", "plan:v1")
+			beforeLinks := call("link", "list", "--from", "plan:v1")
 			for _, tc := range []struct{ name, selector string }{
 				{"opaque bracket", "[urn:x@y]@unpinned"},
 				{"no authority bracket", "[https:///beads/plan:v1]@unpinned"},
@@ -356,7 +356,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					refuse("invalid_selector", "link", "create", "plan:v1", tc.selector, "--type", "types/subject-to")
 				})
 			}
-			if call("show", "plan:v1") != beforeSubject || call("link", "list", "--source", "plan:v1") != beforeLinks {
+			if call("show", "plan:v1") != beforeSubject || call("link", "list", "--from", "plan:v1") != beforeLinks {
 				t.Fatal("refused bracketed locator changed current state")
 			}
 		})

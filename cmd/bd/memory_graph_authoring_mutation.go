@@ -68,11 +68,14 @@ func runMemoryLinkCommand(cmd *cobra.Command, args []string, op memoryLinkOperat
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	flags := []string{op.targetFlag, "title", "body", "status", "properties", "metadata", "id", "source-revision", "target-revision", "if-source-revision", "json"}
+	flags := []string{"from", "to", "title", "body", "status", "properties", "metadata", "id", "source-revision", "target-revision", "if-source-revision", "json"}
 	if err := canonicalGraphFlags(cmd, renderer, flags...); err != nil {
 		return err
 	}
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], flags...); err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if err := canonicalExactOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	request, err := memoryLinkRequest(cmd, args, graphPreviewConfig.GraphScopeURL, op)

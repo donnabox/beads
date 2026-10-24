@@ -35,7 +35,7 @@ func canonicalCollectionTestCommand(t *testing.T, links bool, args ...string) (*
 	cmd.Flags().Bool("all", false, "")
 	if links {
 		cmd.Flags().Lookup("limit").Annotations = map[string][]string{"canonical-output-only": {"true"}}
-		for _, flag := range []string{"source", "target", "incident-to"} {
+		for _, flag := range []string{"from", "to", "incident-to"} {
 			cmd.Flags().String(flag, "", "")
 		}
 		cmd.Flags().String("direction", "both", "")
@@ -91,7 +91,7 @@ func TestCanonicalCollectionExistingBDPSelection(t *testing.T) {
 		{"beads", false, []string{"--type", note}, 2},
 		{"type-family", false, []string{"--conforms-to", note}, 2},
 		{"unknown-type", false, []string{"--type", scope + "types/missing"}, 0},
-		{"source-and-target", true, []string{"--source", "a", "--target", "beads/b"}, 1},
+		{"source-and-target", true, []string{"--from", "a", "--to", "beads/b"}, 1},
 		{"incident-in", true, []string{"--incident-to", "b", "--direction", "in"}, 1},
 		{"incident-out-empty", true, []string{"--incident-to", "b", "--direction", "out"}, 0},
 	} {

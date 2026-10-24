@@ -895,7 +895,7 @@ retrieving endpoint Resources:
 ```sh
 bd list --output-format json --unpaged
 bd list --output-format table --unpaged --include /properties/title
-bd link list --output-format json --unpaged --source beads/plan
+bd link list --output-format json --unpaged --from beads/plan
 bd link list --output-format jsonl --incident-to beads/plan --direction in
 bd link list --output-format json --unpaged --omit envelope
 ```
@@ -906,7 +906,7 @@ to that Type. Use the full Type identity, for example
 `https://example.test/project/types/note`. Canonical selection does not resolve
 Issue classifications such as `bug`, bare names, `types/NAME`, or Dependency
 aliases; those remain available on legacy paths. Link selection accepts
-`--source`, `--target`, and `--incident-to`.
+`--from`, `--to`, and `--incident-to`.
 An incident selection can use `--direction in`, `out`, or `both`. These filters
 combine with AND. Canonical collection selection includes every current matching
 Bead, without a default filter for Issue status. It refuses Issue workflow filters, including `--all`, and
