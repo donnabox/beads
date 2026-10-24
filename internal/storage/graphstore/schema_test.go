@@ -112,8 +112,18 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 func TestInstalledIssueDependencyProjectionMapping(t *testing.T) {
 	const scope = "https://example.test/relationships/"
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "arbitrary"} {
-		if got, ok := nativeDependencyTypeURLForIssueType(scope, IssueTypeURL(scope), native); !ok || got != DependencyTypeURL(scope) {
+		if got, ok := nativeDependencyTypeURLForIssueType(scope, IssueTypeURL(scope), native); !ok || got != scope+"types/native-dependency/"+hex.EncodeToString([]byte(native)) {
 			t.Fatalf("native %q Type = %q, %t", native, got, ok)
+		}
+	}
+	concreteIssue, err := NativeIssueTypeURL(scope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, issueType := range []string{IssueTypeURL(scope), concreteIssue} {
+		blocks, ok := nativeDependencyTypeURLForIssueType(scope, issueType, types.DepBlocks)
+		if !ok || !isNativeDependencyLinkType(scope, issueType, blocks) || isNativeDependencyLinkType(scope, issueType, DependencyTypeURL(scope)) {
+			t.Fatalf("native concrete/family mapping differs for %q: %q %t", issueType, blocks, ok)
 		}
 	}
 	if _, ok := nativeDependencyTypeURLForIssueType(scope, scope+"types/uninstalled", types.DepBlocks); ok {

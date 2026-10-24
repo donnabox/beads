@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"errors"
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage"
@@ -34,10 +35,14 @@ func TestIssueDeleteSetPlanUsesOneBoundedGraphSnapshot(t *testing.T) {
 				len(flat.Links) != 1 || flat.Links[0].ID != f.links[0].ID || len(flat.Native.All) != 1 {
 				t.Fatalf("flat plan: %+v %v", flat, err)
 			}
+			wantIssues := []IssueRecord{f.targets[0], f.source}
+			sort.Slice(wantIssues, func(i, j int) bool { return wantIssues[i].ID < wantIssues[j].ID })
+			wantLinks := append([]LinkRecord(nil), f.links[:2]...)
+			sort.Slice(wantLinks, func(i, j int) bool { return wantLinks[i].ID < wantLinks[j].ID })
 			cascade, err := plan([]string{"beads/first"}, true)
-			if err != nil || len(cascade.Issues) != 2 || cascade.Issues[0].ID != f.targets[0].ID ||
-				cascade.Issues[1].ID != f.source.ID || len(cascade.Links) != 2 ||
-				cascade.Links[0].ID != f.links[0].ID || cascade.Links[1].ID != f.links[1].ID ||
+			if err != nil || len(cascade.Issues) != 2 || cascade.Issues[0].ID != wantIssues[0].ID ||
+				cascade.Issues[1].ID != wantIssues[1].ID || len(cascade.Links) != 2 ||
+				cascade.Links[0].ID != wantLinks[0].ID || cascade.Links[1].ID != wantLinks[1].ID ||
 				len(cascade.Native.All) != 2 {
 				t.Fatalf("cascade plan: %+v %v", cascade, err)
 			}
