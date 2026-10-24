@@ -291,6 +291,9 @@ func TestGraphPreviewMemoryPropertiesPatchLegacyAdmission(t *testing.T) {
 	})
 	jsonOutput, graphPreviewStructuredErrors = false, false
 	cmd := memoryPropertiesPatchCommand(t, "--patch=@-")
+	cmd.Use = "update"
+	parent := &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	updateCmd = cmd
 	probe := &memoryPropertiesPatchProbe{}
 	cmd.SetIn(probe)
