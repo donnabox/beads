@@ -165,7 +165,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			// the informational superseded-by Type, not native supersedes.
 			planBefore, workBefore := call("show", scope+"beads/plan"), call("show", scope+"beads/work")
 			for _, kind := range []struct{ selected, hint string }{
-				{"types/dependency", "native blocks Dependency requires two live Issues; use an informational Link Type for Memory endpoints: "},
+				{"blocks", "native blocks Dependency requires two live Issues; use an informational Link Type for Memory endpoints: "},
 				{"supersedes", "native supersedes Dependency requires two live Issues; use informational Link Type types/superseded-by for Memory succession: "},
 			} {
 				for _, endpoints := range [][2]string{{scope + "beads/plan", scope + "beads/work"}, {scope + "beads/work", scope + "beads/plan"}} {
