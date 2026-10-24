@@ -71,6 +71,50 @@ func canonicalCollectionTestPlan(t *testing.T, cmd *cobra.Command, links bool) (
 	return plan, canonicalCollectionFailure{renderer: renderer, jsonl: plan.jsonl}
 }
 
+func TestCanonicalCollectionAdmissionBeforeOpen(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+	}{
+		{"page size", []string{"--page-size", "0"}},
+		{"negative limit", []string{"--limit", "-1"}},
+		{"relative family", []string{"--conforms-to", "relative"}},
+		{"bad endpoint revision", []string{"--incident-to", "a@bogus"}},
+		{"duplicate positional incidence", []string{"a", "--incident-to", "b"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			args := append([]string{"--output-format", "json"}, tc.args...)
+			cmd, out, _ := canonicalCollectionTestCommand(t, true, args...)
+			err := runCanonicalCollection(cmd, true)
+			var exit *exitError
+			if !errors.As(err, &exit) || exit.Code != 2 || !strings.Contains(out.String(), `"code":"invalid_selector"`) || strings.Contains(out.String(), "graph_not_initialized") {
+				t.Fatalf("pre-store admission: err=%v output=%q", err, out.String())
+			}
+		})
+	}
+	t.Run("endpoint acquisition limit", func(t *testing.T) {
+		cmd, out, _ := canonicalCollectionTestCommand(t, true, "--output-format", "json")
+		options, _, err := canonicalOutputOptions(cmd)
+		if err != nil {
+			t.Fatal(err)
+		}
+		descriptor, err := canonicalCollectionDescriptor(true, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		renderer, err := clioutput.NewCollection(descriptor, options)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = canonicalCollectionRequestFailure(cmd, canonicalCollectionFailure{renderer: renderer},
+			&canonicalCollectionEndpointReadError{graphstore.ErrLimitExceeded})
+		var exit *exitError
+		if !errors.As(err, &exit) || exit.Code != 5 || !strings.Contains(out.String(), `"code":"capability_unavailable"`) || strings.Contains(out.String(), "invalid_selector") {
+			t.Fatalf("endpoint read limit: err=%v output=%q", err, out.String())
+		}
+	})
+}
+
 func canonicalCollectionRecord(id string) json.RawMessage {
 	return json.RawMessage(fmt.Sprintf(`{"id":%q,"type":%q,"revision":"r1","properties":{"body":"large","title":"title"},"metadata":{}}`, canonicalCollectionScope+"beads/"+id, canonicalCollectionScope+"types/note"))
 }
