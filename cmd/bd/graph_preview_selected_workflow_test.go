@@ -23,19 +23,25 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			for _, id := range []string{"i1", "i2", "isolated-issue"} {
-				call("create", id, "--id", id, "--type", "task")
+				call("create", id, "--graph-path", "beads/"+id, "--type", "task")
 			}
 			for _, id := range []string{"m1", "m2", "isolated-memory"} {
 				call("create", id, "--id", id, "--type", "types/memory")
 			}
-			for _, edge := range [][3]string{{"i1", "m1", "a"}, {"m1", "i2", "b"}, {"i2", "m2", "c"}, {"i1", "m1", "parallel"}, {"m1", "i1", "cycle"}} {
-				call("link", "create", edge[0], edge[1], "--id", edge[2], "--type", "types/references")
+			linkEndpoint := func(id string) string {
+				if id == "i1" || id == "i2" {
+					return scope + "beads/" + id // path-only Issue creation allocated a different public ID
+				}
+				return id
 			}
-			call("dep", "add", "i1", "i2")
-			call("dep", "add", "i2", "isolated-issue")
+			for _, edge := range [][3]string{{"i1", "m1", "a"}, {"m1", "i2", "b"}, {"i2", "m2", "c"}, {"i1", "m1", "parallel"}, {"m1", "i1", "cycle"}} {
+				call("link", "create", linkEndpoint(edge[0]), linkEndpoint(edge[1]), "--id", edge[2], "--type", "types/references")
+			}
+			call("dep", "add", scope+"beads/i1", scope+"beads/i2")
+			call("dep", "add", scope+"beads/i2", scope+"beads/isolated-issue")
 			pin := graphMixedResult[graphstore.Record](t, call("show", "m2"))
 			call("link", "create", "m1", "m2", "--id", "pin", "--type", "types/references", "--target-revision", pin.Revision)
-			call("update", "m2", "--properties", `{"title":"New current title"}`)
+			call("update", "beads/m2", "--properties", `{"title":"New current title"}`)
 			implicit := call("graph", "i1")
 			explicit := call("graph", "i1", "--link-type", "Dependency")
 			if implicit != explicit {

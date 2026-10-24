@@ -39,8 +39,8 @@ func runGraphPreviewAssign(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		issue := *result.Issue.Properties
-		issue.ID = graphPreviewDisplayLocalURL(result.Issue.ID)
-		touched = issue.ID
+		issue.ID = result.Issue.Properties.ID
+		touched = result.Issue.ID
 		if assignee == "" {
 			return &issue, fmt.Sprintf("%s Unassigned %s\n", ui.RenderPass("✓"), formatFeedbackID(issue.ID, issue.Title)), nil
 		}
@@ -82,8 +82,8 @@ func runGraphPreviewPriority(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		issue := *result.Issue.Properties
-		issue.ID = graphPreviewDisplayLocalURL(result.Issue.ID)
-		touched = issue.ID
+		issue.ID = result.Issue.Properties.ID
+		touched = result.Issue.ID
 		return &issue, fmt.Sprintf("%s Set priority of %s to P%d\n", ui.RenderPass("✓"), formatFeedbackID(issue.ID, issue.Title), priority), nil
 	}, func(result any, human string) error {
 		if jsonOutput {
@@ -122,8 +122,8 @@ func runGraphPreviewNote(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		issue := *result.Issue.Properties
-		issue.ID = graphPreviewDisplayLocalURL(result.Issue.ID)
-		touched = issue.ID
+		issue.ID = result.Issue.Properties.ID
+		touched = result.Issue.ID
 		return &issue, fmt.Sprintf("%s Note added to %s\n", ui.RenderPass("✓"), formatFeedbackID(issue.ID, issue.Title)), nil
 	}, func(result any, human string) error {
 		if jsonOutput {

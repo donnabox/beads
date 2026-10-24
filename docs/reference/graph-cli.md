@@ -52,9 +52,11 @@ candidate in [PR130](https://github.com/donnabox/beads/pull/130). Check the
 integration and qualification status before choosing a build.
 
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
-is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
-still needs an explicit `links/ID` where a command accepts either kind of
-resource. The shorthand does not change stored IDs or HTTP URLs. Omit `--id`
+is under `beads/`. In read and Link-pair arguments, `policy` can abbreviate
+`beads/policy`; a Link still needs an explicit `links/ID` where a command
+accepts either kind of resource. Some mixed writes require the full public ID
+or canonical Scope URL, as noted below. The shorthand does not change stored
+IDs or HTTP URLs. Omit `--id`
 when creating a Bead to allocate an ID, or supply one to use it exactly.
 `bd create` refuses a duplicate ID; `bd remember --id ID` updates an existing
 Memory at that ID unless `--create-only` is supplied. The examples below use
@@ -88,8 +90,15 @@ property, retyping and refusal details for the Preview 3 candidate.
 When an Issue is created without `--id`, its canonical `beads/` ID uses the
 Issue ID allocated under the workspace prefix set by `bd init --prefix`. For
 example, a generated `mp-53` Issue is `beads/mp-53` locally. An explicitly
-supplied `--id` remains the requested canonical path. Generated Memory IDs
-remain random `beads/` paths; generated Link IDs remain under `links/`.
+supplied `--id` is the literal native Issue ID, even if it contains slashes;
+its ordinary preview path is `beads/` followed by that whole ID. Use the
+separate Preview 3 `--graph-path beads/PATH` option to choose only a graph path
+and let the native Issue writer allocate its ID. Generated Memory IDs remain
+random `beads/` paths; generated Link IDs remain under `links/`.
+Current `bd show` and `bd link show` resolve local public IDs as opaque within
+the Scope, including slash-bearing IDs. A canonical same-Scope URL selects an
+exact graph path. Other write and historical routes retain their documented
+selector limits.
 
 ```sh
 bd create 'Move the release branch' --id work --type task
@@ -389,9 +398,9 @@ body and applies them to that Memory. On creation, these flags form its initial
 metadata object.
 
 ```sh
-bd update policy --metadata '{"reviewed":true}'
-bd update policy --unset-metadata team
-bd update policy --replace-metadata '{}'
+bd update beads/policy --metadata '{"reviewed":true}'
+bd update beads/policy --unset-metadata team
+bd update beads/policy --replace-metadata '{}'
 bd update links/policy-work --replace-properties '{}'
 ```
 
@@ -405,10 +414,17 @@ fallback, including at a terminal. `--readonly` does not write the marker.
 
 ```sh
 bd update work --title 'Move the release branch after review'
-bd update policy --properties '{"body":"Land reviewed changes on integration."}'
+bd update beads/policy --properties '{"body":"Land reviewed changes on integration."}'
 bd update work --properties '{"priority":1,"description":"Review the release branch."}'
 bd update work --patch '[{"op":"replace","path":"/description","value":"Reviewed."}]'
 ```
+
+`bd update`, `bd edit` and Issue comment writes resolve a mixed local selector
+before invoking their checked writer. They accept an exact public ID, such as
+Issue `work` or Memory `beads/policy`, and a canonical same-Scope URL for an
+exact graph path. They refuse compatibility suffix shorthand, such as `policy`
+for Memory `beads/policy`, because its meaning could change before the write
+transaction. Reads and Link-pair writes retain their separate selector rules.
 
 `bd close ID...` and `bd reopen ID...` accept one or more local Issues. A
 single `--reason` applies to every close target, repeated reasons map to IDs
@@ -446,6 +462,10 @@ bd reopen work review --reason 'Follow-up needed'
 storage; `--force` applies it. An Issue set can also be selected with multiple
 IDs or `--from-file PATH`. `--cascade` includes dependent Issues, while
 `--dry-run` keeps a Memory or Issue request read-only even beside `--force`.
+Each local ID is an opaque public ID, including a spelling such as
+`beads/work`; a same-Scope URL selects an exact graph path. Named Issue
+selectors are resolved in the checked deletion transaction, including lines
+read from `--from-file`.
 Every named Issue must exist before the set changes. Dotted native Issue IDs
 currently refuse set deletion while citation rewriting is being qualified.
 `bd forget ID` applies Memory deletion
@@ -576,7 +596,7 @@ bd link policy work --type types/references \
 bd links policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
-bd unlink policy-work
+bd link delete --force links/policy-work
 ```
 
 `bd links ID` lists current incident Links with Type first and in-Scope IDs
@@ -588,6 +608,11 @@ Conformance claims. The selected nominal subtypes inherit those rules.
 Changing an owned Link changes its owner; its target does not change merely
 because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for constraints and exact Evaluation subject rules.
+
+The positional `bd link` write treats local spellings, including `beads/PATH`,
+as public IDs. A full same-Scope URL selects an exact graph path. Current
+`bd show` and `bd link show` reads use the same public-ID rule for local
+spellings. `bd link delete` selects a Link by its Link ID.
 
 Link updates and removal accept the current Link by default; `--if-revision
 TOKEN` rejects a stale Link. Removal retains the identity and prior snapshots.
@@ -603,16 +628,18 @@ the opposite order. Add `--id links/ID` to `bd dep add` when the Link needs a
 chosen local identity; repeating the same pair with that ID or no ID is a
 no-op, while a different ID refuses. `bd dep remove BLOCKED BLOCKER` (also
 `bd dep rm`) removes the blocking pair through the same Issue writer as
-canonical `bd unlink links/ID`. An absent pair reports `not_found` without
-adding Issue History or a Link tombstone; an actual removal records one native
-dependency event and source version. The target Issue stays unchanged.
-Bare native Issue IDs are resolved within the same removal transaction when
-their graph paths differ. A bare ID that also names a different Bead refuses
-as ambiguous; use `beads/PATH` or its full canonical URL to select explicitly.
-`bd unlink` continues to require an exact Link ID and revision guard for a
-blocking Dependency. `bd dep relate` and `bd dep unrelate` are outside this
-graph preview because the ordinary command owns two directed relationships,
-not one Link.
+`bd link delete --force links/ID` by Link ID. An absent pair reports
+`not_found` without adding Issue History or a Link tombstone; an actual
+removal records one native dependency event and source version. The target
+Issue stays unchanged.
+Local public Issue IDs are resolved within the same removal transaction when
+their graph paths differ. The exact public ID wins over a different Bead at
+the compatibility candidate path; use a full canonical Scope URL to select
+that graph path instead. Ambiguous abbreviations refuse without a change.
+`bd link delete` selects a blocking Dependency by Link ID; an explicit
+`--if-revision` guards its observed Link revision. `bd dep relate` and
+`bd dep unrelate` are outside this graph preview because the ordinary command
+owns two directed relationships, not one Link.
 
 ## Claim and release Issue work
 
@@ -707,7 +734,7 @@ Structured graph records carry an `attribution` object only when a principal
 was recorded. This applies to reads such as `bd show`, `bd compare`,
 `bd memories --format records-json` and `bd list --format records-json`, and to
 mutation results from `bd remember`, `bd create`, `bd update`, `bd link`,
-`bd unlink` and `bd delete`, including nested replaced-source records.
+`bd link delete` and `bd delete`, including nested replaced-source records.
 Its `basis` is `writer-supplied` when that version's writer
 supplied the actor, or `unknown` when the relationship to the version cannot
 be established. `basis` describes the source of the value; it does not assert

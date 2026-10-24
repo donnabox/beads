@@ -943,7 +943,7 @@ func TestLegacyImportCommentFeedPersistence(t *testing.T) {
 			}
 			byText, ids := map[string]*types.Comment{}, map[string]bool{}
 			for _, comment := range feed {
-				if comment.ID == "" || ids[comment.ID] || comment.IssueID != "beads/"+issue.ID || comment.Author != "author" || comment.CreatedAt.IsZero() {
+				if comment.ID == "" || ids[comment.ID] || comment.IssueID != issue.ID || comment.Author != "author" || comment.CreatedAt.IsZero() {
 					t.Fatalf("invalid normalized comment: %+v", comment)
 				}
 				ids[comment.ID] = true

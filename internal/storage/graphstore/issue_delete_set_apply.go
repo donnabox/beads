@@ -15,13 +15,15 @@ import (
 // IssueDeleteSetRequest is an opt-in storage composition, not the CLI delete
 // policy. Every named path is resolved and checked in the deleting transaction.
 type IssueDeleteSetRequest struct {
-	Paths             []string
-	ExpectedRevisions map[string]string
-	Unconditional     bool
-	Cascade           bool
-	Force             bool
-	Preview           bool
-	Actor             string
+	Paths                    []string
+	Selectors                []IssueSelector
+	ExpectedRevisions        map[string]string
+	ExpectedSelectorRevision string
+	Unconditional            bool
+	Cascade                  bool
+	Force                    bool
+	Preview                  bool
+	Actor                    string
 }
 
 type IssueDeleteSetResult struct {
@@ -38,6 +40,28 @@ type IssueDeleteSetResult struct {
 func (s *Store) DeleteIssueSetWithIncidentLinks(ctx context.Context, req IssueDeleteSetRequest) (IssueDeleteSetResult, error) {
 	if !utf8.ValidString(req.Actor) {
 		return IssueDeleteSetResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
+	}
+	if len(req.Paths) != 0 && len(req.Selectors) != 0 {
+		return IssueDeleteSetResult{}, fmt.Errorf("%w: delete accepts paths or public Issue selectors, not both", storage.ErrValidation)
+	}
+	if len(req.Selectors) != 0 && len(req.ExpectedRevisions) != 0 {
+		return IssueDeleteSetResult{}, fmt.Errorf("%w: public Issue selectors require a selector revision guard", storage.ErrValidation)
+	}
+	if len(req.Selectors) > PreviewSnapshotLimit {
+		return IssueDeleteSetResult{}, fmt.Errorf("%w: delete request exceeds %d Issue selectors", ErrLimitExceeded, PreviewSnapshotLimit)
+	}
+	for _, selector := range req.Selectors {
+		if err := validateIssueSelector(selector); err != nil {
+			return IssueDeleteSetResult{}, err
+		}
+	}
+	if req.ExpectedSelectorRevision != "" {
+		if len(req.Selectors) != 1 {
+			return IssueDeleteSetResult{}, fmt.Errorf("%w: revision guard requires one public Issue selector", storage.ErrValidation)
+		}
+		if err := validateVersionToken(req.ExpectedSelectorRevision); err != nil {
+			return IssueDeleteSetResult{}, err
+		}
 	}
 	namedPaths := make(map[string]bool, len(req.Paths))
 	for _, path := range req.Paths {
@@ -57,26 +81,48 @@ func (s *Store) DeleteIssueSetWithIncidentLinks(ctx context.Context, req IssueDe
 		transact = func(ctx context.Context, fn func(*sql.Tx) error) error { return s.withTx(ctx, false, fn) }
 	}
 	err := transact(ctx, func(tx *sql.Tx) error {
-		plan, err := s.planIssueDeleteSetInTx(ctx, tx, req.Paths, req.Cascade)
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		paths := req.Paths
+		expected := req.ExpectedRevisions
+		if len(req.Selectors) != 0 {
+			paths = make([]string, 0, len(req.Selectors))
+			seen := make(map[string]bool, len(req.Selectors))
+			for _, selector := range req.Selectors {
+				path, _, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+				if err != nil {
+					return err
+				}
+				if !seen[path] {
+					seen[path] = true
+					paths = append(paths, path)
+				}
+			}
+			if req.ExpectedSelectorRevision != "" {
+				expected = map[string]string{paths[0]: req.ExpectedSelectorRevision}
+			}
+		}
+		plan, err := s.planIssueDeleteSetInTx(ctx, tx, paths, req.Cascade)
 		if err != nil {
 			return err
 		}
 		byPath := make(map[string]IssueRecord, len(plan.Issues))
-		namedIDs := make([]string, 0, len(req.Paths))
-		namedSet := make(map[string]bool, len(req.Paths))
+		namedIDs := make([]string, 0, len(paths))
+		namedSet := make(map[string]bool, len(paths))
 		for _, issue := range plan.Issues {
 			byPath[strings.TrimPrefix(issue.ID, s.ScopeURL())] = issue
 			if strings.Contains(issue.Properties.ID, ".") {
 				return fmt.Errorf("%w: dotted Issue ID citation rewrite is not qualified for composed deletion", ErrCapabilityUnavailable)
 			}
 		}
-		for _, path := range req.Paths {
+		for _, path := range paths {
 			if namedSet[path] {
 				continue
 			}
 			namedSet[path] = true
 			issue := byPath[path]
-			if err := checkRevisionGuard(req.ExpectedRevisions[path], req.Unconditional, issue.Revision, !req.Preview, "Issue"); err != nil {
+			if err := checkRevisionGuard(expected[path], req.Unconditional, issue.Revision, !req.Preview, "Issue"); err != nil {
 				return err
 			}
 			namedIDs = append(namedIDs, issue.Properties.ID)

@@ -30,24 +30,26 @@ func TestGraphPreviewBlockedParentWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			call(args...)
-			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Parent", "--id", "beads/selected-parent", "--type", "epic"))
-			child := graphMixedResult[graphstore.IssueRecord](t, call("create", "Child", "--parent", "beads/selected-parent"))
+			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Parent", "--graph-path", "beads/selected-parent", "--type", "epic"))
+			child := graphMixedResult[graphstore.IssueRecord](t, call("create", "Child", "--parent", parent.ID))
 			blocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Prerequisite"))
 			unrelated := graphMixedResult[graphstore.IssueRecord](t, call("create", "Unrelated"))
 			call("dep", "add", child.ID, blocker.ID)
 			call("dep", "add", unrelated.ID, blocker.ID)
-			for _, selector := range []string{parent.Properties.ID, "beads/selected-parent", parent.ID} {
+			for _, selector := range []string{parent.Properties.ID, parent.ID} {
 				got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--parent", selector))
 				if len(got) != 1 || got[0].Issue.ID != child.ID {
 					t.Fatalf("blocked --parent %q selected %+v", selector, got)
 				}
 			}
-			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--parent", "beads/missing")); len(got) != 0 {
+			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--parent", scope+"beads/missing")); len(got) != 0 {
 				t.Fatalf("missing explicit parent selected %+v", got)
 			}
-			call("remember", "Collision", "--id", "beads/"+parent.Properties.ID)
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "blocked", "--parent", parent.Properties.ID, "--json")
-			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--parent", "beads/selected-parent")); len(got) != 1 || got[0].Issue.ID != child.ID {
+			call("remember", "Distinct public ID", "--id", "beads/"+parent.Properties.ID)
+			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--parent", parent.Properties.ID)); len(got) != 1 || got[0].Issue.ID != child.ID {
+				t.Fatalf("Memory path shorthand displaced the native parent ID: %+v", got)
+			}
+			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--parent", parent.ID)); len(got) != 1 || got[0].Issue.ID != child.ID {
 				t.Fatalf("explicit parent stopped resolving after bare-ID collision: %+v", got)
 			}
 		})

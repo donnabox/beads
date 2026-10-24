@@ -14,15 +14,16 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
-			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/discovery/")
+			const scope = "https://example.invalid/discovery/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			call("create", "Authentication work", "--id", "beads/work", "--priority", "1", "--labels", "backend", "--metadata", `{"team":"backend"}`)
-			call("create", "Other work", "--id", "beads/other", "--priority", "2")
-			call("close", "beads/other")
-			call("create", "Child work", "--id", "beads/work.child", "--priority", "3", "--type", "bug")
+			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Authentication work", "--graph-path", "beads/work", "--priority", "1", "--labels", "backend", "--metadata", `{"team":"backend"}`))
+			otherIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other work", "--graph-path", "beads/other", "--priority", "2"))
+			call("close", otherIssue.ID)
+			call("create", "Child work", "--graph-path", "beads/work.child", "--priority", "3", "--type", "bug")
 
 			var found []*types.IssueWithCounts
 			if out := call("search", "Authentication"); json.Unmarshal([]byte(out), &found) != nil || len(found) != 1 || found[0].ID != "beads/work" || found[0].Title != "Authentication work" {
@@ -65,14 +66,14 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 				args []string
 				want int
 			}{
-				{"canonical ID set", []string{"--id", "beads/work,beads/other"}, 2},
-				{"bare ID", []string{"--id", "work"}, 1},
-				{"parent dotted fallback", []string{"--parent", "beads/work"}, 1},
+				{"public ID set", []string{"--id", workIssue.Properties.ID + "," + otherIssue.Properties.ID}, 2},
+				{"public ID", []string{"--id", workIssue.Properties.ID}, 1},
+				{"parent dotted fallback", []string{"--parent", scope + "beads/work"}, 1},
 				{"edge-less dotted child has no parent", []string{"--no-parent"}, 3},
 				{"exclude status", []string{"--exclude-status", "closed"}, 2},
 				{"exclude type", []string{"--exclude-type", "bug"}, 2},
-				{"ID and exclusion", []string{"--id", "beads/work,beads/other", "--exclude-status", "closed"}, 1},
-				{"parent and exclusion", []string{"--parent", "beads/work", "--exclude-type", "bug"}, 0},
+				{"ID and exclusion", []string{"--id", workIssue.Properties.ID + "," + otherIssue.Properties.ID, "--exclude-status", "closed"}, 1},
+				{"parent and exclusion", []string{"--parent", scope + "beads/work", "--exclude-type", "bug"}, 0},
 			} {
 				out := call(append([]string{"count"}, tc.args...)...)
 				if json.Unmarshal([]byte(out), &count) != nil || count.Count != tc.want {
@@ -100,13 +101,18 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "count", "--include-infra", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--parent", "work", "--no-parent", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--exclude-status", "bogus", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--id", "links/wrong-kind", "--json")
+			var opaqueMissing struct {
+				Count int `json:"count"`
+			}
+			if err := json.Unmarshal([]byte(graphPolicyCLI(t, bd, work, home, nil, "", "count", "--id", "links/wrong-kind", "--json")), &opaqueMissing); err != nil || opaqueMissing.Count != 0 {
+				t.Fatalf("opaque, missing Issue ID count = %+v, %v", opaqueMissing, err)
+			}
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--by-status", "--by-type", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "query", "parent!=beads/work", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "query", "type=task", "--offset", "1", "--sort", "priority", "--json")
 
-			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--id", "beads/custom-path"))
-			call("create", "Dotted child", "--id", "beads/custom-path.child")
+			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path"))
+			call("create", "Dotted child", "--graph-path", "beads/custom-path.child")
 			if custom.Properties.ID == "custom-path" {
 				t.Fatal("fixture needs a native ID distinct from its graph path")
 			}
@@ -117,9 +123,13 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 				t.Fatalf("count native parent ID: %s", out)
 			}
 			call("remember", "Colliding Memory", "--id", "beads/"+custom.Properties.ID)
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "count", "--id", custom.Properties.ID, "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "count", "--parent", custom.Properties.ID, "--json")
-			if out := call("count", "--id", "beads/custom-path"); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+			if out := call("count", "--id", custom.Properties.ID); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+				t.Fatalf("Memory path shorthand displaced native Issue count: %s", out)
+			}
+			if out := call("count", "--parent", custom.Properties.ID); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+				t.Fatalf("Memory path shorthand displaced native parent count: %s", out)
+			}
+			if out := call("count", "--id", scope+"beads/custom-path"); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
 				t.Fatalf("explicit count path after native-ID collision: %s", out)
 			}
 		})

@@ -34,9 +34,12 @@ func runGraphPreviewEdit(cmd *cobra.Command, args []string) error {
 	if changed > 1 {
 		return graphFailure("invalid_properties", "edit accepts one Issue field at a time", 2)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
-	if err != nil || !strings.HasPrefix(path, "beads/") {
-		return graphFailure("invalid_selector", "edit requires an Issue Bead ID or beads/PATH", 2)
+	path, err := graphPreviewResolvedWritePath(args[0])
+	if err != nil {
+		return err
+	}
+	if !strings.HasPrefix(path, "beads/") {
+		return graphFailure("invalid_selector", "edit requires an Issue Bead ID or canonical Bead URL", 2)
 	}
 	if field == "acceptance" {
 		field = "acceptance_criteria"
@@ -153,6 +156,6 @@ func runGraphPreviewEdit(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	saved = true
-	SetLastTouchedID(path)
+	graphPreviewStoreLastTouchedPath(path)
 	return nil
 }

@@ -357,7 +357,7 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 		return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		graphPreviewStoreLastTouchedPath(path)
 	}
 	return err
 }

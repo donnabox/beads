@@ -12,9 +12,8 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 )
 
-// The ordinary interactive last-touched workflow must use the graph Issue's
-// canonical identity. Its native backing ID is not a graph selector, and a
-// Memory read must not redirect a later no-ID Issue write.
+// The ordinary interactive last-touched workflow stores an unambiguous
+// canonical Issue URL. A Memory read must not redirect a later no-ID write.
 func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
@@ -50,29 +49,29 @@ func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector", "close", "--json")
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector",
 				"update", "--priority", "0", "--json")
-			call("create", "First", "--id", "first", "--priority", "2")
-			marker("beads/first")
-			call("create", "Second", "--id", "second", "--priority", "1")
-			marker("beads/second")
+			call("create", "First", "--graph-path", "beads/first", "--priority", "2")
+			marker(scope + "beads/first")
+			call("create", "Second", "--graph-path", "beads/second", "--priority", "1")
+			marker(scope + "beads/second")
 			call("remember", "A note", "--id", "memory")
 			call("show", "memory")
-			marker("beads/second")
+			marker(scope + "beads/second")
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector",
 				"update", "--properties", `{"title":"Wrong","body":"Target"}`, "--json")
-			marker("beads/second")
-			call("show", "first")
-			marker("beads/first")
+			marker(scope + "beads/second")
+			call("show", scope+"beads/first")
+			marker(scope + "beads/first")
 			updated := graphMixedResult[graphstore.IssueMutationResult](t, fallback("update", "--priority", "0"))
 			if !updated.Changed || updated.Issue.ID != scope+"beads/first" || updated.Issue.Properties.Priority != 0 {
 				t.Fatalf("no-ID update missed the last shown Issue: %+v", updated)
 			}
-			marker("beads/first")
-			call("show", "second")
+			marker(scope + "beads/first")
+			call("show", scope+"beads/second")
 			closed := graphMixedResult[graphstore.IssueMutationResult](t, fallback("close", "--reason", "done"))
 			if !closed.Changed || closed.Issue.ID != scope+"beads/second" || closed.Issue.Properties.Status != types.StatusClosed {
 				t.Fatalf("no-ID close missed the last shown Issue: %+v", closed)
 			}
-			marker("beads/second")
+			marker(scope + "beads/second")
 			claimed := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--claim", "--actor", "worker"))
 			if len(claimed) != 1 || claimed[0].ID != scope+"beads/first" {
 				t.Fatalf("ready claim selected unexpected work: %+v", claimed)
@@ -82,7 +81,7 @@ func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 			if !closed.Changed || closed.Issue.ID != scope+"beads/first" {
 				t.Fatalf("no-ID close missed the claimed Issue: %+v", closed)
 			}
-			marker("beads/first")
+			marker(scope + "beads/first")
 		})
 	}
 }

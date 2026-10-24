@@ -45,41 +45,41 @@ func TestGraphPreviewIssueDescriptionSources(t *testing.T) {
 			}
 			file := filepath.Join(work, "description.md")
 			writeFile(t, file, []byte("From file — 雪\n"))
-			created := graphMixedResult[graphstore.IssueRecord](t, run(nil, "create", "File source", "--id", "beads/file", "--body-file", file))
+			created := graphMixedResult[graphstore.IssueRecord](t, run(nil, "create", "File source", "--graph-path", "beads/file", "--body-file", file))
 			if created.Properties.Description != "From file — 雪\n" {
 				t.Fatal("create lost file contents")
 			}
-			stdin := graphMixedResult[graphstore.IssueRecord](t, run([]byte("From stdin\r\n"), "create", "Stdin source", "--id", "beads/stdin", "--description=-"))
+			stdin := graphMixedResult[graphstore.IssueRecord](t, run([]byte("From stdin\r\n"), "create", "Stdin source", "--graph-path", "beads/stdin", "--description=-"))
 			if stdin.Properties.Description != "From stdin\r\n" {
 				t.Fatal("create changed stdin contents")
 			}
-			refuse(2, []byte("should not be consumed"), "create", "Duplicate source", "--id", "beads/duplicate", "--properties", `{"description":"Property"}`, "--stdin")
-			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, nil, "update", "beads/file", "--properties", `{"description":"Property"}`, "--stdin", "--if-revision", created.Revision, "--json")
+			refuse(2, []byte("should not be consumed"), "create", "Duplicate source", "--graph-path", "beads/duplicate", "--properties", `{"description":"Property"}`, "--stdin")
+			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, nil, "update", scope+"beads/file", "--properties", `{"description":"Property"}`, "--stdin", "--if-revision", created.Revision, "--json")
 			if code != 2 || stdout != "" || !strings.Contains(stderr, "supplied by both --properties and a shorthand flag") {
 				t.Fatalf("duplicate update description source: code=%d stdout=%q stderr=%q", code, stdout, stderr)
 			}
-			refuse(2, []byte{}, "create", "Empty source", "--id", "beads/empty", "--stdin")
-			refuse(2, []byte{}, "update", "beads/file", "--stdin")
-			if got := graphMixedResult[graphstore.IssueRecord](t, run(nil, "show", "beads/file", "--format", "graph-json")); got.Revision != created.Revision || got.Properties.Description != created.Properties.Description {
+			refuse(2, []byte{}, "create", "Empty source", "--graph-path", "beads/empty", "--stdin")
+			refuse(2, []byte{}, "update", scope+"beads/file", "--stdin")
+			if got := graphMixedResult[graphstore.IssueRecord](t, run(nil, "show", scope+"beads/file", "--format", "graph-json")); got.Revision != created.Revision || got.Properties.Description != created.Properties.Description {
 				t.Fatal("empty-input refusal changed Issue")
 			}
-			fromAlias := graphMixedResult[graphstore.IssueMutationResult](t, run([]byte("Replacement"), "update", "beads/file", "--body=-", "--if-revision", created.Revision))
+			fromAlias := graphMixedResult[graphstore.IssueMutationResult](t, run([]byte("Replacement"), "update", scope+"beads/file", "--body=-", "--if-revision", created.Revision))
 			if !fromAlias.Changed || fromAlias.Issue.Properties.Description != "Replacement" {
 				t.Fatal("update lost stdin alias")
 			}
 			writeFile(t, file, []byte("Second file"))
-			fromFile := graphMixedResult[graphstore.IssueMutationResult](t, run(nil, "update", "beads/file", "--description-file", file, "--if-revision", fromAlias.Issue.Revision))
+			fromFile := graphMixedResult[graphstore.IssueMutationResult](t, run(nil, "update", scope+"beads/file", "--description-file", file, "--if-revision", fromAlias.Issue.Revision))
 			if !fromFile.Changed || fromFile.Issue.Properties.Description != "Second file" {
 				t.Fatal("update lost description-file alias")
 			}
-			cleared := graphMixedResult[graphstore.IssueMutationResult](t, run([]byte{}, "update", "beads/file", "--stdin", "--allow-empty-description", "--if-revision", fromFile.Issue.Revision))
+			cleared := graphMixedResult[graphstore.IssueMutationResult](t, run([]byte{}, "update", scope+"beads/file", "--stdin", "--allow-empty-description", "--if-revision", fromFile.Issue.Revision))
 			if !cleared.Changed || cleared.Issue.Properties.Description != "" || cleared.Issue.Revision == fromFile.Issue.Revision {
 				t.Fatal("explicit empty replacement did not create a revision")
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, run(nil, "show", "beads/stdin", "--format", "graph-json")); got.Properties.Description != stdin.Properties.Description {
+			if got := graphMixedResult[graphstore.IssueRecord](t, run(nil, "show", scope+"beads/stdin", "--format", "graph-json")); got.Properties.Description != stdin.Properties.Description {
 				t.Fatal("other Issue changed")
 			}
-			if !strings.Contains(run(nil, "show", "beads/file"), "File source") {
+			if !strings.Contains(run(nil, "show", scope+"beads/file"), "File source") {
 				t.Fatal("Issue no longer visible after input edits")
 			}
 		})
@@ -125,7 +125,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			}
 			call(args...)
 			memory := call("remember", "Context", "--id", "beads/context", "--title", "Context")
-			initial := graphMixedResult[graphstore.IssueRecord](t, call("create", "Authored", "--id", "beads/work", "--design", "Design — 雪", "--acceptance", "Done\r\n", "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ", "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z", "--actor", "author"))
+			initial := graphMixedResult[graphstore.IssueRecord](t, call("create", "Authored", "--graph-path", "beads/work", "--design", "Design — 雪", "--acceptance", "Done\r\n", "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ", "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z", "--actor", "author"))
 			p := initial.Properties
 			if p.Design != "Design — 雪" || p.AcceptanceCriteria != "Done\r\n" || p.Assignee != "author" || p.EstimatedMinutes == nil || *p.EstimatedMinutes != 0 || p.ExternalRef == nil || *p.ExternalRef != " tracker #1 " || p.SpecID != " spec " || p.Notes != " Initial\r\n雪 " || p.StartedAt != nil || p.LeaseExpiresAt != nil || p.DueAt == nil || !p.DueAt.Equal(past) {
 				t.Fatalf("initial fields/presence/lease: %+v", p)
@@ -137,12 +137,12 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			selected(true, "--due-after=1999-01-01T00:00:00Z", "--due-before=2001-01-01T00:00:00Z", "--overdue")
 			selected(false, "--due-before=2000-01-01T00:00:00Z")
 			selected(false, "--due-after=2000-01-01T00:00:00Z")
-			target := call("create", "Gate", "--id", "beads/gate")
-			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
-			info := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
-			current := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
+			target := call("create", "Gate", "--graph-path", "beads/gate")
+			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
+			info := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
+			current := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			before := current
-			edit := []string{"update", "beads/work", "--estimate=45", "--external-ref=next", "--spec-id=next spec", "--due=2100-01-01T00:00:00Z", "--design=Revised", "--acceptance=Accepted", "--append-notes=Progress", "--if-revision", current.Revision, "--actor", "author"}
+			edit := []string{"update", scope + "beads/work", "--estimate=45", "--external-ref=next", "--spec-id=next spec", "--due=2100-01-01T00:00:00Z", "--design=Revised", "--acceptance=Accepted", "--append-notes=Progress", "--if-revision", current.Revision, "--actor", "author"}
 			changed := graphMixedResult[graphstore.IssueMutationResult](t, call(edit...))
 			current = changed.Issue
 			if !changed.Changed || current.Revision == before.Revision || !reflect.DeepEqual(current.Owned, before.Owned) || *current.Properties.EstimatedMinutes != 45 || *current.Properties.ExternalRef != "next" || current.Properties.SpecID != "next spec" || current.Properties.Design != "Revised" || current.Properties.AcceptanceCriteria != "Accepted" || current.Properties.Notes != initial.Properties.Notes+"\nProgress" || current.Properties.DueAt == nil || !current.Properties.DueAt.Equal(future) {
@@ -156,7 +156,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			selected(true, "--due-after=2099-01-01T00:00:00Z", "--due-before=2101-01-01T00:00:00Z")
 			selected(false, "--overdue")
 			state := graphMemoryReadSnapshot(t, work)
-			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--estimate=45", "--external-ref=next", "--spec-id=next spec", "--due=2100-01-01T00:00:00Z", "--if-revision", current.Revision))
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--estimate=45", "--external-ref=next", "--spec-id=next spec", "--due=2100-01-01T00:00:00Z", "--if-revision", current.Revision))
 			if noop.Changed || !reflect.DeepEqual(noop.Issue, current) || !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("authoring noop mutated complete state")
 			}
@@ -165,10 +165,10 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 				code string
 				args []string
 			}{
-				{"invalid_properties", []string{"update", "beads/work", "--estimate=-1"}},
-				{"notes_overwrite_refused", []string{"update", "beads/work", "--notes=Replace"}},
-				{"capability_unavailable", []string{"update", "beads/work", "--estimate=1", "--claim"}},
-				{"permission_denied", []string{"update", "beads/work", "--spec-id=No", "--readonly"}},
+				{"invalid_properties", []string{"update", scope + "beads/work", "--estimate=-1"}},
+				{"notes_overwrite_refused", []string{"update", scope + "beads/work", "--notes=Replace"}},
+				{"capability_unavailable", []string{"update", scope + "beads/work", "--estimate=1", "--claim"}},
+				{"permission_denied", []string{"update", scope + "beads/work", "--spec-id=No", "--readonly"}},
 			} {
 				graphPolicyCLI(t, bd, work, home, nil, refusal.code, append(refusal.args, "--json")...)
 			}
@@ -176,7 +176,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 				t.Fatal("refusal mutated complete state")
 			}
 			before = current
-			cleared := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--estimate=0", "--external-ref=", "--spec-id=", "--due=", "--if-revision", current.Revision))
+			cleared := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--estimate=0", "--external-ref=", "--spec-id=", "--due=", "--if-revision", current.Revision))
 			current = cleared.Issue
 			if !cleared.Changed || current.Properties.EstimatedMinutes == nil || *current.Properties.EstimatedMinutes != 0 || current.Properties.ExternalRef != nil || current.Properties.SpecID != "" || current.Properties.Notes != before.Properties.Notes || current.Properties.DueAt != nil {
 				t.Fatal("nullable clear/zero or notes preservation lost")
@@ -187,11 +187,11 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			selected(false, "--due-after=1999-01-01T00:00:00Z")
 			selected(false, "--overdue")
 			state = graphMemoryReadSnapshot(t, work)
-			clearAgain := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--due=", "--if-revision", current.Revision))
+			clearAgain := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--due=", "--if-revision", current.Revision))
 			if clearAgain.Changed || !reflect.DeepEqual(clearAgain.Issue, current) || !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("repeated due clear mutated complete state")
 			}
-			if call("show", "beads/context") != memory || call("show", "beads/gate", "--format", "graph-json") != target {
+			if call("show", scope+"beads/context") != memory || call("show", scope+"beads/gate", "--format", "graph-json") != target {
 				t.Fatal("authoring changed neighboring Bead")
 			}
 			if got := graphMixedResult[graphstore.LinkRecord](t, call("show", dep.Link.ID)); !reflect.DeepEqual(got, dep.Link) {
@@ -209,7 +209,8 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			work, home := t.TempDir(), t.TempDir()
-			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/deferral/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			const scope = "https://example.invalid/deferral/"
+			args := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
 				if port == "" {
@@ -226,17 +227,17 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
-			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "work"))
-			claimed := graphMixedResult[graphstore.IssueRecord](t, call("create", "Claimed", "--id", "claimed"))
-			claimedState := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "claimed", "--claim", "--actor", "operator"))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work"))
+			claimed := graphMixedResult[graphstore.IssueRecord](t, call("create", "Claimed", "--graph-path", "beads/claimed"))
+			claimedState := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/claimed", "--claim", "--actor", "operator"))
 			if !claimedState.Changed {
 				t.Fatal("claim setup did not change Issue")
 			}
-			claimedDeferred := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "claimed"))
+			claimedDeferred := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", scope+"beads/claimed"))
 			if !claimedDeferred.Changed || claimedDeferred.Issue.Properties.Assignee != "operator" || claimedDeferred.Issue.Revision == claimed.Revision {
 				t.Fatalf("claimed deferral lost assignment: %+v", claimedDeferred)
 			}
-			claimedOpened := graphMixedResult[graphstore.IssueMutationResult](t, call("undefer", "claimed"))
+			claimedOpened := graphMixedResult[graphstore.IssueMutationResult](t, call("undefer", scope+"beads/claimed"))
 			if !claimedOpened.Changed || claimedOpened.Issue.Properties.Assignee != "operator" {
 				t.Fatalf("claimed undefer lost assignment: %+v", claimedOpened)
 			}
@@ -284,7 +285,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			if !foundWork {
 				t.Fatalf("dated defer did not wake: %+v", woke)
 			}
-			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other", "--id", "other"))
+			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other", "--graph-path", "beads/other"))
 			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("defer", "work", other.ID))
 			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
 				t.Fatalf("batch defer: %+v", batch)

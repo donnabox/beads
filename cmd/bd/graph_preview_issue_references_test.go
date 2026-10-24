@@ -87,7 +87,7 @@ func TestGraphPreviewIssueReferencesClaimDispatch(t *testing.T) {
 		code  int
 	}{{"true", 5}, {"false", 2}} {
 		t.Run(tc.claim, func(t *testing.T) {
-			err := runGraphPreviewUpdate(issueClaimCommand(t, "--claim="+tc.claim, "--external-ref=x", "--spec-id=y"), []string{"beads/work"})
+			err := runGraphPreviewUpdate(issueClaimCommand(t, "--claim="+tc.claim, "--external-ref=x", "--spec-id=y"), []string{"https://example.invalid/beads/work"})
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != tc.code {
 				t.Fatalf("mixed claim/reference reached storage: %v", err)

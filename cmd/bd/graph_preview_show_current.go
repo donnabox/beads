@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -27,8 +28,8 @@ func graphPreviewCurrentIssueID(actor string) (string, error) {
 				return nil, "", err
 			}
 			if len(page.Items) != 0 {
-				selected, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, page.Items[0].ID)
-				return nil, "", err
+				selected = page.Items[0].ID
+				return nil, "", nil
 			}
 		}
 		return nil, "", nil
@@ -40,4 +41,10 @@ func graphPreviewCurrentIssueID(actor string) (string, error) {
 		return selected, nil
 	}
 	return GetLastTouchedID(), nil
+}
+
+// Last-touched graph paths are stored as canonical URLs. A bare value in the
+// persisted slot is an opaque public ID, even when it contains beads/.
+func graphPreviewStoreLastTouchedPath(path string) {
+	SetLastTouchedID(graph.CanonicalURL(graphPreviewConfig.GraphScopeURL, path))
 }

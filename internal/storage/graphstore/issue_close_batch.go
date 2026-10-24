@@ -19,6 +19,7 @@ import (
 // inside one graph transaction. Reasons correspond to Paths in request order.
 type IssueCloseBatchRequest struct {
 	Paths, Reasons   []string
+	NativeIDs        []string
 	Actor, Session   string
 	Force, ClaimNext bool
 	// RequireAllPaths rejects a missing or non-Issue selector before any batch
@@ -48,6 +49,9 @@ func (s *Store) CloseIssues(ctx context.Context, request IssueCloseBatchRequest)
 	if len(request.Paths) == 0 || len(request.Paths) != len(request.Reasons) {
 		return IssueCloseBatchResult{}, fmt.Errorf("%w: close batch requires paths and matching reasons", storage.ErrValidation)
 	}
+	if len(request.NativeIDs) != 0 && len(request.NativeIDs) != len(request.Paths) {
+		return IssueCloseBatchResult{}, fmt.Errorf("%w: close batch requires one native selector per path", storage.ErrValidation)
+	}
 	if request.Actor == "" || !utf8.ValidString(request.Actor) || !utf8.ValidString(request.Session) {
 		return IssueCloseBatchResult{}, fmt.Errorf("%w: close requires UTF-8 actor and session", storage.ErrValidation)
 	}
@@ -68,8 +72,12 @@ func (s *Store) CloseIssues(ctx context.Context, request IssueCloseBatchRequest)
 		indexes := make([]int, 0, len(request.Paths))
 		anyOpen := false
 		for i, path := range request.Paths {
+			selected := IssueSelector{Path: path}
+			if len(request.NativeIDs) != 0 {
+				selected.NativeID = request.NativeIDs[i]
+			}
+			path, before, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selected)
 			result.Outcomes[i].Path = path
-			before, err := s.requireIssueInTx(ctx, tx, path)
 			if err != nil {
 				if request.RequireAllPaths {
 					return fmt.Errorf("closing %s: %w", path, err)

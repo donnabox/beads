@@ -33,55 +33,55 @@ func TestGraphPreviewIssueDeleteSetWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(initArgs...)
-			call("create", "Blocker", "--id", "beads/blocker")
-			call("create", "Dependent", "--id", "beads/dependent")
-			call("dep", "add", "dependent", "blocker")
-			blockerBefore, dependentBefore := call("versions", "blocker"), call("versions", "dependent")
-			refuse("not_found", "delete", "blocker", "dependent", "missing", "--force")
-			if call("versions", "blocker") != blockerBefore || call("versions", "dependent") != dependentBefore {
+			blocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Blocker", "--id", "beads/blocker", "--force"))
+			dependent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Dependent", "--id", "beads/dependent", "--force"))
+			call("dep", "add", "beads/dependent", "beads/blocker")
+			blockerBefore, dependentBefore := call("versions", blocker.ID), call("versions", dependent.ID)
+			refuse("not_found", "delete", "beads/blocker", "beads/dependent", "missing", "--force")
+			if call("versions", blocker.ID) != blockerBefore || call("versions", dependent.ID) != dependentBefore {
 				t.Fatal("missing named selector changed an earlier Issue")
 			}
-			preview := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "blocker", "dependent"))
+			preview := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "beads/blocker", "beads/dependent"))
 			if !preview.Preview || preview.Deleted || len(preview.Issues) != 2 || len(preview.IncidentLinkIDs) != 1 {
 				t.Fatalf("named pair preview: %+v", preview)
 			}
-			if call("versions", "blocker") != blockerBefore || call("versions", "dependent") != dependentBefore {
+			if call("versions", blocker.ID) != blockerBefore || call("versions", dependent.ID) != dependentBefore {
 				t.Fatal("named pair preview wrote state")
 			}
-			refuse("invalid_selector", "delete", "blocker", "dependent", "--if-revision", "stale", "--force")
-			applied := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "blocker", "dependent", "--force"))
+			refuse("invalid_selector", "delete", "beads/blocker", "beads/dependent", "--if-revision", "stale", "--force")
+			applied := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "beads/blocker", "beads/dependent", "--force"))
 			if !applied.Deleted || len(applied.Issues) != 2 || len(applied.IncidentLinkIDs) != 1 {
 				t.Fatalf("named pair deletion: %+v", applied)
 			}
-			refuse("gone", "show", "blocker")
-			refuse("gone", "show", "dependent")
+			refuse("gone", "show", "beads/blocker")
+			refuse("gone", "show", "beads/dependent")
 
-			call("create", "Cascade blocker", "--id", "beads/cascade-blocker")
-			call("create", "Cascade dependent", "--id", "beads/cascade-dependent")
-			call("dep", "add", "cascade-dependent", "cascade-blocker")
-			cascadePreview := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "cascade-blocker", "--cascade"))
+			call("create", "Cascade blocker", "--id", "beads/cascade-blocker", "--force")
+			call("create", "Cascade dependent", "--id", "beads/cascade-dependent", "--force")
+			call("dep", "add", "beads/cascade-dependent", "beads/cascade-blocker")
+			cascadePreview := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "beads/cascade-blocker", "--cascade"))
 			if !cascadePreview.Preview || len(cascadePreview.Issues) != 2 || len(cascadePreview.IncidentLinkIDs) != 1 {
 				t.Fatalf("cascade preview: %+v", cascadePreview)
 			}
-			cascade := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "cascade-blocker", "--cascade", "--force"))
+			cascade := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "beads/cascade-blocker", "--cascade", "--force"))
 			if !cascade.Deleted || len(cascade.Issues) != 2 {
 				t.Fatalf("cascade deletion: %+v", cascade)
 			}
-			refuse("gone", "show", "cascade-blocker")
-			refuse("gone", "show", "cascade-dependent")
+			refuse("gone", "show", "beads/cascade-blocker")
+			refuse("gone", "show", "beads/cascade-dependent")
 
-			call("create", "File first", "--id", "beads/file-first")
-			call("create", "File second", "--id", "beads/file-second")
+			call("create", "File first", "--id", "beads/file-first", "--force")
+			call("create", "File second", "--id", "beads/file-second", "--force")
 			file := filepath.Join(work, "delete-ids.txt")
-			if err := os.WriteFile(file, []byte("# native Issue IDs\nfile-first\n\nfile-second\n"), 0o600); err != nil {
+			if err := os.WriteFile(file, []byte("# native Issue IDs\nbeads/file-first\n\nbeads/file-second\n"), 0o600); err != nil {
 				t.Fatal(err)
 			}
 			fromFile := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "--from-file", file, "--force"))
 			if !fromFile.Deleted || len(fromFile.Issues) != 2 {
 				t.Fatalf("file-selected deletion: %+v", fromFile)
 			}
-			refuse("gone", "show", "file-first")
-			refuse("gone", "show", "file-second")
+			refuse("gone", "show", "beads/file-first")
+			refuse("gone", "show", "beads/file-second")
 		})
 	}
 }

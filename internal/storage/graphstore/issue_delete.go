@@ -16,6 +16,7 @@ import (
 // Apply requires an observed graph revision or an explicit unconditional choice.
 type IssueDeleteRequest struct {
 	Path, Actor, ExpectedRevision string
+	NativeID                      string
 	Unconditional, Preview        bool
 }
 
@@ -47,7 +48,8 @@ func (s *Store) PreviewDeleteIssueWithIncidentLinks(ctx context.Context, request
 }
 
 func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, removeIncidentLinks, enforceDependents bool) (IssueDeleteResult, error) {
-	if err := validatePath(request.Path); err != nil {
+	selector := IssueSelector{Path: request.Path, NativeID: request.NativeID}
+	if err := validateIssueSelector(selector); err != nil {
 		return IssueDeleteResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
 	if !utf8.ValidString(request.Actor) {
@@ -69,7 +71,7 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		current, err := s.showIssueInTx(ctx, tx, request.Path)
+		path, current, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
 		if err != nil {
 			return err
 		}
@@ -79,7 +81,7 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 		// The native writer removes dependencies. Refuse every live graph Link
 		// first, in the same transaction, so that native cleanup cannot cascade
 		// through a graph endpoint. Informational and blocking Links both count.
-		links, err := s.incidentLinksInTx(ctx, tx, LinksRequest{BeadPath: request.Path, Direction: "both"}, "")
+		links, err := s.incidentLinksInTx(ctx, tx, LinksRequest{BeadPath: path, Direction: "both"}, "")
 		if err != nil {
 			return err
 		}
@@ -88,7 +90,7 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 			ids[i] = link.ID
 		}
 		if len(links) != 0 && !removeIncidentLinks {
-			return fmt.Errorf("%w: %s has incident Links %s; unlink explicitly before retrying", ErrIncidentLinkConstraint, request.Path, strings.Join(ids, ", "))
+			return fmt.Errorf("%w: %s has incident Links %s; unlink explicitly before retrying", ErrIncidentLinkConstraint, path, strings.Join(ids, ", "))
 		}
 		if enforceDependents {
 			issueID := current.Properties.ID
@@ -116,7 +118,7 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 		if len(links) != 0 {
 			// Unlinking a dependency can version its source Issue. The deletion
 			// terminal must refer to that final live head, not the pre-plan head.
-			current, err = s.showIssueInTx(ctx, tx, request.Path)
+			current, err = s.showIssueInTx(ctx, tx, path)
 			if err != nil {
 				return err
 			}
@@ -129,7 +131,7 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 		if err != nil {
 			return err
 		}
-		ordinal, err := nextIssueHistoryOrdinalInTx(ctx, tx, request.Path, 0)
+		ordinal, err := nextIssueHistoryOrdinalInTx(ctx, tx, path, 0)
 		if err != nil {
 			return err
 		}
@@ -150,7 +152,7 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 		if err := s.afterStage("issue-delete-native"); err != nil {
 			return err
 		}
-		changed, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=? WHERE path=? AND allocation_state='live' AND revision=? AND backing='issue'`, deletionRevision, request.Path, current.Revision)
+		changed, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=? WHERE path=? AND allocation_state='live' AND revision=? AND backing='issue'`, deletionRevision, path, current.Revision)
 		if err != nil {
 			return err
 		}
@@ -166,13 +168,13 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at,native_participation_generation) VALUES(?,?,?,?,?,UTC_TIMESTAMP(6),?)`, request.Path, deletionRevision, snapshot, request.Actor, ordinal, generation); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at,native_participation_generation) VALUES(?,?,?,?,?,UTC_TIMESTAMP(6),?)`, path, deletionRevision, snapshot, request.Actor, ordinal, generation); err != nil {
 			return err
 		}
 		if err := s.afterStage("issue-delete-retained"); err != nil {
 			return err
 		}
-		if err := s.validateDeletedIssueInTx(ctx, tx, request.Path); err != nil {
+		if err := s.validateDeletedIssueInTx(ctx, tx, path); err != nil {
 			return err
 		}
 		result.Deleted = true

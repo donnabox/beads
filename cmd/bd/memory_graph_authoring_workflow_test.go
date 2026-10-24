@@ -34,11 +34,11 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string { t.Helper(); return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			old := func(args ...string) string { t.Helper(); return call(append(args, "--json")...) }
-			snapshot := func(id string) string { t.Helper(); return old("show", id) }
+			snapshot := func(id string) string { t.Helper(); return old("show", scope+"beads/"+id) }
 			for _, id := range []string{"a", "b", "c", "d"} {
 				old("create", id, "--id", id, "--type", "types/constraint")
 			}
-			old("create", "native", "--id", "i", "--type", "task")
+			old("create", "native", "--graph-path", "beads/i", "--type", "task")
 			decode := func(raw string) memoryAuthoredLink {
 				t.Helper()
 				var frame struct {

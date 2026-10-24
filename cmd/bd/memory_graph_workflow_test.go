@@ -27,13 +27,14 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			call := func(args ...string) string { t.Helper(); return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			legacy := func(args ...string) string { t.Helper(); return call(append(args, "--json")...) }
 			for _, id := range []string{"a", "c"} {
-				legacy("create", id, "--id", id, "--type", "task")
+				legacy("create", id, "--graph-path", "beads/"+id, "--type", "task")
 			}
 			for _, id := range []string{"b", "d", "isolated"} {
 				legacy("create", id, "--id", id, "--type", "types/memory", "--properties", `{"body":"Content","extra":{"keep":true}}`)
 			}
+			endpoint := func(id string) string { return scope + "beads/" + id }
 			for _, e := range [][3]string{{"a", "b", "ab"}, {"b", "c", "bc"}, {"c", "d", "cd"}, {"a", "b", "parallel"}, {"b", "a", "cycle"}} {
-				legacy("link", "create", e[0], e[1], "--id", e[2], "--type", "types/references", "--properties", `{"title":"Authored relationship","status":"active"}`)
+				legacy("link", "create", endpoint(e[0]), endpoint(e[1]), "--id", e[2], "--type", "types/references", "--properties", `{"title":"Authored relationship","status":"active"}`)
 			}
 			decode := func(raw string) memoryGraphResult {
 				t.Helper()
@@ -114,7 +115,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			if strings.Contains(human, "types/") || strings.Contains(human, "beads/") || strings.Contains(human, "links/") {
 				t.Fatalf("display prefixes retained:\n%s", human)
 			}
-			legacy("link", "create", "b", "d", "--type", "types/superseded-by", "--id", "retirement")
+			legacy("link", "create", endpoint("b"), endpoint("d"), "--type", "types/superseded-by", "--id", "retirement")
 			successor := read("successor", "b")
 			if len(successor.Beads) != 2 || len(successor.Links) != 1 || (successor.Traversal.Roots[0].Depth == nil || *successor.Traversal.Roots[0].Depth != 1000) {
 				t.Fatalf("replacement chain: %+v", successor)
@@ -123,13 +124,14 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 			if len(supersedes.Beads) != 2 || len(supersedes.Links) != 1 || (supersedes.Traversal.Roots[0].Depth == nil || *supersedes.Traversal.Roots[0].Depth != 1) {
 				t.Fatalf("replacement inverse: %+v", supersedes)
 			}
-			current := graphMixedResult[graphstore.Record](t, legacy("show", "d"))
-			legacy("link", "create", "isolated", "d", "--type", "types/references", "--id", "pin", "--target-revision", current.Revision)
+			dURI := supersedes.Traversal.Roots[0].ID
+			current := graphMixedResult[graphstore.Record](t, legacy("show", dURI))
+			legacy("link", "create", endpoint("isolated"), endpoint("d"), "--type", "types/references", "--id", "pin", "--target-revision", current.Revision)
 			pinned := read("references", "isolated")
 			if len(pinned.Links) != 1 || pinned.Links[0].Target.Revision != current.Revision {
 				t.Fatalf("current pin erased: %+v", pinned)
 			}
-			legacy("update", "d", "--properties", `{"body":"Next revision"}`)
+			legacy("update", dURI, "--properties", `{"body":"Next revision"}`)
 			for _, tc := range []struct {
 				args []string
 				code string

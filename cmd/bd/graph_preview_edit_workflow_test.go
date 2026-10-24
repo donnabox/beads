@@ -39,7 +39,7 @@ func TestGraphPreviewEditWorkflow(t *testing.T) {
 			}
 			call("", nil, initArgs...)
 			call("", nil, "remember", "Memory body", "--id", "beads/memory", "--title", "Memory")
-			original := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "create", "Edit me", "--id", "beads/work", "--description", "Original description", "--notes", "Original notes"))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "create", "Edit me", "--id", "work", "--force", "--description", "Original description", "--notes", "Original notes"))
 			versions := call("", nil, "versions", "work")
 			unchanged := graphMixedResult[graphstore.IssueMutationResult](t, call("", editor("exit 0"), "edit", "work"))
 			if unchanged.Changed || !reflect.DeepEqual(unchanged.Issue, original) || call("", nil, "versions", "work") != versions {
@@ -61,11 +61,11 @@ func TestGraphPreviewEditWorkflow(t *testing.T) {
 			call("invalid_properties", nil, "edit", "work", "--title", "--notes")
 			call("invalid_properties", editor(`printf '   ' > "$1"`), "edit", "work", "--title")
 			call("permission_denied", nil, "edit", "work", "--readonly")
-			call("capability_unavailable", nil, "edit", "memory")
+			call("capability_unavailable", nil, "edit", "beads/memory")
 			if got := call("", nil, "versions", "work"); got != beforeRefusals {
 				t.Fatal("refused edits changed History")
 			}
-			if shown := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "show", "work", "--format", "graph-json")); !reflect.DeepEqual(shown, notes.Issue) {
+			if shown := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "show", original.ID, "--format", "graph-json")); !reflect.DeepEqual(shown, notes.Issue) {
 				t.Fatal("refused edits changed Issue")
 			}
 			if !strings.Contains(call("", editor(`printf 'Renamed\n' > "$1"`), "edit", "work", "--title"), "Renamed") {
@@ -75,14 +75,14 @@ func TestGraphPreviewEditWorkflow(t *testing.T) {
 			raceEditor := editor(`printf 'Lost description\n' > "$1"
 "$BD_BIN" update work --title Concurrent --json >/dev/null`)
 			call("revision_conflict", append(raceEditor, "BD_BIN="+bd), "edit", "work")
-			afterRace := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "show", "work", "--format", "graph-json"))
+			afterRace := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "show", original.ID, "--format", "graph-json"))
 			if afterRace.Properties.Title != "Concurrent" || afterRace.Properties.Description != "Edited description" || call("", nil, "versions", "work") == beforeRace {
 				t.Fatal("stale editor overwrote a concurrent Issue update")
 			}
 			_, _, rowsBeforeUntouchedRace, _ := graphVersionsListed(t, call("", nil, "versions", "work"))
 			untouchedRaceEditor := editor(`"$BD_BIN" update work --title UntouchedRace --json >/dev/null`)
 			call("revision_conflict", append(untouchedRaceEditor, "BD_BIN="+bd), "edit", "work")
-			current := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "show", "work", "--format", "graph-json"))
+			current := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "show", original.ID, "--format", "graph-json"))
 			_, _, rowsAfterUntouchedRace, _ := graphVersionsListed(t, call("", nil, "versions", "work"))
 			if current.Properties.Title != "UntouchedRace" || current.Properties.Description != "Edited description" || len(rowsAfterUntouchedRace) != len(rowsBeforeUntouchedRace)+1 {
 				t.Fatal("unchanged editor content returned stale success or added History")

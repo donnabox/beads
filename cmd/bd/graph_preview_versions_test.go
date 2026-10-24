@@ -67,9 +67,9 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 					"--server-port", port, "--server-user", "root")
 			}
 			call(initArgs...)
-			call("create", "Source", "--id", "source")
+			call("create", "Source", "--graph-path", "beads/source")
 			call("remember", "Target", "--id", "target")
-			call("link", "source", "target", "--id", "links/edge", "--type", scope+"types/references")
+			call("link", scope+"beads/source", scope+"beads/target", "--id", "links/edge", "--type", scope+"types/references")
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
 			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", "links/edge"))
 			listed := call("versions", "links/edge")
@@ -85,13 +85,13 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 				if row.Version == removed.Link.Version {
 					t.Fatalf("deletion marker became a version: %+v", row)
 				}
-				call("show", "links/edge", "--version", row.Version)
+				call("show", scope+"links/edge", "--version", row.Version)
 			}
 			if got := call("history", "links/edge"); got != listed {
 				t.Fatalf("history alias differs from versions: history=%s versions=%s", got, listed)
 			}
 			_, stderr, code := graphVersionsProcess(t, bd, work, home,
-				"show", "links/edge", "--version", removed.Link.Version, "--json")
+				"show", scope+"links/edge", "--version", removed.Link.Version, "--json")
 			if code == 0 || !strings.Contains(stderr, "gone") {
 				t.Fatalf("private deletion token unexpectedly citable: code=%d stderr=%q", code, stderr)
 			}
@@ -286,9 +286,9 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 
 	// Issue plane: created, then renamed, so there are two versions to order
 	// and a second row to carry native attribution.
-	run(t, "create", "Issue subject", "--id", "beads/issue", "--actor", author, "--json")
+	run(t, "create", "Issue subject", "--graph-path", "beads/issue", "--actor", author, "--json")
 	run(t, "remember", "Link target", "--id", "beads/target", "--actor", author, "--json")
-	run(t, "update", "beads/issue", "--title", "Issue subject renamed", "--actor", author, "--json")
+	run(t, "update", scope+"beads/issue", "--title", "Issue subject renamed", "--actor", author, "--json")
 	// Memory plane: created, then replaced. Memory records no attribution
 	// status at all, which is a different thing from recording an empty one.
 	run(t, "remember", "Memory body", "--id", "beads/memory", "--title", "Memory subject", "--actor", author, "--json")
@@ -297,7 +297,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	// Link plane: created, changed, then unlinked. The private deletion marker
 	// must not appear among the citable versions. An Issue source leaves this
 	// Link unowned, so these writes do not advance a second subject's history.
-	run(t, "link", "beads/issue", "beads/target", "--id", "links/related", "--type", relatedType, "--actor", author, "--json")
+	run(t, "link", scope+"beads/issue", "beads/target", "--id", "links/related", "--type", relatedType, "--actor", author, "--json")
 	run(t, "update", "links/related", "--properties", `{"note":"changed"}`, "--actor", author, "--json")
 	removedLink := graphMixedResult[graphstore.LinkDeleteResult](t, run(t, "link", "delete", "--force", "links/related", "--actor", author, "--json"))
 
@@ -357,9 +357,9 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 				t.Fatalf("non-citable deletion token appeared as a Resource version: %+v", row)
 			}
 			// Every returned token must actually work as an exact address.
-			run(t, "show", "links/related", "--version", row.Version, "--json")
+			run(t, "show", scope+"links/related", "--version", row.Version, "--json")
 		}
-		_, stderr, code := graphVersionsProcess(t, bd, work, home, "show", "links/related", "--version", removedLink.Link.Version, "--json")
+		_, stderr, code := graphVersionsProcess(t, bd, work, home, "show", scope+"links/related", "--version", removedLink.Link.Version, "--json")
 		if code == 0 || !strings.Contains(stderr, "gone") {
 			t.Fatalf("private deletion token unexpectedly citable: code=%d stderr=%q", code, stderr)
 		}

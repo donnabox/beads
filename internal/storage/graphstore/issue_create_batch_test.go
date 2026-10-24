@@ -91,6 +91,42 @@ func TestGraphIssueCreateBatchAtomicMappingAndInitialVersions(t *testing.T) {
 	}
 }
 
+// A Memory's legacy graph path is also its public ID. A later Issue batch
+// cannot claim that spelling, even when an earlier item in the same batch is
+// otherwise valid; refusal must leave the whole transaction unchanged.
+func TestGraphIssueCreateBatchRefusesReservedMemoryIDAtomically(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		for _, state := range []string{"live", "deleted"} {
+			t.Run(backend+"/"+state, func(t *testing.T) {
+				ctx, _, store := memoryDeleteStore(t, backend)
+				const reservedID = "beads/exp-batch-reservation"
+				if _, err := store.Create(ctx, CreateRequest{Path: reservedID, Title: "Reserved Memory identity"}); err != nil {
+					t.Fatal(err)
+				}
+				if state == "deleted" {
+					if _, err := store.DeleteMemory(ctx, MemoryDeleteRequest{Path: reservedID, Unconditional: true}); err != nil {
+						t.Fatal(err)
+					}
+				}
+				before := workflowState(t, ctx, store)
+				first := plainIssue("Valid first Issue")
+				collision := plainIssue("Must refuse cross-kind identity")
+				collision.Issue.ID = reservedID
+				records, err := store.CreateIssueBatch(ctx, publicops.CreateBatchRequest{
+					Actor: "test-author", ForceIDPrefix: true,
+					Items: []publicops.BatchCreateItem{{Issue: first.Issue}, {Issue: collision.Issue}},
+				})
+				if !errors.Is(err, ErrAlreadyExists) || records != nil {
+					t.Fatalf("batch claimed reserved Memory ID: records=%+v err=%v", records, err)
+				}
+				if after := workflowState(t, ctx, store); !reflect.DeepEqual(before, after) {
+					t.Fatal("refused batch left native Issue, retained History, or catalog effects")
+				}
+			})
+		}
+	}
+}
+
 func graphBatchRowCount(t *testing.T, ctx context.Context, s *Store, table string) int {
 	t.Helper()
 	var count int

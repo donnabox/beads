@@ -169,7 +169,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 2 {
-		return graphFailure("invalid_selector", "graph Link creation requires two Bead IDs or beads/PATH selectors", 2)
+		return graphFailure("invalid_selector", "graph Link creation requires two public Bead IDs or canonical Bead URLs", 2)
 	}
 	resolved := make([]string, 2)
 	pins := make([]graphstore.EndpointPin, 2)
@@ -196,18 +196,16 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 2 {
-		return graphFailure("invalid_selector", "graph Link creation requires two Bead IDs or beads/PATH selectors", 2)
+		return graphFailure("invalid_selector", "graph Link creation requires two public Bead IDs or canonical Bead URLs", 2)
 	}
 	paths := make([]string, 2)
+	localIDs := make([]string, 2)
 	for i, selector := range args {
-		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+		selected, err := graphPreviewIssueSelector(selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if err := graph.ValidateBeadPath(path); err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		paths[i] = path
+		paths[i], localIDs[i] = selected.Path, selected.NativeID
 	}
 	path, _ := cmd.Flags().GetString("id")
 	if cmd.Flags().Changed("id") {
@@ -237,7 +235,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		result, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
-			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
+			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourceLocalID: localIDs[0], TargetLocalID: localIDs[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
 		return graphPreviewReplacementResult(result, fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource, err)

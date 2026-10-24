@@ -25,8 +25,8 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 	if err := issueops.ValidatePublicCreateRequest(request); err != nil {
 		return err
 	}
-	if request.ParentID != "" || request.InheritLabelsFromParent || len(request.Dependencies) > 0 || request.WaitsFor != nil || request.ForceIDPrefix || request.IDPrefix != "" {
-		return fmt.Errorf("%w: Issue preview does not support composite create options or prefix overrides", storage.ErrValidation)
+	if request.ParentID != "" || request.InheritLabelsFromParent || len(request.Dependencies) > 0 || request.WaitsFor != nil || request.IDPrefix != "" {
+		return fmt.Errorf("%w: Issue preview does not support composite create options or a custom ID prefix", storage.ErrValidation)
 	}
 	i := request.Issue
 	// CloneCreateRequest materializes empty relation slices. Their lengths
@@ -79,6 +79,16 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
+		// Explicit IDs can remain reserved by a deleted graph allocation even
+		// after the native Issue row has been removed. Refuse before the native
+		// writer can collide with retained History for that ID.
+		if request.Issue.ID != "" {
+			if exists, err := publicResourceIDExistsInTx(ctx, tx, request.Issue.ID); err != nil {
+				return err
+			} else if exists {
+				return ErrAlreadyExists
+			}
+		}
 		if path != "" {
 			var exists int
 			err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
@@ -95,12 +105,18 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err != nil {
 			return err
 		}
+		// The generated ID is known only after the native writer runs. Check
+		// every lifetime allocation before publishing it; refusal rolls the
+		// native create and its first retained version back together.
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
+		}
 		if path == "" {
-			// An omitted graph --id follows the ordinary Issue writer, including
-			// its configured prefix, hash/counter mode and collision handling.
-			// The catalog may independently reserve an ID for a Memory or a
-			// deleted Bead. Keep the native Issue ID while choosing an unused
-			// canonical path in this same transaction.
+			// The graph path is a separate address from the opaque native ID.
+			// A Memory or deleted Bead may reserve the preferred path while
+			// the native Issue keeps its own public ID.
 			path, err = generatedIssuePath(ctx, tx, created.Issue.ID)
 			if err != nil {
 				return err
@@ -197,30 +213,72 @@ func (s *Store) Read(ctx context.Context, path string) (any, error) {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		var backing string
-		if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return ErrNotFound
-			}
-			return err
-		}
 		var err error
-		switch backing {
-		case "generic":
-			result, err = s.showMemoryInTx(ctx, tx, path)
-		case "issue":
-			result, err = s.showIssueInTx(ctx, tx, path)
-		case "dependency", "informational":
-			result, err = s.showLinkInTx(ctx, tx, path)
-		default:
-			err = fmt.Errorf("%w: unsupported backing", ErrInvalidStore)
-		}
+		result, err = s.readCurrentVerifiedInTx(ctx, tx, path)
 		return err
 	})
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
+}
+
+// ReadBeadSelected uses the shared native Issue selector for bare spelling,
+// then reads a non-Issue Bead at that exact path in the same checked snapshot.
+// An explicit graph path never resolves through a native ID. Ambiguous bare
+// spelling refuses even when a Memory exists at the fallback path.
+func (s *Store) ReadBeadSelected(ctx context.Context, selector IssueSelector) (any, error) {
+	if err := validateIssueSelector(selector); err != nil {
+		return nil, err
+	}
+	var result any
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkCurrentReadBytes(ctx, tx); err != nil {
+			return err
+		}
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		var err error
+		result, err = s.readBeadSelectedInTx(ctx, tx, selector)
+		return err
+	})
+	return result, err
+}
+
+func (s *Store) readBeadSelectedInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (any, error) {
+	if selector.NativeID != "" {
+		_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		switch {
+		case err == nil:
+			return issue, nil
+		case errors.Is(err, ErrNotFound), errors.Is(err, errNonIssueSelector):
+			// Bare Memory names retain their existing read spelling.
+		default:
+			return nil, err
+		}
+	}
+	return s.readCurrentVerifiedInTx(ctx, tx, selector.Path)
+}
+
+func (s *Store) readCurrentVerifiedInTx(ctx context.Context, tx *sql.Tx, path string) (any, error) {
+	var backing string
+	if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
+		return nil, err
+	}
+	switch backing {
+	case "generic":
+		return s.showMemoryInTx(ctx, tx, path)
+	case "issue":
+		return s.showIssueInTx(ctx, tx, path)
+	case "dependency", "informational":
+		return s.showLinkInTx(ctx, tx, path)
+	default:
+		return nil, fmt.Errorf("%w: unsupported backing", ErrInvalidStore)
+	}
 }
 
 func (s *Store) ShowIssue(ctx context.Context, path string) (IssueRecord, error) {

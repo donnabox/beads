@@ -218,13 +218,13 @@ func TestGraphPreviewIfRevisionInLinkModeStaysGraphToken(t *testing.T) {
 	call("init", "--graph-mode", "link", "--scope-url", "https://example.invalid/if-revision/", "--skip-hooks", "--skip-agents", "--non-interactive")
 	memory := graphMixedResult[graphstore.Record](t, call("remember", "Guarded body", "--id", "beads/plan", "--title", "Plan"))
 	const replacement = `{"title":"Plan","body":"Replaced body"}`
-	before := call("show", "beads/plan")
+	before := call("show", "https://example.invalid/if-revision/beads/plan")
 	for _, token := range []string{"observed", "7"} {
 		refuse("revision_conflict", "update", "beads/plan", "--properties", replacement, "--if-revision", token)
 		refuse("revision_conflict", "delete", "beads/plan", "--if-revision", token)
 		refuse("revision_conflict", "delete", "beads/plan", "--force", "--if-revision", token)
 	}
-	if call("show", "beads/plan") != before {
+	if call("show", "https://example.invalid/if-revision/beads/plan") != before {
 		t.Fatal("a refused graph token changed the Memory")
 	}
 
@@ -243,25 +243,26 @@ func TestGraphPreviewIfRevisionInLinkModeStaysGraphToken(t *testing.T) {
 func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
+	const closeURL = "https://example.invalid/close-if-revision/beads/close-guard"
 	call := func(args ...string) string {
 		t.Helper()
 		return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 	}
 	call("init", "--graph-mode", "link", "--scope-url", "https://example.invalid/close-if-revision/", "--skip-hooks", "--skip-agents", "--non-interactive")
-	call("create", "Close guard", "--id", "beads/close-guard")
-	before := call("show", "--format", "graph-json", "beads/close-guard")
+	call("create", "Close guard", "--graph-path", "beads/close-guard")
+	before := call("show", "--format", "graph-json", closeURL)
 	for _, args := range [][]string{
-		{"close", "beads/close-guard", "--if-revision", "1"},
-		{"close", "beads/close-guard", "--reason", "Done", "--if-revision", "1"},
+		{"close", closeURL, "--if-revision", "1"},
+		{"close", closeURL, "--reason", "Done", "--if-revision", "1"},
 	} {
 		graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", args...)
 	}
-	graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", "assign", "beads/close-guard", "alice", "--if-revision", "1")
-	if call("show", "--format", "graph-json", "beads/close-guard") != before {
+	graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", "assign", closeURL, "alice", "--if-revision", "1")
+	if call("show", "--format", "graph-json", closeURL) != before {
 		t.Fatal("a refused guarded close changed the Issue")
 	}
 	observed := graphMixedResult[graphstore.IssueRecord](t, before)
-	if closed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", "beads/close-guard", "--reason", "Done", "--if-revision", observed.Revision)); !closed.Changed {
+	if closed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", closeURL, "--reason", "Done", "--if-revision", observed.Revision)); !closed.Changed {
 		t.Fatal("a close with the observed graph revision did not apply")
 	}
 }

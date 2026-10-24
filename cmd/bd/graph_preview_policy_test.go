@@ -167,7 +167,7 @@ func TestGraphPreviewInitQuiet(t *testing.T) {
 				t.Fatalf("--quiet emitted human output: %q", out)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Persisted after quiet init", "--id", "beads/quiet", "--title", "Quiet", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/quiet", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/quiet/beads/quiet", "--json")
 		})
 	}
 }
@@ -279,13 +279,14 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	// Generic typed creation is now admitted and must stay on the graph writer.
 	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Title", "--properties", `{"description":"Graph only"}`)
 	for _, args := range [][]string{
-		{"create", "Must refuse", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--json"},
+		{"create", "Must refuse", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json"},
+		{"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--json"},
 		// Native upstream label operations must not enter the graph writer.
 		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
 		{"update", "beads/plan", "-l", "new", "--json"},
 		{"memories", "--json"}, {"recall", "beads/plan", "--json"},
-		{"ready", "--explain", "--json"}, {"close", "beads/plan", "--force", "--json"},
-		{"link", "beads/plan", "beads/other", "--type=related", "--json"}, {"serve", "--json"},
+		{"ready", "--explain", "--json"}, {"close", "https://example.invalid/c0/beads/plan", "--force", "--json"},
+		{"link", "https://example.invalid/c0/beads/plan", "https://example.invalid/c0/beads/other", "--type=related", "--json"}, {"serve", "--json"},
 		{"db-proxy-child", "--root", filepath.Join(work, ".beads"), "--port", "1", "--backend", "external", "--json"},
 	} {
 		before := legacyUpgradeTreeDigest(t, work)
@@ -306,8 +307,8 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 			t.Fatalf("refused %v changed workspace", args)
 		}
 	}
-	first := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/plan", "--json")
-	second := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/plan", "--json")
+	first := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/c0/beads/plan", "--json")
+	second := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/c0/beads/plan", "--json")
 	if first != created || second != created {
 		t.Fatal("new-process current reads differ from creation")
 	}

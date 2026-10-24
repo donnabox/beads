@@ -139,3 +139,49 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateChildIssueRejectsReservedPublicIDWithoutEffects(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = store.Close() })
+			parentRequest := plainIssue("Parent")
+			parentRequest.Issue.ID = "beads/exp-parent"
+			parentRequest.ForceIDPrefix = true
+			parent, err := store.CreateIssue(ctx, "beads/parent", parentRequest)
+			if err != nil {
+				t.Fatal(err)
+			}
+			childID := parent.Properties.ID + ".1"
+			if _, err := store.Create(ctx, CreateRequest{Path: childID, Title: "Memory with child ID"}); err != nil {
+				t.Fatal(err)
+			}
+			var reservedPath, reservedBacking string
+			if err := store.db.QueryRowContext(ctx, `SELECT path,backing FROM graph_preview_catalog WHERE path=?`, childID).Scan(&reservedPath, &reservedBacking); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, store)
+			var counters int
+			if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM child_counters`).Scan(&counters); err != nil {
+				t.Fatal(err)
+			}
+			created, err := store.CreateChildIssue(ctx, IssueChildCreateRequest{
+				ParentPath: "beads/parent", ExpectedParentRevision: parent.Revision,
+				Create: publicops.CreateRequest{Actor: "child-author", ForceIDPrefix: true, Issue: &types.Issue{
+					Title: "Rejected child", Status: types.StatusOpen, Priority: 2, IssueType: types.TypeTask,
+				}},
+			})
+			if !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
+				t.Fatalf("child reused Memory public ID %q (%s %s) or changed state: created=%+v err=%v", childID, reservedPath, reservedBacking, created, err)
+			}
+			var afterCounters int
+			if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM child_counters`).Scan(&afterCounters); err != nil || afterCounters != counters {
+				t.Fatalf("refused child burned a counter: before=%d after=%d err=%v", counters, afterCounters, err)
+			}
+		})
+	}
+}

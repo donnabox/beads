@@ -26,14 +26,21 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 		}
 	}
 	request.Actor = getActorWithGit()
+	readPath, localID, err := graphPreviewResourceReadSelector(args[0])
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		selectedPath, current, err := store.ReadResourceSelected(ctx, readPath, localID)
+		if err != nil {
+			return nil, "", err
+		}
+		request.Path = selectedPath
 		if !forget {
-			current, err := store.Read(ctx, request.Path)
-			if err != nil {
-				return nil, "", err
-			}
 			if _, issue := current.(graphstore.IssueRecord); issue {
-				issueRequest := graphstore.IssueDeleteRequest(request)
+				issueRequest := graphstore.IssueDeleteRequest{Path: readPath, NativeID: localID,
+					Actor: request.Actor, ExpectedRevision: request.ExpectedRevision,
+					Unconditional: request.Unconditional, Preview: request.Preview}
 				var result graphstore.IssueDeleteResult
 				if issueRequest.Preview {
 					result, err = store.PreviewDeleteIssueWithIncidentLinks(ctx, issueRequest)

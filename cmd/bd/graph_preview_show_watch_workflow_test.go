@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
@@ -25,10 +27,10 @@ func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
 				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", initArgs...)
-			graphPolicyCLI(t, bd, work, home, nil, "", "create", "Initial watch title", "--id", "beads/work", "--json")
+			created := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Initial watch title", "--id", "beads/work", "--force", "--json"))
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Memory body", "--id", "beads/memory", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/missing", "--watch", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/memory", "--watch", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "https://example.invalid/watch/beads/memory", "--watch", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/work", "--watch", "--version", "old", "--json")
 
 			logDir := t.TempDir()
@@ -84,7 +86,7 @@ func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
 			}
 			waitFor(outPath, "Initial watch title")
 			waitFor(errPath, "Watching for changes")
-			graphPolicyCLI(t, bd, work, home, nil, "", "update", "beads/work", "--title", "Revised watch title", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "update", created.ID, "--title", "Revised watch title", "--json")
 			waitFor(outPath, "Revised watch title")
 			if err := watch.Process.Signal(os.Interrupt); err != nil {
 				t.Fatal(err)

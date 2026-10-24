@@ -42,30 +42,30 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
-			call("create", "Leased work", "--id", "beads/work")
+			call("create", "Leased work", "--id", "work", "--force")
 			claim := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--claim", "--actor", "holder"))
 			before := graphMemoryReadSnapshot(t, work)
-			refuse("constraint_violation", "heartbeat", "work", "--actor", "stranger")
-			refuse("permission_denied", "heartbeat", "work", "--actor", "holder", "--readonly")
-			refuse("invalid_selector", "heartbeat", "links/work", "--actor", "holder")
+			refuse("constraint_violation", "heartbeat", scope+"beads/work", "--actor", "stranger")
+			refuse("permission_denied", "heartbeat", scope+"beads/work", "--actor", "holder", "--readonly")
+			refuse("not_found", "heartbeat", "links/work", "--actor", "holder")
 			if !reflect.DeepEqual(before, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("heartbeat refusal changed graph state")
 			}
-			call("heartbeat", "work", "--actor", "holder")
-			current := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--format", "graph-json"))
+			call("heartbeat", scope+"beads/work", "--actor", "holder")
+			current := graphMixedResult[graphstore.IssueRecord](t, call("show", scope+"beads/work", "--format", "graph-json"))
 			if current.Revision != claim.Issue.Revision || current.Properties.LeaseExpiresAt == nil || current.Properties.HeartbeatAt == nil {
 				t.Fatalf("heartbeat changed retained Issue or lost lease: %+v", current)
 			}
-			call("show", "work", "--version", claim.Issue.Revision)
+			call("show", scope+"beads/work", "--version", claim.Issue.Revision)
 			refuse("invalid_properties", "reclaim", "--older-than=-1s")
 			refuse("invalid_properties", "reclaim", "--id=")
 			refuse("permission_denied", "reclaim", "--readonly")
 			live := graphMemoryReadSnapshot(t, work)
-			call("reclaim", "--older-than=0s", "--id=work", "--actor", "reaper")
+			call("reclaim", "--older-than=0s", "--id="+scope+"beads/work", "--actor", "reaper")
 			if !reflect.DeepEqual(live, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("live-lease reclaim changed graph state")
 			}
-			call("create", "Stateful work", "--id", "beads/stateful", "--labels", "mode:degraded")
+			call("create", "Stateful work", "--graph-path", "beads/stateful", "--labels", "mode:degraded")
 			// Bare status and state retain their native JSON shapes.
 			initialStatus := nativeJSON("status")
 			if summary, ok := initialStatus["summary"].(map[string]any); !ok || summary["total_issues"] != float64(2) {
@@ -77,19 +77,23 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 			if !reflect.DeepEqual(stateBefore, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("state refusal changed graph state")
 			}
-			read := nativeJSON("state", "stateful", "mode")
+			read := nativeJSON("state", scope+"beads/stateful", "mode")
 			if read["value"] != "degraded" {
 				t.Fatalf("state read: %+v", read)
 			}
-			listed := nativeJSON("state", "list", "stateful")
+			listed := nativeJSON("state", "list", scope+"beads/stateful")
 			if states, ok := listed["states"].(map[string]any); !ok || states["mode"] != "degraded" {
 				t.Fatalf("state list: %+v", listed)
 			}
 			call("remember", "Ordinary Memory", "--id", "beads/plain-memory")
 			memoryBefore := graphMemoryReadSnapshot(t, work)
-			for _, selector := range []string{"plain-memory", "beads/plain-memory", scope + "beads/plain-memory"} {
-				refuse("capability_unavailable", "state", selector, "mode")
-				refuse("capability_unavailable", "state", "list", selector)
+			for _, tc := range []struct{ selector, code string }{
+				{"plain-memory", "capability_unavailable"},
+				{"beads/plain-memory", "capability_unavailable"},
+				{scope + "beads/plain-memory", "capability_unavailable"},
+			} {
+				refuse(tc.code, "state", tc.selector, "mode")
+				refuse(tc.code, "state", "list", tc.selector)
 			}
 			if !reflect.DeepEqual(memoryBefore, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("state refusal on Memory changed graph state")
@@ -97,12 +101,12 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 
 			// A familiar native ID may differ from its explicit canonical path.
 			// Every Issue-only command must resolve it through the checked catalog.
-			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--id", "beads/custom-path", "--labels", "mode:ready"))
+			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path", "--labels", "mode:ready"))
 			if custom.Properties.ID == "custom-path" {
 				t.Fatalf("fixture did not separate canonical path and native ID: %+v", custom)
 			}
-			customClaim := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/custom-path", "--claim", "--actor", "holder"))
-			customBefore := call("versions", "beads/custom-path")
+			customClaim := graphMixedResult[graphstore.IssueMutationResult](t, call("update", custom.ID, "--claim", "--actor", "holder"))
+			customBefore := call("versions", custom.ID)
 			call("heartbeat", custom.Properties.ID, "--actor", "holder")
 			if got := nativeJSON("state", custom.Properties.ID, "mode"); got["value"] != "ready" || got["issue_id"] != custom.Properties.ID {
 				t.Fatalf("native-ID state read selected wrong Issue: %+v", got)
@@ -111,23 +115,23 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 				t.Fatalf("native-ID state list selected wrong Issue: %+v", got)
 			}
 			call("reclaim", "--older-than=0s", "--id="+custom.Properties.ID, "--actor", "reaper")
-			if got := call("versions", "beads/custom-path"); got != customBefore {
+			if got := call("versions", custom.ID); got != customBefore {
 				t.Fatal("native-ID heartbeat/state/live-lease reclaim changed retained History")
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/custom-path", "--format", "graph-json")); got.Revision != customClaim.Issue.Revision || got.Properties.LeaseExpiresAt == nil {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", custom.ID, "--format", "graph-json")); got.Revision != customClaim.Issue.Revision || got.Properties.LeaseExpiresAt == nil {
 				t.Fatalf("native-ID commands lost live lease: %+v", got)
 			}
 			call("remember", "Colliding Memory", "--id", "beads/"+custom.Properties.ID)
-			beforeCollision := graphMemoryReadSnapshot(t, work)
-			refuse("invalid_properties", "heartbeat", custom.Properties.ID, "--actor", "holder")
-			refuse("invalid_properties", "reclaim", "--older-than=0s", "--id="+custom.Properties.ID, "--actor", "reaper")
-			refuse("invalid_properties", "state", custom.Properties.ID, "mode")
-			if !reflect.DeepEqual(beforeCollision, graphMemoryReadSnapshot(t, work)) {
-				t.Fatal("ambiguous native ID changed graph state")
+			// A different Resource's graph path cannot shadow the opaque public
+			// Issue ID, even when its suffix has the same spelling.
+			call("heartbeat", custom.Properties.ID, "--actor", "holder")
+			call("reclaim", "--older-than=0s", "--id="+custom.Properties.ID, "--actor", "reaper")
+			if got := nativeJSON("state", custom.Properties.ID, "mode"); got["value"] != "ready" {
+				t.Fatalf("public Issue ID was shadowed by a Memory path: %+v", got)
 			}
-			call("heartbeat", "beads/custom-path", "--actor", "holder")
+			call("heartbeat", custom.ID, "--actor", "holder")
 			call("reclaim", "--older-than=0s", "--id="+scope+"beads/custom-path", "--actor", "reaper")
-			if got := nativeJSON("state", "beads/custom-path", "mode"); got["value"] != "ready" {
+			if got := nativeJSON("state", custom.ID, "mode"); got["value"] != "ready" {
 				t.Fatalf("explicit path lost precedence: %+v", got)
 			}
 		})

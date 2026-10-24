@@ -309,7 +309,7 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			original := graphMixedResult[graphstore.Record](t, call("remember", body, "--id", "beads/plan", "--title", "Straße plan"))
 			empty := graphMixedResult[graphstore.Record](t, call("remember", "", "--id", "beads/empty", "--title", "Empty"))
 			contextMemory := graphMixedResult[graphstore.Record](t, call("remember", "Surviving context", "--id", "beads/context", "--title", "Context"))
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Surviving Issue", "--id", "beads/work"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Surviving Issue", "--graph-path", "beads/work"))
 			selected := discover("STRASSE")
 			if selected.Projection != "summary" || selected.Scope != scope || !selected.Complete || selected.Next != nil || len(selected.Items) != 1 || selected.Items[0].ID != original.ID || selected.Items[0].Version != original.Revision || !reflect.DeepEqual(selected.Items[0].MatchedFields, []string{"title"}) || selected.Items[0].Excerpt != nil {
 				t.Fatalf("literal case-folded discovery: %+v", selected)
@@ -326,10 +326,10 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			edited := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", string(rawProperties), "--if-revision", original.Revision)).Memory
 			related := scope + "types/superseded-by"
 			firstLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--id", "links/owned", "--type", related, "--properties", `{"note":"first"}`, "--if-source-revision", edited.Revision)).Link
-			linked := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
+			linked := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
 			changedLink := graphMixedResult[graphstore.LinkMutationResult](t, call("update", "links/owned", "--properties", `{"note":"second"}`, "--if-revision", firstLink.Revision, "--if-source-revision", linked.Revision)).Link
-			current := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			survivingLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/survivor", "--type", "types/references")).Link
+			current := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
+			survivingLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/survivor", "--type", "types/references")).Link
 			issueCurrent := call("show", issue.ID)
 			if current.Properties != properties || original.Properties.Body != body || empty.Properties.Body != "" {
 				t.Fatal("fixture did not preserve authored body bytes")

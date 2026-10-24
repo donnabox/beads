@@ -269,7 +269,7 @@ def main():
                 "--design", "Initial design — 雪", "--acceptance", "Ready\r\n",
                 "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ",
                 "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z"]
-            records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--id", path, *fields, "--json"]))
+            records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--graph-path", path, *fields, "--json"]))
         # Selected SubjectTo ownership needs a Constraint target. Keep the native
         # Issue pair intact and create its independent target through the CLI.
         records["beads/constraint"] = c0.envelope(capture.success("constraint-create", [
@@ -278,11 +278,11 @@ def main():
         capture.success("memory-constraint-link", ["link", "beads/plan", "beads/constraint", "--type", owned_type,
             "--id", "links/context", "--properties", '{"note":"before page"}', "--metadata", '{"origin":"manual"}',
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
-        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--type", "types/references",
+        capture.success("issue-memory-link", ["link", scope + "beads/work", scope + "beads/plan", "--type", "types/references",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
-        dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", "beads/work", "beads/prereq", "--json"]))
+        dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", scope + "beads/work", scope + "beads/prereq", "--json"]))
         for path in [*records, "links/context", "links/back", dependency["link"]["id"]]:
-            capture.success("fresh-process-show", ["show", path, "--json"])
+            capture.success("fresh-process-show", ["show", path if path.startswith(scope) else scope + path, "--json"])
         capture.passed("normal initialization and fresh-process Memory/Issue/mixed-Link/Dependency creation and reads")
         token = secrets.token_urlsafe(32)
         token_file = capture.root / "http-token"
@@ -337,7 +337,7 @@ def main():
         # Alpha remains unreferenced and unchanged throughout the public-client
         # checks. Use its original observed revision, not a fresh pre-read.
         alpha = records["beads/alpha"]
-        deleted = c0.envelope(capture.success("memory-delete", ["delete", "beads/alpha", "--force",
+        deleted = c0.envelope(capture.success("memory-delete", ["delete", scope + "beads/alpha", "--force",
             "--if-revision", alpha["revision"], "--json"]))
         c0.require_memory_deletion(deleted, alpha)
         name = "python-after-delete"

@@ -121,13 +121,13 @@ func TestGraphPreviewListOrderAndCapWorkflow(t *testing.T) {
 
 			// A Memory, an Issue and a Memory, each recorded by its own process.
 			call("remember", "first body", "--id", "beads/first", "--title", "First")
-			call("create", "Second", "--id", "beads/second")
+			call("create", "Second", "--graph-path", "beads/second")
 			call("remember", "third body", "--id", "beads/third", "--title", "Third")
 			beads, more := structured(nil)
 			expect("creation order", beads, more, []string{"beads/third", "beads/second", "beads/first"}, false)
 
 			// An edit is a new recorded version, so the oldest Bead moves to the front.
-			first := graphMixedResult[graphstore.Record](t, call("show", "beads/first"))
+			first := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/first"))
 			call("update", "beads/first", "--properties", `{"title":"First, revised","body":"first body"}`, "--if-revision", first.Revision)
 			edited := []string{"beads/first", "beads/third", "beads/second"}
 			beads, more = structured(nil)

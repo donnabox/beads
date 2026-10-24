@@ -309,23 +309,23 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 			} {
 				t.Run(tc.name, func(t *testing.T) {
 					sourcePath, targetPath, linkPath := "beads/source-"+tc.name, "beads/target-"+tc.name, "links/"+tc.name
-					source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--id", sourcePath))
-					target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", targetPath))
+					source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--graph-path", sourcePath))
+					target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--graph-path", targetPath))
 					typeURL, _ := graphstore.RelationshipDependencyTypeURL(scope, tc.kind)
-					addArgs := []string{"dep", "add", sourcePath, targetPath, "--type", string(tc.kind), "--id", linkPath}
+					addArgs := []string{"dep", "add", source.ID, target.ID, "--type", string(tc.kind), "--id", linkPath}
 					if tc.viaLink {
-						addArgs = []string{"link", "create", "--source", sourcePath, "--target", targetPath, "--type", string(tc.kind), "--id", linkPath, "--if-source-revision", source.Revision}
+						addArgs = []string{"link", "create", "--source", source.ID, "--target", target.ID, "--type", string(tc.kind), "--id", linkPath, "--if-source-revision", source.Revision}
 					}
 					added := graphMixedResult[graphstore.DependencyResult](t, call(addArgs...))
 					if !added.Changed || added.Link.Type != typeURL || added.Link.Properties["dep_type"] != string(tc.kind) || added.Link.Source != source.ID || added.Link.Target != target.ID || len(added.Source.Owned) != 1 {
 						t.Fatalf("rendered native Link differs: %+v", added)
 					}
-					shown := graphMixedResult[graphstore.LinkRecord](t, call("show", linkPath))
+					shown := graphMixedResult[graphstore.LinkRecord](t, call("show", scope+linkPath))
 					if shown.Type != typeURL || shown.Properties["dep_type"] != string(tc.kind) || shown.Source != source.ID || shown.Target != target.ID {
 						t.Fatalf("shown Link differs from native endpoints: %+v", shown)
 					}
-					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", sourcePath, "--type", string(tc.kind)))
-					counted := graphMixedResult[map[string]int](t, call("link", "count", "--source", sourcePath, "--type", string(tc.kind)))
+					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", source.ID, "--type", string(tc.kind)))
+					counted := graphMixedResult[map[string]int](t, call("link", "count", "--source", source.ID, "--type", string(tc.kind)))
 					if len(listed) != 1 || listed[0].ID != added.Link.ID || counted["count"] != 1 {
 						t.Fatalf("Dependency type list/count did not select %s: list=%+v count=%+v", tc.kind, listed, counted)
 					}
@@ -334,7 +334,7 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 						state.NativeVersions != 2 || state.GraphVersions != 2 || state.LinkVersions != 1 || state.PairRows != 1 {
 						t.Fatalf("native Link mapping or History after add: %+v", state)
 					}
-					beforeNoOp := call("show", sourcePath, "--format", "graph-json")
+					beforeNoOp := call("show", scope+sourcePath, "--format", "graph-json")
 					if tc.viaLink {
 						addArgs[len(addArgs)-1] = added.Source.Revision
 					}
@@ -345,7 +345,7 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if again := graphInstalledRelationship(t, work, linkPath, source.Properties.ID, target.Properties.ID); again != state {
 						t.Fatalf("no-op changed native or retained state: before=%+v after=%+v", state, again)
 					}
-					if afterNoOp := call("show", sourcePath, "--format", "graph-json"); afterNoOp != beforeNoOp {
+					if afterNoOp := call("show", scope+sourcePath, "--format", "graph-json"); afterNoOp != beforeNoOp {
 						t.Fatal("same-pair no-op changed the source record")
 					}
 					refuse("revision_conflict", "link", "delete", "--force", linkPath, "--if-revision", added.Link.Revision, "--if-source-revision", source.Revision)
@@ -353,8 +353,8 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if !removed.Changed || removed.Link.Type != typeURL || removed.Link.State != "deleted" {
 						t.Fatalf("canonical unlink did not tombstone typed Link: %+v", removed)
 					}
-					refuse("gone", "show", linkPath)
-					if owner := graphMixedResult[graphstore.IssueRecord](t, call("show", sourcePath, "--format", "graph-json")); len(owner.Owned) != 0 {
+					refuse("gone", "show", scope+linkPath)
+					if owner := graphMixedResult[graphstore.IssueRecord](t, call("show", scope+sourcePath, "--format", "graph-json")); len(owner.Owned) != 0 {
 						t.Fatalf("unlinked native Link remains owned: %+v", owner.Owned)
 					}
 					state = graphInstalledRelationship(t, work, linkPath, source.Properties.ID, target.Properties.ID)

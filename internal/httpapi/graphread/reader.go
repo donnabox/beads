@@ -34,6 +34,18 @@ func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
 	return r.projectResource(ctx, record)
 }
 
+// ResourceSelected resolves a local opaque public ID in storage's checked
+// snapshot before projecting its Resource. Immutable Type descriptors may be
+// read afterward without reselecting the Resource.
+func (r *Reader) ResourceSelected(ctx context.Context, path, localID string) (string, any, error) {
+	selected, record, err := r.store.ReadResourceSelected(ctx, path, localID)
+	if err != nil {
+		return "", nil, err
+	}
+	projected, err := r.projectResource(ctx, record)
+	return selected, projected, err
+}
+
 // ResourceVersion projects one exact retained snapshot through the same BDP
 // representation as Resource. It never fills missing state from a current read
 // or advertises HTTP History support. Installed preview Type definitions are

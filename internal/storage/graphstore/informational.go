@@ -75,6 +75,10 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 			return LinkMutationResult{}, err
 		}
 	}
+	if request.SourceLocalID != "" && request.SourcePath != "beads/"+request.SourceLocalID ||
+		request.TargetLocalID != "" && request.TargetPath != "beads/"+request.TargetLocalID {
+		return LinkMutationResult{}, fmt.Errorf("%w: local Bead ID does not match its candidate path", storage.ErrValidation)
+	}
 	if request.Path != "" {
 		if err := validateLinkPath(request.Path); err != nil {
 			return LinkMutationResult{}, err
@@ -101,6 +105,15 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 	var result LinkMutationResult
 	err = s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		var err error
+		request.SourcePath, err = s.resolveLiveBeadWriteSelectorInTx(ctx, tx, request.SourcePath, request.SourceLocalID)
+		if err != nil {
+			return err
+		}
+		request.TargetPath, err = s.resolveLiveBeadWriteSelectorInTx(ctx, tx, request.TargetPath, request.TargetLocalID)
+		if err != nil {
 			return err
 		}
 		if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
@@ -157,6 +170,11 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
 			return err
+		}
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, path); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
