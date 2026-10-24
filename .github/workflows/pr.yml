@@ -1201,7 +1201,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        scope: [graphstore, remaining]
+        scope: [graphstore-odd, graphstore-even, remaining]
     runs-on: ubuntu-latest
     needs: [build-artifacts, bazel-coverage]
     if: needs.bazel-coverage.outputs.pr_lanes != 'true'
@@ -2640,13 +2640,20 @@ jobs:
 
       # The existing required CI Gate remains the complete PR Core signal:
       # matrix success alone cannot hide an omitted package or lost receipt.
-      - name: Download PR core graphstore evidence
+      - name: Download PR core graphstore-odd evidence
         if: needs.pr-core-wrapper.result == 'success'
         timeout-minutes: 3
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          name: pr-core-go-test-${{ github.sha }}-graphstore
-          path: artifacts/pr-core-scope-results/graphstore
+          name: pr-core-go-test-${{ github.sha }}-graphstore-odd
+          path: artifacts/pr-core-scope-results/graphstore-odd
+      - name: Download PR core graphstore-even evidence
+        if: needs.pr-core-wrapper.result == 'success'
+        timeout-minutes: 3
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: pr-core-go-test-${{ github.sha }}-graphstore-even
+          path: artifacts/pr-core-scope-results/graphstore-even
       - name: Download PR core remaining evidence
         if: needs.pr-core-wrapper.result == 'success'
         timeout-minutes: 3

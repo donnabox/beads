@@ -29,6 +29,8 @@ GROUPS = 4  # Command groups and the default pure partition helper.
 # A native 81-root group exhausted 30m after 79 passing roots.
 # Finer graphstore batches retain every alarm and the total scope deadline.
 GRAPHSTORE_GROUPS = 8
+GRAPHSTORE_SCOPES = ("graphstore-odd", "graphstore-even")
+CI_SCOPES = (*GRAPHSTORE_SCOPES, "remaining")
 DISCOVERY_SECONDS = 900
 GROUP_SECONDS = 2100
 OTHER_SECONDS = 3600
@@ -214,6 +216,13 @@ def partition(names, group_count=GROUPS):
     return groups
 
 
+def selected_group_numbers(scope, count):
+    numbers = list(range(1, count + 1))
+    if scope in GRAPHSTORE_SCOPES:
+        return [number for number in numbers if number % 2 == (1 if scope == "graphstore-odd" else 0)]
+    return numbers
+
+
 def discovered_names(path):
     # -list . also lists benchmarks; those do not run in normal `go test`.
     # Examples and fuzz seed tests DO run normally and must remain in the union.
@@ -268,7 +277,8 @@ def policy_flags(package_parallel=None, test_parallel=None):
 
 
 def execute(root, output, go="go", package_parallel=None, test_parallel=None, json_output=None, scope="all", source_sha=None):
-    require(scope in ("all", "graphstore", "remaining"), "unknown execution scope")
+    require(scope in ("all", "graphstore", *CI_SCOPES), "unknown execution scope")
+    graph_scope = scope == "graphstore" or scope in GRAPHSTORE_SCOPES
     require(source_sha is None or re.fullmatch(r"[0-9a-f]{40}", source_sha), "invalid source revision")
     flags = policy_flags(package_parallel, test_parallel)
     json_flags = [flag for flag in flags if flag != "-v"]
@@ -288,27 +298,30 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
         require(other, "missing remaining package coverage")
         partitions = []
         for label, package, summary_key in (("graphstore", GRAPHSTORE, "groups"), ("cmd-bd", COMMAND, "commandGroups")):
-            if (scope == "graphstore" and package != GRAPHSTORE) or (scope == "remaining" and package == GRAPHSTORE):
+            if (graph_scope and package != GRAPHSTORE) or (scope == "remaining" and package == GRAPHSTORE):
                 continue
             names_file = runner.run(label + "-discovery", [go, "test", *flags, "-list", ".", package], DISCOVERY_SECONDS)
             names = discovered_names(names_file)
             groups = partition(names, GRAPHSTORE_GROUPS if package == GRAPHSTORE else GROUPS)
             plan = dict(package=package, discovered=sorted(names),
-                        excluded=sorted(set(names) - set(sum(groups, []))), groups=groups)
+                        excluded=sorted(set(names) - set(sum(groups, []))), groups=groups,
+                        selectedGroups=selected_group_numbers(scope, len(groups)))
             partitions.append((label, package, summary_key, plan))
         graph_plan = next((plan for _, package, _, plan in partitions if package == GRAPHSTORE), None)
         command_plan = next((plan for _, package, _, plan in partitions if package == COMMAND), None)
-        scoped_packages = [GRAPHSTORE] if scope == "graphstore" else sorted(set(packages) - {GRAPHSTORE}) if scope == "remaining" else sorted(packages)
+        scoped_packages = [GRAPHSTORE] if graph_scope else sorted(set(packages) - {GRAPHSTORE}) if scope == "remaining" else sorted(packages)
         # Preserve the default full-dispatch evidence shape. Explicit CI scopes
         # advertise their exact package ownership and source for the union gate.
         write_json(output / "plan.json", dict(packages=sorted(packages), otherPackages=other,
-                   **{key: graph_plan[key] if graph_plan else [] for key in ("discovered", "excluded", "groups")},
+                   **{key: graph_plan[key] if graph_plan else [] for key in ("discovered", "excluded", "groups", "selectedGroups")},
                    command=command_plan, flags=flags, jsonFlags=json_flags,
                    scope=scope, source=source_sha, scopedPackages=scoped_packages))
         # Separate Go processes reset only each package alarm, not any test body.
         # The same total deadline and strict owned-process cleanup still apply.
         for prefix, package, summary_key, plan in partitions:
             for index, group in enumerate(plan["groups"], 1):
+                if index not in plan["selectedGroups"]:
+                    continue
                 label = f"{prefix}-{index}"
                 write_json(output / (label + "-manifest.json"), group)
                 if not group:
@@ -319,7 +332,7 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
                 census = verify_events(events, [package], group)
                 write_json(output / (label + "-census.json"), census)
                 summary[summary_key].append(dict(label=label, **census))
-        if scope != "graphstore":
+        if not graph_scope:
             events = runner.run("other-packages", [go, "test", *json_flags, "-json", *other], OTHER_SECONDS)
             summary["other"] = verify_events(events, other)
         summary["passed"] = True
@@ -332,19 +345,20 @@ def execute(root, output, go="go", package_parallel=None, test_parallel=None, js
 
 
 def verify_scopes(root, source_sha, package_parallel=None, test_parallel=None):
-    """Recheck both disjoint real-output scopes before the existing Mac gate passes."""
+    """Recheck all source-matched scope outputs and their exact test/package union."""
     require(re.fullmatch(r"[0-9a-f]{40}", source_sha or ""), "missing aggregate source revision")
     summaries = sorted(root.rglob("summary.json"))
-    require(len(summaries) == 2, "both and only both scope artifacts are required")
+    require(len(summaries) == len(CI_SCOPES), "all and only the three scope artifacts are required")
     flags = policy_flags(package_parallel, test_parallel)
     json_flags = [flag for flag in flags if flag != "-v"]
     scopes, coverage, packages = set(), Counter(), None
+    graph_roots, graph_discovered = Counter(), None
     for path in summaries:
         directory = path.parent
         summary = json.loads(path.read_text())
         plan = json.loads((directory / "plan.json").read_text())
         scope = plan.get("scope")
-        require(scope in ("graphstore", "remaining") and scope not in scopes, "duplicate or unexpected scope")
+        require(scope in CI_SCOPES and scope not in scopes, "duplicate or unexpected scope")
         scopes.add(scope)
         require(summary.get("passed") is True and summary.get("failure") is None and summary.get("scope") == scope,
                 "scope did not complete successfully")
@@ -358,27 +372,38 @@ def verify_scopes(root, source_sha, package_parallel=None, test_parallel=None):
         if packages is None:
             packages = discovered
         require(discovered == packages, "scopes disagree on complete package discovery")
-        expected = [GRAPHSTORE] if scope == "graphstore" else sorted(set(packages) - {GRAPHSTORE})
+        graph_scope = scope in GRAPHSTORE_SCOPES
+        expected = [GRAPHSTORE] if graph_scope else sorted(set(packages) - {GRAPHSTORE})
         require(plan.get("scopedPackages") == expected, "scope package selection differs")
         coverage.update(expected)
-        prefix, package, key = ("graphstore", GRAPHSTORE, "groups") if scope == "graphstore" else ("cmd-bd", COMMAND, "commandGroups")
-        selected = plan if scope == "graphstore" else plan.get("command")
+        prefix, package, key = ("graphstore", GRAPHSTORE, "groups") if graph_scope else ("cmd-bd", COMMAND, "commandGroups")
+        selected = plan if graph_scope else plan.get("command")
         require(isinstance(selected, dict), "missing partition discovery")
         require(sorted(discovered_names(directory / (prefix + "-discovery.stdout"))) == selected.get("discovered"),
                 "partition plan differs from compiled test discovery")
         groups = partition(selected["discovered"], GRAPHSTORE_GROUPS if package == GRAPHSTORE else GROUPS)
-        require(selected.get("groups") == groups and len(summary.get(key, [])) == len(groups),
-                "scope did not retain the complete partition")
+        numbers = selected_group_numbers(scope, len(groups))
+        require(selected.get("groups") == groups and selected.get("selectedGroups") == numbers
+                and len(summary.get(key, [])) == len(numbers), "scope did not retain its exact complete partition")
+        require(selected.get("excluded") == sorted(set(selected["discovered"]) - set(sum(groups, []))),
+                "scope changed intentional test exclusions")
+        if graph_scope:
+            if graph_discovered is None:
+                graph_discovered = selected["discovered"]
+            require(selected["discovered"] == graph_discovered, "graphstore scopes disagree on complete test discovery")
         expected_labels = ["package-discovery", prefix + "-discovery"]
-        for index, group in enumerate(groups, 1):
+        for position, index in enumerate(numbers):
+            group = groups[index - 1]
             label = f"{prefix}-{index}"
+            if graph_scope:
+                graph_roots.update(group)
             if not group:
-                require(summary[key][index - 1] == dict(label=label, roots=[], empty=True), "invalid empty group")
+                require(summary[key][position] == dict(label=label, roots=[], empty=True), "invalid empty group")
                 continue
             expected_labels.append(label)
             census = verify_events(directory / (label + ".stdout"), [package], group)
             require(json.loads((directory / (label + "-census.json")).read_text()) == census and
-                    summary[key][index - 1] == dict(label=label, **census), "group proof differs from actual output")
+                    summary[key][position] == dict(label=label, **census), "group proof differs from actual output")
         if scope == "remaining":
             expected_labels.append("other-packages")
             other = sorted(set(packages) - {GRAPHSTORE, COMMAND})
@@ -390,8 +415,10 @@ def verify_scopes(root, source_sha, package_parallel=None, test_parallel=None):
         require(receipts and all(receipt.get("exitCode") == 0 and receipt.get("failure") is None and
                                 receipt.get("groupGone") is True and not receipt.get("cleanupError")
                                 for receipt in receipts), "scope process/cleanup proof failed")
-    require(scopes == {"graphstore", "remaining"} and coverage == Counter({package: 1 for package in packages}),
+    require(scopes == set(CI_SCOPES) and coverage == Counter({package: 2 if package == GRAPHSTORE else 1 for package in packages}),
             "scope union omits or duplicates package coverage")
+    require(graph_roots == Counter(sum(partition(graph_discovered, GRAPHSTORE_GROUPS), [])),
+            "graphstore scope union omits or duplicates test roots")
     return dict(passed=True, source=source_sha, scopes=sorted(scopes), packages=packages)
 
 
@@ -401,9 +428,9 @@ def main():
     parser.add_argument("--package-parallel", type=int)
     parser.add_argument("--test-parallel", type=int)
     parser.add_argument("--json-output", type=Path, help="concatenate raw execution JSON for PR-core/Bazel equivalence")
-    parser.add_argument("--scope", choices=("all", "graphstore", "remaining"), default="all")
+    parser.add_argument("--scope", choices=("all", "graphstore", *CI_SCOPES), default="all")
     parser.add_argument("--source-sha", help="actual checkout revision for CI scope composition")
-    parser.add_argument("--verify-scopes", type=Path, help="verify the two downloaded CI scope artifacts without rerunning tests")
+    parser.add_argument("--verify-scopes", type=Path, help="verify the three downloaded CI scope artifacts without rerunning tests")
     args = parser.parse_args()
     signal.signal(signal.SIGTERM, interrupted)
     signal.signal(signal.SIGINT, interrupted)
