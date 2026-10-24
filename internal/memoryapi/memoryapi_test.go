@@ -265,7 +265,8 @@ func TestResolveKeyRefusesAWhitespaceOnlyExplicitKey(t *testing.T) {
 func TestTitleFromBodyIndependentOfIdentity(t *testing.T) {
 	for _, tc := range []struct{ body, want string }{
 		{"  First \t line\nrest\n", "First line"},
-		{"  \n", ""},
+		{"", "Untitled memory"},
+		{"  \n", "Untitled memory"},
 		{strings.Repeat("雪", 81), strings.Repeat("雪", 79) + "…"},
 	} {
 		if got := TitleFromBody(tc.body); got != tc.want {

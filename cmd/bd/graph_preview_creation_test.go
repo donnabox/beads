@@ -33,7 +33,7 @@ func TestGraphPreviewCreationDefaults(t *testing.T) {
 	}
 	for _, tc := range []struct{ body, title string }{
 		{"  Code  flow\tpolicy\r\nKeep the whole body.", "Code flow policy"},
-		{"\n\t", ""},
+		{"\n\t", "Untitled memory"},
 		{strings.Repeat("雪", 80), strings.Repeat("雪", 80)},
 		{strings.Repeat("雪", 81), strings.Repeat("雪", 79) + "…"},
 	} {

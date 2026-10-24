@@ -34,7 +34,7 @@ func graphPreviewCreateBeadPath(cmd *cobra.Command) (string, error) {
 }
 
 // This is a deterministic display summary, not an inferred semantic title.
-// The complete body remains unchanged. Whitespace-only bodies get an empty title.
+// The complete body remains unchanged; an empty summary gets "Untitled memory".
 func graphPreviewMemoryTitle(body string) string {
 	return memoryapi.TitleFromBody(body)
 }
