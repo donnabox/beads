@@ -66,7 +66,7 @@ func (s *Store) ResolveExactAllocatedResourcePath(ctx context.Context, id string
 
 func (s *Store) resolveAllocatedResourcePath(ctx context.Context, id string, allowShorthand bool) (string, error) {
 	if err := validatePublicID(id); err != nil {
-		return "", fmt.Errorf("%w: invalid local Resource ID", storage.ErrValidation)
+		return "", err
 	}
 	var selected string
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
