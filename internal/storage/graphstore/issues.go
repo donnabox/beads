@@ -104,14 +104,6 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err != nil {
 			return err
 		}
-		// The generated ID is known only after the native writer runs. Check
-		// every lifetime allocation before publishing it; refusal rolls the
-		// native create and its first retained version back together.
-		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
-			return err
-		} else if exists {
-			return ErrAlreadyExists
-		}
 		if path == "" {
 			// The graph path is a separate address from the opaque native ID.
 			// A Memory or deleted Bead may reserve the preferred path while
@@ -143,6 +135,13 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
 			return err
+		}
+		// Check after installing the prospective Type as well: this Resource
+		// cannot take the URL of its own first-use concrete declaration.
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
             (path,resource_kind,type_url,revision,allocation_state,backing,backing_key)

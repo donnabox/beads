@@ -39,7 +39,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+		_, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
 		if err != nil {
 			return err
 		}
@@ -70,12 +70,24 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 		if err := s.afterStage("issue"); err != nil {
 			return err
 		}
-		records = make([]IssueRecord, 0, len(created.Issues))
-		hasInitialNotes := false
+		// Reserve every prospective Type before checking any new Resource ID.
+		// Item order cannot let an earlier Resource claim a later item's Type.
+		declaredTypes := make([]string, len(created.Issues))
 		for index, issue := range created.Issues {
 			if !sameIssueCreateFields(request.Items[index].Issue, issue, request.Actor) || issueops.IsWisp(issue) {
 				return fmt.Errorf("%w: markdown item %d cannot be represented exactly as a durable graph Issue", storage.ErrValidation, index)
 			}
+			declaredTypes[index], err = NativeIssueTypeURL(s.ScopeURL(), string(issue.IssueType))
+			if err != nil {
+				return err
+			}
+			if err := s.ensureNativeTypeInTx(ctx, tx, declaredTypes[index]); err != nil {
+				return err
+			}
+		}
+		records = make([]IssueRecord, 0, len(created.Issues))
+		hasInitialNotes := false
+		for index, issue := range created.Issues {
 			// Generated IDs are known only after the native batch writer runs.
 			// Roll every item back if any public ID is already allocated.
 			if exists, err := publicResourceIDExistsInTx(ctx, tx, issue.ID); err != nil {
@@ -95,13 +107,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issue.ID).Scan(&ordinal); err != nil {
 				return err
 			}
-			issueType, err = NativeIssueTypeURL(s.ScopeURL(), string(issue.IssueType))
-			if err != nil {
-				return err
-			}
-			if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
-				return err
-			}
+			issueType := declaredTypes[index]
 			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
 				(path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
 				VALUES (?,'bead',?,?,'live','issue',?)`, path, issueType, revision, issue.ID); err != nil {
