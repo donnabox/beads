@@ -2,7 +2,10 @@
 
 package graphstore
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestInformationalPairWritesSelectOpaquePublicBeadID(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
@@ -58,5 +61,63 @@ func TestInformationalPairWritesSelectOpaquePublicBeadID(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// A Link's exact public ID must not fall through to a different Memory whose
+// path has that Link ID as a suffix. Both pair writes use this selector.
+func TestInformationalPairWritesRefuseExactLinkIDAsBead(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		for _, state := range []string{"live", "deleted"} {
+			t.Run(backend+"/"+state, func(t *testing.T) {
+				ctx, options := issueExperimentOptions(t, backend)
+				store, err := OpenExisting(ctx, options)
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() { _ = store.Close() })
+				for _, path := range []string{"beads/source", "beads/target", "beads/links/x"} {
+					if _, err := store.Create(ctx, CreateRequest{Path: path, Title: path}); err != nil {
+						t.Fatal(err)
+					}
+				}
+				typ := store.ScopeURL() + "types/references"
+				original, err := store.AddInformationalLink(ctx, LinkCreateRequest{
+					Path: "links/x", TypeURL: typ, SourcePath: "beads/source", TargetPath: "beads/target",
+				})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if state == "deleted" {
+					if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: "links/x", ExpectedRevision: original.Link.Revision}); err != nil {
+						t.Fatal(err)
+					}
+				}
+				if _, err := store.AddInformationalLink(ctx, LinkCreateRequest{
+					Path: "links/pair-decoy", TypeURL: typ, SourcePath: "beads/links/x", TargetPath: "beads/target",
+				}); err != nil {
+					t.Fatal(err)
+				}
+				beforePair := workflowState(t, ctx, store)
+				if _, err := store.Unlink(ctx, LinkDeleteRequest{
+					SourcePath: "beads/links/x", SourceLocalID: "links/x", TargetPath: "beads/target",
+					TypeURL: typ, Unconditional: true, DefaultInformationalSource: true,
+				}); err == nil {
+					t.Error("pair unlink selected the Memory suffix of an exact Link ID")
+				}
+				if after := workflowState(t, ctx, store); !reflect.DeepEqual(beforePair, after) {
+					t.Error("refused pair unlink changed graph state")
+				}
+				beforeCreate := workflowState(t, ctx, store)
+				if _, err := store.AddInformationalLink(ctx, LinkCreateRequest{
+					Path: "links/wrong", TypeURL: typ, SourcePath: "beads/links/x", SourceLocalID: "links/x", TargetPath: "beads/target",
+				}); err == nil {
+					t.Error("Link create selected the Memory suffix of an exact Link ID")
+				}
+				if after := workflowState(t, ctx, store); !reflect.DeepEqual(beforeCreate, after) {
+					t.Error("refused Link create changed graph state")
+				}
+			})
+		}
 	}
 }
