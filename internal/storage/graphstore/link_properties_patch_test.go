@@ -242,7 +242,8 @@ func TestLinkPropertiesPatchRefusalAndRollback(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			if _, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "fixture"}); err != nil {
+			blocking, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "fixture"})
+			if err != nil {
 				t.Fatal(err)
 			}
 			before := workflowState(t, ctx, s)
@@ -273,7 +274,11 @@ func TestLinkPropertiesPatchRefusalAndRollback(t *testing.T) {
 			}{
 				{"actor", func(r *LinkPropertiesPatchRequest) { r.Actor = "\xff" }, storage.ErrValidation},
 				{"missing", func(r *LinkPropertiesPatchRequest) { r.Path = "links/missing" }, ErrNotFound},
-				{"blocking-Type", func(r *LinkPropertiesPatchRequest) { r.Path = "links/block" }, storage.ErrValidation},
+				{"blocking-Type", func(r *LinkPropertiesPatchRequest) {
+					r.Path = "links/block"
+					r.ExpectedRevision = blocking.Link.Revision
+					r.ExpectedSourceRevision = blocking.Source.Revision
+				}, storage.ErrValidation},
 				{"both-link-guards", func(r *LinkPropertiesPatchRequest) { r.Unconditional = true }, storage.ErrValidation},
 				{"neither-link-guard", func(r *LinkPropertiesPatchRequest) { r.ExpectedRevision = "" }, storage.ErrValidation},
 				{"both-source-guards", func(r *LinkPropertiesPatchRequest) { r.UnconditionalSource = true }, storage.ErrValidation},

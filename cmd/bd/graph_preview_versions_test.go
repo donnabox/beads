@@ -346,11 +346,15 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 			t.Fatalf("create/update should retain two citable Link versions, got %d: %+v", len(rows), rows)
 		}
 		if removedLink.Link.Version == "" {
-			t.Fatal("unlink did not report its private deletion token")
+			t.Fatal("unlink did not report its terminal deletion revision")
 		}
 		human := run(t, "versions", "links/related")
-		if strings.Contains(human, removedLink.Link.Version) {
-			t.Fatalf("non-citable deletion token appeared in human version list:\n%s", human)
+		live, terminal, found := strings.Cut(human, "\nCurrent state: deleted\n")
+		if !found || !strings.Contains(terminal, "deletion revision: "+removedLink.Link.Version) {
+			t.Fatalf("removed Link has no separate terminal deletion descriptor:\n%s", human)
+		}
+		if strings.Contains(live, removedLink.Link.Version) {
+			t.Fatalf("non-citable deletion revision appeared in live version list:\n%s", human)
 		}
 		if !strings.Contains(human, "This Link has been removed.") {
 			t.Fatalf("removed Link has no human state notice:\n%s", human)
