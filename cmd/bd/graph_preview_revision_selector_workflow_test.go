@@ -154,6 +154,20 @@ func TestGraphPreviewPositionalLinkPreservesShippingKinds(t *testing.T) {
 					if len(links) != 1 || links[0].Type != scope+"types/dependency" || links[0].Properties["dep_type"] != tc.kind {
 						t.Fatalf("positional Link changed native kind: %+v", links)
 					}
+					selected := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", source, "--type", tc.kind))
+					if len(selected) != 1 || selected[0].ID != links[0].ID {
+						t.Fatalf("Link list lost exact native kind %q: %+v", tc.kind, selected)
+					}
+					count := graphMixedResult[map[string]int](t, call("link", "count", "--source", source, "--type", tc.kind))
+					if count["count"] != 1 {
+						t.Fatalf("Link count lost exact native kind %q: %+v", tc.kind, count)
+					}
+					if tc.kind != "blocks" {
+						absent := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", source, "--type", "blocks"))
+						if len(absent) != 0 {
+							t.Fatalf("native kind %q was coerced to blocks: %+v", tc.kind, absent)
+						}
+					}
 					if repeated := call("link", source, target, "--type", tc.kind); repeated != added {
 						t.Fatalf("repeated positional Link changed feedback: %s", repeated)
 					}
@@ -166,6 +180,7 @@ func TestGraphPreviewPositionalLinkPreservesShippingKinds(t *testing.T) {
 			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "link", "create", "blocked-by-source", "blocked-by-target", "--type", "my-own-kind", "--json")
 			for _, kind := range []string{"", strings.Repeat("x", 33)} {
 				graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "blocked-by-source", "blocked-by-target", "--type", kind, "--json")
+				graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "list", "--type", kind, "--json")
 			}
 		})
 	}

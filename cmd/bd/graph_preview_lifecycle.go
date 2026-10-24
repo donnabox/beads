@@ -163,6 +163,7 @@ func init() {
 	linkCreateCmd.Flags().String("if-source-revision", "", "Require the owning Bead revision")
 	for _, command := range []*cobra.Command{linkListCmd, linkCountCmd} {
 		registerGraphLinkTypeFlag(command)
+		command.Flags().Lookup("type").Usage = "Installed Link Type or exact native Dependency kind"
 		if command == linkListCmd {
 			command.Flags().Lookup("type").Usage += "; with --output-format, requires a canonical absolute HTTP(S) Type URI without alias or Dependency-kind resolution"
 		}
@@ -260,7 +261,7 @@ func graphPreviewFilterLinkKind(cmd *cobra.Command, links []graphstore.LinkRecor
 	if graphPreviewNominalSelector(selector) {
 		return links
 	}
-	kind := string(canonicalDependencyType(types.DependencyType(selector)))
+	kind := selector
 	matching := links[:0]
 	for _, link := range links {
 		if link.Properties["dep_type"] == kind {
@@ -268,6 +269,22 @@ func graphPreviewFilterLinkKind(cmd *cobra.Command, links []graphstore.LinkRecor
 		}
 	}
 	return matching
+}
+
+// Legacy Link reads may select the exact native kind stored by positional
+// bd link. Canonical output continues to select only absolute Link Type URIs.
+func graphPreviewLinkReadType(cmd *cobra.Command) (string, error) {
+	if !cmd.Flags().Changed("type") {
+		return "", nil
+	}
+	selector, _ := cmd.Flags().GetString("type")
+	if graphPreviewNominalSelector(selector) {
+		return graphPreviewLinkType(cmd)
+	}
+	if !types.DependencyType(selector).IsValid() || !utf8.ValidString(selector) {
+		return "", graphFailure("invalid_selector", fmt.Sprintf("invalid dependency type %q: must be non-empty UTF-8 and at most %d bytes", selector, types.MaxDependencyTypeLen), 2)
+	}
+	return graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL), nil
 }
 
 // Only the human view shortens URLs. JSON retains canonical IDs and foreign
@@ -288,7 +305,7 @@ func graphPreviewLinkCollectionRequest(cmd *cobra.Command) (graphstore.LinkColle
 		return request, err
 	}
 	var err error
-	request.TypeURL, err = graphPreviewLinkType(cmd)
+	request.TypeURL, err = graphPreviewLinkReadType(cmd)
 	if err != nil {
 		return request, err
 	}

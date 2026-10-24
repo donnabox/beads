@@ -520,13 +520,13 @@ a properties edit.
 bd link policy work --type types/references \
   --id policy-work --properties '{"body":"work follows this policy"}' \
   --metadata '{"origin":"manual"}'
-bd links policy
+bd link list --incident-to policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
 bd unlink policy-work --unconditional
 ```
 
-`bd links ID` lists current incident Links with Type first and in-Scope IDs
+`bd link list --incident-to ID` lists current incident Links with Type first and in-Scope IDs
 relative to the Scope URL; JSON retains canonical URLs. `bd link SOURCE TARGET`
 without `--type` is an Issue dependency shorthand. Direct References Links
 are unowned. Other selected families have source ownership: Memory owns
@@ -543,6 +543,12 @@ nonblocking kinds here; neither becomes `blocks`. `bd dep add --type` treats
 those two spellings as aliases for `blocks` and admits only built-in kinds.
 Canonical `bd link create --type` selects an installed Link Type, so it does
 not accept a custom native Dependency kind.
+
+On legacy reads, `bd link list --type KIND` and `bd link count --type KIND`
+select that exact stored native kind, including custom kinds and the literal
+`depends-on` or `blocked-by` spellings. Use `--type types/NAME` to select a
+nominal Link Type instead. Canonical collection output still uses the absolute
+Link Type URI; it does not infer a kind filter from `--type`.
 
 Link updates accept the current Link by default; `--if-revision TOKEN`
 rejects a stale Link. Removal needs `--if-revision TOKEN` or `--unconditional`
