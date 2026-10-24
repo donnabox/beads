@@ -20,8 +20,17 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 		return graphFailure("capability_unavailable", "multi-ID show supports current Issue details only", 5)
 	}
 	selectors := make([]struct{ path, localID string }, 0, len(args))
-	for _, arg := range args {
-		ref, err := graphPreviewParseReference(arg)
+	literalIDs, _ := cmd.Flags().GetStringArray("id")
+	for index, arg := range args {
+		resolve := graphPreviewResolveMemoryArgument
+		if index >= len(args)-len(literalIDs) {
+			resolve = graphPreviewResolveLiteralArgument
+		}
+		argument, err := resolve(arg)
+		if err != nil {
+			return err
+		}
+		ref, err := graphPreviewParseReference(argument)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -64,7 +73,6 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 			}
 			if shortMode {
 				shorthand := *issue.Properties
-				shorthand.ID = issue.Properties.ID
 				lines = append(lines, formatShortIssue(&shorthand))
 				continue
 			}

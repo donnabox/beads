@@ -4,6 +4,8 @@ package main
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -235,6 +237,68 @@ func TestGraphPreviewCommonIdentityIssueDelete(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", issue.ID, "--json")
 			if call("show", memory.ID) != memoryBefore {
 				t.Fatal("Issue deletion selected the Memory whose public ID matches its private locator")
+			}
+		})
+	}
+}
+
+func TestGraphPreviewCommonIdentityLiteralIssueAdapters(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/literal-issue/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			one := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal Issue", "--id", "work@literal", "--force"))
+			two := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other Issue"))
+			for _, args := range [][]string{
+				{"show", one.Properties.ID, two.Properties.ID},
+				{"show", "--id", one.Properties.ID, "--id", two.Properties.ID},
+				{"show", one.Properties.ID, "--id", two.Properties.ID},
+			} {
+				var rows []map[string]any
+				if err := json.Unmarshal([]byte(call(args...)), &rows); err != nil {
+					t.Fatal(err)
+				}
+				if len(rows) != 2 || rows[0]["id"] != one.Properties.ID || rows[1]["id"] != two.Properties.ID {
+					t.Fatalf("literal multi selector changed identity: %+v", rows)
+				}
+			}
+			for _, flag := range []string{"--refs", "--children"} {
+				for _, selector := range [][]string{{one.Properties.ID}, {"--id", one.Properties.ID}} {
+					var rows map[string]json.RawMessage
+					if err := json.Unmarshal([]byte(call(append([]string{"show", flag}, selector...)...)), &rows); err != nil {
+						t.Fatal(err)
+					}
+					if _, ok := rows[one.Properties.ID]; !ok {
+						t.Fatalf("literal related selector changed identity: %+v", rows)
+					}
+				}
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "--refs", "--id", "work@no-such-key", "--json")
+			empty := graphPolicyCLI(t, bd, work, home, nil, "", "comments", one.Properties.ID)
+			if strings.TrimSpace(empty) != "No comments on "+one.Properties.ID {
+				t.Fatalf("empty comments leaked private locator: %s", empty)
+			}
+			call("comments", "add", one.Properties.ID, "A native comment")
+			comments := graphPolicyCLI(t, bd, work, home, nil, "", "comments", one.Properties.ID)
+			if !strings.Contains(comments, "Comments on "+one.Properties.ID+":") || strings.Contains(comments, "beads/"+one.Properties.ID) {
+				t.Fatalf("comments leaked private locator: %s", comments)
+			}
+			editor := filepath.Join(t.TempDir(), "editor")
+			if err := os.WriteFile(editor, []byte("#!/bin/sh\nprintf 'Edited native title\\n' > \"$1\"\n"), 0700); err != nil {
+				t.Fatal(err)
+			}
+			edited := graphPolicyCLI(t, bd, work, home, []string{"EDITOR=" + editor}, "", "edit", one.Properties.ID, "--title")
+			if !strings.Contains(edited, one.Properties.ID) || strings.Contains(edited, "beads/"+one.Properties.ID) {
+				t.Fatalf("editor feedback leaked private locator: %s", edited)
+			}
+			current := graphMixedResult[graphstore.IssueRecord](t, call("show", one.ID, "--format", "graph-json"))
+			if current.ID != one.ID || current.Properties.Title != "Edited native title" {
+				t.Fatalf("editor changed identity or lost title: %+v", current)
 			}
 		})
 	}

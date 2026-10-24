@@ -25,8 +25,17 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 		return graphFailure("capability_unavailable", "--refs and --children require current Issues in the familiar output format", 5)
 	}
 	selectors := make([]struct{ path, localID string }, 0, len(args))
-	for _, arg := range args {
-		ref, err := graphPreviewParseReference(arg)
+	literalIDs, _ := cmd.Flags().GetStringArray("id")
+	for index, arg := range args {
+		resolve := graphPreviewResolveMemoryArgument
+		if index >= len(args)-len(literalIDs) {
+			resolve = graphPreviewResolveLiteralArgument
+		}
+		argument, err := resolve(arg)
+		if err != nil {
+			return err
+		}
+		ref, err := graphPreviewParseReference(argument)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}

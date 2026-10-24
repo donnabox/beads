@@ -29,14 +29,18 @@ func runGraphPreviewComments(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
+		identity, err := store.AllocatedResourceIdentityForPath(ctx, path)
+		if err != nil {
+			return nil, "", err
+		}
 		if comments == nil {
 			comments = []*types.Comment{}
 		}
 		if len(comments) == 0 {
-			return comments, "No comments on " + path, nil
+			return comments, "No comments on " + identity.PublicID, nil
 		}
 		var out strings.Builder
-		fmt.Fprintf(&out, "\nComments on %s:\n\n", path)
+		fmt.Fprintf(&out, "\nComments on %s:\n\n", identity.PublicID)
 		for _, comment := range comments {
 			ts := comment.CreatedAt
 			if localTime {
