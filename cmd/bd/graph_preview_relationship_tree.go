@@ -194,7 +194,7 @@ func graphDepthBoundary(depth int, id string) string {
 
 func (t *graphRelationshipTree) nodeLabel(id string) string {
 	n := t.nodes[id]
-	label := t.label(id) + " [" + t.label(n.Type) + "]"
+	label := t.label(id) + " [" + graphHumanType(t.result.Scope, n.Type) + "]"
 	if n.Status != "" {
 		label += " (" + t.label(n.Status) + ")"
 	}
@@ -322,11 +322,11 @@ func (t *graphRelationshipTree) writeLines(lines []graphTreeLine, prefix string)
 			arrow = "←"
 		}
 		l := line.link
-		node := t.label(line.next) + " [" + t.label(t.nodes[line.next].Type) + "]"
+		node := t.label(line.next) + " [" + graphHumanType(t.result.Scope, t.nodes[line.next].Type) + "]"
 		if line.reference == "" {
 			node = t.nodeLabel(line.next)
 		}
-		text := fmt.Sprintf("%s%s[%s] (%s) %s %s%s", prefix, branch, t.label(l.Type), t.label(l.ID), arrow, node, line.reference)
+		text := fmt.Sprintf("%s%s[%s] (%s) %s %s%s", prefix, branch, graphHumanType(t.result.Scope, l.Type), t.label(l.ID), arrow, node, line.reference)
 		if l.SourceRevision != "" || l.TargetRevision != "" {
 			text += fmt.Sprintf(" [source revision=%s target revision=%s]", strconv.QuoteToGraphic(l.SourceRevision), strconv.QuoteToGraphic(l.TargetRevision))
 		}

@@ -150,6 +150,45 @@ func TestGraphRelationshipTreePreservesLiteralSegmentsAndForeignURLs(t *testing.
 	}
 }
 
+func TestGraphRelationshipTreeHumanTypeLabels(t *testing.T) {
+	task, err := graphstore.NativeIssueTypeURL(genericTestScope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blocks, err := graphstore.NativeDependencyTypeURL(genericTestScope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := graphTreeTestResult("a", "out", []string{"a", "b", "c", "d"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"parallel", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"ad", "a", "d"})
+	r.Nodes[0].Type, r.Nodes[1].Type = task, task
+	r.Nodes[2].Type = genericTestScope + "types/task" // a distinct generic Type
+	r.Nodes[3].Type = "https://foreign.invalid/types/task"
+	r.Links[0].Type, r.Links[1].Type = blocks, blocks
+	r.Links[3].Type = "https://foreign.invalid/types/blocks"
+	before := fmt.Sprintf("%#v", r)
+	text := graphTreeTestText(t, r)
+	for _, label := range []string{"beads/a [task]", "beads/b [task]", "beads/b [task] (shown elsewhere)", "[blocks] (links/ab)", "beads/c [types/task]", "beads/d [https://foreign.invalid/types/task]", "[https://foreign.invalid/types/blocks] (links/ad)"} {
+		if !strings.Contains(text, label) {
+			t.Fatalf("tree changed Type identity classification or literal data %q:\n%s", label, text)
+		}
+	}
+	if before != fmt.Sprintf("%#v", r) {
+		t.Fatal("human Type labels mutated canonical selection")
+	}
+	// The shared Type helper already escapes display text. Applying the tree's
+	// data escaper again would double the backslash in this one-line label.
+	escaped, err := graphstore.NativeIssueTypeURL(genericTestScope, "label\nline")
+	if err != nil {
+		t.Fatal(err)
+	}
+	r = graphTreeTestResult("a", "out", []string{"a"})
+	r.Nodes[0].Type = escaped
+	text = graphTreeTestText(t, r)
+	if !strings.Contains(text, `[label\nline]`) || strings.Contains(text, `[label\\nline]`) {
+		t.Fatalf("shared Type display was escaped twice: %q", text)
+	}
+}
+
 func TestGraphRelationshipTreeEscapesAndPreservesData(t *testing.T) {
 	r := graphTreeTestResult("a", "out", []string{"a", "b"}, genericTestEdge{"ab", "a", "b"})
 	r.Nodes[0].Type = genericTestScope + "types/issue"
