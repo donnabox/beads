@@ -31,6 +31,9 @@ const (
 	shutdownSpawnWaitDeadline = openDeadline + 2*shutdownConfirmDeadline
 )
 
+// afterActiveSpawnMarker is a test observation point after releasing proxy.lock.
+var afterActiveSpawnMarker = func() {}
+
 type killRecordChecks struct {
 	VerifyRoot       bool
 	CheckSpawnMarker bool
@@ -190,6 +193,7 @@ func stopAndAcquire(
 				}
 				if active {
 					lock.Unlock()
+					afterActiveSpawnMarker()
 					now := time.Now()
 					if spawnDeadline.IsZero() {
 						spawnDeadline = now.Add(shutdownSpawnWaitDeadline)

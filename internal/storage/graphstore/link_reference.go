@@ -143,6 +143,13 @@ func (r *LinkRecord) UnmarshalJSON(raw []byte) error {
 // authority transaction. Exact lookup never substitutes current state, and
 // errors retain the existing missing/gone/unknown distinctions.
 func (s *Store) endpointPinInTx(ctx context.Context, tx *sql.Tx, path string, pin EndpointPin, used *uint64) (string, error) {
+	return s.endpointPinInTxBudget(ctx, tx, path, pin, used, false)
+}
+
+// Historical Link composition charges earlier retained roles and the current
+// working set before decoding an additional explicit endpoint pin. Ordinary pin
+// writes retain their existing acquisition policy.
+func (s *Store) endpointPinInTxBudget(ctx context.Context, tx *sql.Tx, path string, pin EndpointPin, used *uint64, includeCurrent bool) (string, error) {
 	if pin.Current && pin.Revision != "" {
 		return "", fmt.Errorf("%w: choose current or exact endpoint revision", graph.ErrValidation)
 	}
@@ -161,6 +168,11 @@ func (s *Store) endpointPinInTx(ctx context.Context, tx *sql.Tx, path string, pi
 	}
 	if err := reserveEndpointVersionBytes(ctx, tx, path, pin.Revision, used); err != nil {
 		return "", err
+	}
+	if includeCurrent {
+		if err := checkCurrentReadBytesAdditional(ctx, tx, *used); err != nil {
+			return "", err
+		}
 	}
 	value, err := s.readVersionInTx(ctx, tx, path, pin.Revision)
 	if err != nil {

@@ -102,7 +102,11 @@ func TestGraphPreviewBlockedAdmission(t *testing.T) {
 }
 
 func TestGraphPreviewBlockedOutput(t *testing.T) {
-	item := graphstore.BlockedIssue{Issue: graphstore.IssueRecord{ID: "https://example.test/beads/work", Revision: "v1", Version: "v1", Properties: &types.Issue{ID: "native-private-property", Title: "Line\n雪", Priority: 1}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}, BlockedBy: []string{"https://example.test/beads/prereq"}}
+	taskType, err := graphstore.NativeIssueTypeURL("https://example.test/", "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	item := graphstore.BlockedIssue{Issue: graphstore.IssueRecord{ID: "https://example.test/beads/work", Type: taskType, Revision: "v1", Version: "v1", Properties: &types.Issue{ID: "native-private-property", IssueType: types.TypeTask, Title: "Line\n雪", Priority: 1}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}, BlockedBy: []string{"https://example.test/beads/prereq"}}
 	for _, quiet := range []bool{false, true} {
 		output, err := renderGraphIssueBlocked([]graphstore.BlockedIssue{item}, true, quiet)
 		if err != nil {

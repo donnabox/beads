@@ -124,10 +124,10 @@ func (s *Store) ReadResourceWithIssueDetailsSelected(ctx context.Context, path, 
 
 func (s *Store) readResourceSelected(ctx context.Context, path, localID string, opts workapi.DetailOptions, includeDetails bool) (string, any, *types.IssueDetails, error) {
 	if localID == "" {
-		if err := validateResourcePath(path); err != nil {
+		if err := s.validateResourceReadAddress(path); err != nil {
 			return "", nil, nil, err
 		}
-	} else if path != "beads/"+localID || validatePath(path) != nil || validateLinkPath("links/"+localID) != nil {
+	} else if path != "beads/"+localID || validatePublicID(localID) != nil {
 		return "", nil, nil, fmt.Errorf("%w: invalid local Resource ID", storage.ErrValidation)
 	}
 	var selectedPath string
@@ -141,27 +141,55 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 			return err
 		}
 		if localID == "" {
-			selectedPath = path
 			var err error
-			record, err = s.readCurrentVerifiedInTx(ctx, tx, path)
+			selectedPath, err = s.resolveResourceReadAddressInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			record, err = s.readCurrentVerifiedInTx(ctx, tx, selectedPath)
 			if err != nil {
 				return err
 			}
 		} else {
-			// Memory and Link public IDs are their allocated graph paths in this
-			// preview. Bare suffixes remain compatibility shorthand; an Issue's
-			// private graph path is never a second local Issue identity.
+			// Memory and Link public IDs come from the immutable catalog. Legacy
+			// suffix shorthand is confined to allocations without explicit public IDs;
+			// a private path is never a second identity.
 			exactNonIssuePath := ""
-			if validatePath(localID) == nil || validateLinkPath(localID) == nil {
-				var backing string
-				err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live'`, localID).Scan(&backing)
-				if err != nil && !errors.Is(err, sql.ErrNoRows) {
+			rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=? AND allocation_state='live' LIMIT 2`, localID)
+			if err != nil {
+				return err
+			}
+			for rows.Next() {
+				if exactNonIssuePath != "" {
+					_ = rows.Close()
+					return fmt.Errorf("%w: public ID has multiple live allocations", ErrInvalidStore)
+				}
+				if err := rows.Scan(&exactNonIssuePath); err != nil {
+					_ = rows.Close()
 					return err
 				}
-				if err == nil && (backing == "generic" || backing == "dependency" || backing == "informational") {
-					exactNonIssuePath = localID
+			}
+			if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+				return err
+			}
+			if exactNonIssuePath == "" {
+				// Explicit public IDs remain authoritative through deletion;
+				// old NULL-ID suffix compatibility retains its former policy.
+				var deleted int
+				if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE public_id=? AND allocation_state='deleted'`, localID).Scan(&deleted); err != nil {
+					return err
+				}
+				if deleted > 1 {
+					return fmt.Errorf("%w: duplicate deleted public IDs", ErrInvalidStore)
+				}
+				if deleted == 1 {
+					return ErrGone
+				}
+				if validatePath(path) != nil || validateLinkPath("links/"+localID) != nil {
+					return ErrNotFound
 				}
 			}
+
 			issuePath, issue, issueErr := s.resolveExactLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: path, NativeID: localID})
 			exactIssue := issueErr == nil
 			if issueErr != nil && !errors.Is(issueErr, ErrNotFound) && !errors.Is(issueErr, errNonIssueSelector) {
@@ -188,7 +216,7 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 			if exactNonIssuePath == "" && !exactIssue {
 				for _, candidate := range []struct{ path, backing string }{{path, "generic"}, {"links/" + localID, "link"}} {
 					var backing string
-					err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live'`, candidate.path).Scan(&backing)
+					err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live' AND public_id IS NULL`, candidate.path).Scan(&backing)
 					if errors.Is(err, sql.ErrNoRows) {
 						continue
 					}
@@ -215,7 +243,7 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 				err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog
 					WHERE allocation_state='deleted' AND
 					((backing='issue' AND backing_key=?) OR
-					 (backing IN ('generic','dependency','informational') AND path=?))`, localID, localID).Scan(&deleted)
+					 (backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?))`, localID, localID).Scan(&deleted)
 				if err != nil {
 					return err
 				}
@@ -295,7 +323,7 @@ func (s *Store) projectIssueDetailIDsInTx(ctx context.Context, tx *sql.Tx, detai
 		if err != nil {
 			return err
 		}
-		if kind != "bead" || typ != issueType || state != "live" || validatePath(path) != nil {
+		if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || state != "live" || validatePath(path) != nil {
 			return fmt.Errorf("%w: invalid Issue detail allocation", ErrInvalidStore)
 		}
 		validated[nativeID] = true

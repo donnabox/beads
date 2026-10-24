@@ -1201,7 +1201,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        scope: [graphstore, remaining]
+        scope: [graphstore-odd, graphstore-even, remaining]
     runs-on: ubuntu-latest
     needs: [build-artifacts, bazel-coverage]
     if: needs.bazel-coverage.outputs.pr_lanes != 'true'
@@ -2313,8 +2313,12 @@ jobs:
 
   # Required graph-core checkpoint, including the installed mixed workflow and
   # optional-by-default real-engine tests. Never infer this capability from a normal suite with service skips.
-  graph-c0:
-    name: Graph core / real engines, installed CLI and BDP
+  graph-c0-cohort:
+    name: Graph core / ${{ matrix.cohort }}
+    strategy:
+      fail-fast: false
+      matrix:
+        cohort: [storage, cli-http]
     needs: build-artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -2391,6 +2395,7 @@ jobs:
         run: |
           export PATH="$RUNNER_TEMP/graph-c0-bin:$PATH"
           python3 scripts/ci/graph-c0-qualify.py \
+            --cohort "${{ matrix.cohort }}" \
             --bd "$RUNNER_TEMP/graph-c0-bin/bd" \
             --dolt "$RUNNER_TEMP/graph-c0-bin/dolt" \
             --artifacts "$RUNNER_TEMP/graph-c0-build" \
@@ -2402,12 +2407,52 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: graph-c0-${{ github.sha }}
+          name: graph-c0-${{ matrix.cohort }}-${{ github.sha }}
           path: |
             ${{ runner.temp }}/graph-c0-evidence/
             ${{ runner.temp }}/graph-c0-build/build-manifest.txt
             ${{ runner.temp }}/graph-c0-build/SHA256SUMS
             ${{ runner.temp }}/bdp-client-build/
+          retention-days: 14
+          if-no-files-found: error
+
+
+  # Preserve the required check name, but accept no incomplete/mismatched cohort.
+  graph-c0:
+    name: Graph core / real engines, installed CLI and BDP
+    if: ${{ always() }}
+    needs: [build-artifacts, graph-c0-cohort]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+      - name: Require every graph cohort to succeed
+        env:
+          COHORT_RESULT: ${{ needs.graph-c0-cohort.result }}
+        run: test "$COHORT_RESULT" = success
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ci-build-artifacts
+          path: ${{ runner.temp }}/graph-c0-build
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: graph-c0-storage-${{ github.sha }}
+          path: ${{ runner.temp }}/graph-c0-cohorts/storage
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: graph-c0-cli-http-${{ github.sha }}
+          path: ${{ runner.temp }}/graph-c0-cohorts/cli-http
+      - name: Verify complete source-bound graph fan-in
+        run: |
+          python3 scripts/ci/graph-c0-qualify.py \
+            --combine-cohorts "$RUNNER_TEMP/graph-c0-cohorts" \
+            --artifacts "$RUNNER_TEMP/graph-c0-build" \
+            --output "$RUNNER_TEMP/graph-c0-combined.json"
+      - name: Preserve combined graph qualification
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: graph-c0-${{ github.sha }}
+          path: ${{ runner.temp }}/graph-c0-combined.json
           retention-days: 14
           if-no-files-found: error
 
@@ -2595,13 +2640,20 @@ jobs:
 
       # The existing required CI Gate remains the complete PR Core signal:
       # matrix success alone cannot hide an omitted package or lost receipt.
-      - name: Download PR core graphstore evidence
+      - name: Download PR core graphstore-odd evidence
         if: needs.pr-core-wrapper.result == 'success'
         timeout-minutes: 3
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
-          name: pr-core-go-test-${{ github.sha }}-graphstore
-          path: artifacts/pr-core-scope-results/graphstore
+          name: pr-core-go-test-${{ github.sha }}-graphstore-odd
+          path: artifacts/pr-core-scope-results/graphstore-odd
+      - name: Download PR core graphstore-even evidence
+        if: needs.pr-core-wrapper.result == 'success'
+        timeout-minutes: 3
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: pr-core-go-test-${{ github.sha }}-graphstore-even
+          path: artifacts/pr-core-scope-results/graphstore-even
       - name: Download PR core remaining evidence
         if: needs.pr-core-wrapper.result == 'success'
         timeout-minutes: 3

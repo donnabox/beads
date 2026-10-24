@@ -101,7 +101,7 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 				{issue.ID, issue.Revision, issue.Metadata},
 				{link.Link.ID, link.Link.Revision, link.Link.Metadata},
 			} {
-				raw := graphMixedResult[map[string]any](t, call("show", saved.id, "--version", saved.version))
+				raw := graphMixedResult[map[string]any](t, call("show", saved.id, "--revision", saved.version))
 				metadata, err := json.Marshal(raw["metadata"])
 				if err != nil || !bytes.Equal(metadata, saved.metadata) {
 					t.Fatalf("retained %s metadata = %s, want %s (%v)", saved.id, metadata, saved.metadata, err)

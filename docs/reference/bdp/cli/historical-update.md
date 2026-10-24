@@ -16,7 +16,7 @@ An effective write creates one fresh revision. The native preview result's `attr
 
 For a live Bead, if the final content equals the current content, the operation returns `changed: false` and preserves the entire current envelope, including earlier historical context. Selecting a source alone never creates an audit revision.
 
-An unknown, foreign, invalid, or unavailable source refuses without writing. Link historical updates refuse. Shipping `bd restore` behavior is unchanged.
+An unknown, foreign, invalid, or unavailable source refuses without writing. Informational and native Dependency Links support the checked historical flow below. Native writes retain their Issue-domain validation and source ownership. Shipping `bd restore` behavior is unchanged.
 
 ## Recovering a deleted Bead
 
@@ -55,3 +55,25 @@ Native notes overwrite and active-assignment protections continue to apply again
 Deletion removed native labels and node-local leases; recovery does not replay them from the source or last-current payload. Removed parent/Dependency/owned-Link structure also stays removed. Native workflow status and assignee alone do not regrant an old lease. The native journal records materializing the missing row; graph Inception separately identifies the same-allocation recovery. Shipping native `bd restore` remains unchanged.
 
 Graph Issue history can now contain both native snapshots and graph terminal revisions. Its local ordering includes D; underlying native Issue history keeps its own ordinals. Terminal tokens remain unavailable as editable content sources before and after recovery.
+
+## Informational Link updates and recovery
+
+Use a retained Link revision to restore its editable properties and metadata, or to recover a deleted Link with its original ID:
+
+```sh
+bd link versions LINK --json
+bd link update LINK --from-revision LIVE_SOURCE_TOKEN --if-revision CURRENT_TOKEN --json
+bd link update LINK --from-revision LIVE_SOURCE_TOKEN --patch '[{"op":"replace","path":"/note","value":"Revised historical note"}]' --json
+# After deletion, obtain D from currentState.revision in link versions:
+bd link update LINK --from-revision LIVE_SOURCE_TOKEN --if-revision DELETION_TOKEN --json
+```
+
+The source supplies properties and common metadata before explicit edits. The current Link Type, source/target identities, stored endpoint pins and ownership remain current; recovery uses the separately validated final live baseline for those facts. Selecting an old Link revision does not restore its old pins. Existing explicit `--source-revision` and `--target-revision` flags remain independent pin edits; owned-source pins still refuse.
+
+For an owned Link, `--if-source-revision TOKEN` independently checks the current owning Bead. An effectful Link change creates its fresh Link revision and one new owning Bead revision in the same transaction. Source-only live equality preserves both complete envelopes. Recovery always appends a fresh live Link revision, even for identical content.
+
+`bd link versions LINK --json` returns the current deletion descriptor and lists every retained D separately in `terminal_versions`, including old D rows after recovery. A D token is never citable live content. Missing/deleted endpoints, stale guards, unknown or deleted source revisions, unavailable pins and invalid current Type constraints refuse atomically. Native Dependency Links preserve local unpinned Issue endpoints. Their only property is the native `dep_type` string; common metadata is editable. Native cycle, hierarchy and readiness checks still apply, and the owning source receives one native version. Recovery refuses an endpoint pair already reasserted under another Link ID.
+
+The Link implementation crosswalk is recorded in `engdocs/GRAPH_LINK_HISTORICAL_UPDATE.md`.
+
+This storage generation is schema 9. Existing schema-8 preview workspaces are refused without migration; create a safe successor workspace rather than opening old data with the new binary.

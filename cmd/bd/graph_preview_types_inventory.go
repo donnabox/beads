@@ -9,27 +9,26 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
-	"github.com/steveyegge/beads/internal/types"
 )
 
 // graphPreviewTypesInventory renders the provider's selected definitions. It
 // neither installs definitions nor assumes a particular Memory catalog or parent
-// graph. Text lists nominal Type IDs separately from Issue classifications and
-// Dependency kinds; JSON and details describe the installed Types themselves.
-func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, customTypes []string, details, assessmentsEnabled bool) (graphTypeInventory, string, error) {
+// graph. Text, JSON and details describe the actual declared Types; native
+// classification shorthands do not form a second inventory authority.
+func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, details, assessmentsEnabled bool) (graphTypeInventory, string, error) {
 	descriptors := append([]graph.TypeDescriptor(nil), selected...)
 	sort.Slice(descriptors, func(i, j int) bool {
 		return graph.CompareCodeUnits(descriptors[i].ID(), descriptors[j].ID()) < 0
 	})
 	inventory := graphTypeInventory{BeadTypes: []json.RawMessage{}, LinkTypes: []json.RawMessage{}}
-	var beads, links, issueClasses, dependencyKinds strings.Builder
-	beadCount, linkCount, issueClassCount, dependencyKindCount := 0, 0, 0, 0
+	var beads, links strings.Builder
+	beadCount, linkCount := 0, 0
 	add := func(out *strings.Builder, count *int, name, description string) {
 		fmt.Fprintf(out, "  %-25s %s\n", graphMemoryDisplayText(name), graphMemoryDisplayText(description))
 		*count = *count + 1
 	}
 	for _, descriptor := range descriptors {
-		if graphPreviewIntrinsicType(descriptor) || !graphstore.AssessmentTypeAvailable(scope, descriptor.ID(), assessmentsEnabled) {
+		if (!graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) && graphPreviewIntrinsicType(descriptor)) || !graphstore.AssessmentTypeAvailable(scope, descriptor.ID(), assessmentsEnabled) {
 			continue
 		}
 		var out *strings.Builder
@@ -45,31 +44,11 @@ func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, c
 			return graphTypeInventory{}, "", fmt.Errorf("%w: installed Type has unknown resource category", graphstore.ErrInvalidStore)
 		}
 		id := strings.TrimPrefix(descriptor.ID(), scope)
-		add(out, count, id, descriptor.Name())
-		if !details && descriptor.Describes() == graph.KindBead && descriptor.ID() == graphstore.IssueTypeURL(scope) {
-			for _, entry := range coreWorkTypes {
-				name := string(entry.Type)
-				add(&issueClasses, &issueClassCount, name, graphPreviewTypeTitle(name)+" Issue")
-			}
-			for _, entry := range systemWorkTypes() {
-				add(&issueClasses, &issueClassCount, entry.Name, graphPreviewTypeTitle(entry.Name)+" Issue")
-			}
-			for _, name := range customTypes {
-				add(&issueClasses, &issueClassCount, name, graphPreviewTypeTitle(name)+" Issue")
-			}
+		label := descriptor.Name()
+		if descriptor.ID() == graphstore.IssueTypeURL(scope) || descriptor.ID() == graphstore.DependencyTypeURL(scope) {
+			label += " (abstract)"
 		}
-		if !details && descriptor.Describes() == graph.KindLink && descriptor.ID() == graphstore.DependencyTypeURL(scope) {
-			for _, kind := range types.WellKnownDependencyTypes() {
-				name, title := string(kind), graphPreviewTypeTitle(string(kind))
-				if kind == types.DepBlocks {
-					title = "Blocking"
-				}
-				if kind == types.DepParentChild {
-					title = "Parent/Child"
-				}
-				add(&dependencyKinds, &dependencyKindCount, name, title+" Dependency")
-			}
-		}
+		add(out, count, id, label)
 		if details {
 			var pretty bytes.Buffer
 			if err := json.Indent(&pretty, descriptor.CanonicalJSON(), "", "  "); err != nil {
@@ -86,13 +65,7 @@ func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, c
 	}
 	var text strings.Builder
 	fmt.Fprintf(&text, "%sBead Types (%d):\n%s", prefix, beadCount, beads.String())
-	if issueClassCount != 0 {
-		fmt.Fprintf(&text, "\nIssue classifications (%d):\n%s", issueClassCount, issueClasses.String())
-	}
 	fmt.Fprintf(&text, "\n%sLink Types (%d):\n%s", prefix, linkCount, links.String())
-	if dependencyKindCount != 0 {
-		fmt.Fprintf(&text, "\nDependency kinds (%d):\n%s", dependencyKindCount, dependencyKinds.String())
-	}
 	return inventory, text.String(), nil
 }
 

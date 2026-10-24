@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -118,14 +119,17 @@ func memoryCurrentRequest(cmd *cobra.Command, args []string, scope string, op me
 		if err != nil {
 			return zero, err
 		}
-		if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
+		if ref.Explicit && !ref.currentSelection() {
 			return zero, fmt.Errorf("%w: Memory relationship reads select current roots only", graphstore.ErrCapabilityUnavailable)
 		}
-		path, err := graphPreviewResourcePath(scope, ref.Identity)
-		if err != nil {
-			return zero, err
-		}
-		if err := graph.ValidateBeadPath(path); err != nil {
+		path := ref.Identity
+		if strings.HasPrefix(path, scope) {
+			var err error
+			path, err = graph.ScopeLocalPublicResourceID(scope, path)
+			if err != nil {
+				return zero, err
+			}
+		} else if err := graph.ValidateCanonicalResourceID(path); err != nil {
 			return zero, err
 		}
 		request.Roots = append(request.Roots, memoryquery.CurrentRoot{Path: path, Depth: depth})
@@ -161,7 +165,15 @@ func runMemoryCurrentRead(cmd *cobra.Command, args []string, op memoryReadOperat
 			return canonicalFailure(cmd, renderer, "capability_unavailable", "Memory graph field masks are not available yet", 5)
 		}
 	}
-	request, err := memoryCurrentRequest(cmd, args, graphPreviewConfig.GraphScopeURL, op)
+	resolvedArgs := append([]string(nil), args...)
+	for i, arg := range resolvedArgs {
+		resolved, err := graphPreviewResolveMemoryArgument(arg)
+		if err != nil {
+			return err
+		}
+		resolvedArgs[i] = resolved
+	}
+	request, err := memoryCurrentRequest(cmd, resolvedArgs, graphPreviewConfig.GraphScopeURL, op)
 	if err != nil {
 		if errors.Is(err, storage.ErrValidation) {
 			return canonicalFailure(cmd, renderer, "invalid_properties", err.Error(), 2)

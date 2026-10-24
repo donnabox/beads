@@ -37,7 +37,7 @@ func runGraphPreviewUnclaim(cmd *cobra.Command, args []string) error {
 	}
 	paths := make([]selectedPath, len(args))
 	for i, selector := range args {
-		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err == nil {
 			err = graph.ValidateBeadPath(path)
 		}

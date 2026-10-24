@@ -398,10 +398,10 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 		t.Fatal(err)
 	}
 	strategy := raw.Jobs["pr-core-wrapper"].Strategy
-	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string]any{"scope": []any{"graphstore", "remaining"}}) {
-		t.Error("PR Core must run both disjoint scopes without fail-fast cancellation")
+	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string]any{"scope": []any{"graphstore-odd", "graphstore-even", "remaining"}}) {
+		t.Error("PR Core must run all three disjoint scopes without fail-fast cancellation")
 	}
-	for _, scope := range []string{"graphstore", "remaining"} {
+	for _, scope := range []string{"graphstore-odd", "graphstore-even", "remaining"} {
 		download := gate.step(t, "Download PR core "+scope+" evidence")
 		if download.If != "needs.pr-core-wrapper.result == 'success'" || download.TimeoutMinutes != 3 || download.Uses != "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" || download.With["name"] != "pr-core-go-test-${{ github.sha }}-"+scope || download.With["path"] != "artifacts/pr-core-scope-results/"+scope || download.With["pattern"] != "" {
 			t.Error("required CI gate must retrieve only the exact named source scope artifacts")
@@ -412,7 +412,7 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 		t.Error("required CI gate must propagate bounded complete-union proof failures")
 	}
 	assertStepRunsExactly(t, gate, "Verify complete PR core coverage and cleanup", `python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/pr-core-scope-results --source-sha "$(git rev-parse HEAD)" --package-parallel 4 --test-parallel 4`)
-	assertStepsBefore(t, gate, []string{"Download PR core graphstore evidence", "Download PR core remaining evidence", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
+	assertStepsBefore(t, gate, []string{"Download PR core graphstore-odd evidence", "Download PR core graphstore-even evidence", "Download PR core remaining evidence", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
 
 }
 
@@ -4092,6 +4092,19 @@ func TestBazelWorkflowRunsCIConfigWithReports(t *testing.T) {
 		t.Errorf("%s has no timeout-minutes", bazelJobName)
 	}
 	testStep := job.step(t, "bazel test //... --config=ci")
+	// PR #276 job 120799042314 exhausted 95 minutes with 221/222 tests
+	// complete and the last bd_test shard still progressing. Retain the
+	// five-minute outer margin while adding cumulative cold-run headroom;
+	// individual action/test deadlines remain governed by .bazelrc.
+	const observedCutoffMinutes = 95
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; testStep.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cutoff plus %d minutes headroom)",
+			bazelJobName, testStep.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
+	}
+	if job.TimeoutMinutes < testStep.TimeoutMinutes+5 || job.TimeoutMinutes > testStep.TimeoutMinutes+15 {
+		t.Errorf("%s timeout-minutes = %d, want the test step's %d plus 5 to 15 minutes for setup/reports/cleanup", bazelJobName, job.TimeoutMinutes, testStep.TimeoutMinutes)
+	}
 	for _, required := range []string{"bazel test //... --config=ci", "--profile=", "--build_event_json_file=", "set -o pipefail"} {
 		if !strings.Contains(testStep.Run, required) {
 			t.Errorf("test step does not contain %q:\n%s", required, testStep.Run)
@@ -4417,12 +4430,15 @@ func TestBazelIntegrationJob(t *testing.T) {
 	// (rbe-west's 1200s limit). The job adds setup and log upload. In mode
 	// cache it runs on a 4-CPU GitHub-hosted runner, and with the read-only
 	// cache closed (the farm's kill switch) the whole suite builds and runs
-	// there cold, about 30 minutes simulated: the step keeps twice that.
+	// there cold. PR276 job120799042322 exhausted 75 minutes while the
+	// last shard still progressed after 178/179 tests; reserve 15 minutes
+	// beyond that observed cumulative cutoff without raising action limits.
 	const coldCompileMinutes = 20
-	const cacheClosedMinutes = 30
-	if test.TimeoutMinutes < 2*cacheClosedMinutes {
-		t.Errorf("%s test step timeout-minutes = %d, want at least %d (mode cache with the cache closed: ~%d minutes cold on a GitHub-hosted runner)",
-			bazelIntegJobName, test.TimeoutMinutes, 2*cacheClosedMinutes, cacheClosedMinutes)
+	const observedCutoffMinutes = 75
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; test.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cumulative cutoff plus %d minutes headroom)",
+			bazelIntegJobName, test.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
 	}
 	actionCapMinutes := 0
 	for line := range bazelrcLines(t) {
@@ -5912,6 +5928,7 @@ if "-list" in args:
     names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"]
     if mode == "last-group":
         names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds", "TestAardvark", "TestZZLast"]
+    if mode == "census-416": names = [f"TestStore{index:03d}" for index in range(416)]
     for name in names: print(name)
     print("BenchmarkIgnored")
     if mode == "duplicate-name": print("TestNew")
@@ -6008,7 +6025,7 @@ class DispatchControls(unittest.TestCase):
             root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
             output = root / "scopes"; output.mkdir()
             with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
-                for scope in ("graphstore", "remaining"):
+                for scope in m.CI_SCOPES:
                     m.execute(root, output / scope, str(fake), scope=scope, source_sha=source)
             self.assertTrue(m.verify_scopes(output, source)["passed"])
             with self.assertRaises(RuntimeError): m.verify_scopes(output, source, 4, 4)
@@ -6020,11 +6037,11 @@ class DispatchControls(unittest.TestCase):
             root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
             outputs = root / "scopes"; outputs.mkdir()
             with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
-                for scope in ("graphstore", "remaining"):
+                for scope in m.CI_SCOPES:
                     m.execute(root, outputs / scope / "run.fixture" / "evidence", str(fake), scope=scope, source_sha=source, package_parallel=4, test_parallel=4)
             proof = m.verify_scopes(outputs, source, 4, 4)
             self.assertTrue(proof["passed"])
-            self.assertEqual(proof["scopes"], ["graphstore", "remaining"])
+            self.assertEqual(proof["scopes"], sorted(m.CI_SCOPES))
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
             self.assertEqual(len(executions), m.GRAPHSTORE_GROUPS + m.GROUPS + 1)
@@ -6050,6 +6067,56 @@ class DispatchControls(unittest.TestCase):
                         path.write_text(json.dumps(value))
                     with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
                         m.verify_scopes(changed, source, 4, 4)
+
+    def test_alternating_scopes_preserve_416_roots_and_refuse_partial_proof(self):
+        from collections import Counter
+        import shutil
+        source = "a" * 40
+        self.assertEqual(m.TOTAL_SECONDS, 6900)
+        self.assertEqual(m.GROUP_SECONDS, 2100)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 8)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            outputs = root / "scopes"; outputs.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "census-416"}):
+                for scope in m.CI_SCOPES:
+                    m.execute(root, outputs / scope, str(fake), scope=scope, source_sha=source)
+            coverage = Counter()
+            for scope, expected in (("graphstore-odd", [1, 3, 5, 7]), ("graphstore-even", [2, 4, 6, 8])):
+                plan = json.loads((outputs / scope / "plan.json").read_text())
+                summary = json.loads((outputs / scope / "summary.json").read_text())
+                self.assertEqual(plan["selectedGroups"], expected)
+                self.assertEqual([len(g) for g in plan["groups"]], [52] * 8)
+                self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
+                self.assertEqual([g["label"] for g in summary["groups"]], [f"graphstore-{n}" for n in expected])
+                self.assertEqual(sum(len(g["roots"]) for g in summary["groups"]), 208)
+                self.assertEqual(summary["commandGroups"], [])
+                self.assertNotIn("other", summary)
+                coverage.update(name for g in summary["groups"] for name in g["roots"])
+            self.assertEqual(coverage, Counter({f"TestStore{index:03d}": 1 for index in range(416)}))
+            self.assertTrue(m.verify_scopes(outputs, source)["passed"])
+            calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+            executions = [c for c in calls if c[0] == "test" and "-list" not in c]
+            self.assertEqual(sum(c[-1] == m.GRAPHSTORE for c in executions), 8)
+            self.assertEqual(sum(c[-1] == m.COMMAND for c in executions), 4)
+            self.assertEqual(sum(c[-1] not in (m.GRAPHSTORE, m.COMMAND) for c in executions), 1)
+            for case in ("missing-half", "duplicate-half", "wrong-selection", "missing-group", "raw", "discovery", "excluded"):
+                with self.subTest(case=case):
+                    changed = root / case; shutil.copytree(outputs, changed)
+                    half = changed / "graphstore-odd"
+                    if case == "missing-half": shutil.rmtree(half)
+                    elif case == "duplicate-half": shutil.copytree(half, changed / "extra")
+                    elif case == "raw": (half / "graphstore-7.stdout").write_text("")
+                    elif case == "discovery": (half / "graphstore-discovery.stdout").write_text("TestIncomplete\n")
+                    else:
+                        path = half / ("summary.json" if case == "missing-group" else "plan.json")
+                        value = json.loads(path.read_text())
+                        if case == "wrong-selection": value["selectedGroups"] = [2, 4, 6, 8]
+                        elif case == "missing-group": value["groups"].pop()
+                        elif case == "excluded": value["excluded"] = []
+                        path.write_text(json.dumps(value))
+                    with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
+                        m.verify_scopes(changed, source)
 
     def test_pr_core_options_and_raw_json_compatibility(self):
         for case in ("good", "json-fail", "other-failure"):

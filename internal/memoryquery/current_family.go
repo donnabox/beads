@@ -90,7 +90,7 @@ func validateCurrentWalk(ctx context.Context, reader CurrentContext, family func
 		return fmt.Errorf("%w: invalid current family request", graph.ErrValidation)
 	}
 	for _, root := range roots {
-		if graph.ValidateBeadPath(root.Path) != nil || root.Depth < 0 || root.Depth > currentFamilyBound {
+		if graph.ValidateCanonicalResourceID(root.Path) != nil || root.Depth < 0 || root.Depth > currentFamilyBound {
 			return fmt.Errorf("%w: invalid current root", graph.ErrValidation)
 		}
 	}

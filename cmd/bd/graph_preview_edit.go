@@ -150,12 +150,12 @@ func runGraphPreviewEdit(cmd *cobra.Command, args []string) error {
 			verb = "Unchanged"
 		}
 		name := strings.ReplaceAll(field, "_", " ")
-		return result, fmt.Sprintf("%s %s %s for issue: %s", ui.RenderPass("✓"), verb, name, formatFeedbackID(path, result.Issue.Properties.Title)), nil
+		return result, fmt.Sprintf("%s %s %s for issue: %s", ui.RenderPass("✓"), verb, name, formatFeedbackID(result.Issue.Properties.ID, result.Issue.Properties.Title)), nil
 	}, func(result any, human string) error { return graphPrint(result, human, quietFlag) })
 	if err != nil {
 		return err
 	}
 	saved = true
-	graphPreviewStoreLastTouchedPath(path)
+	SetLastTouchedID(issue.ID)
 	return nil
 }

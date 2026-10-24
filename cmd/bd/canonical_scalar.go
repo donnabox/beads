@@ -11,6 +11,16 @@ import (
 // Existing scalar flags retain their shipping pflag types. Reparse occurrences
 // only for conflict detection; this does not add a selector or query grammar.
 func canonicalScalarOccurrences(cmd *cobra.Command, argv []string, names ...string) error {
+	return canonicalScalarOccurrencesWithPolicy(cmd, argv, false, names...)
+}
+
+// Endpoint authoring forbids repeated bindings even when the values agree.
+// Other scalar flags retain their established equal-repeat behavior.
+func canonicalExactOccurrences(cmd *cobra.Command, argv []string, names ...string) error {
+	return canonicalScalarOccurrencesWithPolicy(cmd, argv, true, names...)
+}
+
+func canonicalScalarOccurrencesWithPolicy(cmd *cobra.Command, argv []string, rejectRepeats bool, names ...string) error {
 	probe := pflag.NewFlagSet("canonical-collection-admission", pflag.ContinueOnError)
 	probe.SetOutput(&bytes.Buffer{})
 	values := make(map[string]*canonicalScalarValues)
@@ -32,6 +42,13 @@ func canonicalScalarOccurrences(cmd *cobra.Command, argv []string, names ...stri
 	cmd.InheritedFlags().VisitAll(add)
 	if err := probe.Parse(argv); err != nil {
 		return err
+	}
+	if rejectRepeats {
+		for _, name := range names {
+			if value := values[name]; value != nil && len(value.values) > 1 {
+				return fmt.Errorf("--%s supplied more than once", name)
+			}
+		}
 	}
 	for name, value := range values {
 		if len(value.values) < 2 {

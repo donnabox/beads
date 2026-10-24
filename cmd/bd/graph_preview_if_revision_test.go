@@ -249,7 +249,7 @@ func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 		return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 	}
 	call("init", "--graph-mode", "link", "--scope-url", "https://example.invalid/close-if-revision/", "--skip-hooks", "--skip-agents", "--non-interactive")
-	call("create", "Close guard", "--graph-path", "beads/close-guard")
+	call("create", "Close guard", "--id", "beads/close-guard", "--force")
 	before := call("show", "--format", "graph-json", closeURL)
 	for _, args := range [][]string{
 		{"close", closeURL, "--if-revision", "1"},

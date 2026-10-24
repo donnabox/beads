@@ -33,12 +33,12 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(initArgs...)
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work", "--force"))
 			preview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issue.Properties.ID))
 			if !preview.Preview || preview.Deleted || !reflect.DeepEqual(preview.Issue, issue) {
 				t.Fatal("default preview did not disclose unchanged Issue")
 			}
-			unguarded := graphMixedResult[graphstore.IssueRecord](t, call("create", "Unguarded deletion", "--graph-path", "beads/unguarded"))
+			unguarded := graphMixedResult[graphstore.IssueRecord](t, call("create", "Unguarded deletion", "--id", "beads/unguarded", "--force"))
 			applied := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", unguarded.Properties.ID, "--force"))
 			if !applied.Deleted || applied.Preview || !reflect.DeepEqual(applied.Issue, unguarded) {
 				t.Fatal("unguarded --force did not delete the current Issue")
@@ -83,7 +83,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			}
 			refuse("gone", "show", issue.ID)
 			refuse("gone", "delete", issue.Properties.ID, "--force")
-			refuse("identity_reserved", "create", "Replacement", "--graph-path", "beads/work")
+			refuse("identity_reserved", "create", "Replacement", "--id", "beads/work", "--force")
 			type terminalHistory struct {
 				CurrentState *graphstore.BeadTerminalState `json:"currentState"`
 				Versions     []map[string]any              `json:"versions"`
@@ -95,10 +95,10 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 				t.Fatal("native deletion lost prior snapshots or distinct D")
 			}
 
-			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", issue.ID, "--version", final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
+			if old := graphMixedResult[graphstore.IssueRecord](t, call("show", issue.ID, "--revision", final.Revision)); old.ID != final.ID || old.Revision != final.Revision {
 				t.Fatal("final live snapshot unavailable")
 			}
-			call("show", "other")
+			call("show", "beads/other")
 		})
 	}
 }

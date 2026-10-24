@@ -48,6 +48,7 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			memory := call("remember", "Private body", "--id", "beads/plan", "--title", "Plan")
 			memoryRevision := graphAssertCompleteRecordRevisionOnly(t, memory)
 			graphAssertCompleteRecordRevisionOnly(t, call("create", "Work", "--graph-path", "beads/work"))
+			graphAssertCompleteRecordRevisionOnly(t, call("create", "Generated work", "--id-root", "work"))
 			call("create", "Rule", "--type", "types/constraint", "--id", "beads/rule")
 			var receipt struct {
 				Link   json.RawMessage `json:"link"`
@@ -70,7 +71,7 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			if string(link["properties"]) != `{"note":"user value"}` {
 				t.Fatalf("caller-authored Link property changed: %s", receipt.Link)
 			}
-			graphAssertCompleteRecordRevisionOnly(t, call("show", scope+"beads/plan", "--version", memoryRevision))
+			graphAssertCompleteRecordRevisionOnly(t, call("show", scope+"beads/plan", "--revision", memoryRevision))
 		})
 	}
 }

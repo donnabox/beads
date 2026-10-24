@@ -45,20 +45,20 @@ func TestGraphPreviewIssueDescriptionSources(t *testing.T) {
 			}
 			file := filepath.Join(work, "description.md")
 			writeFile(t, file, []byte("From file — 雪\n"))
-			created := graphMixedResult[graphstore.IssueRecord](t, run(nil, "create", "File source", "--graph-path", "beads/file", "--body-file", file))
+			created := graphMixedResult[graphstore.IssueRecord](t, run(nil, "create", "File source", "--id", "beads/file", "--force", "--body-file", file))
 			if created.Properties.Description != "From file — 雪\n" {
 				t.Fatal("create lost file contents")
 			}
-			stdin := graphMixedResult[graphstore.IssueRecord](t, run([]byte("From stdin\r\n"), "create", "Stdin source", "--graph-path", "beads/stdin", "--description=-"))
+			stdin := graphMixedResult[graphstore.IssueRecord](t, run([]byte("From stdin\r\n"), "create", "Stdin source", "--id", "beads/stdin", "--force", "--description=-"))
 			if stdin.Properties.Description != "From stdin\r\n" {
 				t.Fatal("create changed stdin contents")
 			}
-			refuse(2, []byte("should not be consumed"), "create", "Duplicate source", "--graph-path", "beads/duplicate", "--properties", `{"description":"Property"}`, "--stdin")
+			refuse(2, []byte("should not be consumed"), "create", "Duplicate source", "--id", "beads/duplicate", "--force", "--properties", `{"description":"Property"}`, "--stdin")
 			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, nil, "update", scope+"beads/file", "--properties", `{"description":"Property"}`, "--stdin", "--if-revision", created.Revision, "--json")
 			if code != 2 || stdout != "" || !strings.Contains(stderr, "supplied by both --properties and a shorthand flag") {
 				t.Fatalf("duplicate update description source: code=%d stdout=%q stderr=%q", code, stdout, stderr)
 			}
-			refuse(2, []byte{}, "create", "Empty source", "--graph-path", "beads/empty", "--stdin")
+			refuse(2, []byte{}, "create", "Empty source", "--id", "beads/empty", "--force", "--stdin")
 			refuse(2, []byte{}, "update", scope+"beads/file", "--stdin")
 			if got := graphMixedResult[graphstore.IssueRecord](t, run(nil, "show", scope+"beads/file", "--format", "graph-json")); got.Revision != created.Revision || got.Properties.Description != created.Properties.Description {
 				t.Fatal("empty-input refusal changed Issue")
@@ -106,7 +106,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Revision))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--revision", record.Revision))
 				p := *record.Properties
 				p.ContentHash, p.RowVersion = "", 0
 				record.Properties = &p
@@ -125,7 +125,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			}
 			call(args...)
 			memory := call("remember", "Context", "--id", "beads/context", "--title", "Context")
-			initial := graphMixedResult[graphstore.IssueRecord](t, call("create", "Authored", "--graph-path", "beads/work", "--design", "Design — 雪", "--acceptance", "Done\r\n", "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ", "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z", "--actor", "author"))
+			initial := graphMixedResult[graphstore.IssueRecord](t, call("create", "Authored", "--id", "beads/work", "--force", "--design", "Design — 雪", "--acceptance", "Done\r\n", "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ", "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z", "--actor", "author"))
 			p := initial.Properties
 			if p.Design != "Design — 雪" || p.AcceptanceCriteria != "Done\r\n" || p.Assignee != "author" || p.EstimatedMinutes == nil || *p.EstimatedMinutes != 0 || p.ExternalRef == nil || *p.ExternalRef != " tracker #1 " || p.SpecID != " spec " || p.Notes != " Initial\r\n雪 " || p.StartedAt != nil || p.LeaseExpiresAt != nil || p.DueAt == nil || !p.DueAt.Equal(past) {
 				t.Fatalf("initial fields/presence/lease: %+v", p)
@@ -137,7 +137,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			selected(true, "--due-after=1999-01-01T00:00:00Z", "--due-before=2001-01-01T00:00:00Z", "--overdue")
 			selected(false, "--due-before=2000-01-01T00:00:00Z")
 			selected(false, "--due-after=2000-01-01T00:00:00Z")
-			target := call("create", "Gate", "--graph-path", "beads/gate")
+			target := call("create", "Gate", "--id", "beads/gate", "--force")
 			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
 			info := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
 			current := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
@@ -227,8 +227,8 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
-			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work"))
-			claimed := graphMixedResult[graphstore.IssueRecord](t, call("create", "Claimed", "--graph-path", "beads/claimed"))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work", "--force"))
+			claimed := graphMixedResult[graphstore.IssueRecord](t, call("create", "Claimed", "--id", "beads/claimed", "--force"))
 			claimedState := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/claimed", "--claim", "--actor", "operator"))
 			if !claimedState.Changed {
 				t.Fatal("claim setup did not change Issue")
@@ -247,22 +247,22 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			if call("show", original.ID) == memory {
 				t.Fatal("Issue and Memory identity collided")
 			}
-			deferred := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "work", "--if-revision", original.Revision))
+			deferred := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", original.Properties.ID, "--if-revision", original.Revision))
 			if !deferred.Changed || string(deferred.Issue.Properties.Status) != "deferred" || deferred.Issue.Properties.DeferUntil != nil || deferred.Issue.Revision == original.Revision {
 				t.Fatalf("defer result: %+v", deferred)
 			}
-			refuse("revision_conflict", "defer", "work", "--if-revision", original.Revision)
-			refuse("invalid_selector", "undefer", "work", "--if-revision", "")
+			refuse("revision_conflict", "defer", original.Properties.ID, "--if-revision", original.Revision)
+			refuse("invalid_selector", "undefer", original.Properties.ID, "--if-revision", "")
 			for _, item := range graphMixedResult[[]graphstore.IssueRecord](t, call("ready")) {
 				if item.ID == original.ID {
 					t.Fatalf("deferred Issue remained ready: %+v", item)
 				}
 			}
-			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "work", "--if-revision", deferred.Issue.Revision))
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", original.Properties.ID, "--if-revision", deferred.Issue.Revision))
 			if noop.Changed || !reflect.DeepEqual(noop.Issue, deferred.Issue) {
 				t.Fatalf("repeat defer changed Issue: %+v", noop)
 			}
-			opened := graphMixedResult[graphstore.IssueMutationResult](t, call("undefer", "work", "--if-revision", deferred.Issue.Revision))
+			opened := graphMixedResult[graphstore.IssueMutationResult](t, call("undefer", original.Properties.ID, "--if-revision", deferred.Issue.Revision))
 			if !opened.Changed || string(opened.Issue.Properties.Status) != "open" || opened.Issue.Revision == deferred.Issue.Revision {
 				t.Fatalf("undefer result: %+v", opened)
 			}
@@ -273,7 +273,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			if !foundWork {
 				t.Fatal("undeferred Issue remained hidden")
 			}
-			snoozed := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "work", "--until", "2000-01-01", "--reason", "waiting on review"))
+			snoozed := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", original.Properties.ID, "--until", "2000-01-01", "--reason", "waiting on review"))
 			if !snoozed.Changed || snoozed.Issue.Properties.DeferUntil == nil || snoozed.Issue.Properties.Notes != "waiting on review" {
 				t.Fatalf("dated defer with reason: %+v", snoozed)
 			}
@@ -285,12 +285,12 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			if !foundWork {
 				t.Fatalf("dated defer did not wake: %+v", woke)
 			}
-			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other", "--graph-path", "beads/other"))
-			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("defer", "work", other.ID))
+			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other", "--id", "beads/other", "--force"))
+			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("defer", original.Properties.ID, other.ID))
 			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
 				t.Fatalf("batch defer: %+v", batch)
 			}
-			batch = graphMixedResult[[]graphstore.IssueMutationResult](t, call("undefer", "work", other.ID))
+			batch = graphMixedResult[[]graphstore.IssueMutationResult](t, call("undefer", original.Properties.ID, other.ID))
 			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
 				t.Fatalf("batch undefer: %+v", batch)
 			}

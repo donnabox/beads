@@ -1066,7 +1066,7 @@
         "memory",
         "supersede",
         "a",
-        "--by",
+        "--to",
         "b"
       ],
       "expected": "refuse create-only operation; no owner, Link or history change; do not silently reuse or retarget"
@@ -1079,7 +1079,7 @@
         "memory",
         "supersede",
         "c",
-        "--by",
+        "--to",
         "a"
       ],
       "expected": "refuse cycle atomically"

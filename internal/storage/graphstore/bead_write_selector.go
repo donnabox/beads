@@ -13,21 +13,18 @@ import (
 // selection as mixed reads, while keeping selection and mutation in one tx.
 // Only a canonical URL (localID empty) selects a graph path directly.
 func (s *Store) resolveLiveBeadWriteSelectorInTx(ctx context.Context, tx *sql.Tx, candidatePath, localID string) (string, error) {
-	if err := validatePath(candidatePath); err != nil {
+	if err := validateBeadWriteOperand(candidatePath, localID); err != nil {
 		return "", err
 	}
 	if localID == "" {
 		return candidatePath, nil
-	}
-	if candidatePath != "beads/"+localID {
-		return "", fmt.Errorf("%w: local Bead ID does not match its candidate path", storage.ErrValidation)
 	}
 	// An exact public ID owns its spelling for the Scope's lifetime. Include
 	// Link and deleted allocations here so neither can fall through to a
 	// different Bead found by compatibility suffix selection below.
 	rows, err := tx.QueryContext(ctx, `SELECT path, resource_kind, allocation_state FROM graph_preview_catalog WHERE
 		((backing='issue' AND backing_key=?) OR
-		 (backing IN ('generic','dependency','informational') AND path=?)) LIMIT 2`, localID, localID)
+		 (backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)) LIMIT 2`, localID, localID)
 	if err != nil {
 		return "", err
 	}
@@ -69,7 +66,7 @@ func (s *Store) resolveLiveBeadWriteSelectorInTx(ctx context.Context, tx *sql.Tx
 		return "", issueErr
 	}
 	var backing string
-	err = tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live'`, candidatePath).Scan(&backing)
+	err = tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live' AND (backing<>'generic' OR public_id IS NULL)`, candidatePath).Scan(&backing)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return "", err
 	}
@@ -86,4 +83,20 @@ func (s *Store) resolveLiveBeadWriteSelectorInTx(ctx context.Context, tx *sql.Tx
 		return "", ErrGone
 	}
 	return "", ErrNotFound
+}
+
+// A local ID is opaque data; the candidate is only its tagged operand carrier.
+// Requiring the exact pairing prevents a caller from smuggling a different path
+// beside an ID and making validation or mutation select another Resource.
+func validateBeadWriteOperand(candidatePath, localID string) error {
+	if localID == "" {
+		return validatePath(candidatePath)
+	}
+	if err := validatePublicID(localID); err != nil {
+		return err
+	}
+	if candidatePath != "beads/"+localID {
+		return fmt.Errorf("%w: local Bead ID does not match its candidate path", storage.ErrValidation)
+	}
+	return nil
 }

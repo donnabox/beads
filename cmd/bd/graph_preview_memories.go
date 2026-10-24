@@ -59,7 +59,10 @@ func renderGraphMemoryDiscovery(result graphMemoryDiscoveryResult, structured, q
 	if !structured && !quiet {
 		fmt.Fprintf(&human, "Memories (%d):\n\n", len(result.Items))
 		for _, item := range result.Items {
-			id := strings.TrimPrefix(item.ID, result.Scope)
+			id := item.ID
+			if !item.HasPublicID {
+				id = strings.TrimPrefix(id, result.Scope)
+			}
 			fmt.Fprintf(&human, "  %s  %s\n", graphMemoryDisplayText(id), graphMemoryDisplayText(item.Title))
 			if item.Excerpt != nil {
 				label := "excerpt"
@@ -82,7 +85,7 @@ func renderGraphMemoryDiscovery(result graphMemoryDiscoveryResult, structured, q
 					human.WriteString("    Attribution: none recorded\n")
 				}
 				fmt.Fprintf(&human, "    Owned Links: %d\n", item.Details.OwnedLinkCount)
-				fmt.Fprintf(&human, "    Recall: bd recall %s --version %s\n", graphMemoryDisplayText(graphMemoryShellArg(id)), graphMemoryDisplayText(graphMemoryShellArg(item.Version)))
+				fmt.Fprintf(&human, "    Recall: bd recall %s --revision %s\n", graphMemoryDisplayText(graphMemoryShellArg(id)), graphMemoryDisplayText(graphMemoryShellArg(item.Version)))
 			}
 		}
 		human.WriteString("\nTitle/body summaries. Use bd recall <id> for full text; --details for versions, attribution and Links.\n")

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -399,5 +400,79 @@ func TestGraphReadRejectsMixedSources(t *testing.T) {
 		if _, err := Listen(cfg); err == nil {
 			t.Fatal("invalid graph source bound a listener")
 		}
+	}
+}
+
+// Public URI spelling does not establish kind. All records and endpoint
+// references must expose exactly the supplied common ID, never a SQL locator.
+func TestGraphReadHTTPCommonCanonicalIDs(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			port, _ := strconv.Atoi(os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT"))
+			if engine == "server" && port == 0 {
+				t.Skip("ordinary shared-server Dolt port not configured")
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+			defer cancel()
+			workspace, err := filepath.EvalSymlinks(t.TempDir())
+			if err != nil {
+				t.Fatal(err)
+			}
+			const scope = "https://authority.example/common/"
+			opts := graphstore.Options{IssuePrefix: "issue", Backend: engine, ServerHost: "127.0.0.1", ServerPort: port, ServerUser: "root", Database: fmt.Sprintf("graph_http_ids_%d", time.Now().UnixNano()), Branch: "main", DataDir: filepath.Join(workspace, "dolt"), Binding: graphstore.Binding{WorkspaceID: workspace, ScopeURL: scope, AuthorityID: "0123456789abcdef0123456789abcdef", SchemaVersion: graphstore.SchemaVersion}}
+			if err := graphstore.Init(ctx, opts); err != nil {
+				t.Fatal(err)
+			}
+			store, err := graphstore.OpenExisting(ctx, opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = store.Close() })
+			for _, id := range []string{"rootless", "links/memory", "types/unregistered", "alias/latest"} {
+				created, err := store.Create(ctx, graphstore.CreateRequest{PublicID: id, Title: "Exact " + id, Body: "body"})
+				if err != nil || created.ID != scope+id {
+					t.Fatalf("create %q: %+v %v", id, created, err)
+				}
+			}
+			createdIssue, err := store.CreateIssue(ctx, "beads/private-issue", issueops.CreateRequest{Issue: &issueops.Issue{ID: "issue-rootless", Title: "Issue", Status: "open", IssueType: "task", Priority: 2}, Actor: "human:tester"})
+			if err != nil || createdIssue.ID != scope+"issue-rootless" {
+				t.Fatalf("Issue identity: %+v %v", createdIssue, err)
+			}
+			link, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{PublicID: "beads/context", TypeURL: scope + "types/references", SourcePath: scope + "rootless", TargetPath: scope + "links/memory", UnconditionalSource: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			reader, err := NewGraphRead(graphread.New(store), scope)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(reader.Close)
+			server := httptest.NewServer(reader)
+			t.Cleanup(server.Close)
+			for _, id := range []string{"rootless", "links/memory", "types/unregistered", "alias/latest", "issue-rootless", "beads/context"} {
+				response, err := http.Get(server.URL + "/common/" + id)
+				if err != nil {
+					t.Fatal(err)
+				}
+				raw, err := io.ReadAll(response.Body)
+				_ = response.Body.Close()
+				if err != nil || response.StatusCode != http.StatusOK {
+					t.Fatalf("GET %q: %d %s %v", id, response.StatusCode, raw, err)
+				}
+				var record struct{ ID, Source, Target string }
+				if err := json.Unmarshal(raw, &record); err != nil {
+					t.Fatal(err)
+				}
+				if record.ID != scope+id {
+					t.Fatalf("GET rewrote %q: %s", id, raw)
+				}
+				if id == "beads/context" && (record.ID != link.Link.ID || record.Source != scope+"rootless" || record.Target != scope+"links/memory") {
+					t.Fatalf("Link reference identity: %s", raw)
+				}
+				if strings.Contains(string(raw), "private-issue") {
+					t.Fatalf("private locator leaked: %s", raw)
+				}
+			}
+		})
 	}
 }

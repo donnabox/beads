@@ -32,7 +32,7 @@ import (
 // the package gates, because build-artifacts stands down where pr_lanes is
 // true; on this fork's pull requests it never is, so these jobs always get
 // their input.
-var forkBuildArtifactConsumers = map[string]bool{"graph-c0": true}
+var forkBuildArtifactConsumers = map[string]bool{"graph-c0": true, "graph-c0-cohort": true}
 
 // forkPRCoreGoTest: how the fork's scripts/ci/pr-core.sh runs PR Core's go
 // test, through the sequential graph-storage dispatcher rather than one go
@@ -92,18 +92,21 @@ func TestForkPullRequestsKeepLegacyLanes(t *testing.T) {
 // takes its bd from build-artifacts, and ci-gate still requires Graph core.
 func TestForkKeepsLegacyJobsAndGraphCore(t *testing.T) {
 	pr := readCIWorkflow(t, "pr.yml")
-	for _, name := range []string{"pr-core-wrapper", "build-artifacts", "graph-c0"} {
+	for _, name := range []string{"pr-core-wrapper", "build-artifacts", "graph-c0-cohort", "graph-c0"} {
 		if _, ok := pr.Jobs[name]; !ok {
 			t.Errorf("pr.yml has no %s job", name)
 		}
 	}
-	if graph, ok := pr.Jobs["graph-c0"]; ok && !contains(graph.Needs, "build-artifacts") {
-		t.Errorf("graph-c0 needs %v, want build-artifacts (it installs bd from ci-build-artifacts)", graph.Needs)
+	if graph, ok := pr.Jobs["graph-c0-cohort"]; ok && !contains(graph.Needs, "build-artifacts") {
+		t.Errorf("graph-c0-cohort needs %v, want build-artifacts (it installs bd from ci-build-artifacts)", graph.Needs)
 	}
 	for _, name := range sortedKeys(forkBuildArtifactConsumers) {
 		if job, ok := pr.Jobs[name]; !ok || !contains(job.Needs, "build-artifacts") {
 			t.Errorf("forkBuildArtifactConsumers lists %s, which is not a pr.yml job that needs build-artifacts; drop the exception", name)
 		}
+	}
+	if graph := pr.job(t, "graph-c0"); !contains(graph.Needs, "graph-c0-cohort") {
+		t.Errorf("graph-c0 does not require all graph-c0-cohort matrix results: %v", graph.Needs)
 	}
 	gate := pr.job(t, "ci-gate")
 	step := gate.step(t, "Evaluate CI gate")

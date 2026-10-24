@@ -241,7 +241,7 @@ func TestGraphPreviewMemoryPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		{"Issue-title-conflict", []string{"beads/work"}, []string{"--title=Issue"}, false, 5},
 		{"claim-conflict", []string{"beads/work"}, []string{"--claim=true"}, false, 5},
 		{"false-claim-conflict", []string{"beads/work"}, []string{"--claim=false"}, false, 5},
-		{"source-guard", []string{"https://example.invalid/beads/plan"}, []string{"--if-source-revision=old"}, false, 5},
+		{"invalid-source-guard", []string{"https://example.invalid/beads/plan"}, []string{"--if-source-revision=\xff"}, false, 2},
 		{"false-source-unconditional", []string{"beads/plan"}, []string{"--unconditional-source=false"}, false, 5},
 		{"notes-conflict", []string{"beads/plan"}, []string{"--notes="}, false, 5},
 		{"request-status-unavailable", []string{"beads/plan"}, []string{"--request-id=id"}, false, 5},
@@ -291,6 +291,9 @@ func TestGraphPreviewMemoryPropertiesPatchLegacyAdmission(t *testing.T) {
 	})
 	jsonOutput, graphPreviewStructuredErrors = false, false
 	cmd := memoryPropertiesPatchCommand(t, "--patch=@-")
+	cmd.Use = "update"
+	parent := &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	updateCmd = cmd
 	probe := &memoryPropertiesPatchProbe{}
 	cmd.SetIn(probe)

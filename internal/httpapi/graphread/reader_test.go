@@ -76,7 +76,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal(err)
 			}
 			createIssue := func(path string) graphstore.IssueRecord {
-				v, err := s.CreateIssue(ctx, path, issueops.CreateRequest{Issue: &issueops.Issue{Title: path, Status: "open", IssueType: "task", Priority: 2, Metadata: json.RawMessage(`{"team":"triage"}`)}, Actor: "agent:test"})
+				v, err := s.CreateIssue(ctx, path, issueops.CreateRequest{Issue: &issueops.Issue{ID: "00-" + strings.TrimPrefix(path, "beads/"), Title: path, Status: "open", IssueType: "task", Priority: 2, Metadata: json.RawMessage(`{"team":"triage"}`)}, ForceIDPrefix: true, Actor: "agent:test"})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -275,7 +275,7 @@ func checkInventory(t *testing.T, ctx context.Context, reader *Reader, beads, li
 	}
 	verify := func(id string, record any) {
 		t.Helper()
-		one, err := reader.Resource(ctx, strings.TrimPrefix(id, reader.store.ScopeURL()))
+		one, err := reader.Resource(ctx, id)
 		if err != nil || !reflect.DeepEqual(one, record) {
 			t.Fatalf("inventory differs from exact read of %s: %v", id, err)
 		}

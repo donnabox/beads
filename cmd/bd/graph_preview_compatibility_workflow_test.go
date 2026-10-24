@@ -40,20 +40,23 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			call(args...)
 			const body = "  Code  flow policy\nTarget integration; retain the previous policy."
 			memory := graphMixedResult[graphstore.Record](t, call("remember", body))
-			other := graphMixedResult[graphstore.Record](t, call("remember", body))
+			other := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", body)).Memory
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Update integration target"))
-			if memory.ID == other.ID || memory.ID == issue.ID || other.ID == issue.ID || !strings.HasPrefix(memory.ID, scope+"beads/") {
-				t.Fatal("omitted IDs did not allocate distinct canonical identities")
+			if memory.ID != other.ID || memory.ID == issue.ID {
+				t.Fatalf("derived Memory identity did not overwrite while Issue allocation stayed separate: Memory=%q repeated=%q Issue=%q", memory.ID, other.ID, issue.ID)
 			}
-			if !strings.HasPrefix(issue.Properties.ID, "compat-") || issue.ID != scope+"beads/"+issue.Properties.ID {
+			if want := scope + "code-flow-policy-target-integration-retain-the-previous"; memory.ID != want {
+				t.Fatalf("legacy content derivation changed: got %q want %q", memory.ID, want)
+			}
+			if !strings.HasPrefix(issue.Properties.ID, "compat-") || issue.ID != scope+issue.Properties.ID {
 				t.Fatalf("generated Issue path did not use the configured native prefix: %+v", issue)
 			}
 			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Explicit parent", "--id", "compat-parent", "--type", "epic"))
-			if parent.ID != scope+"beads/compat-parent" || parent.Properties.ID != "compat-parent" {
+			if parent.ID != scope+"compat-parent" || parent.Properties.ID != "compat-parent" {
 				t.Fatalf("bare explicit Issue ID diverged from its native identity: %+v", parent)
 			}
 			child := graphMixedResult[graphstore.IssueRecord](t, call("create", "Child", "--parent", "compat-parent"))
-			if child.ID != scope+"beads/compat-parent.1" || child.Properties.ID != "compat-parent.1" {
+			if child.ID != scope+"compat-parent.1" || child.Properties.ID != "compat-parent.1" {
 				t.Fatalf("child did not retain the shipping parent ID: %+v", child)
 			}
 			_, _, exit := graphGenerationRun(t, bd, work, home, "create", "Wrong prefix", "--id", "other-parent", "--json")
@@ -62,7 +65,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			}
 			refuse("not_found", "show", "other-parent")
 			forced := graphMixedResult[graphstore.IssueRecord](t, call("create", "Forced prefix", "--id", "other-parent", "--force"))
-			if forced.ID != scope+"beads/other-parent" || forced.Properties.ID != "other-parent" {
+			if forced.ID != scope+"other-parent" || forced.Properties.ID != "other-parent" {
 				t.Fatalf("forced bare Issue ID diverged from shipping identity: %+v", forced)
 			}
 			if memory.Properties.Title != "Code flow policy" || memory.Properties.Body != body {
@@ -73,24 +76,24 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("explicit identity/title not preserved")
 			}
 			explicitIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Explicit Issue", "--graph-path", "beads/fixed-issue"))
-			if explicitIssue.ID != scope+"beads/fixed-issue" {
-				t.Fatalf("explicit Issue path changed: %+v", explicitIssue)
+			if explicitIssue.ID != scope+explicitIssue.Properties.ID || explicitIssue.ID == scope+"beads/fixed-issue" {
+				t.Fatalf("path-created Issue did not expose its distinct public identity: %+v", explicitIssue)
 			}
 			literalIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal Issue ID", "--id", "beads/literal-issue", "--type", "epic", "--force"))
-			if literalIssue.Properties.ID != "beads/literal-issue" || literalIssue.ID != scope+"beads/beads/literal-issue" {
+			if literalIssue.Properties.ID != "beads/literal-issue" || literalIssue.ID != scope+"beads/literal-issue" {
 				t.Fatalf("slash-bearing --id was not kept literal: %+v", literalIssue)
 			}
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/literal-issue", "--format", "graph-json")); got.ID != literalIssue.ID || got.Properties.ID != literalIssue.Properties.ID {
 				t.Fatalf("local slash-bearing ID selected a graph path instead of the public Issue: %+v", got)
 			}
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", literalIssue.ID, "--format", "graph-json")); got.ID != literalIssue.ID {
-				t.Fatalf("canonical Scope URL did not select its exact graph path: %+v", got)
+				t.Fatalf("canonical Scope URL did not select its exact public identity: %+v", got)
 			}
 			if out := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/literal-issue", "--output-format=json"); !strings.Contains(out, literalIssue.ID) {
 				t.Fatalf("canonical output did not resolve the literal public ID: %s", out)
 			}
 			literalChild := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal child", "--parent", "beads/literal-issue", "--force"))
-			if literalChild.Properties.ID != "beads/literal-issue.1" || literalChild.ID != scope+"beads/beads/literal-issue.1" {
+			if literalChild.Properties.ID != "beads/literal-issue.1" || literalChild.ID != scope+"beads/literal-issue.1" {
 				t.Fatalf("slash-bearing parent ID did not retain dotted child identity: %+v", literalChild)
 			}
 			if many := call("show", "beads/literal-issue", "--id=beads/literal-issue.1"); !strings.Contains(many, `"id": "beads/literal-issue"`) || !strings.Contains(many, `"id": "beads/literal-issue.1"`) {
@@ -103,7 +106,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			graphMixedResult[graphstore.IssueRecord](t, call("create", "Graph path distinct from literal ID", "--graph-path", "beads/literal-issue"))
 			collision := graphMixedResult[graphstore.Record](t, call("remember", "Existing Memory", "--id", "beads/compat-collision"))
 			coexistingIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Distinct opaque ID", "--id", "compat-collision"))
-			if coexistingIssue.Properties.ID != "compat-collision" || !strings.HasPrefix(coexistingIssue.ID, scope+"beads/compat-collision-") {
+			if coexistingIssue.Properties.ID != "compat-collision" || coexistingIssue.ID != scope+"compat-collision" {
 				t.Fatalf("different opaque IDs did not retain their own identity: %+v", coexistingIssue)
 			}
 			if got := graphMixedResult[graphstore.Record](t, call("show", collision.ID)); !reflect.DeepEqual(got, collision) {
@@ -115,7 +118,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			refuse("identity_reserved", "remember", "Overwrite", "--id", "beads/fixed", "--create-only")
 			refuse("identity_reserved", "create", "Overwrite", "--graph-path", "beads/fixed-issue")
 			refuse("identity_reserved", "create", "Duplicate literal", "--id", "beads/literal-issue", "--force")
-			refuse("identity_reserved", "create", "Wrong kind", "--graph-path", "beads/fixed")
+			refuse("identity_reserved", "create", "Wrong kind", "--id", "beads/fixed", "--force")
 			refuse("identity_reserved", "remember", "Wrong kind", "--id", "beads/fixed-issue")
 			refuse("invalid_selector", "remember", "Body", "--id=")
 			refuse("invalid_selector", "create", "Title", "--id=")
@@ -194,14 +197,16 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("default informational Link changed or disclosed its Issue source")
 			}
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "link", "list", "--incident-to", issue.ID)
-			if !strings.Contains(human, "types/references  "+strings.TrimPrefix(unowned.Link.ID, scope)+"  "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
-				t.Fatalf("links omitted type-first local display: %q", human)
+			if !strings.Contains(human, strings.TrimPrefix(unowned.Link.ID, scope)+" [types/references] "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
+				t.Fatalf("links omitted identity-first local display: %q", human)
 			}
 			call("link", "delete", "--force", unowned.Link.ID, "--if-revision", unowned.Link.Revision)
-			canonicalID := scope + "links/canonical"
-			canonical := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, other.ID, "--type", "types/references", "--id", canonicalID))
+			localLinkID := "links/canonical"
+			canonicalID := scope + localLinkID
+			refuse("invalid_selector", "link", issue.ID, other.ID, "--type", "types/references", "--id", canonicalID)
+			canonical := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, other.ID, "--type", "types/references", "--id", localLinkID))
 			if canonical.Link.ID != canonicalID {
-				t.Fatal("informational Link did not accept an in-scope canonical ID")
+				t.Fatal("informational Link did not preserve the literal local ID in its canonical URL")
 			}
 			call("link", "delete", "--force", canonicalID, "--if-revision", canonical.Link.Revision)
 			if call("show", issue.ID) != issueBefore {
@@ -246,7 +251,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatalf("positional link lost shipping JSON fields or pair direction: %+v", shorthandBlock)
 			}
 			beforeShorthandNoop := call("versions", issue.ID)
-			beforeShorthandLinks := call("link", "list", "--source", issue.ID, "--type", "blocks")
+			beforeShorthandLinks := call("link", "list", "--from", issue.ID, "--type", "blocks")
 			if shorthandNoop := decodeShorthand(call("link", issue.ID, thirdBlocker.ID)); !reflect.DeepEqual(shorthandNoop, shorthandBlock) {
 				t.Fatalf("repeated positional link changed its familiar result: %+v", shorthandNoop)
 			}
@@ -257,7 +262,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if afterShorthandNoop := call("versions", issue.ID); afterShorthandNoop != beforeShorthandNoop {
 				t.Fatal("repeated positional link allocated another Issue version")
 			}
-			if afterShorthandLinks := call("link", "list", "--source", issue.ID, "--type", "blocks"); afterShorthandLinks != beforeShorthandLinks {
+			if afterShorthandLinks := call("link", "list", "--from", issue.ID, "--type", "blocks"); afterShorthandLinks != beforeShorthandLinks {
 				t.Fatal("repeated positional link allocated another Link")
 			}
 			refuse("invalid_properties", "link", issue.ID, thirdBlocker.ID, "--type", "tracks")
@@ -316,6 +321,76 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			}
 			refuse("revision_conflict", "update", propertyIssue.ID, "--properties", `{"title":"stale"}`, "--if-revision", propertyIssue.Revision)
 			refuse("invalid_properties", "update", propertyIssue.ID, "--properties", `{"status":"closed"}`, "--if-revision", issuePatched.Issue.Revision)
+		})
+	}
+}
+
+func TestGraphPreviewPositionalLinkPartialIDsWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/link-partial/"
+			initArgs := []string{"init", "--graph-mode", "link", "--prefix", "compat", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification")
+				}
+				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			call(initArgs...)
+			source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source"))
+			target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target"))
+			abbreviate := func(id string) string {
+				t.Helper()
+				if !strings.HasPrefix(id, "compat-") || len(id) < len("compat-")+2 {
+					t.Fatalf("unexpected generated native Issue ID %q", id)
+				}
+				return id[len("compat-") : len(id)-1]
+			}
+			from, to := abbreviate(source.Properties.ID), abbreviate(target.Properties.ID)
+			decodeLink := func(raw string) map[string]any {
+				t.Helper()
+				var result map[string]any
+				if err := json.Unmarshal([]byte(raw), &result); err != nil {
+					t.Fatalf("decode familiar positional Link JSON: %v\n%s", err, raw)
+				}
+				return result
+			}
+			result := decodeLink(call("link", from, to))
+			if result["issue_id"] != source.Properties.ID || result["depends_on_id"] != target.Properties.ID || result["type"] != "blocks" {
+				t.Fatalf("positional partial Link resolved wrong Issues: %+v", result)
+			}
+			if repeated := decodeLink(call("link", from, to)); !reflect.DeepEqual(repeated, result) {
+				t.Fatalf("repeated positional Link changed familiar result: %+v", repeated)
+			}
+			var shown []struct {
+				Dependencies []json.RawMessage `json:"dependencies"`
+			}
+			if raw := call("show", source.ID); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 1 {
+				t.Fatalf("positional Link did not preserve one native relation: %s", raw)
+			}
+			plain := graphMixedResult[graphstore.IssueRecord](t, call("create", "Plain", "--id", "x", "--force"))
+			slash := graphMixedResult[graphstore.IssueRecord](t, call("create", "Slash", "--id", "beads/x", "--force"))
+			if plain.ID == slash.ID {
+				t.Fatal("distinct public IDs shared one graph path")
+			}
+			if linked := decodeLink(call("link", "beads/x", target.Properties.ID)); linked["issue_id"] != "beads/x" || linked["depends_on_id"] != target.Properties.ID {
+				t.Fatalf("positional Link treated slash ID as another Issue's graph path: %+v", linked)
+			}
+			shown = nil
+			if raw := call("show", "x"); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 0 {
+				t.Fatalf("linking beads/x changed x: %s", raw)
+			}
+			shown = nil
+			if raw := call("show", "beads/x"); json.Unmarshal([]byte(raw), &shown) != nil || len(shown) != 1 || len(shown[0].Dependencies) != 1 {
+				t.Fatalf("positional slash-ID Link missed its source: %s", raw)
+			}
 		})
 	}
 }

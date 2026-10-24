@@ -90,10 +90,14 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			wantType, ok := RelationshipDependencyTypeURL(options.Binding.ScopeURL, types.DepParentChild)
+			if !ok {
+				t.Fatal("missing concrete parent-child mapping")
+			}
 			if !strings.HasPrefix(created.Child.Properties.ID, parent.Properties.ID+".") ||
-				created.Child.ID != options.Binding.ScopeURL+"beads/"+created.Child.Properties.ID ||
+				created.Child.ID != options.Binding.ScopeURL+created.Child.Properties.ID ||
 				created.Link.Source != created.Child.ID || created.Link.Target != parent.ID ||
-				created.Link.Type != DependencyTypeURL(options.Binding.ScopeURL) ||
+				created.Link.Type != wantType ||
 				created.Link.Properties["dep_type"] != string(types.DepParentChild) ||
 				len(created.Child.Owned) != 1 {
 				t.Fatalf("child Issue and Link disagree: %+v", created)
@@ -101,7 +105,7 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 			if created.Child.Attribution.Inception != "create" || created.Child.Attribution.HistoricalUpdate != nil {
 				t.Fatalf("child initial context: %+v", created.Child.Attribution)
 			}
-			retained, err := store.ReadVersion(ctx, strings.TrimPrefix(created.Child.ID, options.Binding.ScopeURL), created.Child.Revision)
+			retained, err := store.ReadVersion(ctx, created.Child.ID, created.Child.Revision)
 			if err != nil {
 				t.Fatal(err)
 			}

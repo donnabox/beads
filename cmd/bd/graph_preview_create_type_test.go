@@ -64,15 +64,15 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 		flags      []string
 		code       int
 	}{
-		{name: "default-issue", want: graphstore.IssueTypeURL(scope)},
-		{name: "classification-is-not-bead-type", flags: []string{"--type=bug"}, want: graphstore.IssueTypeURL(scope)},
-		{name: "unregistered-preview-classification", flags: []string{"--type=preview-task"}, code: 5},
-		{name: "unregistered-example-classification", flags: []string{"--type=example-task"}, code: 5},
-		{name: "removed-short-issue", flags: []string{"--type=preview-issue"}, code: 5},
-		{name: "relative-issue", flags: []string{"--type=types/issue"}, want: graphstore.IssueTypeURL(scope)},
-		{name: "canonical-issue", flags: []string{"--type=" + graphstore.IssueTypeURL(scope)}, want: graphstore.IssueTypeURL(scope)},
-		{name: "removed-short-memory", flags: []string{"--type=preview-memory"}, code: 5},
-		{name: "mistyped-memory", flags: []string{"--type=memory-preview"}, code: 5},
+		{name: "default-issue", want: scope + "types/native-issue/7461736b"},
+		{name: "classification-is-concrete-type", flags: []string{"--type=bug"}, want: scope + "types/native-issue/627567"},
+		{name: "prospective-native-classification", flags: []string{"--type=preview-task"}, want: scope + "types/native-issue/707265766965772d7461736b"},
+		{name: "prospective-example-classification", flags: []string{"--type=example-task"}, want: scope + "types/native-issue/6578616d706c652d7461736b"},
+		{name: "prospective-custom-issue", flags: []string{"--type=preview-issue"}, want: scope + "types/native-issue/707265766965772d6973737565"},
+		{name: "relative-issue", flags: []string{"--type=types/issue"}, code: 2},
+		{name: "canonical-issue", flags: []string{"--type=" + graphstore.IssueTypeURL(scope)}, code: 2},
+		{name: "prospective-custom-memory-label", flags: []string{"--type=preview-memory"}, want: scope + "types/native-issue/707265766965772d6d656d6f7279"},
+		{name: "prospective-custom-label", flags: []string{"--type=memory-preview"}, want: scope + "types/native-issue/6d656d6f72792d70726576696577"},
 		{name: "relative-memory", flags: []string{"--type=types/memory"}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "canonical-memory", flags: []string{"--type=" + graphstore.MemoryTypeURL(scope)}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "empty", flags: []string{"--type="}, code: 2},
@@ -95,37 +95,39 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 	}
 }
 
-func TestGraphPreviewCreateBeadTypeUsesOneFreshIssueType(t *testing.T) {
+func TestGraphPreviewCreateBeadTypeUsesConcreteNativeTypes(t *testing.T) {
 	const scope = "https://example.invalid/project/"
 	previous := graphPreviewTypeGeneration
 	graphPreviewTypeGeneration = graphstore.TypeGeneration
 	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
-	if got := graphPreviewBlockingTypeURL(scope); got != graphstore.DependencyTypeURL(scope) {
-		t.Fatalf("blocking Type = %q", got)
-	}
-	for _, flags := range [][]string{nil, {"--type=" + graphstore.IssueTypeURL(scope)}} {
-		if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, flags), scope); err != nil || got != graphstore.IssueTypeURL(scope) {
+	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
+	for _, flags := range [][]string{nil, {"--type=" + task}} {
+		if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, flags), scope); err != nil || got != task {
 			t.Fatalf("flags %v: Issue Type %q, err %v", flags, got, err)
 		}
 	}
-	if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, []string{"--type=types/preview-issue-v3"}), scope); got != "" || err == nil {
-		t.Fatalf("admitted obsolete Issue Type: %q, %v", got, err)
+	for _, old := range []string{graphstore.IssueTypeURL(scope), "types/preview-issue-v3"} {
+		if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, []string{"--type=" + old}), scope); got != "" || err == nil {
+			t.Fatalf("admitted abstract or obsolete Type: %q, %v", got, err)
+		}
 	}
 }
 
-func TestGraphPreviewNativeDependencySelectionUsesOneType(t *testing.T) {
+func TestGraphPreviewNativeDependencySelectionUsesConcreteTypes(t *testing.T) {
 	const scope = "https://example.invalid/project/"
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "my-own-kind"} {
 		url, admitted := graphPreviewDependencyTypeURL(scope, native)
-		if !admitted || url != graphstore.DependencyTypeURL(scope) {
-			t.Fatalf("native %q maps to %q, %t; want single Dependency Type", native, url, admitted)
+		want, _ := graphstore.NativeDependencyTypeURL(scope, string(native))
+		decoded, ok := graphPreviewNativeDependencyType(scope, url)
+		if !admitted || url != want || !ok || decoded != native {
+			t.Fatalf("native %q maps to %q decoded %q; want %q", native, url, decoded, want)
 		}
 	}
 	if _, ok := graphPreviewDependencyTypeURL(scope, "123456789012345678901234567890123"); ok {
 		t.Fatal("overlong native kind admitted")
 	}
-	if _, ok := graphPreviewNativeDependencyType(scope, graphstore.DependencyTypeURL(scope)); !ok {
-		t.Fatal("single native Dependency Type was not admitted")
+	if _, ok := graphPreviewNativeDependencyType(scope, graphstore.DependencyTypeURL(scope)); ok {
+		t.Fatal("abstract Dependency admitted as concrete")
 	}
 }
 
@@ -145,7 +147,7 @@ func TestGraphPreviewCreateMemoryInput(t *testing.T) {
 		{name: "exact-properties", flags: []string{`--properties={"title":"Property title","body":"Property body"}`}, title: "Property title", body: "Property body"},
 		{name: "properties-body-summary", flags: []string{`--properties={"body":"Property body"}`}, title: "Property body", body: "Property body"},
 		{name: "properties-disjoint-title", args: []string{"Positional title"}, flags: []string{`--properties={"body":"Property body"}`}, title: "Positional title", body: "Property body"},
-		{name: "explicit-empty-body", flags: []string{"--body="}},
+		{name: "explicit-empty-body", flags: []string{"--body="}, title: "Untitled memory"},
 		{name: "no-content", code: 2},
 		{name: "conflicting-titles", args: []string{"Other"}, flags: []string{"--title=Title"}, code: 2},
 		{name: "empty-title", flags: []string{"--title=", "--body=Body"}, code: 2},

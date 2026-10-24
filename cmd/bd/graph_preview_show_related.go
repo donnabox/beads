@@ -21,24 +21,30 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 	if len(args) == 0 {
 		return graphFailure("invalid_selector", "at least one Issue ID is required", 2)
 	}
-	if format != "" || cmd.Flags().Changed("version") {
+	if format != "" || cmd.Flags().Changed("revision") {
 		return graphFailure("capability_unavailable", "--refs and --children require current Issues in the familiar output format", 5)
 	}
 	selectors := make([]struct{ path, localID string }, 0, len(args))
-	for _, arg := range args {
-		ref, err := graphPreviewParseReference(arg)
+	literalIDs, _ := cmd.Flags().GetStringArray("id")
+	for index, arg := range args {
+		resolve := graphPreviewResolveMemoryArgument
+		if index >= len(args)-len(literalIDs) {
+			resolve = graphPreviewResolveLiteralArgument
+		}
+		argument, err := resolve(arg)
+		if err != nil {
+			return err
+		}
+		ref, err := graphPreviewParseReference(argument)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if ref.Explicit && ref.Revision != "current" && ref.Revision != "unpinned" {
+		if ref.Explicit && !ref.currentSelection() {
 			return graphFailure("capability_unavailable", "--refs and --children require current Issues", 5)
 		}
 		path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		if !strings.HasPrefix(path, "beads/") {
-			return graphFailure("capability_unavailable", "--refs and --children require Issues", 5)
 		}
 		selectors = append(selectors, struct{ path, localID string }{path, localID})
 	}
@@ -47,7 +53,7 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 		rows := make(map[string][]*types.IssueWithDependencyMetadata, len(selectors))
 		var human strings.Builder
 		for index, selector := range selectors {
-			path, record, detail, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.path, selector.localID, workapi.DetailOptions{IncludeDependents: true})
+			_, record, detail, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.path, selector.localID, workapi.DetailOptions{IncludeDependents: true})
 			if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) {
 				missing = append(missing, args[index])
 				continue
@@ -55,7 +61,8 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 			if err != nil {
 				return nil, "", err
 			}
-			if _, ok := record.(graphstore.IssueRecord); !ok {
+			issue, ok := record.(graphstore.IssueRecord)
+			if !ok {
 				return nil, "", graphFailure("capability_unavailable", "--refs and --children require Issues", 5)
 			}
 			related := make([]*types.IssueWithDependencyMetadata, 0, len(detail.Dependents))
@@ -65,11 +72,11 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 				}
 				related = append(related, row)
 			}
-			rows[path] = related
+			rows[issue.Properties.ID] = related
 			if refs {
-				renderGraphShowRefs(&human, path, related)
+				renderGraphShowRefs(&human, issue.Properties.ID, related)
 			} else {
-				renderGraphShowChildren(&human, path, related, short)
+				renderGraphShowChildren(&human, issue.Properties.ID, related, short)
 			}
 		}
 		return rows, human.String(), nil

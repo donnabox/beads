@@ -5,12 +5,14 @@ package main
 import (
 	"encoding/json"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -41,21 +43,131 @@ func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
 				{"revision_unknown", []string{"update", "beads/subject", "--from-revision", "unknown"}},
 				{"invalid_selector", []string{"update", "beads/subject", "--from-revision", ""}},
 				{"invalid_selector", []string{"update", "subject@current", "--from-revision", original.Revision}},
-				{"capability_unavailable", []string{"update", "https://example.invalid/historical-update/links/not-created", "--from-revision", original.Revision}},
+				{"not_found", []string{"update", "https://example.invalid/historical-update/links/not-created", "--from-revision", original.Revision}},
 			} {
 				graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...)
 			}
 			if got := graphMixedResult[graphstore.Record](t, call("show", original.ID)); !reflect.DeepEqual(got, applied.Memory) {
 				t.Fatal("refusal changed target")
 			}
-			if got := graphMixedResult[graphstore.Record](t, call("show", original.ID, "--version", original.Revision)); !reflect.DeepEqual(got, original) {
+			if got := graphMixedResult[graphstore.Record](t, call("show", original.ID, "--revision", original.Revision)); !reflect.DeepEqual(got, original) {
 				t.Fatal("original history changed")
 			}
 		})
 	}
 }
 
+func TestGraphPreviewHistoricalLinkWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/historical-link/")
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			call("remember", "Source", "--id", "source")
+			call("remember", "Target", "--id", "target")
+			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", "source", "--to", "target", "--type", "types/references", "--id", "historical", "--properties", `{"note":"first"}`, "--metadata", `{"old":true}`))
+			last := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--properties", `{"note":"last"}`, "--replace-metadata", `{"last":true}`))
+			restored := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--from-revision", first.Link.Revision, "--if-revision", last.Link.Revision, "--set-metadata", "explicit=7"))
+			if !restored.Changed || restored.Link.Properties["note"] != "first" || string(restored.Link.Metadata) != `{"explicit":7,"old":true}` || restored.Link.Attribution.HistoricalUpdate == nil {
+				t.Fatalf("historical Link composition: %+v", restored)
+			}
+			noop := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--from_revision", restored.Link.Revision))
+			if noop.Changed || !reflect.DeepEqual(noop.Link, restored.Link) {
+				t.Fatalf("source-only no-op: %+v", noop)
+			}
+			deleted := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "historical", "--force", "--if-revision", restored.Link.Revision))
+			humanDeleted := graphPolicyCLI(t, bd, work, home, nil, "", "link", "versions", "historical")
+			if !strings.Contains(humanDeleted, "This Link has been removed") || !strings.Contains(humanDeleted, "(deleted; not a live snapshot)") || !strings.Contains(humanDeleted, "  SEQ  WHEN") || strings.Contains(humanDeleted, deleted.Link.Revision) || strings.Contains(humanDeleted, "did not create a Link version") {
+				t.Fatalf("contradictory deleted human history: %s", humanDeleted)
+			}
+			longDeleted := graphPolicyCLI(t, bd, work, home, nil, "", "link", "versions", "historical", "--long")
+			if !strings.Contains(longDeleted, "deletion revision: "+deleted.Link.Revision) {
+				t.Fatalf("long history lost exact terminal token: %s", longDeleted)
+			}
+
+			type linkHistory struct {
+				CurrentState *graphstore.ResourceTerminalState `json:"currentState"`
+				Terminal     []map[string]any                  `json:"terminal_versions"`
+			}
+			history := graphMixedResult[linkHistory](t, call("link", "versions", "historical"))
+			if history.CurrentState == nil || history.CurrentState.Revision != deleted.Link.Revision || history.CurrentState.Type != deleted.Link.Type || len(history.Terminal) != 1 {
+				t.Fatalf("missing Link terminal descriptor: %+v", history)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "link", "update", "historical", "--from-revision", first.Link.Revision, "--if-revision", restored.Link.Revision, "--json")
+			recovered := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--from-revision", first.Link.Revision, "--if-revision", history.CurrentState.Revision, "--patch", `[{"op":"replace","path":"/note","value":"after source"}]`))
+			if !recovered.Changed || recovered.Link.ID != first.Link.ID || recovered.Link.Properties["note"] != "after source" || recovered.Link.Attribution.HistoricalUpdate == nil || recovered.Link.Attribution.HistoricalUpdate.PreviousRevision != deleted.Link.Revision {
+				t.Fatalf("same-ID recovery: %+v", recovered)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", deleted.Link.ID, "--revision", deleted.Link.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "update", "historical", "--from-revision", deleted.Link.Revision, "--json")
+			if current := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", "historical")); !reflect.DeepEqual(current, recovered.Link) {
+				t.Fatalf("refusal changed Link: %+v", current)
+			}
+			humanRecovered := graphPolicyCLI(t, bd, work, home, nil, "", "link", "versions", "historical")
+			if !strings.Contains(humanRecovered, "Terminal deletion versions are retained separately") || strings.Contains(humanRecovered, "This Link has been removed") {
+				t.Fatalf("recovered human history lost terminal evidence: %s", humanRecovered)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewHistoricalDependencyLinkWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/historical-dependency/")
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			sourceIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--graph-path", "beads/source"))
+			targetIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--graph-path", "beads/target"))
+			initial := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", sourceIssue.ID, targetIssue.ID, "--id", "links/native"))
+			old := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--properties", `{"dep_type":"blocks"}`, "--replace-metadata", `{"old":true}`))
+			current := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--properties", `{"dep_type":"blocks"}`, "--replace-metadata", `{"current":true}`))
+			beforeRefusal := call("link", "show", initial.Link.ID)
+			beforeHistory := call("link", "versions", initial.Link.ID)
+			beforeSource := call("show", sourceIssue.ID, "--format", "graph-json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "link", "update", initial.Link.ID, "--properties", `{"dep_type":"relates-to"}`, "--if-revision", current.Link.Revision, "--json")
+			if call("link", "show", initial.Link.ID) != beforeRefusal || call("link", "versions", initial.Link.ID) != beforeHistory || call("show", sourceIssue.ID, "--format", "graph-json") != beforeSource {
+				t.Fatal("refused concrete Type change wrote Link, History or owner")
+			}
+			restored := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--from-revision", old.Link.Revision, "--if-revision", current.Link.Revision, "--set-metadata", "explicit=7"))
+			if !restored.Changed || restored.Link.ID != initial.Link.ID || restored.Link.Type != initial.Link.Type || restored.Link.Properties["dep_type"] != "blocks" || string(restored.Link.Metadata) != `{"explicit":7,"old":true}` || restored.Link.Attribution.HistoricalUpdate == nil {
+				t.Fatalf("native historical CLI composition: %+v", restored)
+			}
+			noop := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--from_revision", restored.Link.Revision))
+			if noop.Changed || !reflect.DeepEqual(noop.Link, restored.Link) {
+				t.Fatalf("native source-only CLI no-op: %+v", noop)
+			}
+			source := graphMixedResult[graphstore.IssueRecord](t, call("show", sourceIssue.ID, "--format", "graph-json"))
+			deleted := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "links/native", "--force", "--if-revision", restored.Link.Revision, "--if-source-revision", source.Revision))
+			type historyResult struct {
+				CurrentState *graphstore.ResourceTerminalState `json:"currentState"`
+			}
+			history := graphMixedResult[historyResult](t, call("link", "versions", "links/native"))
+			if history.CurrentState == nil || history.CurrentState.Revision != deleted.Link.Revision {
+				t.Fatalf("native D guard missing: %+v", history)
+			}
+			recovered := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "links/native", "--from-revision", old.Link.Revision, "--if-revision", history.CurrentState.Revision, "--patch", `[{"op":"replace","path":"/dep_type","value":"blocks"}]`))
+			if !recovered.Changed || recovered.Link.ID != initial.Link.ID || recovered.Link.Type != initial.Link.Type || recovered.Link.Revision == deleted.Link.Revision || recovered.Link.Attribution.Inception != "revert" || recovered.Link.Properties["dep_type"] != "blocks" || string(recovered.Link.Metadata) != `{"old":true}` {
+				t.Fatalf("native same-ID CLI recovery: %+v", recovered)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", "links/native", "--revision", deleted.Link.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "link", "update", "links/native", "--from-revision", old.Link.Revision, "--if-revision", deleted.Link.Revision, "--json")
+			if got := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", "links/native")); !reflect.DeepEqual(got, recovered.Link) {
+				t.Fatalf("native current lost context: %+v", got)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewHistoricalRecoveryWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -66,7 +178,7 @@ func TestGraphPreviewHistoricalRecoveryWorkflow(t *testing.T) {
 			}
 			first := graphMixedResult[graphstore.Record](t, call("remember", "first", "--id", "beads/recover"))
 			last := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/recover", "--properties", `{"body":"last"}`))
-			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "recover", "--force", "--if-revision", last.Memory.Revision))
+			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", first.ID, "--force", "--if-revision", last.Memory.Revision))
 			if deleted.Terminal == nil || deleted.Terminal.Revision == last.Memory.Revision {
 				t.Fatalf("missing actual D: %+v", deleted)
 			}
@@ -75,24 +187,24 @@ func TestGraphPreviewHistoricalRecoveryWorkflow(t *testing.T) {
 				Terminal     []map[string]any                `json:"terminal_versions"`
 				Versions     []map[string]any                `json:"versions"`
 			}
-			history := graphMixedResult[historyResult](t, call("versions", "recover"))
+			history := graphMixedResult[historyResult](t, call("versions", first.ID))
 			if !reflect.DeepEqual(history.CurrentState, deleted.Terminal) || len(history.Terminal) != 1 || history.Terminal[0]["version"] != deleted.Terminal.Revision {
 				t.Fatalf("terminal carrier: %+v", history)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--version", deleted.Terminal.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--revision", deleted.Terminal.Revision, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", "beads/recover", "--from-revision", first.Revision, "--if-revision", last.Memory.Revision, "--json")
 			recovered := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/recover", "--from-revision", first.Revision, "--if-revision", deleted.Terminal.Revision, "--properties", `{"body":"explicit after source"}`))
 			if !recovered.Changed || recovered.Memory.ID != first.ID || recovered.Memory.Properties.Body != "explicit after source" || recovered.Memory.Attribution.Inception != "revert" || recovered.Memory.Attribution.HistoricalUpdate == nil || recovered.Memory.Attribution.HistoricalUpdate.PreviousRevision != deleted.Terminal.Revision {
 				t.Fatalf("wrong recovery: %+v", recovered)
 			}
-			if got := graphMixedResult[graphstore.Record](t, call("show", first.ID, "--version", first.Revision)); !reflect.DeepEqual(got, first) {
+			if got := graphMixedResult[graphstore.Record](t, call("show", first.ID, "--revision", first.Revision)); !reflect.DeepEqual(got, first) {
 				t.Fatal("recovery changed retained source")
 			}
 			if got := graphMixedResult[graphstore.Record](t, call("show", first.ID)); !reflect.DeepEqual(got, recovered.Memory) {
 				t.Fatal("recovery did not install result")
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--version", deleted.Terminal.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--revision", deleted.Terminal.Revision, "--json")
 		})
 	}
 }
@@ -156,7 +268,7 @@ func TestGraphPreviewHistoricalNativeIssueWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(got, applied.Issue) {
 				t.Fatal("refusal changed native destination")
 			}
-			exact := graphMixedResult[graphstore.IssueRecord](t, call("show", original.ID, "--version", applied.Issue.Revision))
+			exact := graphMixedResult[graphstore.IssueRecord](t, call("show", original.ID, "--revision", applied.Issue.Revision))
 			want := applied.Issue
 			properties := *want.Properties
 			properties.ContentHash = ""
@@ -248,7 +360,7 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 			}
 			assertCanonicalHistory(history)
 			refuse("gone", "show", source.ID)
-			refuse("gone", "show", source.ID, "--version", deleted.Terminal.Revision)
+			refuse("gone", "show", source.ID, "--revision", deleted.Terminal.Revision)
 			refuse("revision_conflict", "update", "subject", "--from-revision", source.Revision, "--if-revision", current.Issue.Revision)
 			refuse("gone", "update", "subject", "--from-revision", deleted.Terminal.Revision, "--if-revision", deleted.Terminal.Revision)
 			recovered := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", source.Revision, "--if-revision", deleted.Terminal.Revision, "--patch", `[{"op":"replace","path":"/title","value":"Recovered"}]`, "--set-metadata", "explicit=7", "--actor", "restorer"))
@@ -260,7 +372,7 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 			if !reflect.DeepEqual(got, recovered.Issue) {
 				t.Fatal("native recovery not visible to fresh process")
 			}
-			for _, selection := range [][]string{nil, {"--version", recovered.Issue.Revision}} {
+			for _, selection := range [][]string{nil, {"--revision", recovered.Issue.Revision}} {
 				args := append([]string{"show", source.ID, "--output-format", "json"}, selection...)
 				raw := graphPolicyCLI(t, bd, work, home, nil, "", args...)
 				var envelope struct {
@@ -293,7 +405,7 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 				t.Fatalf("repeated native recovery lost terminal or citable rows: %+v", history)
 			}
 			assertCanonicalHistory(history)
-			refuse("gone", "show", source.ID, "--version", secondDelete.Terminal.Revision)
+			refuse("gone", "show", source.ID, "--revision", secondDelete.Terminal.Revision)
 		})
 	}
 }

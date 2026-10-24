@@ -37,7 +37,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Revision))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--revision", record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
@@ -64,8 +64,8 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			}
 			call(args...)
 			memory := call("remember", "Progress context", "--id", "beads/context", "--title", "Context")
-			call("create", "Record progress", "--graph-path", "beads/work", "--labels", "demo,graph")
-			target := call("create", "Prerequisite", "--graph-path", "beads/gate")
+			call("create", "Record progress", "--id", "beads/work", "--force", "--labels", "demo,graph")
+			target := call("create", "Prerequisite", "--id", "beads/gate", "--force")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))

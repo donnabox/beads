@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"strings"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -73,7 +72,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
-		if parent.Type != issueType {
+		if !nativeIssueTypeMatches(s.ScopeURL(), parent.Type, issueType) {
 			return fmt.Errorf("%w: parent is not an Issue of the installed relationship Type", storage.ErrValidation)
 		}
 		if parent.Revision != request.ExpectedParentRevision {
@@ -123,6 +122,13 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
+		issueType, err = NativeIssueTypeURL(s.ScopeURL(), string(created.Issue.IssueType))
+		if err != nil {
+			return err
+		}
+		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
+			return err
+		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
 			(path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
 			VALUES (?,'bead',?,?,'live','issue',?)`, childPath, issueType, childRevision, created.Issue.ID); err != nil {
@@ -165,11 +171,15 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err := s.afterStage("child-link-catalog"); err != nil {
 			return err
 		}
-		link, err := s.currentLinkInTx(ctx, tx, linkPath)
+		link, err := s.currentLinkForCreationInTx(ctx, tx, linkPath)
 		if err != nil {
 			return err
 		}
-		if link.Source != graph.CanonicalURL(s.ScopeURL(), childPath) || link.Target != parent.ID || link.Type != linkType {
+		childURL, err := s.publicResourceURLInTx(ctx, tx, childPath)
+		if err != nil {
+			return err
+		}
+		if link.Source != childURL || link.Target != parent.ID || link.Type != linkType {
 			return fmt.Errorf("%w: child Link endpoints or Type differ from native Dependency", ErrInvalidStore)
 		}
 		linkBytes, err := canonicalJSON(link)

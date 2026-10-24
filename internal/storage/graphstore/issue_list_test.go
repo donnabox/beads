@@ -450,8 +450,16 @@ func TestGraphIssueListBounds(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := issueListFixture(t, backend)
-			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
+			work, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
 				t.Fatal(err)
+			}
+			assertUnchanged := func() {
+				t.Helper()
+				page, err := s.ListIssues(ctx, publicops.ListRequest{IssueType: "task"})
+				if err != nil || page.HasMore || len(page.Items) != 1 || page.Items[0].ID != work.ID || page.Items[0].Properties == nil || page.Items[0].Properties.ID != work.Properties.ID || page.Items[0].Properties.IssueType != "task" {
+					t.Fatalf("bound injection changed the valid native list: %+v %v", page, err)
+				}
 			}
 			assertBound := func(got IssueListPage, err error) error {
 				if !errors.Is(err, ErrLimitExceeded) || !reflect.ValueOf(got).IsZero() {
@@ -459,6 +467,7 @@ func TestGraphIssueListBounds(t *testing.T) {
 				}
 				return nil
 			}
+			assertUnchanged()
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				// Each value fits the existing TEXT column. Their aggregate,
 				// including key bytes, exceeds the adapter's 64KiB admission.
@@ -467,11 +476,21 @@ func TestGraphIssueListBounds(t *testing.T) {
 						return err
 					}
 				}
+				// Raw SQL acquisition still enforces its aggregate byte budget,
+				// independently of the earlier native classification validator.
+				config, err := issueListConfigInTx(ctx, tx)
+				if !errors.Is(err, ErrLimitExceeded) || !reflect.ValueOf(config).IsZero() {
+					return fmt.Errorf("raw config bound leaked config: %+v %w", config, err)
+				}
 				got, err := s.listIssuesInTx(ctx, tx, publicops.ListRequest{})
-				return assertBound(got, err)
+				if !errors.Is(err, storage.ErrValidation) || errors.Is(err, ErrLimitExceeded) || !strings.Contains(err.Error(), "native Issue classification exceeds 32 characters") || !reflect.ValueOf(got).IsZero() {
+					return fmt.Errorf("invalid native classification leaked page or lost cause: %+v %w", got, err)
+				}
+				return nil
 			}); err != nil {
 				t.Fatal(err)
 			}
+			assertUnchanged()
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				names := make([]string, PreviewIssueListConfigRowLimit+1)
 				for i := range names {
@@ -486,6 +505,7 @@ func TestGraphIssueListBounds(t *testing.T) {
 			}); err != nil {
 				t.Fatal(err)
 			}
+			assertUnchanged()
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				// Synthetic catalog excess verifies the operational cap before hydration.
 				// This rolled-back bound injection is not application acceptance evidence.
@@ -499,6 +519,7 @@ func TestGraphIssueListBounds(t *testing.T) {
 			}); err != nil {
 				t.Fatal(err)
 			}
+			assertUnchanged()
 			// Unlike the synthetic count probe, this oversized unrelated Memory is
 			// authored through the actual writer and exercises the persisted byte cap.
 			if _, err := s.Create(ctx, CreateRequest{Title: "Large", Path: "beads/large", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2)}); err != nil {

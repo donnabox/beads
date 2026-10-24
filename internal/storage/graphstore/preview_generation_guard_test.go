@@ -88,16 +88,16 @@ func TestUnspecifiedStoreGenerationRequiresCompleteFreshTypes(t *testing.T) {
 	}
 }
 
-// The common-metadata and endpoint-pin columns change the preview storage
-// layout and require SchemaVersion 8. Older workspaces remain pinned to their original binary;
+// Common public identity changes canonical snapshot semantics and requires
+// SchemaVersion 11. Older workspaces remain pinned to their original binary;
 // this binary refuses them rather than silently upgrading their data. The
 // workspace marker generation still describes the installed Type set.
 //
 // Counting Types is plain SQL over graph_preview_types and identical on both
 // engines, so only the embedded engine is exercised here.
 func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
-	if SchemaVersion != 8 {
-		t.Fatalf("SchemaVersion is %d, want 8 for endpoint pins", SchemaVersion)
+	if SchemaVersion != 11 {
+		t.Fatalf("SchemaVersion is %d, want 11 for common canonical public identity", SchemaVersion)
 	}
 	ctx, o := issueExperimentOptions(t, "embedded")
 	s, err := OpenExisting(ctx, o)
@@ -109,6 +109,19 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 			t.Error(err)
 		}
 	})
+	rows, err := s.db.QueryContext(ctx, `SELECT native_attribution FROM graph_preview_versions LIMIT 0`)
+	if err != nil {
+		t.Fatalf("missing native Link attribution authority: %v", err)
+	}
+	if err := rows.Close(); err != nil {
+		t.Fatal(err)
+	}
+	old := o
+	old.Binding.SchemaVersion = 10
+	if prior, err := OpenExisting(ctx, old); err == nil {
+		_ = prior.Close()
+		t.Fatal("schema-10 binding was silently adopted")
+	}
 	installed := func() (int, error) {
 		tx, err := s.db.BeginTx(ctx, nil)
 		if err != nil {
@@ -122,8 +135,8 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 		descriptors, err := installedPreviewTypes(ctx, tx, s.ScopeURL())
 		return len(descriptors), err
 	}
-	if count, err := installed(); err != nil || count != 20 {
-		t.Fatalf("fresh installation has %d Types with %v; want 20", count, err)
+	if count, err := installed(); err != nil || count != 52 {
+		t.Fatalf("fresh installation has %d Types with %v; want 52", count, err)
 	}
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='dependency'`); err != nil {
 		t.Fatal(err)
@@ -174,5 +187,49 @@ func TestPriorPreviewTypeInstallationIsNotSilentlyAdopted(t *testing.T) {
 	}
 	if !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
 		t.Fatal("refusing an old installation changed its data or coordination")
+	}
+}
+
+// An unspecified direct Store generation uses the checked catalog, not a CLI
+// marker. A valid old twenty-Type baseline is insufficient, even at schema 11.
+func TestUnspecifiedStoreGenerationRefusesPriorTwentyTypes(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			if options.TypeGeneration != 0 || options.Binding.SchemaVersion != 11 {
+				t.Fatalf("expected unspecified generation at schema11: %+v", options)
+			}
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := store.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			if current, err := store.ListInstalledTypes(ctx); err != nil || len(current) != 52 {
+				t.Fatalf("complete current catalog refused: %d %v", len(current), err)
+			}
+			if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name LIKE 'native-issue/%' OR name LIKE 'native-dependency/%'`); err != nil {
+				t.Fatal(err)
+			}
+			var count int
+			if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil || count != 20 {
+				t.Fatalf("old catalog fixture: %d %v", count, err)
+			}
+			before := workflowState(t, ctx, store)
+			// Embedded engine opens serialize. Exercise the checked direct Store
+			// entrypoints on this handle, rather than opening a second engine.
+			if catalog, err := store.ListInstalledTypes(ctx); !errors.Is(err, ErrInvalidStore) || catalog != nil {
+				t.Fatalf("unspecified generation admitted old catalog: %v %v", catalog, err)
+			}
+			if children, err := store.ListChildren(ctx, "beads/missing"); !errors.Is(err, ErrInvalidStore) || children != nil {
+				t.Fatalf("relationship reader bypassed old catalog: %v %v", children, err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
+				t.Fatal("old catalog refusal changed data or coordination")
+			}
+		})
 	}
 }

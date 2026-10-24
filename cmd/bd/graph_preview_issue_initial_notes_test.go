@@ -105,7 +105,7 @@ func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
 				t.Fatalf("forced notes update lost native fields or attribution: %+v", replaced)
 			}
 			refuse("revision_conflict", "update", selector, "--notes=Stale", "--force", "--if-revision", created.Revision)
-			prior := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--version", created.Revision))
+			prior := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--revision", created.Revision))
 			if prior.Properties.Notes != "First" || prior.Properties.Title != "Notes work" {
 				t.Fatal("replacement rewrote the retained initial Issue")
 			}
@@ -117,7 +117,7 @@ func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
 			if !cleared.Changed || cleared.Issue.Properties.Notes != "" || cleared.Issue.Properties.Title != "Revised" {
 				t.Fatal("explicit clear changed another field or retained notes")
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--version", appended.Issue.Revision)); got.Properties.Notes != "Second\nThird" {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--revision", appended.Issue.Revision)); got.Properties.Notes != "Second\nThird" {
 				t.Fatal("clear rewrote prior retained notes")
 			}
 			versions = call("versions", selector)
@@ -155,7 +155,7 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 			writeFile(t, gitconfig, []byte(gitText))
 			env := []string{"BEADS_ACTOR=" + tc.beadsActor, "BD_ACTOR=" + tc.oldActor, "GIT_AUTHOR_EMAIL=" + tc.ownerEnv}
 			path := "beads/" + tc.name
-			args := []string{"create", "Authored Issue", "--graph-path", path, "--notes", "  Initial 雪\r\n ", "--assignee", "assigned-worker", "--json"}
+			args := []string{"create", "Authored Issue", "--id", path, "--force", "--notes", "  Initial 雪\r\n ", "--assignee", "assigned-worker", "--json"}
 			if tc.flagActor != "" {
 				args = append(args, "--actor", tc.flagActor)
 			}
@@ -174,7 +174,7 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 			if envelope.Result.Revision == "" || i.CreatedBy != tc.wantActor || i.Owner != tc.wantOwner || envelope.Result.Attribution.Actor != tc.wantActor || i.Assignee != "assigned-worker" || i.Status != types.StatusOpen || i.Notes != "  Initial 雪\r\n " || i.LeaseExpiresAt != nil || i.HeartbeatAt != nil {
 				t.Fatalf("authorship, initial notes or no-claim boundary lost: %+v", envelope.Result)
 			}
-			for _, flags := range [][]string{nil, {"--version", envelope.Result.Revision}} {
+			for _, flags := range [][]string{nil, {"--revision", envelope.Result.Revision}} {
 				if got := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"show", "https://example.invalid/initial-notes/" + path, "--format", "graph-json", "--json"}, flags...)...); got != created {
 					t.Fatal("fresh current/exact read changed complete initial authored Issue")
 				}
@@ -188,10 +188,10 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 	for _, key := range []string{"BEADS_ACTOR", "GIT_AUTHOR_EMAIL"} {
 		t.Run("overlong-"+key, func(t *testing.T) {
 			env := []string{key + "=" + strings.Repeat("雪", 256)}
-			graphPolicyCLI(t, bd, work, home, env, "invalid_properties", "create", "Refused", "--graph-path", "beads/refused", "--notes=No allocation", "--json")
+			graphPolicyCLI(t, bd, work, home, env, "invalid_properties", "create", "Refused", "--id", "beads/refused", "--force", "--notes=No allocation", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 		})
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--graph-path", "beads/refused", "--notes", "must not allocate", "--readonly", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--id", "beads/refused", "--force", "--notes", "must not allocate", "--readonly", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 }

@@ -12,11 +12,11 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 8
+const SchemaVersion = 11
 
-// TypeGeneration changes when the selected fresh Type installation changes.
-// It is an admission marker, never an automatic migration of existing stores.
-const TypeGeneration = 10
+// TypeGeneration identifies the selected fresh graph contract, including its
+// Type installation and public identity semantics. It never migrates stores.
+const TypeGeneration = 12
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -55,13 +55,20 @@ type Options struct {
 
 // CreateRequest creates a new canonical Memory path; it is not a keyed upsert.
 type CreateRequest struct {
-	TypeURL        string
-	PropertiesJSON json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
-	Path           string
-	Title          string
-	Body           string
-	Actor          string
-	Metadata       json.RawMessage
+	// PublicID is an exact user identity; Path is its private locator. Empty
+	// retains the legacy allocation-path public identity.
+	PublicID string
+	// IDRoot prefixes an automatically generated public ID, never an explicit ID.
+	IDRoot               string
+	generatePublicID     bool
+	privatePathGenerated bool
+	TypeURL              string
+	PropertiesJSON       json.RawMessage // complete object; exclusive with nonempty legacy Title/Body
+	Path                 string
+	Title                string
+	Body                 string
+	Actor                string
+	Metadata             json.RawMessage
 }
 
 // Properties retains the common Memory fields and every other authored property.
@@ -76,6 +83,8 @@ type Properties struct {
 // Record is a complete preview Memory record, including its outgoing owned Links.
 // Version identifies retained state; it is not a local ordinal or timestamp.
 type Record struct {
+	// PublicID is checked allocation data for local CLI projection, not BDP wire.
+	PublicID    string            `json:"-"`
 	ID          string            `json:"id"`
 	Type        string            `json:"type"`
 	Revision    string            `json:"revision"`
@@ -103,9 +112,9 @@ type Attribution struct {
 	HistoricalUpdate *HistoricalUpdateContext `json:"historicalUpdate,omitempty"`
 }
 
-// IssueRecord projects the authoritative specialized Issue aggregate. It is a
-// disposable preview, with mutable issue_type classification under one local
-// experimental Type. No public nominal Task/Bug contract is established.
+// IssueRecord projects the authoritative native Issue aggregate. Type is the
+// Scope-local concrete declaration derived from its native issue_type column.
+// Exact retained records use their retained classification, never the current one.
 type IssueRecord struct {
 	ID          string            `json:"id"`
 	Type        string            `json:"type"`
@@ -132,6 +141,9 @@ var (
 // in the workspace generation. If both are set, they must agree. Path is an
 // optional never-reused Link allocation; empty allocates a fresh path.
 type DependencyRequest struct {
+	// PublicID is exact public identity; Path is only the private allocation locator.
+	PublicID string
+	IDRoot   string
 	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
 	ExpectedSourceRevision string
 	Type                   types.DependencyType
@@ -166,6 +178,7 @@ type LinkRecord struct {
 type DependencyResult struct {
 	Link    LinkRecord  `json:"link"`
 	Source  IssueRecord `json:"source"`
+	Target  IssueRecord `json:"-"`
 	Changed bool        `json:"changed"`
 }
 
@@ -199,6 +212,9 @@ const PreviewOwnedLinkLimit = 1000
 // LinkCreateRequest allocates an independent informational Link. Equal endpoints
 // do not deduplicate intent; an explicit allocated Path cannot be reused.
 type LinkCreateRequest struct {
+	// PublicID is exact public identity; Path remains a private SQL locator.
+	PublicID string
+	IDRoot   string
 	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
 	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string
@@ -216,6 +232,7 @@ type LinkCreateRequest struct {
 // Type or endpoint identities. Nil pin intent preserves the stored Reference.
 // A guard is mandatory for the Link and, when owned, its source Memory.
 type LinkUpdateRequest struct {
+	FromRevision           string
 	Path, Actor            string
 	SourcePin, TargetPin   *EndpointPin
 	Properties             map[string]any
@@ -237,12 +254,28 @@ type LinkMutationResult struct {
 
 // LinksRequest selects complete current incident state in one read transaction.
 // Empty direction means both. Empty TypeURL admits all installed Link Types.
-type LinksRequest struct{ BeadPath, Direction, TypeURL string }
+type LinksRequest struct{ BeadPath, Direction, TypeURL, ConformsTo string }
+
+// LinkPinSelection is an optional CLI endpoint-revision applicability test.
+// Revision is an exact retained token; Current requests the live Bead revision.
+type LinkPinSelection struct {
+	Revision string
+	Explicit bool
+	Current  bool
+}
 
 // LinkCollectionRequest selects current Links without enumerating Beads.
 // An empty selector is unconstrained; the preview refuses an incomplete
 // collection rather than returning a silently truncated page.
-type LinkCollectionRequest struct{ TypeURL, SourcePath, TargetPath, IncidentPath string }
+type LinkCollectionRequest struct {
+	TypeURL, ConformsTo, SourcePath, TargetPath, IncidentPath string
+	// URLs are checked public identities, independent of private path spelling.
+	SourceURL, TargetURL, IncidentURL string
+	SourcePin, TargetPin, IncidentPin LinkPinSelection
+	PairDirection                     string // out, in, or both; empty keeps conjunctive flag filters
+	IncidentDirection                 string // in/out/both relative to IncidentPath, independent of source/target filters
+	AllRevisions                      bool
+}
 
 // PreviewIncidentLinkLimit bounds this disposable non-paginated reader.
 const PreviewIncidentLinkLimit = 1000

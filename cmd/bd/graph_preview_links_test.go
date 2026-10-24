@@ -141,8 +141,8 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		{nil, "", false},
 		{[]string{"--type", "types/references"}, "https://example.invalid/demo/types/references", false},
 		{[]string{"--type", "types/preview-related"}, "", true},
-		{[]string{"--type", "blocks"}, "https://example.invalid/demo/types/dependency", false},
-		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/types/dependency", false},
+		{[]string{"--type", "blocks"}, "https://example.invalid/demo/types/native-dependency/626c6f636b73", false},
+		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/types/native-dependency/706172656e742d6368696c64", false},
 		{[]string{"--type", "random"}, "", true},
 		{[]string{"--type="}, "", true},
 	} {

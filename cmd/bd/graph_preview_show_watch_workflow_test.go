@@ -31,7 +31,7 @@ func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Memory body", "--id", "beads/memory", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/missing", "--watch", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "https://example.invalid/watch/beads/memory", "--watch", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/work", "--watch", "--version", "old", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", "beads/work", "--watch", "--revision", "old", "--json")
 
 			logDir := t.TempDir()
 			outPath, errPath := filepath.Join(logDir, "stdout"), filepath.Join(logDir, "stderr")
@@ -45,7 +45,7 @@ func TestGraphPreviewShowWatchWorkflow(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer stderr.Close()
-			watch := exec.Command(bd, "show", "beads/work", "--watch")
+			watch := exec.Command(bd, "show", created.ID, "--watch")
 			watch.Dir = work
 			watch.Env = []string{
 				"PATH=" + os.Getenv("PATH"), "HOME=" + home,

@@ -23,19 +23,20 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string, prepa
 	if err != nil {
 		return err
 	}
-	issueUpdated := false
+	touchedID := ""
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		current, err := store.Read(ctx, path)
 		if err != nil {
 			return nil, "", err
 		}
 		if issue, ok := current.(graphstore.IssueRecord); ok {
-			if request.TypeURL != "" {
-				return nil, "", graphFailure("capability_unavailable", "native Issue Type changes require their domain writer", 5)
+			request.TypeURL, err = graphPreviewNativeIssueTypeFlag(cmd, store.ScopeURL())
+			if err != nil {
+				return nil, "", err
 			}
 			result, summary, err := graphPreviewPatchIssueProperties(ctx, store, cmd, request, issue)
 			if err == nil {
-				issueUpdated = true
+				touchedID = issue.ID
 			}
 			return result, summary, err
 		}
@@ -57,8 +58,8 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string, prepa
 		}
 		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Memory.ID), result.Replaced, nil)
 	})
-	if err == nil && issueUpdated {
-		graphPreviewStoreLastTouchedPath(path)
+	if err == nil && touchedID != "" {
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }

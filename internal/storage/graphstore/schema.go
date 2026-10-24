@@ -39,14 +39,14 @@ var previewDDL = []string{
         path VARBINARY(1024) PRIMARY KEY, resource_kind VARBINARY(16) NOT NULL,
         type_url LONGBLOB NOT NULL, revision VARBINARY(32) NOT NULL,
         allocation_state VARBINARY(16) NOT NULL, backing VARBINARY(32) NOT NULL,
-        backing_key VARBINARY(255) NULL, UNIQUE KEY one_backing (backing, backing_key))`,
+        backing_key VARBINARY(255) NULL, public_id LONGBLOB NULL, UNIQUE KEY one_backing (backing, backing_key))`,
 	`CREATE TABLE graph_preview_payloads (
         path VARBINARY(1024) PRIMARY KEY, properties LONGBLOB NOT NULL,
         metadata LONGBLOB NULL)`,
 	`CREATE TABLE graph_preview_versions (
         path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,
         snapshot LONGBLOB NOT NULL, actor LONGBLOB NOT NULL,
-        ordinal BIGINT NOT NULL, change_at DATETIME(6) NOT NULL, native_participation_generation BIGINT NULL,
+        ordinal BIGINT NOT NULL, change_at DATETIME(6) NOT NULL, native_participation_generation BIGINT NULL, native_attribution LONGBLOB NULL,
         PRIMARY KEY (path, version), UNIQUE KEY one_path_ordinal (path, ordinal))`,
 	`CREATE TABLE graph_preview_issue_versions (
         path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,
@@ -61,11 +61,10 @@ func memoryDescriptor(scope string) (graph.TypeDescriptor, error) {
 	return selectedMemoryDescriptor(scope, "memory")
 }
 
-// IssueTypeURL deliberately avoids settling the nominal Task/Bug discussion.
+// IssueTypeURL identifies the abstract native Issue family.
 func IssueTypeURL(scope string) string { return scope + "types/issue" }
 
-// DependencyTypeURL is the one native Dependency Link Type. The kind is stored
-// in the Link's dep_type property, not its nominal Type URL.
+// DependencyTypeURL identifies the abstract native Dependency family.
 func DependencyTypeURL(scope string) string { return scope + "types/dependency" }
 
 func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
@@ -75,13 +74,13 @@ func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
 		ID: DependencyTypeURL(scope), Name: "Dependency", Describes: graph.KindLink,
-		Description: "Issue-owned native Dependency with live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; no other properties or metadata edits are supported. One ordered Issue pair has at most one Dependency.",
+		Description: "Abstract native Dependency family; cannot be declared directly. Concrete kinds refine this family and use live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; common metadata is editable; no other properties are supported. One ordered Issue pair has at most one Dependency.",
 		Source:      &endpoint, Target: &endpoint,
 	})
 }
 
-// The one installed Issue Type owns the native Dependency Links exposed by
-// this fresh workspace. Issue classification remains an unconstrained property.
+// The abstract native Issue family supplies inherited ownership. Its concrete
+// children derive affiliation from the native writer's validated classification.
 func issueDescriptor(scope string) (graph.TypeDescriptor, error) {
 	owned := make([]graph.OwnedLinkDecl, 0, len(relationshipDependencyTypes))
 	for _, relation := range relationshipDependencyTypes {
@@ -93,7 +92,7 @@ func issueDescriptor(scope string) (graph.TypeDescriptor, error) {
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
 		ID: IssueTypeURL(scope), Name: "Issue", Describes: graph.KindBead,
-		Description:  "Disposable specialized Issue adapter with source-owned Dependency Links. Issue classification remains a property. Native Issue writers own lifecycle and retained History; these Link Types do not define a close reason or authorize an edge-plus-close operation.",
+		Description:  "Abstract native Issue family; cannot be declared directly. Concrete native classifications refine this family and inherit source-owned Dependency Links. Native Issue writers own lifecycle and retained History; these Link Types do not define a close reason or authorize an edge-plus-close operation.",
 		OwnsOutgoing: owned,
 	})
 }
@@ -112,47 +111,35 @@ var relationshipDependencyTypes = [...]relationshipDependencyType{
 }
 
 func relationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
-	if native.IsValid() {
-		return DependencyTypeURL(scope), true
+	if !native.IsValid() {
+		return "", false
 	}
-	return "", false
+	id, err := NativeDependencyTypeURL(scope, string(native))
+	return id, err == nil
 }
 
-// RelationshipDependencyTypeURL names a native Dependency Link Type. This
-// is an identity lookup, not permission to create the relationship.
+// RelationshipDependencyTypeURL is an identity lookup, not admission permission.
 func RelationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
 	return relationshipDependencyTypeURL(scope, native)
 }
-
-// RelationshipBlockingTypeURL is the installed blocking Link identity.
 func RelationshipBlockingTypeURL(scope string) string {
 	id, _ := relationshipDependencyTypeURL(scope, types.DepBlocks)
 	return id
 }
-
-func nativeRelationshipDependencyType(scope, id string) (types.DependencyType, bool) {
-	if id == DependencyTypeURL(scope) {
-		// The Type identifies a Dependency, while dependencies.type supplies
-		// its kind. Callers must not infer a kind from this return value.
-		return types.DepBlocks, true
-	}
-	return "", false
+func isNativeRelationshipDependencyType(scope, id string) bool {
+	base, kind, ok := NativeTypeClassification(scope, id)
+	return ok && base == DependencyTypeURL(scope) && types.DependencyType(kind).IsValid()
 }
-
 func relationshipDependencyInstallName(scope, id string) (string, bool) {
-	for _, relation := range relationshipDependencyTypes {
-		if id == scope+relation.path {
-			return relation.installName, true
-		}
-	}
-	return "", false
+	ok := isNativeRelationshipDependencyType(scope, id)
+	return strings.TrimPrefix(id, scope+"types/"), ok
 }
-
 func relationshipDependencyDescriptor(scope string, native types.DependencyType) (graph.TypeDescriptor, error) {
-	if native.IsValid() {
-		return dependencyDescriptor(scope)
+	id, ok := relationshipDependencyTypeURL(scope, native)
+	if !ok {
+		return graph.TypeDescriptor{}, fmt.Errorf("unsupported native relationship Dependency %q", native)
 	}
-	return graph.TypeDescriptor{}, fmt.Errorf("unsupported native relationship Dependency %q", native)
+	return nativeConcreteDescriptor(scope, id)
 }
 
 // RelatedTypeURL retains the legacy command spelling as an alias for References.
@@ -256,7 +243,7 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 		return err
 	}
 	count := len(installed)
-	if count != len(previewTypeDefinitions()) {
+	if count < len(previewTypeDefinitions()) {
 		return fmt.Errorf("%w: workspace marker and installed Type generation differ", ErrInvalidStore)
 	}
 	if _, err := issueops.ReadConfigPrefix(ctx, tx); err != nil {
@@ -264,10 +251,10 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	}
 	// Reject incomplete bootstrap on open, even before a caller selects a row.
 	for _, query := range []string{
-		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key FROM graph_preview_catalog LIMIT 0`,
+		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key, public_id FROM graph_preview_catalog LIMIT 0`,
 		`SELECT path, properties, metadata FROM graph_preview_payloads LIMIT 0`,
 		`SELECT path, source_path, target_path, source_revision, target_revision, properties, metadata, attribution FROM graph_preview_links LIMIT 0`,
-		`SELECT path, version, snapshot, actor, ordinal, change_at, native_participation_generation FROM graph_preview_versions LIMIT 0`,
+		`SELECT path, version, snapshot, actor, ordinal, change_at, native_participation_generation, native_attribution FROM graph_preview_versions LIMIT 0`,
 		`SELECT path, version, issue_id, issue_revision, owned, revision_context, history_ordinal FROM graph_preview_issue_versions LIMIT 0`,
 		`SELECT issue_id, revision, durable_state, attribution_status FROM issue_versions LIMIT 0`,
 	} {

@@ -127,8 +127,8 @@ func TestGraphPreviewCorruptMetadataRefusesBeforeLegacyOpening(t *testing.T) {
 			}
 			for _, args := range [][]string{
 				{"show", "beads/plan", "--json"},
-				{"show", "beads/plan", "--version=observed", "--json"},
-				{"recall", "beads/plan", "--version=observed", "--json"},
+				{"show", "beads/plan", "--revision=observed", "--json"},
+				{"recall", "beads/plan", "--revision=observed", "--json"},
 				{"compare", "beads/plan", "--from=observed", "--to=observed", "--json"},
 				{"memories", "--format=records-json"},
 			} {
@@ -357,9 +357,12 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, args := range [][]string{
 		{"graph", "demo-one", "--graph-mode", "dependency", "--link-type", "references"},
-		{"graph", "demo-one", "--graph-mode", "dependency", "--all-link-types"},
+		{"graph", "demo-one", "--graph-mode", "dependency", "--link-type", "any"},
+		{"graph", "demo-one", "--graph-mode", "dependency", "--exact-link-type", "references"},
 		{"import", "--source-prefix", "web-app"},
 		{"import", "--source-prefix="},
+		{"import", "--id-root", "restored/team"},
+		{"import", "--id-root="},
 		{"remember", "--update", "beads/plan", "--title", "Refused"},
 		{"link", "demo-one", "demo-two", "--properties", `{}`},
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
@@ -375,8 +378,8 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		// New graph-only source guards still refuse before legacy opening.
 		{"update", "demo-one", "--if-source-revision", "observed"},
 		{"forget", "beads/plan", "--if-revision="},
-		{"show", "beads/plan", "--version=observed"},
-		{"recall", "beads/plan", "--version="},
+		{"show", "beads/plan", "--revision=observed"},
+		{"recall", "beads/plan", "--revision="},
 		{"compare", "beads/plan", "--from=observed", "--to=observed"},
 		{"memories", "--all=false"},
 		{"memories", "--details=false"},
@@ -388,6 +391,25 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", append(args, "--json")...)
 		if after := legacyUpgradeTreeDigest(t, work); after != before {
 			t.Fatalf("generic flags changed a legacy workspace: %v", args)
+		}
+	}
+}
+
+func TestGraphPreviewImportRootRefusesDamagedLegacyOpening(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, root := range []string{"restored/team", ""} {
+		work, home := t.TempDir(), t.TempDir()
+		dir := filepath.Join(work, ".beads")
+		if err := os.MkdirAll(dir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "metadata.json"), []byte(`{"broken":`), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		before := legacyUpgradeTreeDigest(t, work)
+		graphPolicyCLI(t, bd, work, home, nil, "graph_not_initialized", "import", "--id-root="+root, "--json")
+		if after := legacyUpgradeTreeDigest(t, work); after != before {
+			t.Fatal("import root opened or changed damaged legacy metadata")
 		}
 	}
 }

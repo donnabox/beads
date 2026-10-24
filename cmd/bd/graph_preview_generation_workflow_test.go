@@ -156,15 +156,15 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err != nil || cfg == nil {
 		t.Fatalf("read initialized binding: %v", err)
 	}
-	if cfg.GraphSchemaVersion != 8 {
-		t.Fatalf("graph_schema_version = %d, want 8", cfg.GraphSchemaVersion)
+	if cfg.GraphSchemaVersion != 11 {
+		t.Fatalf("graph_schema_version = %d, want 11", cfg.GraphSchemaVersion)
 	}
-	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 8 {
-		t.Fatalf("persisted schema_version = %d, want 8", persisted)
+	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 11 {
+		t.Fatalf("persisted schema_version = %d, want 11", persisted)
 	}
 	// Availability changes discovery, not the immutable installed catalog.
-	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 20 {
-		t.Fatalf("fresh registered Types = %d; want all 20 definitions", registered)
+	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 52 {
+		t.Fatalf("fresh registered Types = %d; want all 52 definitions", registered)
 	}
 	var installed struct {
 		Result struct {
@@ -176,8 +176,8 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &installed); err != nil {
 		t.Fatalf("read fresh Type inventory: %v\n%s", err, out)
 	}
-	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 9 || links != 6 {
-		t.Fatalf("fresh available Types = %d Bead, %d Link; want 9 and 6", beads, links)
+	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 22 || links != 25 {
+		t.Fatalf("fresh available Types = %d Bead, %d Link; want 22 and 25", beads, links)
 	}
 
 	refuse := func(marker, want string) {
@@ -191,10 +191,10 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("marker %q: refused read changed workspace", marker)
 		}
 	}
-	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n"} {
+	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n", "link-preview-v10\n", "link-preview-v11\n"} {
 		refuse(old, graphGenerationFirstGateRefusal)
 	}
-	refuse("link-preview-v11\n", "graph_mode workspace format link-preview-v11 is newer than this bd supports (link-preview-v10); upgrade bd; no database was opened")
+	refuse("link-preview-v13\n", "graph_mode workspace format link-preview-v13 is newer than this bd supports (link-preview-v12); upgrade bd; no database was opened")
 	refuse("link-preview-v9", graphGenerationFirstGateRefusal)
 	refuse("link-preview-v9x\n", graphGenerationFirstGateRefusal)
 
@@ -224,7 +224,7 @@ type graphInstalledRelationshipState struct {
 	NativeVersions, GraphVersions, LinkVersions, PairRows int
 }
 
-func graphInstalledRelationship(t *testing.T, work, linkPath, sourceID, targetID string) graphInstalledRelationshipState {
+func graphInstalledRelationship(t *testing.T, work, linkPublicID, sourceID, targetID string) graphInstalledRelationshipState {
 	t.Helper()
 	cfg, err := configfile.LoadForDiscovery(filepath.Join(work, ".beads"))
 	if err != nil || cfg == nil {
@@ -257,6 +257,14 @@ func graphInstalledRelationship(t *testing.T, work, linkPath, sourceID, targetID
 			t.Error(err)
 		}
 	}()
+	localID := strings.TrimPrefix(linkPublicID, cfg.GraphScopeURL)
+	if localID == linkPublicID {
+		t.Fatalf("Link %q is not in Scope %q", linkPublicID, cfg.GraphScopeURL)
+	}
+	var linkPath string
+	if err := db.QueryRowContext(ctx, `SELECT path FROM graph_preview_catalog WHERE public_id=?`, localID).Scan(&linkPath); err != nil {
+		t.Fatalf("resolve allocated Link %q: %v", linkPublicID, err)
+	}
 	state := graphInstalledRelationshipState{}
 	query := `SELECT d.type,d.issue_id,d.depends_on_issue_id,c.type_url FROM graph_preview_catalog c
  JOIN dependencies d ON d.id=c.backing_key WHERE c.path=? AND c.backing='dependency' AND c.allocation_state='live'`
@@ -285,7 +293,7 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	const scope = "https://example.invalid/typed-relationships/"
 	for _, engine := range []string{"embedded", "server"} {
-		t.Run("v10-"+engine, func(t *testing.T) {
+		t.Run("v11-"+engine, func(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string {
 				t.Helper()
@@ -314,7 +322,7 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					typeURL, _ := graphstore.RelationshipDependencyTypeURL(scope, tc.kind)
 					addArgs := []string{"dep", "add", source.ID, target.ID, "--type", string(tc.kind), "--id", linkPath}
 					if tc.viaLink {
-						addArgs = []string{"link", "create", "--source", source.ID, "--target", target.ID, "--type", string(tc.kind), "--id", linkPath, "--if-source-revision", source.Revision}
+						addArgs = []string{"link", "create", "--from", source.ID, "--to", target.ID, "--type", string(tc.kind), "--id", linkPath, "--if-source-revision", source.Revision}
 					}
 					added := graphMixedResult[graphstore.DependencyResult](t, call(addArgs...))
 					if !added.Changed || added.Link.Type != typeURL || added.Link.Properties["dep_type"] != string(tc.kind) || added.Link.Source != source.ID || added.Link.Target != target.ID || len(added.Source.Owned) != 1 {
@@ -324,17 +332,22 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if shown.Type != typeURL || shown.Properties["dep_type"] != string(tc.kind) || shown.Source != source.ID || shown.Target != target.ID {
 						t.Fatalf("shown Link differs from native endpoints: %+v", shown)
 					}
-					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", source.ID, "--type", string(tc.kind)))
-					counted := graphMixedResult[map[string]int](t, call("link", "count", "--source", source.ID, "--type", string(tc.kind)))
+					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source.ID, "--type", "types/dependency", "--exact-type", typeURL))
+					counted := graphMixedResult[map[string]int](t, call("link", "count", "--from", source.ID, "--type", "types/dependency", "--exact-type", typeURL))
 					if len(listed) != 1 || listed[0].ID != added.Link.ID || counted["count"] != 1 {
 						t.Fatalf("Dependency type list/count did not select %s: list=%+v count=%+v", tc.kind, listed, counted)
 					}
-					state := graphInstalledRelationship(t, work, linkPath, source.Properties.ID, target.Properties.ID)
+					shorthandListed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source.ID, "--type", string(tc.kind)))
+					shorthandCounted := graphMixedResult[map[string]int](t, call("link", "count", "--from", source.ID, "--type", string(tc.kind)))
+					if len(shorthandListed) != 1 || shorthandListed[0].ID != added.Link.ID || shorthandCounted["count"] != 1 {
+						t.Fatalf("native Dependency shorthand did not select %s: list=%+v count=%+v", tc.kind, shorthandListed, shorthandCounted)
+					}
+					state := graphInstalledRelationship(t, work, added.Link.ID, source.Properties.ID, target.Properties.ID)
 					if state.NativeType != string(tc.kind) || state.SourceID != source.Properties.ID || state.TargetID != target.Properties.ID || state.LinkType != typeURL ||
 						state.NativeVersions != 2 || state.GraphVersions != 2 || state.LinkVersions != 1 || state.PairRows != 1 {
 						t.Fatalf("native Link mapping or History after add: %+v", state)
 					}
-					beforeNoOp := call("show", scope+sourcePath, "--format", "graph-json")
+					beforeNoOp := call("show", source.ID, "--format", "graph-json")
 					if tc.viaLink {
 						addArgs[len(addArgs)-1] = added.Source.Revision
 					}
@@ -342,10 +355,10 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if repeated.Changed || repeated.Link.ID != added.Link.ID || repeated.Source.Revision != added.Source.Revision {
 						t.Fatalf("same pair was not an exact no-op: %+v", repeated)
 					}
-					if again := graphInstalledRelationship(t, work, linkPath, source.Properties.ID, target.Properties.ID); again != state {
+					if again := graphInstalledRelationship(t, work, added.Link.ID, source.Properties.ID, target.Properties.ID); again != state {
 						t.Fatalf("no-op changed native or retained state: before=%+v after=%+v", state, again)
 					}
-					if afterNoOp := call("show", scope+sourcePath, "--format", "graph-json"); afterNoOp != beforeNoOp {
+					if afterNoOp := call("show", source.ID, "--format", "graph-json"); afterNoOp != beforeNoOp {
 						t.Fatal("same-pair no-op changed the source record")
 					}
 					refuse("revision_conflict", "link", "delete", "--force", linkPath, "--if-revision", added.Link.Revision, "--if-source-revision", source.Revision)
@@ -353,11 +366,11 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if !removed.Changed || removed.Link.Type != typeURL || removed.Link.State != "deleted" {
 						t.Fatalf("canonical unlink did not tombstone typed Link: %+v", removed)
 					}
-					refuse("gone", "show", scope+linkPath)
-					if owner := graphMixedResult[graphstore.IssueRecord](t, call("show", scope+sourcePath, "--format", "graph-json")); len(owner.Owned) != 0 {
+					refuse("gone", "show", added.Link.ID)
+					if owner := graphMixedResult[graphstore.IssueRecord](t, call("show", source.ID, "--format", "graph-json")); len(owner.Owned) != 0 {
 						t.Fatalf("unlinked native Link remains owned: %+v", owner.Owned)
 					}
-					state = graphInstalledRelationship(t, work, linkPath, source.Properties.ID, target.Properties.ID)
+					state = graphInstalledRelationship(t, work, added.Link.ID, source.Properties.ID, target.Properties.ID)
 					if state.NativeType != "" || state.PairRows != 0 || state.NativeVersions != 3 || state.GraphVersions != 3 || state.LinkVersions != 2 {
 						t.Fatalf("native unlink or retained History differs: %+v", state)
 					}

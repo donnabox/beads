@@ -31,8 +31,32 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			inventory := graphMixedResult[graphTypeInventory](t, call("types"))
-			if len(inventory.BeadTypes) != 10 || len(inventory.LinkTypes) != 10 {
-				t.Fatalf("selected catalog not installed: %+v", inventory)
+			// Native concrete declarations extend the inventory; the fixed
+			// selected catalog must still contain its original ten per Kind.
+			baseCount := func(descriptors []json.RawMessage, nativeBase string) int {
+				t.Helper()
+				count := 0
+				for _, raw := range descriptors {
+					var descriptor struct {
+						ID, Name   string
+						ConformsTo []string
+					}
+					if err := json.Unmarshal(raw, &descriptor); err != nil {
+						t.Fatal(err)
+					}
+					base, classification, native := graphstore.NativeTypeClassification(scope, descriptor.ID)
+					if !native {
+						count++
+						continue
+					}
+					if base != nativeBase || descriptor.Name != classification || len(descriptor.ConformsTo) != 1 || descriptor.ConformsTo[0] != nativeBase {
+						t.Fatalf("native descriptor lost its identity or family: %s", raw)
+					}
+				}
+				return count
+			}
+			if beads, links := baseCount(inventory.BeadTypes, graphstore.IssueTypeURL(scope)), baseCount(inventory.LinkTypes, graphstore.DependencyTypeURL(scope)); beads != 10 || links != 10 {
+				t.Fatalf("selected catalog not installed: BeadTypes=%d LinkTypes=%d", beads, links)
 			}
 			for _, descriptor := range append(inventory.BeadTypes, inventory.LinkTypes...) {
 				for _, absent := range []string{"types/preview-", "types/example-", "types/Type", "types/BeadType", "types/LinkType", "types/ConformsTo", "types/refines"} {
@@ -50,7 +74,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 			if !edited.Changed || edited.Memory.Type != scope+"types/requirement" || !strings.Contains(call("show", memory.ID), `"kept"`) {
 				t.Fatal("combined retype/merge lost inherited complete properties")
 			}
-			retained := graphMixedResult[graphstore.Record](t, call("show", "["+memory.ID+"]@"+memory.Revision))
+			retained := graphMixedResult[graphstore.Record](t, call("show", "["+memory.ID+"]@="+memory.Revision))
 			if !reflect.DeepEqual(retained, memory) {
 				t.Fatal("retype rewrote the original Type/payload/history")
 			}
@@ -101,7 +125,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 				t.Fatal("Evaluation claim mutated its subject")
 			}
 			refuse("invalid_properties", "link", "create", "evaluation", "constraint", "--type", "types/conformance")
-			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--type", "types/conformance")); len(got) != 0 {
+			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--exact-type", "types/conformance")); len(got) != 0 {
 				t.Fatal("abstract Type was instantiated")
 			}
 			for _, intrinsic := range []string{"Type", "BeadType", "LinkType", "ConformsTo", "Refines"} {
@@ -111,8 +135,9 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 				refuse("capability_unavailable", "create", "Removed", "--type", "types/"+removed)
 			}
 			decision := graphMixedResult[graphstore.IssueRecord](t, call("create", "Native decision", "--graph-path", "beads/decision", "--type", "decision"))
-			if decision.Type != graphstore.IssueTypeURL(scope) {
-				t.Fatal("bare native decision became a nominal Memory Type")
+			nativeDecisionType, err := graphstore.NativeIssueTypeURL(scope, "decision")
+			if err != nil || decision.Type != nativeDecisionType {
+				t.Fatalf("bare native decision lost its concrete native Type: got=%s want=%s err=%v", decision.Type, nativeDecisionType, err)
 			}
 			epic := graphMixedResult[graphstore.IssueRecord](t, call("create", "Epic", "--graph-path", "beads/epic", "--type", "epic"))
 			call("create", "Child", "--type", "task", "--parent", epic.ID)
@@ -153,8 +178,8 @@ func TestGraphPreviewAssessmentAvailabilityWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", append(args, "--json")...)
 			}
 			inventory := graphMixedResult[graphTypeInventory](t, call("types"))
-			if len(inventory.BeadTypes) != 9 || len(inventory.LinkTypes) != 6 {
-				t.Fatal("default assessment inventory is not15")
+			if len(inventory.BeadTypes) != 22 || len(inventory.LinkTypes) != 25 {
+				t.Fatal("default assessment inventory is not22 Bead/25 Link Types")
 			}
 			for _, args := range [][]string{{"create", "E", "--type", "types/evaluation", "--id", "denied"}, {"create", "E", "--type", scope + "types/evaluation", "--id", "denied"}} {
 				refuse(args...)
@@ -167,7 +192,7 @@ func TestGraphPreviewAssessmentAvailabilityWorkflow(t *testing.T) {
 			}
 			graphAssessmentSwitch(t, work, true)
 			all := graphMixedResult[graphTypeInventory](t, call("types", "--details"))
-			if len(all.BeadTypes)+len(all.LinkTypes) != 20 {
+			if len(all.BeadTypes) != 23 || len(all.LinkTypes) != 29 {
 				t.Fatal("enabled CLI inventory lost definitions")
 			}
 			eval := graphMixedResult[graphstore.Record](t, call("create", "--type", "types/evaluation", "--id", "eval", "--properties", string(props)))

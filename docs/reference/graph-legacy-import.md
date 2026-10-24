@@ -21,7 +21,10 @@ bd comments legacy-b --json
 `bd import FILE`, `bd import -i FILE` and `bd import -` use the same format and
 validation. With no source argument, the configured ordinary import path is
 used inside this workspace. Redirected stdin requires `-`. Use `--json` for
-counts, source-to-graph identity maps and an explicit history disposition. If the source IDs are ambiguous,
+counts, source-to-graph identity maps and an explicit history disposition.
+Generated Link IDs in a dry-run are provisional and may differ on apply;
+`generated_ids_provisional` identifies that case. Issue and Memory source mappings
+remain exact. Supplied Memory rows need no import inclusion flag. If the source IDs are ambiguous,
 use the original configured prefix on both dry-run and apply:
 
 ```bash
@@ -63,14 +66,15 @@ and do not recreate source history. Blank lines are ignored. Other schema versio
 
 | Data | Graph import behavior |
 | --- | --- |
-| Issue IDs | Required and preserved as the underlying Issue ID. The graph identity is `SCOPE/beads/ID`; the result maps each source ID to its graph URL. All Issue IDs must match one nonempty ordinary prefix and form valid local Bead paths. The whole batch resolves numeric/hash candidates, so `web-app-123` and `web-app-abcdef` share `web-app` regardless of record order. JSONL omits source configuration; if all IDs have ambiguous multi-hyphen spellings, supply the original prefix with `--source-prefix PREFIX`. The result reports the adopted `issue_prefix`. Prefixes with surrounding whitespace or a trailing hyphen refuse; IDs are never rewritten. Import atomically sets the fresh workspace's Issue prefix to that source prefix, so later creates and dependencies continue to work; dry-run rolls that change back. |
-| Current Issue content and workflow fields | Preserved using the ordinary Issue writer. Missing status/type default to open/task; missing timestamps are filled at import. Omitted priority remains P0, matching ordinary import. Invalid statuses, types or values refuse. Fields that storage cannot represent exactly refuse the whole import. |
+| Issue IDs | Required, canonical Scope-relative identities. Without a root, `ID` becomes `SCOPE/ID`; literal `beads/`, `links/` or `types/` source segments are preserved, subject to exact identity reservations below. The result maps each original source ID to its accepted URL. All source Issues must share one ordinary prefix; ambiguous IDs require `--source-prefix PREFIX`. `source_issue_prefix` records that source configuration and `issue_prefix` records the effective destination configuration. Unrooted import adopts the source prefix atomically; a rooted import preserves the destination's future-create prefix. Mounted native Issue IDs must fit the existing 255-byte backing limit. |
+| Reserved identities | The Scope discovery ID `bdp.json` and installed Type IDs are reserved, including concrete native Issue and Dependency Types needed by this package. A collision with any such identity refuses the whole import, even if the Type is needed only by a later record. An explicit `--id-root` can move an otherwise valid source ID away from a reservation; a root that creates a reserved identity also refuses. |
+| Current Issue content and workflow fields | Preserved using the ordinary Issue writer. Missing status/type default to open/task; missing timestamps are filled at import. Omitted priority remains P0, matching ordinary import. Custom Issue classes/statuses are not installed from the source export; this converter admits its supported built-in vocabulary. Invalid statuses, types or values refuse. Fields that storage cannot represent exactly refuse the whole import. |
 | Issue metadata | Preserved as common graph metadata. It must meet graph JSON-object validation; array/scalar metadata and duplicate keys refuse. JSON formatting and object key order are canonicalized. |
 | Labels | Preserved as a set. Storage representation that loses values refuses. |
-| Dependencies | Same-prefix local edges between Issues in the same input preserve every native-valid dependency kind, including `blocks`, `parent-child`, `relates-to` and custom kinds (nonempty, at most 32 bytes). The kind remains the native Dependency Link's `dep_type`; it is not converted to a different Link Type. Direction, creator and supplied timestamp are preserved. Each source/target pair gets a canonical Link; the result maps pairs to Link URLs. Native surrogate IDs are recomputed from the pair and become the Link path. Source dependency IDs are not portable graph identity. |
+| Dependencies | Same-prefix local edges between Issues in the same source package preserve every native-valid kind, including `blocks`, `parent-child`, `relates-to` and custom kinds (nonempty, at most 32 bytes). The native adapter selects the concrete Dependency Type and preserves `dep_type`, direction, creator and supplied timestamp. Each pair gets a new graph Link identity from the shared short-ID allocator. `dependency_ids` maps original source pairs to those URLs. Native surrogate IDs remain internal and deterministic from the mounted pair; they are not graph Link identities. Dry-run Link IDs are provisional. |
 | Dependency metadata and threads | Only absent/empty-object metadata and empty thread IDs are accepted. Invalid dependency kinds, missing targets, parent/child hierarchy conflicts, self-edges and duplicate pairs refuse. Cycles in `blocks`, `conditional-blocks` and `parent-child` refuse; cycles in other kinds, including `relates-to` and `waits-for`, are accepted, matching native dependency validation. No edge is silently skipped. |
 | Comments | IDs, Issue ownership, authors, text and supplied timestamps are preserved in the separate current comment feed. Older int64 numeric IDs become their decimal string spelling. Missing IDs are derived by the ordinary writer. Comments do not become retained Issue versions. Duplicate IDs/content or unrepresentable values refuse rather than disappear. |
-| Legacy memories | A key/value record becomes a Memory with exact title `KEY`, body `VALUE` (including an empty string) and empty metadata. A key must be nonempty UTF-8; duplicate keys refuse. Valid unoccupied `beads/KEY` paths are preserved first. Other keys use a canonical percent-encoded segment when valid and free, otherwise `beads/imported-memory-SHA256(KEY)` with a checked numeric suffix on collision. Issue paths and all direct Memory paths are reserved before remaps are allocated in bytewise key order. Spaces, Unicode, percent/dot/separator spellings and Issue-ID collisions therefore preserve distinct key/value records. The `memory_ids` result maps every exact original key to its allocated URL; use those URLs for later reads and edits. |
+| Legacy memories | Every supplied Memory row is processed by default. An admitted key `KEY` becomes the exact local public ID (beneath an explicit root, if supplied); `VALUE` becomes the exact body, including an empty string. The independent title uses the shared body summary: first trimmed line, collapsed spacing, at most 80 Unicode characters including an ellipsis; an empty summary uses `Untitled memory`. Metadata is empty. Blank, canonically incompatible, duplicate or colliding keys refuse the package. There is no automatic encoding, digest name, suffix, title lookup or separate key alias. `memory_ids` maps original keys to accepted URLs. |
 | Counts, content hashes and readiness | Exported dependency/dependent/comment counts and readiness are projections; recomputed from accepted data. |
 | Source history | Ordinary export contains no retained revisions, events or Dolt history. Each imported Bead and Link starts new retained graph history. Initial Issue/Memory writes name the importing actor; Link attribution carries the source dependency creator and timestamp when supplied; otherwise it uses the importing actor and import time. Earlier source history is neither reconstructed nor advertised as preserved. |
 | Compound lineage | Nonempty `bonded_from`, `source_formula` and `source_location` refuse because ordinary storage does not persist them. |
@@ -105,3 +109,32 @@ prerequisite also uses `invalid_store`; import does not repair it.
 
 This is a fresh-workspace interchange operation. It does not migrate an
 existing workspace in place or carry full backup/restore history.
+
+## Optional placement beneath an ID root
+
+Use `--id-root` to place this package beneath an explicit Scope-relative path:
+
+```bash
+bd import old-issues.jsonl --id-root restored/team --dry-run --json
+bd import old-issues.jsonl --id-root restored/team --json
+```
+
+For Scope `https://example.invalid/project/`, source Issue `old-a` becomes
+`https://example.invalid/project/restored/team/old-a`. A source Memory key
+`beads/note` becomes `https://example.invalid/project/restored/team/beads/note`;
+the literal `beads/` is preserved. Newly generated Link IDs receive the same root
+once. Internal endpoints, comment ownership, owned Links and initial retained
+state use the accepted identities; registered Type identities stay shared.
+
+The root must already be a canonical relative path. Empty, absolute, escaping
+or otherwise incompatible roots refuse; nothing is silently cleaned or encoded.
+A root that would classify native local dependencies as external also refuses.
+The root affects only this import, preserves the destination's configured
+future-create prefix, and does not enable import into an occupied workspace.
+Results include `id_root`, `source_issue_prefix` and the effective `issue_prefix`.
+
+A successful dry-run reserves nothing. Only source-derived Issue and Memory
+mapping is stable across dry-run and apply; new Link IDs and revision tokens
+remain provisional. A collision or compatibility refusal leaves the whole
+package unapplied. Unrecognized fields and known unsupported data fail by
+default; no ignore-fields flag is provided by this candidate.
