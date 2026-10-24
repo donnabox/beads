@@ -485,8 +485,8 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 			// the projection, and a listing whose two renderings disagree about
 			// order is worse than either being wrong alone.
 			human := run(t, "versions", selector)
-			if !strings.Contains(human, "  REV  WHEN") || strings.Contains(human, "  ORD  WHEN") {
-				t.Fatalf("%s did not render the native-compatible REV heading:\n%s", selector, human)
+			if !strings.Contains(human, "  SEQ  WHEN") || strings.Contains(human, "  REV  WHEN") {
+				t.Fatalf("%s did not render the local SEQ heading:\n%s", selector, human)
 			}
 			parsed := graphVersionsHumanRows(t, selector, human)
 			if len(parsed) != len(rows) {

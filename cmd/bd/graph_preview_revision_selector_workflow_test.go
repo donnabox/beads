@@ -240,8 +240,8 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			human = graphPolicyCLI(t, bd, work, home, nil, "", "link", "beads/disclosure", "beads/target", "--type", "types/subject-to", "--id", "links/disclosed")
 			owner := graphMixedResult[graphstore.Record](t, call("show", "beads/disclosure"))
 			linked := graphMixedResult[graphstore.LinkRecord](t, call("show", scope+"links/disclosed"))
-			if !strings.Contains(human, "Current Link revision: ["+linked.ID+"]@="+linked.Revision) || !strings.Contains(human, "Current source revision: ["+owner.ID+"]@="+owner.Revision) {
-				t.Fatalf("Link write omitted current source revision: %q", human)
+			if strings.TrimSpace(human) != graphHumanRow(scope, linked) || strings.Contains(human, "Current source revision:") {
+				t.Fatalf("Link write did not use its collection row: %q", human)
 			}
 			call("link", "create", "beads/disclosure", "beads/target", "--type", "types/subject-to", "--id", "links/guarded", "--if-source-revision", owner.Revision)
 			graphPatchProcess(t, bd, work, home, nil, "revision_conflict", 90*time.Second, "link", "create", "beads/disclosure", "beads/target", "--type", "types/subject-to", "--id", "links/stale", "--if-source-revision", owner.Revision, "--json")

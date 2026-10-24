@@ -251,7 +251,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			PublicID: publicID, IDRoot: idRoot, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourceLocalID: localIDs[0], TargetLocalID: localIDs[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
-		return graphPreviewReplacementResult(result, fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource, err)
+		return result, graphHumanRow(store.ScopeURL(), result.Link), err
 	})
 }
 

@@ -698,7 +698,7 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		}
 		return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 			r, err := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, Title: createTitle, Body: *body, Actor: getActorWithGit(), Metadata: metadata})
-			return r, fmt.Sprintf("Created %s", publicID), err
+			return r, graphHumanRow(store.ScopeURL(), r), err
 		})
 	}
 	return runGraphPreviewRememberUpsert(cmd, publicID, title, body)
@@ -745,7 +745,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	if format != "" && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags require legacy Issue --json output", 5)
 	}
-	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
 		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
 	}
 	watchMode, _ := cmd.Flags().GetBool("watch")
@@ -797,7 +797,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	if versioned && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags cannot describe an exact retained version", 5)
 	}
-	if versioned && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+	if versioned && (cmd.Flags().Changed("short") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
 		return graphFailure("capability_unavailable", "Issue display flags require a current Issue", 5)
 	}
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
@@ -847,26 +847,19 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 			legacyIssue = true
 			return []*types.IssueDetails{details}, "", nil
 		}
-		if shownIssue && !jsonOutput && format == "" && !versioned {
-			return details, renderGraphIssueDetails(details, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}), nil
-		}
-		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps") || cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps") || cmd.Flags().Changed("short") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
 			return nil, "", graphFailure("capability_unavailable", "Issue detail and display flags require an Issue", 5)
 		}
-		humanRecord := r
-		if memory, ok := r.(graphstore.Record); ok && memory.PublicID != "" {
-			memory.ID = memory.PublicID
-			humanRecord = memory
+		id, token := graphHumanRecordIdentity(r)
+		revision := ""
+		if !jsonOutput && format == "" {
+			revision = graphHumanRevision(ctx, s, id, token)
 		}
-		projected, err := graphProjectCompleteRecords(humanRecord)
-		if err != nil {
-			return nil, "", err
+		human := graphHumanDocument(s.ScopeURL(), r, revision, versioned, longMode)
+		if !versioned {
+			human += graphHumanCurrentIssueDetails(s.ScopeURL(), details, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail})
 		}
-		data, err := json.MarshalIndent(projected, "", "  ")
-		if err != nil {
-			return nil, "", err
-		}
-		return r, string(data), nil
+		return r, human, nil
 	}, func(result any, human string) error {
 		if legacyShort {
 			_, err := fmt.Fprintln(cmd.OutOrStdout(), human)

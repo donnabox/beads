@@ -70,7 +70,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 				if _, ok := record.(graphstore.IssueRecord); !ok {
 					return nil, "", graphFailure("capability_unavailable", "--watch requires an Issue", 5)
 				}
-				return detail, renderGraphIssueDetails(detail, graphIssueDetailOptions{CommentsTail: commentsTail}), nil
+				return detail, graphHumanDocument(s.ScopeURL(), record, "", false, false) + graphHumanCurrentIssueDetails(s.ScopeURL(), detail, graphIssueDetailOptions{CommentsTail: commentsTail}), nil
 			}, func(result any, human string) error {
 				_, err := fmt.Fprintln(cmd.OutOrStdout(), human)
 				if err == nil {
