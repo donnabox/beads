@@ -218,6 +218,8 @@ func assertRetainedMemory(t *testing.T, ctx context.Context, s *Store, path stri
 	if err := s.db.QueryRowContext(ctx, `SELECT snapshot FROM graph_preview_versions WHERE path=? AND version=?`, path, want.Version).Scan(&raw); err != nil {
 		t.Fatal(err)
 	}
+	// PublicID is an internal catalog projection, absent from retained wire snapshots.
+	want.PublicID = ""
 	var got Record
 	if err := json.Unmarshal(raw, &got); err != nil || !reflect.DeepEqual(got, want) {
 		t.Fatalf("retained Memory changed: %v", err)
