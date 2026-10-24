@@ -101,7 +101,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 				t.Fatal("Evaluation claim mutated its subject")
 			}
 			refuse("invalid_properties", "link", "create", "evaluation", "constraint", "--type", "types/conformance")
-			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--type", "types/conformance")); len(got) != 0 {
+			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--exact-type", "types/conformance")); len(got) != 0 {
 				t.Fatal("abstract Type was instantiated")
 			}
 			for _, intrinsic := range []string{"Type", "BeadType", "LinkType", "ConformsTo", "Refines"} {
