@@ -29,12 +29,12 @@ func TestInformationalPairWritesSelectOpaquePublicBeadID(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			memory, err := store.Create(ctx, CreateRequest{Path: "beads/context", Title: "Context"})
+			memory, err := store.Create(ctx, CreateRequest{PublicID: "beads/context", Title: "Context"})
 			if err != nil {
 				t.Fatal(err)
 			}
 			for _, reverse := range []bool{false, true} {
-				request := LinkCreateRequest{TypeURL: store.ScopeURL() + "types/references", Path: "links/out", SourcePath: "beads/beads/exp-x", SourceLocalID: "beads/exp-x", TargetPath: "beads/context", TargetLocalID: "context"}
+				request := LinkCreateRequest{TypeURL: store.ScopeURL() + "types/references", Path: "links/out", SourcePath: "beads/beads/exp-x", SourceLocalID: "beads/exp-x", TargetPath: "beads/" + memory.PublicID, TargetLocalID: memory.PublicID}
 				if reverse {
 					request.Path = "links/in"
 					request.SourcePath, request.TargetPath = request.TargetPath, request.SourcePath

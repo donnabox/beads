@@ -216,7 +216,7 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 			if exactNonIssuePath == "" && !exactIssue {
 				for _, candidate := range []struct{ path, backing string }{{path, "generic"}, {"links/" + localID, "link"}} {
 					var backing string
-					err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live' AND (backing<>'generic' OR public_id IS NULL)`, candidate.path).Scan(&backing)
+					err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=? AND allocation_state='live' AND public_id IS NULL`, candidate.path).Scan(&backing)
 					if errors.Is(err, sql.ErrNoRows) {
 						continue
 					}
