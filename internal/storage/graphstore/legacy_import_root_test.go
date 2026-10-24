@@ -318,7 +318,8 @@ func TestLegacyImportNativeIDBoundaryAndRootedAuthorityKey(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			retainedJSON, err := canonicalJSON(retained)
+			retainedRecord := retained.(IssueRecord)
+			retainedJSON, err := canonicalJSON(retainedRecord)
 			if err != nil || !bytes.Equal(currentJSON, retainedJSON) {
 				t.Fatalf("255-byte retained record differs: %s %s %v", currentJSON, retainedJSON, err)
 			}

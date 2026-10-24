@@ -378,7 +378,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 			refuse(string(ambiguous), "requires one Issue ID prefix", "import", "-", "--source-prefix", "other", "--dry-run")
 			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--dry-run"))
 			configuredPreview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--source-prefix", "web-app", "--dry-run"))
-			if !graphLegacyImportSameExplicitResults(preview, configuredPreview) {
+			if !configuredPreview.DryRun || !configuredPreview.GeneratedIDsProvisional || !graphLegacyImportSameExplicitResults(preview, configuredPreview) {
 				t.Fatalf("inferred and explicit prefix dry-runs differ: %+v %+v", preview, configuredPreview)
 			}
 			// Exported counts are projections, not authoritative imported state.
@@ -392,7 +392,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 				t.Fatal("producer corpus lacks expected comment-count projection")
 			}
 			countPreview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(wrongCounts), "", "import", "-", "--source-prefix", "web-app", "--dry-run"))
-			if !graphLegacyImportSameExplicitResults(preview, countPreview) {
+			if !countPreview.DryRun || !countPreview.GeneratedIDsProvisional || !graphLegacyImportSameExplicitResults(preview, countPreview) {
 				t.Fatalf("exported projections changed import result: %+v %+v", preview, countPreview)
 			}
 			lines := bytes.Split(bytes.TrimSpace(fixture), []byte{'\n'})
