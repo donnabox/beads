@@ -51,7 +51,7 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 				init = append(init, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			call("", "", init...)
-			before := call("", "", "list", "--all", "--format", "records-json")
+			before := call("", "", "list", "--all", "--type", "any", "--format", "records-json")
 			for _, input := range []string{
 				string(fixture) + "\n{broken}",
 				"",
@@ -67,7 +67,7 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 {"id":"old-c","title":"Grandchild","dependencies":[{"depends_on_id":"old-b","type":"parent-child"},{"depends_on_id":"old-a","type":"blocks"}]}`,
 			} {
 				call(input, "invalid_properties", "import", "-")
-				if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
+				if got := call("", "", "list", "--all", "--type", "any", "--format", "records-json"); got != before {
 					t.Fatal("refused import changed inventory")
 				}
 			}
@@ -85,7 +85,7 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 			if !preview.DryRun || preview.IssuePrefix != "legacy" || preview.Issues != 2 || preview.Dependencies != 1 || preview.Comments != 1 || preview.Memories != 1 {
 				t.Fatalf("preview=%+v", preview)
 			}
-			if call("", "", "list", "--all", "--format", "records-json") != before {
+			if call("", "", "list", "--all", "--type", "any", "--format", "records-json") != before {
 				t.Fatal("dry run reserved data")
 			}
 			file := filepath.Join(work, "ordinary.jsonl")
@@ -112,11 +112,11 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 			if !strings.Contains(retained, "A note") {
 				t.Fatal("missing retained initial Issue")
 			}
-			inventory := call("", "", "list", "--all", "--format", "records-json")
+			inventory := call("", "", "list", "--all", "--type", "any", "--format", "records-json")
 			versions := call("", "", "versions", issue.ID)
 			for _, args := range [][]string{{"import", file}, {"import", file, "--dry-run"}} {
 				call("", "invalid_properties", args...)
-				if call("", "", "list", "--all", "--format", "records-json") != inventory || call("", "", "versions", issue.ID) != versions {
+				if call("", "", "list", "--all", "--type", "any", "--format", "records-json") != inventory || call("", "", "versions", issue.ID) != versions {
 					t.Fatal("repeat import changed data or History")
 				}
 			}
@@ -162,7 +162,7 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 				init = append(init, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			call("", init...)
-			before := call("", "list", "--all", "--format", "records-json")
+			before := call("", "list", "--all", "--type", "any", "--format", "records-json")
 			collision := strings.Replace(fixture, `"key":"scratch-memory"`, `"key":"scratch-8b8"`, 1)
 			for _, dry := range []bool{true, false} {
 				args := []string{"import", "-"}
@@ -170,7 +170,7 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 					args = append(args, "--dry-run")
 				}
 				graphLegacyImportRefusal(t, bd, work, home, collision, "collides with Issue", args...)
-				if got := call("", "list", "--all", "--format", "records-json"); got != before {
+				if got := call("", "list", "--all", "--type", "any", "--format", "records-json"); got != before {
 					t.Fatal("true key collision partially imported package")
 				}
 			}
@@ -178,7 +178,7 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 			if !preview.DryRun || !preview.GeneratedIDsProvisional || preview.Issues != 5 || preview.Memories != 2 || preview.Dependencies != 3 {
 				t.Fatalf("preview=%+v", preview)
 			}
-			if got := call("", "list", "--all", "--format", "records-json"); got != before {
+			if got := call("", "list", "--all", "--type", "any", "--format", "records-json"); got != before {
 				t.Fatal("dry-run reserved or changed data")
 			}
 			result := graphMixedResult[graphstore.LegacyImportResult](t, call(fixture, "import", "-"))
@@ -329,7 +329,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 				init = append(init, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			call("", "", init...)
-			before := call("", "", "list", "--all", "--format", "records-json")
+			before := call("", "", "list", "--all", "--type", "any", "--format", "records-json")
 			// The untouched old export now receives an honest compatibility
 			// refusal; every excluded producer row is also exercised alone.
 			refuse(string(originalFixture), "legacy Memory key", "import", "-", "--dry-run")
@@ -341,7 +341,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 						args = append(args, "--dry-run")
 					}
 					refuse(input, "legacy Memory key", args...)
-					if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
+					if got := call("", "", "list", "--all", "--type", "any", "--format", "records-json"); got != before {
 						t.Fatal("incompatible producer row changed inventory")
 					}
 				}
@@ -353,7 +353,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 			} {
 				input := strings.TrimRight(string(fixture), "\n") + "\n" + invalid.record + "\n"
 				refuse(input, invalid.message, "import", "-")
-				if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
+				if got := call("", "", "list", "--all", "--type", "any", "--format", "records-json"); got != before {
 					t.Fatal("refused completeness import changed Bead inventory")
 				}
 			}
@@ -404,7 +404,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 			if !preview.DryRun || !preview.GeneratedIDsProvisional || !reordered.DryRun || !reordered.GeneratedIDsProvisional || preview.IssuePrefix != "web-app" || preview.Issues != len(issues) || preview.Memories != len(memories) || preview.Dependencies != 1 || preview.Comments != 1 || !graphLegacyImportSameExplicitResults(preview, reordered) {
 				t.Fatalf("dry-run counts or order-dependent remapping: %+v %+v", preview, reordered)
 			}
-			if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
+			if got := call("", "", "list", "--all", "--type", "any", "--format", "records-json"); got != before {
 				t.Fatal("completeness dry-run reserved data")
 			}
 			result := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-", "--source-prefix", "web-app"))
@@ -507,7 +507,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 					t.Fatalf("safe free memory path changed for %q", key)
 				}
 			}
-			inventory := call("", "", "list", "--all", "--format", "records-json")
+			inventory := call("", "", "list", "--all", "--type", "any", "--format", "records-json")
 			listed, more := graphListDecode(t, inventory)
 			if more || len(listed) != len(allocated) {
 				t.Fatalf("completeness Bead inventory: got %d, more=%t, want %d", len(listed), more, len(allocated))
@@ -532,7 +532,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 					args = append(args, "--dry-run")
 				}
 				refuse(string(fixture), "requires an empty fresh graph workspace", args...)
-				if call("", "", "list", "--all", "--format", "records-json") != inventory {
+				if call("", "", "list", "--all", "--type", "any", "--format", "records-json") != inventory {
 					t.Fatal("repeat completeness import changed Bead inventory")
 				}
 				for id, versions := range histories {

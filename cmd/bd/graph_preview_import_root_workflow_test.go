@@ -38,10 +38,10 @@ func TestGraphPreviewLegacyImportRootInstalledWorkflow(t *testing.T) {
 				init = append(init, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			call("", "", init...)
-			before := call("", "", "list", "--all", "--format", "records-json")
+			before := call("", "", "list", "--all", "--type", "any", "--format", "records-json")
 			for _, root := range []string{"", "..", "external:x"} {
 				call(fixture, "invalid_properties", "import", "-", "--id-root", root, "--dry-run")
-				if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
+				if got := call("", "", "list", "--all", "--type", "any", "--format", "records-json"); got != before {
 					t.Fatal("root refusal changed inventory")
 				}
 			}
@@ -49,7 +49,7 @@ func TestGraphPreviewLegacyImportRootInstalledWorkflow(t *testing.T) {
 			if !preview.DryRun || !preview.GeneratedIDsProvisional || preview.SourceIssuePrefix != "old" || preview.IDRoot != "foo/bar" || preview.IssuePrefix == "" {
 				t.Fatalf("rooted preview=%+v", preview)
 			}
-			if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
+			if got := call("", "", "list", "--all", "--type", "any", "--format", "records-json"); got != before {
 				t.Fatal("rooted dry-run reserved data")
 			}
 			human := graphPatchProcess(t, bd, work, home, strings.NewReader(fixture), "", 90*time.Second, "import", "-", "--id-root", "foo/bar", "--dry-run")
