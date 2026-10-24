@@ -28,7 +28,7 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 	request.Actor = getActorWithGit()
 	selectedArgument := args[0]
 	if !forget {
-		selectedArgument, err = graphPreviewResolveMemoryArgument(selectedArgument)
+		selectedArgument, err = graphPreviewWritableResourceArgument(selectedArgument)
 		if err != nil {
 			return err
 		}

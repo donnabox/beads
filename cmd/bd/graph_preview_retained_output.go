@@ -184,7 +184,7 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 			return nil, err
 		}
 		count = len(citable)
-		result := map[string]any{"resource": path, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}
+		result := map[string]any{"resource": history.PublicID, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}
 		if history.CurrentState != nil {
 			result["currentState"] = history.CurrentState
 		}
@@ -200,7 +200,7 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 			}
 			rows := data["versions"].([]map[string]any)
 			for _, row := range rows {
-				item, err := graphVersionStreamItem(path, data["kind"].(string), row)
+				item, err := graphVersionStreamItem(data["resource"].(string), data["kind"].(string), row)
 				if err != nil {
 					return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
 				}

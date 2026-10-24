@@ -137,7 +137,11 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		root := store.ScopeURL() + path
+		identity, err := store.AllocatedResourceIdentityForPath(ctx, path)
+		if err != nil {
+			return nil, "", err
+		}
+		root := store.ScopeURL() + identity.PublicID
 		if !g.hasIssue(root) {
 			return nil, "", graphstore.ErrNotFound
 		}

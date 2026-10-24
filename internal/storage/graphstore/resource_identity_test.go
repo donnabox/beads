@@ -119,3 +119,26 @@ func TestAllocatedResourceIdentityUsesCatalogKind(t *testing.T) {
 		})
 	}
 }
+
+func TestAllocatedIdentityReadDoesNotAcquireUnrelatedPayload(t *testing.T) {
+	ctx, _, store := memoryDeleteStore(t, "embedded")
+	selected, err := store.Create(ctx, CreateRequest{PublicID: "selected", Title: "Selected"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	unrelated, err := store.Create(ctx, CreateRequest{PublicID: "unrelated", Title: "Unrelated"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := fixtureResourcePath(t, ctx, store, unrelated.ID)
+	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=REPEAT('x',?) WHERE path=?`, PreviewCurrentReadByteLimit, path); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.CurrentSnapshot(ctx); !errors.Is(err, ErrLimitExceeded) {
+		t.Fatalf("whole-Scope control did not exceed budget: %v", err)
+	}
+	identity, err := store.ResolveAllocatedResourceIdentity(ctx, "selected")
+	if err != nil || identity.PublicID != "selected" || store.ScopeURL()+identity.PublicID != selected.ID {
+		t.Fatalf("scoped identity acquired unrelated payload: %+v %v", identity, err)
+	}
+}

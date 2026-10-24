@@ -158,7 +158,7 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
-	issueUpdated := false
+	touchedID := ""
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		current, err := store.Read(ctx, path)
 		if err != nil {
@@ -181,7 +181,7 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 			if err != nil {
 				return nil, "", err
 			}
-			issueUpdated = true
+			touchedID = result.Issue.ID
 			verb := "Updated"
 			if !result.Changed {
 				verb = "Unchanged"
@@ -203,8 +203,8 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 		}
 		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Memory.ID), result.Replaced, err)
 	})
-	if err == nil && issueUpdated {
-		graphPreviewStoreLastTouchedPath(path)
+	if err == nil && touchedID != "" {
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }

@@ -156,6 +156,6 @@ func runGraphPreviewEdit(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	saved = true
-	graphPreviewStoreLastTouchedPath(path)
+	SetLastTouchedID(issue.ID)
 	return nil
 }

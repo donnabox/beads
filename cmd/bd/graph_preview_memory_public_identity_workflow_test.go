@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -144,7 +145,57 @@ func TestGraphPreviewCommonIdentityGraphAndNativeLinkWorkflow(t *testing.T) {
 					t.Fatalf("native graph omitted %q: %s", id, nativeGraph)
 				}
 			}
+			tree := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", one.ID)
+			if !strings.Contains(tree, one.Properties.ID) || !strings.Contains(tree, two.Properties.ID) {
+				t.Fatalf("dependency tree lost public native IDs: %s", tree)
+			}
 			call("dep", "remove", one.ID, two.ID)
+		})
+	}
+}
+
+func TestGraphPreviewCommonIdentityCurrentAndRelated(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/current-public/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			one := graphMixedResult[graphstore.IssueRecord](t, call("create", "Actual Issue"))
+			two := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other Issue"))
+			call("remember", "Different allocation", "--id", "beads/"+one.Properties.ID)
+			call("show", one.ID, "--format", "graph-json")
+			current := graphMixedResult[graphstore.IssueRecord](t, call("show", "--current", "--actor", "none", "--format", "graph-json"))
+			if current.ID != one.ID {
+				t.Fatalf("last-touched selected private spelling: %+v", current)
+			}
+			var many []map[string]any
+			if err := json.Unmarshal([]byte(call("show", one.ID, two.ID)), &many); err != nil {
+				t.Fatal(err)
+			}
+			if len(many) != 2 || many[0]["id"] != one.Properties.ID || many[1]["id"] != two.Properties.ID {
+				t.Fatalf("multi show: %+v", many)
+			}
+			for _, flag := range []string{"--refs", "--children"} {
+				var related map[string]json.RawMessage
+				if err := json.Unmarshal([]byte(call("show", one.ID, flag)), &related); err != nil {
+					t.Fatal(err)
+				}
+				if _, ok := related[one.Properties.ID]; !ok {
+					t.Fatalf("related map used private path: %v", related)
+				}
+			}
+			versions := graphMixedResult[map[string]any](t, call("versions", one.ID))
+			if versions["resource"] != one.Properties.ID {
+				t.Fatalf("versions leaked locator: %+v", versions)
+			}
+			raw := graphPolicyCLI(t, bd, work, home, nil, "", "versions", one.ID, "--output-format", "jsonl")
+			if !strings.Contains(raw, `"resource":"`+one.Properties.ID+`"`) || strings.Contains(raw, `"resource":"beads/`+one.Properties.ID+`"`) {
+				t.Fatalf("JSONL versions identity: %s", raw)
+			}
 		})
 	}
 }

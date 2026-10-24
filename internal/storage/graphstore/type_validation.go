@@ -273,8 +273,8 @@ func (s *Store) validateExactSubjectBindings(ctx context.Context, tx *sql.Tx, ca
 			return fmt.Errorf("%w: nonempty exact subject bindings required", storage.ErrValidation)
 		}
 		for _, ref := range references {
-			path, kind, ok := graph.SplitCanonicalURL(s.ScopeURL(), ref.URI)
-			if !ok || kind != graph.KindBead || validatePath(path) != nil {
+			path, err := s.publicResourcePathInTx(ctx, tx, ref.URI, graph.KindBead)
+			if err != nil {
 				return fmt.Errorf("%w: subjects require canonical Bead identities in this Scope", storage.ErrValidation)
 			}
 			if path == ownerPath {

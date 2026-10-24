@@ -26,16 +26,29 @@ func graphPreviewIssueSelector(selector string) (graphstore.IssueSelector, error
 	return graphstore.IssueSelector{Path: "beads/" + selector, NativeID: selector}, nil
 }
 
+// An allocated literal ID wins before write-reference syntax is interpreted.
+// An unallocated ID@revision cannot silently become a historical write target.
+func graphPreviewWritableResourceArgument(selector string) (string, error) {
+	resolved, err := graphPreviewResolveMemoryArgument(selector)
+	if err != nil {
+		return "", err
+	}
+	identity, err := graphPreviewWritableIdentity(resolved)
+	if err != nil {
+		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	return identity, nil
+}
+
 // Resolve an exact public ID before passing its immutable allocation path to
 // an existing checked writer. A compatibility shorthand can change meaning
 // between this read and the writer's transaction, so it must use a canonical
 // Scope URL (or a writer that resolves shorthand in its own transaction).
 func graphPreviewResolvedWritePath(selector string) (string, error) {
-	resolved, resolveErr := graphPreviewResolveMemoryArgument(selector)
-	if resolveErr != nil {
-		return "", resolveErr
+	selector, err := graphPreviewWritableResourceArgument(selector)
+	if err != nil {
+		return "", err
 	}
-	selector = resolved
 	path, localID, err := graphPreviewResourceReadSelector(selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
@@ -66,11 +79,10 @@ func graphPreviewResolvedWritePath(selector string) (string, error) {
 }
 
 func graphPreviewResolvedHistoricalPath(selector string) (string, error) {
-	resolved, resolveErr := graphPreviewResolveMemoryArgument(selector)
-	if resolveErr != nil {
-		return "", resolveErr
+	selector, err := graphPreviewWritableResourceArgument(selector)
+	if err != nil {
+		return "", err
 	}
-	selector = resolved
 	path, localID, err := graphPreviewResourceReadSelector(selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)

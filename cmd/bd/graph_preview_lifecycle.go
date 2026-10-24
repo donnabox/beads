@@ -87,7 +87,7 @@ var linkUpdateCmd = &cobra.Command{
 	Use: "update LINK", Short: "Update a Link or recover it from a retained revision",
 	Args: cobra.ExactArgs(1), SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		selector, err := graphPreviewWritableIdentity(args[0])
+		selector, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -364,7 +364,7 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "force", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
-	selector, err := graphPreviewWritableIdentity(args[0])
+	selector, err := graphPreviewWritableResourceArgument(args[0])
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -449,7 +449,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		if graphPreviewLinkTypeChanged(cmd) {
 			return graphFailure("invalid_selector", "--type is only used for pair selection", 2)
 		}
-		selector, err := graphPreviewWritableIdentity(args[0])
+		selector, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -463,11 +463,11 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		request.Path = path
 	} else {
 		var err error
-		source, err := graphPreviewWritableIdentity(args[0])
+		source, err := graphPreviewWritableResourceArgument(args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		target, err := graphPreviewWritableIdentity(args[1])
+		target, err := graphPreviewWritableResourceArgument(args[1])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}

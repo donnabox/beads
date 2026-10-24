@@ -368,7 +368,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 			}
 			results = append(results, result)
 			if firstSettled == "" {
-				firstSettled = path
+				firstSettled = result.Issue.ID
 			}
 			if result.OpenChildren > 0 {
 				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], result.OpenChildren)
@@ -399,7 +399,9 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	graphPreviewStoreLastTouchedPath(firstSettled)
+	if firstSettled != "" {
+		SetLastTouchedID(firstSettled)
+	}
 	if hadError {
 		return SilentExit()
 	}
@@ -439,7 +441,7 @@ func runGraphPreviewCloseBatch(paths, nativeIDs, targets, reasons []string, sess
 				Issue: outcome.Issue, Changed: outcome.Changed, OpenChildren: outcome.OpenChildren,
 			})
 			if firstSettled == "" {
-				firstSettled = paths[i]
+				firstSettled = outcome.Issue.ID
 			}
 			if outcome.OpenChildren > 0 {
 				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], outcome.OpenChildren)
@@ -485,7 +487,9 @@ func runGraphPreviewCloseBatch(paths, nativeIDs, targets, reasons []string, sess
 	if claimedID != "" {
 		SetLastTouchedID(claimedID)
 	} else {
-		graphPreviewStoreLastTouchedPath(firstSettled)
+		if firstSettled != "" {
+			SetLastTouchedID(firstSettled)
+		}
 	}
 	if hadError {
 		if claimedID != "" {

@@ -14,9 +14,9 @@ import (
 // SchemaVersion identifies this explicitly experimental storage layout.
 const SchemaVersion = 11
 
-// TypeGeneration changes when the selected fresh Type installation changes.
-// It is an admission marker, never an automatic migration of existing stores.
-const TypeGeneration = 10
+// TypeGeneration identifies the selected fresh graph contract, including its
+// Type installation and public identity semantics. It never migrates stores.
+const TypeGeneration = 11
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.

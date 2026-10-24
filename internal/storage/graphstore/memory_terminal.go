@@ -95,6 +95,7 @@ func (s *Store) deletedMemoryStateInTx(ctx context.Context, tx *sql.Tx, path str
 // evidence. Rows and current state are acquired in one checked snapshot. It is
 // separate from ordinary Read, which continues refusing a deleted subject.
 type VersionHistoryResult struct {
+	PublicID     string               `json:"-"`
 	Kind         ResourceKind         `json:"kind"`
 	Versions     []VersionRow         `json:"versions"`
 	CurrentState *MemoryTerminalState `json:"currentState,omitempty"`
@@ -114,6 +115,11 @@ func (s *Store) History(ctx context.Context, path string) (VersionHistoryResult,
 		if err != nil {
 			return err
 		}
+		identity, err := allocatedResourceIdentityForPathInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
+		result.PublicID = identity.PublicID
 		if result.Kind == KindMemory || result.Kind == KindIssue || result.Kind == KindLink {
 			var state string
 			if err := tx.QueryRowContext(ctx, `SELECT allocation_state FROM graph_preview_catalog WHERE path=?`, path).Scan(&state); err != nil {

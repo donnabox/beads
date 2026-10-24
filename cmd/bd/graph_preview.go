@@ -796,6 +796,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		return graphFailure("capability_unavailable", "retained versions require an exact canonical Scope URL", 5)
 	}
 	var shownIssue, legacyIssue, legacyShort bool
+	var touchedID string
 	err = withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
 		var details *types.IssueDetails
@@ -819,7 +820,9 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 				return nil, "", graphFailure("capability_unavailable", "link show requires a Link Resource", 5)
 			}
 		}
-		_, shownIssue = r.(graphstore.IssueRecord)
+		if selected, ok := r.(graphstore.IssueRecord); ok {
+			shownIssue, touchedID = true, selected.ID
+		}
 		if shortMode && shownIssue && !versioned && format == "" {
 			legacyShort = true
 			issue := *r.(graphstore.IssueRecord).Properties
@@ -864,7 +867,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		return graphPrint(result, human, quietFlag)
 	})
 	if err == nil && shownIssue {
-		graphPreviewStoreLastTouchedPath(path)
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }

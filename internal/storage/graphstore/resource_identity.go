@@ -51,9 +51,6 @@ func (s *Store) readAllocatedResourceIdentity(ctx context.Context, lookup func(*
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		if err := checkCurrentReadBytes(ctx, tx); err != nil {
-			return err
-		}
 		var err error
 		identity, err = lookup(tx)
 		return err

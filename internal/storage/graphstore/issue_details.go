@@ -151,9 +151,9 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 				return err
 			}
 		} else {
-			// Memory and Link public IDs are their allocated graph paths in this
-			// preview. Bare suffixes remain compatibility shorthand; an Issue's
-			// private graph path is never a second local Issue identity.
+			// Memory and Link public IDs come from the immutable catalog. Legacy
+			// suffix shorthand is confined to allocations without explicit public IDs;
+			// a private path is never a second identity.
 			exactNonIssuePath := ""
 			rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=? AND allocation_state='live' LIMIT 2`, localID)
 			if err != nil {

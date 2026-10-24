@@ -123,7 +123,7 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		result := map[string]any{
-			"resource": path,
+			"resource": history.PublicID,
 			"kind":     string(kind),
 			"versions": graphVersionRowsJSON(citable),
 		}

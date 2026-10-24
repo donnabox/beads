@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -23,7 +22,11 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 	if format != "" || cmd.Flags().Changed("version") {
 		return graphFailure("capability_unavailable", "--watch requires a current Issue in the familiar output format", 5)
 	}
-	ref, err := graphPreviewParseReference(args[0])
+	argument, err := graphPreviewResolveMemoryArgument(args[0])
+	if err != nil {
+		return err
+	}
+	ref, err := graphPreviewParseReference(argument)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -33,9 +36,6 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 	selectorPath, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	if !strings.HasPrefix(selectorPath, "beads/") {
-		return graphFailure("capability_unavailable", "--watch requires an Issue", 5)
 	}
 	// Refuse a Memory or missing Issue before starting a watch. The shared
 	// loop's initial-render failure is otherwise silent by design.
