@@ -1448,10 +1448,11 @@ exit 2
 	ports := strings.Fields(string(got))
 	require.Len(t, ports, 5, "one launch per port: %v", ports)
 	assert.Equal(t, "40001", ports[0], "the first launch uses config.yaml's port")
-	seen := map[string]bool{}
-	for _, p := range ports {
-		assert.False(t, seen[p], "port %s launched twice: %v", p, ports)
-		seen[p] = true
+	// The allocator releases its probe listener before launch, so the OS may
+	// reuse an earlier ephemeral port. Each move must avoid only the port
+	// that conflicted on the immediately preceding attempt.
+	for i := 1; i < len(ports); i++ {
+		assert.NotEqual(t, ports[i-1], ports[i], "retry reused the in-use port: %v", ports)
 	}
 
 	after, err := os.ReadFile(cfgPath)
