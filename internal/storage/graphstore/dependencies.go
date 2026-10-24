@@ -150,11 +150,6 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if publicID == "" {
 			publicID = path
 		}
-		if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
-			return err
-		} else if exists {
-			return ErrAlreadyExists
-		}
 		path, err = choosePrivateResourcePathInTx(ctx, tx, path, generatedPath, graph.KindLink)
 		if err != nil {
 			return err
@@ -183,6 +178,12 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		}
 		if err := s.ensureNativeTypeInTx(ctx, tx, linkType); err != nil {
 			return err
+		}
+		// The first-use Type now reserves its own URL in this transaction.
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id) VALUES (?,'link',?,?,'live','dependency',?,?)`, path, linkType, revision, key, publicID); err != nil {
 			return err

@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/steveyegge/beads/internal/types"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 func TestNativeConcreteTypesCurrentAndRetained(t *testing.T) {
@@ -432,12 +433,87 @@ func TestNativeConcreteTypePublicIdentityCollision(t *testing.T) {
 						request.Issue.IssueType = types.IssueType(classification)
 						_, err = s.CreateIssue(ctx, "beads/refused-"+classification, request)
 					} else {
-						_, err = s.AddDependency(ctx, DependencyRequest{Path: "links/refused-" + classification, SourcePath: "beads/native-public-a", TargetPath: "beads/native-public-b", Type: types.DependencyType(classification)})
+						_, err = s.AddDependency(ctx, DependencyRequest{Path: "links/refused-" + classification, SourcePath: "beads/native-public-a", TargetPath: "beads/native-public-b", Type: types.DependencyType(classification), Actor: "collision-tester"})
 					}
 					if !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 						t.Fatalf("%s/%s public-ID collision changed state: %v", family, state, err)
 					}
 				}
+			}
+		})
+	}
+}
+
+func TestNativeConcreteTypesProspectiveIdentityReservations(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+				_, err := tx.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('types.custom',?) ON DUPLICATE KEY UPDATE value=VALUES(value)", "self-class,cross-left,cross-right")
+				return err
+			}); err != nil {
+				t.Fatal(err)
+			}
+			selfType, _ := NativeIssueTypeURL(s.ScopeURL(), "self-class")
+			self := plainIssue("Cannot share identity with own Type")
+			self.Issue.ID = strings.TrimPrefix(selfType, s.ScopeURL())
+			self.Issue.IssueType = types.IssueType("self-class")
+			self.ForceIDPrefix = true
+			before := workflowState(t, ctx, s)
+			if _, err := s.CreateIssue(ctx, "", self); !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("Issue acquired prospective own Type identity or left state: %v", err)
+			}
+			for _, path := range []string{"beads/reservation-a", "beads/reservation-b", "beads/reservation-c"} {
+				if _, err := s.CreateIssue(ctx, path, plainIssue(path)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			selfLinkType, _ := NativeDependencyTypeURL(s.ScopeURL(), "self-edge")
+			before = workflowState(t, ctx, s)
+			_, err := s.AddDependency(ctx, DependencyRequest{PublicID: strings.TrimPrefix(selfLinkType, s.ScopeURL()), SourcePath: "beads/reservation-a", TargetPath: "beads/reservation-b", Type: types.DependencyType("self-edge"), Actor: "tester"})
+			if !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("Dependency acquired prospective own Type identity or left state: %v", err)
+			}
+			leftType, _ := NativeIssueTypeURL(s.ScopeURL(), "cross-left")
+			rightType, _ := NativeIssueTypeURL(s.ScopeURL(), "cross-right")
+			for direction := 0; direction < 2; direction++ {
+				left, right := plainIssue("Left").Issue, plainIssue("Right").Issue
+				left.IssueType, right.IssueType = types.IssueType("cross-left"), types.IssueType("cross-right")
+				left.ID, right.ID = "batch-left", "batch-right"
+				if direction == 0 {
+					left.ID = strings.TrimPrefix(rightType, s.ScopeURL())
+				} else {
+					right.ID = strings.TrimPrefix(leftType, s.ScopeURL())
+				}
+				before := workflowState(t, ctx, s)
+				records, err := s.CreateIssueBatch(ctx, publicops.CreateBatchRequest{Actor: "tester", ForceIDPrefix: true, Items: []publicops.BatchCreateItem{{Issue: left}, {Issue: right}}})
+				if !errors.Is(err, ErrAlreadyExists) || records != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("batch direction %d acquired another item's Type or left state: %v", direction, err)
+				}
+			}
+			// A raw nominal URI is recognition, not permission to register an
+			// unseen kind. Native-kind authoring can establish its binding first.
+			const kind = types.DependencyType("retained-custom-edge")
+			declared, _ := NativeDependencyTypeURL(s.ScopeURL(), string(kind))
+			request := DependencyRequest{Path: "links/custom-edge", SourcePath: "beads/reservation-a", TargetPath: "beads/reservation-b", Type: kind, TypeURL: declared, Actor: "tester"}
+			before = workflowState(t, ctx, s)
+			if _, err := s.AddDependency(ctx, request); !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("unseen nominal URI bypassed native Type admission: %v", err)
+			}
+			request.TypeURL = ""
+			created, err := s.AddDependency(ctx, request)
+			if err != nil || created.Link.Type != declared {
+				t.Fatalf("ordinary valid native kind failed to establish concrete affiliation: %+v %v", created, err)
+			}
+			request.Path, request.TargetPath, request.TypeURL = "links/custom-edge-second", "beads/reservation-c", declared
+			second, err := s.AddDependency(ctx, request)
+			if err != nil || second.Link.Type != declared {
+				t.Fatalf("registered nominal Type disagreed with native kind: %+v %v", second, err)
+			}
+			request.Path, request.Type = "links/uri-only", ""
+			before = workflowState(t, ctx, s)
+			if _, err := s.AddDependency(ctx, request); !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("nominal URI silently replaced default native kind: %v", err)
 			}
 		})
 	}
