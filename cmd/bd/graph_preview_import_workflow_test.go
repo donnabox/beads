@@ -104,7 +104,7 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 			if !strings.Contains(comments, "fixture-commenter") || !strings.Contains(comments, "A preserved comment") {
 				t.Fatalf("comments=%s", comments)
 			}
-			retained := call("", "", "show", issue.ID, "--version", issue.Revision)
+			retained := call("", "", "show", issue.ID, "--revision", issue.Revision)
 			if !strings.Contains(retained, "A note") {
 				t.Fatal("missing retained initial Issue")
 			}
@@ -323,7 +323,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 						t.Fatalf("Issue %s dependency lost type or endpoints: %+v", source.ID, link)
 					}
 				}
-				retained := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", id, "--version", got.Revision))
+				retained := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", id, "--revision", got.Revision))
 				if !reflect.DeepEqual(got.Properties, retained.Properties) || !bytes.Equal(got.Metadata, retained.Metadata) || !reflect.DeepEqual(got.Owned, retained.Owned) {
 					t.Fatalf("Issue %s initial retained state differs", source.ID)
 				}
@@ -353,7 +353,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 				}
 				allocated[id] = true
 				got := graphMixedResult[graphstore.Record](t, call("", "", "show", id))
-				retained := graphMixedResult[graphstore.Record](t, call("", "", "show", id, "--version", got.Revision))
+				retained := graphMixedResult[graphstore.Record](t, call("", "", "show", id, "--revision", got.Revision))
 				if got.ID != id || got.Revision == "" || got.Properties.Title != key || got.Properties.Body != value || !reflect.DeepEqual(got.Properties, retained.Properties) {
 					t.Fatalf("memory %q lost original key/value or retained state: %+v %+v", key, got, retained)
 				}

@@ -167,7 +167,7 @@ func graphCitableVersionRows(kind graphstore.ResourceKind, rows []graphstore.Ver
 // renderGraphVersions prints the token on its own line under each row.
 //
 // That is not a layout accident. On this plane the opaque version token is the
-// ONLY citable address -- it is what `show --version` and `compare --from/--to`
+// ONLY citable address -- it is what `show --revision` and `compare --from/--to`
 // accept -- so a listing that elides it cannot be used for the thing the
 // listing is for. The ordinal is 1-2 characters and the token is 32, which no
 // single terminal row holds alongside a timestamp and an actor, so the token
@@ -215,10 +215,10 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 	b.WriteString("clones can hold a different local revision for the same state. Cite the token\n")
 	b.WriteString("under each row instead:\n\n")
 	if kind == graphstore.KindLink {
-		fmt.Fprintf(&b, "  bd link show %s --version <token>\n", selector)
+		fmt.Fprintf(&b, "  bd link show %s --revision <token>\n", selector)
 		fmt.Fprintf(&b, "  bd link compare %s --from <token> --to <token>\n", selector)
 	} else {
-		fmt.Fprintf(&b, "  bd show %s --version <token>\n", selector)
+		fmt.Fprintf(&b, "  bd show %s --revision <token>\n", selector)
 		fmt.Fprintf(&b, "  bd compare %s --from <token> --to <token>\n", selector)
 	}
 	if removed {

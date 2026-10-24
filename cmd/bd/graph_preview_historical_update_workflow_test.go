@@ -49,7 +49,7 @@ func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.Record](t, call("show", original.ID)); !reflect.DeepEqual(got, applied.Memory) {
 				t.Fatal("refusal changed target")
 			}
-			if got := graphMixedResult[graphstore.Record](t, call("show", original.ID, "--version", original.Revision)); !reflect.DeepEqual(got, original) {
+			if got := graphMixedResult[graphstore.Record](t, call("show", original.ID, "--revision", original.Revision)); !reflect.DeepEqual(got, original) {
 				t.Fatal("original history changed")
 			}
 		})
@@ -95,7 +95,7 @@ func TestGraphPreviewHistoricalLinkWorkflow(t *testing.T) {
 			if !recovered.Changed || recovered.Link.ID != first.Link.ID || recovered.Link.Properties["note"] != "after source" || recovered.Link.Attribution.HistoricalUpdate == nil || recovered.Link.Attribution.HistoricalUpdate.PreviousRevision != deleted.Link.Revision {
 				t.Fatalf("same-ID recovery: %+v", recovered)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", deleted.Link.ID, "--version", deleted.Link.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", deleted.Link.ID, "--revision", deleted.Link.Revision, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "update", "historical", "--from-revision", deleted.Link.Revision, "--json")
 			if current := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", "historical")); !reflect.DeepEqual(current, recovered.Link) {
 				t.Fatalf("refusal changed Link: %+v", current)
@@ -143,7 +143,7 @@ func TestGraphPreviewHistoricalDependencyLinkWorkflow(t *testing.T) {
 			if !recovered.Changed || recovered.Link.ID != initial.Link.ID || recovered.Link.Attribution.Inception != "revert" || recovered.Link.Properties["dep_type"] != "relates-to" || string(recovered.Link.Metadata) != `{"old":true}` {
 				t.Fatalf("native same-ID CLI recovery: %+v", recovered)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", "native", "--version", deleted.Link.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "link", "show", "native", "--revision", deleted.Link.Revision, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "link", "update", "native", "--from-revision", old.Link.Revision, "--if-revision", deleted.Link.Revision, "--json")
 			if got := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", "native")); !reflect.DeepEqual(got, recovered.Link) {
 				t.Fatalf("native current lost context: %+v", got)
@@ -177,19 +177,19 @@ func TestGraphPreviewHistoricalRecoveryWorkflow(t *testing.T) {
 				t.Fatalf("terminal carrier: %+v", history)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--version", deleted.Terminal.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--revision", deleted.Terminal.Revision, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", "beads/recover", "--from-revision", first.Revision, "--if-revision", last.Memory.Revision, "--json")
 			recovered := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/recover", "--from-revision", first.Revision, "--if-revision", deleted.Terminal.Revision, "--properties", `{"body":"explicit after source"}`))
 			if !recovered.Changed || recovered.Memory.ID != first.ID || recovered.Memory.Properties.Body != "explicit after source" || recovered.Memory.Attribution.Inception != "revert" || recovered.Memory.Attribution.HistoricalUpdate == nil || recovered.Memory.Attribution.HistoricalUpdate.PreviousRevision != deleted.Terminal.Revision {
 				t.Fatalf("wrong recovery: %+v", recovered)
 			}
-			if got := graphMixedResult[graphstore.Record](t, call("show", first.ID, "--version", first.Revision)); !reflect.DeepEqual(got, first) {
+			if got := graphMixedResult[graphstore.Record](t, call("show", first.ID, "--revision", first.Revision)); !reflect.DeepEqual(got, first) {
 				t.Fatal("recovery changed retained source")
 			}
 			if got := graphMixedResult[graphstore.Record](t, call("show", first.ID)); !reflect.DeepEqual(got, recovered.Memory) {
 				t.Fatal("recovery did not install result")
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--version", deleted.Terminal.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", first.ID, "--revision", deleted.Terminal.Revision, "--json")
 		})
 	}
 }
@@ -253,7 +253,7 @@ func TestGraphPreviewHistoricalNativeIssueWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(got, applied.Issue) {
 				t.Fatal("refusal changed native destination")
 			}
-			exact := graphMixedResult[graphstore.IssueRecord](t, call("show", original.ID, "--version", applied.Issue.Revision))
+			exact := graphMixedResult[graphstore.IssueRecord](t, call("show", original.ID, "--revision", applied.Issue.Revision))
 			want := applied.Issue
 			properties := *want.Properties
 			properties.ContentHash = ""
@@ -345,7 +345,7 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 			}
 			assertCanonicalHistory(history)
 			refuse("gone", "show", source.ID)
-			refuse("gone", "show", source.ID, "--version", deleted.Terminal.Revision)
+			refuse("gone", "show", source.ID, "--revision", deleted.Terminal.Revision)
 			refuse("revision_conflict", "update", "subject", "--from-revision", source.Revision, "--if-revision", current.Issue.Revision)
 			refuse("gone", "update", "subject", "--from-revision", deleted.Terminal.Revision, "--if-revision", deleted.Terminal.Revision)
 			recovered := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "subject", "--from-revision", source.Revision, "--if-revision", deleted.Terminal.Revision, "--patch", `[{"op":"replace","path":"/title","value":"Recovered"}]`, "--set-metadata", "explicit=7", "--actor", "restorer"))
@@ -357,7 +357,7 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 			if !reflect.DeepEqual(got, recovered.Issue) {
 				t.Fatal("native recovery not visible to fresh process")
 			}
-			for _, selection := range [][]string{nil, {"--version", recovered.Issue.Revision}} {
+			for _, selection := range [][]string{nil, {"--revision", recovered.Issue.Revision}} {
 				args := append([]string{"show", source.ID, "--output-format", "json"}, selection...)
 				raw := graphPolicyCLI(t, bd, work, home, nil, "", args...)
 				var envelope struct {
@@ -390,7 +390,7 @@ func TestGraphPreviewHistoricalNativeRecovery(t *testing.T) {
 				t.Fatalf("repeated native recovery lost terminal or citable rows: %+v", history)
 			}
 			assertCanonicalHistory(history)
-			refuse("gone", "show", source.ID, "--version", secondDelete.Terminal.Revision)
+			refuse("gone", "show", source.ID, "--revision", secondDelete.Terminal.Revision)
 		})
 	}
 }

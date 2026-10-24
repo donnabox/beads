@@ -207,7 +207,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			retain := func(id, version string, value any) {
 				t.Helper()
 				saved[id+"@"+version] = value
-				graphPatchEqual(t, graphMixedResult[any](t, call("show", id, "--version", version)), value)
+				graphPatchEqual(t, graphMixedResult[any](t, call("show", id, "--revision", version)), value)
 			}
 			retain(memory.ID, memory.Revision, memory)
 			add := func(id, dest string, properties string) graphstore.LinkRecord {
@@ -577,9 +577,9 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "no reuse", "--id", "beads/plan", "--title", "Reserved", "--json")
 			for key, value := range saved {
 				index := strings.LastIndex(key, "@")
-				graphPatchEqual(t, graphMixedResult[any](t, call("show", key[:index], "--version", key[index+1:])), value)
+				graphPatchEqual(t, graphMixedResult[any](t, call("show", key[:index], "--revision", key[index+1:])), value)
 			}
-			graphMemoryReadRaw(t, bd, work, home, final.Properties.Body, "", "recall", final.ID, "--version", final.Revision)
+			graphMemoryReadRaw(t, bd, work, home, final.Properties.Body, "", "recall", final.ID, "--revision", final.Revision)
 			if call("show", issue.ID, "--format", "graph-json") != issueCurrent || call("show", target.ID, "--format", "graph-json") != targetCurrent {
 				t.Fatal("deletion changed Issue survivors")
 			}

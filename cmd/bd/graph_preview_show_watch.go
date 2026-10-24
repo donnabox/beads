@@ -19,7 +19,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "watch mode requires exactly one Issue ID", 2)
 	}
-	if format != "" || cmd.Flags().Changed("version") {
+	if format != "" || cmd.Flags().Changed("revision") {
 		return graphFailure("capability_unavailable", "--watch requires a current Issue in the familiar output format", 5)
 	}
 	resolve := graphPreviewResolveMemoryArgument

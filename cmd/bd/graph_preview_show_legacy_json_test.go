@@ -162,11 +162,11 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 			if !strings.Contains(tail, "1 older comment hidden") || !strings.Contains(tail, "Second note") || strings.Contains(tail, "First note") {
 				t.Fatalf("--comments-tail did not preserve familiar elision: %s", tail)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", scope+"beads/work", "--version", created.Revision, "--long", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "show", scope+"beads/work", "--revision", created.Revision, "--long", "--json")
 
 			// The old experimental complete-record envelope remains explicitly
 			// addressable, including for a retained version.
-			for _, args := range [][]string{{"show", scope + "beads/work", "--format", "graph-json", "--json"}, {"show", scope + "beads/work", "--version", created.Revision, "--format", "graph-json", "--json"}} {
+			for _, args := range [][]string{{"show", scope + "beads/work", "--format", "graph-json", "--json"}, {"show", scope + "beads/work", "--revision", created.Revision, "--format", "graph-json", "--json"}} {
 				var envelope struct{ Result graphstore.IssueRecord }
 				out := graphPolicyCLI(t, bd, work, home, nil, "", args...)
 				if err := json.Unmarshal([]byte(out), &envelope); err != nil || envelope.Result.ID != created.ID || envelope.Result.Revision == "" {
