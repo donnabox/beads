@@ -189,7 +189,9 @@ func memoryAcceptanceSeed(t *testing.T, work, scope string, corpus memoryAccepta
 		for _, b := range fixture.Beads {
 			path := "beads/" + name + "/" + b.ID
 			if b.Type == "issue" {
-				_, err = store.CreateIssue(ctx, path, publicops.CreateRequest{Actor: "memory-cli-test", Issue: &publicops.Issue{Title: b.ID, Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}})
+				// Keep the corpus's literal prefixed public identity explicit;
+				// specifying only its private path would generate another ID.
+				_, err = store.CreateIssue(ctx, path, publicops.CreateRequest{Actor: "memory-cli-test", ForceIDPrefix: true, Issue: &publicops.Issue{ID: path, Title: b.ID, Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}})
 			} else {
 				_, err = store.Create(ctx, graphstore.CreateRequest{Path: path, TypeURL: scope + "types/" + b.Type, Title: b.ID, Body: "Acceptance fixture", Actor: "memory-cli-test"})
 			}

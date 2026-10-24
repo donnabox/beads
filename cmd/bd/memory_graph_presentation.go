@@ -129,13 +129,10 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 			return "", err
 		}
 		// Escape display identifiers before framing; arbitrary data cannot inject
-		// another root or a false completion/frontier line.
+		// another root or a false depth-boundary line.
 		label := (&graphRelationshipTree{result: r}).label
-		if err := line(fmt.Sprintf("Root %s: complete: %t; direction: %s; depth: %d; frontier: %d", label(r.Root), r.Complete, r.Direction, r.Depth, len(r.Frontier))); err != nil {
-			return "", err
-		}
 		for _, id := range r.Frontier {
-			if err := line(fmt.Sprintf("Root %s: more relationships beyond depth %d: %s", label(r.Root), r.Depth, label(id))); err != nil {
+			if err := line(fmt.Sprintf("For %s: %s", label(r.Root), graphDepthBoundary(r.Depth, label(id)))); err != nil {
 				return "", err
 			}
 		}
@@ -146,7 +143,7 @@ func renderMemoryCurrentGraph(read graphstore.CurrentFamilyRead, scope string, d
 	if err := line(""); err != nil {
 		return "", err
 	}
-	if err := line(fmt.Sprintf("Aggregate: %d unique Beads, %d unique Links across %d root views", len(seenNodes), len(seenLinks), len(read.Graph.Views))); err != nil {
+	if err := line(fmt.Sprintf("%d Beads, %d Links across %d views", len(seenNodes), len(seenLinks), len(read.Graph.Views))); err != nil {
 		return "", err
 	}
 	return output.String(), nil
