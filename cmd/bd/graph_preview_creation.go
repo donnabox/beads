@@ -3,11 +3,11 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
-	"github.com/steveyegge/beads/internal/memoryapi"
-	"github.com/steveyegge/beads/internal/storage/graphstore"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/memoryapi"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 // Allocate a Memory path once, then let its writer reserve it atomically.
@@ -35,9 +35,12 @@ func graphPreviewCreateBeadPath(cmd *cobra.Command) (string, error) {
 }
 
 // This is a deterministic display summary, not an inferred semantic title.
-// The complete body remains unchanged. Whitespace-only bodies get an empty title.
-func graphPreviewMemoryTitle(body string) string { return memoryapi.TitleFromBody(body) }
+// The complete body remains unchanged; an empty summary gets "Untitled memory".
+func graphPreviewMemoryTitle(body string) string {
+	return memoryapi.TitleFromBody(body)
+}
 
+// Human summaries use exact public identity rather than a private locator.
 func graphPreviewMemoryDisplayID(memory graphstore.Record) string {
 	if memory.PublicID != "" {
 		return memory.PublicID

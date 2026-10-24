@@ -23,6 +23,7 @@ go_test(
     srcs = [
         "laws_internal_test.go",
         "laws_test.go",
+        "resource_identity_mount_test.go",
         "resource_identity_test.go",
         "roles_test.go",
         "types_test.go",
