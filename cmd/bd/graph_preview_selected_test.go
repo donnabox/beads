@@ -253,7 +253,7 @@ func TestGraphPreviewSelectedExportLabelsAndDepthBoundary(t *testing.T) {
 				if format == "html" {
 					// HTML keeps exact Link Types in data; the tooltip explicitly
 					// brackets that Type rather than changing its wire identity.
-					if !strings.Contains(text, `"type":"`+genericTestScope+`types/references"`) || !strings.Contains(text, `"\n[" + d.type + "]\nsource revision: "`) {
+					if !strings.Contains(text, `"type":"`+genericTestScope+`types/references"`) || !strings.Contains(text, `"\n[" + d.typeLabel + "]\nsource revision: "`) {
 						t.Fatal("HTML lost typed Link data/tooltip", text)
 					}
 				} else if !strings.Contains(text, "[types/references]") {
@@ -289,6 +289,114 @@ func TestGraphPreviewSelectedBoxEscapesStatus(t *testing.T) {
 	renderGraphSelectedBox(&graphExportWriter{out: &out}, r)
 	if strings.Contains(out.String(), "\x1b") || strings.Contains(out.String(), "\n└── forged") || !strings.Contains(out.String(), `open\n└── forged\x1b[2J`) || r.Nodes[0].Status != before {
 		t.Fatalf("Box injected controls or changed captured Status: %q", out.String())
+	}
+}
+
+func TestGraphPreviewSelectedHumanTypeLabelsPreserveCanonicalTypes(t *testing.T) {
+	task, err := graphstore.NativeIssueTypeURL(genericTestScope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blocks, err := graphstore.NativeDependencyTypeURL(genericTestScope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	const foreignScope = "https://foreign.invalid/graph/"
+	foreignTask, err := graphstore.NativeIssueTypeURL(foreignScope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	foreignBlocks, err := graphstore.NativeDependencyTypeURL(foreignScope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := graphTreeTestResult("a", "out", []string{"a", "b", "c"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"bc", "b", "c"})
+	r.Nodes[0].Type = task
+	r.Nodes[1].ID, r.Nodes[1].Type = genericTestScope+"types/caller", genericTestScope+"types/task"
+	r.Nodes[2].ID, r.Nodes[2].Type = foreignScope+"beads/c", foreignTask
+	r.Links[0].Target, r.Links[0].Type = r.Nodes[1].ID, blocks
+	r.Links[1].Target = r.Nodes[2].ID
+	r.Links[2].Source, r.Links[2].Target, r.Links[2].Type = r.Nodes[1].ID, r.Nodes[2].ID, foreignBlocks
+	snapshot := graphstore.Snapshot{Records: []any{
+		graphstore.IssueRecord{ID: r.Nodes[0].ID, Type: task, Revision: "issue-revision", Properties: &types.Issue{Title: "A", IssueType: types.TypeTask}},
+		graphstore.Record{ID: r.Nodes[1].ID, Type: r.Nodes[1].Type, Revision: "generic-revision"},
+		graphstore.Record{ID: r.Nodes[2].ID, Type: foreignTask, Revision: "foreign-revision"},
+	}}
+	typesByID := map[string]string{}
+	labelsByID := map[string]string{r.Nodes[0].ID: "task", r.Nodes[1].ID: "types/task", r.Nodes[2].ID: foreignTask, r.Links[0].ID: "blocks", r.Links[1].ID: "types/references", r.Links[2].ID: foreignBlocks}
+	for _, node := range r.Nodes {
+		typesByID[node.ID] = node.Type
+	}
+	for _, link := range r.Links {
+		typesByID[link.ID] = link.Type
+		snapshot.Records = append(snapshot.Records, graphstore.LinkRecord{ID: link.ID, Type: link.Type, Source: link.Source, Target: link.Target, Revision: "link-revision"})
+	}
+	before, err := graphSelectedRecords(r, snapshot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	canonicalBefore, err := json.Marshal(before)
+	if err != nil {
+		t.Fatal(err)
+	}
+	selectionBefore := fmt.Sprintf("%#v", r)
+	for _, format := range []string{"box", "dot", "html"} {
+		t.Run(format, func(t *testing.T) {
+			var out bytes.Buffer
+			writer := &graphExportWriter{out: &out}
+			switch format {
+			case "box":
+				renderGraphSelectedBox(writer, r)
+			case "dot":
+				renderGraphSelectedDOT(writer, r)
+			case "html":
+				if err := renderGraphSelectedHTML(writer, r); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := writer.wrapError("graph"); err != nil {
+				t.Fatal(err)
+			}
+			text := out.String()
+			for _, label := range []string{"beads/a [task]", "types/caller [types/task]", r.Nodes[2].ID + " [" + foreignTask + "]"} {
+				if !strings.Contains(text, label) {
+					t.Fatalf("%s changed human identity/Type label %q: %s", format, label, text)
+				}
+			}
+			if format == "html" {
+				for _, population := range []string{"nodes", "links"} {
+					_, data, ok := strings.Cut(text, "const "+population+" = ")
+					var rows []struct{ ID, Type, TypeLabel string }
+					if !ok || json.NewDecoder(strings.NewReader(data)).Decode(&rows) != nil || len(rows) != 3 {
+						t.Fatalf("HTML lost %s data", population)
+					}
+					for _, row := range rows {
+						if row.Type != typesByID[row.ID] || row.TypeLabel != labelsByID[row.ID] {
+							t.Fatalf("HTML Type identity replaced by display label: %+v", row)
+						}
+					}
+				}
+				for _, tooltip := range []string{`"Type: " + d.typeLabel`, `"\n[" + d.typeLabel + "]\nsource revision: "`} {
+					if !strings.Contains(text, tooltip) {
+						t.Fatalf("HTML tooltip did not use human Type label: %s", tooltip)
+					}
+				}
+			} else {
+				for _, label := range []string{"[blocks]", "[types/references]", "[" + foreignBlocks + "]"} {
+					if !strings.Contains(text, label) {
+						t.Fatalf("%s lost Link Type label %q", format, label)
+					}
+				}
+			}
+			after, err := graphSelectedRecords(r, snapshot)
+			if err != nil {
+				t.Fatal(err)
+			}
+			canonicalAfter, err := json.Marshal(after)
+			if err != nil || !bytes.Equal(canonicalBefore, canonicalAfter) || selectionBefore != fmt.Sprintf("%#v", r) {
+				t.Fatalf("%s changed canonical selected records or Type fields: %v", format, err)
+			}
+		})
 	}
 }
 

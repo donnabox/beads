@@ -80,6 +80,10 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			if implicit != explicit {
 				t.Fatalf("omitted Dependency differs: %s\n%s", implicit, explicit)
 			}
+			nativeHuman := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "i1")
+			if !strings.Contains(nativeHuman, "[task]") || !strings.Contains(nativeHuman, "[blocks]") || strings.Contains(nativeHuman, "[types/native-") {
+				t.Fatalf("native graph labels differ from shared human rows:\n%s", nativeHuman)
+			}
 			currentIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "i1", "--format", "graph-json"))
 			historical := []string{"i1@1", "i1@=" + currentIssue.Revision}
 			for _, withLiteralSiblings := range []bool{false, true} {

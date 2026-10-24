@@ -166,6 +166,7 @@ func init() {
 		command.Flags().String("incident-to", "", "Select Links incident to this local Bead")
 		command.Flags().String("direction", "both", "With --incident-to: in, out, or both")
 	}
+	linkShowCmd.Flags().Bool("long", false, "Include exact revision token and administrative details")
 	linkShowCmd.Flags().String("revision", "", "Read an exact retained Link version")
 	linkShowCmd.Flags().String("format", "", "Use graph-json for the complete graph record")
 	for _, command := range []*cobra.Command{linkUpdateCmd} {
@@ -237,9 +238,7 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 		}
 		var human strings.Builder
 		for _, link := range result {
-			fmt.Fprintf(&human, "%s  %s  %s → %s\n",
-				graphPreviewDisplayLocalURL(link.Type), graphPreviewDisplayLocalURL(link.ID),
-				graphPreviewDisplayLocalURL(link.Source), graphPreviewDisplayLocalURL(link.Target))
+			fmt.Fprintln(&human, graphHumanRow(store.ScopeURL(), link))
 		}
 		if len(result) == 0 {
 			human.WriteString("No incident Links.\n")
@@ -346,9 +345,7 @@ func runGraphPreviewLinkCollection(cmd *cobra.Command, _ []string) error {
 		}
 		var human strings.Builder
 		for _, link := range links {
-			fmt.Fprintf(&human, "%s  %s  %s → %s\n",
-				graphPreviewDisplayLocalURL(link.Type), graphPreviewDisplayLocalURL(link.ID),
-				graphPreviewDisplayLocalURL(link.Source), graphPreviewDisplayLocalURL(link.Target))
+			fmt.Fprintln(&human, graphHumanRow(store.ScopeURL(), link))
 		}
 		if len(links) == 0 {
 			human.WriteString("No Links.\n")

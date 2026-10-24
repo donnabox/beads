@@ -228,6 +228,9 @@ func publishMemoryLinkExecution(cmd *cobra.Command, renderer *clioutput.Mutation
 	if quietFlag && !jsonFormat {
 		return nil
 	}
+	if !jsonFormat && len(options.Include) == 0 && len(options.Omit) == 0 {
+		return writeMemoryLinkDocument(cmd, []byte(graphHumanRow(graphPreviewConfig.GraphScopeURL, state.result.Link)+"\n"), state, false)
+	}
 	data, err := renderer.RenderSuccess(state.raw)
 	if err != nil {
 		return memoryLinkProblem(cmd, renderer, "output_error", err.Error(), 1, state)

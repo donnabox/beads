@@ -125,7 +125,7 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		if err != nil {
 			return nil, "", err
 		}
-		output, err := renderGraphIssueList(page, plan.notice, structured, quietFlag)
+		output, err := renderGraphIssueList(page, plan.notice, structured, quietFlag, s.ScopeURL())
 		return nil, output, err
 	}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 }
@@ -332,16 +332,7 @@ func renderGraphBeadList(page graphstore.BeadListPage, scope string, all bool, n
 			human.WriteString(notice + "\n")
 		}
 		for _, value := range page.Items {
-			switch record := value.(type) {
-			case graphstore.Record:
-				displayID := record.PublicID
-				if displayID == "" {
-					displayID = strings.TrimPrefix(record.ID, scope)
-				}
-				fmt.Fprintf(&human, "  %s  %s  %s\n", graphMemoryDisplayText(displayID), graphMemoryDisplayText(strings.TrimPrefix(record.Type, scope)), graphMemoryDisplayText(record.Properties.Title))
-			case graphstore.IssueRecord:
-				fmt.Fprintf(&human, "  %s  Issue   %s  P%d  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(string(record.Properties.Status)), record.Properties.Priority, graphMemoryDisplayText(record.Properties.Title))
-			}
+			fmt.Fprintln(&human, graphHumanRow(scope, value))
 		}
 		if page.HasMore {
 			if all {
@@ -361,7 +352,7 @@ func renderGraphBeadList(page graphstore.BeadListPage, scope string, all bool, n
 	return output.String(), nil
 }
 
-func renderGraphIssueList(page graphstore.IssueListPage, notice string, structured, quiet bool) (string, error) {
+func renderGraphIssueList(page graphstore.IssueListPage, notice string, structured, quiet bool, scope string) (string, error) {
 	var human strings.Builder
 	if !structured && !quiet {
 		fmt.Fprintf(&human, "Issues (%d; more: %t; graph preview)\n", len(page.Items), page.HasMore)
@@ -369,7 +360,7 @@ func renderGraphIssueList(page graphstore.IssueListPage, notice string, structur
 			human.WriteString(notice + "\n")
 		}
 		for _, item := range page.Items {
-			fmt.Fprintf(&human, "%q %q P%d %q\n", item.ID, item.Properties.Status, item.Properties.Priority, item.Properties.Title)
+			fmt.Fprintln(&human, graphHumanRow(scope, item))
 		}
 		if page.HasMore {
 			human.WriteString("More matching Issues exist; increase --limit or use --all within preview bounds.\n")
