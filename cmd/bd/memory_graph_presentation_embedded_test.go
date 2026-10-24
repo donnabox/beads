@@ -43,7 +43,7 @@ func TestMemoryCurrentGraphEmbeddedCapture(t *testing.T) {
 			}
 		}
 	})
-	if _, err := s.CreateIssue(ctx, "beads/work", publicops.CreateRequest{Actor: "bridge-author", Issue: &publicops.Issue{Title: "Native work", Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}}); err != nil {
+	if _, err := s.CreateIssue(ctx, "beads/work", publicops.CreateRequest{Actor: "bridge-author", ForceIDPrefix: true, Issue: &publicops.Issue{ID: "beads/work", Title: "Native work", Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}}); err != nil {
 		t.Fatal(err)
 	}
 	policy, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/rail", TypeURL: genericTestScope + "types/policy", Title: "Memory rail", Actor: "bridge-author"})

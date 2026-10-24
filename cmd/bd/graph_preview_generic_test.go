@@ -82,11 +82,12 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 		{name: "missing-view", args: []string{"beads/a"}},
 		{name: "wrong-view", flags: []string{"--view=issue"}, args: []string{"beads/a"}, code: 2},
 		{name: "missing-root", flags: []string{"--view=generic"}, code: 2},
-		{name: "link-root", flags: []string{"--view=generic"}, args: []string{"links/a"}, code: 2},
-		{name: "type-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "types/preview-memory"}, code: 2},
+		{name: "literal-link-looking-id", flags: []string{"--view=generic"}, args: []string{"links/a"}},
+		{name: "literal-type-looking-id", flags: []string{"--view=generic"}, args: []string{genericTestScope + "types/preview-memory"}},
 		{name: "foreign-root", flags: []string{"--view=generic"}, args: []string{"https://foreign.test/beads/a"}, code: 2},
 		{name: "version-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "beads/a?version=old"}, code: 2},
-		{name: "unsupported-root", flags: []string{"--view=generic"}, args: []string{"alias/a"}, code: 2},
+		{name: "literal-alias-looking-id", flags: []string{"--view=generic"}, args: []string{"alias/a"}},
+		{name: "malformed-root", flags: []string{"--view=generic"}, args: []string{"a//b"}, code: 2},
 		{name: "direction", flags: []string{"--view=generic", "--direction=sideways"}, args: []string{"beads/a"}, code: 2},
 		{name: "negative-depth", flags: []string{"--view=generic", "--depth=-1"}, args: []string{"beads/a"}, code: 2},
 		{name: "excess-depth", flags: []string{"--view=generic", "--depth=1001"}, args: []string{"beads/a"}, code: 2},
@@ -109,7 +110,10 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 				}
 				return
 			}
-			if err != nil || in.Root != genericTestScope+"beads/a" {
+			// Prefix-looking path segments are literal identity data; only the
+			// catalog can establish the selected Resource kind.
+			wantRoot := genericTestScope + strings.TrimPrefix(tc.args[0], genericTestScope)
+			if err != nil || in.Root != wantRoot {
 				t.Fatalf("root admission: %+v %v", in, err)
 			}
 			if tc.name == "defaults" && (in.Direction != "both" || in.Depth != 1000 || in.MaxNodes != 1000 || in.MaxLinks != 1000) {

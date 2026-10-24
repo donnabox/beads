@@ -137,11 +137,7 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 
 func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 	if len(args) == 1 {
-		resolved, err := graphPreviewResolveMemoryArgument(args[0])
-		if err != nil {
-			return err
-		}
-		ref, err := graphPreviewParseReference(resolved)
+		ref, err := graphPreviewParseReference(args[0])
 		if err != nil {
 			return graphPreviewReferenceFailure(err)
 		}
@@ -154,6 +150,9 @@ func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	// Public IDs are exact: selection resolves them from the checked snapshot.
+	// A separate allocation lookup would only repeat the same canonicalization
+	// and open storage twice. Syntax and bounds have already been validated.
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		snapshot, err := s.CurrentSnapshot(ctx)
 		if err != nil {

@@ -4,6 +4,7 @@ package graphstore
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -593,6 +594,84 @@ func TestMemoryCurrentFamilyCommonPublicIdentity(t *testing.T) {
 			if exact.ID != link.Link.ID || exact.Source != issue.ID || exact.Target != memory.ID {
 				t.Fatal("retained endpoint identity changed", exact)
 			}
+		})
+	}
+}
+
+// A valid wrong-Kind caller root is an input refusal, while a wrong-Kind node
+// reached through stored graph incidence still indicates an invalid capture.
+func TestMemoryCurrentFamilyRootKindTaxonomy(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			a, err := s.Create(ctx, CreateRequest{PublicID: "a", Title: "A"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			b, err := s.Create(ctx, CreateRequest{PublicID: "b", Title: "B"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "ab", TypeURL: s.ScopeURL() + "types/references", SourcePath: a.ID, TargetPath: b.ID, UnconditionalSource: true})
+			if err != nil {
+				t.Fatal(err)
+			}
+			req := currentFamilyRequest(s, "references", memoryquery.CurrentRoot{Path: "ab", Depth: 1})
+			got, err := s.ReadCurrentFamily(ctx, req)
+			assertCurrentFamilyError(t, got, err, graph.ErrValidation)
+			if errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("caller selection reported corrupt store: %v", err)
+			}
+			req.Roots[0].Path = "absent"
+			got, err = s.ReadCurrentFamily(ctx, req)
+			assertCurrentFamilyError(t, got, err, ErrNotFound)
+			req.Roots[0].Path = "a"
+			got, err = s.ReadCurrentFamily(ctx, req)
+			if err != nil || len(got.Graph.Nodes) != 2 || len(got.Graph.Links) != 1 {
+				t.Fatal(got, err)
+			}
+			err = s.withTx(ctx, false, func(tx *sql.Tx) error {
+				reader, err := s.newCurrentFamilyReader(ctx, tx, req)
+				if err != nil {
+					return err
+				}
+				_, err = reader.Current(ctx, "ab")
+				return err
+			})
+			if !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("internal wrong-Kind node: %v", err)
+			}
+			identity, err := s.ResolveAllocatedResourceIdentity(ctx, "ab")
+			if err != nil {
+				t.Fatal(err)
+			}
+			req.Roots[0].Path = "ab"
+			var revision string
+			if err := s.db.QueryRowContext(ctx, "SELECT revision FROM graph_preview_catalog WHERE path=?", identity.PrivatePath).Scan(&revision); err != nil {
+				t.Fatal(err)
+			}
+			for _, broken := range []struct{ column, invalid, valid string }{
+				{"resource_kind", "bead", "link"},
+				{"allocation_state", "broken", "live"},
+				{"revision", "not a token", revision},
+			} {
+				if _, err := s.db.ExecContext(ctx, "UPDATE graph_preview_catalog SET "+broken.column+"=? WHERE path=?", broken.invalid, identity.PrivatePath); err != nil {
+					t.Fatal(err)
+				}
+				got, err = s.ReadCurrentFamily(ctx, req)
+				assertCurrentFamilyError(t, got, err, ErrInvalidStore)
+				if errors.Is(err, graph.ErrValidation) {
+					t.Fatalf("corrupt %s hidden as caller refusal: %v", broken.column, err)
+				}
+				if _, err := s.db.ExecContext(ctx, "UPDATE graph_preview_catalog SET "+broken.column+"=? WHERE path=?", broken.valid, identity.PrivatePath); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: identity.PrivatePath, Actor: "taxonomy", Unconditional: true, UnconditionalSource: true}); err != nil {
+				t.Fatal(err)
+			}
+			got, err = s.ReadCurrentFamily(ctx, req)
+			assertCurrentFamilyError(t, got, err, ErrGone)
 		})
 	}
 }

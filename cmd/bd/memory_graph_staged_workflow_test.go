@@ -35,7 +35,7 @@ func TestMemoryConstraintReadCLIWorkflow(t *testing.T) {
 				}
 				return env.Data
 			}
-			result := decode(call("memory", "constraints", "recurrence/s", "--json"))
+			result := decode(call("memory", "constraints", "beads/recurrence/s", "--json"))
 			if len(result.Beads) != 3 || len(result.Links) != 3 || len(result.Traversal.Roots) != 1 || result.Traversal.Discovery != "explicit-subject-to-and-requires" {
 				t.Fatalf("staged selection: %+v", result.Traversal)
 			}
@@ -43,25 +43,25 @@ func TestMemoryConstraintReadCLIWorkflow(t *testing.T) {
 			if root.Depth != nil || result.Traversal.Direction != "staged" || root.Stages == nil || root.Stages.Requires.Depth != 1000 || len(root.Stages.SubjectTo) != 1 || len(root.Stages.Requires.Beads) != 3 || len(root.Stages.Requires.Links) != 2 || root.Stages.SubjectTo[0].Link != scope+"links/recurrence/sc" {
 				t.Fatalf("phase witnesses lost: %+v", root.Stages)
 			}
-			human := call("memory", "constraints", "recurrence/s")
+			human := call("memory", "constraints", "beads/recurrence/s")
 			if strings.Count(human, "beads/recurrence/s [types/policy]") != 2 || !strings.Contains(human, "(links/recurrence/sd)") || strings.Contains(human, "(links/recurrence/ce)") || !strings.Contains(human, "Discovery: explicit Subject To declarations and their Requires dependencies") {
 				t.Fatalf("phase recurrence/scope:\n%s", human)
 			}
-			human = call("memory", "constraints", "recurrence/s", "recurrence/c")
+			human = call("memory", "constraints", "beads/recurrence/s", "beads/recurrence/c")
 			if strings.Count(human, "Discovery: explicit Subject To declarations") != 1 || !strings.Contains(human, "beads/recurrence/s [types/policy]") || !strings.Contains(human, "beads/recurrence/c [types/specification]") {
 				t.Fatalf("multi-root scope attribution:\n%s", human)
 			}
-			direct := decode(call("memory", "subjects", "recurrence/c", "--json"))
+			direct := decode(call("memory", "subjects", "beads/recurrence/c", "--json"))
 			if len(direct.Beads) != 2 || len(direct.Links) != 1 || direct.Traversal.Discovery != "direct-incoming-subject-to" {
 				t.Fatalf("direct declaration scope: %+v", direct.Traversal)
 			}
-			human = call("memory", "subjects", "recurrence/c")
+			human = call("memory", "subjects", "beads/recurrence/c")
 			if !strings.Contains(human, "Discovery: direct incoming Subject To declarations only") || strings.Contains(human, "depth:") || strings.Contains(human, "(links/recurrence/cs)") {
 				t.Fatalf("direct scope display:\n%s", human)
 			}
 			for _, verb := range []string{"subjects", "constraints"} {
 				ctx, cancel := context.WithTimeout(t.Context(), time.Minute)
-				command := graphMemoryReadCommand(ctx, bd, work, home, "memory", verb, "recurrence/c", "--json", "--depth=2")
+				command := graphMemoryReadCommand(ctx, bd, work, home, "memory", verb, "beads/recurrence/c", "--json", "--depth=2")
 				var stdout, stderr bytes.Buffer
 				command.Stdout, command.Stderr = &stdout, &stderr
 				err := command.Run()

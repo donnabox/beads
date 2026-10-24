@@ -69,7 +69,7 @@ func (s *Store) ReadCurrentFamily(ctx context.Context, req CurrentFamilyRequest)
 			return fmt.Errorf("%w: current family read does not admit selected family", ErrCapabilityUnavailable)
 		}
 		for _, root := range req.Roots {
-			n, err := r.Current(ctx, root.Path)
+			n, err := r.current(ctx, root.Path, true)
 			if err != nil {
 				return err
 			}
@@ -200,6 +200,10 @@ func (r *currentFamilyReader) isConstraint(id string) bool {
 }
 
 func (r *currentFamilyReader) Current(ctx context.Context, path string) (memoryquery.CurrentNode, error) {
+	return r.current(ctx, path, false)
+}
+
+func (r *currentFamilyReader) current(ctx context.Context, path string, selectedRoot bool) (memoryquery.CurrentNode, error) {
 	if err := ctx.Err(); err != nil {
 		return memoryquery.CurrentNode{}, err
 	}
@@ -229,7 +233,15 @@ func (r *currentFamilyReader) Current(ctx context.Context, path string) (memoryq
 	if state == "deleted" {
 		return memoryquery.CurrentNode{}, ErrGone
 	}
-	if state != "live" || kind != "bead" || !authorityID.MatchString(version) {
+	if state != "live" || !authorityID.MatchString(version) {
+		return memoryquery.CurrentNode{}, fmt.Errorf("%w: unsupported current allocation", ErrInvalidStore)
+	}
+	// The identity resolver already validated kind/backing/state agreement.
+	// A caller may select a valid Link, but graph incidence must resolve Beads.
+	if kind != "bead" {
+		if selectedRoot {
+			return memoryquery.CurrentNode{}, fmt.Errorf("%w: current family root must be a Bead", graph.ErrValidation)
+		}
 		return memoryquery.CurrentNode{}, fmt.Errorf("%w: unsupported current allocation", ErrInvalidStore)
 	}
 	if !((backing == "generic" && !key.Valid && r.catalog.memoryType(typ)) || (backing == "issue" && key.Valid && key.String != "" && typ == IssueTypeURL(r.store.ScopeURL()))) {
