@@ -122,6 +122,9 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 // imports use createPreparedMemoryInTx and its accepted record. Resolve any
 // needed private locator from the transaction catalog after allocation.
 func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties, snapshot []byte) error {
+	if err := s.requireAssessmentAuthoring(r.Type); err != nil {
+		return err
+	}
 	if req.PublicID != "" {
 		return fmt.Errorf("%w: public-ID import requires returned allocation", ErrCapabilityUnavailable)
 	}
@@ -199,11 +202,8 @@ func (s *Store) createPreparedMemoryInTx(ctx context.Context, tx *sql.Tx, req Cr
 	if err := s.afterStage("retained"); err != nil {
 		return Record{}, err
 	}
-	// Public IDs are untruncated data. Refuse oversized aggregate growth inside
-	// this write transaction rather than committing an unreadable allocation.
-	if err := checkCurrentReadBytes(ctx, tx); err != nil {
-		return Record{}, err
-	}
+	// Writes retain their existing request and Type budgets. Complete readers
+	// enforce the complete-current acquisition ceiling independently.
 	return r, nil
 }
 

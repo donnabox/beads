@@ -240,6 +240,7 @@ func TestHistoricalLinkCumulativeCurrentSourceAndPinBudget(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
 			ctx, _, s, owner, _, initial := disclosureFixture(t, engine)
+			ctx = currentReadBudgetContext(t, ctx)
 			first, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/out", Properties: map[string]any{"note": strings.Repeat("h", 2<<20)}, ExpectedRevision: initial.Link.Revision, ExpectedSourceRevision: owner.Revision})
 			if err != nil {
 				t.Fatal(err)
