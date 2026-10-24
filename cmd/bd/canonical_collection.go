@@ -64,11 +64,12 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 // cursor authority. Do not construct an ephemeral pager and publish dead cursors,
 // or set native next:null after discarding undisplayed rows.
 type canonicalCollectionPlan struct {
-	selection *graphread.Selection
-	options   clioutput.Options
-	paging    clioutput.Paging
-	links     bool
-	jsonl     bool
+	selection   *graphread.Selection
+	linkRequest graphstore.LinkCollectionRequest
+	options     clioutput.Options
+	paging      clioutput.Paging
+	links       bool
+	jsonl       bool
 }
 
 type canonicalCollectionFailure struct {
@@ -150,35 +151,23 @@ func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutpu
 	collection := "beads"
 	if links {
 		collection = "links"
-		for flag, key := range map[string]string{"from": "source", "to": "target", "incident-to": "endpoint"} {
-			if !cmd.Flags().Changed(flag) {
-				continue
-			}
-			value, _ := cmd.Flags().GetString(flag)
-			if value == "" {
-				return plan, fmt.Errorf("--%s requires a Bead identity", flag)
-			}
-			// Local endpoint IDs retain their exact public spelling; the common
-			// selection boundary supplies Scope without inserting a kind segment.
-			parameters.Set(key, value)
+		plan.linkRequest, err = graphPreviewLinkCollectionRequest(cmd, cmd.Flags().Args())
+		if err != nil {
+			return plan, err
 		}
-		direction, _ := cmd.Flags().GetString("direction")
-		if direction != "in" && direction != "out" && direction != "both" {
-			return plan, fmt.Errorf("direction must be in, out, or both")
-		}
-		if cmd.Flags().Changed("direction") && !parameters.Has("endpoint") {
-			return plan, fmt.Errorf("--direction requires --incident-to")
-		}
-		if direction != "both" {
-			key := "source"
-			if direction == "in" {
-				key = "target"
+		// The BDP selector has no pair-union parameter. For a two-Bead
+		// bidirectional CLI selection, capture the complete typed inventory
+		// and apply the shared Link predicate before paging or output.
+		if plan.linkRequest.PairDirection != "both" {
+			source, target := plan.linkRequest.SourceURL, plan.linkRequest.TargetURL
+			if plan.linkRequest.PairDirection == "in" {
+				source, target = target, source
 			}
-			if parameters.Has(key) {
-				return plan, fmt.Errorf("--direction conflicts with explicit --%s", key)
+			for key, uri := range map[string]string{"source": source, "target": target, "endpoint": plan.linkRequest.IncidentURL} {
+				if uri != "" {
+					parameters.Set(key, uri)
+				}
 			}
-			parameters.Set(key, parameters.Get("endpoint"))
-			parameters.Del("endpoint")
 		}
 	}
 	plan.selection, err = graphread.CompileCollection(graphPreviewConfig.GraphScopeURL, collection, parameters, graphread.SelectorLimits{Bytes: 16384, Depth: 256, Nodes: 2048})
@@ -211,17 +200,17 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		format = options.Formats[0]
 	}
 	failure := canonicalCollectionFailure{renderer: renderer, jsonl: format == "jsonl"}
-	if len(cmd.Flags().Args()) != 0 {
+	if len(cmd.Flags().Args()) != 0 && !links {
 		return canonicalFailure(cmd, failure, "invalid_selector", "canonical collection listing does not accept positional arguments; use selection flags", 2)
 	}
 	allowed := []string{"type", "exact-type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
 	if links {
-		allowed = append(allowed, "from", "to", "incident-to", "direction")
+		allowed = append(allowed, "from", "to", "incident-to", "direction", "all-revisions")
 	}
 	if err := canonicalGraphFlags(cmd, failure, allowed...); err != nil {
 		return err
 	}
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "all-revisions", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	plan, err := canonicalCollectionRequest(cmd, links, options)
@@ -232,10 +221,50 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	return canonicalReadWithGraphStore(cmd, failure, func(ctx context.Context, store *graphstore.Store) (any, error) {
-		return graphread.New(store).Select(ctx, plan.selection)
+		inventory, err := graphread.New(store).Inventory(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return selectCanonicalCollection(plan, inventory)
 	}, func(value any) error {
 		return renderCanonicalCollection(cmd, plan, value.([]json.RawMessage), failure)
 	})
+}
+
+func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread.Inventory) ([]json.RawMessage, error) {
+	records, err := plan.selection.Select(inventory)
+	if err != nil || !plan.links {
+		return records, err
+	}
+	request := plan.linkRequest
+	current := make(map[string]string)
+	for _, bead := range inventory.Beads {
+		for _, selected := range []struct{ path, url string }{
+			{request.SourcePath, request.SourceURL}, {request.TargetPath, request.TargetURL}, {request.IncidentPath, request.IncidentURL},
+		} {
+			if selected.path != "" && bead.ID == selected.url {
+				current[selected.path] = bead.Revision
+			}
+		}
+	}
+	for _, path := range []string{request.SourcePath, request.TargetPath, request.IncidentPath} {
+		if path != "" && current[path] == "" {
+			return nil, graphstore.ErrNotFound
+		}
+	}
+	filtered := make([]json.RawMessage, 0, len(records))
+	for _, raw := range records {
+		var link bdpwire.LinkRecord
+		if err := bdpwire.Unmarshal(raw, &link); err != nil {
+			return nil, fmt.Errorf("%w: current Link collection item: %v", graphstore.ErrInvalidStore, err)
+		}
+		captured := graphstore.LinkRecord{Source: link.Source.URI, Target: link.Target.URI,
+			SourceRevision: link.Source.Revision, TargetRevision: link.Target.Revision}
+		if graphstore.LinkCollectionMatches(captured, request, current) {
+			filtered = append(filtered, raw)
+		}
+	}
+	return filtered, nil
 }
 
 func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan, records []json.RawMessage, failure canonicalCollectionFailure) error {

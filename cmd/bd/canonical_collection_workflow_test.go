@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -114,6 +115,94 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 						}
 					}
 				}
+			}
+		})
+	}
+}
+
+// One installed population drives legacy list/count and canonical output.
+// It catches a count/list drift that pure endpoint predicate tests cannot.
+func TestGraphLinkCollectionPositionalRevisionWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/link-collection-selection/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			first := graphMixedResult[graphstore.Record](t, call("remember", "A", "--id", "a", "--json"))
+			call("remember", "B", "--id", "b", "--json")
+			create := func(id, from, to string) {
+				t.Helper()
+				call("link", "create", from, to, "--type", "types/references", "--id", id, "--json")
+			}
+			create("floating", "a", "b")
+			create("old", "a@current", "b")
+			call("update", "a", "--properties", `{"body":"A revised"}`, "--json")
+			current := graphMixedResult[graphstore.Record](t, call("show", "a", "--json"))
+			if current.Revision == first.Revision {
+				t.Fatal("source revision did not advance")
+			}
+			create("current", "a@current", "b")
+			create("reverse", "b", "a")
+			list := func(args ...string) []graphstore.LinkRecord {
+				t.Helper()
+				return graphMixedResult[[]graphstore.LinkRecord](t, call(append([]string{"link", "list"}, append(args, "--json")...)...))
+			}
+			count := func(args ...string) string {
+				t.Helper()
+				return strings.TrimSpace(call(append([]string{"link", "count"}, args...)...))
+			}
+			for _, tc := range []struct {
+				name string
+				args []string
+				want int
+			}{
+				{"all current", nil, 4},
+				{"bare incident", []string{"a"}, 4},
+				{"current incident", []string{"a@current"}, 3},
+				{"stable ordinal", []string{"a@1"}, 1},
+				{"exact old token", []string{"a@=" + first.Revision}, 1},
+				{"all revisions still current Links", []string{"a@1", "--all-revisions"}, 4},
+				{"flag historical source", []string{"--from", "a@1"}, 1},
+				{"flag current outgoing", []string{"--incident-to", "a@current", "--direction", "out"}, 2},
+				{"flag current incoming", []string{"--to", "a@current"}, 1},
+				{"out pair", []string{"a", "b"}, 3},
+				{"in pair", []string{"a", "b", "--direction", "in"}, 1},
+				{"both pair", []string{"a", "b", "--direction", "both"}, 4},
+				{"self pair empty", []string{"a", "a", "--direction", "both"}, 0},
+				{"filtered family and nominal", []string{"a", "--type", "references", "--exact-type", "types/references"}, 4},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					if got := list(tc.args...); len(got) != tc.want {
+						t.Fatalf("list returned %d want %d: %+v", len(got), tc.want, got)
+					}
+					if got := count(tc.args...); got != fmt.Sprint(tc.want) {
+						t.Fatalf("count=%q want %d", got, tc.want)
+					}
+				})
+			}
+			var canonical bdpwire.LinkCollection
+			if raw := call("link", "list", "a@current", "--output-format", "json", "--unpaged", "--omit", "envelope"); bdpwire.Unmarshal([]byte(raw), &canonical) != nil || len(canonical.Items) != 3 {
+				t.Fatalf("canonical Link list lost pin applicability: %s", raw)
+			}
+			for _, refusal := range []struct {
+				code string
+				args []string
+			}{
+				{"invalid_selector", []string{"link", "list", "a", "--from", "b"}},
+				{"invalid_selector", []string{"link", "count", "a", "b", "--incident-to", "a"}},
+				{"invalid_selector", []string{"link", "list", "--direction", "in"}},
+				{"revision_unknown", []string{"link", "list", "a@=no-such-revision"}},
+			} {
+				graphMemoryReadRaw(t, bd, work, home, "", refusal.code, refusal.args...)
+			}
+			call("remember", "literal", "--id", "beads/a", "--json")
+			if got := list("beads/a"); len(got) != 0 {
+				t.Fatalf("path-looking public ID selected a different Bead's Links: %+v", got)
 			}
 		})
 	}
