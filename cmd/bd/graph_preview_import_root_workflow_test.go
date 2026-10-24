@@ -68,7 +68,7 @@ func TestGraphPreviewLegacyImportRootInstalledWorkflow(t *testing.T) {
 				t.Fatalf("empty legacy Memory changed: %+v", memory)
 			}
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", result.IDs["old-b"], "--format", "graph-json"))
-			retained := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", issue.ID, "--version", issue.Revision))
+			retained := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", issue.ID, "--revision", issue.Revision))
 			if issue.Properties.ID != "foo/bar/old-b" || !reflect.DeepEqual(issue.Properties, retained.Properties) || !reflect.DeepEqual(issue.Owned, retained.Owned) {
 				t.Fatalf("rooted retained Issue mismatch: %+v %+v", issue, retained)
 			}

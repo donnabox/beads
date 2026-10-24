@@ -206,7 +206,7 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 						t.Fatalf("missing generated dependency attribution: %+v", link.Attribution)
 					}
 				}
-				retained := graphMixedResult[graphstore.LinkRecord](t, call("", "link", "show", link.ID, "--version", link.Revision))
+				retained := graphMixedResult[graphstore.LinkRecord](t, call("", "link", "show", link.ID, "--revision", link.Revision))
 				if !reflect.DeepEqual(retained, link) {
 					t.Fatalf("initial retained dependency differs: %+v / %+v", retained, link)
 				}
