@@ -22,22 +22,35 @@ func TestAllocatedResourceIdentityUsesCatalogKind(t *testing.T) {
 			}
 			path := strings.TrimPrefix(memory.ID, store.ScopeURL())
 			got, err := store.ResolveAllocatedResourceIdentity(ctx, "links/a-memory")
-			want := AllocatedResourceIdentity{PublicID: "links/a-memory", Path: path, Kind: graph.KindBead, State: "live"}
+			want := AllocatedResourceIdentity{PublicID: "links/a-memory", PrivatePath: path, Kind: graph.KindBead, State: "live"}
 			if err != nil || got != want {
 				t.Fatalf("prefix selected kind: %+v %v", got, err)
 			}
-			byURI, err := store.ResolveCanonicalResourceIdentity(ctx, store.ScopeURL()+"links/a-memory")
+			publicURI, err := graph.CanonicalPublicResourceURL(store.ScopeURL(), want.PublicID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			byURI, err := store.ResolveCanonicalPublicResourceIdentity(ctx, publicURI)
 			if err != nil || byURI != want {
 				t.Fatalf("canonical public identity did not select allocation: %+v %v", byURI, err)
+			}
+			// Existing records still expose the old private-locator projection.
+			// This preparatory resolver must not silently accept it as a public ID.
+			if memory.ID == publicURI {
+				t.Fatal("fixture no longer exercises projection mismatch")
+			}
+			if _, err := store.ResolveCanonicalPublicResourceIdentity(ctx, memory.ID); !errors.Is(err, ErrNotFound) {
+				t.Fatalf("old private record URI was relabeled as public identity: %v", err)
 			}
 			issueRequest := plainIssue("Catalog Issue kind")
 			issueRequest.Issue.ID = "types/an-issue"
 			issueRequest.ForceIDPrefix = true
-			if _, err := store.CreateIssue(ctx, "beads/private-issue", issueRequest); err != nil {
+			issueCreated, err := store.CreateIssue(ctx, "beads/private-issue", issueRequest)
+			if err != nil {
 				t.Fatal(err)
 			}
 			issueIdentity, err := store.ResolveAllocatedResourceIdentity(ctx, "types/an-issue")
-			if err != nil || issueIdentity.Kind != graph.KindBead || issueIdentity.Path != "beads/private-issue" || issueIdentity.PublicID != "types/an-issue" {
+			if err != nil || issueIdentity.Kind != graph.KindBead || issueIdentity.PrivatePath != "beads/private-issue" || issueIdentity.PublicID != "types/an-issue" {
 				t.Fatalf("native Issue public identity: %+v %v", issueIdentity, err)
 			}
 			link, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/reference", TypeURL: store.ScopeURL() + "types/references", SourcePath: path, TargetPath: "beads/private-issue"})
@@ -45,11 +58,26 @@ func TestAllocatedResourceIdentityUsesCatalogKind(t *testing.T) {
 				t.Fatal(err)
 			}
 			linkIdentity, err := store.ResolveAllocatedResourceIdentity(ctx, "links/reference")
-			if err != nil || linkIdentity.Kind != graph.KindLink || store.ScopeURL()+linkIdentity.Path != link.Link.ID {
+			if err != nil || linkIdentity.Kind != graph.KindLink || store.ScopeURL()+linkIdentity.PrivatePath != link.Link.ID {
 				t.Fatalf("Link public identity: %+v %v", linkIdentity, err)
 			}
-			if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: linkIdentity.Path, ExpectedRevision: link.Link.Revision}); err != nil {
+			if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: linkIdentity.PrivatePath, ExpectedRevision: link.Link.Revision}); err != nil {
 				t.Fatal(err)
+			}
+			deletedLink, err := store.ResolveAllocatedResourceIdentity(ctx, "links/reference")
+			if err != nil || deletedLink.State != "deleted" || deletedLink.Kind != graph.KindLink || deletedLink.PrivatePath != linkIdentity.PrivatePath {
+				t.Fatalf("deleted Link identity: %+v %v", deletedLink, err)
+			}
+			if _, err := store.DeleteIssue(ctx, IssueDeleteRequest{Path: issueIdentity.PrivatePath, ExpectedRevision: issueCreated.Revision}); err != nil {
+				t.Fatal(err)
+			}
+			deletedIssue, err := store.ResolveAllocatedResourceIdentity(ctx, "types/an-issue")
+			if err != nil || deletedIssue.State != "deleted" || deletedIssue.Kind != graph.KindBead || deletedIssue.PrivatePath != issueIdentity.PrivatePath {
+				t.Fatalf("deleted Issue identity: %+v %v", deletedIssue, err)
+			}
+			reverse, err := store.AllocatedResourceIdentityForPath(ctx, path)
+			if err != nil || reverse != want {
+				t.Fatalf("private locator lost public identity: %+v %v", reverse, err)
 			}
 			encoded, err := json.Marshal(got)
 			if err != nil || string(encoded) != "{}" {
@@ -63,8 +91,12 @@ func TestAllocatedResourceIdentityUsesCatalogKind(t *testing.T) {
 			if err != nil || got != want {
 				t.Fatalf("deleted identity was lost: %+v %v", got, err)
 			}
+			reverse, err = store.AllocatedResourceIdentityForPath(ctx, path)
+			if err != nil || reverse != want {
+				t.Fatalf("deleted reverse identity: %+v %v", reverse, err)
+			}
 			before := workflowState(t, ctx, store)
-			if _, err := store.ResolveCanonicalResourceIdentity(ctx, store.ScopeURL()+"a//b"); err == nil {
+			if _, err := store.ResolveCanonicalPublicResourceIdentity(ctx, store.ScopeURL()+"a//b"); err == nil {
 				t.Fatal("canonical helper accepted unselected legacy-key mapping")
 			}
 			if !reflect.DeepEqual(before, workflowState(t, ctx, store)) {

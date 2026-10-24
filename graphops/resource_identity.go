@@ -15,17 +15,27 @@ func ValidateCanonicalResourceID(id string) error {
 	if strings.ContainsAny(id, "?#") {
 		return fmt.Errorf("%w: local Resource ID must not contain query or fragment", ErrValidation)
 	}
-	for _, segment := range strings.Split(id, "/") {
+	// Walk segments without allocating a slice proportional to their count.
+	// Operational request budgets belong to callers, not a new identity cap.
+	for rest := id; ; {
+		segment, tail, more := strings.Cut(rest, "/")
 		if err := ValidateCanonicalSegment(segment); err != nil {
-			return fmt.Errorf("%w: local Resource ID %q: %s", ErrValidation, id, reason(err))
+			return fmt.Errorf("%w: local Resource ID: %s", ErrValidation, reason(err))
 		}
+		if !more {
+			break
+		}
+		rest = tail
 	}
 	return nil
 }
 
-// CanonicalResourceURL composes a canonical Scope and already-canonical local
+// CanonicalPublicResourceURL composes a canonical Scope and already-canonical local
 // Resource ID. It never inserts a kind prefix, cleans a path, or encodes data.
-func CanonicalResourceURL(scope, id string) (string, error) {
+// This is the intended public identity boundary, not the currently emitted
+// rooted Record.ID projection. Callers must not relabel existing records or
+// combine this URL with references from that older projection.
+func CanonicalPublicResourceURL(scope, id string) (string, error) {
 	if err := ValidateScopeURL(scope); err != nil {
 		return "", err
 	}
@@ -35,9 +45,9 @@ func CanonicalResourceURL(scope, id string) (string, error) {
 	return scope + id, nil
 }
 
-// ScopeLocalResourceID is the exact inverse of CanonicalResourceURL for this
+// ScopeLocalPublicResourceID is the exact inverse of CanonicalPublicResourceURL for this
 // Scope. It does not derive kind from a prefix or percent-decode the public ID.
-func ScopeLocalResourceID(scope, uri string) (string, error) {
+func ScopeLocalPublicResourceID(scope, uri string) (string, error) {
 	if err := ValidateScopeURL(scope); err != nil {
 		return "", err
 	}
