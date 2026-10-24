@@ -20,10 +20,10 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Authentication work", "--graph-path", "beads/work", "--priority", "1", "--labels", "backend", "--metadata", `{"team":"backend"}`))
-			otherIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other work", "--graph-path", "beads/other", "--priority", "2"))
+			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Authentication work", "--id", "beads/work", "--force", "--priority", "1", "--labels", "backend", "--metadata", `{"team":"backend"}`))
+			otherIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other work", "--id", "beads/other", "--force", "--priority", "2"))
 			call("close", otherIssue.ID)
-			call("create", "Child work", "--graph-path", "beads/work.child", "--priority", "3", "--type", "bug")
+			call("create", "Child work", "--id", "beads/work.child", "--force", "--priority", "3", "--type", "bug")
 
 			var found []*types.IssueWithCounts
 			if out := call("search", "Authentication"); json.Unmarshal([]byte(out), &found) != nil || len(found) != 1 || found[0].ID != "beads/work" || found[0].Title != "Authentication work" {
@@ -129,7 +129,7 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 			if out := call("count", "--parent", custom.Properties.ID); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
 				t.Fatalf("Memory path shorthand displaced native parent count: %s", out)
 			}
-			if out := call("count", "--id", scope+"beads/custom-path"); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+			if out := call("count", "--id", custom.ID); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
 				t.Fatalf("explicit count path after native-ID collision: %s", out)
 			}
 		})

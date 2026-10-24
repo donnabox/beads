@@ -40,13 +40,13 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 			}
 			uri := func(id string) string { return scope + "beads/" + id }
 			call(initArgs...)
-			call("create", "Blocking prerequisite", "--graph-path", "beads/blocker", "--priority", "3")
-			call("create", "Next work", "--graph-path", "beads/dependent", "--priority", "0")
-			call("create", "Spare work", "--graph-path", "beads/spare", "--priority", "1")
+			call("create", "Blocking prerequisite", "--id", "beads/blocker", "--force", "--priority", "3")
+			call("create", "Next work", "--id", "beads/dependent", "--force", "--priority", "0")
+			call("create", "Spare work", "--id", "beads/spare", "--force", "--priority", "1")
 			call("dep", "add", uri("dependent"), uri("blocker"))
 			dependentBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("dependent")))
 			spareBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("spare")))
-			blockerBefore := call("versions", "blocker")
+			blockerBefore := call("versions", "beads/blocker")
 			type claimResult struct {
 				Closed  []graphstore.IssueRecord `json:"closed"`
 				Claimed graphstore.IssueRecord   `json:"claimed"`
@@ -60,20 +60,20 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				first.Claimed.Revision == dependentBefore.Revision {
 				t.Fatalf("close did not atomically claim newly ready Issue: %+v", first)
 			}
-			if call("versions", "blocker") == blockerBefore {
+			if call("versions", "beads/blocker") == blockerBefore {
 				t.Fatal("close did not retain the native Issue successor")
 			}
-			closedVersions, dependentVersions := call("versions", "blocker"), call("versions", "dependent")
+			closedVersions, dependentVersions := call("versions", "beads/blocker"), call("versions", "beads/dependent")
 			if retry := graphMixedResult[[]graphstore.IssueRecord](t, call("close", uri("blocker"), "--claim-next", "--reason", "Ignored")); len(retry) != 1 || !reflect.DeepEqual(retry[0], first.Closed[0]) {
 				t.Fatalf("already-closed retry changed Issue or claimed work: %+v", retry)
 			}
-			if call("versions", "blocker") != closedVersions || call("versions", "dependent") != dependentVersions ||
+			if call("versions", "beads/blocker") != closedVersions || call("versions", "beads/dependent") != dependentVersions ||
 				!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("spare"))), spareBefore) {
 				t.Fatal("no-op retry minted a version or claimed spare work")
 			}
-			call("create", "Higher priority spare", "--graph-path", "beads/next", "--priority", "0")
+			call("create", "Higher priority spare", "--id", "beads/next", "--force", "--priority", "0")
 			nextBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("next")))
-			spareVersions, nextVersions := call("versions", "spare"), call("versions", "next")
+			spareVersions, nextVersions := call("versions", "beads/spare"), call("versions", "beads/next")
 			missingClose := func() {
 				t.Helper()
 				ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
@@ -89,7 +89,7 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 			}
 			for i := 0; i < 2; i++ {
 				missingClose()
-				if call("versions", "spare") != spareVersions || call("versions", "next") != nextVersions ||
+				if call("versions", "beads/spare") != spareVersions || call("versions", "beads/next") != nextVersions ||
 					!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("spare"))), spareBefore) ||
 					!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("next"))), nextBefore) {
 					t.Fatal("missing close selector changed an Issue or claimed the next one")
@@ -99,7 +99,7 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 			if len(landed.Closed) != 1 || landed.Closed[0].ID != uri("spare") || landed.Claimed.ID != uri("next") || landed.Claimed.Revision == nextBefore.Revision {
 				t.Fatalf("valid close did not claim next work after refused batch: %+v", landed)
 			}
-			call("create", "Last unassigned work", "--graph-path", "beads/terminal")
+			call("create", "Last unassigned work", "--id", "beads/terminal", "--force")
 			nothingReady := graphMixedResult[[]graphstore.IssueRecord](t, call("close", uri("terminal"), "--claim-next"))
 			if len(nothingReady) != 1 || nothingReady[0].Properties.Status != types.StatusClosed {
 				t.Fatalf("no-ready close did not commit without a claim: %+v", nothingReady)
