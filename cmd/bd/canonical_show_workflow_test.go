@@ -23,6 +23,7 @@ import (
 var updateCanonicalShowCorpus = flag.Bool("canonical-show-update", false, "regenerate canonical show corpus from real CLI output")
 
 func TestCanonicalShowWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -53,7 +54,6 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			if err := json.Unmarshal(legacy("link", "beads/plan", "beads/work", "--type", "types/subject-to", "--id", "links/note", "--properties", `{"note":"unchanged"}`), &receipt); err != nil {
 				t.Fatal(err)
 			}
-			linkPath := strings.TrimPrefix(receipt.Link.ID, scope)
 			var linked graphstore.Record
 			if err := json.Unmarshal(legacy("show", scope+"beads/plan"), &linked); err != nil || len(linked.Owned) != 1 {
 				t.Fatalf("legacy owned result changed: %+v %v", linked, err)
@@ -89,9 +89,9 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			canonicalShowGolden(t, "link", linkOutput)
 			link := decode(linkOutput)
 			equalJSON(link, decode(call("show", receipt.Link.ID, "--output-format=json")))
-			equalJSON(link, decode(call("show", "note", "--output-format=json")))
-			equalJSON(link, decode(call("link", "show", "note", "--output-format=json")))
-			equalJSON(legacy("show", receipt.Link.ID), legacy("link", "show", "note"))
+			equalJSON(link, decode(call("show", "links/note", "--output-format=json")))
+			equalJSON(link, decode(call("link", "show", "links/note", "--output-format=json")))
+			equalJSON(legacy("show", receipt.Link.ID), legacy("link", "show", "links/note"))
 			// Compare public CLI payloads to the real protocol projector, with store
 			// lifetime entirely outside child processes.
 			cfg, err := configfile.Load(filepath.Join(work, ".beads"))
@@ -110,7 +110,7 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			for _, v := range []struct {
 				path string
 				got  []byte
-			}{{"beads/plan", bead}, {linkPath, link}} {
+			}{{initial.ID, bead}, {receipt.Link.ID, link}} {
 				expected, err := reader.Resource(ctx, v.path)
 				if err != nil {
 					t.Fatal(err)

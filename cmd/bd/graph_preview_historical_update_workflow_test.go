@@ -57,6 +57,7 @@ func TestGraphPreviewHistoricalUpdateWorkflow(t *testing.T) {
 }
 
 func TestGraphPreviewHistoricalLinkWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -79,9 +80,14 @@ func TestGraphPreviewHistoricalLinkWorkflow(t *testing.T) {
 			}
 			deleted := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "historical", "--force", "--if-revision", restored.Link.Revision))
 			humanDeleted := graphPolicyCLI(t, bd, work, home, nil, "", "link", "versions", "historical")
-			if !strings.Contains(humanDeleted, "This Link has been removed") || !strings.Contains(humanDeleted, "deletion revision") || strings.Contains(humanDeleted, "did not create a Link version") {
+			if !strings.Contains(humanDeleted, "This Link has been removed") || !strings.Contains(humanDeleted, "(deleted; not a live snapshot)") || !strings.Contains(humanDeleted, "  SEQ  WHEN") || strings.Contains(humanDeleted, deleted.Link.Revision) || strings.Contains(humanDeleted, "did not create a Link version") {
 				t.Fatalf("contradictory deleted human history: %s", humanDeleted)
 			}
+			longDeleted := graphPolicyCLI(t, bd, work, home, nil, "", "link", "versions", "historical", "--long")
+			if !strings.Contains(longDeleted, "deletion revision: "+deleted.Link.Revision) {
+				t.Fatalf("long history lost exact terminal token: %s", longDeleted)
+			}
+
 			type linkHistory struct {
 				CurrentState *graphstore.ResourceTerminalState `json:"currentState"`
 				Terminal     []map[string]any                  `json:"terminal_versions"`
@@ -160,6 +166,7 @@ func TestGraphPreviewHistoricalDependencyLinkWorkflow(t *testing.T) {
 }
 
 func TestGraphPreviewHistoricalRecoveryWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -170,7 +177,7 @@ func TestGraphPreviewHistoricalRecoveryWorkflow(t *testing.T) {
 			}
 			first := graphMixedResult[graphstore.Record](t, call("remember", "first", "--id", "beads/recover"))
 			last := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/recover", "--properties", `{"body":"last"}`))
-			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "recover", "--force", "--if-revision", last.Memory.Revision))
+			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", first.ID, "--force", "--if-revision", last.Memory.Revision))
 			if deleted.Terminal == nil || deleted.Terminal.Revision == last.Memory.Revision {
 				t.Fatalf("missing actual D: %+v", deleted)
 			}
@@ -179,7 +186,7 @@ func TestGraphPreviewHistoricalRecoveryWorkflow(t *testing.T) {
 				Terminal     []map[string]any                `json:"terminal_versions"`
 				Versions     []map[string]any                `json:"versions"`
 			}
-			history := graphMixedResult[historyResult](t, call("versions", "recover"))
+			history := graphMixedResult[historyResult](t, call("versions", first.ID))
 			if !reflect.DeepEqual(history.CurrentState, deleted.Terminal) || len(history.Terminal) != 1 || history.Terminal[0]["version"] != deleted.Terminal.Revision {
 				t.Fatalf("terminal carrier: %+v", history)
 			}

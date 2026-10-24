@@ -14,6 +14,7 @@ import (
 )
 
 func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -29,7 +30,11 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 				if created.ID != scope+key || created.Properties.Title != memoryapi.TitleFromBody(body) || created.Properties.Body != body {
 					t.Fatal("creation changed title/body")
 				}
-				out, stderr, exit := graphGenerationRun(t, bd, work, home, "recall", key)
+				selector := key
+				if strings.Contains(key, "@") {
+					selector = created.ID // A canonical URL escapes a literal @ identity.
+				}
+				out, stderr, exit := graphGenerationRun(t, bd, work, home, "recall", selector)
 				if exit != 0 || out != body+"\n" {
 					t.Fatalf("recall %q: %q %s exit%d", key, out, stderr, exit)
 				}
@@ -37,7 +42,7 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 				if edited.Memory.ID != created.ID || edited.Memory.Properties.Title != created.Properties.Title {
 					t.Fatal("overwrite changed identity/title")
 				}
-				shown := graphMixedResult[graphstore.Record](t, call("show", key, "--format", "graph-json"))
+				shown := graphMixedResult[graphstore.Record](t, call("show", selector, "--format", "graph-json"))
 				if shown.ID != created.ID || shown.Properties.Body != "Different body" {
 					t.Fatal("returned key did not select same Memory")
 				}
@@ -55,16 +60,16 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 					t.Fatalf("summary did not return exact ID %q: %+v", key, summary)
 				}
 				graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "remember", "Refused", "--id", key, "--key", key, "--json")
-				after := graphMixedResult[graphstore.Record](t, call("show", key, "--format", "graph-json"))
+				after := graphMixedResult[graphstore.Record](t, call("show", selector, "--format", "graph-json"))
 				if after.Revision != shown.Revision {
 					t.Fatal("conflicting flags changed Memory")
 				}
-				removed := graphMixedResult[graphstore.MemoryDeleteResult](t, call("forget", key, "--if-revision", shown.Revision))
+				removed := graphMixedResult[graphstore.MemoryDeleteResult](t, call("forget", selector, "--if-revision", shown.Revision))
 				if removed.Terminal == nil {
 					t.Fatal("forget omitted terminal revision")
 				}
 				graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "No auto recovery", "--key", key, "--json")
-				restored := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", key, "--from-revision", created.Revision, "--if-revision", removed.Terminal.Revision))
+				restored := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", selector, "--from-revision", created.Revision, "--if-revision", removed.Terminal.Revision))
 				if restored.Memory.ID != created.ID || restored.Memory.Properties.Body != body {
 					t.Fatal("restore changed identity or source content")
 				}
@@ -72,7 +77,7 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 			const sourceKey, targetKey = "source/%E6%BA%90/@literal", "target-literal"
 			source := graphMixedResult[graphstore.Record](t, call("remember", "Source body", "--id", sourceKey))
 			target := graphMixedResult[graphstore.Record](t, call("remember", "Target body", "--id", targetKey))
-			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", sourceKey, "--to", targetKey, "--type", "types/references", "--id", "literal-endpoints"))
+			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", source.ID, "--to", target.ID, "--type", "types/references", "--id", "literal-endpoints"))
 			if linked.Link.Source != source.ID || linked.Link.Target != target.ID {
 				t.Fatal("literal public endpoints selected different allocations")
 			}
