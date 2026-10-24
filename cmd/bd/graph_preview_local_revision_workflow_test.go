@@ -36,8 +36,13 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 				t.Fatalf("generated Link/full pin: %+v", linked.Link)
 			}
 			call("update", twoID, "--properties", `{"body":"Changed"}`)
+			graphMemoryReadRaw(t, bd, work, home, "", "", "recall", twoID+"@1")
+			graphMemoryReadRaw(t, bd, work, home, "", "", "recall", two.ID, "--revision", two.Revision)
+			graphMemoryReadRaw(t, bd, work, home, "Changed", "", "recall", twoID+"@current")
+			graphMemoryReadRaw(t, bd, work, home, "", "invalid_selector", "recall", twoID+"@1", "--revision", two.Revision)
+			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "recall", two.ID, "--revision", "current")
 			byNumber := call("show", twoID+"@1")
-			if byNumber != call("show", twoID+"@="+two.Revision) || byNumber != call("show", two.ID, "--version", two.Revision) || byNumber == call("show", twoID+"@current") {
+			if byNumber != call("show", twoID+"@="+two.Revision) || byNumber != call("show", two.ID, "--revision", two.Revision) || byNumber == call("show", twoID+"@current") {
 				t.Fatal("ordinal, exact token and current selection disagree")
 			}
 			refuse("revision_unknown", "show", twoID+"@999")
@@ -60,7 +65,7 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 			if !strings.HasPrefix(issue.Properties.ID, "work/") || len(strings.TrimPrefix(issue.Properties.ID, "work/")) != 6 {
 				t.Fatalf("native root ID: %+v", issue)
 			}
-			if call("show", issue.Properties.ID+"@1") != call("show", issue.ID, "--version", issue.Revision) {
+			if call("show", issue.Properties.ID+"@1") != call("show", issue.ID, "--revision", issue.Revision) {
 				t.Fatal("native ordinal did not resolve authoritative history")
 			}
 			refuse("invalid_selector", "create", "Bad", "--type", "types/memory", "--id", "explicit", "--id-root", "root")
@@ -93,7 +98,7 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 			refuse("gone", "show", "recovery@2")
 			call("update", "recovery", "--from-revision", gone.Revision, "--if-revision", history.CurrentState.Revision)
 			refuse("gone", "show", "recovery@2")
-			if call("show", "recovery@1") != call("show", gone.ID, "--version", gone.Revision) {
+			if call("show", "recovery@1") != call("show", gone.ID, "--revision", gone.Revision) {
 				t.Fatal("recovery renumbered old state")
 			}
 			if call("show", "recovery@3") != call("show", "recovery") {

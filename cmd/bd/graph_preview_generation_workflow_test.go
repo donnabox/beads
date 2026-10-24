@@ -314,7 +314,7 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					typeURL, _ := graphstore.RelationshipDependencyTypeURL(scope, tc.kind)
 					addArgs := []string{"dep", "add", source.ID, target.ID, "--type", string(tc.kind), "--id", linkPath}
 					if tc.viaLink {
-						addArgs = []string{"link", "create", "--source", source.ID, "--target", target.ID, "--type", string(tc.kind), "--id", linkPath, "--if-source-revision", source.Revision}
+						addArgs = []string{"link", "create", "--from", source.ID, "--to", target.ID, "--type", string(tc.kind), "--id", linkPath, "--if-source-revision", source.Revision}
 					}
 					added := graphMixedResult[graphstore.DependencyResult](t, call(addArgs...))
 					if !added.Changed || added.Link.Type != typeURL || added.Link.Properties["dep_type"] != string(tc.kind) || added.Link.Source != source.ID || added.Link.Target != target.ID || len(added.Source.Owned) != 1 {
@@ -324,8 +324,8 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if shown.Type != typeURL || shown.Properties["dep_type"] != string(tc.kind) || shown.Source != source.ID || shown.Target != target.ID {
 						t.Fatalf("shown Link differs from native endpoints: %+v", shown)
 					}
-					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--source", source.ID, "--type", string(tc.kind)))
-					counted := graphMixedResult[map[string]int](t, call("link", "count", "--source", source.ID, "--type", string(tc.kind)))
+					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source.ID, "--type", string(tc.kind)))
+					counted := graphMixedResult[map[string]int](t, call("link", "count", "--from", source.ID, "--type", string(tc.kind)))
 					if len(listed) != 1 || listed[0].ID != added.Link.ID || counted["count"] != 1 {
 						t.Fatalf("Dependency type list/count did not select %s: list=%+v count=%+v", tc.kind, listed, counted)
 					}

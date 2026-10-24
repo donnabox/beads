@@ -35,7 +35,7 @@ func canonicalCollectionTestCommand(t *testing.T, links bool, args ...string) (*
 	cmd.Flags().Bool("all", false, "")
 	if links {
 		cmd.Flags().Lookup("limit").Annotations = map[string][]string{"canonical-output-only": {"true"}}
-		for _, flag := range []string{"source", "target", "incident-to"} {
+		for _, flag := range []string{"from", "to", "incident-to"} {
 			cmd.Flags().String(flag, "", "")
 		}
 		cmd.Flags().String("direction", "both", "")
@@ -91,8 +91,8 @@ func TestCanonicalCollectionExistingBDPSelection(t *testing.T) {
 		{"beads", false, []string{"--type", note}, 2},
 		{"type-family", false, []string{"--conforms-to", note}, 2},
 		{"unknown-type", false, []string{"--type", scope + "types/missing"}, 0},
-		{"source-and-target", true, []string{"--source", "beads/a", "--target", "beads/b"}, 1},
-		{"no-kind-prefix-insertion", true, []string{"--source", "a", "--target", "beads/b"}, 0},
+		{"source-and-target", true, []string{"--from", "beads/a", "--to", "beads/b"}, 1},
+		{"no-kind-prefix-insertion", true, []string{"--from", "a", "--to", "beads/b"}, 0},
 		{"incident-in", true, []string{"--incident-to", "beads/b", "--direction", "in"}, 1},
 		{"incident-out-empty", true, []string{"--incident-to", "beads/b", "--direction", "out"}, 0},
 	} {
@@ -191,7 +191,7 @@ func TestCanonicalCollectionAdmissionBeforeRead(t *testing.T) {
 		{"--output-format", "json", "--page-size", "0"},
 		{"--output-format", "json", "--limit", "-1"},
 		{"--output-format", "json", "--paged", "--unpaged"},
-		{"--output-format", "json", "--type", "task"},
+		{"--output-format", "json", "--type", "task", "--exact-type", "task"},
 		{"--output-format", "json", "--continue", "opaque"},
 	} {
 		cmd, _, _ := canonicalCollectionTestCommand(t, false, args...)
@@ -349,21 +349,27 @@ func TestCanonicalCollectionRejectsIssueAllSelection(t *testing.T) {
 
 func TestCanonicalCollectionTypeGrammarDiagnostics(t *testing.T) {
 	for _, links := range []bool{false, true} {
-		for _, flag := range []string{"type", "conforms-to"} {
-			for _, value := range []string{"bug", "preview-dependency", "types/note", canonicalCollectionScope + "beads/note"} {
+		for _, flag := range []string{"type", "exact-type", "conforms-to"} {
+			for _, value := range []string{canonicalCollectionScope + "beads/note", "https://"} {
 				cmd, _, _ := canonicalCollectionTestCommand(t, links, "--output-format=json", "--"+flag, value)
 				options, _, _ := canonicalOutputOptions(cmd)
-				_, err := canonicalCollectionRequest(cmd, links, options)
-				if err == nil || !strings.Contains(err.Error(), "--"+flag) || !strings.Contains(err.Error(), "canonical absolute HTTP(S) Type URI") || strings.Contains(err.Error(), "conformsTo") {
-					t.Fatalf("value=%q flag=%s diagnostic=%v", value, flag, err)
+				if _, err := canonicalCollectionRequest(cmd, links, options); err == nil {
+					t.Fatalf("invalid Type %q admitted by %s", value, flag)
 				}
 			}
 			for _, value := range []string{canonicalCollectionScope + "types/note", "https://types.example.test/external-note"} {
 				cmd, _, _ := canonicalCollectionTestCommand(t, links, "--output-format=json", "--"+flag, value)
 				options, _, _ := canonicalOutputOptions(cmd)
 				if _, err := canonicalCollectionRequest(cmd, links, options); err != nil {
-					t.Fatalf("canonical Type URI %s refused: %v", value, err)
+					t.Fatalf("canonical Type %s refused: %v", value, err)
 				}
+			}
+		}
+		for _, value := range []string{"bug", "types/note"} {
+			cmd, _, _ := canonicalCollectionTestCommand(t, links, "--output-format=json", "--conforms-to", value)
+			options, _, _ := canonicalOutputOptions(cmd)
+			if _, err := canonicalCollectionRequest(cmd, links, options); err == nil || !strings.Contains(err.Error(), "--conforms-to requires a canonical absolute HTTP(S) Type URI") {
+				t.Fatalf("alias spelling guard: %v", err)
 			}
 		}
 	}

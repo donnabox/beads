@@ -67,7 +67,8 @@ func graphPreviewIssueTypeURL(scope string) string {
 }
 
 func graphPreviewBlockingTypeURL(scope string) string {
-	return graphstore.DependencyTypeURL(scope)
+	id, _ := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	return id
 }
 
 func init() {
@@ -94,8 +95,8 @@ func init() {
 	memoriesCmd.Flags().Bool("all", false, "Return all matching graph Memory summaries within preview bounds")
 	memoriesCmd.Flags().Bool("details", false, "Include Memory versions, attribution and owned-Link counts")
 	memoriesCmd.Flags().String("format", "table", "Graph Memory summaries: table or records-json (preview only)")
-	recallCmd.Flags().String("version", "", "Recall an exact retained Memory version token (graph preview only)")
-	showCmd.Flags().String("version", "", "Read an exact retained version token (graph preview only)")
+	recallCmd.Flags().String("revision", "", "Recall an exact retained Memory version token (graph preview only)")
+	showCmd.Flags().String("revision", "", "Read an exact retained version token (graph preview only)")
 	createCmd.Flags().String("properties", "", "Initialize installed Bead Type properties from a JSON object, @file, or @- (graph preview only)")
 	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
@@ -301,6 +302,9 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
+		if cmd.Flags().Lookup("exact-type") != nil && cmd.Flags().Changed("exact-type") {
+			return true, graphFailure("capability_unavailable", "--exact-type requires a workspace initialized with graph_mode link", 5)
+		}
 		if cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root")) {
 			flag := "--source-prefix"
 			if cmd.Flags().Changed("id-root") {
@@ -337,8 +341,8 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == showCmd && cmd.Flags().Changed("format") {
 			return true, graphFailure("capability_unavailable", "--format requires an experimental graph workspace", 5)
 		}
-		if (cmd == showCmd || cmd == recallCmd) && cmd.Flags().Changed("version") {
-			return true, graphFailure("capability_unavailable", "--version requires an experimental graph workspace", 5)
+		if (cmd == showCmd || cmd == recallCmd) && cmd.Flags().Changed("revision") {
+			return true, graphFailure("capability_unavailable", "--revision requires an experimental graph workspace", 5)
 		}
 		if cmd == graphCompareCmd || graphPreviewLinkNamespaceCommand(cmd) || graphPreviewMemoryNamespaceCommand(cmd) {
 			return true, graphFailure("capability_unavailable", "this command requires an experimental graph workspace", 5)
@@ -708,7 +712,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	if canonicalOutputSelected(cmd) {
 		return runCanonicalShow(cmd, args, linkOnly)
 	}
-	if err := graphPreviewFlags(cmd, "id", "current", "refs", "children", "watch", "version", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "current", "refs", "children", "watch", "revision", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
 		return err
 	}
 	idFlags, _ := cmd.Flags().GetStringArray("id")
@@ -773,18 +777,18 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 	if err != nil {
 		return graphPreviewReferenceFailure(err)
 	}
-	if ref.Explicit && cmd.Flags().Changed("version") {
-		return graphFailure("invalid_selector", "choose ID@revision or --version, not both", 2)
+	if ref.Explicit && cmd.Flags().Changed("revision") {
+		return graphFailure("invalid_selector", "choose ID@revision or --revision, not both", 2)
 	}
 	ref, err = graphPreviewResolveParsedReference(ref)
 	if err != nil {
 		return graphPreviewReferenceFailure(err)
 	}
-	version, _ := cmd.Flags().GetString("version")
-	versioned := cmd.Flags().Changed("version")
+	version, _ := cmd.Flags().GetString("revision")
+	versioned := cmd.Flags().Changed("revision")
 	if ref.Explicit {
 		if versioned {
-			return graphFailure("invalid_selector", "choose ID@revision or --version, not both", 2)
+			return graphFailure("invalid_selector", "choose ID@revision or --revision, not both", 2)
 		}
 		if !ref.currentSelection() {
 			version, versioned = ref.Revision, true
@@ -797,7 +801,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		return graphFailure("capability_unavailable", "Issue display flags require a current Issue", 5)
 	}
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
-		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
+		return graphFailure("invalid_selector", "--revision requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
 	path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 	if err != nil {
@@ -934,7 +938,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"issueListTree": false, "issueListLegacyJSON": true, "issueAssigneeFilter": true, "issueDueDate": true, "issueDueFilter": true, "issueClaim": true, "issueUnclaim": true, "issueTodo": true, "issueHeartbeat": true, "issueReclaim": true, "issueStateRead": true, "issueStateSet": false, "issueStatus": true, "issueGate": false, "issueMergeSlot": true, "issueWorkflows": false,
 					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "versionList": true, "exactVersionRead": true, "exactVersionCompare": true,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone Issue assign, priority and note shortcuts, native Issue comments, quick capture and editor-backed Issue edits, bounded Issue search/count/query with ordinary JSON, and task-Issue todo add/list/done, atomic Issue claims with five-minute leases, node-local history-free heartbeat, native stale-lease reclaim, native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), state-label read, durable Issue status summary and merge-slot create/check/acquire/release. Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with local endpoint pins, same-ID re-pin, shallow property merge and guarded unlink (owned-source pins remain unavailable), blocking Dependencies with canonical-ID unlink or native pair-level dep remove, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake are available. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Human blocking dep list/tree/cycles and flat graph check are available within their bounded snapshot and format guards. Bounded current all-Bead listing with nominal Bead Type filtering and Issue-only legacy list JSON are available; Issue-specific filters retain the native Issue query and due/assignee filters. Native immediate children has human and ordinary JSON views; tree formatting is not yet available. Fresh graph workspaces admit atomic create --parent with a native dotted child ID and parent-child Link, plus epic status and close-eligible (including dry-run) from native parent-child Links. Complete dependency-blocked inspection and bounded current typed Bead graph traversal with Link-Type unions/refinements, canonical JSON and ordinary output formats are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, gate, set-state, duplicate/supersede journeys, HTTP History and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone Issue assign, priority and note shortcuts, native Issue comments, quick capture and editor-backed Issue edits, bounded Issue search/count/query with ordinary JSON, and task-Issue todo add/list/done, atomic Issue claims with five-minute leases, node-local history-free heartbeat, native stale-lease reclaim, native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), state-label read, durable Issue status summary and merge-slot create/check/acquire/release. Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with local endpoint pins, same-ID re-pin, shallow property merge and guarded unlink (owned-source pins remain unavailable), blocking Dependencies with canonical-ID unlink or native pair-level dep remove, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake are available. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Human blocking dep list/tree/cycles and flat graph check are available within their bounded snapshot and format guards. Bounded current all-Bead listing with nominal Bead Type filtering and Issue-only legacy list JSON are available; Issue-specific filters retain the native Issue query and due/assignee filters. Native immediate children has human and ordinary JSON views; tree formatting is not yet available. Fresh graph workspaces admit atomic create --parent with a native dotted child ID and parent-child Link, plus epic status and close-eligible (including dry-run) from native parent-child Links. Complete dependency-blocked inspection and bounded current typed Bead graph traversal with Link-Type unions/refinements, canonical JSON and ordinary output formats are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --revision, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, gate, set-state, duplicate/supersede journeys, HTTP History and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 

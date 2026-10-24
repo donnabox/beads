@@ -21,7 +21,7 @@ func runGraphPreviewShowRelated(cmd *cobra.Command, args []string, refs, short b
 	if len(args) == 0 {
 		return graphFailure("invalid_selector", "at least one Issue ID is required", 2)
 	}
-	if format != "" || cmd.Flags().Changed("version") {
+	if format != "" || cmd.Flags().Changed("revision") {
 		return graphFailure("capability_unavailable", "--refs and --children require current Issues in the familiar output format", 5)
 	}
 	selectors := make([]struct{ path, localID string }, 0, len(args))

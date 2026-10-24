@@ -49,7 +49,8 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 	}
 	registerCanonicalOutputFlags(cmd)
 	cmd.Flags().Lookup("output-format").Usage = "Canonical collection output: default, table, detail, json or jsonl; cannot mix legacy --json/--format"
-	cmd.Flags().String("conforms-to", "", "Select a canonical absolute HTTP(S) Type URI and its conformance family; canonical output does not resolve Type aliases")
+	cmd.Flags().String("exact-type", "", "Select only the exact declared Type; --type includes refinements")
+	cmd.Flags().String("conforms-to", "", "Select a canonical absolute HTTP(S) Type URI and its conformance family; compatibility alias for --type")
 	cmd.Flags().Bool("paged", false, "Return one page in canonical output; current local provider refuses truncation")
 	cmd.Flags().Bool("unpaged", false, "Return the complete bounded current selection in canonical output")
 	cmd.Flags().Int("page-size", 50, "Canonical page size; use --unpaged if the complete local selection exceeds this boundary")
@@ -136,16 +137,20 @@ func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutpu
 		return plan, fmt.Errorf("%w: local collection reads cannot resume retained continuations; use a complete --unpaged selection", graphstore.ErrCapabilityUnavailable)
 	}
 	parameters := url.Values{}
-	for flag, key := range map[string]string{"type": "type", "conforms-to": "conformsTo"} {
-		if cmd.Flags().Changed(flag) {
-			value, _ := cmd.Flags().GetString(flag)
-			parameters.Set(key, value)
-		}
+	exact, family, err := graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, links)
+	if err != nil {
+		return plan, err
+	}
+	if exact != "" {
+		parameters.Set("type", exact)
+	}
+	if family != "" {
+		parameters.Set("conformsTo", family)
 	}
 	collection := "beads"
 	if links {
 		collection = "links"
-		for flag, key := range map[string]string{"source": "source", "target": "target", "incident-to": "endpoint"} {
+		for flag, key := range map[string]string{"from": "source", "to": "target", "incident-to": "endpoint"} {
 			if !cmd.Flags().Changed(flag) {
 				continue
 			}
@@ -183,7 +188,7 @@ func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutpu
 		if parameter.Name == "conformsTo" {
 			flag = "conforms-to"
 		}
-		return plan, fmt.Errorf("--%s requires a canonical absolute HTTP(S) Type URI (for a local Type, %stypes/NAME); canonical output does not resolve Issue classifications, bare names, or types/NAME", flag, graphPreviewConfig.GraphScopeURL)
+		return plan, fmt.Errorf("--%s requires a canonical absolute HTTP(S) Type URI (for a local Type, %stypes/NAME); use an installed Type or native classification shorthand", flag, graphPreviewConfig.GraphScopeURL)
 	}
 	return plan, err
 }
@@ -209,14 +214,14 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	if len(cmd.Flags().Args()) != 0 {
 		return canonicalFailure(cmd, failure, "invalid_selector", "canonical collection listing does not accept positional arguments; use selection flags", 2)
 	}
-	allowed := []string{"type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
+	allowed := []string{"type", "exact-type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
 	if links {
-		allowed = append(allowed, "source", "target", "incident-to", "direction")
+		allowed = append(allowed, "from", "to", "incident-to", "direction")
 	}
 	if err := canonicalGraphFlags(cmd, failure, allowed...); err != nil {
 		return err
 	}
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "conforms-to", "source", "target", "incident-to", "direction", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	plan, err := canonicalCollectionRequest(cmd, links, options)

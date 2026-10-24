@@ -141,7 +141,7 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 				t.Fatalf("projection: %s", projected)
 			}
 			// Historical owner output must retain its old owned state, never today's.
-			old := decode(call("show", "["+scope+"beads/plan]@"+initial.Revision, "--output-format=json"))
+			old := decode(call("show", "["+scope+"beads/plan]@="+initial.Revision, "--output-format=json"))
 			var oldBead bdpwire.BeadRecord
 			if err := json.Unmarshal(old, &oldBead); err != nil || oldBead.Revision != initial.Revision || len(oldBead.OwnedLinks) != len(resource.OwnedLinks) {
 				t.Fatalf("historical state changed: %s %v", old, err)
@@ -152,7 +152,7 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 					t.Fatalf("retained owner must preserve selected empty groups without current Links: %s", old)
 				}
 			}
-			equalJSON(old, decode(call("show", scope+"beads/plan", "--version", initial.Revision, "--output-format=json")))
+			equalJSON(old, decode(call("show", scope+"beads/plan", "--revision", initial.Revision, "--output-format=json")))
 			detail := call("show", scope+"beads/plan", "--output-format=detail", "--omit=/ownedLinks")
 			if !strings.Contains(detail, "Big body & <literal>") {
 				t.Fatalf("human detail escaped or lost body: %s", detail)
@@ -169,8 +169,8 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 				{[]string{"show", scope + "beads/plan", "--output-format=json", "--json=false"}, "invalid_selector", false, true},
 				{[]string{"show", scope + "beads/plan", "--graph-mode=invalid"}, "invalid_selector", false, false},
 				{[]string{"show", scope + "beads/plan", "--omit=/revision"}, "invalid_selector", false, false},
-				{[]string{"show", scope + "beads/plan", "--version=first", "--version=second"}, "invalid_selector", false, false},
-				{[]string{"link", "show", receipt.Link.ID, "--version=first", "--version=second"}, "invalid_selector", false, false},
+				{[]string{"show", scope + "beads/plan", "--revision=first", "--revision=second"}, "invalid_selector", false, false},
+				{[]string{"link", "show", receipt.Link.ID, "--revision=first", "--revision=second"}, "invalid_selector", false, false},
 				{[]string{"link", "show"}, "invalid_selector", false, false},
 				{[]string{"show", scope + "beads/plan"}, "capability_unavailable", true, false},
 			} {

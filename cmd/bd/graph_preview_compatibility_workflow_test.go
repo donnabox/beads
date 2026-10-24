@@ -246,7 +246,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatalf("positional link lost shipping JSON fields or pair direction: %+v", shorthandBlock)
 			}
 			beforeShorthandNoop := call("versions", issue.ID)
-			beforeShorthandLinks := call("link", "list", "--source", issue.ID, "--type", "blocks")
+			beforeShorthandLinks := call("link", "list", "--from", issue.ID, "--type", "blocks")
 			if shorthandNoop := decodeShorthand(call("link", issue.ID, thirdBlocker.ID)); !reflect.DeepEqual(shorthandNoop, shorthandBlock) {
 				t.Fatalf("repeated positional link changed its familiar result: %+v", shorthandNoop)
 			}
@@ -257,7 +257,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if afterShorthandNoop := call("versions", issue.ID); afterShorthandNoop != beforeShorthandNoop {
 				t.Fatal("repeated positional link allocated another Issue version")
 			}
-			if afterShorthandLinks := call("link", "list", "--source", issue.ID, "--type", "blocks"); afterShorthandLinks != beforeShorthandLinks {
+			if afterShorthandLinks := call("link", "list", "--from", issue.ID, "--type", "blocks"); afterShorthandLinks != beforeShorthandLinks {
 				t.Fatal("repeated positional link allocated another Link")
 			}
 			refuse("invalid_properties", "link", issue.ID, thirdBlocker.ID, "--type", "tracks")

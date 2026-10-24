@@ -68,26 +68,30 @@ func runMemoryLinkCommand(cmd *cobra.Command, args []string, op memoryLinkOperat
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	flags := []string{op.targetFlag, "title", "body", "status", "properties", "metadata", "id", "source-revision", "target-revision", "if-source-revision", "json"}
+	flags := []string{"from", "to", "title", "body", "status", "properties", "metadata", "id", "source-revision", "target-revision", "if-source-revision", "json"}
 	if err := canonicalGraphFlags(cmd, renderer, flags...); err != nil {
 		return err
 	}
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], flags...); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	resolvedArgs := append([]string(nil), args...)
-	target, _ := cmd.Flags().GetString(op.targetFlag)
-	if len(resolvedArgs) == 1 && target != "" {
-		resolvedArgs[0], err = graphPreviewResolveMemoryArgument(resolvedArgs[0])
-		if err != nil {
-			return err
-		}
-		target, err = graphPreviewResolveMemoryArgument(target)
-		if err != nil {
-			return err
-		}
+	if err := canonicalExactOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	request, err := memoryLinkRequestWithTarget(cmd, resolvedArgs, graphPreviewConfig.GraphScopeURL, op, target)
+	source, target, err := graphPreviewAuthoringEndpoints(cmd, args)
+	if err != nil {
+		err = fmt.Errorf("%s %w", op.name, err)
+	}
+	if err == nil {
+		source, err = graphPreviewResolveMemoryArgument(source)
+	}
+	if err == nil {
+		target, err = graphPreviewResolveMemoryArgument(target)
+	}
+	var request graphstore.LinkCreateRequest
+	if err == nil {
+		request, err = memoryLinkRequestWithEndpoints(cmd, graphPreviewConfig.GraphScopeURL, op, source, target)
+	}
 	if err != nil {
 		var exit *exitError
 		if errors.As(err, &exit) {

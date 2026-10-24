@@ -20,20 +20,21 @@ type graphSelectedOutput struct {
 	Traversal graphSelectedTraversal  `json:"traversal"`
 }
 type graphSelectedTraversal struct {
-	Root         string   `json:"root,omitempty"`
-	All          bool     `json:"all,omitempty"`
-	Direction    string   `json:"direction"`
-	Depth        int      `json:"depth"`
-	MaxNodes     int      `json:"maxNodes"`
-	MaxLinks     int      `json:"maxLinks"`
-	LinkTypes    []string `json:"linkTypes"`
-	AllLinkTypes bool     `json:"allLinkTypes,omitempty"`
-	Complete     bool     `json:"complete"`
-	Frontier     []string `json:"frontier"`
+	Root           string   `json:"root,omitempty"`
+	All            bool     `json:"all,omitempty"`
+	Direction      string   `json:"direction"`
+	Depth          int      `json:"depth"`
+	MaxNodes       int      `json:"maxNodes"`
+	MaxLinks       int      `json:"maxLinks"`
+	LinkTypes      []string `json:"linkTypes"`
+	ExactLinkTypes []string `json:"exactLinkTypes,omitempty"`
+	AllLinkTypes   bool     `json:"allLinkTypes,omitempty"`
+	Complete       bool     `json:"complete"`
+	Frontier       []string `json:"frontier"`
 }
 
 func graphSelectedRecords(result graphGenericResult, snapshot graphstore.Snapshot) (graphSelectedOutput, error) {
-	out := graphSelectedOutput{Scope: result.Scope, Beads: []any{}, Links: []graphstore.LinkRecord{}, Traversal: graphSelectedTraversal{Root: result.Root, All: result.All, Direction: result.Direction, Depth: result.Depth, MaxNodes: result.MaxNodes, MaxLinks: result.MaxLinks, LinkTypes: result.LinkTypes, AllLinkTypes: result.AllLinkTypes, Complete: result.Complete, Frontier: result.Frontier}}
+	out := graphSelectedOutput{Scope: result.Scope, Beads: []any{}, Links: []graphstore.LinkRecord{}, Traversal: graphSelectedTraversal{Root: result.Root, All: result.All, Direction: result.Direction, Depth: result.Depth, MaxNodes: result.MaxNodes, MaxLinks: result.MaxLinks, LinkTypes: result.LinkTypes, ExactLinkTypes: result.ExactLinkTypes, AllLinkTypes: result.AllLinkTypes, Complete: result.Complete, Frontier: result.Frontier}}
 	records := map[string]any{}
 	for _, raw := range snapshot.Records {
 		switch r := raw.(type) {
@@ -65,27 +66,6 @@ func graphSelectedRecords(result graphGenericResult, snapshot graphstore.Snapsho
 		out.Links = append(out.Links, record)
 	}
 	return out, nil
-}
-
-func graphSelectedOpenIssues(snapshot graphstore.Snapshot) graphstore.Snapshot {
-	selected := map[string]bool{}
-	out := snapshot
-	out.Records = []any{}
-	for _, raw := range snapshot.Records {
-		if r, ok := raw.(graphstore.IssueRecord); ok && r.Properties != nil {
-			switch r.Properties.Status {
-			case "open", "in_progress", "blocked":
-				selected[r.ID] = true
-				out.Records = append(out.Records, r)
-			}
-		}
-	}
-	for _, raw := range snapshot.Records {
-		if r, ok := raw.(graphstore.LinkRecord); ok && selected[r.Source] && selected[r.Target] {
-			out.Records = append(out.Records, r)
-		}
-	}
-	return out
 }
 
 // Reuse the command writer and JSON record projection. Native dependency
@@ -130,34 +110,40 @@ func renderGraphSelected(cmd *cobra.Command, result graphGenericResult, snapshot
 	return output.String(), nil
 }
 func renderGraphSelectedBox(w *graphExportWriter, r graphGenericResult) {
-	local := func(value string) string { return strings.TrimPrefix(value, r.Scope) }
-	w.printf("Graph (%d Beads, %d Links; direction %s; depth %d)\n", len(r.Nodes), len(r.Links), r.Direction, r.Depth)
+	local := (&graphRelationshipTree{result: r}).label
+	if len(r.Nodes) == 0 {
+		w.println("No matching Beads.")
+		return
+	}
+	w.printf("Graph (%d Beads, %d Links)\n", len(r.Nodes), len(r.Links))
 	// A hop-selected set is not an execution schedule. Never label a Memory ready.
 	for _, n := range r.Nodes {
-		w.printf("┌ %s [%s] %s\n│ %q\n└\n", local(n.ID), local(n.Type), n.Status, n.Title)
+		w.printf("┌ %s [%s] %s\n│ %q\n└\n", local(n.ID), local(n.Type), local(n.Status), n.Title)
 	}
 	for _, l := range r.Links {
-		w.printf("%s --%s (%s)--> %s", local(l.Source), local(l.Type), local(l.ID), local(l.Target))
+		w.printf("%s --[%s] (%s)--> %s", local(l.Source), local(l.Type), local(l.ID), local(l.Target))
 		if l.SourceRevision != "" || l.TargetRevision != "" {
 			w.printf(" [source revision=%q target revision=%q]", l.SourceRevision, l.TargetRevision)
 		}
 		w.println()
 	}
-	w.printf("Complete: %t; frontier: %d\n", r.Complete, len(r.Frontier))
 	for _, id := range r.Frontier {
-		w.printf("Frontier %s\n", id)
+		w.println(graphDepthBoundary(r.Depth, local(id)))
 	}
 }
 func renderGraphSelectedDOT(w *graphExportWriter, r graphGenericResult) {
+	local := func(value string) string { return strings.TrimPrefix(value, r.Scope) }
 	w.println("digraph beads {")
 	w.println("  rankdir=LR;")
 	for _, n := range r.Nodes {
-		w.printf("  %q [label=%q, shape=box];\n", n.ID, n.Title+"\n"+n.Type)
+		w.printf("  %q [label=%q, shape=box];\n", n.ID, local(n.ID)+" ["+local(n.Type)+"]\n"+n.Title)
 	}
 	for _, l := range r.Links {
-		w.printf("  %q -> %q [id=%q, label=%q, tooltip=%q];\n", l.Source, l.Target, l.ID, l.Type, l.ID+" source revision="+l.SourceRevision+" target revision="+l.TargetRevision)
+		w.printf("  %q -> %q [id=%q, label=%q, tooltip=%q];\n", l.Source, l.Target, l.ID, "["+local(l.Type)+"]", l.ID+" source revision="+l.SourceRevision+" target revision="+l.TargetRevision)
 	}
-	w.printf("  graph [label=%q];\n", fmt.Sprintf("direction %s; depth %d; complete %t; frontier %d", r.Direction, r.Depth, r.Complete, len(r.Frontier)))
+	if len(r.Frontier) > 0 {
+		w.printf("  graph [label=%q];\n", fmt.Sprintf("Depth limit %d reached; further relationships are outside this view.", r.Depth))
+	}
 	w.println("}")
 }
 func renderGraphSelectedHTML(w *graphExportWriter, r graphGenericResult) error {
@@ -172,7 +158,7 @@ func renderGraphSelectedHTML(w *graphExportWriter, r graphGenericResult) error {
 	}
 	nodes := make([]neutralNode, 0, len(r.Nodes))
 	for _, n := range r.Nodes {
-		nodes = append(nodes, neutralNode{ID: n.ID, Label: strings.TrimPrefix(n.ID, r.Scope), Title: n.Title, Type: n.Type})
+		nodes = append(nodes, neutralNode{ID: n.ID, Label: strings.TrimPrefix(n.ID, r.Scope) + " [" + strings.TrimPrefix(n.Type, r.Scope) + "]", Title: n.Title, Type: n.Type})
 	}
 	rawNodes, err := json.Marshal(nodes)
 	if err != nil {
@@ -231,10 +217,13 @@ function graphLinkPath(d) {
 	// arc groups before constructing that force so grouping uses authored IDs.
 	template = strings.Replace(template, `const simulation = d3.forceSimulation(nodes)`, linkGeometry+`
 const simulation = d3.forceSimulation(nodes)`, 1)
-	const linkTitle = `link.append("title").text(d => d.id + "\n" + d.type + "\nsource revision: " + (d.sourceRevision || "unpinned") + "\ntarget revision: " + (d.targetRevision || "unpinned"));
+	const linkTitle = `link.append("title").text(d => d.id + "\n[" + d.type + "]\nsource revision: " + (d.sourceRevision || "unpinned") + "\ntarget revision: " + (d.targetRevision || "unpinned"));
 const node = g.append("g")`
 	template = strings.Replace(template, `const node = g.append("g")`, linkTitle, 1)
-	title := fmt.Sprintf("Beads graph — complete %t; depth %d; frontier %d", r.Complete, r.Depth, len(r.Frontier))
+	title := "Beads graph"
+	if len(r.Frontier) > 0 {
+		title += fmt.Sprintf(" — depth limit %d reached; further relationships are outside this view", r.Depth)
+	}
 	w.printf(template, html.EscapeString(title), string(rawNodes), string(rawLinks))
 	return nil
 }

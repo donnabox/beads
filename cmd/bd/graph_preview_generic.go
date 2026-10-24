@@ -13,14 +13,14 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-var graphGenericFlags = []string{"view", "direction", "depth", "max-nodes", "max-links", "link-type", "all-link-types"}
+var graphGenericFlags = []string{"view", "direction", "depth", "max-nodes", "max-links", "link-type", "exact-link-type"}
 
 func init() {
 	graphCmd.Flags().String("view", "", "Deprecated: generic is the ordinary graph view in link mode")
 	graphCmd.Flags().String("direction", "both", "Generic Link direction: in, out or both (graph_mode link workspaces only)")
 	graphCmd.Flags().Int("depth", 1000, "Link hop depth (0..1000); frontier reports depth truncation (link mode only)")
-	graphCmd.Flags().StringArray("link-type", nil, "Select a Link Type including refinements (repeatable OR union; default Dependency; link mode only)")
-	graphCmd.Flags().Bool("all-link-types", false, "Select every installed public Link Type instead of Dependency (link mode only)")
+	graphCmd.Flags().StringArray("link-type", nil, "Select a Link Type family, or any for all Types (repeatable OR union; default Dependency; link mode only)")
+	graphCmd.Flags().StringArray("exact-link-type", nil, "Select exactly a Link Type, without refinements (repeatable OR union; link mode only)")
 	graphCmd.Flags().Int("max-nodes", 1000, "Generic emitted Bead bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
 	graphCmd.Flags().Int("max-links", 1000, "Generic emitted Link bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
 }
@@ -68,20 +68,23 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 		}
 		in.Root = address
 	}
-	in.AllLinkTypes, _ = cmd.Flags().GetBool("all-link-types")
 	selectors, _ := cmd.Flags().GetStringArray("link-type")
-	if cmd.Flags().Changed("link-type") && len(selectors) == 0 {
-		return zero, graphFailure("invalid_selector", "--link-type requires a nonempty Type selector", 2)
+	exact, _ := cmd.Flags().GetStringArray("exact-link-type")
+	for _, selection := range []struct {
+		flag   string
+		values []string
+	}{{"link-type", selectors}, {"exact-link-type", exact}} {
+		if cmd.Flags().Changed(selection.flag) && len(selection.values) == 0 {
+			return zero, graphFailure("invalid_selector", "--"+selection.flag+" requires a nonempty Type selector", 2)
+		}
 	}
-	if in.AllLinkTypes && len(selectors) != 0 {
-		return zero, graphFailure("invalid_selector", "--all-link-types and --link-type are mutually exclusive", 2)
-	}
-	if !in.AllLinkTypes && len(selectors) == 0 {
+	in.ImplicitDependency = !cmd.Flags().Changed("link-type") && !cmd.Flags().Changed("exact-link-type")
+	if in.ImplicitDependency {
 		selectors = []string{"dependency"}
 	}
-	for _, selector := range selectors {
+	resolve := func(selector, flag string) (string, error) {
 		if selector == "" {
-			return zero, graphFailure("invalid_selector", "--link-type requires a nonempty Type selector", 2)
+			return "", graphFailure("invalid_selector", "--"+flag+" requires a nonempty Type selector", 2)
 		}
 		if !strings.Contains(selector, "/") {
 			for _, name := range graphstore.FreshTypeNames() {
@@ -93,19 +96,32 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 		}
 		url, err := graphPreviewTypeURL(scope, selector)
 		if err != nil {
-			return zero, graphFailure("invalid_selector", err.Error(), 2)
+			return "", graphFailure("invalid_selector", err.Error(), 2)
 		}
-		seen := false
-		for _, existing := range in.LinkTypes {
-			if existing == url {
-				seen = true
+		return url, nil
+	}
+	for _, selection := range []struct {
+		flag        string
+		values      []string
+		destination *[]string
+	}{{"link-type", selectors, &in.LinkTypes}, {"exact-link-type", exact, &in.ExactLinkTypes}} {
+		seen := map[string]bool{}
+		for _, selector := range selection.values {
+			if selection.flag == "link-type" && selector == "any" {
+				in.AllLinkTypes = true
+				continue
+			}
+			url, err := resolve(selector, selection.flag)
+			if err != nil {
+				return zero, err
+			}
+			if !seen[url] {
+				*selection.destination = append(*selection.destination, url)
+				seen[url] = true
 			}
 		}
-		if !seen {
-			in.LinkTypes = append(in.LinkTypes, url)
-		}
+		sort.Strings(*selection.destination)
 	}
-	sort.Strings(in.LinkTypes)
 	in.Direction, _ = cmd.Flags().GetString("direction")
 	in.Depth, _ = cmd.Flags().GetInt("depth")
 	in.MaxNodes, _ = cmd.Flags().GetInt("max-nodes")
@@ -121,11 +137,7 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 
 func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 	if len(args) == 1 {
-		resolved, err := graphPreviewResolveMemoryArgument(args[0])
-		if err != nil {
-			return err
-		}
-		ref, err := graphPreviewParseReference(resolved)
+		ref, err := graphPreviewParseReference(args[0])
 		if err != nil {
 			return graphPreviewReferenceFailure(err)
 		}
@@ -138,6 +150,18 @@ func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	// Validate the complete request before allocation lookup can open storage.
+	// Reference syntax was parsed lexically above, so allocated sibling names
+	// cannot shadow a revision selector.
+	if !in.All {
+		resolved, err := graphPreviewResolveMemoryArgument(args[0])
+		if err != nil {
+			return err
+		}
+		if resolved != args[0] {
+			in.Root = resolved
+		}
+	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		snapshot, err := s.CurrentSnapshot(ctx)
 		if err != nil {
@@ -145,17 +169,32 @@ func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 		}
 		// Dependency --all follows the familiar open-Issue population. Other
 		// selectors include only matching components, never unrelated isolates.
-		if in.All && !in.AllLinkTypes && len(in.LinkTypes) == 1 && in.LinkTypes[0] == graphstore.DependencyTypeURL(s.ScopeURL()) {
-			snapshot = graphSelectedOpenIssues(snapshot)
-		}
+		in.OpenIssuesOnly = in.All && !in.AllLinkTypes && len(in.ExactLinkTypes) == 0 && len(in.LinkTypes) == 1 && in.LinkTypes[0] == graphstore.DependencyTypeURL(s.ScopeURL())
 		result, err := projectGraphGeneric(snapshot, s.ScopeURL(), in)
 		if err != nil {
 			return nil, "", err
 		}
 
 		output, err := renderGraphSelected(cmd, result, snapshot)
-		return nil, output, err
-	}, func(_ any, output string) error { return writeGraphGeneric(cmd.OutOrStdout(), output) })
+		return result.OmittedLinkTypes, output, err
+	}, func(value any, output string) error {
+		omitted, _ := value.([]string)
+		return writeGraphGenericSelection(cmd.OutOrStdout(), cmd.ErrOrStderr(), output, omitted)
+	})
+}
+
+func writeGraphGenericSelection(out, diagnostics io.Writer, output string, omitted []string) error {
+	if err := writeGraphGeneric(out, output); err != nil {
+		return err
+	}
+	return writeGraphGenericOmittedNotice(diagnostics, omitted)
+}
+
+func writeGraphGenericOmittedNotice(out io.Writer, omitted []string) error {
+	if len(omitted) == 0 || quietFlag {
+		return nil
+	}
+	return writeGraphGeneric(out, fmt.Sprintf("Graph uses the default Dependency family; reached Beads also have omitted Link Types: %s. Use --link-type any to select all Link Types; direction and depth still apply. With --all, that selects Link endpoints and omits isolated Beads.\n", strings.Join(omitted, ", ")))
 }
 
 func writeGraphGeneric(out io.Writer, output string) error {

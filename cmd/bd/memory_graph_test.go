@@ -35,7 +35,7 @@ func TestMemoryCurrentInput(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		want := []memoryquery.CurrentRoot{{Path: "beads/a", Depth: op.depth}, {Path: "beads/b", Depth: op.depth}, {Path: "beads/a", Depth: op.depth}, {Path: "beads/a", Depth: op.depth}}
+		want := []memoryquery.CurrentRoot{{Path: "a", Depth: op.depth}, {Path: "beads/b", Depth: op.depth}, {Path: "a", Depth: op.depth}, {Path: "a", Depth: op.depth}}
 		wantFamily, wantDirection := scope+"types/"+op.family, op.direction
 		if op.name == "constraints" || op.name == "subjects" {
 			// These fixed discovery operations reuse only the admitted roots
@@ -51,14 +51,21 @@ func TestMemoryCurrentInput(t *testing.T) {
 		}
 	}
 	op := memoryReadOperations[0]
+	// Kind comes from the catalog, never a literal local-ID prefix.
+	for _, id := range []string{"beads/a", "links/a", "types/a"} {
+		got, err := memoryCurrentRequest(memoryTestCommand(t, op), []string{id}, scope, op)
+		if err != nil || len(got.Roots) != 1 || got.Roots[0].Path != id {
+			t.Fatalf("literal identity changed: %s %+v %v", id, got, err)
+		}
+	}
 	for _, tc := range []struct {
 		name        string
 		flags, args []string
 		capability  bool
 	}{
-		{name: "missing"}, {name: "link", args: []string{"links/a"}},
+		{name: "missing"}, {name: "malformed", args: []string{"a//b"}},
 		{name: "foreign", args: []string{"https://elsewhere.invalid/beads/a"}},
-		{name: "old-pin", args: []string{"a@old"}, capability: true},
+		{name: "old-pin", args: []string{"a@=old"}, capability: true},
 		{name: "negative-depth", flags: []string{"--depth=-1"}, args: []string{"a"}},
 		{name: "too-deep", flags: []string{"--depth=1001"}, args: []string{"a"}},
 		{name: "empty-node-budget", flags: []string{"--max-nodes=0"}, args: []string{"a"}},
