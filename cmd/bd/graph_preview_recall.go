@@ -30,6 +30,9 @@ func runGraphPreviewRecall(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphPreviewReferenceFailure(err)
 	}
+	if _, _, err := graphPreviewResourceReadSelector(ref.Identity); err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
 	version, _ := cmd.Flags().GetString("revision")
 	versioned := cmd.Flags().Changed("revision")
 	if ref.Explicit && versioned {
