@@ -92,8 +92,9 @@ func TestDependencyWorkflowDurableSequence(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			blockingType, _ := relationshipDependencyTypeURL(o.Binding.ScopeURL, types.DepBlocks)
-			if source.Type != IssueTypeURL(o.Binding.ScopeURL) || target.Type != source.Type || added.Link.Type != blockingType || added.Link.Properties["dep_type"] != "blocks" {
+			taskType := o.Binding.ScopeURL + "types/native-issue/7461736b"
+			blockingType := o.Binding.ScopeURL + "types/native-dependency/626c6f636b73"
+			if source.Type != taskType || target.Type != source.Type || added.Link.Type != blockingType || added.Link.Properties["dep_type"] != "blocks" {
 				t.Fatalf("fresh Issue/Dependency Types differ: source=%s target=%s link=%s properties=%v", source.Type, target.Type, added.Link.Type, added.Link.Properties)
 			}
 			if !added.Changed || added.Link.Source != source.ID || added.Link.Target != target.ID || added.Source.Version == source.Version || len(added.Source.Owned) != 1 || len(added.Source.Properties.Dependencies) != 0 {
