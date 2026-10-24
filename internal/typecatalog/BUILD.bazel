@@ -4,6 +4,7 @@ go_library(
     name = "typecatalog",
     srcs = [
         "catalog.go",
+        "definition_record.go",
         "validation.go",
     ],
     importpath = "github.com/steveyegge/beads/internal/typecatalog",
@@ -18,8 +19,10 @@ go_test(
     name = "typecatalog_test",
     srcs = [
         "catalog_test.go",
+        "definition_record_test.go",
         "validation_test.go",
     ],
+    data = ["testdata/definition-records.json"],
     embed = [":typecatalog"],
     deps = ["//graphops"],
 )
