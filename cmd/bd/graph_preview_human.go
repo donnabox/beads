@@ -213,13 +213,39 @@ func graphHumanCurrentIssueDetails(scope string, details *types.IssueDetails, op
 			fmt.Fprintf(&out, "%s [%s] %s P%d %q\n", graphHumanID(scope, issue.ID), graphMemoryDisplayText(string(issue.IssueType)), graphMemoryDisplayText(string(issue.Status)), issue.Priority, issue.Title)
 		}
 	}
+	if len(details.GatedBy) != 0 {
+		out.WriteString("\n\nCurrent gates\n")
+		for _, gate := range details.GatedBy {
+			kind := gate.Type
+			if kind == "" {
+				kind = "gate"
+			}
+			fmt.Fprintf(&out, "%s [%s]", graphHumanID(scope, gate.ID), graphMemoryDisplayText(kind))
+			if gate.Reason != "" {
+				fmt.Fprintf(&out, ": %s", graphMemoryDisplayText(gate.Reason))
+			}
+			out.WriteByte('\n')
+		}
+	}
 	comments := details.Comments
+	hidden := 0
 	if opts.CommentsTail > 0 && len(comments) > opts.CommentsTail {
-		comments = comments[len(comments)-opts.CommentsTail:]
+		hidden = len(comments) - opts.CommentsTail
+		comments = comments[hidden:]
 	}
 	if len(comments) != 0 {
 		out.WriteString("\n\nCurrent comments\n")
+		if hidden != 0 {
+			fmt.Fprintf(&out, "%d older comments hidden; omit --comments-tail for the full current record.\n", hidden)
+		}
 		for _, comment := range comments {
+			if opts.Long || opts.LocalTime {
+				at := comment.CreatedAt
+				if opts.LocalTime {
+					at = at.Local()
+				}
+				fmt.Fprintf(&out, "%s ", at.Format("2006-01-02 15:04:05 -07:00"))
+			}
 			fmt.Fprintf(&out, "%s: %s\n", graphMemoryDisplayText(comment.Author), graphMemoryDisplayText(comment.Text))
 		}
 	}

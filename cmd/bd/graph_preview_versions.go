@@ -171,8 +171,7 @@ func graphCitableVersionRows(kind graphstore.ResourceKind, rows []graphstore.Ver
 // Human timelines use stable store-local sequence numbers. Exact tokens are
 // available through --long and JSON; deletion events retain their actual
 // ordinals but never become readable live snapshots.
-func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []graphstore.VersionRow, removed, currentlyDeleted bool, details ...bool) string {
-	long := len(details) != 0 && details[0]
+func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []graphstore.VersionRow, removed, currentlyDeleted bool, long bool) string {
 	if len(rows) == 0 {
 		// Defensive, and deliberately NOT reassuring. An allocated subject
 		// always has at least version 1, because its creation version is

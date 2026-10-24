@@ -79,7 +79,7 @@ func runGraphPreviewShowMany(cmd *cobra.Command, args []string, shortMode, longM
 			if jsonOutput {
 				details = append(details, detail)
 			} else {
-				lines = append(lines, graphHumanDocument(s.ScopeURL(), issue, "", false, longMode)+graphHumanCurrentIssueDetails(s.ScopeURL(), detail, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}))
+				lines = append(lines, graphHumanDocument(s.ScopeURL(), issue, graphHumanRevision(ctx, s, issue.ID, issue.Revision), false, longMode)+graphHumanCurrentIssueDetails(s.ScopeURL(), detail, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail}))
 			}
 		}
 		if len(details)+len(lines) == 0 {

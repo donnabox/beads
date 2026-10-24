@@ -186,16 +186,16 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/structure/"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--graph-path", "beads/parent", "--id", "beads/parent", "--force", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Work", "--graph-path", "beads/work", "--id", "beads/work", "--force", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--graph-path", "beads/isolated", "--id", "beads/isolated", "--force", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--id", "beads/parent", "--force", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Work", "--id", "beads/work", "--force", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--id", "beads/isolated", "--force", "--json")
 
 	// Only native parent-child edges count. A blocking dependency does not
 	// make an Issue a child.
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "children", scope+"beads/parent", "--json"); strings.TrimSpace(got) != "[]" {
 		t.Fatalf("empty native children must retain the ordinary JSON array shape: %q", got)
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "children", "parent", "--pretty", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "children", "beads/parent", "--pretty", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "children", "missing", "--json")
 
 	created := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/work", scope+"beads/parent", "--json"))
@@ -212,8 +212,8 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	if alias.Changed || alias.Link.ID != created.Link.ID || alias.Source.Revision != created.Source.Revision {
 		t.Fatalf("--depends-on changed a repeated blocking pair: %+v", alias)
 	}
-	workHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "work", "--json")
-	parentHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "parent", "--json")
+	workHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "beads/work", "--json")
+	parentHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "beads/parent", "--json")
 	// Native dep add treats an empty alias as absent, and gives --blocked-by
 	// precedence when both nonempty aliases are present. These repeat the
 	// existing edge, so neither form may append source History.
@@ -227,17 +227,17 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 		}
 	}
 	for _, flags := range [][]string{
-		{"work", "parent", "--blocked-by", "isolated", "--json"},
-		{"work", "parent", "--depends-on", "isolated", "--json"},
-		{"work", "parent", "--blocked-by", "parent", "--depends-on", "isolated", "--json"},
+		{"beads/work", "beads/parent", "--blocked-by", "isolated", "--json"},
+		{"beads/work", "beads/parent", "--depends-on", "isolated", "--json"},
+		{"beads/work", "beads/parent", "--blocked-by", "beads/parent", "--depends-on", "isolated", "--json"},
 	} {
 		graphPolicyCLI(t, bd, work, home, nil, "stderr:cannot use both positional depends-on-id and --blocked-by/--depends-on flag", append([]string{"dep", "add"}, flags...)...)
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "stderr:requires 2 arg(s)", "dep", "add", "work", "--blocked-by=", "--json")
-	if after := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "work", "--json"); after != workHistory {
+	graphPolicyCLI(t, bd, work, home, nil, "stderr:requires 2 arg(s)", "dep", "add", "beads/work", "--blocked-by=", "--json")
+	if after := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "beads/work", "--json"); after != workHistory {
 		t.Fatalf("refused dependency arguments or alias no-op appended source History\nbefore: %s\nafter: %s", workHistory, after)
 	}
-	if after := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "parent", "--json"); after != parentHistory {
+	if after := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "beads/parent", "--json"); after != parentHistory {
 		t.Fatalf("refused dependency arguments or alias no-op appended target History\nbefore: %s\nafter: %s", parentHistory, after)
 	}
 	for _, tc := range []struct {
@@ -254,8 +254,8 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "children", scope+"beads/parent", "--json"); strings.TrimSpace(got) != "[]" {
 		t.Fatalf("blocking dependency leaked into native children: %q", got)
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "list", "work", "--type", "parent-child", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "dep", "list", "work", "--direction", "both", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "list", "beads/work", "--type", "parent-child", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "dep", "list", "beads/work", "--direction", "both", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "dep", "list", "https://other.invalid/beads/work", "--json")
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "list", scope+"beads/work"); !strings.Contains(got, "beads/work depends on beads/parent") {
 		t.Fatalf("missing human dependency summary: %q", got)
@@ -293,32 +293,32 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 		t.Fatalf("generic traversal changed: %+v", generic)
 	}
 	for _, args := range [][]string{
-		{"dep", "list", "work", "--json"},
-		{"dep", "list", "work", "parent", "--json"},
-		{"dep", "tree", "work", "--json"},
+		{"dep", "list", "beads/work", "--json"},
+		{"dep", "list", "beads/work", "beads/parent", "--json"},
+		{"dep", "tree", "beads/work", "--json"},
 		{"dep", "cycles", "--json"},
 	} {
 		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "work", "--max-rows=1", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "tree", "work", "--max-rows=1", "--json")
-	graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "capability_unavailable", "graph", "work", "--json")
-	graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "capability_unavailable", "dep", "tree", "work", "--json")
-	graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=bad"}, "invalid_properties", "graph", "work", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "dep", "tree", "work", "--max-rows=-1", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "beads/work", "--max-rows=1", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "tree", "beads/work", "--max-rows=1", "--json")
+	graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "capability_unavailable", "graph", "beads/work", "--json")
+	graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "capability_unavailable", "dep", "tree", "beads/work", "--json")
+	graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=bad"}, "invalid_properties", "graph", "beads/work", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "dep", "tree", "beads/work", "--max-rows=-1", "--json")
 	if got := graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "", "graph", scope+"beads/work", "--max-rows=0"); !strings.Contains(got, "2 Beads, 1 Links") {
 		t.Fatalf("explicit zero did not override graph row cap: %q", got)
 	}
 	if got := graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "", "dep", "tree", scope+"beads/work", "--max-rows=0"); !strings.Contains(got, "beads/parent") {
 		t.Fatalf("explicit zero did not override tree row cap: %q", got)
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "tree", "work", "--status", "open", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "tree", "beads/work", "--status", "open", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "cycles", "--include-tracks", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "graph", "check", "work", "--json")
-	if got := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "work", "--json"); got != workHistory {
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "graph", "check", "beads/work", "--json")
+	if got := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "beads/work", "--json"); got != workHistory {
 		t.Fatalf("dependency reads changed source History\nbefore: %s\nafter: %s", workHistory, got)
 	}
-	if got := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "parent", "--json"); got != parentHistory {
+	if got := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "beads/parent", "--json"); got != parentHistory {
 		t.Fatalf("child and dependency reads changed parent History\nbefore: %s\nafter: %s", parentHistory, got)
 	}
 }
