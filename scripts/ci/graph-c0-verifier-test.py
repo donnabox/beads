@@ -999,6 +999,158 @@ class ServerLifecycle(unittest.TestCase):
             self.assertIn("owned server exited before readiness", str(refused.exception.__context__))
             self.assertEqual(q.children, set())
             self.assertEqual(q.receipts[-1]["exit"], 3)
+
+class CohortDispatch(unittest.TestCase):
+    def test_actual_execute_routes_every_phase_exactly_once(self):
+        labels = {ast.literal_eval(c.args[3]) for c in self_calls("execute", "tests")}
+        self.assertEqual(set().union(*module.COHORT_PHASES.values()), labels)
+        self.assertFalse(module.COHORT_PHASES["storage"] & module.COHORT_PHASES["cli-http"])
+        for cohort in (*module.COHORT_PHASES, "all"):
+            with self.subTest(cohort=cohort), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                q = runner(directory)
+                q.root = Path(__file__).resolve().parents[2]
+                q.cohort, q.counts = cohort, {}
+                q.bd, q.dolt, q.artifacts = root / "bd", root / "dolt", root
+                for binary in (q.bd, q.dolt):
+                    binary.write_bytes(b"fixture executable")
+                    binary.chmod(0o755)
+                commit = "a" * 40
+                (root / "build-manifest.txt").write_text("commit=" + commit + "\nbuild_tags=gms_pure_go\n")
+                (root / "SHA256SUMS").write_text(module.digest(q.bd) + "  bd-linux-gms-pure\n")
+                q.client_checkout, q.client_manifest, q.node = root, root / "client.json", root / "node"
+                captures, commands = [], []
+                q.server = lambda label: contextlib.nullcontext(12345)
+                def tests(package, selector, files, label, required_subtests=(), groups=1):
+                    self.assertNotIn(label, q.counts)
+                    if label == "storage":
+                        self.assertEqual(groups, 8)
+                        self.assertEqual(len(required_subtests), 6)
+                    if label == "cli":
+                        self.assertEqual(groups, 20)
+                        self.assertTrue(any("/embedded" in n for n in required_subtests))
+                        self.assertTrue(any("/server" in n for n in required_subtests))
+                    q.counts[label] = 1
+                def run(argv, label, **kwargs):
+                    commands.append(label)
+                    if label == "head": return commit.encode()
+                    if label == "source-status": return b""
+                    if label == "dolt-version": return b"dolt version 2.1.8\n"
+                    if label == "python-example-tests":
+                        count = sum(len(re.findall(r"^    def test_\w+\(", p.read_text(), re.MULTILINE))
+                                    for p in (q.root / "examples/bdp-read").glob("test_*.py"))
+                        (root / (label + ".stderr")).write_text(f"Ran {count} tests in 0.01s\nOK\n")
+                    if label == "bdp-http-capture":
+                        (root / "http").mkdir()
+                        summary = {key: module.digest(q.root / path) for key, path in (
+                            ("harness_sha256", "scripts/graph-bdp-read-smoke.py"),
+                            ("client_harness_sha256", "scripts/graph-bdp-read-client.mjs"),
+                            ("python_example_sha256", "examples/bdp-read/read_beads.py"))}
+                        (root / "http/summary.json").write_text(json.dumps(summary))
+                    return b""
+                q.tests, q.run = tests, run
+                q.capture = lambda engine, port: captures.append(engine)
+                with mock.patch.object(module, "verify_http_capture") as http:
+                    q.execute()
+                client = cohort != "storage"
+                self.assertEqual(set(q.counts), labels if cohort == "all" else module.COHORT_PHASES[cohort])
+                self.assertEqual(captures, ["embedded", "server"] if client else [])
+                self.assertEqual(http.call_count, int(client))
+                self.assertEqual("python-example-tests" in commands, client)
+                self.assertEqual("bdp-http-capture" in commands, client)
+                summary = json.loads((root / "summary.json").read_text())
+                source = json.loads((root / "source.json").read_text())
+                self.assertEqual(source["cohort"], cohort)
+                self.assertEqual(summary["cohort"], cohort)
+                self.assertTrue(all(summary[k] == source[k] for k in module.BINDING_FIELDS))
+
+
+class CohortFanIn(unittest.TestCase):
+    def exercise(self, change=None):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            artifacts = root / "build"
+            artifacts.mkdir()
+            (artifacts / "bd-linux-gms-pure").write_bytes(b"exact binary")
+            commit, runner_hash = "a" * 40, "b" * 64
+            binding = dict(commit=commit, binarySHA256=module.digest(artifacts / "bd-linux-gms-pure"),
+                           doltSHA256="c" * 64, runnerSHA256=runner_hash)
+            (artifacts / "build-manifest.txt").write_text(f"commit={commit}\nbuild_tags=gms_pure_go\n")
+            (artifacts / "SHA256SUMS").write_text(binding["binarySHA256"] + "  bd-linux-gms-pure\n")
+            evidence = root / "cohorts"
+            for cohort, labels in module.COHORT_PHASES.items():
+                path = evidence / cohort / "graph-c0-evidence"
+                path.mkdir(parents=True)
+                (path / "source.json").write_text(json.dumps(dict(binding, cohort=cohort)))
+                client = cohort == "cli-http"
+                (path / "summary.json").write_text(json.dumps(dict(binding, cohort=cohort,
+                    passed={label: 1 for label in labels}, engines=["embedded", "server"], childrenRemaining=0,
+                    installedCLICommands=10 if client else 0, bdpHTTP=client, pythonBDP=client)))
+                (path / "receipts.json").write_text(json.dumps([
+                    dict(label="phase", exit=0), dict(label="phase-server-shutdown", exit=0,
+                        forced=False, groupGone=True, portClosed=True)]))
+            if change:
+                change(evidence, artifacts)
+                with self.assertRaises((RuntimeError, FileNotFoundError)):
+                    module.combine_cohorts(evidence, artifacts, root / "combined.json", commit, runner_hash)
+                self.assertFalse((root / "combined.json").exists())
+            else:
+                result = module.combine_cohorts(evidence, artifacts, root / "combined.json", commit, runner_hash)
+                self.assertEqual(set(result["cohorts"]), set(module.COHORT_PHASES))
+                self.assertEqual(set(result["passed"]), set().union(*module.COHORT_PHASES.values()))
+                self.assertEqual(result["commit"], commit)
+                self.assertEqual(result["binarySHA256"], binding["binarySHA256"])
+    def test_complete_matching_cohorts(self): self.exercise()
+
+    def test_missing_mismatched_partial_or_failed_cohort_refuses(self):
+        def edit(relative, mutate):
+            def change(evidence, artifacts):
+                path = evidence / Path(relative).parts[0] / "graph-c0-evidence" / Path(*Path(relative).parts[1:])
+                value = json.loads(path.read_text())
+                mutate(value)
+                path.write_text(json.dumps(value))
+            return change
+        cases = {
+            "missing": lambda e, a: (e / "storage/graph-c0-evidence/summary.json").unlink(),
+            "wrong-cohort": edit("storage/source.json", lambda v: v.update(cohort="cli-http")),
+            "wrong-source": edit("storage/source.json", lambda v: v.update(commit="d" * 40)),
+            "wrong-binary": edit("storage/source.json", lambda v: v.update(binarySHA256="d" * 64)),
+            "wrong-runner": edit("storage/source.json", lambda v: v.update(runnerSHA256="d" * 64)),
+            "different-dolt": edit("storage/source.json", lambda v: v.update(doltSHA256="d" * 64)),
+            "summary-source": edit("storage/summary.json", lambda v: v.update(commit="d" * 40)),
+            "missing-phase": edit("cli-http/summary.json", lambda v: v["passed"].pop("graph-http")),
+            "zero-roots": edit("storage/summary.json", lambda v: v["passed"].update(storage=0)),
+            "missing-engine": edit("storage/summary.json", lambda v: v.update(engines=["embedded"])),
+            "live-child": edit("storage/summary.json", lambda v: v.update(childrenRemaining=1)),
+            "no-http": edit("cli-http/summary.json", lambda v: v.update(bdpHTTP=False)),
+            "failed-command": edit("storage/receipts.json", lambda v: v[0].update(exit=1)),
+            "forced-cleanup": edit("storage/receipts.json", lambda v: v[1].update(forced=True)),
+            "open-port": edit("storage/receipts.json", lambda v: v[1].update(portClosed=False)),
+            "changed-artifact": lambda e, a: (a / "bd-linux-gms-pure").write_bytes(b"different binary"),
+        }
+        for name, change in cases.items():
+            with self.subTest(case=name): self.exercise(change)
+
+
+class CohortWorkflow(unittest.TestCase):
+    def test_required_gate_requires_both_independent_source_bound_jobs(self):
+        workflow = (Path(__file__).resolve().parents[2] / ".github/workflows/pr.yml").read_text()
+        cohort = workflow.split("  graph-c0-cohort:\n", 1)[1].split("  graph-c0:\n", 1)[0]
+        gate = workflow.split("  graph-c0:\n", 1)[1].split("\n  # The Bazel lane", 1)[0]
+        self.assertIn("cohort: [storage, cli-http]", cohort)
+        self.assertIn("fail-fast: false", cohort)
+        self.assertIn("timeout-minutes: 90", cohort)
+        self.assertIn('--cohort "${{ matrix.cohort }}"', cohort)
+        self.assertIn("name: graph-c0-${{ matrix.cohort }}-${{ github.sha }}", cohort)
+        self.assertIn("if: ${{ always() }}", gate)
+        self.assertIn("needs: [build-artifacts, graph-c0-cohort]", gate)
+        self.assertIn('run: test "$COHORT_RESULT" = success', gate)
+        for name in ("storage", "cli-http"):
+            self.assertIn(f"name: graph-c0-{name}-${{{{ github.sha }}}}", gate)
+        self.assertIn("--combine-cohorts", gate)
+        self.assertIn("name: Graph core / real engines, installed CLI and BDP", gate)
+
+
 class SmokeDeadlines(unittest.TestCase):
     # The HTTP/BDP smoke starts with a server-backed `bd init`. Hosted runners differ by
     # about 2x: that init took 34 s on a fast runner and 58 s and 65 s on slow ones, and the
@@ -1011,7 +1163,7 @@ class SmokeDeadlines(unittest.TestCase):
     # The wrapper must outlast the smoke's whole run by the time the smoke needs to reap its
     # children and report its own labelled failure; the original margin was this much.
     WRAPPER_MARGIN_SECONDS = 60
-    JOB_NAME = "Graph core / real engines, installed CLI and BDP"
+    JOB_NAME = "Graph core / ${{ matrix.cohort }}"
     # Whole-job durations on hosted runners: 27 min on a fast one, 43 to 44 min on five slow
     # ones (each stopped at the smoke's first command), and one slow runner whose job was cut
     # off by the 50 min cap 11 s into the smoke. That last one is a floor for what a complete
