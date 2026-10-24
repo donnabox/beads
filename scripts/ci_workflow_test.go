@@ -4092,6 +4092,19 @@ func TestBazelWorkflowRunsCIConfigWithReports(t *testing.T) {
 		t.Errorf("%s has no timeout-minutes", bazelJobName)
 	}
 	testStep := job.step(t, "bazel test //... --config=ci")
+	// PR #276 job 120799042314 exhausted 95 minutes with 221/222 tests
+	// complete and the last bd_test shard still progressing. Retain the
+	// five-minute outer margin while adding cumulative cold-run headroom;
+	// individual action/test deadlines remain governed by .bazelrc.
+	const observedCutoffMinutes = 95
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; testStep.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cutoff plus %d minutes headroom)",
+			bazelJobName, testStep.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
+	}
+	if job.TimeoutMinutes < testStep.TimeoutMinutes+5 || job.TimeoutMinutes > testStep.TimeoutMinutes+15 {
+		t.Errorf("%s timeout-minutes = %d, want the test step's %d plus 5 to 15 minutes for setup/reports/cleanup", bazelJobName, job.TimeoutMinutes, testStep.TimeoutMinutes)
+	}
 	for _, required := range []string{"bazel test //... --config=ci", "--profile=", "--build_event_json_file=", "set -o pipefail"} {
 		if !strings.Contains(testStep.Run, required) {
 			t.Errorf("test step does not contain %q:\n%s", required, testStep.Run)
@@ -4417,12 +4430,15 @@ func TestBazelIntegrationJob(t *testing.T) {
 	// (rbe-west's 1200s limit). The job adds setup and log upload. In mode
 	// cache it runs on a 4-CPU GitHub-hosted runner, and with the read-only
 	// cache closed (the farm's kill switch) the whole suite builds and runs
-	// there cold, about 30 minutes simulated: the step keeps twice that.
+	// there cold. PR276 job120799042322 exhausted 75 minutes while the
+	// last shard still progressed after 178/179 tests; reserve 15 minutes
+	// beyond that observed cumulative cutoff without raising action limits.
 	const coldCompileMinutes = 20
-	const cacheClosedMinutes = 30
-	if test.TimeoutMinutes < 2*cacheClosedMinutes {
-		t.Errorf("%s test step timeout-minutes = %d, want at least %d (mode cache with the cache closed: ~%d minutes cold on a GitHub-hosted runner)",
-			bazelIntegJobName, test.TimeoutMinutes, 2*cacheClosedMinutes, cacheClosedMinutes)
+	const observedCutoffMinutes = 75
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; test.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cumulative cutoff plus %d minutes headroom)",
+			bazelIntegJobName, test.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
 	}
 	actionCapMinutes := 0
 	for line := range bazelrcLines(t) {
