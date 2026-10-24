@@ -18,7 +18,7 @@ func runGraphPreviewComments(cmd *cobra.Command, args []string) error {
 	}
 	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)

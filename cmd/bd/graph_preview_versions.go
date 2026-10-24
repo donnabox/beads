@@ -94,7 +94,7 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 	// the same reason.
 	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		history, err := store.History(ctx, path)

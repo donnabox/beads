@@ -31,7 +31,7 @@ type CurrentFamilyRequest struct {
 
 // CurrentFamilyRead retains canonical Records separately from selected graph
 // membership: embedded Owned copies must never be interpreted as selected edges.
-// Graph uses local paths; canonical Records retain their original absolute IDs,
+// Graph uses exact local public IDs; canonical Records retain their absolute IDs,
 // properties, metadata, pins, ownership and attribution. WriterToken and current
 // revisions describe this one observed view, not resolution of historical pins.
 // Types/OwnedLinkTypes use the existing checked Snapshot context vocabulary.

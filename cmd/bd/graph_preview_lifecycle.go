@@ -93,9 +93,12 @@ var linkUpdateCmd = &cobra.Command{
 		}
 		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err != nil {
+			return err
+		}
+		if err := graph.ValidateLinkPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return runGraphPreviewUpdate(cmd, []string{graphPreviewConfig.GraphScopeURL + path})
+		return runGraphPreviewUpdate(cmd, []string{selector})
 	},
 }
 
@@ -113,9 +116,12 @@ var linkVersionsCmd = &cobra.Command{
 		}
 		path, err := graphPreviewResolvedHistoricalPath(args[0])
 		if err != nil {
+			return err
+		}
+		if err := graph.ValidateLinkPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return runGraphPreviewVersions(cmd, []string{path})
+		return runGraphPreviewVersions(cmd, args)
 	},
 }
 
@@ -128,9 +134,12 @@ var linkCompareCmd = &cobra.Command{
 		}
 		path, err := graphPreviewResolvedHistoricalPath(args[0])
 		if err != nil {
+			return err
+		}
+		if err := graph.ValidateLinkPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return runGraphPreviewCompare(cmd, []string{path})
+		return runGraphPreviewCompare(cmd, args)
 	},
 }
 
@@ -188,7 +197,7 @@ func init() {
 func graphPreviewBeadSelector(selector string) (string, error) {
 	path, err := graphPreviewResolvedHistoricalPath(selector)
 	if err != nil {
-		return "", graphFailure("invalid_selector", err.Error(), 2)
+		return "", err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
@@ -361,7 +370,7 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 	}
 	path, err := graphPreviewResolvedHistoricalPath(selector)
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
 	revision, _ := cmd.Flags().GetString("if-revision")
 	sourceRevision, _ := cmd.Flags().GetString("if-source-revision")
@@ -446,7 +455,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		}
 		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		if err := graph.ValidateLinkPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)

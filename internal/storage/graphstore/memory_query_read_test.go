@@ -217,7 +217,7 @@ func TestMemoryCanonicalMixedIssuePath(t *testing.T) {
 		}
 	})
 	for _, p := range []string{"i1", "i2"} {
-		if _, err := s.CreateIssue(ctx, "beads/"+p, plainIssue(p)); err != nil {
+		if _, err := s.CreateIssue(ctx, "beads/"+p, plainIssueAtPublicID(p, "beads/"+p)); err != nil {
 			t.Fatal(err)
 		}
 	}

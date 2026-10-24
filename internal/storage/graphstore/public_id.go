@@ -136,10 +136,10 @@ func (s *Store) resolveAllocatedResourcePath(ctx context.Context, id string, all
 // reason rather than being renamed, encoded, trimmed or truncated.
 func validatePublicID(id string) error {
 	if !utf8.ValidString(id) || strings.TrimSpace(id) == "" {
-		return fmt.Errorf("%w: incompatible public ID %q: expected nonblank UTF-8", storage.ErrValidation, id)
+		return fmt.Errorf("%w: incompatible public ID %q: expected nonblank UTF-8; choose an explicit compatible replacement ID", storage.ErrValidation, id)
 	}
 	if err := graph.ValidateCanonicalResourceID(id); err != nil {
-		return fmt.Errorf("%w: incompatible public ID %q: %w", storage.ErrValidation, id, err)
+		return fmt.Errorf("%w: incompatible public ID %q: %w; choose an explicit compatible replacement ID", storage.ErrValidation, id, err)
 	}
 	return nil
 }

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
-	"strings"
 	"testing"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -20,7 +19,7 @@ func TestAllocatedResourceIdentityUsesCatalogKind(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			path := strings.TrimPrefix(memory.ID, store.ScopeURL())
+			path := fixtureResourcePath(t, ctx, store, memory.ID)
 			got, err := store.ResolveAllocatedResourceIdentity(ctx, "links/a-memory")
 			want := AllocatedResourceIdentity{PublicID: "links/a-memory", PrivatePath: path, Kind: graph.KindBead, State: "live"}
 			if err != nil || got != want {

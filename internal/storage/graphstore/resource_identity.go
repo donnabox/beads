@@ -64,10 +64,9 @@ func (s *Store) readAllocatedResourceIdentity(ctx context.Context, lookup func(*
 	return identity, nil
 }
 
-// ResolveCanonicalPublicResourceIdentity resolves a safe canonical public URI through
-// Bead/Link allocations only. It is not a complete public route: registered Type
-// and navigation collision checks belong to the subsequent common switch. This
-// preparatory API changes neither the rooted protocol readers nor snapshots.
+// ResolveCanonicalPublicResourceIdentity resolves an exact same-Scope public URI
+// through the lifetime Bead/Link catalog. Registered Type and navigation URLs
+// are separate authority facts, not inferred Resource-kind prefix families.
 func (s *Store) ResolveCanonicalPublicResourceIdentity(ctx context.Context, uri string) (AllocatedResourceIdentity, error) {
 	id, err := graph.ScopeLocalPublicResourceID(s.ScopeURL(), uri)
 	if err != nil {

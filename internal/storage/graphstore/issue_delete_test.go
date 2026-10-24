@@ -204,7 +204,7 @@ func TestIssueDeleteComposesDependencyUnlinksInOneTransaction(t *testing.T) {
 				}
 			}
 			for i, target := range f.targets {
-				got, err := f.store.ShowIssue(f.ctx, strings.TrimPrefix(target.ID, f.store.ScopeURL()))
+				got, err := f.store.ShowIssue(f.ctx, fixtureResourcePath(t, f.ctx, f.store, target.ID))
 				if err != nil || !reflect.DeepEqual(got, target) {
 					t.Fatalf("target %d changed: %+v %v", i, got, err)
 				}

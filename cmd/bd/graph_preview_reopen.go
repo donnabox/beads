@@ -25,7 +25,7 @@ func runGraphPreviewReopen(cmd *cobra.Command, args []string) error {
 	for i, selector := range args {
 		path, err := graphPreviewResolvedHistoricalPath(selector)
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		if err := graph.ValidateBeadPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)

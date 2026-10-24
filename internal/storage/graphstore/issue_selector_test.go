@@ -98,7 +98,7 @@ func TestDependencyCreateSelectsOpaqueIssueIDInsideWrite(t *testing.T) {
 				TargetPath: "beads/target", Actor: "author",
 			}
 			created, err := s.AddDependency(ctx, request)
-			if err != nil || !created.Changed || created.Source.Properties.ID != "beads/exp-fixed" || created.Link.Source != s.ScopeURL()+"beads/other" {
+			if err != nil || !created.Changed || created.Source.Properties.ID != "beads/exp-fixed" || created.Link.Source != s.ScopeURL()+literal.Issue.ID {
 				t.Fatalf("opaque source selected graph path owner: %+v %v", created, err)
 			}
 			pathOwner, err := s.ShowIssue(ctx, "beads/exp-fixed")

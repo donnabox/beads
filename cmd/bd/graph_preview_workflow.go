@@ -517,7 +517,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 	for i, selector := range args {
 		path, err := graphPreviewResolvedWritePath(selector)
 		if err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
+			return err
 		}
 		if err := graph.ValidateBeadPath(path); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
