@@ -4092,6 +4092,19 @@ func TestBazelWorkflowRunsCIConfigWithReports(t *testing.T) {
 		t.Errorf("%s has no timeout-minutes", bazelJobName)
 	}
 	testStep := job.step(t, "bazel test //... --config=ci")
+	// PR #276 job 120799042314 exhausted 95 minutes with 221/222 tests
+	// complete and the last bd_test shard still progressing. Retain the
+	// five-minute outer margin while adding cumulative cold-run headroom;
+	// individual action/test deadlines remain governed by .bazelrc.
+	const observedCutoffMinutes = 95
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; testStep.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cutoff plus %d minutes headroom)",
+			bazelJobName, testStep.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
+	}
+	if job.TimeoutMinutes < testStep.TimeoutMinutes+5 || job.TimeoutMinutes > testStep.TimeoutMinutes+15 {
+		t.Errorf("%s timeout-minutes = %d, want the test step's %d plus 5 to 15 minutes for setup/reports/cleanup", bazelJobName, job.TimeoutMinutes, testStep.TimeoutMinutes)
+	}
 	for _, required := range []string{"bazel test //... --config=ci", "--profile=", "--build_event_json_file=", "set -o pipefail"} {
 		if !strings.Contains(testStep.Run, required) {
 			t.Errorf("test step does not contain %q:\n%s", required, testStep.Run)

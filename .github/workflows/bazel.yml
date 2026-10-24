@@ -794,7 +794,8 @@ jobs:
     # worker pool shared with gascity). Skipped only in mode skip (same-repo
     # runs while RBE_WEST_WORKERS is unset).
     if: ${{ needs.rbe.outputs.mode != 'skip' }}
-    timeout-minutes: 100
+    # Preserve five minutes beyond the test step for setup/reports/cleanup.
+    timeout-minutes: 115
     outputs:
       result: ${{ steps.result.outputs.result }}
     env:
@@ -891,11 +892,13 @@ jobs:
       # --profile and --build_event_json_file are command options, so they go
       # after `test` (a startup position fails).
       # A cold local fork run executes every action on the runner. The
-      # assembled Preview 3 suite completed successfully in 90m39s; leave
-      # room for that work while retaining the job's 100-minute outer bound.
+      # assembled Preview 3 suite completed successfully in 90m39s, but
+      # PR #276's cache-unreachable run exhausted 95 minutes with 221/222
+      # tests complete and bd_test shards still progressing. Add 15 minutes
+      # beyond that cumulative cutoff; keep action limits and shards fixed.
       - name: bazel test //... --config=ci
         id: test
-        timeout-minutes: 95
+        timeout-minutes: 110
         run: |
           set -o pipefail
           start=$(date +%s)
