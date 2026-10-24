@@ -78,6 +78,12 @@ type canonicalCollectionFailure struct {
 	jsonl    bool
 }
 
+// Distinguish store-bound endpoint/pin failures from pure invocation errors.
+// The latter have already been checked before opening the graph.
+type canonicalCollectionEndpointReadError struct{ error }
+
+func (e *canonicalCollectionEndpointReadError) Unwrap() error { return e.error }
+
 func (f canonicalCollectionFailure) RenderFailure(origin string, problem json.RawMessage) ([]byte, error) {
 	if !f.jsonl {
 		return f.renderer.RenderFailure(origin, problem)
@@ -118,35 +124,11 @@ func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutpu
 }
 
 func canonicalCollectionRequestIn(cmd *cobra.Command, links bool, options clioutput.Options, ctx context.Context, store *graphstore.Store) (canonicalCollectionPlan, error) {
-	plan := canonicalCollectionPlan{options: options, links: links}
-	format := "default"
-	if len(options.Formats) != 0 {
-		format = options.Formats[0]
-	}
-	plan.jsonl = format == "jsonl"
-	paged, _ := cmd.Flags().GetBool("paged")
-	unpaged, _ := cmd.Flags().GetBool("unpaged")
-	pageSize, _ := cmd.Flags().GetInt("page-size")
-	limit := 0
-	if cmd.Flags().Changed("limit") {
-		limit, _ = cmd.Flags().GetInt("limit")
-	}
-	if pageSize <= 0 {
-		return plan, fmt.Errorf("--page-size must be positive")
-	}
-	paging, err := clioutput.ResolvePaging(clioutput.PagingOptions{Paged: paged, Unpaged: unpaged, PageSize: pageSize, Limit: limit}, format)
+	plan, exact, family, err := canonicalCollectionPureRequest(cmd, links, options)
 	if err != nil {
 		return plan, err
-	}
-	plan.paging = paging
-	if cmd.Flags().Changed("continue") {
-		return plan, fmt.Errorf("%w: local collection reads cannot resume retained continuations; use a complete --unpaged selection", graphstore.ErrCapabilityUnavailable)
 	}
 	parameters := url.Values{}
-	exact, family, err := graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, links)
-	if err != nil {
-		return plan, err
-	}
 	if exact != "" {
 		parameters.Set("type", exact)
 	}
@@ -165,6 +147,9 @@ func canonicalCollectionRequestIn(cmd *cobra.Command, links bool, options cliout
 				}, func(message string) error { return errors.New(message) })
 		}
 		if err != nil {
+			if store != nil {
+				return plan, &canonicalCollectionEndpointReadError{err}
+			}
 			return plan, err
 		}
 		// The BDP selector has no pair-union parameter. For a two-Bead
@@ -192,6 +177,70 @@ func canonicalCollectionRequestIn(cmd *cobra.Command, links bool, options cliout
 		return plan, fmt.Errorf("--%s requires a canonical absolute HTTP(S) Type URI (for a local Type, %stypes/NAME); use an installed Type or native classification shorthand", flag, graphPreviewConfig.GraphScopeURL)
 	}
 	return plan, err
+}
+
+// Reject deterministic option and selector syntax before opening a graph.
+// Endpoint allocation and pin checks stay inside the canonical read owner.
+func canonicalCollectionPureRequest(cmd *cobra.Command, links bool, options clioutput.Options) (canonicalCollectionPlan, string, string, error) {
+	plan := canonicalCollectionPlan{options: options, links: links}
+	format := "default"
+	if len(options.Formats) != 0 {
+		format = options.Formats[0]
+	}
+	plan.jsonl = format == "jsonl"
+	paged, _ := cmd.Flags().GetBool("paged")
+	unpaged, _ := cmd.Flags().GetBool("unpaged")
+	pageSize, _ := cmd.Flags().GetInt("page-size")
+	limit := 0
+	if cmd.Flags().Changed("limit") {
+		limit, _ = cmd.Flags().GetInt("limit")
+	}
+	if pageSize <= 0 {
+		return plan, "", "", fmt.Errorf("--page-size must be positive")
+	}
+	paging, err := clioutput.ResolvePaging(clioutput.PagingOptions{Paged: paged, Unpaged: unpaged, PageSize: pageSize, Limit: limit}, format)
+	if err != nil {
+		return plan, "", "", err
+	}
+	plan.paging = paging
+	if cmd.Flags().Changed("continue") {
+		return plan, "", "", fmt.Errorf("%w: local collection reads cannot resume retained continuations; use a complete --unpaged selection", graphstore.ErrCapabilityUnavailable)
+	}
+	exact, family, err := graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, links)
+	return plan, exact, family, err
+}
+
+func canonicalCollectionPreflight(cmd *cobra.Command, links bool, options clioutput.Options) error {
+	if _, _, _, err := canonicalCollectionPureRequest(cmd, links, options); err != nil {
+		return err
+	}
+	if !links {
+		return nil
+	}
+	_, err := graphPreviewLinkCollectionRequestWith(cmd, cmd.Flags().Args(),
+		func(selector string) (string, string, graphstore.LinkPinSelection, error) {
+			ref, err := graphPreviewParseReference(selector)
+			if err != nil {
+				return "", "", graphstore.LinkPinSelection{}, err
+			}
+			path, _, err := graphPreviewResourceReadSelectorIn(graphPreviewConfig.GraphScopeURL, ref.Identity)
+			return path, "", graphstore.LinkPinSelection{}, err
+		}, func(message string) error { return errors.New(message) })
+	return err
+}
+
+func canonicalCollectionRequestFailure(cmd *cobra.Command, failure canonicalCollectionFailure, err error) error {
+	var endpoint *canonicalCollectionEndpointReadError
+	if errors.As(err, &endpoint) {
+		return canonicalReadError(cmd, failure, endpoint.error, "route_unavailable")
+	}
+	if errors.Is(err, graphstore.ErrCapabilityUnavailable) {
+		return canonicalFailure(cmd, failure, "capability_unavailable", err.Error(), 5)
+	}
+	if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) || errors.Is(err, graphstore.ErrVersionUnknown) || errors.Is(err, graphstore.ErrInvalidStore) {
+		return canonicalReadError(cmd, failure, err, "invalid_selector")
+	}
+	return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 }
 
 func runCanonicalCollection(cmd *cobra.Command, links bool) error {
@@ -225,6 +274,9 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "all-revisions", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
+	if err := canonicalCollectionPreflight(cmd, links, options); err != nil {
+		return canonicalCollectionRequestFailure(cmd, failure, err)
+	}
 	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
 	defer cancel()
 	store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
@@ -239,13 +291,7 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	}()
 	plan, err := canonicalCollectionRequestIn(cmd, links, options, ctx, store)
 	if err != nil {
-		if errors.Is(err, graphstore.ErrCapabilityUnavailable) {
-			return canonicalFailure(cmd, failure, "capability_unavailable", err.Error(), 5)
-		}
-		if errors.Is(err, graphstore.ErrNotFound) || errors.Is(err, graphstore.ErrGone) || errors.Is(err, graphstore.ErrVersionUnknown) || errors.Is(err, graphstore.ErrInvalidStore) {
-			return canonicalReadError(cmd, failure, err, "invalid_selector")
-		}
-		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
+		return canonicalCollectionRequestFailure(cmd, failure, err)
 	}
 	inventory, err := graphread.New(store).Inventory(ctx)
 	if err != nil {
