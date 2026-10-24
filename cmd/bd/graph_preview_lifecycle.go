@@ -59,13 +59,13 @@ var linkCreateCmd = &cobra.Command{
 }
 
 var linkListCmd = &cobra.Command{
-	Use: "list", Short: "List current Links in a graph workspace",
-	Args: cobra.NoArgs, SilenceUsage: true, SilenceErrors: true, RunE: runGraphPreviewLinkCollection,
+	Use: "list [BEAD [OTHER]]", Short: "List current Links in a graph workspace",
+	Args: cobra.MaximumNArgs(2), SilenceUsage: true, SilenceErrors: true, RunE: runGraphPreviewLinkCollection,
 }
 
 var linkCountCmd = &cobra.Command{
-	Use: "count", Short: "Count current Links matching the collection filters",
-	Args: cobra.NoArgs, SilenceUsage: true, SilenceErrors: true, RunE: runGraphPreviewLinkCollection,
+	Use: "count [BEAD [OTHER]]", Short: "Count current Links matching the collection filters",
+	Args: cobra.MaximumNArgs(2), SilenceUsage: true, SilenceErrors: true, RunE: runGraphPreviewLinkCollection,
 }
 
 var linkShowCmd = &cobra.Command{
@@ -164,7 +164,8 @@ func init() {
 		command.Flags().String("from", "", "Select Links with this local source Bead")
 		command.Flags().String("to", "", "Select Links with this local target Bead")
 		command.Flags().String("incident-to", "", "Select Links incident to this local Bead")
-		command.Flags().String("direction", "both", "With --incident-to: in, out, or both")
+		command.Flags().String("direction", "both", "With one Bead or --incident-to: in, out, or both; with two Beads default is out")
+		command.Flags().Bool("all-revisions", false, "Ignore endpoint-pin applicability while selecting current live Links")
 	}
 	linkShowCmd.Flags().String("revision", "", "Read an exact retained Link version")
 	linkShowCmd.Flags().String("format", "", "Use graph-json for the complete graph record")
@@ -275,58 +276,172 @@ func graphPreviewDisplayLocalURL(url string) string {
 	return url
 }
 
-func graphPreviewLinkCollectionRequest(cmd *cobra.Command) (graphstore.LinkCollectionRequest, error) {
+func graphPreviewLinkCollectionEndpoint(selector string) (string, string, graphstore.LinkPinSelection, error) {
+	ref, err := graphPreviewResolveReference(selector)
+	if err != nil {
+		return "", "", graphstore.LinkPinSelection{}, graphPreviewReferenceFailure(err)
+	}
+	path, err := graphPreviewBeadSelector(ref.Identity)
+	if err != nil {
+		return "", "", graphstore.LinkPinSelection{}, err
+	}
+	var publicURL string
+	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		identity, lookupErr := store.AllocatedResourceIdentityForPath(ctx, path)
+		if lookupErr != nil {
+			return nil, "", lookupErr
+		}
+		publicURL, lookupErr = graph.CanonicalPublicResourceURL(store.ScopeURL(), identity.PublicID)
+		return nil, "", lookupErr
+	}, func(any, string) error { return nil })
+	if err != nil {
+		return "", "", graphstore.LinkPinSelection{}, err
+	}
+	if ref.Explicit && !ref.currentSelection() {
+		// An unknown or terminal retained token is never an empty successful
+		// current-Link selection. The immutable token is checked before the
+		// collection's current snapshot evaluates pin applicability.
+		err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+			_, readErr := store.ReadVersion(ctx, path, ref.Revision)
+			return nil, "", readErr
+		}, func(any, string) error { return nil })
+		if err != nil {
+			return "", "", graphstore.LinkPinSelection{}, err
+		}
+	}
+	return path, publicURL, graphstore.LinkPinSelection{Revision: ref.Revision, Explicit: ref.Explicit, Current: ref.currentSelection()}, nil
+}
+
+// Canonical collection planning runs under its read owner. This resolver
+// returns raw selector/storage errors; it never writes a legacy diagnostic.
+func graphPreviewLinkCollectionEndpointRaw(ctx context.Context, store *graphstore.Store, selector string) (string, string, graphstore.LinkPinSelection, error) {
+	ref, err := graphPreviewParseReference(selector)
+	if err != nil {
+		return "", "", graphstore.LinkPinSelection{}, err
+	}
+	if strings.Contains(ref.Identity, "://") && !graphPreviewCanonicalResourceAddress(store.ScopeURL(), ref.Identity) {
+		return "", "", graphstore.LinkPinSelection{}, fmt.Errorf("endpoint requires a canonical URL in this Scope")
+	}
+	var identity graphstore.AllocatedResourceIdentity
+	if graphPreviewCanonicalResourceAddress(store.ScopeURL(), ref.Identity) {
+		identity, err = store.ResolveCanonicalPublicResourceIdentity(ctx, ref.Identity)
+	} else {
+		identity, err = store.ResolveAllocatedResourceIdentity(ctx, ref.Identity)
+	}
+	if err != nil {
+		return "", "", graphstore.LinkPinSelection{}, err
+	}
+	if err := graph.ValidateBeadPath(identity.PrivatePath); err != nil {
+		return "", "", graphstore.LinkPinSelection{}, err
+	}
+	if ref.Ordinal != 0 {
+		row, readErr := store.ResolveLocalRevision(ctx, identity.PrivatePath, ref.Ordinal)
+		if readErr != nil {
+			return "", "", graphstore.LinkPinSelection{}, readErr
+		}
+		ref.Revision = row.Version
+		ref.Ordinal = 0
+		ref.LiteralRevision = true
+	}
+	if ref.Explicit && !ref.currentSelection() {
+		if _, err := store.ReadVersion(ctx, identity.PrivatePath, ref.Revision); err != nil {
+			return "", "", graphstore.LinkPinSelection{}, err
+		}
+	}
+	publicURL, err := graph.CanonicalPublicResourceURL(store.ScopeURL(), identity.PublicID)
+	return identity.PrivatePath, publicURL, graphstore.LinkPinSelection{Revision: ref.Revision, Explicit: ref.Explicit, Current: ref.currentSelection()}, err
+}
+
+// A positional incidence can intersect independent source/target filters.
+// Refuse only a duplicate binding of incidence or of a pair endpoint.
+func graphPreviewLinkCollectionRequest(cmd *cobra.Command, args []string) (graphstore.LinkCollectionRequest, error) {
+	return graphPreviewLinkCollectionRequestWith(cmd, args, graphPreviewLinkCollectionEndpoint,
+		func(message string) error { return graphFailure("invalid_selector", message, 2) })
+}
+
+type graphPreviewLinkEndpointResolver func(string) (string, string, graphstore.LinkPinSelection, error)
+
+func graphPreviewLinkCollectionRequestWith(cmd *cobra.Command, args []string, endpoint graphPreviewLinkEndpointResolver, invalid func(string) error) (graphstore.LinkCollectionRequest, error) {
 	var request graphstore.LinkCollectionRequest
-	if err := graphPreviewFlags(cmd, "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction"); err != nil {
-		return request, err
+	if len(args) > 2 {
+		return request, invalid("link list/count accepts at most two Beads")
+	}
+	if len(args) != 0 {
+		blocked := []string{"incident-to"}
+		if len(args) == 2 {
+			blocked = []string{"from", "to"}
+		}
+		for _, name := range blocked {
+			if cmd.Flags().Changed(name) {
+				return request, invalid("positional Beads cannot accompany --" + name)
+			}
+		}
 	}
 	var err error
 	request.TypeURL, request.ConformsTo, err = graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, true)
 	if err != nil {
-		return request, graphFailure("invalid_selector", err.Error(), 2)
+		return request, invalid(err.Error())
 	}
 	for _, field := range []struct {
 		name string
 		dest *string
+		url  *string
+		pin  *graphstore.LinkPinSelection
 	}{
-		{"from", &request.SourcePath}, {"to", &request.TargetPath}, {"incident-to", &request.IncidentPath},
+		{"from", &request.SourcePath, &request.SourceURL, &request.SourcePin}, {"to", &request.TargetPath, &request.TargetURL, &request.TargetPin}, {"incident-to", &request.IncidentPath, &request.IncidentURL, &request.IncidentPin},
 	} {
 		if !cmd.Flags().Changed(field.name) {
 			continue
 		}
 		selector, _ := cmd.Flags().GetString(field.name)
 		if selector == "" {
-			return request, graphFailure("invalid_selector", "--"+field.name+" requires a Bead", 2)
+			return request, invalid("--" + field.name + " requires a Bead")
 		}
-		*field.dest, err = graphPreviewBeadSelector(selector)
+		*field.dest, *field.url, *field.pin, err = endpoint(selector)
 		if err != nil {
 			return request, err
 		}
 	}
+	if len(args) == 1 {
+		request.IncidentPath, request.IncidentURL, request.IncidentPin, err = endpoint(args[0])
+	} else if len(args) == 2 {
+		request.SourcePath, request.SourceURL, request.SourcePin, err = endpoint(args[0])
+		if err == nil {
+			request.TargetPath, request.TargetURL, request.TargetPin, err = endpoint(args[1])
+		}
+	}
+	if err != nil {
+		return request, err
+	}
+	request.AllRevisions, _ = cmd.Flags().GetBool("all-revisions")
 	direction, _ := cmd.Flags().GetString("direction")
 	if direction != "both" && direction != "in" && direction != "out" {
-		return request, graphFailure("invalid_selector", "direction must be in, out, or both", 2)
+		return request, invalid("direction must be in, out, or both")
+	}
+	if len(args) == 2 {
+		if !cmd.Flags().Changed("direction") {
+			direction = "out"
+		}
+		request.PairDirection = direction
+		return request, nil
 	}
 	if cmd.Flags().Changed("direction") && request.IncidentPath == "" {
-		return request, graphFailure("invalid_selector", "--direction requires --incident-to", 2)
+		return request, invalid("--direction requires --incident-to")
 	}
-	if direction == "in" && request.TargetPath != "" || direction == "out" && request.SourcePath != "" {
-		return request, graphFailure("invalid_selector", "--direction conflicts with an explicit endpoint filter on the same side", 2)
-	}
-	if direction == "in" {
-		request.TargetPath, request.IncidentPath = request.IncidentPath, ""
-	}
-	if direction == "out" {
-		request.SourcePath, request.IncidentPath = request.IncidentPath, ""
+	if request.IncidentPath != "" {
+		request.IncidentDirection = direction
 	}
 	return request, nil
 }
 
-func runGraphPreviewLinkCollection(cmd *cobra.Command, _ []string) error {
+func runGraphPreviewLinkCollection(cmd *cobra.Command, args []string) error {
 	if cmd.Name() == "list" && canonicalOutputSelected(cmd) {
 		return runCanonicalCollection(cmd, true)
 	}
-	request, err := graphPreviewLinkCollectionRequest(cmd)
+	if err := graphPreviewFlags(cmd, "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "all-revisions"); err != nil {
+		return err
+	}
+	request, err := graphPreviewLinkCollectionRequest(cmd, args)
 	if err != nil {
 		return err
 	}

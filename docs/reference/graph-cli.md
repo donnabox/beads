@@ -954,6 +954,8 @@ bd list --output-format json --unpaged
 bd list --output-format table --unpaged --include /properties/title
 bd link list --output-format json --unpaged --from beads/plan
 bd link list --output-format jsonl --incident-to beads/plan --direction in
+bd link list beads/plan --output-format json --unpaged
+bd link count beads/plan beads/review --direction both
 bd link list --output-format json --unpaged --omit envelope
 ```
 
@@ -964,12 +966,28 @@ They can be combined to require both predicates, for example
 canonical absolute HTTP(S) Type URI. Product collection flags also accept
 native names such as `task` and `blocks`; use a full URI when passing a Type
 identity between workspaces. Link selection accepts `--from`, `--to`, and
-`--incident-to`.
-An incident selection can use `--direction in`, `out`, or `both`. These filters
-combine with AND. Canonical collection selection includes every current matching
-Bead, without a default filter for Issue status. It refuses Issue workflow filters, including `--all`, and
-does not accept the textual query language. Legacy `bd list --all` retains its
-selection meaning; it is not a pagination flag.
+`--incident-to`. With no operands, `bd link list` and `bd link count` select
+matching current live Links. One Bead operand selects its incident Links; two
+operands select the first Bead's outgoing Links to the second. With two Beads,
+`--direction in` reverses the pair and `both` includes both directions once
+per Link. A one-Bead or `--incident-to` selection also accepts `in`, `out`, or
+`both`. One positional Bead can combine with `--from` or `--to` as an
+additional AND filter; `--incident-to` would bind its incidence twice. Two
+positional Beads can combine with `--incident-to`, but `--from` or `--to`
+would bind a pair endpoint twice.
+
+A bare Bead ID includes every endpoint pin. `ID@current` includes floating
+Links and Links pinned to the current Bead revision. `ID@N` and `ID@=TOKEN`
+select Links pinned to that exact revision; if it is current, floating Links
+also apply. `--all-revisions` ignores pin applicability while still selecting
+only current live Links. Count and list apply the same selection. A canonical
+Scope URL selects its exact graph path; a path-looking local ID remains an
+opaque public ID. Explicit endpoint filters combine with AND.
+
+Canonical Bead collection selection includes every current matching Bead,
+without a default filter for Issue status. It refuses Issue workflow filters,
+including `--all`, and does not accept the textual query language. Legacy
+`bd list --all` retains its selection meaning; it is not a pagination flag.
 
 `default` and `table` display generic identity columns; `detail` displays each
 selected record. The same JSON Pointer masks select optional fields for every

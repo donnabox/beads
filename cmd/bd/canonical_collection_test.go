@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -70,6 +71,50 @@ func canonicalCollectionTestPlan(t *testing.T, cmd *cobra.Command, links bool) (
 	return plan, canonicalCollectionFailure{renderer: renderer, jsonl: plan.jsonl}
 }
 
+func TestCanonicalCollectionAdmissionBeforeOpen(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+	}{
+		{"page size", []string{"--page-size", "0"}},
+		{"negative limit", []string{"--limit", "-1"}},
+		{"relative family", []string{"--conforms-to", "relative"}},
+		{"bad endpoint revision", []string{"--incident-to", "a@bogus"}},
+		{"duplicate positional incidence", []string{"a", "--incident-to", "b"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			args := append([]string{"--output-format", "json"}, tc.args...)
+			cmd, out, _ := canonicalCollectionTestCommand(t, true, args...)
+			err := runCanonicalCollection(cmd, true)
+			var exit *exitError
+			if !errors.As(err, &exit) || exit.Code != 2 || !strings.Contains(out.String(), `"code":"invalid_selector"`) || strings.Contains(out.String(), "graph_not_initialized") {
+				t.Fatalf("pre-store admission: err=%v output=%q", err, out.String())
+			}
+		})
+	}
+	t.Run("endpoint acquisition limit", func(t *testing.T) {
+		cmd, out, _ := canonicalCollectionTestCommand(t, true, "--output-format", "json")
+		options, _, err := canonicalOutputOptions(cmd)
+		if err != nil {
+			t.Fatal(err)
+		}
+		descriptor, err := canonicalCollectionDescriptor(true, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		renderer, err := clioutput.NewCollection(descriptor, options)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = canonicalCollectionRequestFailure(cmd, canonicalCollectionFailure{renderer: renderer},
+			&canonicalCollectionEndpointReadError{graphstore.ErrLimitExceeded})
+		var exit *exitError
+		if !errors.As(err, &exit) || exit.Code != 5 || !strings.Contains(out.String(), `"code":"capability_unavailable"`) || strings.Contains(out.String(), "invalid_selector") {
+			t.Fatalf("endpoint read limit: err=%v output=%q", err, out.String())
+		}
+	})
+}
+
 func canonicalCollectionRecord(id string) json.RawMessage {
 	return json.RawMessage(fmt.Sprintf(`{"id":%q,"type":%q,"revision":"r1","properties":{"body":"large","title":"title"},"metadata":{}}`, canonicalCollectionScope+"beads/"+id, canonicalCollectionScope+"types/note"))
 }
@@ -98,12 +143,93 @@ func TestCanonicalCollectionExistingBDPSelection(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd, _, _ := canonicalCollectionTestCommand(t, tc.links, append([]string{"--output-format", "json", "--unpaged"}, tc.args...)...)
-			plan, _ := canonicalCollectionTestPlan(t, cmd, tc.links)
+			var plan canonicalCollectionPlan
+			if tc.links {
+				// The BDP selector is pure. Product Link flags now resolve opaque
+				// public IDs through a real store, which the installed workflow
+				// below covers; keep this inventory test focused on BDP filtering.
+				parameters := url.Values{}
+				for _, binding := range []struct{ flag, parameter string }{{"from", "source"}, {"to", "target"}, {"incident-to", "endpoint"}} {
+					if cmd.Flags().Changed(binding.flag) {
+						value, _ := cmd.Flags().GetString(binding.flag)
+						parameters.Set(binding.parameter, value)
+					}
+				}
+				direction, _ := cmd.Flags().GetString("direction")
+				if direction != "both" {
+					key := "source"
+					if direction == "in" {
+						key = "target"
+					}
+					parameters.Set(key, parameters.Get("endpoint"))
+					parameters.Del("endpoint")
+				}
+				var err error
+				plan.selection, err = graphread.CompileCollection(scope, "links", parameters, graphread.SelectorLimits{})
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else {
+				plan, _ = canonicalCollectionTestPlan(t, cmd, false)
+			}
 			records, err := plan.selection.Select(inventory)
 			if err != nil || len(records) != tc.want {
 				t.Fatalf("selection=%s err=%v want=%d", records, err, tc.want)
 			}
 		})
+	}
+}
+
+func TestCanonicalLinkCollectionUsesCapturedEndpointRevisions(t *testing.T) {
+	cmd, _, _ := canonicalCollectionTestCommand(t, true, "--output-format", "json", "--unpaged")
+	_ = cmd
+	scope := canonicalCollectionScope
+	bead, linkType := scope+"types/note", scope+"types/related"
+	inventory := graphread.Inventory{
+		Beads: []bdpwire.BeadRecord{
+			{ID: scope + "a", Type: bead, Revision: "r2", Properties: bdpwire.Properties{}, Metadata: bdpwire.Metadata{}},
+			{ID: scope + "b", Type: bead, Revision: "r1", Properties: bdpwire.Properties{}, Metadata: bdpwire.Metadata{}},
+		},
+		Types: []bdpwire.TypeDescriptor{{ID: bead, Name: "Note", Describes: bdpwire.DescribesBead}, {ID: linkType, Name: "Related", Describes: bdpwire.DescribesLink}},
+	}
+	for _, link := range []struct{ id, source, target, sourcePin string }{
+		{"floating", "a", "b", ""}, {"old", "a", "b", "r1"}, {"current", "a", "b", "r2"},
+		{"reverse", "b", "a", ""}, {"self", "a", "a", ""},
+	} {
+		inventory.Links = append(inventory.Links, bdpwire.LinkRecord{ID: scope + "links/" + link.id, Type: linkType, Revision: "l1",
+			Source: bdpwire.Reference{URI: scope + link.source, Revision: link.sourcePin},
+			Target: bdpwire.Reference{URI: scope + link.target}, Properties: bdpwire.Properties{}, Metadata: bdpwire.Metadata{}})
+	}
+	selection, err := graphread.CompileCollection(scope, "links", url.Values{}, graphread.SelectorLimits{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name string
+		req  graphstore.LinkCollectionRequest
+		want int
+	}{
+		{"bare incidence", graphstore.LinkCollectionRequest{IncidentPath: "beads/a", IncidentURL: scope + "a"}, 5},
+		{"historical pin", graphstore.LinkCollectionRequest{IncidentPath: "beads/a", IncidentURL: scope + "a", IncidentPin: graphstore.LinkPinSelection{Revision: "r1", Explicit: true}}, 1},
+		{"current pin", graphstore.LinkCollectionRequest{IncidentPath: "beads/a", IncidentURL: scope + "a", IncidentPin: graphstore.LinkPinSelection{Current: true, Explicit: true}}, 4},
+		{"all revisions override", graphstore.LinkCollectionRequest{IncidentPath: "beads/a", IncidentURL: scope + "a", IncidentPin: graphstore.LinkPinSelection{Revision: "r1", Explicit: true}, AllRevisions: true}, 5},
+		{"out pair", graphstore.LinkCollectionRequest{SourcePath: "beads/a", SourceURL: scope + "a", TargetPath: "beads/b", TargetURL: scope + "b", PairDirection: "out"}, 3},
+		{"in pair", graphstore.LinkCollectionRequest{SourcePath: "beads/a", SourceURL: scope + "a", TargetPath: "beads/b", TargetURL: scope + "b", PairDirection: "in"}, 1},
+		{"both pair", graphstore.LinkCollectionRequest{SourcePath: "beads/a", SourceURL: scope + "a", TargetPath: "beads/b", TargetURL: scope + "b", PairDirection: "both"}, 4},
+		{"self once", graphstore.LinkCollectionRequest{SourcePath: "beads/a", SourceURL: scope + "a", TargetPath: "beads/a", TargetURL: scope + "a", PairDirection: "both"}, 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := selectCanonicalCollection(canonicalCollectionPlan{selection: selection, links: true, linkRequest: tc.req}, inventory)
+			if err != nil || len(got) != tc.want {
+				t.Fatalf("got %d want %d: %v", len(got), tc.want, err)
+			}
+		})
+	}
+	missing := inventory
+	missing.Beads = inventory.Beads[1:]
+	if _, err := selectCanonicalCollection(canonicalCollectionPlan{selection: selection, links: true,
+		linkRequest: graphstore.LinkCollectionRequest{IncidentPath: "beads/a", IncidentURL: scope + "a"}}, missing); !errors.Is(err, graphstore.ErrNotFound) {
+		t.Fatalf("noncurrent selected Bead returned an empty collection: %v", err)
 	}
 }
 
@@ -191,7 +317,7 @@ func TestCanonicalCollectionAdmissionBeforeRead(t *testing.T) {
 		{"--output-format", "json", "--page-size", "0"},
 		{"--output-format", "json", "--limit", "-1"},
 		{"--output-format", "json", "--paged", "--unpaged"},
-		{"--output-format", "json", "--type", "task", "--exact-type", "task"},
+		{"--output-format", "json", "--type", "task", "--conforms-to", canonicalCollectionScope + "types/task"},
 		{"--output-format", "json", "--continue", "opaque"},
 	} {
 		cmd, _, _ := canonicalCollectionTestCommand(t, false, args...)
