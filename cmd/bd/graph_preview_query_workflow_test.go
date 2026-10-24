@@ -119,7 +119,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			type retainedRead struct{ id, version, output string }
 			var retained []retainedRead
 			for _, record := range []graphstore.Record{planBefore, memoryEdit.Memory} {
-				output := call("show", record.ID, "--version", record.Revision)
+				output := call("show", record.ID, "--revision", record.Revision)
 				if got := graphMixedResult[graphstore.Record](t, output); !reflect.DeepEqual(got, record) {
 					t.Fatalf("Memory predecessor/current retention: %+v want=%+v", got, record)
 				}
@@ -129,7 +129,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
-				output := call("show", record.ID, "--version", record.Revision)
+				output := call("show", record.ID, "--revision", record.Revision)
 				if got := graphMixedResult[graphstore.IssueRecord](t, output); !reflect.DeepEqual(got, record) {
 					t.Fatalf("Issue predecessor/current retention: %+v want=%+v", got, record)
 				}
@@ -337,7 +337,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				t.Fatal("explicit unlink/delete lost the edited final Memory predecessor")
 			}
 			for _, saved := range retained {
-				if got := call("show", saved.id, "--version", saved.version); got != saved.output {
+				if got := call("show", saved.id, "--revision", saved.version); got != saved.output {
 					t.Fatalf("release lifecycle changed retained record %s@%s", saved.id, saved.version)
 				}
 			}

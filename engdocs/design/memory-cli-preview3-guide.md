@@ -120,11 +120,15 @@ evaluate whether a constraint is satisfied.
 
 ```sh
 bd memory reference design --to policy --title "Relevant policy"
-bd memory supersede original --by revised
+bd memory supersede original --to revised
 bd memory requires privacy --to authorize
 bd memory defines privacy --to retention
 bd memory subject-to service --to privacy
 ```
+
+All five authoring commands also accept `SOURCE TARGET` or `--from SOURCE
+--to TARGET`. Supplying the same endpoint both positionally and by flag is
+an error.
 
 Each command uses the checked Link writer. The Link Type determines ownership
 and source revision effects: a bare References Link does not revise its source.

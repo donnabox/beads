@@ -200,7 +200,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "id-root", "properties", "metadata", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "from", "to", "source-revision", "target-revision", "id", "id-root", "properties", "metadata", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 2 {

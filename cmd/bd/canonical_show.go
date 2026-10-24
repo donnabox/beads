@@ -60,10 +60,10 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if len(args) != 1 {
 		return canonicalFailure(cmd, renderer, "invalid_selector", "canonical show requires exactly one Resource identity", 2)
 	}
-	if err := canonicalGraphFlags(cmd, renderer, "id", "version"); err != nil {
+	if err := canonicalGraphFlags(cmd, renderer, "id", "revision"); err != nil {
 		return err
 	}
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "version"); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "revision"); err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
 	var literal string
@@ -82,8 +82,8 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 		}
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	if ref.Explicit && cmd.Flags().Changed("version") {
-		return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --version, not both", 2)
+	if ref.Explicit && cmd.Flags().Changed("revision") {
+		return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --revision, not both", 2)
 	}
 	ref, err = graphPreviewResolveParsedReference(ref)
 	if err != nil {
@@ -99,18 +99,18 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if linkOnly && localID == "" && !strings.HasPrefix(path, graphPreviewConfig.GraphScopeURL) && !strings.HasPrefix(path, "links/") {
 		return canonicalFailure(cmd, renderer, "invalid_selector", "link show requires a Link Resource", 2)
 	}
-	version, _ := cmd.Flags().GetString("version")
-	versioned := cmd.Flags().Changed("version")
+	version, _ := cmd.Flags().GetString("revision")
+	versioned := cmd.Flags().Changed("revision")
 	if ref.Explicit {
 		if versioned {
-			return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --version, not both", 2)
+			return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --revision, not both", 2)
 		}
 		if !ref.currentSelection() {
 			version, versioned = ref.Revision, true
 		}
 	}
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
-		return canonicalFailure(cmd, renderer, "invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
+		return canonicalFailure(cmd, renderer, "invalid_selector", "--revision requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
 	if versioned && localID != "" {
 		return canonicalFailure(cmd, renderer, "capability_unavailable", "retained versions require an exact canonical Scope URL", 5)

@@ -136,7 +136,7 @@ Type shown in another workspace is installed in this one.
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
 | `bd recall ID` | Print **one** Memory's body followed by a newline, as ordinary `bd recall` does. It does not enumerate Memories. |
 | `bd show ID --json` | A current Issue uses the ordinary `bd show` JSON detail array, including labels, dependency/comment counts, Scope-relative Bead IDs that round-trip to graph commands, and the graph revision token. Memory and Link still use the preview complete-record envelope. |
-| `bd show ID --format graph-json` | Read the preview complete-record envelope explicitly, including for an Issue or an exact `--version` read. This is a preview record, not a BDP Resource representation. |
+| `bd show ID --format graph-json` | Read the preview complete-record envelope explicitly, including for an Issue or an exact `--revision` read. This is a preview record, not a BDP Resource representation. |
 | `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--type types/NAME` to narrow by exact declared nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
 | `bd statuses [--json]` | List built-in Issue statuses and any custom statuses resolved for this workspace, using the ordinary command's human and JSON shapes. This is Issue status discovery, not Bead Type discovery. |
 
@@ -602,7 +602,7 @@ bd assign work alice
 An Issue edit accepts the current state by default. A stale `--if-revision`
 refuses even with `--force`; force only authorizes the notes overwrite. An
 identical value or a clear of already-empty notes leaves the revision alone.
-Use `bd versions work` and `bd show work --version TOKEN` to inspect prior
+Use `bd versions work` and `bd show work --revision TOKEN` to inspect prior
 snapshots after an accepted change.
 
 ## Create, inspect, edit and remove Links
@@ -736,7 +736,7 @@ portable citations. Resolution refuses an unavailable or incomplete history.
 
 `ID@=TOKEN` selects the exact token, including an all-numeric token or one
 literally named `current`. `@current` selects the current revision. Generated
-local-ID forms need no shell quoting. `--version TOKEN` remains a literal-token
+local-ID forms need no shell quoting. `--revision TOKEN` remains a literal-token
 alternative and cannot combine with a suffix. Full canonical URLs stay literal;
 use `'[URI]@=TOKEN'` for an adorned URL. Local suffix grammar is interpreted before any whole-ID allocation lookup, so
 allocating a literal sibling never changes a reference's meaning. An ID
@@ -750,7 +750,7 @@ record has one opaque `revision` field. Use it with `--if-revision` when a
 write must apply only to the state you read. A different current revision
 means the state changed and the guarded write refuses. **Version** names a
 retained state of that Resource. `bd versions` rows and discovery summaries
-call its exact-read address `version`; use that token with `--version`, or as
+call its exact-read address `version`; use that token with `--revision`, or as
 an operand to `bd compare`, to retrieve or compare the state later. A current
 record's `revision` is also its retained-state address. These names express
 two uses of one opaque token, not separate counters. The token encodes no
@@ -764,8 +764,8 @@ their chronological order.
 
 ```sh
 bd memories 'code flow' --details
-bd recall policy --version SAVED_TOKEN
-bd show policy --version SAVED_TOKEN --json
+bd recall policy --revision SAVED_TOKEN
+bd show policy --revision SAVED_TOKEN --json
 bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --json
 bd versions policy
 bd history policy  # same listing in a graph workspace
@@ -773,7 +773,7 @@ bd history policy  # same listing in a graph workspace
 
 | Flag | Current use |
 | --- | --- |
-| `--version TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`; use a saved `version` token. |
+| `--revision TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`; use a saved `version` token. |
 | `--from TOKEN --to TOKEN` | Select the two complete states for `bd compare`. |
 | `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has the saved `revision`. In an ordinary workspace, `bd update` and `bd delete` instead read it as the legacy compare-and-swap on a decimal bead `revision`. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
@@ -801,7 +801,7 @@ graph workspace. `bd history ID` is an alias there; in an ordinary workspace,
 opaque `version` token, a store-local `local_revision`, a display `change_at`
 time, and attribution. The `bd versions --json` row's scalar `attribution` is
 the native per-version status label (`claimed`, `unknown`, or empty), not the
-carried-attribution object above. Use the **token** for `show --version` or `compare`, never
+carried-attribution object above. Use the **token** for `show --revision` or `compare`, never
 the local revision number. Human output calls the number `REV`, matching
 ordinary `bd versions`; graph JSON uses `local_revision`. It orders versions
 within this store and is not a stable cross-clone address. `change_at` is not
@@ -952,7 +952,7 @@ retrieving endpoint Resources:
 ```sh
 bd list --output-format json --unpaged
 bd list --output-format table --unpaged --include /properties/title
-bd link list --output-format json --unpaged --source beads/plan
+bd link list --output-format json --unpaged --from beads/plan
 bd link list --output-format jsonl --incident-to beads/plan --direction in
 bd link list --output-format json --unpaged --omit envelope
 ```
@@ -963,7 +963,7 @@ to that Type. Use the full Type identity, for example
 `https://example.test/project/types/note`. Canonical selection does not resolve
 Issue classifications such as `bug`, bare names, `types/NAME`, or Dependency
 aliases; those remain available on legacy paths. Link selection accepts
-`--source`, `--target`, and `--incident-to`.
+`--from`, `--to`, and `--incident-to`.
 An incident selection can use `--direction in`, `out`, or `both`. These filters
 combine with AND. Canonical collection selection includes every current matching
 Bead, without a default filter for Issue status. It refuses Issue workflow filters, including `--all`, and

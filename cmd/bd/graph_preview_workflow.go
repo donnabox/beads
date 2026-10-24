@@ -76,7 +76,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "source-revision", "target-revision", "id", "id-root", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "from", "to", "source-revision", "target-revision", "id", "id-root", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
 		return err
 	}
 	// Keep the ordinary single-edge spellings. Native --blocked-by wins if both
@@ -137,7 +137,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	ownedCreate := cmd.Name() == "create" && cmd.Flags().Lookup("source") != nil
+	ownedCreate := cmd.Name() == "create" && cmd.Flags().Lookup("from") != nil
 	guardedShorthand := cmd.Name() == "link" && cmd.Flags().Changed("if-source-revision")
 	if ownedCreate || guardedShorthand {
 		sourceRevision, _ = cmd.Flags().GetString("if-source-revision")
@@ -264,11 +264,11 @@ func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID
 		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{PublicID: linkPath, IDRoot: idRoot, Type: depType, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, SourceNativeID: sourceNativeID, TargetNativeID: targetNativeID, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
-				kind := "blocking"
-				if typeURL != "" && typeURL != graphPreviewBlockingTypeURL(graphPreviewConfig.GraphScopeURL) {
-					kind = "native Dependency"
+				hint := "use an informational Link Type for Memory endpoints"
+				if depType == types.DepSupersedes {
+					hint = "use informational Link Type types/superseded-by for Memory succession"
 				}
-				return nil, "", fmt.Errorf("%s Link Type requires two live Issues; use an informational Type such as types/references for Memory endpoints: %w", kind, err)
+				return nil, "", fmt.Errorf("native %s Dependency requires two live Issues; %s: %w", depType, hint, err)
 			}
 			return nil, "", err
 		}

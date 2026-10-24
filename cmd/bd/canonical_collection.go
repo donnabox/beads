@@ -145,7 +145,7 @@ func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutpu
 	collection := "beads"
 	if links {
 		collection = "links"
-		for flag, key := range map[string]string{"source": "source", "target": "target", "incident-to": "endpoint"} {
+		for flag, key := range map[string]string{"from": "source", "to": "target", "incident-to": "endpoint"} {
 			if !cmd.Flags().Changed(flag) {
 				continue
 			}
@@ -211,12 +211,12 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	}
 	allowed := []string{"type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
 	if links {
-		allowed = append(allowed, "source", "target", "incident-to", "direction")
+		allowed = append(allowed, "from", "to", "incident-to", "direction")
 	}
 	if err := canonicalGraphFlags(cmd, failure, allowed...); err != nil {
 		return err
 	}
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "conforms-to", "source", "target", "incident-to", "direction", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "conforms-to", "from", "to", "incident-to", "direction", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	plan, err := canonicalCollectionRequest(cmd, links, options)

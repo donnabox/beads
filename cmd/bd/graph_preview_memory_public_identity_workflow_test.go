@@ -72,7 +72,7 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 			const sourceKey, targetKey = "source/%E6%BA%90/@literal", "target-literal"
 			source := graphMixedResult[graphstore.Record](t, call("remember", "Source body", "--id", sourceKey))
 			target := graphMixedResult[graphstore.Record](t, call("remember", "Target body", "--id", targetKey))
-			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--source", sourceKey, "--target", targetKey, "--type", "types/references", "--id", "literal-endpoints"))
+			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", sourceKey, "--to", targetKey, "--type", "types/references", "--id", "literal-endpoints"))
 			if linked.Link.Source != source.ID || linked.Link.Target != target.ID {
 				t.Fatal("literal public endpoints selected different allocations")
 			}
@@ -118,7 +118,7 @@ func TestGraphPreviewCommonIdentityGraphAndNativeLinkWorkflow(t *testing.T) {
 			}
 			source := graphMixedResult[graphstore.Record](t, call("remember", "Source", "--id", "source"))
 			target := graphMixedResult[graphstore.Record](t, call("remember", "Target", "--id", "links/target"))
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--source", source.ID, "--target", target.ID, "--type", "types/references", "--id", "beads/edge"))
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", source.ID, "--to", target.ID, "--type", "types/references", "--id", "beads/edge"))
 			if link.Link.ID != scope+"beads/edge" || link.Link.Source != source.ID || link.Link.Target != target.ID {
 				t.Fatal("informational identity changed", link)
 			}
@@ -137,7 +137,7 @@ func TestGraphPreviewCommonIdentityGraphAndNativeLinkWorkflow(t *testing.T) {
 			if one.ID != scope+one.Properties.ID || two.ID != scope+two.Properties.ID {
 				t.Fatal("Issue ID acquired a kind prefix")
 			}
-			dependency := graphMixedResult[graphstore.DependencyResult](t, call("link", "create", "--source", one.ID, "--target", two.ID, "--type", "types/dependency", "--id", "dependency-rootless"))
+			dependency := graphMixedResult[graphstore.DependencyResult](t, call("link", "create", "--from", one.ID, "--to", two.ID, "--type", "types/dependency", "--id", "dependency-rootless"))
 			if dependency.Link.ID != scope+"dependency-rootless" || dependency.Link.Source != one.ID || dependency.Link.Target != two.ID {
 				t.Fatal("native Link identity changed", dependency)
 			}

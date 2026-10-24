@@ -70,7 +70,7 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			if string(link["properties"]) != `{"note":"user value"}` {
 				t.Fatalf("caller-authored Link property changed: %s", receipt.Link)
 			}
-			graphAssertCompleteRecordRevisionOnly(t, call("show", scope+"beads/plan", "--version", memoryRevision))
+			graphAssertCompleteRecordRevisionOnly(t, call("show", scope+"beads/plan", "--revision", memoryRevision))
 		})
 	}
 }

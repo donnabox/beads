@@ -27,7 +27,7 @@ Use bd versions ID to list one Memory, Issue or Link's retained versions newest
 first. Bare ID means beads/ID; use links/PATH for a Link. Every new graph
 Resource has a creation version; do not enable ordinary versioned-history
 recording for this command. Cite the opaque version token with bd show ID
---version TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
+--revision TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
 local_revision only orders versions within this store. --json names that field
 local_revision, matching ordinary bd versions. BDP HTTP History is unavailable.
 A removed Link lists only its prior citable versions; deletion adds no version.
@@ -104,7 +104,7 @@ replaces all metadata; {} clears the selected document.`},
 Use --all for a complete bounded result, --details for version/Link counts,
 or --format records-json for machine-readable summaries. --json is unavailable;
 use bd recall ID for the exact body.`},
-		{recallCmd, `Use bd recall ID for one exact Memory body. --version TOKEN
+		{recallCmd, `Use bd recall ID for one exact Memory body. --revision TOKEN
 selects a retained body; use bd show ID --json for the record. Graph
 recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id ID.
@@ -143,17 +143,17 @@ Issue changes; stop it with Ctrl+C.
 --current selects the actor's first in-progress Issue, then hooked Issue, then
 the last-touched Issue; it cannot combine with an explicit ID.
 ID@N selects the stable store-local revision number N. ID@=TOKEN or
-'[URL]@=TOKEN' selects one exact retained record; --version TOKEN remains
+'[URL]@=TOKEN' selects one exact retained record; --revision TOKEN remains
 an exact-token alternative (not both). @current reads current. Unwrapped URL forms containing :// are
 literal, including raw @; use the full canonical Scope URL to escape local
 @ shorthand. Colon-only forms such as plan:v1@=TOKEN use local syntax.
 Bracketed operands require canonical HTTP(S) Scope URLs, not opaque URIs.
 Suffixes are rejected on the selected update and deletion targets; use
---if-revision for write comparison. --version treats current and unpinned as exact tokens.
+--if-revision for write comparison. --revision treats current and unpinned as exact tokens.
 Endpoint pins remain unavailable. This is not an ordered history listing.
 A current Issue's
 --json uses the ordinary detail array with Scope-relative Bead IDs and its
-graph revision token. Memory, Link, and exact --version reads use the
+graph revision token. Memory, Link, and exact --revision reads use the
 experimental graph envelope; --format graph-json explicitly requests that
 envelope for a current Issue too. graph-json is not a BDP Resource format.
 Showing an Issue makes it the last-touched Issue for interactive update/close;
@@ -221,7 +221,7 @@ that bare name. These native pair operands retain literal Issue-ID semantics,
 including @. For Link-ID removal use bd link delete ID --force.`},
 		{linkCmd, `The canonical graph Link namespace is bd link
 create/list/show/update/delete/versions/compare/count. Create requires
---type and SOURCE TARGET (or --source and --target); list and count query complete current
+--type and SOURCE TARGET (or SOURCE --to TARGET, or --from SOURCE --to TARGET); list and count query complete current
 Link collections within the preview's advertised bounds. Delete previews
 by default and --force applies the checked mutation.
 
@@ -232,7 +232,7 @@ pins and @current are supported, while native Dependency endpoints remain
 floating. bd dep add/remove keep literal Issue IDs, so the input
 syntaxes are not interchangeable. To create any native Dependency
 kind through the canonical namespace, use
-  bd link create --type blocks --source ISSUE --target ISSUE
+  bd link create --type blocks --from ISSUE --to ISSUE
 Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.
 For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
