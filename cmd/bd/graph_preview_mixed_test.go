@@ -161,22 +161,24 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatal("stale Link update changed Link or owning Memory")
 			}
 
-			// The blocking Type is Issue-only. Selecting it explicitly for a
-			// Memory endpoint, as source or target, keeps the invalid_properties
-			// code and the store's cause, adds the hint naming an informational
-			// Type to use instead, and changes neither endpoint.
-			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/references for Memory endpoints: "
+			// Native Dependency kinds are Issue-only. A Memory successor uses
+			// the informational superseded-by Type, not native supersedes.
 			planBefore, workBefore := call("show", scope+"beads/plan"), call("show", scope+"beads/work")
-			for _, endpoints := range [][2]string{{scope + "beads/plan", scope + "beads/work"}, {scope + "beads/work", scope + "beads/plan"}} {
-				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", "types/dependency", "--json")
-				var diagnostic struct {
-					Code      string `json:"code"`
-					Message   string `json:"message"`
-					Retryable bool   `json:"retryable"`
-				}
-				if exit != 2 || stdout != "" || json.Unmarshal([]byte(stderr), &diagnostic) != nil || diagnostic.Code != "invalid_properties" || diagnostic.Retryable ||
-					!strings.HasPrefix(diagnostic.Message, memoryEndpointHint) || !strings.Contains(diagnostic.Message, "operation requires a live durable Issue, not generic") {
-					t.Fatalf("blocking Type with Memory endpoint %v: exit=%d stdout=%q stderr=%q", endpoints, exit, stdout, stderr)
+			for _, kind := range []struct{ selected, hint string }{
+				{"blocks", "native blocks Dependency requires two live Issues; use an informational Link Type for Memory endpoints: "},
+				{"supersedes", "native supersedes Dependency requires two live Issues; use informational Link Type types/superseded-by for Memory succession: "},
+			} {
+				for _, endpoints := range [][2]string{{scope + "beads/plan", scope + "beads/work"}, {scope + "beads/work", scope + "beads/plan"}} {
+					stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", kind.selected, "--json")
+					var diagnostic struct {
+						Code      string `json:"code"`
+						Message   string `json:"message"`
+						Retryable bool   `json:"retryable"`
+					}
+					if exit != 2 || stdout != "" || json.Unmarshal([]byte(stderr), &diagnostic) != nil || diagnostic.Code != "invalid_properties" || diagnostic.Retryable ||
+						!strings.HasPrefix(diagnostic.Message, kind.hint) || !strings.Contains(diagnostic.Message, "operation requires a live durable Issue, not generic") {
+						t.Fatalf("%s with Memory endpoint %v: exit=%d stdout=%q stderr=%q", kind.selected, endpoints, exit, stdout, stderr)
+					}
 				}
 			}
 			if call("show", scope+"beads/plan") != planBefore || call("show", scope+"beads/work") != workBefore {
