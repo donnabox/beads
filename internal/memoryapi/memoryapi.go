@@ -158,3 +158,16 @@ func FilterMemories(all map[string]string, search string) map[string]string {
 	}
 	return out
 }
+
+// TitleFromBody derives an independent Memory title from the first nonempty
+// trimmed body line, collapsing whitespace and limiting the title to 80 runes.
+// It does not change body bytes or derive, resolve, or overwrite an identity.
+func TitleFromBody(body string) string {
+	line, _, _ := strings.Cut(strings.TrimSpace(body), "\n")
+	title := []rune(strings.Join(strings.Fields(line), " "))
+	const maxRunes = 80
+	if len(title) > maxRunes {
+		return string(title[:maxRunes-1]) + "…"
+	}
+	return string(title)
+}
