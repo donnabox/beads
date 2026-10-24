@@ -162,28 +162,28 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 		if len(nodes) == 0 {
 			switch direction {
 			case "up":
-				return nodes, fmt.Sprintf("%s has no dependents", path), nil
+				return nodes, fmt.Sprintf("%s has no dependents", identity.PublicID), nil
 			case "both":
-				return nodes, fmt.Sprintf("%s has no dependencies or dependents", path), nil
+				return nodes, fmt.Sprintf("%s has no dependencies or dependents", identity.PublicID), nil
 			default:
-				return nodes, fmt.Sprintf("%s has no dependencies", path), nil
+				return nodes, fmt.Sprintf("%s has no dependencies", identity.PublicID), nil
 			}
 		}
 		var human strings.Builder
-		fmt.Fprintf(&human, "Blocking dependency tree for %s (%s; graph preview)\n", path, direction)
+		fmt.Fprintf(&human, "Blocking dependency tree for %s (%s; graph preview)\n", identity.PublicID, direction)
 		writeNode := func(node graphDependencyTreeNode) {
 			fmt.Fprintf(&human, "%s%s  %s\n", strings.Repeat("  ", node.Depth), graphPreviewDisplayLocalURL(node.Issue.ID), node.Issue.Properties.Title)
 		}
 		if direction == "both" {
 			writeNode(nodes[0])
-			fmt.Fprintf(&human, "Dependencies (what %s depends on):\n", path)
+			fmt.Fprintf(&human, "Dependencies (what %s depends on):\n", identity.PublicID)
 			if len(dependencies) == 1 {
 				human.WriteString("  (none)\n")
 			}
 			for _, node := range dependencies[1:] {
 				writeNode(node)
 			}
-			fmt.Fprintf(&human, "Dependents (what depends on %s):\n", path)
+			fmt.Fprintf(&human, "Dependents (what depends on %s):\n", identity.PublicID)
 			if len(dependents) == 1 {
 				human.WriteString("  (none)\n")
 			}

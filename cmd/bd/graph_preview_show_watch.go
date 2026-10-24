@@ -22,7 +22,11 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 	if format != "" || cmd.Flags().Changed("version") {
 		return graphFailure("capability_unavailable", "--watch requires a current Issue in the familiar output format", 5)
 	}
-	argument, err := graphPreviewResolveMemoryArgument(args[0])
+	resolve := graphPreviewResolveMemoryArgument
+	if cmd.Flags().Changed("id") {
+		resolve = graphPreviewResolveLiteralArgument
+	}
+	argument, err := resolve(args[0])
 	if err != nil {
 		return err
 	}
@@ -88,7 +92,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 			if err != nil {
 				return nil, err
 			}
-			path, record, _, readErr := s.ReadResourceWithIssueDetailsSelected(readCtx, selectorPath, localID, workapi.DetailOptions{})
+			_, record, _, readErr := s.ReadResourceWithIssueDetailsSelected(readCtx, selectorPath, localID, workapi.DetailOptions{})
 			closeErr := s.Close()
 			if err := errors.Join(readErr, closeErr); err != nil {
 				return nil, err
@@ -98,7 +102,6 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 				return nil, fmt.Errorf("%w: watched Bead is no longer an Issue", graphstore.ErrCapabilityUnavailable)
 			}
 			selected := *issue.Properties
-			selected.ID = path
 			revision = issue.Revision
 			return &selected, nil
 		},

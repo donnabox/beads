@@ -810,7 +810,7 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 			if !jsonOutput && format == "" {
 				includeDependents, includeComments = true, true
 			}
-			path, r, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, path, localID, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
+			_, r, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, path, localID, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
 		}
 		if err != nil {
 			return nil, "", err
@@ -826,7 +826,6 @@ func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) e
 		if shortMode && shownIssue && !versioned && format == "" {
 			legacyShort = true
 			issue := *r.(graphstore.IssueRecord).Properties
-			issue.ID = r.(graphstore.IssueRecord).Properties.ID
 			return r, formatShortIssue(&issue), nil
 		}
 		if shownIssue && jsonOutput && format == "" && !versioned {

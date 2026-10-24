@@ -129,6 +129,11 @@ func graphPreviewResolveMemoryArgument(selector string) (string, error) {
 	if strings.Contains(selector, "://") {
 		return selector, nil
 	}
+	// Non-ID reference syntax cannot name an allocated literal ID. Let the
+	// reference parser report selector errors without a speculative store read.
+	if graph.ValidateCanonicalResourceID(selector) != nil {
+		return selector, nil
+	}
 	resolved := selector
 	err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		identity, err := store.ResolveAllocatedResourceIdentity(ctx, selector)

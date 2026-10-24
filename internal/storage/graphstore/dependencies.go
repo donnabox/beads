@@ -41,6 +41,14 @@ func validateLinkPath(path string) error {
 // Reasserting the same pair is an exact no-op; it never invokes the legacy
 // same-pair metadata updater. This is not generic Link multiedge policy.
 func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (DependencyResult, error) {
+	if request.IDRoot != "" {
+		if request.Path != "" || request.PublicID != "" {
+			return DependencyResult{}, fmt.Errorf("%w: ID root cannot accompany an explicit ID", storage.ErrValidation)
+		}
+		if err := graph.ValidateCanonicalResourceID(request.IDRoot); err != nil {
+			return DependencyResult{}, err
+		}
+	}
 	preparedPath, generatedPath, err := prepareLinkIdentity(request.Path, request.PublicID)
 	if err != nil {
 		return DependencyResult{}, err
@@ -127,15 +135,18 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 			return err
 		}
 		path := request.Path
-		if path == "" {
-			token, err := freshToken()
+		publicID := request.PublicID
+		if path == "" && publicID == "" {
+			publicID, err = selectGeneratedPublicIDInTx(ctx, tx, request.IDRoot)
 			if err != nil {
 				return err
 			}
-			path = "links/" + token
+			path, err = preferredPrivateResourcePath(graph.KindLink, publicID)
+			if err != nil {
+				return err
+			}
 			generatedPath = true
 		}
-		publicID := request.PublicID
 		if publicID == "" {
 			publicID = path
 		}

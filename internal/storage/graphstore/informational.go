@@ -60,6 +60,14 @@ func (s *Store) beadEndpointInTx(ctx context.Context, tx *sql.Tx, path string) (
 // AddInformationalLink creates independent identity even for equal endpoints.
 // Link payload, retained Link and owned source snapshot commit together.
 func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequest) (LinkMutationResult, error) {
+	if request.IDRoot != "" {
+		if request.Path != "" || request.PublicID != "" {
+			return LinkMutationResult{}, fmt.Errorf("%w: ID root cannot accompany an explicit ID", storage.ErrValidation)
+		}
+		if err := graph.ValidateCanonicalResourceID(request.IDRoot); err != nil {
+			return LinkMutationResult{}, err
+		}
+	}
 	preparedPath, generatedPath, err := prepareLinkIdentity(request.Path, request.PublicID)
 	if err != nil {
 		return LinkMutationResult{}, err
@@ -156,16 +164,22 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if memory, ok := source.(Record); owned && ok && len(memory.Owned) >= PreviewOwnedLinkLimit {
 			return fmt.Errorf("%w: preview source-owned Link limit %d exceeded", storage.ErrValidation, PreviewOwnedLinkLimit)
 		}
+		if err := s.touchCoordination(ctx, tx); err != nil {
+			return err
+		}
 		path := request.Path
-		if path == "" {
-			token, err := freshToken()
+		publicID := request.PublicID
+		if path == "" && publicID == "" {
+			publicID, err = selectGeneratedPublicIDInTx(ctx, tx, request.IDRoot)
 			if err != nil {
 				return err
 			}
-			path = "links/" + token
+			path, err = preferredPrivateResourcePath(graph.KindLink, publicID)
+			if err != nil {
+				return err
+			}
 			generatedPath = true
 		}
-		publicID := request.PublicID
 		if publicID == "" {
 			publicID = path
 		}
@@ -176,9 +190,6 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		}
 		path, err = choosePrivateResourcePathInTx(ctx, tx, path, generatedPath, graph.KindLink)
 		if err != nil {
-			return err
-		}
-		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
 		linkRevision, err := freshToken()

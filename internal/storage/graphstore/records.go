@@ -28,6 +28,16 @@ func validatePath(path string) error {
 // or optional History switch. Commit uncertainty returns no success record.
 func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	var err error
+	if req.IDRoot != "" && (req.PublicID != "" || req.Path != "") {
+		return Record{}, fmt.Errorf("%w: ID root cannot accompany an explicit ID", graph.ErrValidation)
+	}
+	if req.PublicID == "" && req.Path == "" {
+		req.generatePublicID = true
+		req.PublicID, err = graph.GeneratedResourceIDCandidate(req.IDRoot, graph.GeneratedResourceIDInitialLength)
+		if err != nil {
+			return Record{}, err
+		}
+	}
 	req, err = PrepareMemoryIdentity(req)
 	if err != nil {
 		return Record{}, err
@@ -106,7 +116,8 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 }
 
 // createInTx preserves the existing path-based importer seam. New public-ID
-// imports use createPreparedMemoryInTx and consume its actual returned locator.
+// imports use createPreparedMemoryInTx and its accepted record. Resolve any
+// needed private locator from the transaction catalog after allocation.
 func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties, snapshot []byte) error {
 	if req.PublicID != "" {
 		return fmt.Errorf("%w: public-ID import requires returned allocation", ErrCapabilityUnavailable)
@@ -130,6 +141,13 @@ func (s *Store) createPreparedMemoryInTx(ctx context.Context, tx *sql.Tx, req Cr
 		return Record{}, err
 	}
 	publicID := req.PublicID
+	if req.generatePublicID {
+		var err error
+		publicID, err = selectGeneratedPublicIDInTx(ctx, tx, req.IDRoot)
+		if err != nil {
+			return Record{}, err
+		}
+	}
 	if publicID == "" {
 		publicID = req.Path
 	}
