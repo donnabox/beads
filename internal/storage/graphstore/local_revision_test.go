@@ -56,6 +56,23 @@ func TestLocalRevisionRemainsStableAcrossDeletionRecovery(t *testing.T) {
 			if _, err := s.LocalRevisionForToken(ctx, path, "unavailable"); !errors.Is(err, ErrVersionUnknown) {
 				t.Fatalf("absent token: %v", err)
 			}
+			// Ordinal aliases need the checked ledger, not terminal payload hydration.
+			last, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: path, ExpectedRevision: restored.Memory.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_versions SET snapshot='{"state":"deleted"}' WHERE path=? AND version=?`, path, last.Terminal.Revision); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.History(ctx, path); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("fixture did not corrupt terminal content: %v", err)
+			}
+			if got, err := s.ResolveLocalRevision(ctx, path, 1); err != nil || got.Version != first.Version {
+				t.Fatalf("healthy alias depends on terminal payload: %+v %v", got, err)
+			}
+			if got, err := s.LocalRevisionForToken(ctx, path, last.Terminal.Revision); err != nil || got.Ordinal != 4 || !got.Removed {
+				t.Fatalf("D alias depends on terminal payload: %+v %v", got, err)
+			}
 		})
 	}
 }

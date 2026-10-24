@@ -28,6 +28,9 @@ func validatePath(path string) error {
 // or optional History switch. Commit uncertainty returns no success record.
 func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	var err error
+	if err := graph.ValidateGeneratedResourceIDRoot(req.IDRoot); err != nil {
+		return Record{}, err
+	}
 	if req.IDRoot != "" && (req.PublicID != "" || req.Path != "") {
 		return Record{}, fmt.Errorf("%w: ID root cannot accompany an explicit ID", graph.ErrValidation)
 	}
@@ -144,6 +147,10 @@ func (s *Store) createPreparedMemoryInTx(ctx context.Context, tx *sql.Tx, req Cr
 	if req.generatePublicID {
 		var err error
 		publicID, err = selectGeneratedPublicIDInTx(ctx, tx, req.IDRoot)
+		if err != nil {
+			return Record{}, err
+		}
+		req.Path, err = preferredPrivateResourcePath(graph.KindBead, publicID)
 		if err != nil {
 			return Record{}, err
 		}

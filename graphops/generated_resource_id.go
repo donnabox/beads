@@ -11,7 +11,26 @@ const (
 	GeneratedResourceIDInitialLength = 6
 	// GeneratedResourceIDMaxLength bounds collision-driven lengthening.
 	GeneratedResourceIDMaxLength = 26
+	// GeneratedResourceIDRootMaxBytes leaves room for a separator, the longest
+	// generated suffix and the private beads/ or links/ locator prefix.
+	GeneratedResourceIDRootMaxBytes = 1024 - 6 - 1 - GeneratedResourceIDMaxLength
 )
+
+// ValidateGeneratedResourceIDRoot applies the shared generated-ID request budget.
+// Empty means a flat generated ID. This is stricter than canonical ID syntax,
+// whose general-purpose validator intentionally has no operational byte cap.
+func ValidateGeneratedResourceIDRoot(root string) error {
+	if root == "" {
+		return nil
+	}
+	if err := ValidateCanonicalResourceID(root); err != nil {
+		return err
+	}
+	if len(root) > GeneratedResourceIDRootMaxBytes {
+		return fmt.Errorf("%w: generated ID root exceeds %d bytes", ErrValidation, GeneratedResourceIDRootMaxBytes)
+	}
+	return nil
+}
 
 // GeneratedResourceIDCandidate generates an already-canonical public ID. This
 // is only a candidate: the writer must reserve the COMPLETE name atomically
@@ -26,10 +45,8 @@ func generatedResourceIDCandidate(root string, length int, entropy io.Reader) (s
 	if length < GeneratedResourceIDInitialLength || length > GeneratedResourceIDMaxLength {
 		return "", fmt.Errorf("%w: generated ID length must be between %d and %d", ErrValidation, GeneratedResourceIDInitialLength, GeneratedResourceIDMaxLength)
 	}
-	if root != "" {
-		if err := ValidateCanonicalResourceID(root); err != nil {
-			return "", err
-		}
+	if err := ValidateGeneratedResourceIDRoot(root); err != nil {
+		return "", err
 	}
 	buf := make([]byte, length)
 	if _, err := io.ReadFull(entropy, buf); err != nil {

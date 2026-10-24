@@ -36,3 +36,14 @@ func TestGeneratedResourceIDCandidateRefusesInvalidRootAndEntropy(t *testing.T) 
 		t.Fatalf("entropy error = %v", err)
 	}
 }
+
+func TestGeneratedResourceIDRootBudget(t *testing.T) {
+	root := strings.Repeat("a", GeneratedResourceIDRootMaxBytes)
+	id, err := GeneratedResourceIDCandidate(root, GeneratedResourceIDMaxLength)
+	if err != nil || len(id) != 1018 {
+		t.Fatalf("maximum root: %d bytes, %v", len(id), err)
+	}
+	if _, err := GeneratedResourceIDCandidate(root+"a", GeneratedResourceIDInitialLength); err == nil {
+		t.Fatal("overbudget root accepted")
+	}
+}

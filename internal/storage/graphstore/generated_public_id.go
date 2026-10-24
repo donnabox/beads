@@ -8,6 +8,8 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 )
 
+const generatedIDAttemptsPerLength = 8
+
 // selectGeneratedPublicIDInTx chooses a public name inside the caller's fenced
 // write transaction. The caller MUST insert its allocation in that same
 // transaction before releasing the writer fence. A successful return alone is
@@ -18,9 +20,8 @@ func selectGeneratedPublicIDInTx(ctx context.Context, tx *sql.Tx, root string) (
 }
 
 func selectGeneratedPublicIDWithCandidateInTx(ctx context.Context, tx *sql.Tx, root string, candidate func(string, int) (string, error)) (string, error) {
-	const attemptsPerLength = 8
 	for length := graph.GeneratedResourceIDInitialLength; length <= graph.GeneratedResourceIDMaxLength; length++ {
-		for attempt := 0; attempt < attemptsPerLength; attempt++ {
+		for attempt := 0; attempt < generatedIDAttemptsPerLength; attempt++ {
 			if err := ctx.Err(); err != nil {
 				return "", err
 			}

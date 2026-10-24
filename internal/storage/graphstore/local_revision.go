@@ -6,7 +6,7 @@ import (
 )
 
 // ResolveLocalRevision resolves a stable store-local per-Resource ordinal to
-// its full opaque token. The checked history reader supplies both acquisition
+// its full opaque token. The checked version ledger reader supplies both acquisition
 // bounds and corruption detection. It never uses the row's position as an
 // ordinal, and deletion events remain selectable for guards but not content.
 // Callers must still perform their normal exact-token admission for the chosen
@@ -15,11 +15,11 @@ func (s *Store) ResolveLocalRevision(ctx context.Context, path string, ordinal i
 	if ordinal <= 0 {
 		return VersionRow{}, fmt.Errorf("%w: local revision must be positive", ErrVersionUnknown)
 	}
-	history, err := s.History(ctx, path)
+	_, versions, err := s.Versions(ctx, path)
 	if err != nil {
 		return VersionRow{}, err
 	}
-	for _, row := range history.Versions {
+	for _, row := range versions {
 		if row.Ordinal == ordinal {
 			return row, nil
 		}
@@ -33,11 +33,11 @@ func (s *Store) LocalRevisionForToken(ctx context.Context, path, token string) (
 	if err := validateVersionToken(token); err != nil {
 		return VersionRow{}, err
 	}
-	history, err := s.History(ctx, path)
+	_, versions, err := s.Versions(ctx, path)
 	if err != nil {
 		return VersionRow{}, err
 	}
-	for _, row := range history.Versions {
+	for _, row := range versions {
 		if row.Version == token {
 			return row, nil
 		}
