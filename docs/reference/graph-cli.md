@@ -311,15 +311,22 @@ not a claim about a historical traversal. `--view generic` is optional/deprecate
 This candidate needs integration and qualification before release adoption;
 it does not change the historical integration ledger below or dependency mode.
 
-## Blocking dependency views
+## Dependency views
 
-`bd dep list ISSUE`, `bd dep tree ISSUE`, `bd dep cycles` and `bd graph check`
-retain the blocking Dependency views. The tree supports `--direction down|up|both`;
-its both-direction human view labels dependencies and dependents separately.
-`bd graph check --json` returns the ordinary flat check object and local Issue
-IDs in its `cycles`. These views read a complete bounded graph snapshot.
-Positive row caps refuse the complete graph/tree acquisition. `dep list/tree/cycles
---json` still refuses until its ordinary JSON shape can be preserved.
+`bd dep list ISSUE` shows all native Dependency kinds by default, including
+non-blocking kinds such as `tracks` and `related`. Use `--type KIND` to select
+one exact native kind (for example, `--type blocks`), or `--direction up` to
+list dependents. Human output names each kind after `via`.
+
+`bd dep tree ISSUE`, `bd dep cycles`, and `bd graph check` retain their
+blocking-Dependency semantics. The tree supports `--direction down|up|both`;
+its both-direction human view separates dependencies and dependents.
+`bd graph check --json` returns the ordinary flat check object and local
+Issue IDs in `cycles`. A positive `--max-rows` cap refuses complete tree
+acquisition. These views use checked, bounded reads. The `--json` output for
+`dep list`, `dep tree`, and `dep cycles` refuses until each ordinary shape can
+be preserved.
+`bd graph ISSUE` uses the selected-Type view described above.
 
 In the local relationship-journeys candidate, fresh
 v7 workspaces support `bd children PARENT` and `bd children PARENT --json` for
@@ -359,8 +366,8 @@ bd graph check --json
 bd graph plan --link-type any --direction out --depth 2 --json
 ```
 
-`dep list --direction up` lists dependents instead; `dep tree` also accepts
-`--max-depth` and deprecated `--reverse` (equivalent to `--direction up`).
+`dep tree` also accepts `--max-depth` and deprecated `--reverse` (equivalent
+to `--direction up`).
 `dep cycles --limit N` caps displayed cycles, not the count reported.
 `dep list/tree/cycles --json` refuses until ordinary JSON shapes are preserved.
 A positive `--max-rows` or `BEADS_MAX_ROWS` refuses full graph/tree acquisition

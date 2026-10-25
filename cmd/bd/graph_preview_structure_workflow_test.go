@@ -191,7 +191,7 @@ func TestGraphPreviewDepTreeBothDistinguishesDirections(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/root", scope+"beads/blocker", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", scope+"beads/dependent", scope+"beads/root", "--json")
 
-			got := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "beads/root", "--direction", "both"))
+			got := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", scope+"beads/root", "--direction", "both"))
 			want := strings.Join([]string{
 				"Blocking dependency tree for beads/root (both; graph preview)",
 				"beads/root  Root",
@@ -202,6 +202,17 @@ func TestGraphPreviewDepTreeBothDistinguishesDirections(t *testing.T) {
 			}, "\n")
 			if got != want {
 				t.Fatalf("both-direction tree must separate blockers from dependents\nwant:\n%s\ngot:\n%s", want, got)
+			}
+			for _, direction := range []string{"down", "up", "both"} {
+				got := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", scope+"beads/root", "--direction", direction, "--max-depth", "1"))
+				want := "Blocking dependency tree for beads/root (" + direction + "; graph preview)\nbeads/root  Root"
+				if got != want {
+					t.Fatalf("depth-limited %s tree must show the root without claiming no edges\nwant:\n%s\ngot:\n%s", direction, want, got)
+				}
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--id", "beads/isolated", "--force", "--json")
+			if got := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", scope+"beads/isolated", "--max-depth", "1")); got != "beads/isolated has no dependencies" {
+				t.Fatalf("isolated root should still have no dependency tree: %q", got)
 			}
 		})
 	}
@@ -526,6 +537,18 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, code, args...)
 			}
 			call("", graphSetupInitArgs(t, engine, scope, "--prefix", "demo", "--skip-hooks", "--skip-agents")...)
+			var status struct {
+				Result struct {
+					Capabilities map[string]bool `json:"capabilities"`
+				} `json:"result"`
+			}
+			rawStatus := call("", "status", "--graph", "--json")
+			if err := json.Unmarshal([]byte(rawStatus), &status); err != nil {
+				t.Fatalf("decode graph status: %v: %s", err, rawStatus)
+			}
+			if !status.Result.Capabilities["blockingDependencyPairUnlink"] {
+				t.Fatalf("graph status must advertise the pair removal exercised below: %s", rawStatus)
+			}
 			created := map[string]graphstore.IssueRecord{}
 			for _, id := range []string{"work", "first", "second"} {
 				created[id] = graphMixedResult[graphstore.IssueRecord](t, call("", "create", id, "--id", "beads/"+id, "--force", "--json"))
