@@ -91,6 +91,27 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", "batch-fields")); len(got) != 1 || got[0].Target != parent.ID {
 				t.Fatalf("initial fields broke canonical Link publication: %+v", got)
 			}
+			call("create", "Existing source", "--id", "batch-existing-source")
+			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-existing-source", "--format", "graph-json"))
+			writePlan(`{"nodes":[{"key":"new-target","id":"batch-new-target","title":"New target"}],"edges":[{"from_id":"batch-existing-source","to_key":"new-target"}]}`)
+			var existingSource GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &existingSource); err != nil {
+				t.Fatal(err)
+			}
+			if existingSource.IDs["new-target"] != "batch-new-target" {
+				t.Fatalf("existing-source plan did not create target: %+v", existingSource)
+			}
+			updated := graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-existing-source", "--format", "graph-json"))
+			if updated.Revision == original.Revision || len(updated.Owned) != 1 {
+				t.Fatalf("existing source did not retain a new Link/version: %+v", updated)
+			}
+			newTarget := graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-new-target", "--format", "graph-json"))
+			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", "batch-existing-source")); len(got) != 1 || got[0].Target != newTarget.ID {
+				t.Fatalf("existing source did not publish a Link to the new target: %+v", got)
+			}
+			writePlan(`{"nodes":[{"key":"missing-source-target","id":"batch-missing-source-target","title":"Must not exist"}],"edges":[{"from_id":"batch-missing-source","to_key":"missing-source-target"}]}`)
+			refuse("not_found", "create", "--graph", path)
+			refuse("not_found", "show", "batch-missing-source-target")
 			writePlan(`{"nodes":[{"key":"dupe","title":"Must not exist","id":"batch-dupe"}],"edges":[{"from_key":"dupe","to_id":"` + result.IDs["parent"] + `"},{"from_key":"dupe","to_id":"https://example.invalid/batch/` + result.IDs["parent"] + `"}]}`)
 			refuse("invalid_properties", "create", "--graph", path)
 			refuse("not_found", "show", "batch-dupe")
