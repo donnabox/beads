@@ -537,6 +537,18 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, code, args...)
 			}
 			call("", graphSetupInitArgs(t, engine, scope, "--prefix", "demo", "--skip-hooks", "--skip-agents")...)
+			var status struct {
+				Result struct {
+					Capabilities map[string]bool `json:"capabilities"`
+				} `json:"result"`
+			}
+			rawStatus := call("", "status", "--graph", "--json")
+			if err := json.Unmarshal([]byte(rawStatus), &status); err != nil {
+				t.Fatalf("decode graph status: %v: %s", err, rawStatus)
+			}
+			if !status.Result.Capabilities["blockingDependencyPairUnlink"] {
+				t.Fatalf("graph status must advertise the pair removal exercised below: %s", rawStatus)
+			}
 			created := map[string]graphstore.IssueRecord{}
 			for _, id := range []string{"work", "first", "second"} {
 				created[id] = graphMixedResult[graphstore.IssueRecord](t, call("", "create", id, "--id", "beads/"+id, "--force", "--json"))
