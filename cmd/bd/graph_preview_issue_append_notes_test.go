@@ -164,7 +164,7 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 	t.Run("selected-issue-route", func(t *testing.T) {
 		cmd := issueTextCommand(t, "--append-notes=\xff")
 		appendNotesNoInput(t, cmd)
-		err := runGraphPreviewUpdateIssue(cmd, "beads/work")
+		err := runGraphPreviewUpdateIssue(cmd, "beads/work", "work")
 		var failure *exitError
 		if !errors.As(err, &failure) || failure.Code != 2 {
 			t.Fatalf("selected Issue malformed text reached storage: %v", err)

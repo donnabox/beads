@@ -78,6 +78,21 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	}
 	path, err := resolve(selector)
 	if err != nil {
+		// A bare native Issue abbreviation has no exact public allocation.
+		// Keep its selection inside UpdateIssue's checked write transaction.
+		if graphPreviewIssueEditFlagsChanged(cmd) && !cmd.Flags().Changed("from-revision") && !cmd.Flags().Changed("patch") && !cmd.Flags().Changed("replace-properties") {
+			if selected, selectErr := graphPreviewIssueSelector(selector); selectErr == nil && !selected.Exact {
+				// The read confirms this is an Issue before parsing Issue-only input.
+				// UpdateIssue resolves the abbreviation again in its write transaction.
+				if readErr := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+					_, readErr := store.ShowIssueSelected(ctx, selected)
+					return nil, "", readErr
+				}, func(any, string) error { return nil }); readErr != nil {
+					return readErr
+				}
+				return runGraphPreviewUpdateIssue(cmd, selected.Path, selector)
+			}
+		}
 		return err
 	}
 	if graphPreviewLinkPinFlagsChanged(cmd) && !strings.HasPrefix(path, "links/") {
@@ -105,7 +120,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if native {
-			return runGraphPreviewUpdateIssue(cmd, path)
+			return runGraphPreviewUpdateIssue(cmd, path, selector)
 		}
 		return runGraphPreviewUpdateMemory(cmd, path)
 	}
@@ -119,7 +134,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewUpdateLink(cmd, []string{selector})
 	}
 	if graphPreviewIssueEditFlagsChanged(cmd) {
-		return runGraphPreviewUpdateIssue(cmd, path)
+		return runGraphPreviewUpdateIssue(cmd, path, selector)
 	}
 	return runGraphPreviewUpdateMemory(cmd, path)
 }

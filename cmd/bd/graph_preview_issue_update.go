@@ -42,7 +42,7 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // This narrow preview keeps familiar Issue field meanings while requiring the
 // existing opaque graph guard for a canonical Resource selector. Broader
 // workflow flags remain explicit refusals; legacy routing is unchanged.
-func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
+func graphPreviewIssueEditRequest(cmd *cobra.Command, path string, identity ...string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
 	allowed := append([]string{"type", "if-revision", "if-status", "if-assignee", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
@@ -75,7 +75,11 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		values, _ := cmd.Flags().GetStringSlice("remove-label")
 		request.Labels.Remove = utils.NormalizeLabels(values)
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
+	revisionIdentity, privatePath := path, true
+	if len(identity) != 0 {
+		revisionIdentity, privatePath = identity[0], false
+	}
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, revisionIdentity, privatePath)
 	if err != nil {
 		return request, err
 	}
@@ -402,16 +406,23 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 	return nil
 }
 
-func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
+func runGraphPreviewUpdateIssue(cmd *cobra.Command, path, identity string) error {
 	// Resolve the structured input and its source conflicts before a description
 	// flag can consume stdin or open a file.
 	values, err := graphPreviewIssuePropertyValues(cmd)
 	if err != nil {
 		return err
 	}
-	request, err := graphPreviewIssueEditRequest(cmd, path)
+	request, err := graphPreviewIssueEditRequest(cmd, path, identity)
 	if err != nil {
 		return err
+	}
+	selected, err := graphPreviewIssueSelector(identity)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if path == selected.Path {
+		request.NativeID = selected.NativeID
 	}
 	if values != nil {
 		if err := graphPreviewApplyIssueProperties(cmd, &request, values); err != nil {

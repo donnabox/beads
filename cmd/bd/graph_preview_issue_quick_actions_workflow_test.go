@@ -151,6 +151,15 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			if err := json.Unmarshal([]byte(call("state", "list", partialID)), &stateResult); err != nil || stateResult.IssueID != abbreviable.Properties.ID {
 				t.Fatalf("abbreviated state selected the wrong Issue: %+v %v", stateResult, err)
 			}
+			updated := graphMixedResult[graphstore.IssueMutationResult](t, call("update", partialID, "--title", "Updated by partial"))
+			if !updated.Changed || updated.Issue.Properties.ID != abbreviable.Properties.ID || updated.Issue.Properties.Title != "Updated by partial" {
+				t.Fatalf("abbreviated update selected the wrong Issue: %+v", updated)
+			}
+			fallbackOutput := graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "", "update", "--title", "Follow-up", "--json")
+			followup := graphMixedResult[graphstore.IssueMutationResult](t, fallbackOutput)
+			if !followup.Changed || followup.Issue.Properties.ID != abbreviable.Properties.ID || followup.Issue.Properties.Title != "Follow-up" {
+				t.Fatalf("last touched after abbreviated update selected the wrong Issue: %+v", followup)
+			}
 			call("remember", "Colliding Memory", "--id", "beads/"+custom.Properties.ID)
 			memoryBefore := call("show", scope+"beads/"+custom.Properties.ID)
 			if got := issue(call("priority", custom.Properties.ID, "0")); got.ID != custom.Properties.ID || got.Priority != 0 {
