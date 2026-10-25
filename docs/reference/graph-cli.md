@@ -199,6 +199,12 @@ records; the formats serve different clients and are not interchangeable.
 
 ## Quick task Issues
 
+`bd q TITLE` creates an Issue and prints only its local ID, including with
+`--json`. In a fresh graph workspace, `bd q TITLE --parent PARENT` creates a
+child with a dotted native Issue ID, inherits the parent's labels, and adds
+the parent-child Link in the same transaction. Use `bd create` when you need
+the full Issue result or additional create options.
+
 `bd todo` is a shortcut for regular task Issues in a graph workspace. Add
 creates an open task at P2 by default and assigns it to the current actor.
 The bare command and `bd todo list` show open tasks; `bd todo list --all`
