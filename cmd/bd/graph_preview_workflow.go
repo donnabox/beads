@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -129,8 +130,13 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		}
 		raw = string(native)
 	}
-	depType := canonicalDependencyType(types.DependencyType(raw))
-	if !depType.IsWellKnown() {
+	depType := types.DependencyType(raw)
+	if cmd.Name() != "link" {
+		// dep add and generic create retain their own well-known-kind policy
+		// and aliases. Shipping positional bd link stores the chosen kind.
+		depType = canonicalDependencyType(depType)
+	}
+	if !depType.IsValid() || !utf8.ValidString(string(depType)) || (cmd.Name() != "link" && !depType.IsWellKnown()) {
 		return graphFailure("capability_unavailable", "Dependency type is not registered in this preview", 5)
 	}
 	linkPath := ""
@@ -145,6 +151,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	}
 	ownedCreate := cmd.Name() == "create" && cmd.Flags().Lookup("from") != nil
 	guardedShorthand := cmd.Name() == "link" && cmd.Flags().Changed("if-source-revision")
+	familiarLink := cmd.Name() == "link" && !cmd.Flags().Changed("id") && !guardedShorthand
 	if ownedCreate || guardedShorthand {
 		sourceRevision, _ = cmd.Flags().GetString("if-source-revision")
 		if cmd.Flags().Changed("if-source-revision") && sourceRevision == "" {
@@ -158,7 +165,11 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 			return graphFailure("capability_unavailable", "this workspace generation does not support that native Dependency kind", 5)
 		}
 	}
-	familiarLink := cmd.Name() == "link" && !cmd.Flags().Changed("id") && !cmd.Flags().Changed("if-source-revision")
+	if familiarLink {
+		// The shipping two-operand route admits a valid native kind even when
+		// it has no separately installed Type selector in this workspace.
+		selectedType = ""
+	}
 	idRoot, _, err := graphPreviewGeneratedIDRoot(cmd)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)

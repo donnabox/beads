@@ -120,6 +120,61 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 	}
 }
 
+// Shipping bd link accepts custom native kinds, including spellings that
+// bd dep add treats as aliases. The positional graph route must store those
+// exact kinds instead of rejecting them or silently turning them into blocks.
+func TestGraphPreviewPositionalLinkPreservesShippingKinds(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/positional-kinds/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			for _, tc := range []struct{ name, kind string }{
+				{"custom", "my-own-kind"},
+				{"depends-on", "depends-on"},
+				{"blocked-by", "blocked-by"},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					source, target := "beads/"+tc.name+"-source", "beads/"+tc.name+"-target"
+					sourceIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--id", source, "--force"))
+					targetIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", target, "--force"))
+					added := call("link", source, target, "--type", tc.kind)
+					var feedback map[string]any
+					if err := json.Unmarshal([]byte(added), &feedback); err != nil {
+						t.Fatal(err)
+					}
+					if feedback["type"] != tc.kind || feedback["issue_id"] != sourceIssue.Properties.ID || feedback["depends_on_id"] != targetIssue.Properties.ID {
+						t.Fatalf("positional Link changed shipping feedback: %+v", feedback)
+					}
+					links := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source))
+					concreteType, err := graphstore.NativeDependencyTypeURL(scope, tc.kind)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if len(links) != 1 || links[0].Type != concreteType || links[0].Properties["dep_type"] != tc.kind {
+						t.Fatalf("positional Link changed native kind: %+v", links)
+					}
+					if repeated := call("link", source, target, "--type", tc.kind); repeated != added {
+						t.Fatalf("repeated positional Link changed feedback: %s", repeated)
+					}
+					if after := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source)); !reflect.DeepEqual(after, links) {
+						t.Fatal("repeated positional Link changed its stored Link")
+					}
+				})
+			}
+			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "dep", "add", "blocked-by-source", "blocked-by-target", "--type", "my-own-kind", "--json")
+			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "link", "create", "blocked-by-source", "blocked-by-target", "--type", "my-own-kind", "--json")
+			for _, kind := range []string{"", strings.Repeat("x", 33)} {
+				graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "blocked-by-source", "blocked-by-target", "--type", kind, "--json")
+			}
+		})
+	}
+}
+
 func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
