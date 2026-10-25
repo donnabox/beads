@@ -40,10 +40,11 @@ This is useful for agents executing molecules to see which steps can run next.
 
 In graph workspaces, the current preview supports filters for limit, priority,
 assignee, unassigned, sort, label, label-any, exclude-label, label-pattern,
-label-regex, type, exclude-type, metadata-field, has-metadata-key, and
-include-deferred. --claim atomically claims the first matching ready Issue.
-Other ready modes require a later graph slice and currently refuse rather
-than silently ignoring flags.`,
+label-regex, type, exclude-type, metadata-field, has-metadata-key,
+include-deferred, and read-only parent filtering. --claim atomically claims
+the first matching ready Issue; combining --claim with --parent awaits atomic
+parent resolution. Other ready modes require a later graph slice and currently
+refuse rather than silently ignoring flags.`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {

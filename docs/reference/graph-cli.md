@@ -569,8 +569,8 @@ bd undefer work --if-revision =REVISION_FROM_SHOW
 
 The graph preview can narrow `bd ready` by priority, Issue classification,
 assignee, label (including glob or regex), top-level metadata, excluded Issue
-type, or defer state and can sort or limit the result. Listing and atomic
-`--claim` use the same native filter. `bd blocked`
+type, or defer state and can sort or limit the result. For options supported
+by both, listing and atomic `--claim` use the same native filter. `bd blocked`
 accepts the ordinary label, label-any, and exclude-label filters. Both use
 the native blocker-aware predicate, then return canonical graph Issue IDs.
 An explicitly supplied blank label filter is an error, so a typo cannot turn
@@ -579,6 +579,7 @@ an intended narrow query into the whole work queue.
 ```sh
 bd ready --priority 2 --type task --limit 10 --json
 bd ready --label release --sort priority
+bd ready --parent beads/release --json
 bd ready --metadata-field team=delivery --exclude-type bug --json
 bd ready --claim --label release --actor rig.agent --json
 bd blocked --label release --json
@@ -588,7 +589,12 @@ bd blocked --label release --json
 records, or an empty array when no matching ready Issue exists. An empty claim
 does not create a claim lease or revision. As with ordinary `ready`, the lazy
 defer-wake before selection may separately version an expired deferred Issue.
-The remaining ordinary ready modes and blocked `--parent` remain in
+`ready --parent` lists ready descendants of a parent Issue. It accepts an
+opaque local Issue ID (including a literal ID containing `beads/`) or its
+canonical Scope URL; an empty
+parent selector is an error. Combining
+`--parent` with `--claim` currently refuses until parent resolution can occur
+inside the atomic claim. The remaining ordinary ready modes remain in
 the [draft CLI specification](/reference/graph-cli-specification-draft)
 and refuse in this graph slice until their supporting graph behavior is ready.
 
