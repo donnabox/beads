@@ -534,11 +534,14 @@ transaction. Reads and Link-pair writes retain their separate selector rules.
 On a fresh graph workspace, `bd update CHILD --parent PARENT` replaces the
 child's native parent-child dependency and canonical Link in one checked
 transaction. Use `--if-revision =TOKEN` to refuse a stale child. A repeated
-same-parent request makes no new version. The new parent must be a nonempty
-local Issue; detaching is unavailable. Labels are not inherited on reparent.
+same-parent request makes no new version. Admitted scalar fields such as
+`--title`, `--priority`, and `--description` can accompany the move in the
+same transaction; a scalar edit against the current parent preserves the
+parent Link. The new parent must be a nonempty local Issue; detaching is
+unavailable. Labels are not inherited on reparent.
 
 ```sh
-bd update child --parent review
+bd update child --parent review --title "Review the release branch"
 ```
 
 `bd close ID...` and `bd reopen ID...` accept one or more local Issues. A

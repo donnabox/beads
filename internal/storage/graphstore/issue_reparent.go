@@ -147,8 +147,9 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		sameParent := len(edges) == 1 && edges[0].target == parent.Properties.ID
 		patch.ParentID.Value = parent.Properties.ID
 		attempt := publicops.UpdateRequest{Actor: request.Actor, IssueID: child.Properties.ID, IssuePlaneOnly: true,
-			Patch: patch, ForceNotesOverwrite: request.Edit.ForceNotesOverwrite,
-			ForceAssigneeTransfer: request.Edit.ForceAssigneeTransfer}
+			Patch: patch, ExpectedStatus: request.Edit.ExpectedStatus, ExpectedAssignee: request.Edit.ExpectedAssignee,
+			ForceNotesOverwrite:   request.Edit.ForceNotesOverwrite,
+			ForceAssigneeTransfer: request.Edit.ForceAssigneeTransfer, ForceClosePolicy: request.Edit.ForceClosePolicy}
 		if err := issueops.ValidateUpdateRequest(attempt); err != nil {
 			return err
 		}
@@ -170,7 +171,7 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 			if _, err := commonMetadata(resolvedMetadata); err != nil {
 				return err
 			}
-			if len(updates) == 0 && !metadataChanged {
+			if len(updates) == 0 && !metadataChanged && !issueLabelsPatchChanges(child.Properties.Labels, patch.Labels) {
 				result = IssueReparentResult{Issue: child}
 				return nil
 			}

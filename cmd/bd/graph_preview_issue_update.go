@@ -43,12 +43,19 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // existing opaque graph guard for a canonical Resource selector. Broader
 // workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string, identity ...string) (graphstore.UpdateIssueRequest, error) {
+	return graphPreviewIssueEditRequestWithParent(cmd, path, false, identity...)
+}
+
+func graphPreviewIssueEditRequestWithParent(cmd *cobra.Command, path string, allowParent bool, identity ...string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
 	allowed := append([]string{"type", "if-revision", "if-status", "if-assignee", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
+	if allowParent {
+		allowed = append(allowed, "parent")
+	}
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
-	if !graphPreviewIssueEditFlagsChanged(cmd) && !graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("type") {
+	if !graphPreviewIssueEditFlagsChanged(cmd) && !graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("type") && !allowParent {
 		return request, graphFailure("invalid_properties", "Issue update requires at least one supported field", 2)
 	}
 	var err error

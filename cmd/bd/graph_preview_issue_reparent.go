@@ -8,11 +8,14 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-// Parent-only graph updates use the checked native/Link composer. Combining
-// another edit here would split one shipping update across transactions, so
-// those forms remain explicit refusals until they share the same composer.
+// Parent replacement and admitted scalar edits share one checked native Issue
+// writer and canonical Link transaction.
 func runGraphPreviewReparentIssue(cmd *cobra.Command, sourceArg string) error {
-	if err := graphPreviewFlags(cmd, "parent", "if-revision"); err != nil {
+	edit, err := graphPreviewIssueEditRequestWithParent(cmd, "", true, sourceArg)
+	if err != nil {
+		return err
+	}
+	if err := graphPreviewIssuePropertyMerge(cmd, &edit); err != nil {
 		return err
 	}
 	parentArg, _ := cmd.Flags().GetString("parent")
@@ -33,15 +36,13 @@ func runGraphPreviewReparentIssue(cmd *cobra.Command, sourceArg string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, sourceArg, false)
-	if err != nil {
-		return err
-	}
+	revision, unconditional := edit.ExpectedRevision, edit.Unconditional
+	edit.ExpectedRevision, edit.Unconditional = "", false
 	var touchedID string
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.ReparentIssue(ctx, graphstore.IssueReparentRequest{
 			Path: source.Path, NativeID: source.NativeID, ParentPath: parent.Path, ParentNativeID: parent.NativeID,
-			Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional,
+			Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Edit: edit,
 		})
 		if err != nil {
 			return nil, "", err
