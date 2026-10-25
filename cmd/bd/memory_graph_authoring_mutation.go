@@ -68,20 +68,36 @@ func runMemoryLinkCommand(cmd *cobra.Command, args []string, op memoryLinkOperat
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	flags := []string{op.targetFlag, "title", "body", "status", "properties", "metadata", "id", "source-revision", "target-revision", "if-source-revision", "json"}
+	flags := []string{"from", "to", "title", "body", "status", "properties", "metadata", "id", "source-revision", "target-revision", "if-source-revision", "json"}
 	if err := canonicalGraphFlags(cmd, renderer, flags...); err != nil {
 		return err
 	}
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], flags...); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	request, err := memoryLinkRequest(cmd, args, graphPreviewConfig.GraphScopeURL, op)
+	if err := canonicalExactOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	source, target, err := graphPreviewAuthoringEndpoints(cmd, args)
+	if err != nil {
+		err = fmt.Errorf("%s %w", op.name, err)
+	}
+	if err == nil {
+		source, err = graphPreviewResolveMemoryArgument(source)
+	}
+	if err == nil {
+		target, err = graphPreviewResolveMemoryArgument(target)
+	}
+	var request graphstore.LinkCreateRequest
+	if err == nil {
+		request, err = memoryLinkRequestWithEndpoints(cmd, graphPreviewConfig.GraphScopeURL, op, source, target)
+	}
 	if err != nil {
 		var exit *exitError
 		if errors.As(err, &exit) {
 			return err
 		}
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return graphPreviewReferenceFailure(err)
 	}
 	request.Properties, err = memoryLinkProperties(cmd)
 	if err != nil {
@@ -211,6 +227,9 @@ func publishMemoryLinkExecution(cmd *cobra.Command, renderer *clioutput.Mutation
 	}
 	if quietFlag && !jsonFormat {
 		return nil
+	}
+	if !jsonFormat && len(options.Include) == 0 && len(options.Omit) == 0 {
+		return writeMemoryLinkDocument(cmd, []byte(graphHumanRow(graphPreviewConfig.GraphScopeURL, state.result.Link)+"\n"), state, false)
 	}
 	data, err := renderer.RenderSuccess(state.raw)
 	if err != nil {

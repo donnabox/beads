@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"sort"
-	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -61,6 +60,19 @@ func (s *Store) beadEndpointInTx(ctx context.Context, tx *sql.Tx, path string) (
 // AddInformationalLink creates independent identity even for equal endpoints.
 // Link payload, retained Link and owned source snapshot commit together.
 func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequest) (LinkMutationResult, error) {
+	if request.IDRoot != "" {
+		if request.Path != "" || request.PublicID != "" {
+			return LinkMutationResult{}, fmt.Errorf("%w: ID root cannot accompany an explicit ID", storage.ErrValidation)
+		}
+		if err := graph.ValidateGeneratedResourceIDRoot(request.IDRoot); err != nil {
+			return LinkMutationResult{}, err
+		}
+	}
+	preparedPath, generatedPath, err := prepareLinkIdentity(request.Path, request.PublicID)
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	request.Path = preparedPath
 	if request.TypeURL == "" {
 		request.TypeURL = RelatedTypeURL(s.ScopeURL())
 	}
@@ -70,14 +82,11 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 	if !IsInformationalTypeURL(s.ScopeURL(), request.TypeURL) {
 		return LinkMutationResult{}, fmt.Errorf("%w: informational Link Type is not supported", storage.ErrValidation)
 	}
-	for _, path := range []string{request.SourcePath, request.TargetPath} {
-		if err := validatePath(path); err != nil {
-			return LinkMutationResult{}, err
-		}
+	if err := s.validateBeadEndpointOperand(request.SourcePath, request.SourceLocalID); err != nil {
+		return LinkMutationResult{}, err
 	}
-	if request.SourceLocalID != "" && request.SourcePath != "beads/"+request.SourceLocalID ||
-		request.TargetLocalID != "" && request.TargetPath != "beads/"+request.TargetLocalID {
-		return LinkMutationResult{}, fmt.Errorf("%w: local Bead ID does not match its candidate path", storage.ErrValidation)
+	if err := s.validateBeadEndpointOperand(request.TargetPath, request.TargetLocalID); err != nil {
+		return LinkMutationResult{}, err
 	}
 	if request.Path != "" {
 		if err := validateLinkPath(request.Path); err != nil {
@@ -108,11 +117,11 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 			return err
 		}
 		var err error
-		request.SourcePath, err = s.resolveLiveBeadWriteSelectorInTx(ctx, tx, request.SourcePath, request.SourceLocalID)
+		request.SourcePath, err = s.resolveBeadEndpointOperandInTx(ctx, tx, request.SourcePath, request.SourceLocalID)
 		if err != nil {
 			return err
 		}
-		request.TargetPath, err = s.resolveLiveBeadWriteSelectorInTx(ctx, tx, request.TargetPath, request.TargetLocalID)
+		request.TargetPath, err = s.resolveBeadEndpointOperandInTx(ctx, tx, request.TargetPath, request.TargetLocalID)
 		if err != nil {
 			return err
 		}
@@ -155,35 +164,39 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if memory, ok := source.(Record); owned && ok && len(memory.Owned) >= PreviewOwnedLinkLimit {
 			return fmt.Errorf("%w: preview source-owned Link limit %d exceeded", storage.ErrValidation, PreviewOwnedLinkLimit)
 		}
+		if err := s.touchCoordination(ctx, tx); err != nil {
+			return err
+		}
 		path := request.Path
-		if path == "" {
-			token, err := freshToken()
+		publicID := request.PublicID
+		if path == "" && publicID == "" {
+			publicID, err = selectGeneratedPublicIDInTx(ctx, tx, request.IDRoot)
 			if err != nil {
 				return err
 			}
-			path = "links/" + token
+			path, err = preferredPrivateResourcePath(graph.KindLink, publicID)
+			if err != nil {
+				return err
+			}
+			generatedPath = true
 		}
-		var exists int
-		err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
-		if err == nil {
-			return ErrAlreadyExists
+		if publicID == "" {
+			publicID = path
 		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-		if exists, err := publicResourceIDExistsInTx(ctx, tx, path); err != nil {
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
 			return err
 		} else if exists {
 			return ErrAlreadyExists
 		}
-		if err := s.touchCoordination(ctx, tx); err != nil {
+		path, err = choosePrivateResourcePathInTx(ctx, tx, path, generatedPath, graph.KindLink)
+		if err != nil {
 			return err
 		}
 		linkRevision, err := freshToken()
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing) VALUES (?,'link',?,?,'live','informational')`, path, request.TypeURL, linkRevision); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,public_id) VALUES (?,'link',?,?,'live','informational',?)`, path, request.TypeURL, linkRevision, publicID); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-catalog"); err != nil {
@@ -220,8 +233,13 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 	if !utf8.ValidString(request.Actor) {
 		return LinkMutationResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
 	}
-	if request.MetadataOnly || (request.Properties == nil && (request.SourcePin != nil || request.TargetPin != nil)) {
-		if !hasCommonMetadataPatch(request.Metadata) && request.SourcePin == nil && request.TargetPin == nil {
+	if request.FromRevision != "" {
+		if err := validateVersionToken(request.FromRevision); err != nil {
+			return LinkMutationResult{}, err
+		}
+	}
+	if request.MetadataOnly || (request.Properties == nil && (request.SourcePin != nil || request.TargetPin != nil || request.FromRevision != "")) {
+		if request.FromRevision == "" && !hasCommonMetadataPatch(request.Metadata) && request.SourcePin == nil && request.TargetPin == nil {
 			return LinkMutationResult{}, fmt.Errorf("%w: Link update requires metadata or properties", storage.ErrValidation)
 		}
 		if err := validateCommonMetadataPatch(request.Metadata); err != nil {
@@ -257,17 +275,61 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		link, err := s.showLinkInTx(ctx, tx, request.Path)
+		var terminal *LinkTombstone
+		var link LinkRecord
+		var head string
+		var historicalBytes uint64
+		if request.FromRevision != "" {
+			var state string
+			if err := tx.QueryRowContext(ctx, `SELECT allocation_state,revision FROM graph_preview_catalog WHERE path=?`, request.Path).Scan(&state, &head); err != nil {
+				if errors.Is(err, sql.ErrNoRows) {
+					return ErrNotFound
+				}
+				return err
+			}
+			if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, head, true, "Link"); err != nil {
+				return err
+			}
+			var err error
+			historicalBytes, err = historicalLinkReadBytes(ctx, tx, request.Path, head, request.FromRevision, state == "deleted")
+			if err != nil {
+				return err
+			}
+			if err := checkCurrentReadBytesAdditional(ctx, tx, historicalBytes); err != nil {
+				return err
+			}
+			if state == "deleted" {
+				link, terminal, err = s.deletedLinkStateInTx(ctx, tx, request.Path)
+			} else {
+				link, err = s.showLinkInTx(ctx, tx, request.Path)
+			}
+			if err != nil {
+				return err
+			}
+		} else {
+			var err error
+			link, err = s.showLinkInTx(ctx, tx, request.Path)
+			if err != nil {
+				return err
+			}
+			head = link.Revision
+		}
+		if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
+			var err error
+			result, err = s.writeNativeLinkPropertiesInTx(ctx, tx, request, properties, patch, link, terminal, head)
+			return err
+		}
+		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, head, true, "Link"); err != nil {
+			return err
+		}
+		sourcePath, err := s.publicResourcePathInTx(ctx, tx, link.Source, graph.KindBead)
 		if err != nil {
 			return err
 		}
-		if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
-			return fmt.Errorf("%w: property update requires informational Link Type", storage.ErrValidation)
-		}
-		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
+		targetPath, err := s.publicResourcePathInTx(ctx, tx, link.Target, graph.KindBead)
+		if err != nil {
 			return err
 		}
-		sourcePath := strings.TrimPrefix(link.Source, s.options.Binding.ScopeURL)
 		source, revision, err := s.beadEndpointInTx(ctx, tx, sourcePath)
 		if err != nil {
 			return err
@@ -290,17 +352,31 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			return err
 		}
 
-		var pinBytes uint64
+		base := link
+		if request.FromRevision != "" {
+			base, err = s.historicalLinkBaseInTx(ctx, tx, request.Path, request.FromRevision, link)
+			if err != nil {
+				return err
+			}
+		}
+		if terminal != nil {
+			if _, _, err := s.beadEndpointInTx(ctx, tx, targetPath); err != nil {
+				return err
+			}
+			if memory, ok := source.(Record); owned && ok && len(memory.Owned) >= PreviewOwnedLinkLimit {
+				return fmt.Errorf("%w: preview source-owned Link limit %d exceeded", storage.ErrValidation, PreviewOwnedLinkLimit)
+			}
+		}
+		pinBytes := historicalBytes
 		sourcePin, targetPin := link.SourceRevision, link.TargetRevision
 		if request.SourcePin != nil {
-			sourcePin, err = s.endpointPinInTx(ctx, tx, sourcePath, *request.SourcePin, &pinBytes)
+			sourcePin, err = s.endpointPinInTxBudget(ctx, tx, sourcePath, *request.SourcePin, &pinBytes, request.FromRevision != "")
 			if err != nil {
 				return err
 			}
 		}
 		if request.TargetPin != nil {
-			targetPath := strings.TrimPrefix(link.Target, s.ScopeURL())
-			targetPin, err = s.endpointPinInTx(ctx, tx, targetPath, *request.TargetPin, &pinBytes)
+			targetPin, err = s.endpointPinInTxBudget(ctx, tx, targetPath, *request.TargetPin, &pinBytes, request.FromRevision != "")
 			if err != nil {
 				return err
 			}
@@ -310,11 +386,15 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		}
 		pinsChanged := sourcePin != link.SourceRevision || targetPin != link.TargetRevision
 		if patch != nil {
-			if note, ok := link.Properties["note"].(string); ok && len(note) > graphpatch.MaxDocumentBytes {
+			if note, ok := base.Properties["note"].(string); ok && len(note) > graphpatch.MaxDocumentBytes {
 				return fmt.Errorf("%w: Link properties exceed the patch working-document limit", ErrLimitExceeded)
 			}
 		}
 		before, err := canonicalJSON(link.Properties)
+		if err != nil {
+			return err
+		}
+		baseProperties, err := canonicalJSON(base.Properties)
 		if err != nil {
 			return err
 		}
@@ -324,8 +404,8 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			if err := json.Unmarshal(properties, &delta); err != nil {
 				return err
 			}
-			merged := make(map[string]any, len(link.Properties)+len(delta))
-			for key, value := range link.Properties {
+			merged := make(map[string]any, len(base.Properties)+len(delta))
+			for key, value := range base.Properties {
 				merged[key] = value
 			}
 			for key, value := range delta {
@@ -337,10 +417,10 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			}
 		}
 		if nextProperties == nil && patch == nil {
-			nextProperties = before
+			nextProperties = baseProperties
 		}
 		if patch != nil {
-			nextProperties, err = applyLinkPropertiesPatch(patch, before)
+			nextProperties, err = applyLinkPropertiesPatch(patch, baseProperties)
 			if err != nil {
 				return err
 			}
@@ -352,7 +432,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err := catalog.validateProperties(link.Type, nextProperties, graph.KindLink); err != nil {
 			return err
 		}
-		metadata, metadataChanged, err := issueops.ApplyMetadataPatch(link.Metadata, request.Metadata)
+		metadata, _, err := issueops.ApplyMetadataPatch(base.Metadata, request.Metadata)
 		if err != nil {
 			return err
 		}
@@ -360,7 +440,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if bytes.Equal(before, nextProperties) && !metadataChanged && !pinsChanged {
+		if terminal == nil && bytes.Equal(before, nextProperties) && bytes.Equal(link.Metadata, metadata) && !pinsChanged {
 			result = LinkMutationResult{Link: link, Source: source}
 			return nil
 		}
@@ -371,17 +451,30 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET revision=? WHERE path=?`, linkRevision, request.Path); err != nil {
+		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET revision=?,allocation_state='live' WHERE path=?`, linkRevision, request.Path); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-catalog"); err != nil {
 			return err
 		}
-		attribution, err := canonicalJSON(writeAttribution(request.Actor))
+		acceptedAttribution := writeAttribution(request.Actor)
+		acceptedAttribution.Inception = link.Attribution.Inception
+		if terminal != nil {
+			acceptedAttribution.Inception = "revert"
+		}
+		if request.FromRevision != "" {
+			acceptedAttribution.HistoricalUpdate = &HistoricalUpdateContext{FromRevision: request.FromRevision, PreviousRevision: head}
+		}
+		attribution, err := canonicalJSON(acceptedAttribution)
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_links SET properties=?, metadata=?, attribution=?, source_revision=?, target_revision=? WHERE path=?`, nextProperties, metadata, attribution, sourcePin, targetPin, request.Path); err != nil {
+		if terminal != nil {
+			_, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_links (path,source_path,target_path,source_revision,target_revision,properties,metadata,attribution) VALUES (?,?,?,?,?,?,?,?)`, request.Path, sourcePath, targetPath, sourcePin, targetPin, nextProperties, metadata, attribution)
+		} else {
+			_, err = tx.ExecContext(ctx, `UPDATE graph_preview_links SET properties=?, metadata=?, attribution=?, source_revision=?, target_revision=? WHERE path=?`, nextProperties, metadata, attribution, sourcePin, targetPin, request.Path)
+		}
+		if err != nil {
 			return err
 		}
 		if err := s.afterStage("link-payload"); err != nil {
@@ -392,7 +485,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			if owned {
 				result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
 			}
-			if patch != nil || request.MergeProperties || hasCommonMetadataPatch(request.Metadata) || pinsChanged {
+			if request.FromRevision != "" || patch != nil || request.MergeProperties || hasCommonMetadataPatch(request.Metadata) || pinsChanged {
 				// The new patch route must not commit a graph that current reads
 				// cannot acquire. Replacement retains its existing policy.
 				return checkCurrentReadBytes(ctx, tx)
@@ -523,7 +616,7 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,allocation_state,backing FROM graph_preview_catalog WHERE path=?`, endpoint).Scan(&kind, &typ, &state, &backing); err != nil {
 			return LinkRecord{}, fmt.Errorf("%w: missing endpoint: %v", ErrInvalidStore, err)
 		}
-		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && s.isMemoryType(typ)) || (backing == "issue" && typ == issueType)) {
+		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && s.isMemoryType(typ)) || (backing == "issue" && nativeIssueTypeMatches(s.ScopeURL(), typ, issueType))) {
 			return LinkRecord{}, fmt.Errorf("%w: invalid informational endpoint", ErrInvalidStore)
 		}
 		pin := []string{sourcePin, targetPin}[index]
@@ -538,7 +631,19 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		}
 
 	}
-	r := LinkRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision, Source: graph.CanonicalURL(s.options.Binding.ScopeURL, source), Target: graph.CanonicalURL(s.options.Binding.ScopeURL, target), SourceRevision: sourcePin, TargetRevision: targetPin}
+	publicURL, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return LinkRecord{}, err
+	}
+	sourceURL, err := s.publicResourceURLInTx(ctx, tx, source)
+	if err != nil {
+		return LinkRecord{}, err
+	}
+	targetURL, err := s.publicResourceURLInTx(ctx, tx, target)
+	if err != nil {
+		return LinkRecord{}, err
+	}
+	r := LinkRecord{ID: publicURL, Type: typ, Revision: revision, Version: revision, Source: sourceURL, Target: targetURL, SourceRevision: sourcePin, TargetRevision: targetPin}
 	canonicalMetadata, err := commonMetadata(metadata)
 	if err != nil || !bytes.Equal(canonicalMetadata, metadata) {
 		return LinkRecord{}, fmt.Errorf("%w: invalid informational metadata", ErrInvalidStore)

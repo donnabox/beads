@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -14,17 +13,20 @@ import (
 // Historical acquisition/composition is a single storage Update transaction;
 // this adapter never simulates it with a historical read and replacement.
 func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
+	if strings.HasPrefix(path, "links/") {
+		return runGraphPreviewHistoricalLinkUpdate(cmd, path)
+	}
+	if err := graphPreviewFlags(cmd, "type", "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return err
 	}
 	if !strings.HasPrefix(path, "beads/") {
-		return graphFailure("capability_unavailable", "historical Link Update/recovery is not supported", 5)
+		return graphFailure("capability_unavailable", "historical Update requires a Bead or Link identity", 5)
 	}
-	source, _ := cmd.Flags().GetString("from-revision")
-	if source == "" || !utf8.ValidString(source) || len(source) > graphstore.PreviewVersionTokenLimit {
-		return graphFailure("invalid_selector", fmt.Sprintf("--from-revision requires a nonempty UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
+	source, err := graphPreviewRevisionFlag(cmd, "from-revision", path, true)
+	if err != nil {
+		return err
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return err
 	}
@@ -32,7 +34,11 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
-	request := graphstore.MemoryPatchRequest{Path: path, FromRevision: source, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}
+	typeURL, err := graphPreviewMemoryTypeFlag(cmd)
+	if err != nil {
+		return err
+	}
+	request := graphstore.MemoryPatchRequest{TypeURL: typeURL, Path: path, FromRevision: source, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}
 	if cmd.Flags().Changed("properties") {
 		if cmd.Flags().Changed("patch") || cmd.Flags().Changed("replace-properties") {
 			return graphFailure("invalid_properties", "--properties cannot combine with --patch or --replace-properties", 2)
@@ -60,7 +66,11 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 			return nil, "", err
 		}
 		if native {
-			nativeRequest := graphstore.UpdateIssueRequest{Path: path, FromRevision: source, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata, PropertiesPatch: patch}
+			nativeType, err := graphPreviewNativeIssueTypeFlag(cmd, store.ScopeURL())
+			if err != nil {
+				return nil, "", err
+			}
+			nativeRequest := graphstore.UpdateIssueRequest{TypeURL: nativeType, Path: path, FromRevision: source, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata, PropertiesPatch: patch}
 			nativeRequest.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
 			if request.PropertiesProvided {
 				var values map[string]any
@@ -86,7 +96,7 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 		}
 		var result graphstore.MemoryMutationResult
 		if patch != nil {
-			result, err = store.PatchMemoryProperties(ctx, graphstore.MemoryPropertiesPatchRequest{Path: path, FromRevision: source, Patch: patch, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata})
+			result, err = store.PatchMemoryProperties(ctx, graphstore.MemoryPropertiesPatchRequest{TypeURL: typeURL, Path: path, FromRevision: source, Patch: patch, Actor: request.Actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata})
 		} else {
 			result, err = store.PatchMemory(ctx, request)
 		}

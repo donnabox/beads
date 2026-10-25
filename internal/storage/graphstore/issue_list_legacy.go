@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/workapi"
@@ -74,7 +75,10 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 			if !strings.HasPrefix(canonical, s.ScopeURL()) {
 				return fmt.Errorf("%w: listed Issue escaped graph scope", ErrInvalidStore)
 			}
-			path := strings.TrimPrefix(canonical, s.ScopeURL())
+			path, err := s.publicResourcePathInTx(ctx, tx, canonical, graph.KindBead)
+			if err != nil {
+				return err
+			}
 			if err := validatePath(path); err != nil {
 				return fmt.Errorf("%w: invalid listed Issue path: %v", ErrInvalidStore, err)
 			}
@@ -99,7 +103,7 @@ func (s *Store) validateCanonicalIssueAllocationInTx(ctx context.Context, tx *sq
 	if err := tx.QueryRowContext(ctx, `SELECT path,resource_kind,type_url,allocation_state FROM graph_preview_catalog WHERE backing='issue' AND backing_key=?`, nativeID).Scan(&path, &kind, &typ, &state); err != nil {
 		return fmt.Errorf("%w: unmapped Issue list parent: %v", ErrInvalidStore, err)
 	}
-	if kind != "bead" || typ != issueType || state != "live" || validatePath(path) != nil {
+	if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || state != "live" || validatePath(path) != nil {
 		return fmt.Errorf("%w: invalid Issue list parent allocation", ErrInvalidStore)
 	}
 	return nil

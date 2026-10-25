@@ -7,6 +7,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -107,7 +108,10 @@ func (s *Store) deleteIssue(ctx context.Context, request IssueDeleteRequest, rem
 			return nil
 		}
 		for _, link := range links {
-			path := strings.TrimPrefix(link.ID, s.ScopeURL())
+			path, err := s.publicResourcePathInTx(ctx, tx, link.ID, graph.KindLink)
+			if err != nil {
+				return err
+			}
 			if _, err := s.unlinkInTx(ctx, tx, LinkDeleteRequest{
 				Path: path, Actor: request.Actor, ExpectedRevision: link.Revision,
 				UnconditionalSource: true,
@@ -192,7 +196,7 @@ func (s *Store) validDeletedIssueAllocationInTx(ctx context.Context, tx *sql.Tx,
 	if err != nil {
 		return err
 	}
-	if validatePath(path) != nil || kind != "bead" || typ != issueType ||
+	if validatePath(path) != nil || kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) ||
 		!authorityID.MatchString(head) || state != "deleted" || backing != "issue" || !key.Valid || key.String == "" {
 		return fmt.Errorf("%w: invalid deleted Issue allocation", ErrInvalidStore)
 	}

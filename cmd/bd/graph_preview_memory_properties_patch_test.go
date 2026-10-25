@@ -85,7 +85,7 @@ func TestGraphPreviewRememberReplacementRequiresOneExistingSelector(t *testing.T
 
 func TestGraphPreviewPropertyReplacementIsRootPatch(t *testing.T) {
 	const value = `{"title":"new","body":"雪","large":1234567890123456}`
-	cmd := memoryPropertiesPatchCommand(t, "--replace-properties="+value, "--if-revision=seen", "--replace-metadata={}")
+	cmd := memoryPropertiesPatchCommand(t, "--replace-properties="+value, "--if-revision==seen", "--replace-metadata={}")
 	request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, "beads/plan")
 	if err != nil {
 		t.Fatal(err)
@@ -198,7 +198,7 @@ func TestGraphPreviewMemoryPropertiesPatchRequest(t *testing.T) {
 	oldActor := actor
 	t.Cleanup(func() { actor = oldActor })
 	actor = "patch-author"
-	for _, flags := range [][]string{{"--if-revision=observed"}, {}} {
+	for _, flags := range [][]string{{"--if-revision==observed"}, {}} {
 		cmd := memoryPropertiesPatchCommand(t, append([]string{"--patch=" + memoryPropertiesPatchExample}, flags...)...)
 		request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, "beads/plan")
 		if err != nil || request.Path != "beads/plan" || request.Actor != "patch-author" || !bytes.Equal(request.Patch, []byte(memoryPropertiesPatchExample)) || request.Unconditional != (len(flags) == 0) || (!request.Unconditional && request.ExpectedRevision != "observed") {
@@ -241,7 +241,7 @@ func TestGraphPreviewMemoryPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		{"Issue-title-conflict", []string{"beads/work"}, []string{"--title=Issue"}, false, 5},
 		{"claim-conflict", []string{"beads/work"}, []string{"--claim=true"}, false, 5},
 		{"false-claim-conflict", []string{"beads/work"}, []string{"--claim=false"}, false, 5},
-		{"source-guard", []string{"https://example.invalid/beads/plan"}, []string{"--if-source-revision=old"}, false, 5},
+		{"invalid-source-guard", []string{"https://example.invalid/beads/plan"}, []string{"--if-source-revision=\xff"}, false, 2},
 		{"false-source-unconditional", []string{"beads/plan"}, []string{"--unconditional-source=false"}, false, 5},
 		{"notes-conflict", []string{"beads/plan"}, []string{"--notes="}, false, 5},
 		{"request-status-unavailable", []string{"beads/plan"}, []string{"--request-id=id"}, false, 5},
@@ -291,6 +291,9 @@ func TestGraphPreviewMemoryPropertiesPatchLegacyAdmission(t *testing.T) {
 	})
 	jsonOutput, graphPreviewStructuredErrors = false, false
 	cmd := memoryPropertiesPatchCommand(t, "--patch=@-")
+	cmd.Use = "update"
+	parent := &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	updateCmd = cmd
 	probe := &memoryPropertiesPatchProbe{}
 	cmd.SetIn(probe)

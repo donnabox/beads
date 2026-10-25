@@ -45,11 +45,11 @@ func graphPreviewLinkPropertiesPatchRequestWithRaw(cmd *cobra.Command, path stri
 	if !cmd.Flags().Changed("patch") && !cmd.Flags().Changed("replace-properties") {
 		return request, graphFailure("invalid_properties", "property update requires --patch or --replace-properties", 2)
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return request, err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, path, true)
 	if err != nil {
 		return request, err
 	}

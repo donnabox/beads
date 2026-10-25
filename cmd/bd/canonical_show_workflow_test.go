@@ -23,6 +23,7 @@ import (
 var updateCanonicalShowCorpus = flag.Bool("canonical-show-update", false, "regenerate canonical show corpus from real CLI output")
 
 func TestCanonicalShowWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -53,7 +54,6 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			if err := json.Unmarshal(legacy("link", "beads/plan", "beads/work", "--type", "types/subject-to", "--id", "links/note", "--properties", `{"note":"unchanged"}`), &receipt); err != nil {
 				t.Fatal(err)
 			}
-			linkPath := strings.TrimPrefix(receipt.Link.ID, scope)
 			var linked graphstore.Record
 			if err := json.Unmarshal(legacy("show", scope+"beads/plan"), &linked); err != nil || len(linked.Owned) != 1 {
 				t.Fatalf("legacy owned result changed: %+v %v", linked, err)
@@ -89,9 +89,9 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			canonicalShowGolden(t, "link", linkOutput)
 			link := decode(linkOutput)
 			equalJSON(link, decode(call("show", receipt.Link.ID, "--output-format=json")))
-			equalJSON(link, decode(call("show", "note", "--output-format=json")))
-			equalJSON(link, decode(call("link", "show", "note", "--output-format=json")))
-			equalJSON(legacy("show", receipt.Link.ID), legacy("link", "show", "note"))
+			equalJSON(link, decode(call("show", "links/note", "--output-format=json")))
+			equalJSON(link, decode(call("link", "show", "links/note", "--output-format=json")))
+			equalJSON(legacy("show", receipt.Link.ID), legacy("link", "show", "links/note"))
 			// Compare public CLI payloads to the real protocol projector, with store
 			// lifetime entirely outside child processes.
 			cfg, err := configfile.Load(filepath.Join(work, ".beads"))
@@ -110,7 +110,7 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			for _, v := range []struct {
 				path string
 				got  []byte
-			}{{"beads/plan", bead}, {linkPath, link}} {
+			}{{initial.ID, bead}, {receipt.Link.ID, link}} {
 				expected, err := reader.Resource(ctx, v.path)
 				if err != nil {
 					t.Fatal(err)
@@ -141,7 +141,7 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 				t.Fatalf("projection: %s", projected)
 			}
 			// Historical owner output must retain its old owned state, never today's.
-			old := decode(call("show", "["+scope+"beads/plan]@"+initial.Revision, "--output-format=json"))
+			old := decode(call("show", "["+scope+"beads/plan]@="+initial.Revision, "--output-format=json"))
 			var oldBead bdpwire.BeadRecord
 			if err := json.Unmarshal(old, &oldBead); err != nil || oldBead.Revision != initial.Revision || len(oldBead.OwnedLinks) != len(resource.OwnedLinks) {
 				t.Fatalf("historical state changed: %s %v", old, err)
@@ -152,7 +152,7 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 					t.Fatalf("retained owner must preserve selected empty groups without current Links: %s", old)
 				}
 			}
-			equalJSON(old, decode(call("show", scope+"beads/plan", "--version", initial.Revision, "--output-format=json")))
+			equalJSON(old, decode(call("show", scope+"beads/plan", "--revision", "="+initial.Revision, "--output-format=json")))
 			detail := call("show", scope+"beads/plan", "--output-format=detail", "--omit=/ownedLinks")
 			if !strings.Contains(detail, "Big body & <literal>") {
 				t.Fatalf("human detail escaped or lost body: %s", detail)
@@ -169,8 +169,8 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 				{[]string{"show", scope + "beads/plan", "--output-format=json", "--json=false"}, "invalid_selector", false, true},
 				{[]string{"show", scope + "beads/plan", "--graph-mode=invalid"}, "invalid_selector", false, false},
 				{[]string{"show", scope + "beads/plan", "--omit=/revision"}, "invalid_selector", false, false},
-				{[]string{"show", scope + "beads/plan", "--version=first", "--version=second"}, "invalid_selector", false, false},
-				{[]string{"link", "show", receipt.Link.ID, "--version=first", "--version=second"}, "invalid_selector", false, false},
+				{[]string{"show", scope + "beads/plan", "--revision=first", "--revision=second"}, "invalid_selector", false, false},
+				{[]string{"link", "show", receipt.Link.ID, "--revision=first", "--revision=second"}, "invalid_selector", false, false},
 				{[]string{"link", "show"}, "invalid_selector", false, false},
 				{[]string{"show", scope + "beads/plan"}, "capability_unavailable", true, false},
 			} {

@@ -217,7 +217,7 @@ func TestMemoryCanonicalMixedIssuePath(t *testing.T) {
 		}
 	})
 	for _, p := range []string{"i1", "i2"} {
-		if _, err := s.CreateIssue(ctx, "beads/"+p, plainIssue(p)); err != nil {
+		if _, err := s.CreateIssue(ctx, "beads/"+p, plainIssueAtPublicID(p, "beads/"+p)); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -267,17 +267,18 @@ func TestMemoryCanonicalMixedIssuePath(t *testing.T) {
 }
 
 func TestMemoryScopedIgnoresUnrelatedIssuePopulation(t *testing.T) {
-	// Setup exercises real legacy batch authoring, independently of the read.
-	// Slow CI setup must not exhaust the scoped-reader budget before it runs.
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-	defer cancel()
+	// The real 1000-Issue atomic writer is fixture setup, not the scoped-read
+	// timing assertion. Race-enabled Bazel setup needs its own workload budget;
+	// the control/read budgets and the package alarm remain unchanged.
+	setupCtx, setupCancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer setupCancel()
 	setupStarted := time.Now()
 	o := testOptions(t)
 	o.IssuePrefix = "exp"
-	if err := Init(ctx, o); err != nil {
+	if err := Init(setupCtx, o); err != nil {
 		t.Fatal(err)
 	}
-	s, err := OpenExisting(ctx, o)
+	s, err := OpenExisting(setupCtx, o)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -286,17 +287,31 @@ func TestMemoryScopedIgnoresUnrelatedIssuePopulation(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	if _, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"}); err != nil {
+	if _, err := s.Create(setupCtx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"}); err != nil {
 		t.Fatal(err)
 	}
 	items := make([]publicops.BatchCreateItem, PreviewSnapshotLimit)
 	for i := range items {
 		items[i] = publicops.BatchCreateItem{Issue: &publicops.Issue{ID: fmt.Sprintf("exp-noise%d", i), Title: "Unrelated", Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}}
 	}
+	retained := 0
+	s.afterWrite = func(stage string) error {
+		if stage == "issue" {
+			t.Logf("native batch authored (uncommitted); setup elapsed=%s", time.Since(setupStarted))
+		} else if stage == "retained" {
+			retained++
+			if retained%100 == 0 {
+				t.Logf("uncommitted native mappings=%d; setup elapsed=%s", retained, time.Since(setupStarted))
+			}
+		}
+		return nil
+	}
 	t.Log("creating 1000 valid native Issues through existing batch authoring")
-	if _, err := s.CreateIssueBatch(ctx, publicops.CreateBatchRequest{Actor: "memory-scoped-test", Items: items}); err != nil {
+	if _, err := s.CreateIssueBatch(setupCtx, publicops.CreateBatchRequest{Actor: "memory-scoped-test", Items: items}); err != nil {
 		t.Fatal(err)
 	}
+	s.afterWrite = nil
+	setupCancel()
 	t.Logf("native Issue population setup finished in %s", time.Since(setupStarted))
 	controlCtx, controlCancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer controlCancel()
@@ -372,7 +387,7 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	for _, field := range []string{"endpoint_type", "retained_backing_key"} {
+	for _, field := range []string{"endpoint_type", "endpoint_public_id", "retained_backing_key"} {
 		if !t.Run(field, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 			t.Cleanup(cancel)
@@ -385,7 +400,7 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			request := memoryQueryRequest(rootPath)
 			request.MaxBytes = 32 * 1024
 			switch field {
-			case "endpoint_type":
+			case "endpoint_type", "endpoint_public_id":
 				if _, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "b"}); err != nil {
 					t.Fatal(err)
 				}
@@ -426,6 +441,8 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 					}
 				})
 				mutation, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, strings.Repeat("x", 64*1024), targetPath)
+			case "endpoint_public_id":
+				mutation, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET public_id=? WHERE path=?`, strings.Repeat("x", 64*1024), targetPath)
 			case "retained_backing_key":
 				mutation, err = s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET backing_key=? WHERE path=?`, "invalid-domain-key", rootPath)
 			}

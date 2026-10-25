@@ -138,7 +138,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 	call(t, "init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive",
 		"--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 	issue := graphMixedResult[graphstore.IssueRecord](t, call(t, "create", "Unchanged Issue source", "--graph-path", "beads/work"))
-	issueShown := call(t, "show", scope+"beads/work")
+	issueShown := call(t, "show", issue.ID)
 
 	// The public CLI does not advertise exact History. Read-only inspection of
 	// the normally initialized store verifies retention without seeding state or
@@ -173,16 +173,17 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 			original := graphMixedResult[graphstore.Record](t, call(t, "remember", "Original body", "--id", path, "--title", "Original title"))
 			before, err := inspection.ReadVersion(inspectCtx, path, original.Revision)
 			expectedStoredOriginal := original
+			expectedStoredOriginal.PublicID = path
 			expectedStoredOriginal.Version = original.Revision
 			if err != nil || !reflect.DeepEqual(before, expectedStoredOriginal) {
 				t.Fatalf("initial retained predecessor: %+v %v", before, err)
 			}
 			commands := [2][]string{
-				{"delete", path, "--force", "--if-revision", original.Revision, "--json"},
-				{"remember", "--update", path, "--title", "Winning edit", "--if-revision", original.Revision, "--json"},
+				{"delete", path, "--force", "--if-revision", "=" + original.Revision, "--json"},
+				{"remember", "--update", path, "--title", "Winning edit", "--if-revision", "=" + original.Revision, "--json"},
 			}
 			if other == "incoming-link" {
-				commands[1] = []string{"link", scope + "beads/work", path, "--id", "links/incoming", "--type", scope + "types/references", "--json"}
+				commands[1] = []string{"link", issue.ID, path, "--id", "links/incoming", "--type", scope + "types/references", "--json"}
 			}
 			results := graphDeleteRacePair(t, bd, work, home, commands)
 			deleteWon, otherWon := results[0].code == "", results[1].code == ""
@@ -236,16 +237,16 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 			if retained, err := inspection.ReadVersion(inspectCtx, path, original.Revision); err != nil || !reflect.DeepEqual(retained, before) {
 				t.Fatalf("race changed retained predecessor: %+v %v", retained, err)
 			}
-			if call(t, "show", scope+"beads/work") != issueShown {
+			if call(t, "show", issue.ID) != issueShown {
 				t.Fatal("race changed the unowned Issue source")
 			}
 			// Establish absence in every scheduling outcome, only after the race
 			// assertions. Explicit unlink/forget are separate normal operations.
 			if !deleteWon {
 				if other == "incoming-link" {
-					call(t, "link", "delete", "--force", "links/incoming", "--if-revision", link.Revision)
+					call(t, "link", "delete", "--force", "links/incoming", "--if-revision", "="+link.Revision)
 				}
-				call(t, "forget", path, "--if-revision", finalLive.Revision)
+				call(t, "forget", path, "--if-revision", "="+finalLive.Revision)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", path, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "Cannot reuse", "--id", path, "--title", "Reserved", "--json")
@@ -253,6 +254,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 				t.Fatalf("final absence lost original snapshot: %+v %v", retained, err)
 			}
 			expectedStoredFinal := finalLive
+			expectedStoredFinal.PublicID = path
 			expectedStoredFinal.Version = finalLive.Revision
 			if retained, err := inspection.ReadVersion(inspectCtx, path, finalLive.Revision); err != nil || !reflect.DeepEqual(retained, expectedStoredFinal) {
 				t.Fatalf("final absence lost final live snapshot: %+v %v", retained, err)

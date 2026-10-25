@@ -19,7 +19,10 @@ type graphDependencyProjection struct {
 }
 
 func projectGraphDependencies(snapshot graphstore.Snapshot, scope string) (graphDependencyProjection, error) {
-	blockingType := graphstore.DependencyTypeURL(scope)
+	blockingType, err := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	if err != nil {
+		return graphDependencyProjection{}, err
+	}
 	g := graphDependencyProjection{
 		issues: map[string]graphstore.IssueRecord{}, links: []graphstore.LinkRecord{},
 		down: map[string][]string{}, up: map[string][]string{},

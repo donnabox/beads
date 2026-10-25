@@ -91,37 +91,37 @@ func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
 			created := graphMixedResult[graphstore.IssueRecord](t, call("create", "Notes work", "--graph-path", path, "--notes=First", "--design=Keep", "--actor=author"))
 			selector := created.ID
 			versions := call("versions", selector)
-			refuse("notes_overwrite_refused", "update", selector, "--notes=Second", "--if-revision", created.Revision)
-			refuse("invalid_properties", "update", selector, "--notes=", "--force", "--if-revision", created.Revision)
+			refuse("notes_overwrite_refused", "update", selector, "--notes=Second", "--if-revision", "="+created.Revision)
+			refuse("invalid_properties", "update", selector, "--notes=", "--force", "--if-revision", "="+created.Revision)
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--format", "graph-json")); !reflect.DeepEqual(got, created) || call("versions", selector) != versions {
 				t.Fatal("refused notes edit changed current Issue or retained history")
 			}
-			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--notes=First", "--if-revision", created.Revision))
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--notes=First", "--if-revision", "="+created.Revision))
 			if noop.Changed || !reflect.DeepEqual(noop.Issue, created) || call("versions", selector) != versions {
 				t.Fatal("identical notes replacement minted a version")
 			}
-			replaced := graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--notes=Second", "--force", "--title=Revised", "--if-revision", created.Revision, "--actor=editor"))
+			replaced := graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--notes=Second", "--force", "--title=Revised", "--if-revision", "="+created.Revision, "--actor=editor"))
 			if !replaced.Changed || replaced.Issue.Revision == created.Revision || replaced.Issue.Properties.Notes != "Second" || replaced.Issue.Properties.Title != "Revised" || replaced.Issue.Properties.Design != "Keep" || replaced.Issue.Attribution.Actor != "editor" {
 				t.Fatalf("forced notes update lost native fields or attribution: %+v", replaced)
 			}
-			refuse("revision_conflict", "update", selector, "--notes=Stale", "--force", "--if-revision", created.Revision)
-			prior := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--version", created.Revision))
+			refuse("revision_conflict", "update", selector, "--notes=Stale", "--force", "--if-revision", "="+created.Revision)
+			prior := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--revision", "="+created.Revision))
 			if prior.Properties.Notes != "First" || prior.Properties.Title != "Notes work" {
 				t.Fatal("replacement rewrote the retained initial Issue")
 			}
-			appended := graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--append-notes=Third", "--if-revision", replaced.Issue.Revision))
+			appended := graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--append-notes=Third", "--if-revision", "="+replaced.Issue.Revision))
 			if !appended.Changed || appended.Issue.Properties.Notes != "Second\nThird" {
 				t.Fatal("append after replacement did not preserve both notes")
 			}
-			cleared := graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--clear-notes", "--if-revision", appended.Issue.Revision))
+			cleared := graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--clear-notes", "--if-revision", "="+appended.Issue.Revision))
 			if !cleared.Changed || cleared.Issue.Properties.Notes != "" || cleared.Issue.Properties.Title != "Revised" {
 				t.Fatal("explicit clear changed another field or retained notes")
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--version", appended.Issue.Revision)); got.Properties.Notes != "Second\nThird" {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--revision", "="+appended.Issue.Revision)); got.Properties.Notes != "Second\nThird" {
 				t.Fatal("clear rewrote prior retained notes")
 			}
 			versions = call("versions", selector)
-			noop = graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--clear-notes", "--if-revision", cleared.Issue.Revision))
+			noop = graphMixedResult[graphstore.IssueMutationResult](t, call("update", selector, "--clear-notes", "--if-revision", "="+cleared.Issue.Revision))
 			if noop.Changed || call("versions", selector) != versions {
 				t.Fatal("clearing empty notes minted a version")
 			}
@@ -155,7 +155,7 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 			writeFile(t, gitconfig, []byte(gitText))
 			env := []string{"BEADS_ACTOR=" + tc.beadsActor, "BD_ACTOR=" + tc.oldActor, "GIT_AUTHOR_EMAIL=" + tc.ownerEnv}
 			path := "beads/" + tc.name
-			args := []string{"create", "Authored Issue", "--graph-path", path, "--notes", "  Initial 雪\r\n ", "--assignee", "assigned-worker", "--json"}
+			args := []string{"create", "Authored Issue", "--id", path, "--force", "--notes", "  Initial 雪\r\n ", "--assignee", "assigned-worker", "--json"}
 			if tc.flagActor != "" {
 				args = append(args, "--actor", tc.flagActor)
 			}
@@ -174,12 +174,12 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 			if envelope.Result.Revision == "" || i.CreatedBy != tc.wantActor || i.Owner != tc.wantOwner || envelope.Result.Attribution.Actor != tc.wantActor || i.Assignee != "assigned-worker" || i.Status != types.StatusOpen || i.Notes != "  Initial 雪\r\n " || i.LeaseExpiresAt != nil || i.HeartbeatAt != nil {
 				t.Fatalf("authorship, initial notes or no-claim boundary lost: %+v", envelope.Result)
 			}
-			for _, flags := range [][]string{nil, {"--version", envelope.Result.Revision}} {
+			for _, flags := range [][]string{nil, {"--revision", "=" + envelope.Result.Revision}} {
 				if got := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"show", "https://example.invalid/initial-notes/" + path, "--format", "graph-json", "--json"}, flags...)...); got != created {
 					t.Fatal("fresh current/exact read changed complete initial authored Issue")
 				}
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "update", "https://example.invalid/initial-notes/"+path, "--notes=", "--if-revision", envelope.Result.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "update", "https://example.invalid/initial-notes/"+path, "--notes=", "--if-revision", "="+envelope.Result.Revision, "--json")
 			if got := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/initial-notes/"+path, "--format", "graph-json", "--json"); got != created {
 				t.Fatal("held notes clear changed initial Issue")
 			}
@@ -188,10 +188,10 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 	for _, key := range []string{"BEADS_ACTOR", "GIT_AUTHOR_EMAIL"} {
 		t.Run("overlong-"+key, func(t *testing.T) {
 			env := []string{key + "=" + strings.Repeat("雪", 256)}
-			graphPolicyCLI(t, bd, work, home, env, "invalid_properties", "create", "Refused", "--graph-path", "beads/refused", "--notes=No allocation", "--json")
+			graphPolicyCLI(t, bd, work, home, env, "invalid_properties", "create", "Refused", "--id", "beads/refused", "--force", "--notes=No allocation", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 		})
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--graph-path", "beads/refused", "--notes", "must not allocate", "--readonly", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "create", "Read-only", "--id", "beads/refused", "--force", "--notes", "must not allocate", "--readonly", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 }

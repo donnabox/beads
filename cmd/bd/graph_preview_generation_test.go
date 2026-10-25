@@ -18,9 +18,11 @@ func TestGraphPreviewGenerationMarkerClassification(t *testing.T) {
 	}{
 		{"legacy generation", "link-preview-v5\n", false, false},
 		{"prior generation", "link-preview-v7\n", false, false},
-		{"previous generation", "link-preview-v9\n", false, false},
-		{"current generation", "link-preview-v10\n", true, false},
-		{"next generation", "link-preview-v11\n", false, true},
+		{"older supported-era generation", "link-preview-v9\n", false, false},
+		{"previous generation", "link-preview-v10\n", false, false},
+		{"prior concrete-label generation", "link-preview-v11\n", false, false},
+		{"current generation", "link-preview-v12\n", true, false},
+		{"next generation", "link-preview-v13\n", false, true},
 		{"numeric not lexical order", "link-preview-v100\n", false, true},
 		{"two digits above current", "link-preview-v99\n", false, true},
 		{"largest uint64", "link-preview-v18446744073709551615\n", false, true},
@@ -33,14 +35,14 @@ func TestGraphPreviewGenerationMarkerClassification(t *testing.T) {
 		{"newline only", "\n", false, false},
 		{"no number", "link-preview-v\n", false, false},
 		{"no number and no newline", "link-preview-v", false, false},
-		{"current without newline", "link-preview-v10", false, false},
-		{"newer without newline", "link-preview-v11", false, false},
-		{"newer with a second newline", "link-preview-v11\n\n", false, false},
-		{"newer with carriage return", "link-preview-v11\r\n", false, false},
+		{"current without newline", "link-preview-v12", false, false},
+		{"newer without newline", "link-preview-v13", false, false},
+		{"newer with a second newline", "link-preview-v13\n\n", false, false},
+		{"newer with carriage return", "link-preview-v13\r\n", false, false},
 		{"leading zero", "link-preview-v06\n", false, false},
 		{"leading zeros on a newer number", "link-preview-v007\n", false, false},
-		{"trailing text on current", "link-preview-v9x\n", false, false},
-		{"trailing text on newer", "link-preview-v10x\n", false, false},
+		{"trailing text on current", "link-preview-v12x\n", false, false},
+		{"trailing text on newer", "link-preview-v13x\n", false, false},
 		{"negative number", "link-preview-v-7\n", false, false},
 		{"explicit plus sign", "link-preview-v+7\n", false, false},
 		{"leading space", " link-preview-v9\n", false, false},
@@ -64,16 +66,16 @@ func TestGraphPreviewGenerationMarkerClassification(t *testing.T) {
 		})
 	}
 
-	// Exactly generation 10 is accepted and exactly those above 10 are
+	// Exactly generation 12 is accepted and exactly those above 12 are
 	// newer, however the numbers are written in the ordinary decimal form.
 	for generation := range 300 {
 		marker := []byte("link-preview-v" + strconv.Itoa(generation) + "\n")
-		wantSupported := generation == 10
+		wantSupported := generation == 12
 		if got := graphPreviewGenerationSupported(marker); got != wantSupported {
 			t.Errorf("supported(generation %d) = %t, want %t", generation, got, wantSupported)
 		}
-		if got := graphPreviewGenerationNewer(marker); got != (generation > 10) {
-			t.Errorf("newer(generation %d) = %t, want %t", generation, got, generation > 10)
+		if got := graphPreviewGenerationNewer(marker); got != (generation > 12) {
+			t.Errorf("newer(generation %d) = %t, want %t", generation, got, generation > 12)
 		}
 	}
 

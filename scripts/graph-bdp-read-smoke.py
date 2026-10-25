@@ -24,7 +24,7 @@ import threading
 import time
 
 
-PIN = "de99030d13a57e77f4f2660b91ea3c39b82823cb"
+PIN = "bad780f19761e5714873aa3a85adeb75bc885928"
 HERE = Path(__file__).resolve().parent
 sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location("graph_c0_capture", HERE / "graph-c0-smoke.py")
@@ -269,7 +269,7 @@ def main():
                 "--design", "Initial design — 雪", "--acceptance", "Ready\r\n",
                 "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ",
                 "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z"]
-            records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--graph-path", path, *fields, "--json"]))
+            records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--id", path, "--force", *fields, "--json"]))
         # Selected SubjectTo ownership needs a Constraint target. Keep the native
         # Issue pair intact and create its independent target through the CLI.
         records["beads/constraint"] = c0.envelope(capture.success("constraint-create", [
@@ -338,7 +338,7 @@ def main():
         # checks. Use its original observed revision, not a fresh pre-read.
         alpha = records["beads/alpha"]
         deleted = c0.envelope(capture.success("memory-delete", ["delete", scope + "beads/alpha", "--force",
-            "--if-revision", alpha["revision"], "--json"]))
+            "--if-revision", "=" + alpha["revision"], "--json"]))
         c0.require_memory_deletion(deleted, alpha)
         name = "python-after-delete"
         consumer = Process(capture, name, [sys.executable, str(Path(__file__)), "--observe-python",

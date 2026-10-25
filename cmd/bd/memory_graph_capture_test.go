@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -110,4 +112,50 @@ func containsMemoryProtected(values []string, want string) bool {
 		}
 	}
 	return false
+}
+
+func TestMemoryCaptureAndTreePreserveCommonIDs(t *testing.T) {
+	roots := []memoryquery.CurrentRoot{{Path: "rootless", Depth: 1}}
+	reader := memoryPresentationReader{nodes: map[string]memoryquery.CurrentNode{
+		"rootless":     {Path: "rootless", TypeURL: genericTestScope + "types/policy", Version: "current"},
+		"links/memory": {Path: "links/memory", TypeURL: genericTestScope + "types/policy", Version: "current"},
+	}}
+	source, err := graph.NewInScopeRef("rootless", "current")
+	if err != nil {
+		t.Fatal(err)
+	}
+	target, err := graph.NewInScopeRef("links/memory", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	revision, err := graph.NewRevision("link-current")
+	if err != nil {
+		t.Fatal(err)
+	}
+	link, err := graph.NewLink(graph.LinkSpec{Path: "beads/edge", TypeURL: genericTestScope + "types/references", Revision: revision, Source: source, Target: target})
+	if err != nil {
+		t.Fatal(err)
+	}
+	reader.links = []graph.Link{link}
+	walk, err := memoryquery.CurrentFamily(context.Background(), reader, func(context.Context, string) (bool, error) { return true, nil }, roots, graph.DirectionOut, memoryquery.Limits{MaxNodes: 10, MaxLinks: 10, MaxInspected: 100})
+	if err != nil {
+		t.Fatal(err)
+	}
+	read := graphstore.CurrentFamilyRead{Graph: walk}
+	for _, node := range walk.Nodes {
+		read.Records = append(read.Records, graphstore.Record{ID: genericTestScope + node.Path, Type: node.TypeURL, Revision: node.Version, Version: node.Version, Properties: graphstore.Properties{Title: node.Path}})
+	}
+	read.Records = append(read.Records, graphstore.LinkRecord{ID: genericTestScope + "beads/edge", Type: link.TypeURL(), Revision: "link-current", Version: "link-current", Source: source.URL(genericTestScope), Target: target.URL(genericTestScope), SourceRevision: source.Pin()})
+	if err := validateMemoryCurrentCapture(read, genericTestScope, roots); err != nil {
+		t.Fatal(err)
+	}
+	text, err := renderMemoryCurrentGraph(read, genericTestScope, graph.DirectionOut, graphstore.PreviewCurrentReadByteLimit)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []string{"rootless", "links/memory", "beads/edge", "types/policy", "types/references"} {
+		if !strings.Contains(text, id) {
+			t.Fatalf("tree elided literal identity %q: %s", id, text)
+		}
+	}
 }

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/memorycatalog"
@@ -32,7 +31,7 @@ type CurrentFamilyRequest struct {
 
 // CurrentFamilyRead retains canonical Records separately from selected graph
 // membership: embedded Owned copies must never be interpreted as selected edges.
-// Graph uses local paths; canonical Records retain their original absolute IDs,
+// Graph uses exact local public IDs; canonical Records retain their absolute IDs,
 // properties, metadata, pins, ownership and attribution. WriterToken and current
 // revisions describe this one observed view, not resolution of historical pins.
 // Types/OwnedLinkTypes use the existing checked Snapshot context vocabulary.
@@ -70,7 +69,7 @@ func (s *Store) ReadCurrentFamily(ctx context.Context, req CurrentFamilyRequest)
 			return fmt.Errorf("%w: current family read does not admit selected family", ErrCapabilityUnavailable)
 		}
 		for _, root := range req.Roots {
-			n, err := r.Current(ctx, root.Path)
+			n, err := r.current(ctx, root.Path, true)
 			if err != nil {
 				return err
 			}
@@ -100,7 +99,7 @@ func validateCurrentFamilyRequest(req CurrentFamilyRequest) error {
 		return fmt.Errorf("%w: invalid current family read", graph.ErrValidation)
 	}
 	for _, root := range req.Roots {
-		if validatePath(root.Path) != nil || root.Depth < 0 || root.Depth > PreviewSnapshotLimit {
+		if graph.ValidateCanonicalResourceID(root.Path) != nil || root.Depth < 0 || root.Depth > PreviewSnapshotLimit {
 			return fmt.Errorf("%w: invalid current family root", graph.ErrValidation)
 		}
 	}
@@ -147,7 +146,7 @@ func (r *currentFamilyReader) materialize(ctx context.Context, g memoryquery.Cur
 		}
 		out.Records = append(out.Records, record)
 	}
-	out.Types, err = installedPreviewTypes(ctx, r.tx, r.store.ScopeURL())
+	out.Types, err = r.store.selectedDescriptorsInTx(ctx, r.tx)
 	if err != nil {
 		return CurrentFamilyRead{}, err
 	}
@@ -170,6 +169,7 @@ func (r *currentFamilyReader) materialize(ctx context.Context, g memoryquery.Cur
 type currentFamilyAllocation struct {
 	node         memoryquery.CurrentNode
 	backing, key string
+	privatePath  string
 }
 type currentFamilyReader struct {
 	store       *Store
@@ -187,7 +187,7 @@ func (r *currentFamilyReader) matches(ctx context.Context, id string) (bool, err
 }
 func (r *currentFamilyReader) family(family typecatalog.Reference) func(context.Context, string) (bool, error) {
 	return func(_ context.Context, id string) (bool, error) {
-		d, ok := r.catalog.types.Definition(id)
+		d, ok := r.catalog.types.Definition(nativeFamilyReference(r.store.ScopeURL(), id))
 		if !ok || d.Kind != graph.KindLink {
 			return false, fmt.Errorf("%w: unknown current Link Type", ErrInvalidStore)
 		}
@@ -195,43 +195,60 @@ func (r *currentFamilyReader) family(family typecatalog.Reference) func(context.
 	}
 }
 func (r *currentFamilyReader) isConstraint(id string) bool {
-	d, ok := r.catalog.types.Definition(id)
+	d, ok := r.catalog.types.Definition(nativeFamilyReference(r.store.ScopeURL(), id))
 	return ok && d.Kind == graph.KindBead && r.catalog.types.Conforms(d.Identity, typecatalog.Reference{URI: r.catalog.projectionBinding(memorycatalog.Constraint)})
 }
 
 func (r *currentFamilyReader) Current(ctx context.Context, path string) (memoryquery.CurrentNode, error) {
+	return r.current(ctx, path, false)
+}
+
+func (r *currentFamilyReader) current(ctx context.Context, path string, selectedRoot bool) (memoryquery.CurrentNode, error) {
 	if err := ctx.Err(); err != nil {
 		return memoryquery.CurrentNode{}, err
 	}
 	if a, ok := r.allocations[path]; ok {
 		return a.node, nil
 	}
-	if err := validatePath(path); err != nil {
+	if err := graph.ValidateCanonicalResourceID(path); err != nil {
 		return memoryquery.CurrentNode{}, err
 	}
-	count, err := r.chargeRows(ctx, "graph_preview_catalog c WHERE c.path=?", "c.path,c.resource_kind,c.type_url,c.revision,c.allocation_state,c.backing,c.backing_key", 4, path)
+	count, err := r.chargeRows(ctx, "graph_preview_catalog WHERE (backing='issue' AND backing_key=?) OR (backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)", "path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id", 4, path, path)
 	if err != nil {
 		return memoryquery.CurrentNode{}, err
 	}
 	if count != 1 {
 		return memoryquery.CurrentNode{}, ErrNotFound
 	}
+	identity, err := resolveAllocatedResourceIdentityInTx(ctx, r.tx, path)
+	if err != nil {
+		return memoryquery.CurrentNode{}, err
+	}
+	privatePath := identity.PrivatePath
 	var kind, typ, version, state, backing string
 	var key sql.NullString
-	if err := r.tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &version, &state, &backing, &key); err != nil {
+	if err := r.tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, privatePath).Scan(&kind, &typ, &version, &state, &backing, &key); err != nil {
 		return memoryquery.CurrentNode{}, err
 	}
 	if state == "deleted" {
 		return memoryquery.CurrentNode{}, ErrGone
 	}
-	if state != "live" || kind != "bead" || !authorityID.MatchString(version) {
+	if state != "live" || !authorityID.MatchString(version) {
 		return memoryquery.CurrentNode{}, fmt.Errorf("%w: unsupported current allocation", ErrInvalidStore)
 	}
-	if !((backing == "generic" && !key.Valid && r.catalog.memoryType(typ)) || (backing == "issue" && key.Valid && key.String != "" && typ == IssueTypeURL(r.store.ScopeURL()))) {
+	// The identity resolver already validated kind/backing/state agreement.
+	// A caller may select a valid Link, but graph incidence must resolve Beads.
+	if kind != "bead" {
+		if selectedRoot {
+			return memoryquery.CurrentNode{}, fmt.Errorf("%w: current family root must be a Bead", graph.ErrValidation)
+		}
+		return memoryquery.CurrentNode{}, fmt.Errorf("%w: unsupported current allocation", ErrInvalidStore)
+	}
+	if !((backing == "generic" && !key.Valid && r.catalog.memoryType(typ)) || (backing == "issue" && key.Valid && key.String != "" && isConcreteNativeIssue(r.store.ScopeURL(), typ))) {
 		return memoryquery.CurrentNode{}, fmt.Errorf("%w: current read supports live Memory/native Issue", ErrCapabilityUnavailable)
 	}
 	n := memoryquery.CurrentNode{Path: path, TypeURL: typ, Version: version}
-	r.allocations[path] = currentFamilyAllocation{node: n, backing: backing, key: key.String}
+	r.allocations[path] = currentFamilyAllocation{node: n, backing: backing, key: key.String, privatePath: privatePath}
 	return n, nil
 }
 
@@ -239,16 +256,20 @@ func (r *currentFamilyReader) Incident(ctx context.Context, path string, allowan
 	if v, ok := r.feeds[path]; ok {
 		return v, nil
 	}
+	if _, err := r.Current(ctx, path); err != nil {
+		return nil, err
+	}
+	privatePath := r.allocations[path].privatePath
 	// Both directions are necessary even for an outward walk: the induced graph
 	// includes reverse/cross Links between reached nodes. This does not expand
 	// reachability or frontier in the opposite direction.
-	if err := r.chargeInformational(ctx, "(l.source_path=? OR l.target_path=?)", path, path); err != nil {
+	if err := r.chargeInformational(ctx, "(l.source_path=? OR l.target_path=?)", privatePath, privatePath); err != nil {
 		return nil, err
 	}
-	if err := r.chargeNative(ctx, "(src.path=? OR dst.path=?)", path, path); err != nil {
+	if err := r.chargeNative(ctx, "(src.path=? OR dst.path=?)", privatePath, privatePath); err != nil {
 		return nil, err
 	}
-	records, err := r.store.incidentLinksInTx(ctx, r.tx, LinksRequest{BeadPath: path, Direction: "both"}, "")
+	records, err := r.store.incidentLinksInTx(ctx, r.tx, LinksRequest{BeadPath: privatePath, Direction: "both"}, "")
 	if err != nil {
 		return nil, err
 	}
@@ -277,7 +298,10 @@ func (r *currentFamilyReader) Incident(ctx context.Context, path string, allowan
 		if err != nil {
 			return nil, err
 		}
-		linkPath := strings.TrimPrefix(record.ID, r.store.ScopeURL())
+		linkPath, err := graph.ScopeLocalPublicResourceID(r.store.ScopeURL(), record.ID)
+		if err != nil {
+			return nil, err
+		}
 		l, err := graph.NewLink(graph.LinkSpec{Path: linkPath, TypeURL: record.Type, Revision: revision, Source: src, Target: dst, Properties: properties})
 		if err != nil {
 			return nil, err
@@ -294,17 +318,18 @@ func (r *currentFamilyReader) hydrate(ctx context.Context, path string) (any, er
 	if !ok || (a.backing != "generic" && a.backing != "issue") {
 		return nil, fmt.Errorf("%w: unselected hydration target", ErrInvalidStore)
 	}
-	if err := r.chargeInformational(ctx, "l.source_path=?", path); err != nil {
+	privatePath := a.privatePath
+	if err := r.chargeInformational(ctx, "l.source_path=?", privatePath); err != nil {
 		return nil, err
 	}
 	if a.backing == "generic" {
-		if _, err := r.chargeRows(ctx, "graph_preview_payloads p WHERE p.path=?", "p.properties,p.metadata", 3, path); err != nil {
+		if _, err := r.chargeRows(ctx, "graph_preview_payloads p WHERE p.path=?", "p.properties,p.metadata", 3, privatePath); err != nil {
 			return nil, err
 		}
-		if _, err := r.chargeRows(ctx, "graph_preview_versions v WHERE v.path=? AND v.version=?", "v.snapshot,v.actor", 3, path, a.node.Version); err != nil {
+		if _, err := r.chargeRows(ctx, "graph_preview_versions v WHERE v.path=? AND v.version=?", "v.snapshot,v.actor", 3, privatePath, a.node.Version); err != nil {
 			return nil, err
 		}
-		record, err := r.store.showMemoryInTx(ctx, r.tx, path)
+		record, err := r.store.showMemoryInTx(ctx, r.tx, privatePath)
 		if err != nil {
 			return nil, err
 		}
@@ -313,10 +338,10 @@ func (r *currentFamilyReader) hydrate(ctx context.Context, path string) (any, er
 		}
 		return record, nil
 	}
-	if err := r.chargeIssue(ctx, path, a.key, a.node.Version); err != nil {
+	if err := r.chargeIssue(ctx, privatePath, a.key, a.node.Version); err != nil {
 		return nil, err
 	}
-	record, err := r.store.showIssueInTx(ctx, r.tx, path)
+	record, err := r.store.showIssueInTx(ctx, r.tx, privatePath)
 	if err != nil {
 		return nil, err
 	}

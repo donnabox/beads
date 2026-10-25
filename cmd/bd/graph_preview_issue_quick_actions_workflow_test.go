@@ -48,7 +48,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 				return result
 			}
 			call(args...)
-			call("create", "Quick actions", "--graph-path", "beads/work", "--description", "Keep this")
+			call("create", "Quick actions", "--id", "beads/work", "--force", "--description", "Keep this")
 			call("remember", "Memory text", "--id", "beads/context", "--title", "Context")
 			before := read()
 			priority := issue(call("priority", scope+"beads/work", "0"))
@@ -71,11 +71,11 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 				t.Fatalf("second note overwrote prior text: %q", got.Properties.Notes)
 			}
 			preAssign := read()
-			assigned := issue(call("assign", scope+"beads/work", "alice", "--if-revision", preAssign.Revision, "--actor", "alice"))
+			assigned := issue(call("assign", scope+"beads/work", "alice", "--if-revision", "="+preAssign.Revision, "--actor", "alice"))
 			if assigned.ID != preAssign.Properties.ID || assigned.Assignee != "alice" || read().Revision == preAssign.Revision {
 				t.Fatalf("assign lost canonical identity or failed to version: %+v", assigned)
 			}
-			refuse("revision_conflict", "assign", scope+"beads/work", "bob", "--if-revision", preAssign.Revision)
+			refuse("revision_conflict", "assign", scope+"beads/work", "bob", "--if-revision", "="+preAssign.Revision)
 			state = graphMemoryReadSnapshot(t, work)
 			call("assign", scope+"beads/work", "alice")
 			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
@@ -99,7 +99,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "assign", scope+"beads/context", "alice")
 
 			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path"))
-			if custom.Properties.ID == "custom-path" {
+			if custom.Properties.ID == "custom-path" || custom.ID != scope+custom.Properties.ID {
 				t.Fatal("fixture needs a native ID distinct from its graph path")
 			}
 			if got := issue(call("priority", custom.Properties.ID, "1")); got.ID != custom.Properties.ID || got.Priority != 1 {
@@ -142,8 +142,8 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			if call("show", scope+"beads/"+custom.Properties.ID) != memoryBefore {
 				t.Fatal("public Issue actions changed colliding Memory path")
 			}
-			if got := issue(call("priority", scope+"beads/custom-path", "0")); got.Priority != 0 {
-				t.Fatalf("explicit path did not select custom Issue: %+v", got)
+			if got := issue(call("priority", custom.ID, "0")); got.Priority != 0 {
+				t.Fatalf("canonical identity did not select custom Issue: %+v", got)
 			}
 		})
 	}

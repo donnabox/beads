@@ -20,7 +20,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_properties", "--replace-properties cannot combine with --properties, --patch or Issue property flags", 2)
 	}
 	if len(args) == 0 && cmd.Flags().Changed("from-revision") {
-		return graphFailure("invalid_selector", "historical Update requires an explicit Bead ID", 2)
+		return graphFailure("invalid_selector", "historical Update requires an explicit Bead or Link ID", 2)
 	}
 	if len(args) == 0 {
 		if graphPreviewLinkPinFlagsChanged(cmd) || cmd.Flags().Changed("properties") || cmd.Flags().Changed("replace-properties") || cmd.Flags().Changed("patch") || cmd.Flags().Changed("type") {
@@ -35,10 +35,8 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph update requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
 	}
-	selector, err := graphPreviewWritableIdentity(args[0])
-	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
+	selector := args[0]
+	var err error
 	if _, _, err := graphPreviewResourceReadSelector(selector); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -46,17 +44,11 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	// fail before opening the selected workspace or consuming patch input.
 	if !cmd.Flags().Changed("from-revision") && (cmd.Flags().Changed("patch") || cmd.Flags().Changed("replace-properties")) {
 		allowed := []string{"type", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force", "source-revision", "target-revision", "if-source-revision"}
-		if _, kind, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, selector); ok {
-			if kind == graph.KindLink {
-				allowed = []string{"patch", "replace-properties", "source-revision", "target-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"}
-			} else {
-				allowed = []string{"type", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"}
-			}
-		}
+
 		if err := graphPreviewFlags(cmd, allowed...); err != nil {
 			return err
 		}
-		revision, _, err := graphPreviewEditRevisionGuard(cmd)
+		revision, _, err := graphPreviewEditRevisionGuard(cmd, selector, false)
 		if err != nil {
 			return err
 		}
@@ -64,7 +56,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
 		}
 		if cmd.Flags().Changed("if-source-revision") {
-			sourceRevision, _, err := graphPreviewRevisionGuard(cmd, true)
+			sourceRevision, _, err := graphPreviewRevisionGuard(cmd, true, selector, false)
 			if err != nil {
 				return err
 			}
@@ -104,6 +96,17 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		if strings.HasPrefix(path, "links/") {
 			return graphFailure("capability_unavailable", "Link retyping is not supported", 5)
 		}
+		var native bool
+		if err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+			var err error
+			native, err = store.NativeIssueAllocation(ctx, path)
+			return nil, "", err
+		}, func(any, string) error { return nil }); err != nil {
+			return err
+		}
+		if native {
+			return runGraphPreviewUpdateIssue(cmd, path)
+		}
 		return runGraphPreviewUpdateMemory(cmd, path)
 	}
 	if cmd.Flags().Changed("claim") {
@@ -113,7 +116,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewUpdateMetadataOnly(cmd, path)
 	}
 	if strings.HasPrefix(path, "links/") {
-		return runGraphPreviewUpdateLink(cmd, []string{graph.CanonicalURL(graphPreviewConfig.GraphScopeURL, path)})
+		return runGraphPreviewUpdateLink(cmd, []string{selector})
 	}
 	if graphPreviewIssueEditFlagsChanged(cmd) {
 		return runGraphPreviewUpdateIssue(cmd, path)
@@ -150,7 +153,7 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return err
 	}
@@ -166,7 +169,7 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
-	issueUpdated := false
+	touchedID := ""
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		current, err := store.Read(ctx, path)
 		if err != nil {
@@ -189,7 +192,7 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 			if err != nil {
 				return nil, "", err
 			}
-			issueUpdated = true
+			touchedID = result.Issue.ID
 			verb := "Updated"
 			if !result.Changed {
 				verb = "Unchanged"
@@ -211,8 +214,8 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 		}
 		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Memory.ID), result.Replaced, err)
 	})
-	if err == nil && issueUpdated {
-		graphPreviewStoreLastTouchedPath(path)
+	if err == nil && touchedID != "" {
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }

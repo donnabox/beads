@@ -98,7 +98,7 @@ func TestDependencyCreateSelectsOpaqueIssueIDInsideWrite(t *testing.T) {
 				TargetPath: "beads/target", Actor: "author",
 			}
 			created, err := s.AddDependency(ctx, request)
-			if err != nil || !created.Changed || created.Source.Properties.ID != "beads/exp-fixed" || created.Link.Source != s.ScopeURL()+"beads/other" {
+			if err != nil || !created.Changed || created.Source.Properties.ID != "beads/exp-fixed" || created.Link.Source != s.ScopeURL()+literal.Issue.ID {
 				t.Fatalf("opaque source selected graph path owner: %+v %v", created, err)
 			}
 			pathOwner, err := s.ShowIssue(ctx, "beads/exp-fixed")
@@ -163,7 +163,7 @@ func TestIssueSelectorSharesNativeAbbreviationAcrossReadAndUpdate(t *testing.T) 
 				t.Fatalf("combined Memory read fabricated Issue details: %+v %+v %v", combined, combinedDetail, err)
 			}
 			paths, err := s.ResolveIssuePaths(ctx, []IssueSelector{selector})
-			if err != nil || !reflect.DeepEqual(paths, []string{"beads/source"}) {
+			if err != nil || !reflect.DeepEqual(paths, []string{created.Properties.ID}) {
 				t.Fatalf("abbreviated count filter selected wrong path: %v %v", paths, err)
 			}
 			title := "Updated"
@@ -241,13 +241,13 @@ func TestAllocatedPublicIDResolvesHistoricalTargetsAfterDeletion(t *testing.T) {
 			if _, err := s.ResolveAllocatedResourcePath(ctx, "private-allocation"); !errors.Is(err, ErrNotFound) {
 				t.Fatalf("private Issue path became public shorthand: %v", err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/context", Title: "Historical Memory"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{PublicID: "beads/context", Title: "Historical Memory"}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/context", Unconditional: true}); err != nil {
 				t.Fatal(err)
 			}
-			for _, id := range []string{"beads/context", "context"} {
+			for _, id := range []string{"beads/context"} {
 				if path, err := s.ResolveAllocatedResourcePath(ctx, id); err != nil || path != "beads/context" {
 					t.Fatalf("deleted Memory selector %q: %q %v", id, path, err)
 				}
@@ -255,8 +255,15 @@ func TestAllocatedPublicIDResolvesHistoricalTargetsAfterDeletion(t *testing.T) {
 			if path, err := s.ResolveExactAllocatedResourcePath(ctx, "beads/context"); err != nil || path != "beads/context" {
 				t.Fatalf("exact deleted Memory public ID: %q %v", path, err)
 			}
+			before := workflowState(t, ctx, s)
+			if _, err := s.ResolveAllocatedResourcePath(ctx, "context"); !errors.Is(err, ErrNotFound) {
+				t.Fatalf("private Memory suffix became a public alias: %v", err)
+			}
 			if _, err := s.ResolveExactAllocatedResourcePath(ctx, "context"); !errors.Is(err, ErrNotFound) {
 				t.Fatalf("compatibility suffix became an exact write ID: %v", err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("refused private suffix changed state")
 			}
 		})
 	}
@@ -283,49 +290,91 @@ func TestOpaqueResourceReadSelectorKeepsPublicIDsSeparateFromGraphPaths(t *testi
 			}
 			pathOnly := plainIssue("Path only")
 			pathOnly.Issue.ID = "exp-other-id"
-			_, err = s.CreateIssue(ctx, "beads/path-only", pathOnly)
+			pathOnlyRecord, err := s.CreateIssue(ctx, "beads/path-only", pathOnly)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/beads/path-only", "beads/path-only", workapi.DetailOptions{}); !errors.Is(err, ErrNotFound) {
 				t.Fatalf("local path spelling silently selected an unrelated Issue: %v", err)
 			}
-			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/path-only", "", workapi.DetailOptions{})
+			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, pathOnlyRecord.ID, "", workapi.DetailOptions{})
 			if read, ok := record.(IssueRecord); err != nil || path != "beads/path-only" || !ok || read.Properties.ID != pathOnly.Issue.ID || details == nil || details.ID != pathOnly.Issue.ID {
-				t.Fatalf("canonical path read: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+				t.Fatalf("canonical public ID read: path=%q record=%+v details=%+v err=%v", path, record, details, err)
 			}
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Notes"})
+			memory, err := s.Create(ctx, CreateRequest{PublicID: "beads/notes", Title: "Notes"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/notes", "notes", workapi.DetailOptions{})
-			if read, ok := record.(Record); err != nil || path != "beads/notes" || !ok || read.ID != memory.ID || details != nil {
-				t.Fatalf("unambiguous Memory fallback: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+			before := workflowState(t, ctx, s)
+			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/notes", "notes", workapi.DetailOptions{}); !errors.Is(err, ErrNotFound) {
+				t.Fatalf("explicit Memory public ID acquired a private suffix alias: %v", err)
 			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("refused private Memory alias changed state")
+			}
+
 			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/beads/notes", "beads/notes", workapi.DetailOptions{})
 			if read, ok := record.(Record); err != nil || path != "beads/notes" || !ok || read.ID != memory.ID || details != nil {
 				t.Fatalf("Memory public path spelling: path=%q record=%+v details=%+v err=%v", path, record, details, err)
 			}
-			link, err := s.AddDependency(ctx, DependencyRequest{Path: "links/edge", SourcePath: "beads/allocation", TargetPath: "beads/path-only", Actor: "author"})
+			link, err := s.AddDependency(ctx, DependencyRequest{Path: "links/edge", PublicID: "links/edge", SourcePath: "beads/allocation", TargetPath: "beads/path-only", Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}
+			before = workflowState(t, ctx, s)
+			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{}); !errors.Is(err, ErrNotFound) {
+				t.Errorf("explicit Link public ID acquired a private suffix alias: %v", err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("private Link alias read changed state")
+			}
+			// Old allocations without explicit public IDs retain suffix compatibility.
+			// Its public ID already equals the private path, so this marker change
+			// does not change any current or retained canonical record identity.
+			if _, err := s.db.ExecContext(ctx, "UPDATE graph_preview_catalog SET public_id=NULL WHERE path='links/edge'"); err != nil {
+				t.Fatal(err)
+			}
+			legacyBefore := workflowState(t, ctx, s)
 			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{})
 			if read, ok := record.(LinkRecord); err != nil || path != "links/edge" || !ok || read.ID != link.Link.ID || details != nil {
-				t.Fatalf("local Link ID read: path=%q record=%+v details=%+v err=%v", path, record, details, err)
+				t.Fatalf("legacy NULL-ID Link suffix compatibility changed: %q %+v %v", path, record, err)
 			}
+			if !reflect.DeepEqual(legacyBefore, workflowState(t, ctx, s)) {
+				t.Fatal("legacy suffix read changed state")
+			}
+			if _, err := s.db.ExecContext(ctx, "UPDATE graph_preview_catalog SET public_id='links/edge' WHERE path='links/edge'"); err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("legacy marker fixture did not restore exact allocation")
+			}
+
 			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/links/edge", "links/edge", workapi.DetailOptions{})
 			if read, ok := record.(LinkRecord); err != nil || path != "links/edge" || !ok || read.ID != link.Link.ID || details != nil {
 				t.Fatalf("Link public path spelling: path=%q record=%+v details=%+v err=%v", path, record, details, err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/edge", Title: "Distinct public spelling"}); err != nil {
+			distinct, err := s.Create(ctx, CreateRequest{PublicID: "edge", Title: "Distinct public spelling"})
+			if err != nil {
 				t.Fatal(err)
 			}
-			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{}); !errors.Is(err, storage.ErrValidation) {
-				t.Fatalf("Memory/Link shorthand ambiguity silently chose one backing: %v", err)
+			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{})
+			if read, ok := record.(Record); err != nil || !ok || read.ID != distinct.ID || details != nil {
+				t.Fatalf("exact Memory ID did not win over unrelated private Link suffix: %q %+v %v", path, record, err)
 			}
+
 			if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/edge", Actor: "remover", ExpectedRevision: link.Link.Revision, ExpectedSourceRevision: link.Source.Revision}); err != nil {
 				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, _, _, err := s.ReadResourceWithIssueDetailsSelected(ctx, "beads/links/edge", "links/edge", workapi.DetailOptions{}); !errors.Is(err, ErrGone) {
+				t.Fatalf("deleted exact Link ID lost lifetime authority: %v", err)
+			}
+			retained, err := s.ReadVersion(ctx, link.Link.ID, link.Link.Revision)
+			if read, ok := retained.(LinkRecord); err != nil || !ok || read.ID != link.Link.ID || read.Source != link.Link.Source || read.Target != link.Link.Target {
+				t.Fatalf("retained Link identity/endpoints changed: %+v %v", retained, err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("deleted/retained Link reads changed state")
 			}
 			path, record, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, "beads/edge", "edge", workapi.DetailOptions{})
 			if read, ok := record.(Record); err != nil || path != "beads/edge" || !ok || read.Properties.Title != "Distinct public spelling" || details != nil {
@@ -336,39 +385,46 @@ func TestOpaqueResourceReadSelectorKeepsPublicIDsSeparateFromGraphPaths(t *testi
 }
 
 func TestOpaqueIssueIDsSurvivePrivatePathOverlapInBothCreateOrders(t *testing.T) {
-	for _, order := range [][]string{{"exp-x", "exp-beads/x"}, {"exp-beads/x", "exp-x"}} {
-		t.Run(order[0]+"-first", func(t *testing.T) {
-			ctx, options := issueExperimentOptions(t, "embedded")
-			s, err := OpenExisting(ctx, options)
-			if err != nil {
-				t.Fatal(err)
-			}
-			t.Cleanup(func() { _ = s.Close() })
-			paths := map[string]string{}
-			for _, id := range order {
-				request := plainIssue(id)
-				request.Issue.ID = id
-				created, err := s.CreateIssue(ctx, "", request)
+	for _, backend := range []string{"embedded", "server"} {
+		for _, order := range [][]string{{"exp-x", "exp-beads/x"}, {"exp-beads/x", "exp-x"}} {
+			t.Run(backend+"/"+order[0]+"-first", func(t *testing.T) {
+				ctx, options := issueExperimentOptions(t, backend)
+				s, err := OpenExisting(ctx, options)
 				if err != nil {
-					t.Fatalf("create literal %q: %v", id, err)
+					t.Fatal(err)
 				}
-				paths[id] = created.ID
-			}
-			if paths[order[0]] == paths[order[1]] {
-				t.Fatal("distinct public IDs shared a graph allocation")
-			}
-			for _, id := range order {
-				selector := IssueSelector{Path: "beads/" + id, NativeID: id}
-				path, record, details, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.Path, id, workapi.DetailOptions{})
-				if issue, ok := record.(IssueRecord); err != nil || !ok || issue.Properties.ID != id || issue.ID != paths[id] || details == nil || details.ID != id || paths[id] != options.Binding.ScopeURL+path {
-					t.Fatalf("literal %q read: path=%q record=%+v details=%+v err=%v", id, path, record, details, err)
+				t.Cleanup(func() { _ = s.Close() })
+				paths := map[string]string{}
+				privatePaths := map[string]string{}
+				for _, id := range order {
+					request := plainIssue(id)
+					request.Issue.ID = id
+					created, err := s.CreateIssue(ctx, "", request)
+					if err != nil {
+						t.Fatalf("create literal %q: %v", id, err)
+					}
+					paths[id] = created.ID
+					privatePaths[id], err = s.ResolveExactAllocatedResourcePath(ctx, id)
+					if err != nil {
+						t.Fatal(err)
+					}
 				}
-				closed, err := s.CloseIssueWithOptions(ctx, IssueCloseRequest{Path: selector.Path, NativeID: id, Reason: "done", Actor: "test-author"})
-				if err != nil || !closed.Changed || closed.Issue.Properties.ID != id {
-					t.Fatalf("literal %q close: %+v %v", id, closed, err)
+				if paths[order[0]] == paths[order[1]] || privatePaths[order[0]] == privatePaths[order[1]] {
+					t.Fatal("distinct public IDs shared a graph allocation")
 				}
-			}
-		})
+				for _, id := range order {
+					selector := IssueSelector{Path: "beads/" + id, NativeID: id}
+					path, record, details, err := s.ReadResourceWithIssueDetailsSelected(ctx, selector.Path, id, workapi.DetailOptions{})
+					if issue, ok := record.(IssueRecord); err != nil || !ok || issue.Properties.ID != id || issue.ID != paths[id] || details == nil || details.ID != id || paths[id] != options.Binding.ScopeURL+id || path != privatePaths[id] {
+						t.Fatalf("literal %q read: path=%q record=%+v details=%+v err=%v", id, path, record, details, err)
+					}
+					closed, err := s.CloseIssueWithOptions(ctx, IssueCloseRequest{Path: selector.Path, NativeID: id, Reason: "done", Actor: "test-author"})
+					if err != nil || !closed.Changed || closed.Issue.Properties.ID != id {
+						t.Fatalf("literal %q close: %+v %v", id, closed, err)
+					}
+				}
+			})
+		}
 	}
 }
 

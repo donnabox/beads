@@ -51,7 +51,7 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Revision))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--revision", "="+record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
@@ -61,12 +61,12 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			}
 			call(args...)
 			memory := call("remember", "Assignment context", "--id", "beads/context", "--title", "Context")
-			call("create", "Prioritize work", "--graph-path", "beads/work", "--description", "Untouched description")
-			gate := call("create", "Prerequisite", "--graph-path", "beads/gate")
+			call("create", "Prioritize work", "--id", "beads/work", "--force", "--description", "Untouched description")
+			gate := call("create", "Prerequisite", "--id", "beads/gate", "--force")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
 			informational := call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references")
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
-			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--priority", "P0", "--assignee", "alice", "--title", "Assigned work", "--if-revision", original.Revision))
+			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--priority", "P0", "--assignee", "alice", "--title", "Assigned work", "--if-revision", "="+original.Revision))
 			current := edited.Issue
 			if !edited.Changed || current.Properties.Priority != 0 || current.Properties.Assignee != "alice" || current.Properties.Title != "Assigned work" || current.Properties.Description != original.Properties.Description || current.Properties.Status != original.Properties.Status || current.Revision == original.Revision || !reflect.DeepEqual(current.Owned, original.Owned) {
 				t.Fatalf("combined edit: %+v", edited)
@@ -80,11 +80,11 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			list([]string{scope + "beads/gate"}, "--no-assignee")
 			list([]string{}, "--assignee=alice", "--no-assignee")
 			before := graphMemoryReadSnapshot(t, work)
-			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--priority", "0", "--assignee", "alice", "--if-revision", current.Revision))
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--priority", "0", "--assignee", "alice", "--if-revision", "="+current.Revision))
 			if noop.Changed || !reflect.DeepEqual(noop.Issue, current) {
 				t.Fatal("same-value edit was not a semantic no-op")
 			}
-			refuse("revision_conflict", "update", scope+"beads/work", "--priority", "0", "--assignee", "alice", "--if-revision", original.Revision)
+			refuse("revision_conflict", "update", scope+"beads/work", "--priority", "0", "--assignee", "alice", "--if-revision", "="+original.Revision)
 			refuse("permission_denied", "update", scope+"beads/work", "--priority", "1", "--readonly")
 			refuse("capability_unavailable", "update", scope+"beads/work", "--assignee", "bob", "--claim")
 			refuse("capability_unavailable", "update", "beads/context", "--priority", "1")
@@ -102,12 +102,12 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			}
 			exact(original)
 			exact(current)
-			omitted := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--description", "Revised description", "--if-revision", current.Revision))
+			omitted := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--description", "Revised description", "--if-revision", "="+current.Revision))
 			if !omitted.Changed || omitted.Issue.Properties.Priority != 0 || omitted.Issue.Properties.Assignee != "alice" {
 				t.Fatal("omitted fields were changed")
 			}
 			current = omitted.Issue
-			cleared := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--assignee=", "--if-revision", current.Revision))
+			cleared := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--assignee=", "--if-revision", "="+current.Revision))
 			if !cleared.Changed || cleared.Issue.Properties.Assignee != "" || cleared.Issue.Properties.Status != current.Properties.Status || cleared.Issue.Properties.Priority != 0 {
 				t.Fatal("assignee clear changed unrelated state")
 			}
@@ -128,8 +128,8 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			// installed callers and refuses generic/infrastructure errors as losers.
 			if engine == "server" {
 				results := graphDeleteRacePair(t, bd, work, home, [2][]string{
-					{"update", scope + "beads/work", "--priority=1", "--assignee=first", "--if-revision", current.Revision, "--json"},
-					{"update", scope + "beads/work", "--priority=4", "--assignee=second", "--if-revision", current.Revision, "--json"},
+					{"update", scope + "beads/work", "--priority=1", "--assignee=first", "--if-revision", "=" + current.Revision, "--json"},
+					{"update", scope + "beads/work", "--priority=4", "--assignee=second", "--if-revision", "=" + current.Revision, "--json"},
 				})
 				winner := -1
 				for i, result := range results {
@@ -163,7 +163,7 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			// Closed scalar edits must preserve the native closure, not reopen work.
 			call("close", scope+"beads/gate", "--reason", "Done")
 			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/gate"))
-			afterClose := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/gate", "--priority=4", "--assignee=reviewer", "--if-revision", closed.Revision))
+			afterClose := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/gate", "--priority=4", "--assignee=reviewer", "--if-revision", "="+closed.Revision))
 			if !afterClose.Changed || afterClose.Issue.Properties.Status != closed.Properties.Status || !reflect.DeepEqual(afterClose.Issue.Properties.ClosedAt, closed.Properties.ClosedAt) || afterClose.Issue.Properties.CloseReason != closed.Properties.CloseReason {
 				t.Fatal("closed Issue edit changed closure")
 			}

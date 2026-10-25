@@ -321,11 +321,19 @@ func TestGraphPreviewGenericCanonicalSpelling(t *testing.T) {
 
 func TestGraphPreviewGenericProjectsOneNativeDependencyType(t *testing.T) {
 	const scope = genericTestScope
+	taskType, err := graphstore.NativeIssueTypeURL(scope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blocksType, err := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
 	snapshot := graphstore.Snapshot{Types: selectedTypeTestDescriptors(t, scope)}
 
-	source := graphstore.IssueRecord{ID: scope + "beads/work", Type: graphstore.IssueTypeURL(scope), Version: "one", Properties: &types.Issue{Title: "Work"}}
-	target := graphstore.IssueRecord{ID: scope + "beads/prereq", Type: source.Type, Version: "two", Properties: &types.Issue{Title: "Prerequisite"}}
-	blocking := graphstore.LinkRecord{ID: scope + "links/blocks", Type: graphstore.DependencyTypeURL(scope), Source: source.ID, Target: target.ID, Version: "three", Properties: map[string]any{"dep_type": "blocks"}}
+	source := graphstore.IssueRecord{ID: scope + "beads/work", Type: taskType, Revision: "one", Version: "one", Properties: &types.Issue{ID: "beads/work", IssueType: types.TypeTask, Title: "Work"}}
+	target := graphstore.IssueRecord{ID: scope + "beads/prereq", Type: source.Type, Revision: "two", Version: "two", Properties: &types.Issue{ID: "beads/prereq", IssueType: types.TypeTask, Title: "Prerequisite"}}
+	blocking := graphstore.LinkRecord{ID: scope + "links/blocks", Type: blocksType, Source: source.ID, Target: target.ID, Revision: "three", Version: "three", Properties: map[string]any{"dep_type": "blocks"}}
 	snapshot.Records = []any{source, target, blocking}
 	got, err := projectGraphGeneric(snapshot, scope, graphGenericInput{Root: source.ID, Direction: "out", Depth: 1, MaxNodes: 2, MaxLinks: 1})
 	if err != nil || len(got.Nodes) != 2 || len(got.Links) != 1 || got.Links[0].Type != blocking.Type {

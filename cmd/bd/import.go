@@ -25,8 +25,9 @@ var importCmd = &cobra.Command{
 	Long: `Import issues from a JSONL file (newline-delimited JSON) into the database.
 
 In a graph workspace, import accepts the existing ordinary export format only,
-into an empty fresh workspace, in one atomic transaction. IDs become local
-Bead paths, dependencies become Links preserving their native kind, comments remain a separate feed,
+into an empty fresh workspace, in one atomic transaction. Admitted source IDs
+remain exact public identities; dependencies become Links preserving their native
+kind, comments remain a separate feed,
 and legacy key/value memories become Memory Beads. Unsupported records or
 relationships refuse the whole import. --dry-run validates through the same
 transaction and rolls it back. Repeat imports refuse an occupied workspace;
@@ -35,9 +36,18 @@ export; each imported Bead starts new graph history. Graph data import is
 unavailable until graph export is implemented. See the graph import guide.
 
 Legacy JSONL omits source prefix configuration. Graph import infers one prefix
-across the Issue batch and reports it as issue_prefix. For ambiguous IDs, pass
+across the Issue batch and reports it as source_issue_prefix. The effective
+workspace prefix is reported separately as issue_prefix. For ambiguous IDs, pass
 --source-prefix with the prefix configured in the original workspace. IDs are
 preserved; a prefix that does not match every Issue refuses the whole import.
+
+Graph import --id-root foo/bar mounts all new identities under that explicit
+Scope-relative root without changing future create defaults. Without a root,
+admitted source Issue IDs and Memory keys remain exact public IDs. Canonically
+incompatible keys and identity collisions refuse; no automatic encoding or rename.
+Memory values remain exact bodies, with independent titles from the shared body
+summary. Generated Link IDs reported by --dry-run are provisional and may differ
+on apply; rollback never reserves them. Source Issue/Memory mappings remain exact.
 
 If no file is specified, imports from the configured import.path under .beads/
 (default: issues.jsonl). Use "-" to read from stdin; redirecting stdin without
@@ -130,11 +140,13 @@ var (
 	importAllowStale   bool
 	importInput        string
 	importSourcePrefix string
+	importIDRoot       string
 )
 
 func init() {
 	importCmd.Flags().StringVarP(&importInput, "input", "i", "", "Read JSONL from a specific file")
 	importCmd.Flags().StringVar(&importSourcePrefix, "source-prefix", "", "Source Issue prefix from the original workspace configuration (graph import only)")
+	importCmd.Flags().StringVar(&importIDRoot, "id-root", "", "Place imported identities beneath this Scope-relative root (graph import only)")
 	importCmd.Flags().BoolVar(&importDryRun, "dry-run", false, "Show what would be imported without importing")
 	importCmd.Flags().BoolVar(&importDedup, "dedup", false, "Skip lines whose title matches an existing open issue")
 	importCmd.Flags().BoolVar(&importAllowStale, "allow-stale", false, "Import rows even when older than the local issue (required to restore an older snapshot)")
@@ -166,6 +178,9 @@ func bulkLoadPoolReadTimeout(cmd *cobra.Command) time.Duration {
 func runImport(cmd *cobra.Command, args []string) error {
 	if graphPreviewActive {
 		return runGraphPreviewImport(cmd, args)
+	}
+	if cmd.Flags().Changed("id-root") {
+		return fmt.Errorf("--id-root is available only for import into a graph workspace")
 	}
 	if cmd.Flags().Changed("source-prefix") {
 		return fmt.Errorf("--source-prefix is available only for import into a graph workspace")

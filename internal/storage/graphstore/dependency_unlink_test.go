@@ -60,7 +60,7 @@ func setupDependencyUnlink(t *testing.T, backend string, count int) dependencyUn
 }
 
 func dependencyUnlinkRequest(link LinkRecord, source IssueRecord) LinkDeleteRequest {
-	return LinkDeleteRequest{Path: strings.TrimPrefix(link.ID, strings.TrimSuffix(source.ID, "beads/source")), Actor: "remover", ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision}
+	return LinkDeleteRequest{Path: strings.TrimPrefix(link.ID, strings.TrimSuffix(source.ID, source.Properties.ID)), Actor: "remover", ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision}
 }
 
 func dependencyRemovalCount(t *testing.T, f dependencyUnlinkFixture) int {
@@ -179,15 +179,17 @@ func TestDependencyPairRemoveRefusesNonBlockingKind(t *testing.T) {
 			removed, err := f.store.RemoveDependency(f.ctx, DependencyRemoveRequest{
 				SourcePath: "beads/source", TargetPath: "beads/first", Actor: "remover",
 			})
-			if !errors.Is(err, ErrCapabilityUnavailable) || removed.Removed {
-				t.Fatalf("nonblocking pair removal did not refuse: %+v %v", removed, err)
+			// Pair removal selects blocks only. A nonblocking Link is not
+			// the selected pair and must remain an exact, write-free no-op.
+			if err != nil || removed.Removed || !reflect.ValueOf(removed.Link).IsZero() || !reflect.DeepEqual(removed.Source, added.Source) || !reflect.DeepEqual(removed.Target, added.Target) {
+				t.Fatalf("nonblocking pair removal was not an exact no-op: %+v %v", removed, err)
 			}
 			if !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
-				t.Fatal("refused pair removal changed state")
+				t.Fatal("nonblocking pair no-op changed state")
 			}
 			current, err := f.store.ShowLink(f.ctx, "links/tracks")
-			if err != nil || current.ID != added.Link.ID || current.Properties["dep_type"] != "tracks" {
-				t.Fatalf("refused pair removal lost Dependency: %+v %v", current, err)
+			if err != nil || !reflect.DeepEqual(current, added.Link) {
+				t.Fatalf("nonblocking pair no-op changed Dependency: %+v %v", current, err)
 			}
 		})
 	}

@@ -9,7 +9,6 @@ import (
 	"math"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 	"unicode/utf8"
 )
@@ -299,17 +298,16 @@ func (p *Properties) UnmarshalJSON(raw []byte) error {
 // The zero value is not a reference; constructors are the only way in.
 type Ref struct {
 	inScope bool
-	path    string // in-Scope: canonical Bead path
+	path    string // in-Scope: canonical public ID; stored affiliation establishes kind
 	uri     string // external: the absolute URI, byte-identical
 	pin     string // "" when unpinned
 }
 
-// NewInScopeRef builds a reference to a Bead of this Scope by its canonical
-// path. DECISION: an in-Scope endpoint names a Bead — the pinned spec's
-// endpoint rule ("MUST identify a live Bead in the Link's Scope") — so a Link
-// path is refused here; a reference to a Link has no in-Scope form in v0.
+// NewInScopeRef preserves an explicit canonical local identity. Its spelling
+// cannot establish Bead versus Link kind; endpoint admission resolves that fact
+// against the allocation and selected Type in the checked store transaction.
 func NewInScopeRef(path, pin string) (Ref, error) {
-	if err := ValidateBeadPath(path); err != nil {
+	if err := ValidateCanonicalResourceID(path); err != nil {
 		return Ref{}, err
 	}
 	if err := validUTF8(pin, "a reference pin"); err != nil {
@@ -318,24 +316,12 @@ func NewInScopeRef(path, pin string) (Ref, error) {
 	return Ref{inScope: true, path: path, pin: pin}, nil
 }
 
-// ParseRef admits a reference as written — a canonical local Bead ID
-// ("beads/…"), the Bead's absolute canonical URL under scopeURL, or an
-// absolute URI outside the Scope — and classifies it by the pinned law: a URI
-// that resolves to (an alias of) the canonical Scope URL claims an in-Scope
-// Bead and is refused unless it IS that Bead's canonical spelling; every
-// other absolute URI is an opaque external reference, kept byte-identically.
-//
-// What "resolves to an alias of the Scope URL" means here is the WHATWG
-// origin the URL parser would serialize (laws.go, normalizeOrigin: scheme
-// and host case, every IPv4 and IPv6 spelling of the host, percent-encoded
-// host characters, a default or zero-padded port) plus RFC 3986 §6.2.2
-// path normalization (dot segments, percent-encoding case and
-// unreserved-character escapes); a different origin is external. A local
-// spelling under links/ or alias/ is refused — endpoints are Beads, and
-// alias resolution is not served in v0 (DECISION: no alias table exists; an
-// alias URL cannot be resolved at admission and is refused rather than
-// stored). scopeURL is held to ValidateScopeURL, the client rule: a
-// reference into a development server's local-test Scope is admissible.
+// ParseRef preserves a canonical local public ID, its exact canonical Scope
+// URL, or an opaque absolute URI outside the Scope. Kind is resolved by the
+// checked operation, never by a beads/, links/ or types/ segment. Alternate
+// spellings that claim this Scope are refused rather than normalized.
+// An absolute URI spelling remains reference syntax; literal ID selectors use
+// NewInScopeRef after exact allocation selection instead of guessing that form.
 func ParseRef(scopeURL, reference, pin string) (Ref, error) {
 	if err := ValidateScopeURL(scopeURL); err != nil {
 		return Ref{}, err
@@ -346,19 +332,13 @@ func ParseRef(scopeURL, reference, pin string) (Ref, error) {
 	if err := validUTF8(pin, "a reference pin"); err != nil {
 		return Ref{}, err
 	}
-	switch {
-	case strings.HasPrefix(reference, "beads/"):
-		return NewInScopeRef(reference, pin)
-	case strings.HasPrefix(reference, "links/"), strings.HasPrefix(reference, "alias/"):
-		return Ref{}, fmt.Errorf("%w: reference %q: an in-Scope endpoint must be a Bead's canonical ID", ErrValidation, reference)
-	}
 	if !isAbsoluteURI(reference) {
-		return Ref{}, fmt.Errorf("%w: reference %q must be a canonical local Bead ID or an absolute URI", ErrValidation, reference)
+		return NewInScopeRef(reference, pin)
 	}
 	if claimsScope(scopeURL, reference) {
-		path, kind, ok := SplitCanonicalURL(scopeURL, reference)
-		if !ok || kind != KindBead {
-			return Ref{}, fmt.Errorf("%w: reference %q claims the Scope but is not a Bead's canonical URL", ErrValidation, reference)
+		path, err := ScopeLocalPublicResourceID(scopeURL, reference)
+		if err != nil {
+			return Ref{}, fmt.Errorf("%w: reference %q claims the Scope but is not its canonical public identity", ErrValidation, reference)
 		}
 		return Ref{inScope: true, path: path, pin: pin}, nil
 	}
@@ -435,7 +415,7 @@ type Bead struct {
 
 // BeadSpec is the input to NewBead.
 type BeadSpec struct {
-	// Path is the canonical Scope-relative Bead path ("beads/…").
+	// Path is the canonical Scope-relative public ID; its spelling does not establish kind.
 	Path string
 	// TypeURL is the declared Type's canonical descriptor URL.
 	TypeURL string
@@ -450,7 +430,7 @@ type BeadSpec struct {
 // NewBead builds a Bead, enforcing the path grammar, the Type URL law and a
 // present revision.
 func NewBead(spec BeadSpec) (Bead, error) {
-	if err := ValidateBeadPath(spec.Path); err != nil {
+	if err := ValidateCanonicalResourceID(spec.Path); err != nil {
 		return Bead{}, err
 	}
 	if err := ValidateTypeURL(spec.TypeURL); err != nil {
@@ -523,7 +503,7 @@ type Link struct {
 
 // LinkSpec is the input to NewLink.
 type LinkSpec struct {
-	// Path is the canonical Scope-relative Link path ("links/…").
+	// Path is the canonical Scope-relative public ID; its spelling does not establish kind.
 	Path string
 	// TypeURL is the declared Link Type's canonical descriptor URL.
 	TypeURL string
@@ -545,7 +525,7 @@ type LinkSpec struct {
 // endpoint is a Bead of this Scope. A Link between two external URIs is
 // refused — a Scope cannot own one in v0.
 func NewLink(spec LinkSpec) (Link, error) {
-	if err := ValidateLinkPath(spec.Path); err != nil {
+	if err := ValidateCanonicalResourceID(spec.Path); err != nil {
 		return Link{}, err
 	}
 	if err := ValidateTypeURL(spec.TypeURL); err != nil {

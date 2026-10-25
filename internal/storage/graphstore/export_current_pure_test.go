@@ -141,8 +141,12 @@ func exportClosureFixture(t *testing.T, scope string) Snapshot {
 			snapshot.OwnedLinkTypes[descriptor.ID()] = owned
 		}
 	}
+	// Current native instances declare concrete Types. Ownership metadata
+	// includes the concrete blocks Type, and Owned carries that exact envelope.
+	taskType := scope + "types/native-issue/7461736b"
+	blocksType := scope + "types/native-dependency/626c6f636b73"
 	links := []LinkRecord{
-		{ID: scope + "links/block", Type: DependencyTypeURL(scope), Source: scope + "beads/work", Target: scope + "beads/prereq", Properties: map[string]any{}},
+		{ID: scope + "links/block", Type: blocksType, Source: scope + "beads/work", Target: scope + "beads/prereq", Properties: map[string]any{"dep_type": "blocks"}},
 		{ID: scope + "links/context", Type: scope + "types/subject-to", Source: scope + "beads/memory", Target: scope + "beads/work", Properties: map[string]any{}},
 		{ID: scope + "links/follows", Type: scope + "types/subject-to", Source: scope + "beads/memory", Target: scope + "beads/prereq", Properties: map[string]any{}},
 		{ID: scope + "links/issue-context", Type: scope + "types/references", Source: scope + "beads/prereq", Target: scope + "beads/memory", Properties: map[string]any{}},
@@ -157,8 +161,8 @@ func exportClosureFixture(t *testing.T, scope string) Snapshot {
 	}
 	snapshot.Records = []any{
 		Record{ID: scope + "beads/memory", Type: MemoryTypeURL(scope), Owned: []json.RawMessage{raw[1], raw[2]}},
-		IssueRecord{ID: scope + "beads/work", Type: IssueTypeURL(scope), Properties: &publicops.Issue{ID: "web-app-a1b"}, Owned: []json.RawMessage{raw[0]}},
-		IssueRecord{ID: scope + "beads/prereq", Type: IssueTypeURL(scope), Properties: &publicops.Issue{ID: "web-app-b2c"}, Owned: []json.RawMessage{}},
+		IssueRecord{ID: scope + "beads/work", Type: taskType, Properties: &publicops.Issue{ID: "web-app-a1b", IssueType: types.TypeTask}, Owned: []json.RawMessage{raw[0]}},
+		IssueRecord{ID: scope + "beads/prereq", Type: taskType, Properties: &publicops.Issue{ID: "web-app-b2c", IssueType: types.TypeTask}, Owned: []json.RawMessage{}},
 	}
 	for _, link := range links {
 		snapshot.Records = append(snapshot.Records, link)
@@ -211,6 +215,21 @@ func TestExportReadProjectionIncludesUnjoinedComments(t *testing.T) {
 func TestExportSnapshotClosurePreservesEndpointPins(t *testing.T) {
 	const scope = "https://example.test/graph/"
 	snapshot := exportClosureFixture(t, scope)
+	// Native ownership is concrete: keep the complete baseline owned set
+	// valid before testing the informational Link's selected endpoint edition.
+	blocking := snapshot.Records[3].(LinkRecord)
+	var err error
+	blocking.Type, err = NativeDependencyTypeURL(scope, "blocks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot.Records[3] = blocking
+	work := snapshot.Records[1].(IssueRecord)
+	work.Owned[0], err = canonicalJSON(blocking)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot.Records[1] = work
 	link := snapshot.Records[4].(LinkRecord)
 	link.TargetRevision = "old-target-version"
 	snapshot.Records[4] = link

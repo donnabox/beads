@@ -32,11 +32,14 @@ func graphRouteFixture(t *testing.T) *GraphRead {
 }
 func TestGraphReadRouteCompilation(t *testing.T) {
 	g := graphRouteFixture(t)
+	// Explicit fixture facts model the post-authority catalog result.
+	kinds := map[string]string{"beads/deep/plan": "bead", "beads/%C3%A9": "bead", "links/a": "link", "types/preview-memory": "type", "beads/a": "bead", "types/a": "type", "plain": "bead", "links/a-bead": "bead", "beads/a-link": "link"}
 	for _, tc := range []struct{ target, kind, code string }{
 		{"/team/", "scope", ""}, {"/team/bdp.json", "discovery", ""},
 		{"/team/beads/", "selection", ""}, {"/team/links/", "selection", ""}, {"/team/types/", "selection", ""},
 		{"/team/beads/deep/plan", "resource", ""}, {"/team/beads/%C3%A9", "resource", ""},
 		{"/team/links/a", "resource", ""}, {"/team/types/preview-memory", "type", ""},
+		{"/team/plain", "resource", ""}, {"/team/links/a-bead?view=links", "selection", ""}, {"/team/beads/a-link?view=links", "", "invalid-parameter"},
 		{"/team/beads/a?view=properties", "properties", ""}, {"/team/links/a?view=properties", "properties", ""},
 		{"/team/beads/a?view=links&direction=inbound&limit=1", "selection", ""},
 		{"/team/beads/a?include=links&direction=outbound&limit=1", "aggregate", ""},
@@ -61,9 +64,9 @@ func TestGraphReadRouteCompilation(t *testing.T) {
 		{"/team/beads/a?view=versions", "", "invalid-parameter"},
 		{"/team/beads/a?view=events", "", "invalid-parameter"},
 		{"/team/bdp.json?x=1", "", "invalid-parameter"}, {"/team/?x=1", "", "invalid-parameter"},
-		{"/team/alias/latest?x=1", "", "resource-not-found"},
-		{"/team/alias/latest?bad=%zz", "", "resource-not-found"},
-		{"/team/operations/create-bead", "", "resource-not-found"},
+		{"/team/alias/latest?x=1", "identity", ""},
+		{"/team/alias/latest?bad=%zz", "", "invalid-parameter"},
+		{"/team/operations/create-bead", "identity", ""},
 		{"/team/beads/a/", "", "resource-not-found"}, {"/team/beads//a", "", "resource-not-found"},
 		{"/team/beads/../a", "", "resource-not-found"}, {"/team/beads/%2e%2e/a", "", "resource-not-found"},
 		{"/team/beads/%61", "", "resource-not-found"}, {"/team/beads/a%2Fb", "", "resource-not-found"},
@@ -80,6 +83,9 @@ func TestGraphReadRouteCompilation(t *testing.T) {
 			if code == "" {
 				var err error
 				route, err = g.compileRoute(path, params)
+				if err == nil && route.kind == "identity" && kinds[path] != "" {
+					route, err = g.compileResourceRoute(path, params, kinds[path])
+				}
 				if err != nil {
 					code = graphReadFailureCode(err)
 				}
@@ -124,7 +130,7 @@ func TestGraphReadAggregateUsesCapturedInventory(t *testing.T) {
 		{ID: g.scope + "links/b", Type: linkType, Revision: "link-before-b", Source: bdpwire.Reference{URI: g.scope + "beads/other"}, Target: bdpwire.Reference{URI: bead.ID}, Properties: bdpwire.Properties{}},
 	}
 	inventory := graphread.Inventory{WriterToken: "never-wire", Beads: []bdpwire.BeadRecord{bead}, Links: links, Types: []bdpwire.TypeDescriptor{{ID: beadType, Name: "Memory", Describes: bdpwire.DescribesBead}, {ID: linkType, Name: "Related", Describes: bdpwire.DescribesLink}}}
-	route, err := g.compileRoute("beads/plan", url.Values{"include": {"links"}, "limit": {"1"}})
+	route, err := g.compileResourceRoute("beads/plan", url.Values{"include": {"links"}, "limit": {"1"}}, "bead")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,7 +154,7 @@ func TestGraphReadAggregateUsesCapturedInventory(t *testing.T) {
 	// Later caller mutations cannot change the retained snapshot bytes.
 	inventory.Links[1].Revision = "link-after-b"
 	inventory.Beads[0].Revision = "bead-after"
-	continuation, err := g.compileRoute("beads/plan", next.Query())
+	continuation, err := g.compileResourceRoute("beads/plan", next.Query(), "bead")
 	if err != nil {
 		t.Fatal(err)
 	}

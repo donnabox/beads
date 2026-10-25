@@ -28,7 +28,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		cmd  *cobra.Command
 		want []string
 	}{
-		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
+		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision =TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
 		{"create", createCmd, []string{"Graph preview workspaces:", "--type types/memory", "--id policy", "--id ID keeps the entire spelling", "--graph-path beads/PATH", "--force overrides that shipping", "--properties JSON", "types/NAME", "--parent ID creates a dotted child ID"}},
 		{"q", quickCmd, []string{"Graph preview workspaces:", "bd q -- -follow-up", "--parent is unavailable here", "Ordinary Issue workspaces:", "bd q \"Subtask\" --parent"}},
 		{"dep", depCmd, []string{"Graph preview workspaces:", "bd dep BLOCKER --blocks BLOCKED", "--no-cycle-check"}},
@@ -39,12 +39,12 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 			"The single Type types/dependency", "--if-source-revision TOKEN to reject a stale source.", "Owned-source pins remain unavailable.", "current resolves",
 		}},
 		{"show", showCmd, []string{"Graph preview workspaces:", "ordinary detail array", "--format graph-json"}},
-		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--replace-properties", "--replace-metadata", "--if-revision TOKEN", "omission", "preserves the existing pin"}},
+		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--replace-properties", "--replace-metadata", "--if-revision =TOKEN", "omission", "preserves the existing pin"}},
 		{"unclaim", unclaimCmd, []string{"Graph preview workspaces:", "bd unclaim ID...", "--force", "--if-assignee HOLDER", "--reason TEXT", "bd comments ID"}},
 		{"comments", commentsCmd, []string{"Graph preview workspaces:", "bd comments ID", "outside the", "Issue version"}},
 		{"list", listCmd, []string{"Graph preview workspaces:", "all installed Bead Types", "--type types/NAME", "Issue-specific filters", "newest recorded change first", "hidden unless --all is given", "--all also removes the row limit", "BEADS_MAX_ROWS refuses a page of more Beads", "--sort, --reverse", "Issues only", "a line under the header saying Memories are", "it is simply not"}},
 		{"types", typesCmd, []string{"Graph preview workspaces:", "types/NAME", "--details", "--type"}},
-		{"versions", versionsCmd, []string{"Graph preview workspaces:", "Use bd versions ID to list one Memory, Issue or Link's retained versions newest", "Bare ID means beads/ID; use links/PATH for a Link.", "--version TOKEN or bd compare ID --from TOKEN --to TOKEN", "BDP HTTP History", "Ordinary Issue workspaces:", "List the versions recorded for a bead by versioned history."}},
+		{"versions", versionsCmd, []string{"Graph preview workspaces:", "Use bd versions ID to list one Memory, Issue or Link's retained versions newest", "Bare ID means beads/ID; use links/PATH for a Link.", "--revision =TOKEN or bd compare ID --from TOKEN --to TOKEN", "BDP HTTP History", "Ordinary Issue workspaces:", "List the versions recorded for a bead by versioned history."}},
 		{"history", historyCmd, []string{"Graph preview workspaces:", "bd history ID is an alias for bd versions ID.", "--limit and --events are not supported by the graph alias.", "BDP HTTP History", "Ordinary Issue workspaces:", "Show the complete version history of an issue"}},
 		{"defer", deferCmd, []string{"Graph preview workspaces:", "bd defer ID...", "current revision is accepted", "--until", "bd ready wakes", "Ordinary Issue workspaces:"}},
 		{"undefer", undeferCmd, []string{"Graph preview workspaces:", "bd undefer ID...", "current revision is accepted", "clears a stale defer date", "Ordinary Issue workspaces:"}},

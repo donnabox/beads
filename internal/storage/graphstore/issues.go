@@ -11,7 +11,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -105,14 +104,6 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err != nil {
 			return err
 		}
-		// The generated ID is known only after the native writer runs. Check
-		// every lifetime allocation before publishing it; refusal rolls the
-		// native create and its first retained version back together.
-		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
-			return err
-		} else if exists {
-			return ErrAlreadyExists
-		}
 		if path == "" {
 			// The graph path is a separate address from the opaque native ID.
 			// A Memory or deleted Bead may reserve the preferred path while
@@ -137,6 +128,20 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		var ordinal int64
 		if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, created.Issue.ID).Scan(&ordinal); err != nil {
 			return err
+		}
+		issueType, err = NativeIssueTypeURL(s.ScopeURL(), string(created.Issue.IssueType))
+		if err != nil {
+			return err
+		}
+		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
+			return err
+		}
+		// Check after installing the prospective Type as well: this Resource
+		// cannot take the URL of its own first-use concrete declaration.
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
             (path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
@@ -202,7 +207,7 @@ func generatedIssuePath(ctx context.Context, tx *sql.Tx, issueID string) (string
 // Read dispatches the immutable backing selection and reads its authoritative
 // state in one snapshot. Unsupported resource families remain explicit errors.
 func (s *Store) Read(ctx context.Context, path string) (any, error) {
-	if err := validateResourcePath(path); err != nil {
+	if err := s.validateResourceReadAddress(path); err != nil {
 		return nil, err
 	}
 	var result any
@@ -214,6 +219,10 @@ func (s *Store) Read(ctx context.Context, path string) (any, error) {
 			return err
 		}
 		var err error
+		path, err = s.resolveResourceReadAddressInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
 		result, err = s.readCurrentVerifiedInTx(ctx, tx, path)
 		return err
 	})
@@ -320,8 +329,11 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 		}
 		return IssueRecord{}, ErrGone
 	}
-	if kind != "bead" || typ != issueType || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
+	if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
+	}
+	if err := s.requireNativeBindingInTx(ctx, tx, typ); err != nil {
+		return IssueRecord{}, err
 	}
 	// Comments are a separate native Issue feed, outside durable_state and its
 	// retained graph version. Including them here would make a new comment look
@@ -329,6 +341,10 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	issue, err := issueops.HydrateIssueOperationResult(ctx, tx, issueID, false)
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue backing: %v", ErrInvalidStore, err)
+	}
+	actualType, err := NativeIssueTypeURL(s.ScopeURL(), string(issue.IssueType))
+	if err != nil || typ != actualType {
+		return IssueRecord{}, fmt.Errorf("%w: Issue classification and declared Type differ", ErrInvalidStore)
 	}
 	var snapshot, retainedOwned, revisionContext []byte
 	var actor, status string
@@ -385,7 +401,11 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, err
 	}
-	return IssueRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision,
+	publicURL, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	return IssueRecord{ID: publicURL, Type: typ, Revision: revision, Version: revision,
 		Properties: issue, Metadata: metadata, Owned: owned, Attribution: attribution}, nil
 }
 
@@ -396,7 +416,7 @@ func installedIssueTypeURLInTx(ctx context.Context, tx *sql.Tx, scope string) (s
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
 		return "", err
 	}
-	if count != len(previewTypeDefinitions()) {
+	if count < len(previewTypeDefinitions()) || count > len(previewTypeDefinitions())+PreviewSnapshotLimit {
 		return "", fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
 	}
 	return IssueTypeURL(scope), nil

@@ -38,7 +38,7 @@ func TestGraphPreviewIssueAppendNotesInput(t *testing.T) {
 		{"above-memory-input-limit", strings.Repeat("x", (1<<20)+1)},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := issueTextCommand(t, "--append-notes="+tc.value, "--if-revision=stale-observed-token")
+			cmd := issueTextCommand(t, "--append-notes="+tc.value, "--if-revision==stale-observed-token")
 			appendNotesNoInput(t, cmd)
 			if !graphPreviewIssueEditFlagsChanged(cmd) {
 				t.Fatal("append-only presence did not select the Issue field route")
@@ -138,13 +138,13 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 		code     int
 	}{
 		// An opaque local ID needs the catalog before its backing kind is known.
-		// A canonical Issue URL can still reject malformed Issue text pre-store.
+		// Canonical URLs also require allocation lookup; their segments do not establish Kind.
 		{"opaque-local-needs-catalog", "beads/work", []string{"--append-notes=\xff"}, 5},
-		{"canonical-issue-route", "https://example.invalid/beads/work", []string{"--append-notes=\xff"}, 2},
+		{"canonical-needs-catalog", "https://example.invalid/beads/work", []string{"--append-notes=\xff"}, 5},
 		{"link-route", "links/context", []string{"--append-notes=Progress"}, 5},
 		{"foreign-selector", "https://foreign.invalid/beads/work", []string{"--append-notes=Progress"}, 2},
 		{"unknown-local-needs-catalog", "alias/work-123", []string{"--append-notes=Progress"}, 5},
-		{"false-claim-dispatch", "https://example.invalid/beads/work", []string{"--append-notes=Progress", "--claim=false"}, 2},
+		{"false-claim-needs-catalog", "https://example.invalid/beads/work", []string{"--append-notes=Progress", "--claim=false"}, 5},
 		{"true-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -157,6 +157,15 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 			}
 		})
 	}
+	t.Run("selected-issue-route", func(t *testing.T) {
+		cmd := issueTextCommand(t, "--append-notes=\xff")
+		appendNotesNoInput(t, cmd)
+		err := runGraphPreviewUpdateIssue(cmd, "beads/work")
+		var failure *exitError
+		if !errors.As(err, &failure) || failure.Code != 2 {
+			t.Fatalf("selected Issue malformed text reached storage: %v", err)
+		}
+	})
 	// This tests the Memory route's own field admission, not the store-backed
 	// classification of a healthy Memory selected through generic update.
 	t.Run("direct-memory-route", func(t *testing.T) {

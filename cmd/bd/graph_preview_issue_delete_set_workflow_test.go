@@ -48,7 +48,7 @@ func TestGraphPreviewIssueDeleteSetWorkflow(t *testing.T) {
 			if call("versions", blocker.ID) != blockerBefore || call("versions", dependent.ID) != dependentBefore {
 				t.Fatal("named pair preview wrote state")
 			}
-			refuse("invalid_selector", "delete", "beads/blocker", "beads/dependent", "--if-revision", "stale", "--force")
+			refuse("invalid_selector", "delete", "beads/blocker", "beads/dependent", "--if-revision", "=stale", "--force")
 			applied := graphMixedResult[graphstore.IssueDeleteSetResult](t, call("delete", "beads/blocker", "beads/dependent", "--force"))
 			if !applied.Deleted || len(applied.Issues) != 2 || len(applied.IncidentLinkIDs) != 1 {
 				t.Fatalf("named pair deletion: %+v", applied)

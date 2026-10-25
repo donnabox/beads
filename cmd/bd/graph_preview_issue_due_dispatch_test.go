@@ -47,7 +47,7 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	const issueURL = "https://example.invalid/due/beads/work"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "due", "--scope-url", "https://example.invalid/due/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
-	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "Due work", "--graph-path", "beads/work", "--due", "2030-01-02T03:04:05-07:00", "--json")
+	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "Due work", "--id", "beads/work", "--force", "--due", "2030-01-02T03:04:05-07:00", "--json")
 	var first struct{ Result graphstore.IssueRecord }
 	if err := json.Unmarshal([]byte(created), &first); err != nil {
 		t.Fatal(err)
@@ -55,7 +55,7 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	if first.Result.Properties.DueAt == nil || first.Result.Properties.DueAt.Format(time.RFC3339) != "2030-01-02T10:04:05Z" {
 		t.Fatal("create dispatcher dropped due instant")
 	}
-	updated := graphPolicyCLI(t, bd, work, home, nil, "", "update", issueURL, "--due=", "--if-revision", first.Result.Revision, "--json")
+	updated := graphPolicyCLI(t, bd, work, home, nil, "", "update", issueURL, "--due=", "--if-revision", "="+first.Result.Revision, "--json")
 	var changed struct {
 		Result graphstore.IssueMutationResult
 	}
@@ -65,10 +65,10 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	if !changed.Result.Changed || changed.Result.Issue.Properties.DueAt != nil || changed.Result.Issue.Revision == first.Result.Revision {
 		t.Fatal("due clear did not reach Issue writer")
 	}
-	if exact := graphPolicyCLI(t, bd, work, home, nil, "", "show", issueURL, "--version", first.Result.Revision, "--format", "graph-json", "--json"); exact != created {
+	if exact := graphPolicyCLI(t, bd, work, home, nil, "", "show", issueURL, "--revision", "="+first.Result.Revision, "--format", "graph-json", "--json"); exact != created {
 		t.Fatal("clearing due changed initial retained record")
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "", "update", issueURL, "--due=2000-01-01T00:00:00Z", "--if-revision", changed.Result.Issue.Revision, "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "update", issueURL, "--due=2000-01-01T00:00:00Z", "--if-revision", "="+changed.Result.Issue.Revision, "--json")
 	listed := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--format", "records-json", "--due-after=1999-01-01T00:00:00Z", "--due-before=2001-01-01T00:00:00Z", "--overdue", "--all", "--limit=2")
 	var page struct{ Result graphstore.IssueListPage }
 	if err := json.Unmarshal([]byte(listed), &page); err != nil {
@@ -82,10 +82,10 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 		name, code string
 		args       []string
 	}{
-		{"invalid-create", "invalid_properties", []string{"create", "Bad", "--graph-path", "beads/bad", "--due=not-a-date"}},
+		{"invalid-create", "invalid_properties", []string{"create", "Bad", "--id", "beads/bad", "--force", "--due=not-a-date"}},
 		{"invalid-update", "invalid_properties", []string{"update", issueURL, "--due=not-a-date"}},
 		{"defer-held", "capability_unavailable", []string{"update", issueURL, "--due=", "--defer="}},
-		{"create-status-held", "capability_unavailable", []string{"create", "Bad", "--graph-path", "beads/bad", "--due=2030-01-01", "--status=open"}},
+		{"create-status-held", "capability_unavailable", []string{"create", "Bad", "--id", "beads/bad", "--force", "--due=2030-01-01", "--status=open"}},
 		{"readonly-before-parse", "permission_denied", []string{"update", issueURL, "--due=not-a-date", "--readonly"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) { graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...) })

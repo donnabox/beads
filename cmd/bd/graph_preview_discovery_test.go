@@ -109,7 +109,10 @@ func TestGraphDiscoveryIssuePathWithExplicitScope(t *testing.T) {
 		selector string
 		want     string
 	}{
-		{"work", "beads/work"},
+		{"work", "work"},
+		{scope + "work", "work"},
+		{"links/work", "links/work"},
+		{"types/work", "types/work"},
 		{"beads/work", "beads/work"},
 		{scope + "beads/work", "beads/work"},
 	} {
@@ -118,4 +121,8 @@ func TestGraphDiscoveryIssuePathWithExplicitScope(t *testing.T) {
 			t.Errorf("selector %q: got %q, %v; want %q", tc.selector, got, err, tc.want)
 		}
 	}
+	if _, err := graphDiscoveryIssuePath(scope, "a//b"); err == nil {
+		t.Fatal("empty path segment was accepted")
+	}
+
 }

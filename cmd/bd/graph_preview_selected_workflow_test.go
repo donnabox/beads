@@ -3,12 +3,43 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
+
+// Capture both channels through the same private command environment as the
+// other graph workflow helpers. Notices must not corrupt canonical JSON or
+// accompany an acquisition/traversal refusal.
+func graphSelectedWorkflowCapture(t *testing.T, bd, work, home, code string, args ...string) (string, string) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+	defer cancel()
+	cmd := graphMemoryReadCommand(ctx, bd, work, home, args...)
+	var out, diagnostics bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &out, &diagnostics
+	err := cmd.Run()
+	if ctx.Err() != nil {
+		t.Fatalf("graph command exceeded deadline: %v args=%v stderr=%s", ctx.Err(), args, diagnostics.String())
+	}
+	if code == "" {
+		if err != nil || !json.Valid(out.Bytes()) {
+			t.Fatalf("graph command did not return structured success: args=%v err=%v stdout=%s stderr=%s", args, err, out.String(), diagnostics.String())
+		}
+	} else {
+		var failure struct{ Code string }
+		if err == nil || out.Len() != 0 || json.Unmarshal(diagnostics.Bytes(), &failure) != nil || failure.Code != code {
+			t.Fatalf("graph refusal lost atomic output: expected=%s err=%v stdout=%s stderr=%s", code, err, out.String(), diagnostics.String())
+		}
+	}
+	return out.String(), diagnostics.String()
+}
 
 // Real subprocess authoring + coherent provider acquisition is the boundary:
 // pure projection tests cannot prove mixed native/generic CLI routing and pins.
@@ -22,30 +53,70 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			for _, id := range []string{"i1", "i2", "isolated-issue"} {
-				call("create", id, "--graph-path", "beads/"+id, "--type", "task")
+			for _, id := range []string{"i1", "i2"} {
+				call("create", id, "--id", id, "--type", "task", "--force")
+			}
+			// This Issue intentionally separates its private path from its
+			// generated public identity. Use the actual graph create record,
+			// never a canonical URL reconstructed from its private path.
+			pathCreated := graphMixedResult[graphstore.IssueRecord](t, call("create", "isolated-issue", "--graph-path", "beads/isolated-issue", "--type", "task"))
+			if !strings.HasPrefix(pathCreated.ID, scope) || pathCreated.ID == scope+"beads/isolated-issue" {
+				t.Fatalf("path-only creation did not expose its distinct public identity: %+v", pathCreated)
 			}
 			for _, id := range []string{"m1", "m2", "isolated-memory"} {
 				call("create", id, "--id", id, "--type", "types/memory")
 			}
-			linkEndpoint := func(id string) string {
-				if id == "i1" || id == "i2" {
-					return scope + "beads/" + id // path-only Issue creation allocated a different public ID
-				}
-				return id
-			}
 			for _, edge := range [][3]string{{"i1", "m1", "a"}, {"m1", "i2", "b"}, {"i2", "m2", "c"}, {"i1", "m1", "parallel"}, {"m1", "i1", "cycle"}} {
-				call("link", "create", linkEndpoint(edge[0]), linkEndpoint(edge[1]), "--id", edge[2], "--type", "types/references")
+				call("link", "create", edge[0], edge[1], "--id", edge[2], "--type", "types/references")
 			}
-			call("dep", "add", scope+"beads/i1", scope+"beads/i2")
-			call("dep", "add", scope+"beads/i2", scope+"beads/isolated-issue")
+			call("dep", "add", "i1", "i2")
+			call("dep", "add", "i2", pathCreated.ID)
+			graphSelectedWorkflowCapture(t, bd, work, home, "not_found", "graph", scope+"beads/isolated-issue", "--json")
 			pin := graphMixedResult[graphstore.Record](t, call("show", "m2"))
 			call("link", "create", "m1", "m2", "--id", "pin", "--type", "types/references", "--target-revision", pin.Revision)
-			call("update", "beads/m2", "--properties", `{"title":"New current title"}`)
+			call("update", "m2", "--properties", `{"title":"New current title"}`)
 			implicit := call("graph", "i1")
 			explicit := call("graph", "i1", "--link-type", "Dependency")
 			if implicit != explicit {
 				t.Fatalf("omitted Dependency differs: %s\n%s", implicit, explicit)
+			}
+			nativeHuman := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "i1")
+			if !strings.Contains(nativeHuman, "[task]") || !strings.Contains(nativeHuman, "[blocks]") || strings.Contains(nativeHuman, "[types/native-") {
+				t.Fatalf("native graph labels differ from shared human rows:\n%s", nativeHuman)
+			}
+			currentIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "i1", "--format", "graph-json"))
+			historical := []string{"i1@1", "i1@=" + currentIssue.Revision}
+			for _, withLiteralSiblings := range []bool{false, true} {
+				if withLiteralSiblings {
+					for _, id := range historical {
+						// --id is literal data; its returned absolute URI selects
+						// that identity without parsing a local revision suffix.
+						literal := graphMixedResult[graphstore.Record](t, call("create", "Literal reference-shaped ID", "--id", id, "--type", "types/memory"))
+						selected := graphSelectedTestSummary(t, call("graph", literal.ID, "--link-type=any"))
+						if len(selected.Nodes) != 1 || selected.Nodes[0].ID != literal.ID || len(selected.Links) != 0 || !selected.Complete {
+							t.Fatalf("canonical literal identity became a revision selector: %s %+v", literal.ID, selected)
+						}
+					}
+				}
+				if bare, current := call("graph", "i1"), call("graph", "i1@current"); bare != current {
+					t.Fatalf("current reference changed graph with literal siblings=%t: %s\n%s", withLiteralSiblings, bare, current)
+				}
+				for _, selector := range historical {
+					graphSelectedWorkflowCapture(t, bd, work, home, "capability_unavailable", "graph", selector, "--json")
+				}
+			}
+			implicitJSON, implicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--json")
+			explicitJSON, explicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--link-type=Dependency", "--json")
+			if implicitJSON != implicit || explicitJSON != implicitJSON || !strings.Contains(implicitNotice, scope+"types/references") || !strings.Contains(implicitNotice, "--link-type any") || strings.Contains(explicitNotice, "omitted Link Types") {
+				t.Fatalf("default disclosure changed stdout or explicit selection: implicit=%s explicit=%s implicit stderr=%s explicit stderr=%s", implicitJSON, explicitJSON, implicitNotice, explicitNotice)
+			}
+			quietJSON, quietNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--quiet", "--json")
+			if quietJSON != implicitJSON || quietNotice != "" {
+				t.Fatalf("quiet graph changed JSON or emitted an advisory: stdout=%s stderr=%s", quietJSON, quietNotice)
+			}
+			_, refusedNotice := graphSelectedWorkflowCapture(t, bd, work, home, "capability_unavailable", "graph", "i1", "--max-nodes=1", "--json")
+			if strings.Contains(refusedNotice, "omitted Link Types") {
+				t.Fatalf("refusal emitted success disclosure: %s", refusedNotice)
 			}
 			generic := graphSelectedTestSummary(t, call("graph", "i1", "--link-type", "References", "--direction", "out", "--depth", "10"))
 			if len(generic.Nodes) != 4 || len(generic.Links) != 6 || !generic.Complete {
@@ -53,7 +124,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			}
 			found := false
 			for _, l := range generic.Links {
-				if l.ID == scope+"links/pin" {
+				if l.ID == scope+"pin" {
 					found = l.TargetRevision == pin.Revision
 				}
 			}
@@ -71,6 +142,27 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			union := graphSelectedTestSummary(t, call("graph", "i1", "--link-type", "references", "--link-type", "dependency"))
 			if len(union.Nodes) != 5 || len(union.Links) != 8 {
 				t.Fatalf("repeatable union: %+v", union)
+			}
+			any := graphSelectedTestSummary(t, call("graph", "i1", "--link-type=any"))
+			mixed := graphSelectedTestSummary(t, call("graph", "i1", "--link-type=dependency", "--exact-link-type=references", "--exact-link-type=references"))
+			for name, selected := range map[string]graphGenericResult{"any": any, "family-exact union": mixed} {
+				if !reflect.DeepEqual(selected.Nodes, union.Nodes) || !reflect.DeepEqual(selected.Links, union.Links) {
+					t.Fatalf("%s changed selected population or duplicated Links: %+v expected=%+v", name, selected, union)
+				}
+			}
+			exact := graphSelectedTestSummary(t, call("graph", "i1", "--exact-link-type=references", "--direction=out", "--depth=10"))
+			if !reflect.DeepEqual(exact.Nodes, generic.Nodes) || !reflect.DeepEqual(exact.Links, generic.Links) {
+				t.Fatalf("exact References changed the six stored Reference Links: %+v expected=%+v", exact, generic)
+			}
+			exactIDs := []string{}
+			for _, link := range exact.Links {
+				if link.Type != scope+"types/references" {
+					t.Fatalf("exact References included another Type: %+v", link)
+				}
+				exactIDs = append(exactIDs, strings.TrimPrefix(link.ID, scope))
+			}
+			if !reflect.DeepEqual(exactIDs, []string{"a", "b", "c", "cycle", "parallel", "pin"}) {
+				t.Fatalf("exact References lost direct stored identities: %v", exactIDs)
 			}
 			family := graphSelectedTestSummary(t, call("graph", "i1", "--link-type", "references"))
 			if !reflect.DeepEqual(family.Nodes, generic.Nodes) || !reflect.DeepEqual(family.Links, generic.Links) {
@@ -93,10 +185,10 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 					args = append(args, flag)
 				}
 				text := graphPolicyCLI(t, bd, work, home, nil, "", args...)
-				for _, id := range []string{"links/a", "links/parallel", "links/cycle", "links/pin"} {
-					want := id
-					if flag == "" || flag == "--compact" {
-						want = "(" + strings.TrimPrefix(id, "links/") + ")"
+				for _, id := range []string{"a", "parallel", "cycle", "pin"} {
+					want := "(" + id + ")"
+					if flag == "--dot" || flag == "--html" {
+						want = scope + id // export data keeps the exact canonical ID
 					}
 					if !strings.Contains(text, want) {
 						t.Fatalf("%s lost %s", flag, id)

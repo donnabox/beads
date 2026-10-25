@@ -1,7 +1,6 @@
 package main
 
 import (
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -33,7 +32,7 @@ func validateMemoryDiscoveryCapture(read graphstore.CurrentFamilyRead, staged *g
 				if link.Target != selected.Root {
 					return invalidMemoryConstraintCapture()
 				}
-				source, _, ok := graph.SplitCanonicalURL(scope, link.Source)
+				source, ok := graphPreviewPublicResourceID(scope, link.Source)
 				if !ok {
 					return invalidMemoryConstraintCapture()
 				}
@@ -68,8 +67,8 @@ func validateMemoryDiscoveryCapture(read graphstore.CurrentFamilyRead, staged *g
 		}
 		for path := range phaseLinks {
 			link, ok := c.links[path]
-			source, _, src := graph.SplitCanonicalURL(scope, link.Source)
-			target, _, dst := graph.SplitCanonicalURL(scope, link.Target)
+			source, src := graphPreviewPublicResourceID(scope, link.Source)
+			target, dst := graphPreviewPublicResourceID(scope, link.Target)
 			if !ok || !src || !dst || !phaseNodes[source] || !phaseNodes[target] {
 				return invalidMemoryConstraintCapture()
 			}

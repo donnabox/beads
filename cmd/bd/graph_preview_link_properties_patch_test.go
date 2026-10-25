@@ -27,9 +27,9 @@ func TestGraphPreviewLinkPropertiesPatchRequest(t *testing.T) {
 		revision, source                   string
 		unconditional, sourceUnconditional bool
 	}{
-		{"literal-dual-guard", raw, []string{"--if-revision=link-old", "--if-source-revision=source-old"}, "link-old", "source-old", false, false},
+		{"literal-dual-guard", raw, []string{"--if-revision==link-old", "--if-source-revision=source-old"}, "link-old", "source-old", false, false},
 		{"file-Link-unconditional", "@" + file, []string{"--if-source-revision=source-old"}, "", "source-old", true, false},
-		{"stdin-source-current", "@-", []string{"--if-revision=link-old"}, "link-old", "", false, true},
+		{"stdin-source-current", "@-", []string{"--if-revision==link-old"}, "link-old", "", false, true},
 		{"default-source-unconditional", raw, []string{}, "", "", true, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -128,7 +128,7 @@ func TestGraphPreviewLinkPropertiesPatchSyntaxBeforeStore(t *testing.T) {
 }
 
 func TestGraphPreviewLinkPropertiesPatchPinIntents(t *testing.T) {
-	cmd := memoryPropertiesPatchCommand(t, `--patch=[{"op":"add","path":"/note","value":"keep"}]`, "--if-revision=link-old", "--if-source-revision=source-now")
+	cmd := memoryPropertiesPatchCommand(t, `--patch=[{"op":"add","path":"/note","value":"keep"}]`, "--if-revision==link-old", "--if-source-revision=source-now")
 	cmd.Flags().String("source-revision", "", "")
 	cmd.Flags().String("target-revision", "", "")
 	if err := cmd.Flags().Set("source-revision", "unpinned"); err != nil {

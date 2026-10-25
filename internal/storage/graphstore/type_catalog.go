@@ -10,6 +10,7 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/typecatalog"
 	"github.com/steveyegge/beads/internal/typeconstraints"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // selectedTypeCatalog combines complete payload validation, native-domain
@@ -47,7 +48,7 @@ func (s *Store) ownsLink(source any, linkType string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return c.types.Owns(typecatalog.Reference{URI: recordType(source)}, typecatalog.Reference{URI: linkType})
+	return c.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), recordType(source))}, typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), linkType)})
 }
 
 // SelectedOwnedLinkTypes supplies effective ownership for complete record
@@ -55,11 +56,18 @@ func (s *Store) ownsLink(source any, linkType string) (bool, error) {
 // This is a pure lookup in the fixed selected catalog, not a storage read or
 // a new declaration of finite semantic maxima.
 func (s *Store) SelectedOwnedLinkTypes(beadType string) ([]string, error) {
+	return s.SelectedOwnedLinkTypesWithObserved(beadType)
+}
+
+// SelectedOwnedLinkTypesWithObserved adds native concrete ownership from an
+// already captured snapshot; it performs no storage reads.
+func (s *Store) SelectedOwnedLinkTypesWithObserved(beadType string, observedLinkTypes ...string) ([]string, error) {
 	c, err := s.selectedTypes()
 	if err != nil {
 		return nil, err
 	}
-	definition, ok := c.types.Definition(beadType)
+	family := nativeFamilyReference(s.ScopeURL(), beadType)
+	definition, ok := c.types.Definition(family)
 	if !ok || definition.Kind != graph.KindBead {
 		return nil, fmt.Errorf("%w: unknown selected Bead ownership contract", ErrInvalidStore)
 	}
@@ -68,12 +76,31 @@ func (s *Store) SelectedOwnedLinkTypes(beadType string) ([]string, error) {
 		if link.Abstract {
 			continue
 		}
-		owns, err := c.types.Owns(typecatalog.Reference{URI: beadType}, link.Identity)
+		owns, err := c.types.Owns(typecatalog.Reference{URI: family}, link.Identity)
 		if err != nil {
 			return nil, err
 		}
 		if owns {
 			result = append(result, link.Identity.URI)
+		}
+	}
+	if family == IssueTypeURL(s.ScopeURL()) {
+		seen := map[string]bool{}
+		for _, id := range result {
+			seen[id] = true
+		}
+		for _, kind := range types.WellKnownDependencyTypes() {
+			id, _ := NativeDependencyTypeURL(s.ScopeURL(), string(kind))
+			if !seen[id] {
+				result = append(result, id)
+				seen[id] = true
+			}
+		}
+		for _, id := range observedLinkTypes {
+			if isConcreteNativeDependency(s.ScopeURL(), id) && !seen[id] {
+				result = append(result, id)
+				seen[id] = true
+			}
 		}
 	}
 	return result, nil
@@ -144,7 +171,7 @@ func newSelectedTypeCatalog(scope string) (*selectedTypeCatalog, error) {
 	// Existing native aggregates retain their actual validators. Nominal facts
 	// let Memory Links reference Issues without replacing native validation.
 	issue := typecatalog.Definition{
-		Identity: typecatalog.Reference{URI: IssueTypeURL(scope)}, Name: "issue", Kind: graph.KindBead, Public: true, NominalOnly: true,
+		Identity: typecatalog.Reference{URI: IssueTypeURL(scope)}, Name: "issue", Kind: graph.KindBead, Public: true, Abstract: true, NominalOnly: true,
 		OwnsOutgoing: []typecatalog.Selector{{AnyOf: []typecatalog.Reference{{URI: DependencyTypeURL(scope)}}}},
 	}
 	for _, owns := range projection.ExistingIssue().OwnershipRequired {
@@ -153,7 +180,7 @@ func newSelectedTypeCatalog(scope string) (*selectedTypeCatalog, error) {
 	nativeEndpoint := typecatalog.EndpointConstraint{ResourceKind: "bead", Scope: "same", Types: typecatalog.Selector{AnyOf: []typecatalog.Reference{{URI: IssueTypeURL(scope)}}}}
 	definitions = append(definitions, issue, typecatalog.Definition{
 		Identity: typecatalog.Reference{URI: DependencyTypeURL(scope)}, Name: "dependency",
-		Kind: graph.KindLink, Public: true, NominalOnly: true,
+		Kind: graph.KindLink, Public: true, Abstract: true, NominalOnly: true,
 		EndpointPairs: []typecatalog.EndpointPair{{Source: nativeEndpoint, Target: nativeEndpoint}},
 	})
 	selected.types, err = typecatalog.New(definitions)

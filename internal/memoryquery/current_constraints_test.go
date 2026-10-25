@@ -145,7 +145,7 @@ func TestCurrentConstraintsCancellationAndInvalid(t *testing.T) {
 	if !errors.Is(err, context.Canceled) || !reflect.DeepEqual(got, memoryquery.CurrentConstraintGraph{}) {
 		t.Fatal(got, err)
 	}
-	subjects, err := memoryquery.CurrentSubjects(context.Background(), r, subjectFamily, []string{"bad"}, currentLimits)
+	subjects, err := memoryquery.CurrentSubjects(context.Background(), r, subjectFamily, []string{"a//b"}, currentLimits)
 	if !errors.Is(err, graph.ErrValidation) || !reflect.DeepEqual(subjects, memoryquery.CurrentGraph{}) {
 		t.Fatal(subjects, err)
 	}
