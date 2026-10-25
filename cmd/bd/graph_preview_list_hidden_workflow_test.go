@@ -20,10 +20,13 @@ import (
 
 // graphListWorkspace initializes a graph workspace on one engine through normal
 // initialization, so every later command is a separate installed process.
-func graphListWorkspace(t *testing.T, bd, engine, scope string) (work, home string) {
+func graphListWorkspace(t *testing.T, bd, engine, scope string, prefix ...string) (work, home string) {
 	t.Helper()
 	work, home = t.TempDir(), t.TempDir()
 	args := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json"}
+	if len(prefix) != 0 {
+		args = append(args, "--prefix", prefix[0])
+	}
 	if engine == "server" {
 		port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
 		if port == "" {
@@ -56,7 +59,7 @@ func graphListConfig(t *testing.T, work, yaml string) {
 // graphListSeedIssue creates an Issue through the controlled writer between two
 // installed processes, for a state no admitted command can author. Close it
 // before the next process opens the workspace, embedded mode included.
-func graphListSeedIssue(t *testing.T, work, path string, request publicops.CreateRequest) {
+func graphListSeedIssue(t *testing.T, work, path string, request publicops.CreateRequest) string {
 	t.Helper()
 	cfg, err := configfile.LoadForDiscovery(filepath.Join(work, ".beads"))
 	if err != nil || cfg == nil {
@@ -77,11 +80,15 @@ func graphListSeedIssue(t *testing.T, work, path string, request publicops.Creat
 			t.Error(err)
 		}
 	}()
-	request.Issue.ID = path
-	request.ForceIDPrefix = true
-	if _, err := s.CreateIssue(ctx, path, request); err != nil {
+	if request.Issue.ID == "" {
+		request.Issue.ID = path
+		request.ForceIDPrefix = true
+	}
+	created, err := s.CreateIssue(ctx, path, request)
+	if err != nil {
 		t.Fatal(err)
 	}
+	return created.Properties.ID
 }
 
 // graphListBeads runs the structured Bead list and returns its page: the
