@@ -25,6 +25,22 @@ func graphPreviewRememberStatus(cmd *cobra.Command) (*string, error) {
 // complete properties object is passed to the existing checked Memory writer;
 // this command does not pre-read a predecessor or implement another upsert.
 func runGraphPreviewRememberCreateOnly(cmd *cobra.Command, args []string, publicID string) error {
+	// Reject independent scalar flag errors before opening --stdin or @-.
+	typeURL, err := graphPreviewMemoryTypeFlag(cmd)
+	if err != nil {
+		return err
+	}
+	status, err := graphPreviewRememberStatus(cmd)
+	if err != nil {
+		return err
+	}
+	var explicitTitle string
+	if cmd.Flags().Changed("title") {
+		explicitTitle, _ = cmd.Flags().GetString("title")
+		if !utf8.ValidString(explicitTitle) || strings.TrimSpace(explicitTitle) == "" {
+			return graphFailure("invalid_properties", "an explicit creation title must be nonempty UTF-8", 2)
+		}
+	}
 	properties := map[string]json.RawMessage{}
 	if cmd.Flags().Changed("properties") {
 		input, _ := cmd.Flags().GetString("properties")
@@ -46,9 +62,11 @@ func runGraphPreviewRememberCreateOnly(cmd *cobra.Command, args []string, public
 	}
 	var body string
 	if raw, present := properties["body"]; present {
-		if err := json.Unmarshal(raw, &body); err != nil {
+		var supplied *string
+		if err := json.Unmarshal(raw, &supplied); err != nil || supplied == nil {
 			return graphFailure("invalid_properties", "Memory body property must be a string", 2)
 		}
+		body = *supplied
 		var err error
 		body, err = graphPreviewReadMemoryBody(strings.NewReader(body))
 		if err != nil {
@@ -63,18 +81,16 @@ func runGraphPreviewRememberCreateOnly(cmd *cobra.Command, args []string, public
 	}
 	title := graphPreviewMemoryTitle(body)
 	if raw, present := properties["title"]; present {
-		if err := json.Unmarshal(raw, &title); err != nil {
+		var supplied *string
+		if err := json.Unmarshal(raw, &supplied); err != nil || supplied == nil {
 			return graphFailure("invalid_properties", "Memory title property must be a string", 2)
 		}
+		title = *supplied
 	} else if cmd.Flags().Changed("title") {
-		title, _ = cmd.Flags().GetString("title")
+		title = explicitTitle
 	}
 	if !utf8.ValidString(title) || strings.TrimSpace(title) == "" {
 		return graphFailure("invalid_properties", "an explicit creation title must be nonempty UTF-8", 2)
-	}
-	status, err := graphPreviewRememberStatus(cmd)
-	if err != nil {
-		return err
 	}
 	if raw, present := properties["status"]; present {
 		var propertyStatus string
@@ -90,10 +106,6 @@ func runGraphPreviewRememberCreateOnly(cmd *cobra.Command, args []string, public
 	complete, err := json.Marshal(properties)
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
-	}
-	typeURL, err := graphPreviewMemoryTypeFlag(cmd)
-	if err != nil {
-		return err
 	}
 	metadata, err := graphPreviewMetadataCreate(cmd)
 	if err != nil {

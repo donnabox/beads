@@ -25,8 +25,9 @@ var memoryLinkOperations = []memoryLinkOperation{
 // metadata and guards. No facade allocates identities or bypasses Type checks.
 func newMemoryLinkCommand(op memoryLinkOperation) *cobra.Command {
 	cmd := &cobra.Command{Use: op.name + " [SOURCE TARGET]", Short: op.description,
-		Args: func(*cobra.Command, []string) error { return nil },
-		RunE: func(cmd *cobra.Command, args []string) error { return runMemoryLinkCommand(cmd, args, op) },
+		Args:        func(*cobra.Command, []string) error { return nil },
+		RunE:        func(cmd *cobra.Command, args []string) error { return runMemoryLinkCommand(cmd, args, op) },
+		Annotations: map[string]string{canonicalDefaultAnnotation: "1"},
 	}
 	cmd.Flags().String("from", "", "Source Bead identity")
 	cmd.Flags().String("to", "", "Target Bead identity")

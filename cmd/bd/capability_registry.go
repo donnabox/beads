@@ -567,7 +567,7 @@ var proxyPermittedPaths = []string{
 
 	// formulas (parser-only), agent memory, swarm reads
 	"formula convert", "formula list", "formula schema", "formula show",
-	"mail", "memories", "ping", "prime", "recall", "remember",
+	"mail", "memories", "memory forget", "memory memories", "memory recall", "memory remember", "ping", "prime", "recall", "remember",
 	"swarm status", "swarm validate",
 
 	// human-in-the-loop queue

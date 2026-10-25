@@ -63,6 +63,22 @@ func TestGraphPreviewMemoryConvenienceWorkflow(t *testing.T) {
 				t.Fatalf("top-level typed properties creation diverged: %+v", fromProperties)
 			}
 			assertStatus(fromProperties, "draft")
+			for _, field := range []string{"title", "body"} {
+				id := "null-" + field
+				properties := `{"title":"Valid title","body":null}`
+				if field == "title" {
+					properties = `{"title":null,"body":"Valid body"}`
+				}
+				refuse("invalid_properties", "memory", "remember", "--id", id, "--create-only", "--properties", properties)
+				createdAfterRefusal := graphMixedResult[graphstore.Record](t, call("memory", "remember", "--id", id, "--create-only", "--title", "Recovered", "--body", "Valid body"))
+				if createdAfterRefusal.ID != scope+id || createdAfterRefusal.Properties.Body != "Valid body" {
+					t.Fatalf("invalid %s consumed identity %q: %+v", field, id, createdAfterRefusal)
+				}
+			}
+			emptyPropertyBody := graphMixedResult[graphstore.Record](t, call("memory", "remember", "--id", "empty-property-body", "--create-only", "--properties", `{"title":"Empty body","body":""}`))
+			if emptyPropertyBody.Properties.Title != "Empty body" || emptyPropertyBody.Properties.Body != "" {
+				t.Fatalf("valid empty body string was changed: %+v", emptyPropertyBody)
+			}
 			refuse("invalid_properties", "memory", "remember", "--id", "conflict", "--create-only", "--body", "One", "--properties", `{"body":"Two"}`)
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Issue target", "--id", "mem-work", "--type", "task"))
 			refuse("capability_unavailable", "memory", "forget", issue.Properties.ID)

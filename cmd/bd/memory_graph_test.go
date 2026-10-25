@@ -126,7 +126,7 @@ func TestMemoryCanonicalBoundary(t *testing.T) {
 			t.Fatalf("registered command lost inherited contract: %s %v", op.name, err)
 		}
 	}
-	if !canonicalOutputDefault(memoryGraphCmd) {
-		t.Fatal("new group is not canonical by default")
+	if canonicalOutputDefault(memoryGraphCmd) || canonicalOutputDefault(memoryRememberAliasCmd) || canonicalOutputDefault(memoryRecallAliasCmd) || canonicalOutputDefault(memoryMemoriesAliasCmd) || canonicalOutputDefault(memoryForgetAliasCmd) {
+		t.Fatal("new group changed a convenience alias output contract")
 	}
 }
