@@ -305,19 +305,31 @@ Each human row shows the local ID and kind; an Issue row also shows its
 status and priority. Use --type types/NAME to narrow by Bead Type.
 --limit returns a prefix with hasMore, not a continuation cursor. A positive
 BEADS_MAX_ROWS refuses a page of more Beads than that.
-Issue-specific filters (--status, --type, --title, --title-contains,
+Issue-specific filters (--status, --type, --id, --title, --title-contains,
 --priority, --priority-min, --priority-max, --assignee, --no-assignee,
---label, --label-any, --exclude-label, --pinned, --no-pinned, --due-before,
---due-after, --overdue, --sort, --reverse) or a matching configured
+--label, --label-any, --exclude-label, --pinned, --no-pinned, --parent, --no-parent, --ready, --due-before,
+--due-after, --overdue, --sort, --reverse, --long) or a matching configured
 directory label switch to the existing Issue query: Issues only, closed and
 pinned Issues omitted unless --all or a filter selects them, quoted rows
 with status and priority, and a line under the header saying Memories are
-not listed. An Issue filter cannot be combined with a non-Issue --type;
+not listed. --id accepts native Issue IDs and exact beads/PATH IDs as a
+comma-separated or repeated set, before the result limit. --parent ID
+accepts direct parent-child edges and edge-less dotted children by graph ID;
+use it with --flat, --json, or --format records-json for direct children.
+Without an output switch, --parent renders the complete bounded recursive tree. An Issue
+filter cannot be combined with a non-Issue --type;
 a configured directory label alone does not refuse one, it is simply not
-applied to Memories. Tree output is unavailable; --tree=false selects the
-same flat output as --flat. --json and --format json
-return the ordinary Issue-only array; use --format records-json for generic
-Bead records.`},
+applied to Memories. --no-parent selects Issues without a parent-child edge,
+including edge-less dotted IDs.
+--ready uses the blocker-aware Issue query, defaults to open Issues, and
+refuses filters that query cannot honor. With --parent it selects transitive
+Issue descendants and prints a flat ready list, as ordinary bd list does.
+--sort accepts priority, created, updated, closed,
+title, status, type, id and assignee; id orders canonical local Bead IDs
+before the result limit. --tree=false selects
+the same flat output as --flat. --long uses the ordinary detailed Issue
+presentation. --json and --format json return the ordinary
+Issue-only array; use --format records-json for generic Bead records.`},
 		{searchCmd, `Search current graph Issues by title or canonical local Bead ID.
 Results include closed Issues unless --status narrows them. --json returns the
 ordinary counted Issue row array with Scope-relative IDs. Supported filters:

@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"slices"
@@ -100,6 +101,241 @@ func graphListSorted(paths []string) []string {
 	return sorted
 }
 
+func TestGraphPreviewListReadyWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/list-ready/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			call("create", "Blocked", "--id", "beads/blocked", "--force")
+			call("create", "Blocker", "--id", "beads/blocker", "--force")
+			call("create", "Other", "--id", "beads/other", "--force")
+			call("remember", "context", "--id", "beads/memory")
+			call("dep", "add", "beads/blocked", "beads/blocker")
+
+			paths, more := graphListBeads(t, bd, work, home, scope, "--ready", "--sort=id")
+			if !slices.Equal(paths, []string{"beads/blocker", "beads/other"}) || more {
+				t.Fatalf("blocker-aware ready paths=%v more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--ready", "--sort=id", "--limit=1")
+			if !slices.Equal(paths, []string{"beads/blocker"}) || !more {
+				t.Fatalf("ready page paths=%v more=%t", paths, more)
+			}
+			var legacy []types.IssueWithCounts
+			if err := json.Unmarshal([]byte(call("list", "--json", "--ready", "--sort=id")), &legacy); err != nil {
+				t.Fatal(err)
+			}
+			if len(legacy) != 2 || legacy[0].ID != "beads/blocker" || legacy[1].ID != "beads/other" {
+				t.Fatalf("legacy ready Issue IDs: %+v", legacy)
+			}
+			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "list", "--ready", "--title", "Blocked", "--json")
+			if got := strings.TrimSpace(call("list", "--ready", "--parent", "beads/blocker", "--json")); got != "[]" {
+				t.Fatalf("ready parent without descendants = %q, want []", got)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewListReadyParentWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/list-ready-parent/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			for _, path := range []string{"beads/root", "beads/mid", "beads/grand", "beads/other"} {
+				call("create", path, "--id", path, "--force")
+			}
+			call("dep", "add", "beads/mid", "beads/root", "--type", "parent-child")
+			call("dep", "add", "beads/grand", "beads/mid", "--type", "parent-child")
+			call("close", "beads/mid", "--force")
+			paths, more := graphListBeads(t, bd, work, home, scope, "--ready", "--parent", "beads/root", "--sort=id")
+			if !slices.Equal(paths, []string{"beads/grand"}) || more {
+				t.Fatalf("ready transitive parent paths=%v more=%t", paths, more)
+			}
+			aliasPaths, aliasMore := graphListBeads(t, bd, work, home, scope, "--ready", "--filter-parent", "beads/root", "--sort=id")
+			if !slices.Equal(aliasPaths, paths) || aliasMore != more {
+				t.Fatalf("ready parent alias paths=%v more=%t", aliasPaths, aliasMore)
+			}
+			var legacy []types.IssueWithCounts
+			if err := json.Unmarshal([]byte(call("list", "--json", "--ready", "--parent", "beads/root")), &legacy); err != nil {
+				t.Fatal(err)
+			}
+			if len(legacy) != 1 || legacy[0].ID != "beads/grand" {
+				t.Fatalf("legacy ready parent rows: %+v", legacy)
+			}
+			text := call("list", "--ready", "--parent", "beads/root")
+			if !strings.Contains(text, "beads/grand") || strings.Contains(text, "beads/mid") || strings.Contains(text, "beads/other") {
+				t.Fatalf("human ready parent row = %q", text)
+			}
+			if explicit := call("list", "--ready", "--parent", "beads/root", "--tree=true"); explicit != text {
+				t.Fatalf("explicit tree flag must preserve shipping flat ready rows: %q versus %q", explicit, text)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewListIDWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/list-ids/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			first := graphMixedResult[graphstore.IssueRecord](t, call("create", "First", "--id", "beads/first", "--json", "--force"))
+			second := graphMixedResult[graphstore.IssueRecord](t, call("create", "Second", "--id", "beads/second", "--json", "--force"))
+			call("remember", "context", "--id", "beads/memory", "--json")
+			paths, more := graphListBeads(t, bd, work, home, scope, "--id", first.Properties.ID)
+			if !slices.Equal(paths, []string{"beads/first"}) || more {
+				t.Fatalf("native --id selected %v, more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--id", "beads/first,beads/second", "--sort=id", "--limit=1")
+			if !slices.Equal(paths, []string{"beads/first"}) || !more {
+				t.Fatalf("ID set must filter before paging: %v, more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--id", second.Properties.ID, "--id", first.Properties.ID, "--sort=id")
+			if !slices.Equal(paths, []string{"beads/first", "beads/second"}) || more {
+				t.Fatalf("repeated public IDs selected %v, more=%t", paths, more)
+			}
+			for _, missing := range []string{"beads/missing", "beads/memory"} {
+				paths, more = graphListBeads(t, bd, work, home, scope, "--id", missing)
+				if len(paths) != 0 || more {
+					t.Fatalf("non-Issue or missing ID %q selected %v, more=%t", missing, paths, more)
+				}
+			}
+			var rows []struct {
+				ID string `json:"id"`
+			}
+			output := call("list", "--id", "beads/second", "--json")
+			if err := json.Unmarshal([]byte(output), &rows); err != nil || len(rows) != 1 || rows[0].ID != "beads/second" {
+				t.Fatalf("legacy JSON ID selection: %s (%v)", output, err)
+			}
+			rows = nil
+			output = call("list", "--id", "beads/missing", "--json")
+			if err := json.Unmarshal([]byte(output), &rows); err != nil || rows == nil || len(rows) != 0 {
+				t.Fatalf("missing legacy JSON ID selection: %s (%v)", output, err)
+			}
+			human := call("list", "--id", "beads/first", "--flat")
+			if !strings.Contains(human, "First") || strings.Contains(human, "Second") {
+				t.Fatalf("human ID selection: %s", human)
+			}
+			long := call("list", "--id", "beads/first", "--long")
+			if !strings.Contains(long, "First") || strings.Contains(long, "Second") {
+				t.Fatalf("long ID selection: %s", long)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewListNoParentWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/no-parent/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			parent := graphMixedResult[graphstore.IssueRecord](t, call("create", "Parent", "--id", "beads/parent", "--json", "--force"))
+			child := graphMixedResult[graphstore.IssueRecord](t, call("create", "Child", "--parent", "beads/parent", "--force", "--json"))
+			call("create", "Grandchild", "--parent", child.Properties.ID, "--force", "--json")
+			call("create", "Dotted without an edge", "--id", "beads/parent.9", "--json", "--force")
+			call("remember", "memory body", "--id", "beads/memory", "--title", "Memory", "--json")
+
+			var rows []struct {
+				ID string `json:"id"`
+			}
+			output := call("list", "--no-parent", "--json", "--sort=id")
+			if err := json.Unmarshal([]byte(output), &rows); err != nil {
+				t.Fatalf("decode no-parent Issue list: %v: %s", err, output)
+			}
+			ids := make([]string, 0, len(rows))
+			for _, row := range rows {
+				ids = append(ids, row.ID)
+			}
+			if !slices.Equal(ids, []string{"beads/parent", "beads/parent.9"}) {
+				t.Fatalf("no-parent must select only Issues without a parent edge, including an edge-less dotted ID: %v", ids)
+			}
+			paths, more := graphListBeads(t, bd, work, home, scope, "--no-parent", "--sort=id")
+			if !slices.Equal(paths, ids) || more {
+				t.Fatalf("structured no-parent Issue list = %v, more=%t; want %v", paths, more, ids)
+			}
+			human := call("list", "--no-parent", "--flat")
+			if !strings.Contains(human, "beads/parent") || !strings.Contains(human, "beads/parent.9") || strings.Contains(human, "Child") || strings.Contains(human, "beads/memory") {
+				t.Fatalf("no-parent human list: %s", human)
+			}
+			wantChildren := graphListSorted([]string{strings.TrimPrefix(child.ID, scope), "beads/parent.9"})
+			paths, more = graphListBeads(t, bd, work, home, scope, "--parent", "beads/parent", "--sort=id")
+			if !slices.Equal(paths, wantChildren) || more {
+				t.Fatalf("parent records list = %v, more=%t; want %v", paths, more, wantChildren)
+			}
+			first, more := graphListBeads(t, bd, work, home, scope, "--parent", "beads/parent", "--sort=id", "--limit=1")
+			if !slices.Equal(first, wantChildren[:1]) || !more {
+				t.Fatalf("parent limited page = %v, more=%t; want %v and more", first, more, wantChildren[:1])
+			}
+			graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "", "list", "--parent", "beads/parent", "--format=records-json")
+			graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "", "list", "--parent", "beads/parent", "--format=records-json", "--limit=1")
+			graphPolicyCLI(t, bd, work, home, []string{"BEADS_MAX_ROWS=1"}, "capability_unavailable", "list", "--parent", "beads/parent", "--format=records-json")
+			output = call("list", "--parent", parent.Properties.ID, "--json", "--sort=id")
+			rows = nil
+			if err := json.Unmarshal([]byte(output), &rows); err != nil {
+				t.Fatalf("decode parent Issue list: %v: %s", err, output)
+			}
+			ids = ids[:0]
+			for _, row := range rows {
+				ids = append(ids, row.ID)
+			}
+			if !slices.Equal(ids, wantChildren) {
+				t.Fatalf("bare native parent list = %v, want %v", ids, wantChildren)
+			}
+			if alias := call("list", "--filter-parent", "beads/parent", "--json", "--sort=id"); alias != call("list", "--parent", "beads/parent", "--json", "--sort=id") {
+				t.Fatalf("filter-parent alias differs from parent:\n%s\n%s", alias, output)
+			}
+			human = call("list", "--parent", "beads/parent", "--flat", "--sort=id")
+			for _, id := range wantChildren {
+				if !strings.Contains(human, id) {
+					t.Fatalf("parent flat list missing %s: %s", id, human)
+				}
+			}
+			if strings.Contains(human, "Grandchild") || strings.Contains(human, "Memory") {
+				t.Fatalf("parent flat list leaked other resources: %s", human)
+			}
+			long := call("list", "--parent", "beads/parent", "--flat", "--long")
+			if !strings.Contains(long, "Child") || !strings.Contains(long, "Dotted without an edge") || strings.Contains(long, "Grandchild") {
+				t.Fatalf("parent long list: %s", long)
+			}
+			tree := call("list", "--parent", "beads/parent", "--limit=1")
+			if !strings.Contains(tree, "Parent") || !strings.Contains(tree, "Child") || !strings.Contains(tree, "Grandchild") || !strings.Contains(tree, "Dotted without an edge") || strings.Contains(tree, "Memory") || strings.Index(tree, "Child") > strings.Index(tree, "Grandchild") || !strings.Contains(tree, "Total: 4 issues") {
+				t.Fatalf("unpaged parent tree lost the hierarchy: %s", tree)
+			}
+			if explicit := call("list", "--parent", "beads/parent", "--tree=true", "--limit=1"); explicit != tree {
+				t.Fatalf("explicit parent tree differs from default:\n%s\n%s", explicit, tree)
+			}
+			graphListRefusal(t, bd, work, home, []string{"BEADS_MAX_ROWS=2"}, "list", "--parent", "beads/parent")
+			call("create", "Edge-less orphan", "--id", "beads/orphan.3", "--json", "--force")
+			paths, more = graphListBeads(t, bd, work, home, scope, "--parent", "beads/orphan")
+			if !slices.Equal(paths, []string{"beads/orphan.3"}) || more {
+				t.Fatalf("missing bare parent dotted fallback = %v, more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--parent", "beads/memory")
+			if len(paths) != 0 || more {
+				t.Fatalf("non-Issue parent unexpectedly selected Issues: %v, more=%t", paths, more)
+			}
+		})
+	}
+}
+
 // Closed and pinned Issues are hidden from the Bead list unless --all, which
 // also lifts the default row limit; an explicit --limit still wins. The CLI
 // cannot author a pinned Issue, so the test seeds one between processes.
@@ -145,6 +381,35 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "", "list", "--format=json", "--include-comments", "--all")
 			if treeFalse, flat := human("--tree=false", "--all"), human("--flat", "--all"); treeFalse != flat {
 				t.Fatalf("--tree=false must retain the shipping flat-output alias:\ntree=false: %s\nflat: %s", treeFalse, flat)
+			}
+			listIDs := func(args ...string) []string {
+				t.Helper()
+				output := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list", "--json"}, args...)...)
+				var rows []struct {
+					ID string `json:"id"`
+				}
+				if err := json.Unmarshal([]byte(output), &rows); err != nil {
+					t.Fatalf("decode sorted Issue list: %v: %s", err, output)
+				}
+				ids := make([]string, 0, len(rows))
+				for _, row := range rows {
+					ids = append(ids, row.ID)
+				}
+				return ids
+			}
+			if got := listIDs("--all", "--sort=id", "--limit=2"); !slices.Equal(got, []string{"beads/done", "beads/open"}) {
+				t.Fatalf("id sort must precede page trim: %v", got)
+			}
+			if got := listIDs("--long", "--all", "--sort=id", "--limit=2"); !slices.Equal(got, []string{"beads/done", "beads/open"}) {
+				t.Fatalf("--json must keep its Issue array when --long is present: %v", got)
+			}
+			if got := listIDs("--all", "--sort=closed", "--limit=1"); !slices.Equal(got, []string{"beads/done"}) {
+				t.Fatalf("closed sort must precede page trim: %v", got)
+			}
+			long := human("--long", "--all", "--sort=id", "--limit=2")
+			if !strings.Contains(long, "Found 2 issues:") || !strings.Contains(long, "beads/done") || !strings.Contains(long, "beads/open") ||
+				!strings.Contains(long, "More matching Issues exist") || strings.Contains(long, "beads/plan") || strings.Contains(long, "beads/pin") {
+				t.Fatalf("--long must render the checked Issue page without Memories or off-page Issues: %s", long)
 			}
 
 			expect := func(what string, got []string, more bool, want []string, wantMore bool) {

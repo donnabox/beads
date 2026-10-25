@@ -185,11 +185,11 @@ BDP Read returns the common `metadata` object on current Issues, Memories,
 informational Links and owned Links, using `{}` when no keys have been set.
 An older retained record can omit `metadata` without rewriting its history.
 
-The Issue filters are `--status` (or `--state`), `--type`, `--title`,
+The Issue filters are `--status` (or `--state`), `--type`, `--id`, `--title`,
 `--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
 `--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
-`--pinned`, `--no-pinned`, `--due-before`, `--due-after`, `--overdue`,
-`--sort` and `--reverse`. Supplying an Issue filter switches `bd list` to the existing Issue query,
+`--pinned`, `--no-pinned`, `--parent`, `--no-parent`, `--ready`, `--due-before`, `--due-after`, `--overdue`,
+`--sort`, `--reverse`, and `--long`. Supplying an Issue filter or `--long` switches `bd list` to the existing Issue query,
 even when an empty value such as `--assignee=` adds no restriction.
 `--type types/NAME` or a full Type URL instead selects a nominal Type;
 a bare `--type task` remains an Issue classification filter. A configured `directory.labels` entry that matches the current
@@ -200,6 +200,26 @@ selected the query. A directory label alone never refuses a nominal `--type`; it
 is not applied to a Memory. Its human rows add status and priority, for example
 `"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
 An Issue filter cannot be combined with a non-Issue nominal `--type`.
+`--long` renders the ordinary detailed Issue presentation, including descriptions
+and labels, for the selected Issue page.
+`--id` accepts comma-separated or repeated native Issue IDs, exact `beads/PATH`
+IDs, or local canonical URLs. It resolves the ID set in the same checked read
+as the Issue query and applies it before the result limit. Missing or non-Issue
+IDs contribute no rows; an ambiguous bare ID requires an explicit path.
+`--no-parent` keeps Issues without a parent-child dependency edge. Like the
+ordinary flat list, an edge-less dotted ID can still appear; the ID alone
+does not establish a parent.
+`--ready` switches to the blocker-aware Issue query and defaults to open
+Issues, as ordinary `bd list --ready` does. An explicit status intersects
+that ready set. Filters the ready query cannot honor are refused instead of
+silently dropped. With `--parent ID`, ready mode selects blocker-free Issue
+descendants recursively, including grandchildren reached through a filtered-out
+intermediary, and prints the ordinary flat ready list.
+Without `--ready`, `--parent ID` selects direct parent-child edges and edge-less dotted children
+under the selected graph Issue ID. It accepts a bare Issue ID or an explicit
+`beads/PATH`; `--filter-parent` is the ordinary compatibility alias. Use
+`--flat`, `--json`, or `--format records-json` with it to list direct children.
+Without a format switch, it renders the bounded recursive parent tree.
 
 `bd list --json` returns the ordinary Issue-only array, including the
 familiar Issue field names and Scope-relative IDs. Memories are omitted from

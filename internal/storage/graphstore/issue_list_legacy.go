@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
-	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/workapi"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -25,6 +24,19 @@ type LegacyIssueListPage struct {
 // allocations in one checked snapshot. The existing graph Issue list first validates
 // every selected record, including the over-fetched pagination probe.
 func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequest) (LegacyIssueListPage, error) {
+	return s.listIssuesLegacy(ctx, request, nil)
+}
+
+// ListIssuesLegacySelected keeps the parent resolution and counted legacy
+// projection in the same checked read transaction.
+func (s *Store) ListIssuesLegacySelected(ctx context.Context, request publicops.ListRequest, parent IssueSelector) (LegacyIssueListPage, error) {
+	if err := validateIssueSelector(parent); err != nil {
+		return LegacyIssueListPage{}, err
+	}
+	return s.listIssuesLegacy(ctx, request, &parent)
+}
+
+func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequest, parent *IssueSelector) (LegacyIssueListPage, error) {
 	includeComments := request.IncludeComments
 	request.IncludeComments = false
 	request, err := prepareIssueListRequest(request)
@@ -32,11 +44,21 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		return LegacyIssueListPage{}, err
 	}
 	request.IncludeComments = includeComments
+	if request.ReadyFlag {
+		s.wakeExpiredDefersAdvisory(ctx)
+	}
 	var result LegacyIssueListPage
 	err = s.withTx(ctx, false, func(tx *sql.Tx) error {
-		page, err := s.listIssuesInTx(ctx, tx, request)
+		page, err := s.listIssuesWithParentInTx(ctx, tx, &request, parent)
 		if err != nil {
 			return err
+		}
+		if (request.IDFilter != "" || parent != nil) && len(page.Items) == 0 {
+			// The checked query already validated the entire selected set.
+			// In particular, an unmatched --id set or graph parent has no
+			// native keys for the counted query to project.
+			result = LegacyIssueListPage{Items: []*types.IssueWithCounts{}, HasMore: page.HasMore}
+			return nil
 		}
 		cfg, err := issueListConfigInTx(ctx, tx)
 		if err != nil {
@@ -47,15 +69,74 @@ func (s *Store) ListIssuesLegacy(ctx context.Context, request publicops.ListRequ
 			return err
 		}
 		filter.SkipCounts = false
-		if filter.Limit > PreviewSnapshotLimit {
+		if parent != nil && request.ReadyFlag {
+			parentNativeID, _, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
+			if err != nil {
+				return err
+			}
+			if parentNativeID != "" {
+				filter.ParentID = &parentNativeID
+			}
+		}
+		if parent != nil || filter.Limit > PreviewSnapshotLimit {
 			filter.Limit = PreviewSnapshotLimit
 		}
-		filter = workapi.WithFetchOneExtra(workapi.WithRowsBeforeThePage(filter, request.Offset))
-		rows, err := issueops.SearchIssuesWithCountsInTx(ctx, tx, "", filter)
+		if parent == nil {
+			filter = workapi.WithFetchOneExtra(workapi.WithRowsBeforeThePage(filter, request.Offset))
+		} else {
+			filter.MaxRows = 0
+		}
+		rows, err := queryIssueListRowsInTx(ctx, tx, filter, request.ReadyFlag)
 		if err != nil {
 			return err
 		}
-		rows, more := workapi.FinishPageAt(rows, request.SortBy, request.Reverse, request.Offset, workapi.PageLimit(request), false)
+		if parent != nil && !request.ReadyFlag {
+			parentNativeID, parentPath, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
+			if err != nil {
+				return err
+			}
+			selected := make([]*types.IssueWithCounts, 0, len(rows))
+			for _, row := range rows {
+				if row == nil || row.Issue == nil {
+					return fmt.Errorf("%w: nil counted Issue list row", ErrInvalidStore)
+				}
+				var path string
+				if err := tx.QueryRowContext(ctx, "SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live'", row.ID).Scan(&path); err != nil {
+					return fmt.Errorf("%w: unmapped counted Issue list row: %v", ErrInvalidStore, err)
+				}
+				if err := validatePath(path); err != nil {
+					return fmt.Errorf("%w: malformed counted Issue list path: %v", ErrInvalidStore, err)
+				}
+				if issueListParentMatches(row, path, parentNativeID, parentPath) {
+					selected = append(selected, row)
+				}
+			}
+			rows = selected
+		}
+		var more bool
+		if request.SortBy == "id" {
+			// The checked graph page is ordered by visible Bead IDs. The native
+			// counted query still names backing IDs, so select its rows in that
+			// checked order instead of sorting those opaque keys a second time.
+			more = len(rows) > len(page.Items)
+			byID := make(map[string]*types.IssueWithCounts, len(rows))
+			for _, row := range rows {
+				if row == nil || row.Issue == nil || byID[row.ID] != nil {
+					return fmt.Errorf("%w: invalid counted Issue list row", ErrInvalidStore)
+				}
+				byID[row.ID] = row
+			}
+			ordered := make([]*types.IssueWithCounts, 0, len(page.Items))
+			for _, item := range page.Items {
+				if item.Properties == nil || byID[item.Properties.ID] == nil {
+					return fmt.Errorf("%w: counted Issue list disagrees with checked graph page", ErrInvalidStore)
+				}
+				ordered = append(ordered, byID[item.Properties.ID])
+			}
+			rows = ordered
+		} else {
+			rows, more = workapi.FinishPageAt(rows, request.SortBy, request.Reverse, request.Offset, workapi.PageLimit(request), false)
+		}
 		if rows == nil {
 			rows = []*types.IssueWithCounts{}
 		}
