@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"reflect"
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -35,10 +36,15 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 	}
 	var edges []edge
 	creates := make(map[string]*publicops.CreateItem)
+	deferredAssignees := make(map[string]string)
+	deferredPhase := false
 	seen := make(map[string]bool)
 	for index, item := range plan.Items {
 		switch item.Kind {
 		case publicops.ItemCreate:
+			if deferredPhase {
+				return nil, fmt.Errorf("%w: graph batch creates must precede deferred assignments", ErrCapabilityUnavailable)
+			}
 			if item.Create.Key == "" || len(item.Create.MetadataRefs) != 0 {
 				return nil, fmt.Errorf("%w: graph batch item %d requires a key and cannot carry metadata refs", ErrCapabilityUnavailable, index)
 			}
@@ -47,6 +53,9 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			}
 			creates[item.Create.Key] = item.Create
 		case publicops.ItemDepAdd:
+			if deferredPhase {
+				return nil, fmt.Errorf("%w: graph batch edges must precede deferred assignments", ErrCapabilityUnavailable)
+			}
 			dep := item.DepAdd
 			if (dep.Source.Key == "") == (dep.Source.ID == "") || (dep.Target.Key == "") == (dep.Target.ID == "") ||
 				dep.Metadata != "" || dep.ThreadID != "" || dep.HasSpawner {
@@ -62,12 +71,31 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			}
 			seen[pair] = true
 			edges = append(edges, edge{sourceKey: dep.Source.Key, sourceID: dep.Source.ID, targetKey: dep.Target.Key, targetID: dep.Target.ID, dependency: resolvedIssueCreateDependency{nativeType: nativeType}})
+		case publicops.ItemUpdate:
+			deferredPhase = true
+			update := item.Update
+			if update.Target.Key == "" || update.Target.ID != "" || update.Patch.Assignee.Value == "" ||
+				!reflect.DeepEqual(*update, publicops.UpdateItem{
+					Target: publicops.Ref{Key: update.Target.Key},
+					Patch:  publicops.IssuePatch{Assignee: publicops.Field[string]{Set: true, Value: update.Patch.Assignee.Value}},
+				}) {
+				return nil, fmt.Errorf("%w: graph batch update must be a new node's deferred assignee", ErrCapabilityUnavailable)
+			}
+			if _, exists := deferredAssignees[update.Target.Key]; exists {
+				return nil, fmt.Errorf("%w: graph batch node has multiple deferred assignments", ErrCapabilityUnavailable)
+			}
+			deferredAssignees[update.Target.Key] = update.Patch.Assignee.Value
 		default:
-			return nil, fmt.Errorf("%w: graph batch item %d is not a new Issue or local Dependency", ErrCapabilityUnavailable, index)
+			return nil, fmt.Errorf("%w: graph batch item %d is not a new Issue, local Dependency or deferred assignee", ErrCapabilityUnavailable, index)
 		}
 	}
 	if len(creates) == 0 {
 		return nil, fmt.Errorf("%w: graph batch requires a new Issue", storage.ErrValidation)
+	}
+	for key := range deferredAssignees {
+		if creates[key] == nil {
+			return nil, fmt.Errorf("%w: deferred assignee must target a new keyed Issue", ErrCapabilityUnavailable)
+		}
 	}
 	for _, item := range edges {
 		if (item.sourceKey != "" && creates[item.sourceKey] == nil) || (item.targetKey != "" && creates[item.targetKey] == nil) {
@@ -320,14 +348,56 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				bySource[item.sourceKey] = append(bySource[item.sourceKey], dependency)
 			}
 		}
-		records = make(map[string]IssueRecord, len(creates))
 		for key := range creates {
 			id, path := applied.Keys[key], paths[key]
 			if dependencies := bySource[key]; len(dependencies) != 0 {
-				if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, id, plan.Actor, dependencies, true); err != nil {
+				if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, id, plan.Actor, dependencies, false); err != nil {
 					return err
 				}
-			} else if err := s.recordIssueMappingContextInTx(ctx, tx, path, id, issueRevisionContext{Inception: "create"}); err != nil {
+			}
+		}
+		for path, dependencies := range byExistingSource {
+			source := existingSources[path]
+			if err := s.mapExistingBatchSourceInTx(ctx, tx, path, source, plan.Actor, dependencies); err != nil {
+				return err
+			}
+		}
+		if len(deferredAssignees) != 0 {
+			updates := make([]publicops.ApplyItem, 0, len(deferredAssignees))
+			keys := make([]string, 0, len(deferredAssignees))
+			for _, item := range plan.Items {
+				if item.Kind != publicops.ItemUpdate {
+					continue
+				}
+				key := item.Update.Target.Key
+				keys = append(keys, key)
+				updates = append(updates, publicops.ApplyItem{Kind: publicops.ItemUpdate, Update: &publicops.UpdateItem{
+					Target: publicops.Ref{ID: applied.Keys[key]},
+					Patch:  publicops.IssuePatch{Assignee: publicops.Field[string]{Set: true, Value: deferredAssignees[key]}},
+				}})
+			}
+			updatePlan, err := storage.PlanApplyBatch(publicops.ApplyBatchRequest{Actor: plan.Actor, Provenance: plan.Provenance, Items: updates})
+			if err != nil {
+				return err
+			}
+			updated, _, err := issueops.ApplyBatchInTx(ctx, tx, updatePlan)
+			if err != nil {
+				return err
+			}
+			if len(updated.Items) != len(keys) {
+				return fmt.Errorf("%w: deferred assignment results are incomplete", ErrInvalidStore)
+			}
+			for i, key := range keys {
+				result := updated.Items[i]
+				if result.Kind != publicops.ItemUpdate || !result.Changed || result.IssueID != applied.Keys[key] || result.Issue == nil || result.Issue.Assignee != deferredAssignees[key] {
+					return fmt.Errorf("%w: graph batch deferred assignee did not update Issue %q", ErrInvalidStore, key)
+				}
+			}
+		}
+		records = make(map[string]IssueRecord, len(creates))
+		for key := range creates {
+			id, path := applied.Keys[key], paths[key]
+			if err := s.recordIssueMappingContextInTx(ctx, tx, path, id, issueRevisionContext{Inception: "create"}); err != nil {
 				return err
 			}
 			record, err := s.showIssueInTx(ctx, tx, path)
@@ -335,12 +405,6 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				return err
 			}
 			records[key] = record
-		}
-		for path, dependencies := range byExistingSource {
-			source := existingSources[path]
-			if err := s.mapExistingBatchSourceInTx(ctx, tx, path, source, plan.Actor, dependencies); err != nil {
-				return err
-			}
 		}
 		for path, source := range existingSources {
 			if len(byExistingSource[path]) != 0 {
