@@ -648,19 +648,20 @@ For literal `closed`, `--session` (or `CLAUDE_SESSION_ID`) records the closing
 session.
 
 ```sh
-bd update work --status in_progress --if-revision REVISION_FROM_SHOW
+bd update work --status in_progress --if-revision =REVISION_FROM_SHOW
 bd update work --status closed --force --session review-session
 bd update work --status open --if-status in_progress
 bd update work --assignee review --if-assignee ''
 ```
 
 `bd update ID --type CLASS` changes the native Issue classification using the
-shipping type aliases and configured custom types. It keeps the Bead's graph
-Type as Issue. Unknown classifications refuse, and an unchanged classification
-does not create a new revision. The edit can use `--if-revision`.
+shipping type aliases and configured custom types. The Bead retains its public
+identity while its graph Type becomes the concrete native Type for CLASS.
+Unknown classifications refuse, and an unchanged classification does not
+create a new revision. The edit can use `--if-revision`.
 
 ```sh
-bd update work --type feature --if-revision REVISION_FROM_SHOW
+bd update work --type feature --if-revision =REVISION_FROM_SHOW
 ```
 
 ## Edit Issue notes
