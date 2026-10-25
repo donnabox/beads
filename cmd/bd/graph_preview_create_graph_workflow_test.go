@@ -136,13 +136,13 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", "batch-later")); len(got) != 1 || got[0].Target != parent.ID {
 				t.Fatalf("existing-target batch did not publish its Link: %+v", got)
 			}
-			writePlan(`{"nodes":[{"key":"fields","id":"batch-fields","title":"Fields","description":"first line","design":"  design — 雪  ","acceptance_criteria":"accept café","notes":"initial note","spec_id":"spec-7","external_ref":"external-7","assignee":"agent","owner":"team","estimated_minutes":45,"due_at":"2030-01-02T03:04:05Z","labels":["urgent","review"]}],"edges":[{"from_key":"fields","to_id":"` + parent.Properties.ID + `"}]}`)
+			writePlan(`{"nodes":[{"key":"fields","id":"batch-fields","title":"Fields","description":"first line","design":"  design — 雪  ","acceptance_criteria":"accept café","notes":"initial note","spec_id":"spec-7","external_ref":"external-7","assignee":"agent","owner":"team","estimated_minutes":45,"due_at":"2030-01-02T03:04:05.623Z","labels":["urgent","review"]}],"edges":[{"from_key":"fields","to_id":"` + parent.Properties.ID + `"}]}`)
 			var fields GraphApplyResult
 			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &fields); err != nil {
 				t.Fatal(err)
 			}
 			created := graphMixedResult[graphstore.IssueRecord](t, call("show", fields.IDs["fields"], "--format", "graph-json"))
-			wantDue, err := time.Parse(time.RFC3339, "2030-01-02T03:04:05Z")
+			wantDue, err := time.Parse(time.RFC3339, "2030-01-02T03:04:06Z")
 			if err != nil {
 				t.Fatal(err)
 			}
