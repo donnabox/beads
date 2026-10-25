@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -17,7 +18,7 @@ import (
 // to the existing Memory writer, which resolves omitted fields and the accepted
 // predecessor in its own transaction. A deleted ID cannot be reused, and an
 // Issue at that ID cannot be patched as a Memory.
-func runGraphPreviewRememberUpsert(cmd *cobra.Command, publicID string, title, body *string) error {
+func runGraphPreviewRememberUpsert(cmd *cobra.Command, publicID string, title, body, status *string) error {
 	path := ""
 	var err error
 	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, publicID, false)
@@ -42,7 +43,15 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, publicID string, title, b
 			if title != nil {
 				createTitle = *title
 			}
-			created, createErr := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, Title: createTitle, Body: *body, Actor: actor, Metadata: createMetadata})
+			create := graphstore.CreateRequest{PublicID: publicID, Title: createTitle, Body: *body, Actor: actor, Metadata: createMetadata}
+			if status != nil {
+				properties, marshalErr := json.Marshal(map[string]string{"title": createTitle, "body": *body, "status": *status})
+				if marshalErr != nil {
+					return nil, "", marshalErr
+				}
+				create.Title, create.Body, create.PropertiesJSON = "", "", properties
+			}
+			created, createErr := store.Create(ctx, create)
 			if createErr == nil {
 				return created, fmt.Sprintf("Created %s\n", publicID), nil
 			}
@@ -55,7 +64,7 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, publicID string, title, b
 				return nil, "", resolveErr
 			}
 			result, patchErr := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-				Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
+				Path: path, Title: title, Body: body, Status: status, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
 				ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 			})
 			if graphPreviewRememberDefiniteError(patchErr, graphstore.ErrNotFound) || graphPreviewRememberDefiniteError(patchErr, graphstore.ErrGone) || graphPreviewRememberDefiniteError(patchErr, graphstore.ErrCapabilityUnavailable) {
@@ -71,7 +80,7 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, publicID string, title, b
 			return nil, "", err
 		}
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-			Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
+			Path: path, Title: title, Body: body, Status: status, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
 			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
 		if graphPreviewRememberDefiniteError(err, graphstore.ErrNotFound) && title != nil && strings.TrimSpace(*title) == "" {
@@ -104,7 +113,7 @@ func graphPreviewRememberPatchResult(result graphstore.MemoryMutationResult, err
 // by this edit route. The checked Memory writer applies properties and metadata
 // together, retaining its revision/no-op rules.
 func runGraphPreviewRememberPropertiesReplacement(cmd *cobra.Command, args []string) error {
-	if len(args) != 0 || cmd.Flags().Changed("title") || cmd.Flags().Changed("body-file") || cmd.Flags().Changed("stdin") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("create-only") {
+	if len(args) != 0 || cmd.Flags().Changed("title") || cmd.Flags().Changed("body") || cmd.Flags().Changed("status") || cmd.Flags().Changed("type") || cmd.Flags().Changed("body-file") || cmd.Flags().Changed("stdin") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("create-only") {
 		return graphFailure("invalid_properties", "--replace-properties requires an existing --id or --update and cannot combine with body, title or --properties", 2)
 	}
 	literal := cmd.Flags().Changed("id") || cmd.Flags().Changed("key")
@@ -176,6 +185,10 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	status, err := graphPreviewRememberStatus(cmd)
+	if err != nil {
+		return err
+	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return err
@@ -187,7 +200,7 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 		}
 
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-			Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: getActorWithGit(),
+			Path: path, Title: title, Body: body, Status: status, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: getActorWithGit(),
 			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
 		if err != nil {
@@ -230,9 +243,9 @@ func graphPreviewRememberPatchInput(cmd *cobra.Command, args []string) (*string,
 	} else {
 		title = propertyTitle
 	}
-	if len(args) == 0 && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") {
-		if title == nil && propertyBody == nil && !cmd.Flags().Changed("properties") && !graphPreviewMetadataFlagsChanged(cmd) {
-			return nil, nil, graphFailure("invalid_properties", "an existing-ID remember write requires --properties, --title, a metadata edit or one explicit body source", 2)
+	if len(args) == 0 && !cmd.Flags().Changed("body") && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") {
+		if title == nil && propertyBody == nil && !cmd.Flags().Changed("status") && !cmd.Flags().Changed("properties") && !graphPreviewMetadataFlagsChanged(cmd) {
+			return nil, nil, graphFailure("invalid_properties", "an existing-ID remember write requires --properties, --title, --status, a metadata edit or one explicit body source", 2)
 		}
 		return title, propertyBody, nil
 	}

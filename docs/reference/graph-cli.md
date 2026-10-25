@@ -64,14 +64,22 @@ explicit IDs only so later commands are easy to follow.
 
 ## Create Beads
 
-`bd remember` stores a Memory from text. It preserves the full body. Without
+`bd remember` and `bd memory remember` share one Memory operation, flags,
+output and errors. `bd memory recall`, `bd memory memories` and
+`bd memory forget` likewise use their top-level handlers; legacy workspaces
+retain the same behavior. `bd remember` stores a Memory from text. It preserves the full body. Without
 `--title`, it makes a title from the first nonempty body line (collapsed
 whitespace, at most 80 Unicode characters including an ellipsis) on creation.
 An explicit `--title` is used as supplied. It can also read a body from
-`--body-file PATH` or `--stdin` instead of the positional text. With `--id`,
+`--body TEXT` (including an explicit empty string), `--body-file PATH` or
+`--stdin` instead of the positional text. With `--id`,
 an unused ID creates and an existing Memory updates in place, matching
 ordinary `bd remember --key` behavior. `--create-only` with `--id` refuses
-any previously allocated ID, including one that has been deleted.
+any previously allocated ID, including one that has been deleted. With
+`--create-only`, `--type types/NAME` chooses an installed Memory Type or
+refinement; omission creates plain Memory. An existing Memory's Type is
+preserved by `remember`; use `bd update ID --type types/NAME` to retype it.
+`--status TEXT` supplies a nonblank status property on creation.
 
 ```sh
 bd remember 'Code flow policy: changes land on integration.' --id policy \
@@ -380,7 +388,12 @@ For a Memory, `bd remember --id ID` changes only the fields you supply if
 that ID already exists. Omitted title or body stays unchanged, and the current
 revision is accepted by default. `--update ID` remains an existing-only
 spelling; it refuses a missing Memory. A title-only update needs no body
-argument. Add `--if-revision =TOKEN` to either spelling to reject a stale edit.
+argument. `--body TEXT` changes only the body and accepts an explicit empty
+string. `--status TEXT` changes only the nonblank status property. These three
+field shorthands preserve omitted properties and metadata in the checked
+transaction; an identical edit keeps its revision. Add `--if-revision =TOKEN`
+to either spelling to reject a stale edit. The nested `bd memory remember`
+spelling has the same behavior.
 
 ```sh
 bd remember 'Changes now land on the release branch.' --id policy
