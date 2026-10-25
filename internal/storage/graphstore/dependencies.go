@@ -482,11 +482,33 @@ func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, p
 	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
 		return err
 	}
+	if err := s.syncIssueMappingTypeInTx(ctx, tx, path, issueID); err != nil {
+		return err
+	}
 	owned, err := s.ownedLinksInTx(ctx, tx, issueID)
 	if err != nil {
 		return err
 	}
 	return s.recordIssueMappingSnapshotInTx(ctx, tx, path, issueID, ordinal, owned, previous)
+}
+
+// syncIssueMappingTypeInTx publishes the native Issue's current affiliation
+// before an owned-Link projection reads its catalog endpoint. Both changes
+// remain inside the caller's transaction.
+func (s *Store) syncIssueMappingTypeInTx(ctx context.Context, tx *sql.Tx, path, issueID string) error {
+	var classification string
+	if err := tx.QueryRowContext(ctx, `SELECT issue_type FROM issues WHERE id=?`, issueID).Scan(&classification); err != nil {
+		return err
+	}
+	declaredType, err := NativeIssueTypeURL(s.ScopeURL(), classification)
+	if err != nil {
+		return err
+	}
+	if err := s.ensureNativeTypeInTx(ctx, tx, declaredType); err != nil {
+		return err
+	}
+	_, err = tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=? AND backing='issue'`, declaredType, path)
+	return err
 }
 
 // recordIssueMappingSnapshotInTx retains a particular native revision and its
@@ -510,23 +532,6 @@ func (s *Store) recordIssueMappingSnapshotInTx(ctx context.Context, tx *sql.Tx, 
 	}
 	revision, err := freshToken()
 	if err != nil {
-		return err
-	}
-	var classification string
-	if err := tx.QueryRowContext(ctx, `SELECT issue_type FROM issues WHERE id=?`, issueID).Scan(&classification); err != nil {
-		return err
-	}
-	declaredType, err := NativeIssueTypeURL(s.ScopeURL(), classification)
-	if err != nil {
-		return err
-	}
-	if err := s.ensureNativeTypeInTx(ctx, tx, declaredType); err != nil {
-		return err
-	}
-	// Native mutation and its derived affiliation are one authority in this
-	// transaction. Publish the new affiliation to internal ownership readers
-	// before capturing Links; no partial state escapes a rollback.
-	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=? AND backing='issue'`, declaredType, path); err != nil {
 		return err
 	}
 	snapshot, err := canonicalJSON(owned)
