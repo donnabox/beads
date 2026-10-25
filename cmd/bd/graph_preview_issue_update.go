@@ -501,13 +501,6 @@ func runGraphPreviewUpdateIssues(cmd *cobra.Command, args []string) error {
 		graphPreviewLinkPinFlagsChanged(cmd) {
 		return graphFailure("capability_unavailable", "multi-ID graph update admits only checked Issue field and property edits", 5)
 	}
-	request, err := graphPreviewIssueEditRequest(cmd, "")
-	if err != nil {
-		return err
-	}
-	if err := graphPreviewIssuePropertyMerge(cmd, &request); err != nil {
-		return err
-	}
 	selected := make([]graphstore.IssueSelector, len(args))
 	for i, arg := range args {
 		identity, err := graphPreviewWritableIdentity(arg)
@@ -519,13 +512,21 @@ func runGraphPreviewUpdateIssues(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
+	// Preflight every operand before edit flags can consume body stdin.
+	request, err := graphPreviewIssueEditRequest(cmd, "")
+	if err != nil {
+		return err
+	}
+	if err := graphPreviewIssuePropertyMerge(cmd, &request); err != nil {
+		return err
+	}
 	request.Actor = getActorWithGit()
 	results := make([]graphstore.IssueMutationResult, 0, len(args))
 	human := make([]string, 0, len(args))
 	failed, unknown := false, false
 	for i, selector := range selected {
 		item := request
-		item.Path, item.NativeID = selector.Path, selector.NativeID
+		item.Path, item.NativeID, item.Exact = selector.Path, selector.NativeID, selector.Exact
 		err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 			result, err := store.UpdateIssue(ctx, item)
 			if err != nil {

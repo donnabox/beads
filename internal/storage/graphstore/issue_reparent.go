@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -18,6 +19,7 @@ import (
 // dotted native IDs still imply their original parent in legacy selectors.
 type IssueReparentRequest struct {
 	Path, NativeID, ParentPath, ParentNativeID string
+	Exact, ParentExact                         bool
 	Actor, ExpectedRevision                    string
 	Unconditional                              bool
 	// Edit is applied by the same native writer that replaces ParentID. Its
@@ -80,11 +82,11 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err := s.selectedLinkTypeInTx(ctx, tx, linkType); err != nil {
 			return err
 		}
-		childPath, child, err := s.resolveDependencyRemoveIssueInTx(ctx, tx, request.Path, request.NativeID)
+		childPath, child, err := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID, Exact: request.Exact})
 		if err != nil {
 			return err
 		}
-		parentPath, parent, err := s.resolveDependencyRemoveIssueInTx(ctx, tx, request.ParentPath, request.ParentNativeID)
+		parentPath, parent, err := s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.ParentPath, NativeID: request.ParentNativeID, Exact: request.ParentExact})
 		if err != nil {
 			return err
 		}
@@ -258,18 +260,30 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if dependencyType != string(types.DepParentChild) {
 			return fmt.Errorf("%w: replacement edge has wrong native kind", ErrInvalidStore)
 		}
-		linkToken, err := freshToken()
+		publicID, err := selectGeneratedPublicIDInTx(ctx, tx, "")
 		if err != nil {
 			return err
 		}
-		linkPath := "links/" + linkToken
+		linkPath, err := preferredPrivateResourcePath(graph.KindLink, publicID)
+		if err != nil {
+			return err
+		}
+		linkPath, err = choosePrivateResourcePathInTx(ctx, tx, linkPath, true, graph.KindLink)
+		if err != nil {
+			return err
+		}
 		linkRevision, err := freshToken()
 		if err != nil {
 			return err
 		}
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
+		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
-			(path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
-			VALUES (?,'link',?,?,'live','dependency',?)`, linkPath, linkType, linkRevision, dependencyID); err != nil {
+			(path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id)
+			VALUES (?,'link',?,?,'live','dependency',?,?)`, linkPath, linkType, linkRevision, dependencyID, publicID); err != nil {
 			return err
 		}
 		if err := s.afterStage("reparent-new-link"); err != nil {

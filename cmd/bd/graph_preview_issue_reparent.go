@@ -11,13 +11,6 @@ import (
 // Parent replacement and admitted scalar edits share one checked native Issue
 // writer and canonical Link transaction.
 func runGraphPreviewReparentIssue(cmd *cobra.Command, sourceArg string) error {
-	edit, err := graphPreviewIssueEditRequestWithParent(cmd, "", true, sourceArg)
-	if err != nil {
-		return err
-	}
-	if err := graphPreviewIssuePropertyMerge(cmd, &edit); err != nil {
-		return err
-	}
 	parentArg, _ := cmd.Flags().GetString("parent")
 	if parentArg == "" {
 		return graphFailure("capability_unavailable", "graph update --parent cannot detach an Issue while dotted IDs imply a parent; select a nonempty local Issue", 5)
@@ -36,12 +29,21 @@ func runGraphPreviewReparentIssue(cmd *cobra.Command, sourceArg string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	// Refuse malformed operands before edit flags can consume body stdin.
+	edit, err := graphPreviewIssueEditRequestWithParent(cmd, "", true, sourceArg)
+	if err != nil {
+		return err
+	}
+	if err := graphPreviewIssuePropertyMerge(cmd, &edit); err != nil {
+		return err
+	}
 	revision, unconditional := edit.ExpectedRevision, edit.Unconditional
 	edit.ExpectedRevision, edit.Unconditional = "", false
 	var touchedID string
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.ReparentIssue(ctx, graphstore.IssueReparentRequest{
 			Path: source.Path, NativeID: source.NativeID, ParentPath: parent.Path, ParentNativeID: parent.NativeID,
+			Exact: source.Exact, ParentExact: parent.Exact,
 			Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Edit: edit,
 		})
 		if err != nil {

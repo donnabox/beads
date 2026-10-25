@@ -38,6 +38,7 @@ func TestGraphPreviewIssueMultiUpdateWorkflow(t *testing.T) {
 			for _, id := range []string{"demo-first", "demo-second", "demo-third"} {
 				call("create", id, "--id", id)
 			}
+			abbrev := graphMixedResult[graphstore.IssueRecord](t, call("create", "Abbreviable", "--id", "demo-a3f8e9"))
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "demo-first", "--format", "graph-json"))
 			multi := func(args ...string) (string, string, int) {
 				t.Helper()
@@ -69,12 +70,20 @@ func TestGraphPreviewIssueMultiUpdateWorkflow(t *testing.T) {
 				}
 				return stdout.String(), stderr.String(), exit.ExitCode()
 			}
+			graphIssueRefuseBeforeStdin(t, bd, work, home, "invalid_selector", "update", "demo-first", "demo-second@1", "--body-file=-", "--json")
 			stdout, stderr, code := multi("update", "demo-first", "demo-second@1", "--priority=0")
 			if code != 2 || stdout != "" || !strings.Contains(stderr, `"code":"invalid_selector"`) {
 				t.Fatalf("write reference was admitted: exit=%d stdout=%s stderr=%s", code, stdout, stderr)
 			}
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "demo-first", "--format", "graph-json")); got.Revision != before.Revision {
 				t.Fatalf("invalid sibling changed the first Issue: %+v", got)
+			}
+			stdout, stderr, code = multi("update", scope+"a3f8", "missing", "--priority=0")
+			if code != 1 || stdout != "" || !strings.Contains(stderr, `"code":"not_found"`) {
+				t.Fatalf("missing exact URL selected an abbreviation: exit=%d stdout=%s stderr=%s", code, stdout, stderr)
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", abbrev.Properties.ID, "--format", "graph-json")); got.Revision != abbrev.Revision || got.Properties.Priority != 2 {
+				t.Fatalf("missing exact URL mutated abbreviated Issue: %+v", got)
 			}
 			stdout, stderr, code = multi("update", "demo-first", "missing", "demo-second", "--priority=0", "--assignee=team")
 			if code != 1 || !strings.Contains(stderr, `"code":"not_found"`) || !strings.Contains(stderr, "missing") {
@@ -107,6 +116,22 @@ func TestGraphPreviewIssueMultiUpdateWorkflow(t *testing.T) {
 			stdout, stderr, code = multi("update", "demo-first", "demo-second", "--priority=1")
 			if code != 0 || stderr != "" || len(graphMixedResult[[]graphstore.IssueMutationResult](t, stdout)) != 2 {
 				t.Fatalf("all-good update: exit=%d stdout=%s stderr=%s", code, stdout, stderr)
+			}
+			stdout, stderr, code = multi("update", "a3f8", "missing", "--priority=1")
+			if code != 1 || !strings.Contains(stderr, `"code":"not_found"`) || len(graphMixedResult[[]graphstore.IssueMutationResult](t, stdout)) != 1 {
+				t.Fatalf("bare abbreviation stopped resolving: exit=%d stdout=%s stderr=%s", code, stdout, stderr)
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", abbrev.Properties.ID, "--format", "graph-json")); got.Properties.Priority != 1 {
+				t.Fatalf("bare abbreviation did not update its Issue: %+v", got)
+			}
+			code, stdout, stderr = graphSetupRun(t, bd, work, home, nil, []byte("Shared body"), "update", "demo-first", "demo-second", "--body-file=-", "--json")
+			if code != 0 || stderr != "" {
+				t.Fatalf("valid multi-ID body stdin failed: code=%d stdout=%s stderr=%s", code, stdout, stderr)
+			}
+			for _, result := range graphMixedResult[[]graphstore.IssueMutationResult](t, stdout) {
+				if result.Issue.Properties.Description != "Shared body" {
+					t.Fatalf("valid body was lost: %+v", result)
+				}
 			}
 		})
 	}

@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -81,9 +82,22 @@ func TestReparentIssueAtomicNativeAndGraphLinks(t *testing.T) {
 			if _, err := store.ShowLink(ctx, "links/old-parent"); !errors.Is(err, ErrGone) {
 				t.Fatalf("old Link remained live: %v", err)
 			}
-			newPath := strings.TrimPrefix(result.Added.ID, options.Binding.ScopeURL)
+			localLinkID := strings.TrimPrefix(result.Added.ID, options.Binding.ScopeURL)
+			if localLinkID == result.Added.ID || len(localLinkID) != graph.GeneratedResourceIDInitialLength || strings.ContainsAny(localLinkID, "/-.") {
+				t.Fatalf("replacement Link ID is not a short rootless allocation: %q", result.Added.ID)
+			}
+			allocated, err := store.ResolveCanonicalPublicResourceIdentity(ctx, result.Added.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			newPath := allocated.PrivatePath
 			if got, err := store.ShowLink(ctx, newPath); err != nil || !reflect.DeepEqual(got, *result.Added) {
 				t.Fatalf("new Link is not current: %+v %v", got, err)
+			}
+			reserved := workflowState(t, ctx, store)
+			if _, err := store.Create(ctx, CreateRequest{PublicID: localLinkID, Title: "Must not reuse Link ID"}); !errors.Is(err, ErrAlreadyExists) ||
+				!reflect.DeepEqual(workflowState(t, ctx, store), reserved) {
+				t.Fatalf("replacement Link did not reserve its public ID across kinds: %v", err)
 			}
 			var target string
 			if err := store.db.QueryRowContext(ctx, `SELECT depends_on_issue_id FROM dependencies WHERE issue_id=? AND type=?`, child.Properties.ID, string(types.DepParentChild)).Scan(&target); err != nil || target != newParent.Properties.ID {
@@ -130,6 +144,17 @@ func TestReparentIssueAtomicNativeAndGraphLinks(t *testing.T) {
 			if err != nil || !attached.Changed || len(attached.Removed) != 0 || attached.Added == nil ||
 				attached.Added.Source != orphan.ID || attached.Added.Target != newParent.ID {
 				t.Fatalf("unparented Issue could not attach atomically: %+v %v", attached, err)
+			}
+			movedBack, err := store.ReparentIssue(ctx, IssueReparentRequest{
+				Path: "beads/child", ParentPath: "beads/old-parent", Actor: "editor", ExpectedRevision: edited.Issue.Revision,
+			})
+			if err != nil || !movedBack.Changed || len(movedBack.Removed) != 1 || movedBack.Removed[0].ID != result.Added.ID {
+				t.Fatalf("replacement Link was not tombstoned by next reparent: %+v %v", movedBack, err)
+			}
+			reserved = workflowState(t, ctx, store)
+			if _, err := store.Create(ctx, CreateRequest{PublicID: localLinkID, Title: "Must not reuse tombstoned Link ID"}); !errors.Is(err, ErrAlreadyExists) ||
+				!reflect.DeepEqual(workflowState(t, ctx, store), reserved) {
+				t.Fatalf("tombstoned replacement Link lost lifetime public ID: %v", err)
 			}
 		})
 	}

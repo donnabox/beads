@@ -3,11 +3,16 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"os"
+	"os/exec"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
@@ -98,6 +103,68 @@ func TestGraphPreviewIssueReparentWorkflow(t *testing.T) {
 			}
 			call("revision_conflict", "update", child.Properties.ID, "--parent", newParent.Properties.ID,
 				"--if-revision", "1", "--json")
+			abbrev := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Abbreviable", "--id", "demo-a3f8e9", "--json"))
+			call("not_found", "update", scope+"a3f8", "--parent", newParent.Properties.ID,
+				"--if-revision", "="+abbrev.Revision, "--json")
+			call("not_found", "update", child.Properties.ID, "--parent", scope+"a3f8",
+				"--if-revision", "="+sameParentEdit.Issue.Revision, "--json")
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("", "show", abbrev.Properties.ID, "--format", "graph-json")); got.Revision != abbrev.Revision || len(got.Owned) != 0 {
+				t.Fatalf("missing exact URL mutated abbreviated source: %+v", got)
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("", "show", child.Properties.ID, "--format", "graph-json")); got.Revision != sameParentEdit.Issue.Revision || len(got.Owned) != 1 {
+				t.Fatalf("missing exact URL mutated parent selection: %+v", got)
+			}
+			viaBareSource := graphMixedResult[graphstore.IssueMutationResult](t, call("", "update", "a3f8", "--parent", newParent.Properties.ID,
+				"--if-revision", "="+abbrev.Revision, "--json"))
+			if !viaBareSource.Changed || viaBareSource.Issue.Properties.ID != abbrev.Properties.ID {
+				t.Fatalf("bare source abbreviation stopped resolving: %+v", viaBareSource)
+			}
+			viaBareParent := graphMixedResult[graphstore.IssueMutationResult](t, call("", "update", child.Properties.ID, "--parent", "a3f8",
+				"--if-revision", "="+sameParentEdit.Issue.Revision, "--json"))
+			if !viaBareParent.Changed || len(viaBareParent.Issue.Owned) != 1 {
+				t.Fatalf("bare parent abbreviation stopped resolving: %+v", viaBareParent)
+			}
+			var bareParentLink graphstore.LinkRecord
+			if err := json.Unmarshal(viaBareParent.Issue.Owned[0], &bareParentLink); err != nil || bareParentLink.Target != abbrev.ID {
+				t.Fatalf("bare parent selected wrong Issue: %+v %v", bareParentLink, err)
+			}
+			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, []byte("Reparent body"), "update", child.Properties.ID,
+				"--parent", "a3f8", "--body-file=-", "--if-revision", "="+viaBareParent.Issue.Revision, "--json")
+			if code != 0 || stderr != "" {
+				t.Fatalf("valid reparent body stdin failed: code=%d stdout=%s stderr=%s", code, stdout, stderr)
+			}
+			if body := graphMixedResult[graphstore.IssueMutationResult](t, stdout); !body.Changed || body.Issue.Properties.Description != "Reparent body" {
+				t.Fatalf("valid reparent body was lost: %+v", body)
+			}
+			graphIssueRefuseBeforeStdin(t, bd, work, home, "capability_unavailable", "update", child.Properties.ID, "--parent=", "--body-file=-", "--json")
+			graphIssueRefuseBeforeStdin(t, bd, work, home, "invalid_selector", "update", child.Properties.ID, "--parent", "a3f8@1", "--body-file=-", "--json")
 		})
+	}
+}
+
+// Leave the writer end open: a command that reads the body before rejecting
+// its selector blocks instead of receiving an immediate EOF.
+func graphIssueRefuseBeforeStdin(t *testing.T, bd, work, home, code string, args ...string) {
+	t.Helper()
+	reader, writer, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer reader.Close()
+	defer writer.Close()
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
+	defer cancel()
+	cmd := graphMemoryReadCommand(ctx, bd, work, home, args...)
+	cmd.Stdin = reader
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &stdout, &stderr
+	err = cmd.Run()
+	if ctx.Err() != nil {
+		t.Fatalf("refusal consumed body stdin for %v: %v", args, ctx.Err())
+	}
+	var exit *exec.ExitError
+	expectedExit := map[string]int{"invalid_selector": 2, "capability_unavailable": 5}[code]
+	if !errors.As(err, &exit) || exit.ExitCode() != expectedExit || stdout.Len() != 0 || !strings.Contains(stderr.String(), `"code":"`+code+`"`) {
+		t.Fatalf("unexpected refusal for %v: err=%v stdout=%q stderr=%q", args, err, stdout.String(), stderr.String())
 	}
 }

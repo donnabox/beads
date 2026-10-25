@@ -41,6 +41,7 @@ type UpdateIssueRequest struct {
 	FromRevision                                              string
 	PropertiesPatch                                           []byte
 	NativeID                                                  string
+	Exact                                                     bool
 	Unconditional, ForceNotesOverwrite, ForceAssigneeTransfer bool
 	PropertiesProvided, ClearEstimatedMinutes                 bool
 	Title, Description, Design, AcceptanceCriteria            *string
@@ -63,7 +64,7 @@ type UpdateIssueRequest struct {
 // retained-version recorder. Payload, opaque graph revision and complete owned
 // state commit together; this adds no public History ordering or change context.
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
-	if err := validateIssueSelector(IssueSelector{Path: request.Path, NativeID: request.NativeID}); err != nil {
+	if err := validateIssueSelector(IssueSelector{Path: request.Path, NativeID: request.NativeID, Exact: request.Exact}); err != nil {
 		return IssueMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
 	if request.FromRevision != "" {
@@ -110,7 +111,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		path := request.Path
 		if request.NativeID != "" {
 			var err error
-			path, _, err = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID})
+			path, _, err = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID, Exact: request.Exact})
 			if err != nil {
 				if errors.Is(err, errNonIssueSelector) {
 					return ErrCapabilityUnavailable
