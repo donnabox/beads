@@ -55,10 +55,12 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Coexisting Memory", "--id", "beads/plan", "--title", "Plan", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "create", "collision", "--id", "beads/plan", "--force", "--json")
 			beforeRefusals := graphMemoryReadSnapshot(t, work)
-			for _, flag := range []string{"--ephemeral", "--no-history", "--deps=blocks:beads/plan", "--defer=tomorrow"} {
+			for _, flag := range []string{"--ephemeral", "--no-history", "--defer=tomorrow"} {
 				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "create", "Unsupported", "--graph-path", "beads/refused", flag, "--json")
 				graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 			}
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "Unsupported", "--graph-path", "beads/refused", "--deps=blocks:beads/plan", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 			if !reflect.DeepEqual(beforeRefusals, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("unsupported create flags changed captured state")
 			}

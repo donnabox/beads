@@ -15,6 +15,12 @@ import (
 // reserves through CreateIssue's fenced lifetime check and transaction; a
 // rejected candidate leaves no Issue, History or graph allocation behind.
 func (s *Store) CreateIssueWithIDRoot(ctx context.Context, root string, req publicops.CreateRequest) (IssueRecord, error) {
+	return s.CreateIssueWithIDRootAndDependencies(ctx, root, req, nil)
+}
+
+// CreateIssueWithIDRootAndDependencies keeps root allocation and local
+// dependency creation in the same checked transaction for each candidate.
+func (s *Store) CreateIssueWithIDRootAndDependencies(ctx context.Context, root string, req publicops.CreateRequest, dependencies []IssueCreateDependency) (IssueRecord, error) {
 	if req.Issue == nil || req.Issue.ID != "" {
 		return IssueRecord{}, fmt.Errorf("%w: ID root requires generated Issue identity", graph.ErrValidation)
 	}
@@ -34,7 +40,7 @@ func (s *Store) CreateIssueWithIDRoot(ctx context.Context, root string, req publ
 			issue.ID = id
 			request := req
 			request.Issue, request.ForceIDPrefix = &issue, true
-			accepted, err := s.CreateIssue(ctx, "", request)
+			accepted, err := s.createIssue(ctx, "", request, dependencies)
 			if !errors.Is(err, ErrAlreadyExists) {
 				return accepted, err
 			}

@@ -118,8 +118,27 @@ same allocation. Private storage locators are not alternative public IDs.
 `--status` sets the initial Issue status and defaults to `open`; the native
 Issue writer validates built-in and configured custom statuses.
 
+For an ordinary Issue create, `--deps` accepts local Issue targets with the
+shipping dependency spellings. Bare `ID`, `blocked-by:ID`, and
+`depends-on:ID` make the new Issue depend on that target; `blocks:ID` makes
+the target depend on the new Issue. The Issue and each canonical Link are
+created in one transaction. `--parent` can be combined with local `--deps`;
+the dotted child Issue, its parent Link, and the requested dependency Links
+commit together. A Markdown `--file` batch can also name existing local
+Issues under a `### Dependencies` heading; every heading, native dependency,
+canonical Link, and retained version commits together. Targets must be live
+local Issues. Graph mode explicitly refuses `external:` targets. Use a full
+opaque public Issue ID or same-Scope canonical URL for a target; partial-ID
+abbreviations and dependencies on another new heading in the same file are
+not admitted. Markdown dependency spellings follow the Markdown parser, so
+use a bare ID for an ordinary blocking dependency. A spelling beginning with
+`beads/` remains one literal public ID.
+
 ```sh
 bd create 'Move the release branch' --id work --type task --status open
+bd create 'Run release checks' --deps blocked-by:work
+bd create 'Release gate' --id gate
+bd create 'Child release task' --parent work --deps blocked-by:gate
 bd create --type types/memory \
   --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```

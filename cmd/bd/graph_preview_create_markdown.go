@@ -38,8 +38,11 @@ func runGraphPreviewCreateMarkdown(cmd *cobra.Command, args []string) error {
 	// Validate this narrower graph route first so --json failures keep the
 	// graph diagnostic contract and the shared builder cannot partially print.
 	for _, template := range templates {
-		if len(template.Dependencies) != 0 {
-			return graphFailure("capability_unavailable", "markdown Dependencies need atomic canonical Link mapping in graph mode", 5)
+		for _, raw := range template.Dependencies {
+			kind, target, typed := strings.Cut(strings.TrimSpace(raw), ":")
+			if typed && (strings.TrimSpace(kind) == "external" || strings.HasPrefix(strings.TrimSpace(target), "external:")) {
+				return graphFailure("capability_unavailable", "markdown Dependencies on external targets are unavailable in graph mode", 5)
+			}
 		}
 		if in.validationMode == "error" {
 			lintIssue := &types.Issue{IssueType: template.IssueType, Description: template.Description, AcceptanceCriteria: template.AcceptanceCriteria}
