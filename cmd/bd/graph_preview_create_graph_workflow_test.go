@@ -154,9 +154,22 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if kind != "issue" || len(versions) != 5 {
 				t.Fatalf("existing-pair plan did not retain source History: %+v", versions)
 			}
-			writePlan(`{"nodes":[{"key":"repeat","id":"batch-repeat-must-not-exist","title":"Must not exist"}],"edges":[{"from_id":"batch-existing-source","to_id":"` + result.IDs["parent"] + `"}]}`)
+			writePlan(`{"nodes":[{"key":"repeat","id":"batch-repeat","title":"Repeat"}],"edges":[{"from_id":"batch-existing-source","to_id":"` + result.IDs["parent"] + `"}]}`)
+			var repeated GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &repeated); err != nil || repeated.IDs["repeat"] != "batch-repeat" {
+				t.Fatalf("change-free pair re-add did not create its new node: result=%+v err=%v", repeated, err)
+			}
+			unchanged := graphMixedResult[graphstore.IssueRecord](t, call("show", "batch-existing-source", "--format", "graph-json"))
+			if unchanged.Revision != versions[0].Version || len(unchanged.Owned) != 4 {
+				t.Fatalf("change-free pair re-add changed the source: %+v", unchanged)
+			}
+			_, kind, versions, _ = graphVersionsListed(t, call("versions", "batch-existing-source"))
+			if kind != "issue" || len(versions) != 5 {
+				t.Fatalf("change-free pair re-add changed History: %+v", versions)
+			}
+			writePlan(`{"nodes":[{"key":"conflict","id":"batch-conflict-must-not-exist","title":"Must not exist"}],"edges":[{"from_id":"batch-existing-source","to_id":"` + result.IDs["parent"] + `","type":"related"}]}`)
 			refuse("capability_unavailable", "create", "--graph", path)
-			refuse("not_found", "show", "batch-repeat-must-not-exist")
+			refuse("not_found", "show", "batch-conflict-must-not-exist")
 			writePlan(`{"nodes":[{"key":"missing-source-target","id":"batch-missing-source-target","title":"Must not exist"}],"edges":[{"from_id":"batch-missing-source","to_key":"missing-source-target"}]}`)
 			refuse("not_found", "create", "--graph", path)
 			refuse("not_found", "show", "batch-missing-source-target")
