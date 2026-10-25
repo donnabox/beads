@@ -663,13 +663,13 @@ a properties edit.
 bd link policy work --type types/references \
   --id policy-work --properties '{"body":"work follows this policy"}' \
   --metadata '{"origin":"manual"}'
-bd links policy
+bd link list --incident-to policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
 bd link delete --force links/policy-work
 ```
 
-`bd links ID` lists current incident Links with Type first and in-Scope IDs
+`bd link list --incident-to ID` lists current incident Links with Type first and in-Scope IDs
 relative to the Scope URL; JSON retains canonical URLs. `bd link SOURCE TARGET`
 without `--type` is an Issue dependency shorthand. Direct References Links
 are unowned. Other selected families have source ownership: Memory owns
@@ -692,6 +692,12 @@ path. In the two-operand native Issue form, a bare Issue ID may be abbreviated
 when it uniquely identifies a live Issue; ambiguous abbreviations refuse.
 Current `bd show` and `bd link show` reads use the same public-ID rule for
 local spellings. `bd link delete` selects a Link by its Link ID.
+
+On Link collection reads, `bd link list --type KIND` and
+`bd link count --type KIND` select that exact native kind, including custom
+kinds and the literal `depends-on` or `blocked-by` spellings. Use
+`--type types/NAME` for an installed nominal Link Type; canonical collection
+output uses the same family selector without rewriting native kind aliases.
 
 Link updates and removal accept the current Link by default; `--if-revision
 TOKEN` rejects a stale Link. Removal retains the identity and prior snapshots.

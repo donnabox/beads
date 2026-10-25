@@ -10,6 +10,8 @@ func TestNativeConcreteCLICollectionSelection(t *testing.T) {
 	const scope = "https://example.test/native/"
 	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
 	blocks, _ := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	dependsOn, _ := graphstore.NativeDependencyTypeURL(scope, "depends-on")
+	blockedBy, _ := graphstore.NativeDependencyTypeURL(scope, "blocked-by")
 	for _, tc := range []struct {
 		name          string
 		links         bool
@@ -27,6 +29,8 @@ func TestNativeConcreteCLICollectionSelection(t *testing.T) {
 		{name: "memory-decision", flags: []string{"--type=types/decision"}, family: scope + "types/decision"},
 		{name: "native-decision-distinct", flags: []string{"--type=decision"}, family: scope + "types/native-issue/6465636973696f6e"},
 		{name: "blocks-family", links: true, flags: []string{"--type=blocks"}, family: blocks},
+		{name: "literal-depends-on-family", links: true, flags: []string{"--type=depends-on"}, family: dependsOn},
+		{name: "literal-blocked-by-exact", links: true, flags: []string{"--exact-type=blocked-by"}, exact: blockedBy},
 		{name: "dependency-family", links: true, flags: []string{"--type=dependency"}, family: graphstore.DependencyTypeURL(scope)},
 		{name: "any-all", flags: []string{"--type=any"}},
 		{name: "compat-family-alias", flags: []string{"--conforms-to=" + task}, family: task},

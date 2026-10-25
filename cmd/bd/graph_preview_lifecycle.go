@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
-	"github.com/steveyegge/beads/internal/types"
 )
 
 var graphUnlinkCmd = &cobra.Command{
@@ -158,6 +157,7 @@ func init() {
 	linkCreateCmd.Flags().String("if-source-revision", "", "Require the owning Bead revision")
 	for _, command := range []*cobra.Command{linkListCmd, linkCountCmd} {
 		registerGraphLinkTypeFlag(command)
+		command.Flags().Lookup("type").Usage = "Installed Link Type or exact native Dependency kind"
 		if command == linkListCmd {
 			command.Flags().Lookup("type").Usage += "; includes refinements (use --exact-type for nominal selection)"
 		}
@@ -246,24 +246,6 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 		}
 		return result, strings.TrimSuffix(human.String(), "\n"), nil
 	})
-}
-
-func graphPreviewFilterLinkKind(cmd *cobra.Command, links []graphstore.LinkRecord) []graphstore.LinkRecord {
-	if !cmd.Flags().Changed("type") {
-		return links
-	}
-	selector, _ := cmd.Flags().GetString("type")
-	if graphPreviewNominalSelector(selector) {
-		return links
-	}
-	kind := string(canonicalDependencyType(types.DependencyType(selector)))
-	matching := links[:0]
-	for _, link := range links {
-		if link.Properties["dep_type"] == kind {
-			matching = append(matching, link)
-		}
-	}
-	return matching
 }
 
 // Only the human view shortens URLs. JSON retains canonical IDs and foreign

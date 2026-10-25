@@ -110,6 +110,8 @@ func graphPreviewCollectionTypeURL(scope, raw string, links bool) (string, error
 				return graphPreviewTypeURL(scope, raw)
 			}
 		}
-		return graphstore.NativeDependencyTypeURL(scope, string(canonicalDependencyType(types.DependencyType(raw))))
+		// Collection reads select the exact stored native kind. The
+		// depends-on/blocked-by aliases belong only to dep add writes.
+		return graphstore.NativeDependencyTypeURL(scope, raw)
 	}
 }
