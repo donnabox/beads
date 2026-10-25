@@ -69,7 +69,14 @@ func TestGraphPreviewIssueMultiUpdateWorkflow(t *testing.T) {
 				}
 				return stdout.String(), stderr.String(), exit.ExitCode()
 			}
-			stdout, stderr, code := multi("update", "demo-first", "missing", "demo-second", "--priority=0", "--assignee=team")
+			stdout, stderr, code := multi("update", "demo-first", "demo-second@1", "--priority=0")
+			if code != 2 || stdout != "" || !strings.Contains(stderr, `"code":"invalid_selector"`) {
+				t.Fatalf("write reference was admitted: exit=%d stdout=%s stderr=%s", code, stdout, stderr)
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "demo-first", "--format", "graph-json")); got.Revision != before.Revision {
+				t.Fatalf("invalid sibling changed the first Issue: %+v", got)
+			}
+			stdout, stderr, code = multi("update", "demo-first", "missing", "demo-second", "--priority=0", "--assignee=team")
 			if code != 1 || !strings.Contains(stderr, `"code":"not_found"`) || !strings.Contains(stderr, "missing") {
 				t.Fatalf("partial update exit=%d stdout=%s stderr=%s", code, stdout, stderr)
 			}
