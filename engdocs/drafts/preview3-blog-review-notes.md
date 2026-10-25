@@ -1,5 +1,13 @@
 # Preview 3 blog review notes
 
+## Current local editorial pass — October 25
+
+Donna supplied the opening and import rewrite; all five `///` comments are now resolved locally. The [separate editorial/transcript receipt](preview3-blog-assets/editorial-transcripts-20261025.json) records input/output hashes, 21 successful source-pinned commands (seven preparation commands and 14 article observations), the real empty human display before and after dry-run, and the applied import maps. The later Memory body is byte-identical to Donna’s saved input. The closing closely adapts the Preview 2 original. No new prose was committed, pushed or published.
+
+The current executable is landed `b27df1b0490bbffadadb399097a3b242d5e0677c` (PR326). Its nested Memory content commands and typed creation passed the separate bounded namespace check: 28 successful commands, including all ten changed article commands, with 10 assertions. The old namespace question below is resolved on this source. The October 24 source, full-fixture observations and original verification file remain historical evidence for `0fcca`, not a b27 runtime campaign. Manual acceptance and publication remain Donna’s decisions.
+
+The remaining sections record the original October 24 draft and checks. Opening/closing placeholders and the then-pending namespace question described there are historical.
+
 ## Ownership and scope
 
 Donna owns the overall opening, closing and publication decision. Brooke owns this body draft, following Donna’s October 24 assignment delivered through Sybil. The manuscript is separate from Preview 2: no Preview 2 post, review PR, release source or runbook was modified. The visible placeholders in [the manuscript](preview3-blog.md) reserve Donna’s opening and closing. This is a draft review surface, not a request to merge, publish, select a release candidate or change a release pin.
@@ -26,7 +34,7 @@ The initial article attempt refused fixed Issue ID `export-work` after import be
 
 The compact human displays in the proposal section are clearly **illustrative**, not terminal transcripts. They use `[current revision]` rather than inventing `Revision: 1`: adding the owned Defines Links actually revises the Specification. Full stored titles/bodies and actual traversal results were verified independently. Displaying or extracting the proposal does not claim its requirements are implemented or satisfied.
 
-## Actual release question for Janet / Sybil
+## Historical release question for Janet / Sybil (resolved on b27)
 
 Does the final Preview 3 cut include the frozen CLI design’s `bd memory remember`, `recall`, `memories` and `forget` aliases, including typed `remember` creation? The selected `0fcca128` executable exposes Memory relationship verbs under `bd memory`, but not those content verbs. `memory remember ... --key` refuses an unknown flag; `memory recall ID` returns group help with exit 0 rather than the requested body. The draft therefore uses the working top-level `remember`/`recall`/`memories` surface and general `bd create --type types/...` for typed content. This keeps the body usable now. If another build is selected for publication, recheck these spellings before adopting the newer namespace from the design.
 

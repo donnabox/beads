@@ -1,115 +1,183 @@
-# Extending Beads: bringing work and knowledge into Preview 3
+# Working with Tasks and Memories with Preview 3
 
-> **DONNA: WRITE THE OPENING HERE.**
+We just pushed Memory Beads Preview 3 out the door. The first preview was there primarily to demonstrate a happy path through:
 
-<!-- Editorial draft. Examples target Janet's October 24 playground source 0fcca128. Donna owns release wording and publication. -->
+1. Generic graph structure that can span issue and non-issue beads. This mode is enabled by passing `--graph-mode link` to `bd init`, which creates a non-production-ready workspace that enables the new features.
+2. A set of bead and link types that model how memories are modeled in beads.
+3. An implementation of a protocol (BDP) designed to allow bead consumers and producers to interoperate and build graphs that span the scope of a single implementation.
 
-## Start with work you already have
+The good news is, it all worked. The meh news is that the happy path was pretty narrow. Preview 2 added no new features; it just made the happy path wider, as does Preview 3. The Preview 3 bits have a lot of undone work that will take weeks and a few previews to grind out. But, Preview 3 has two *very* significant features:
 
-A new graph workspace does not have to start with invented tasks. You can bring in the current Issues, local dependencies, comments and key/value memories from an existing ordinary Beads workspace, then explore that information through the new model. That gives you work and knowledge you recognize before you start adding richer relationships. Preview 3 supports a bounded conversion into a fresh destination; it does not transfer your database's complete history or replace your backup.
+1. Support for importing data from previous versions of beads. You can now export your data from an existing 1.3.* workspace and import it into a new `--graph-mode link` workspace.
+2. The first draft of the Bead and Link Types that model how memory will work in beads, along with a memory-specific CLI surface (`bd memory`) for working with these types.
 
-### Export from the existing workspace
+This blog covers both features, starting, of course, with how to bring up a workspace based on your existing data.
 
-Use the ordinary `bd` installation that already owns your source workspace. Export its current records to a file you can read from the new workspace, and keep the original workspace available for comparison. Memories are excluded from ordinary export by default, so include them explicitly if you want to bring them forward. The export command's normal filtering still applies.
+<!-- Editorial draft. Current reference build: b27df1b0490bbffadadb399097a3b242d5e0677c. The October 25 namespace checks are separate from the broader October 24 evidence; see review notes. Donna owns release wording and publication. -->
 
-```sh
-# Check the ordinary Beads installation in the existing workspace.
-bd version
+## Creating a `--graph-mode link` workspace from existing data
+
+A new workspace starts out empty. No issue beads. No dependency links. No memory beads.  It's a lonely place that requires a heck of a lot of `bd create` calls to be interesting.
+
+Preview 3 adds support for importing data from a workspace created with version 1.3 of beads into a fresh `--graph-mode link` workspace. Be forewarned that Preview 3 is **not** ready for production work, so import is really here so you can seed your workspace with **a copy** of data you recognize.
+
+### Exporting your existing data
+
+To export your data from an existing workspace, use the familiar `bd export` command from an existing 1.3.* build of `bd` that you either got from your favorite package manager or built from the gastownhall/beads repository.  By default, `export` will only export your issues and dependencies. If you want your memories to come along for the ride, add the `--include-memories` flag. The export command's normal filtering still applies if you want to bring over a subset of your beads and dependencies.
+
+For these transcripts, I used the pinned source build `b27df1b04` in both workspace modes, with two Issues, one Dependency, one comment and one key/value memory in the source. Its version output identifies that source build; use your existing installation when exporting your own data. The export path in the output is shortened with an ellipsis.
+
+/// ok, please show bd list and memories on the export side befoe you export, and the import side on import. Also can you create a couple of dependencies?  it would be good to show that the graph structure survives (and that we can display them using bd link list on the import side.)
+
+```console
+# Check the source build in the ordinary workspace.
+> bd version
+bd version 1.3.0 (b27df1b04: master@b27df1b0490b)
 
 # Export current Issues, dependencies, comments and key/value memories.
-bd export --include-memories --output /tmp/preview3-export.jsonl
-
+> bd export --include-memories --output /tmp/preview3-export.jsonl
+Exported 2 issues and 1 memories to …/preview3-export.jsonl
 ```
 
 An ordinary export carries current data. Earlier revisions, Dolt branches and the source database's history do not come with it. Keep this file unchanged while you test the conversion so that you have a clear source for comparison.
 
-### Prepare a fresh destination and try a dry-run
+### Importing your data into a new `--graph-mode link` workspace
 
-Switch to the selected Preview 3 executable before preparing the destination. Choose a new directory outside any existing Beads workspace, and initialize Git there so workspace discovery has a local boundary. The Scope URL supplies the workspace's identity; initializing it does not contact or start a web service. Import must happen before you create sample records, because this preview requires a genuinely fresh destination.
+Switch to the selected Preview 3 executable before preparing the destination. Choose a new directory outside any existing Beads workspace, and initialize Git there so workspace discovery has a local boundary. The Scope URL supplies the workspace's identity; initializing it does not contact or start a web service. Import currently only works on empty workspaces, so perform the import *before* you start calling `bd create` in the new workspace.
 
-```sh
+```console
 # Confirm that this terminal now uses the selected Preview 3 build.
-bd version
+> bd version
+bd version 1.3.0 (b27df1b04: b27df1b0490b)
 
 # Create a new practice directory outside the existing workspace.
-mkdir beads-preview3-trial
+> mkdir beads-preview3-trial
 
 # Enter the new directory.
-cd beads-preview3-trial
+> cd beads-preview3-trial
 
 # Give workspace discovery a local Git boundary.
-git init -q
+> git init -q
 
 # Initialize a fresh embedded graph workspace with its own Scope identity.
-bd init --graph-mode link --scope-url 'https://example.invalid/preview3-trial/'
+> bd init --graph-mode link --scope-url 'https://example.invalid/preview3-trial/'
+Initialized disposable mixed graph preview. Use status --graph for supported commands; no migration or recovery compatibility is promised.
 
-# Save the complete mixed Bead inventory before import.
-bd list --type any --all --format records-json > before-import.json
-
-# Validate the export through the import transaction, then roll it back.
-bd import /tmp/preview3-export.jsonl --dry-run --json > import-preview.json
-
-# Inspect the proposed counts and history boundary.
-jq '.result | {dry_run, issues, memories, dependencies, comments, history}' import-preview.json
-
-# Read the inventory again after the dry-run.
-bd list --type any --all --format records-json > after-preview.json
-
-# Check that the dry-run left the visible inventory unchanged.
-cmp before-import.json after-preview.json
-
+# List all Beads in the new workspace.
+> bd list --type any --all
+Beads (0; more: false; graph preview)
 ```
 
-A successful dry-run reports `dry_run: true`; `cmp` finishes without output. The result also includes identity maps for the records the importer accepts. Dry-run reserves nothing, so generated Link IDs are provisional and may differ when you apply the import.
+`bd list` shows that you have no Beads. To remedy that, let's pull in your export file to populate the new workspace. Start with a dry-run:
 
-### Apply once, then inspect familiar content
+```console
+# Validate the export through the import transaction, then roll it back.
+> bd import /tmp/preview3-export.jsonl --dry-run --json > import-preview.json
+
+# Inspect the proposed counts and history boundary.
+> jq '.result | {dry_run, issues, memories, dependencies, comments, history}' import-preview.json
+{
+  "dry_run": true,
+  "issues": 2,
+  "memories": 1,
+  "dependencies": 1,
+  "comments": 1,
+  "history": "current data only; new initial graph versions; source history is not present in legacy export"
+}
+
+# Check that the workspace is still empty after the dry-run.
+> bd list --type any --all
+Beads (0; more: false; graph preview)
+```
+
+A successful dry-run reports `dry_run: true`; the following list still shows an empty workspace. The result also includes identity maps for the records the importer accepts. Dry-run reserves nothing, so generated Link IDs are provisional and may differ when you apply the import.
 
 After a successful dry-run, apply the same file and options to the same still-fresh destination. Save the result maps so that you can inspect recognizable Issues and Memories. Use the mixed inventory to check both kinds of Bead: `--all` alone changes Issue status coverage, while `--type any` selects the broader population. Compare content and relationships with the export before relying on the converted copy.
 
-```sh
+```console
 # Apply the same export once to the fresh destination.
-bd import /tmp/preview3-export.jsonl --json > import-result.json
+> bd import /tmp/preview3-export.jsonl --json > import-result.json
+
+
+/// uhm where did the comments go on import? I thought we rejected them?  Can we show through the CLI on the import side that they survived?
 
 # Inspect imported record counts and their destination identities.
-jq '.result | {issues, memories, dependencies, comments, ids, memory_ids, dependency_ids}' import-result.json
+> jq '.result | {issues, memories, dependencies, comments, ids, memory_ids, dependency_ids}' import-result.json
+{
+  "issues": 2,
+  "memories": 1,
+  "dependencies": 1,
+  "comments": 1,
+  "ids": {
+    "legacy-review": "https://example.invalid/preview3-trial/legacy-review",
+    "legacy-ship": "https://example.invalid/preview3-trial/legacy-ship"
+  },
+  "memory_ids": {
+    "legacy-encoding": "https://example.invalid/preview3-trial/legacy-encoding"
+  },
+  "dependency_ids": {
+    "legacy-ship -> legacy-review": "https://example.invalid/preview3-trial/xxg7mp"
+  }
+}
 
 # List Issues and Memories together, including closed Issues.
-bd list --type any --all
+> bd list --type any --all
+Beads (3; more: false; graph preview)
+legacy-review [task] open P2 "Check CSV encoding"
+legacy-ship [task] open P2 "Ship CSV export"
+legacy-encoding [types/memory] "Use UTF-8 for exported files."
 
 # Browse the imported Memories.
-bd memories
+> bd memory memories
+Memories (1):
 
+  legacy-encoding  Use UTF-8 for exported files.
+    Use UTF-8 for exported files. (excerpt)
+
+Title/body summaries. Use bd recall <id> for full text; --details for versions, attribution and Links.
 ```
 
-An admitted Issue keeps its public ID, and its local dependencies become Links. Existing comments remain in the Issue's comment feed; they do not become Memory Beads. For a classic key/value Memory, the key becomes its public ID and the exact value becomes its body, while its title is derived independently from that body.
+Each imported Issue retains its public ID, and its Type is set to the corresponding Bead Type, which refines the common abstract Issue Type. The imported local dependencies become first-class Links of the corresponding Link Type, which refines the common abstract Dependency Type. Existing comments remain in the Issue's comment feed; they do not become Memory Beads.
 
-The importer refuses unsupported or conflicting data as a whole. This includes missing or cross-Scope dependency endpoints, incompatible IDs, unsupported custom Issue classifications or statuses, and source history payloads. Repeating an import into an occupied workspace refuses; deleting records does not make a used destination fresh again. This is a way to seed a new graph workspace, not a lossless in-place migration or portable graph round trip.
+If you passed the `--include-memories` flag at export time, classic key/value memories get translated to Beads of Type `memory`. The key becomes the memory bead's public ID and the exact value becomes its body, while its title is derived independently from that body. Memory Beads *are not* Issue Beads, and you can't link them using Dependency Links. We'll see later how to build graphs of memory beads with issue beads intermixed.
 
-## Keep useful knowledge beside the work
+The importer refuses unsupported or conflicting data as a whole. This includes missing or cross-Scope dependency endpoints, incompatible IDs, unsupported custom Issue classifications or statuses, and source history payloads. Repeating an import into an occupied workspace refuses; deleting records does not make a used destination fresh again. This is a way to seed a new graph workspace, not a lossless in-place migration or portable graph round trip. Support will expand in future previews; this is a point-in-time build.
 
-A team learns as it works, and Memory Beads keep that knowledge available for later use. A Memory has a title and a Markdown body; its optional `status` is an author-chosen label with no automatic approval or workflow effect. References Links let readers follow useful context without turning every connection into a blocking Dependency. The [Memory Type overview](https://github.com/gastownhall/bdp/blob/21fa91d3e189bff3832bd977c3d6be49f2b5d93c/specs/types/memory/memory.md#overview-informative) and [Memory CLI introduction](https://github.com/gastownhall/bdp/blob/1979925130a5744add8e45910c8a64931570bc13/docs/cli-design/memory-cli.md) describe that model; the commands below use the selected Preview 3 build's admitted spellings.
+## Introducing Memory Beads
+/// this paragraph is for blog and runbook only - do not bring to spec
+This release is the first one containing intentionally designed bead types; Preview 2 had placeholder typenames (`preview-memory`, `preview-references`) that have now been replaced with types we beleive capture the common scenarios (and satisfy the requirements and scenarios laid out in [Chris' memory proposal]). The rest of this blog is a walk through of the new bead types.
+
+Memory Beads record knowledge for later use by both humans and agents. Memory beads can represent policies, requirements, decisions, or generic information that doesn't fit into a particular category.
+
+A Memory Bead has a `title` and a Markdown `body`; its third property (`status`) is optional. Unlike issues, where the status defines a particular lifecycle specific to work tracking, the `status` field on memory beads is free form text and can be used to map onto whatever lifecycle you, your project, or organization use (e.g., PROPOSED, APPROVED, etc).
+
+/// for the runbook, it's great to refer externally to the conceptual material. I'm finding I'm needing provide it here as I go. I'm not sure how to think about that relative to the BDP and CLI specs' frontmatter.  Let's discuss.
+References Links let readers gather useful context from a memory graph without turning every connection into a blocking Dependency. The [Memory Type overview](https://github.com/gastownhall/bdp/blob/21fa91d3e189bff3832bd977c3d6be49f2b5d93c/specs/types/memory/memory.md#overview-informative) and [Memory CLI introduction](https://github.com/gastownhall/bdp/blob/1979925130a5744add8e45910c8a64931570bc13/docs/cli-design/memory-cli.md) describe that model; the commands below use the selected Preview 3 build's admitted spellings.
 
 ### Record notes and the work they explain
 
-Consider a team adding CSV export to a product. Start with a design note, an encoding note and an interoperability note, each with its own identity. `remember` takes the body as its argument; `--key` selects the same public identity as `--id`, and `--title` supplies readable display text. An identity keeps selecting the same record after its wording changes.
+Consider a team adding CSV export to a product. Start with a design note, an encoding note and an interoperability note, each with its own identity. `remember` takes the body as its argument; `--key` selects the same public identity as `--id`, and `--title` supplies readable display text. An identity keeps selecting the same record after its wording changes. This release defines a new top-level command group (`bd memory`) that groups the existing four memory commands (`bd memory remember`, `recall`, `memories` and `forget`) along with addition memory-specific operations. The top-level commands still work; they are aliases to the specific commands under `bd memory`.  That is, calling `bd remember` and `bd memory remember` are the same.
 
+Here is an example that create the three memory beads.
 ```sh
 # Record the CSV design under an explicit identity and title.
-bd remember 'Export the selected rows as CSV.' \
+bd memory remember 'Export the selected rows as CSV.' \
   --key csv-design --title 'CSV export design' --create-only
 
 # Record the encoding note that the design will reference.
-bd remember 'Use UTF-8.' \
+bd memory remember 'Use UTF-8.' \
   --key csv-encoding --title 'CSV encoding' --create-only
 
 # Record the spreadsheet checks that tie design decisions to implementation.
-bd remember 'Test the exported UTF-8 file in spreadsheet tools; keep the results with the implementation work.' \
+bd memory remember 'Test the exported UTF-8 file in spreadsheet tools; keep the results with the implementation work.' \
   --key csv-interop --title 'CSV interoperability checks' --create-only
 
 ```
 
-The general Bead command can create the same kind of note by selecting its installed Type. In this build, `types/memory` is an explicit Type selector; use `bd types` to inspect the vocabulary installed in your workspace. The following command is an alternative way to create the first note, so choose it instead of the first `remember` call above.
+/// WARNING/ERROR: I thought we got rid of the types/ prefixes (along with beads/ and links/)
 
+
+The general Bead command can create the same kind of note by selecting its installed Type.
 ```sh
 # Alternatively, create the design note through the general Bead command.
 bd create --id csv-design --type types/memory \
@@ -117,7 +185,14 @@ bd create --id csv-design --type types/memory \
 
 ```
 
+/// I would follow this paragraph with an example, showing a two bd remmbers with the same key, followed by the equivalent bd create|update calls. Then show that the bd remember --create-only on the same key fails.  I think that example obviates the need for the previous example
+The `bd remember` command supported both creating new memories and updating existing ones. That continues to work, however to allow callers to specify whether updating is allowed, the new `--create-only` causes the command to fail. /// no need to introduce type updates here.
+
+/// this example confuses the crap out of me. I would have shown the recall/show, forget/delete and memories/list comps (with some explanatory prose preceding each one), all the time emphasizing that memories and now beads
+
+/// see previous comment about refactoring this.
 The notes hold knowledge; Issues record the work of implementing and reviewing the feature. The fixed practice IDs below use `--force` to allow a spelling outside the workspace's configured native Issue prefix. We can then inspect a Memory as a Bead, recall just its body, or browse summaries to choose what to read.
+
 
 ```sh
 # Create the implementation Issue.
@@ -129,10 +204,10 @@ bd create 'Review CSV export' --id review-work --type task --force \
   --description 'Review the completed CSV export feature.'
 
 # Read the design note's body.
-bd recall csv-design
+bd memory recall csv-design
 
 # Browse Memories whose content mentions CSV.
-bd memories CSV
+bd memory memories CSV
 
 # Read the same design note as a complete Bead.
 bd show csv-design
@@ -141,7 +216,10 @@ bd show csv-design
 
 ### Connect context, including cycles
 
-References explain useful connections between knowledge and work. The design uses the encoding note, the encoding note points to interoperability checks, and those checks refer back to the design. The checks also point to the implementation Issue, which refers to the design it implements. This gives us one cycle entirely among Memories and another that passes through an Issue; neither is a blocking Dependency.
+
+References explain useful connections between knowledge and work. The feature design uses the encoding note, the encoding note points to interoperability checks, and those checks refer back to the design. The checks also point to the implementation Issue, which refers to the design it implements. This gives us one cycle entirely among Memories and another that passes through an Issue; neither is a blocking Dependency.
+
+/// please explain that `bd memory reference` and `bd dep add`  are just aliases over the generic bd link create command. No need to show an example, but please use bd dep add for the last link in this list
 
 ```sh
 # Explain which encoding note the design uses.
@@ -169,7 +247,7 @@ bd link create review-work export-work --type blocks --id review-after-export
 
 ```
 
-References cycles are permitted. A traversal stops expanding a Bead it has already visited and keeps the Links that show the relationship, including a cycle-closing Link. The `blocks` Dependency retains its separate workflow meaning: review waits for implementation.
+References links are allowed to create cycles. A traversal stops expanding a Bead it has already visited and keeps the Links that show the relationship, including a cycle-closing Link. The `blocks` Dependency retains its existing workflow meaning: in this case review waits for implementation.
 
 ```mermaid
 flowchart LR
@@ -182,6 +260,8 @@ flowchart LR
 ```
 
 A plain References Link has its own revision; adding or editing it does not revise either endpoint. Use a forward read to find context, or a reverse read to find records referring to a note. The graph viewer can follow the current References family across the connected example.
+
+/// I really wonder if we should apply the `>`/output format used in the import section.  What the heck does bd graph show?  We also should talk about what the link-type flag does (wihtout explaining exact-type here)
 
 ```sh
 # Find the design note's direct References.
@@ -199,6 +279,7 @@ bd graph csv-design --link-type types/references --direction out --depth 4
 
 An edit maintains the same piece of knowledge under the same identity. Each accepted change saves a new revision, while an unchanged update leaves the revision alone. A separately maintained replacement is a different Memory, connected to the old one by a Superseded By Link. These operations answer different questions: what changed in this note, and which note should I follow next?
 
+/// Darn I wish we would have added bd memory update with --body/--title/--subject. Can you check with Janet whether its there and ask her if it's worth adding for PR3?  Either way, I think this would read better as bd remember - the JSON looks ugly
 ```sh
 # Clarify the encoding note while keeping its identity.
 bd update csv-encoding --properties '{"body":"Use UTF-8 without a byte-order mark."}'
@@ -213,15 +294,18 @@ bd versions csv-encoding
 bd show csv-encoding@2
 
 # Recall just the body from that saved revision.
-bd recall csv-encoding@2
+bd memory recall csv-encoding@2
 
 ```
+
+
+//// WHOA WHOA WHOA WHOA WHOA.  First, we shoud NOT introduce pinned references UNTIL we discuss the overall revision model and ID@rev syntax.  I have to say, I could swear I've read AND written that section at least once.  I am going to stop editing and sort out with you what happned with that prose and whether we ahve the right document<->document flow.
 
 Use the actual revision numbers and opaque tokens reported by your store. `@2` selects a store-local revision number; `@=TOKEN` selects the exact token for a portable citation. A retained Resource revision does not reconstruct an entire past graph, and this preview's focused Memory relationship reads can refuse endpoint pins that no longer match the captured current state.
 
 ```sh
 # Record a separately maintained guide that replaces the short note.
-bd remember 'Encoding, headings and spreadsheet examples.' \
+bd memory remember 'Encoding, headings and spreadsheet examples.' \
   --key csv-guide --title 'CSV interoperability guide' --create-only
 
 # Connect the retiring note to its replacement.
@@ -339,7 +423,7 @@ A Subject To Link explicitly declares that a Constraint governs a Bead. The impl
 
 ```sh
 # Record the preview build as a second kind of subject.
-bd remember 'The CSV preview build is ready for review.' \
+bd memory remember 'The CSV preview build is ready for review.' \
   --key csv-preview --title 'CSV preview build' --create-only
 
 # Declare the Specification governing the implementation Issue.
@@ -466,12 +550,24 @@ With only the Defines Links shown above, this read reaches the same children. If
 bd show memory-r1
 
 # Read the first Scenario's Markdown body.
-bd recall memory-s1
+bd memory recall memory-s1
 
 ```
 
 Each extracted Bead can be discussed, referenced and revised independently. The Specification preserves its relationship to the proposal, while the body carries the actual meaning. Discovering a Requirement establishes what must be met, not that anyone has met it.
 
-## Where are we?
+## Where Are We
 
-> **DONNA: WRITE THE CLOSING AND CALL TO ACTION HERE.**
+Preview 3 contains a lot of CLI changes and underlying infrastructure work. We are driving toward the requirements set out in [Chris's Memory proposal](https://github.com/gastownhall/beads/issues/5877) and have made steady progress.
+
+Some major areas still need more work:
+
+- Fleshing out how to define and register new Bead and Link types. Preview 3 uses a selected graph Type catalog; arbitrary user-authored Bead and Link Type installation is unfinished.
+- Implementing the full provenance capabilities outlined in the Memory proposal. Recorded change attribution is available, but the complete provenance surface is unfinished.
+- Implementing the rest of BDP to support the federation requirements outlined in Chris's proposal. The qualified preview surface covers BDP Read; HTTP writes, BDP History, and cross-Scope Links remain outside that surface.
+- Ensuring that the entire Bead, Link, Issue, and Dependency surface works consistently.
+- Ensuring that the remaining operational parts of the CLI work with and respect the new features and capabilities we are introducing.
+
+Work on these areas is underway, but the full capabilities aren't ready for prime time. If your curiosity has you spelunking in those areas, prepare to be surprised in future previews.
+
+Once again, try the workflow on a small disposable copy of a project and tell us where it helps or gets in your way. Join the conversation in the [Gas Town Hall Discord](https://discord.gg/xHpUGUzZp2), in the `#beads` and `#memory-beads` channels, or [file a Beads issue](https://github.com/gastownhall/beads/issues) with a `[Memory]` prefix. Feedback on the protocol itself can go straight to the [BDP repo](https://github.com/gastownhall/bdp/issues). Include the integration commit you tried so we can reproduce what you saw.
