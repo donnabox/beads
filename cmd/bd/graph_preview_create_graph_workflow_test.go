@@ -80,6 +80,38 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if len(owned) != 1 || owned[0].Target != root.ID || owned[0].Properties["dep_type"] != "parent-child" {
 				t.Fatalf("graph parent_id did not publish parent-child Link: %+v", owned)
 			}
+			writePlan(`{"nodes":[{"key":"inline-source","id":"batch-inline-source","title":"Inline source","deps":[{"target":"inline-target"},{"target":"` + root.Properties.ID + `","type":"related"}]},{"key":"inline-target","id":"batch-inline-target","title":"Inline target"}]}`)
+			var inline GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &inline); err != nil {
+				t.Fatal(err)
+			}
+			inlineTarget := graphMixedResult[graphstore.IssueRecord](t, call("show", inline.IDs["inline-target"], "--format", "graph-json"))
+			inlineLinks := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", inline.IDs["inline-source"]))
+			if len(inlineLinks) != 2 || inlineLinks[0].Target == inlineLinks[1].Target {
+				t.Fatalf("inline dependencies did not publish two distinct Links: %+v", inlineLinks)
+			}
+			foundForward, foundExisting := false, false
+			for _, link := range inlineLinks {
+				if link.Target == inlineTarget.ID && link.Properties["dep_type"] == "blocks" {
+					foundForward = true
+				}
+				if link.Target == root.ID && link.Properties["dep_type"] == "related" {
+					foundExisting = true
+				}
+			}
+			if !foundForward || !foundExisting {
+				t.Fatalf("inline dependencies lost their target or type: %+v", inlineLinks)
+			}
+			_, kind, inlineVersions, _ := graphVersionsListed(t, call("versions", inline.IDs["inline-source"]))
+			if kind != "issue" || len(inlineVersions) != 1 {
+				t.Fatalf("inline dependencies must be part of one canonical inception version: %+v", inlineVersions)
+			}
+			writePlan(`{"nodes":[{"key":"external","id":"batch-external-must-not-exist","title":"External","deps":[{"target":"external:other#1"}]}]}`)
+			refuse("capability_unavailable", "create", "--graph", path)
+			refuse("not_found", "show", "batch-external-must-not-exist")
+			writePlan(`{"nodes":[{"key":"missing","id":"batch-inline-missing","title":"Missing","deps":[{"target":"batch-missing"}]}]}`)
+			refuse("not_found", "create", "--graph", path)
+			refuse("not_found", "show", "batch-inline-missing")
 			writePlan(`{"nodes":[{"key":"later","title":"Later","id":"batch-later"}],"edges":[{"from_key":"later","to_id":"` + result.IDs["parent"] + `"}]}`)
 			var linked GraphApplyResult
 			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &linked); err != nil {
