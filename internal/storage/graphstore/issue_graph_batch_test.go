@@ -3,11 +3,14 @@
 package graphstore
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"reflect"
 	"testing"
+	"time"
 
+	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
@@ -153,8 +156,14 @@ func TestApplyNewIssueGraphBindsForwardKeyAndRollsBackAfterNativeEdge(t *testing
 				t.Fatal(err)
 			}
 			t.Cleanup(func() { _ = s.Close() })
+			due, err := time.Parse(time.RFC3339Nano, "2030-01-02T03:04:05.623Z")
+			if err != nil {
+				t.Fatal(err)
+			}
+			firstIssue := plainIssue("First").Issue
+			firstIssue.DueAt = &due
 			request := publicops.ApplyBatchRequest{Actor: "test-author", Items: []publicops.ApplyItem{
-				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "first", Issue: plainIssue("First").Issue}},
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "first", Issue: firstIssue}},
 				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "second", Issue: plainIssue("Second").Issue}},
 				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{
 					Source: publicops.Ref{Key: "first"}, Target: publicops.Ref{Key: "second"}, Type: types.DepBlocks,
@@ -187,6 +196,18 @@ func TestApplyNewIssueGraphBindsForwardKeyAndRollsBackAfterNativeEdge(t *testing
 				t.Fatal(err)
 			}
 			first, second := records["first"], records["second"]
+			wantDue := due.Round(time.Second)
+			var native *types.Issue
+			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+				var err error
+				native, err = issueops.GetIssueInTx(ctx, tx, first.Properties.ID)
+				return err
+			}); err != nil {
+				t.Fatal(err)
+			}
+			if !sameIssueDue(first.Properties.DueAt, &wantDue) || native == nil || !sameIssueDue(native.DueAt, &wantDue) {
+				t.Fatalf("fractional graph due date differs from native storage: graph=%v native=%v want=%v", first.Properties.DueAt, native, wantDue)
+			}
 			if first.Properties.ID == "" || second.Properties.ID == "" || first.Properties.ID == second.Properties.ID {
 				t.Fatalf("symbolic IDs did not bind to two Issues: %+v", records)
 			}
