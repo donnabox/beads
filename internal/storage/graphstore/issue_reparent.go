@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -76,7 +75,9 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err != nil {
 			return err
 		}
-		if childPath == parentPath || child.Type != issueType || parent.Type != issueType || child.Properties.ID == parent.Properties.ID {
+		childBase, _, childNative := NativeTypeClassification(s.ScopeURL(), child.Type)
+		parentBase, _, parentNative := NativeTypeClassification(s.ScopeURL(), parent.Type)
+		if childPath == parentPath || !childNative || !parentNative || childBase != issueType || parentBase != issueType || child.Properties.ID == parent.Properties.ID {
 			return fmt.Errorf("%w: reparent requires two distinct Issues of the installed relationship Type", storage.ErrValidation)
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, child.Revision, true, "Issue"); err != nil {
@@ -202,11 +203,11 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err := s.afterStage("reparent-new-link"); err != nil {
 			return err
 		}
-		added, err := s.currentLinkInTx(ctx, tx, linkPath)
+		added, err := s.currentLinkForCreationInTx(ctx, tx, linkPath)
 		if err != nil {
 			return err
 		}
-		if added.Source != child.ID || added.Target != graph.CanonicalURL(s.ScopeURL(), parentPath) || added.Type != linkType {
+		if added.Source != child.ID || added.Target != parent.ID || added.Type != linkType {
 			return fmt.Errorf("%w: replacement Link differs from native edge", ErrInvalidStore)
 		}
 		snapshot, err := canonicalJSON(added)

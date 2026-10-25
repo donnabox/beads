@@ -40,6 +40,9 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if _, _, err := graphPreviewResourceReadSelector(selector); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	if cmd.Flags().Changed("parent") {
+		return runGraphPreviewReparentIssue(cmd, selector)
+	}
 	// Preserve the C0 refusal boundary: unsupported patch flags and guards
 	// fail before opening the selected workspace or consuming patch input.
 	if !cmd.Flags().Changed("from-revision") && (cmd.Flags().Changed("patch") || cmd.Flags().Changed("replace-properties")) {
