@@ -478,6 +478,22 @@ func (s *Store) recordIssueMappingWithContextInTx(ctx context.Context, tx *sql.T
 }
 
 func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, path, issueID string, previous issueRevisionContext) error {
+	var ordinal int64
+	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
+		return err
+	}
+	owned, err := s.ownedLinksInTx(ctx, tx, issueID)
+	if err != nil {
+		return err
+	}
+	return s.recordIssueMappingSnapshotInTx(ctx, tx, path, issueID, ordinal, owned, previous)
+}
+
+// recordIssueMappingSnapshotInTx retains a particular native revision and its
+// matching owned-Link set. A batch can finish all native writes before it
+// publishes graph Links, so reading only issues.current_revision and the final
+// owned set would lose the intermediate graph History of an existing source.
+func (s *Store) recordIssueMappingSnapshotInTx(ctx context.Context, tx *sql.Tx, path, issueID string, ordinal int64, owned []json.RawMessage, previous issueRevisionContext) error {
 	contextJSON, err := encodeIssueRevisionContext(previous)
 	if err != nil {
 		return err
@@ -487,10 +503,6 @@ func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, p
 	var storedContext any
 	if contextJSON != nil {
 		storedContext = contextJSON
-	}
-	var ordinal int64
-	if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, issueID).Scan(&ordinal); err != nil {
-		return err
 	}
 	historyOrdinal, err := nextIssueHistoryOrdinalInTx(ctx, tx, path, ordinal)
 	if err != nil {
@@ -515,10 +527,6 @@ func (s *Store) recordIssueMappingContextInTx(ctx context.Context, tx *sql.Tx, p
 	// transaction. Publish the new affiliation to internal ownership readers
 	// before capturing Links; no partial state escapes a rollback.
 	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=? AND backing='issue'`, declaredType, path); err != nil {
-		return err
-	}
-	owned, err := s.ownedLinksInTx(ctx, tx, issueID)
-	if err != nil {
 		return err
 	}
 	snapshot, err := canonicalJSON(owned)

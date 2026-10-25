@@ -15,7 +15,8 @@ import (
 // ApplyNewIssueGraph is the bounded storage proof for a graph JSON plan whose
 // nodes are all new durable Issues. An edge may start at a new key and end at
 // a new key or exact existing local Issue, or start at an exact existing local
-// Issue and end at one new key.
+// Issue and end at a new key. Several edges may share an existing source; each
+// native revision receives its matching retained canonical owned-Link set.
 // The native batch body and every canonical projection run in one graph write
 // transaction. Other ApplyBatch forms refuse before any write; this method is
 // not the CLI's complete graph-plan contract.
@@ -47,7 +48,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			dep := item.DepAdd
 			if (dep.Source.Key == "") == (dep.Source.ID == "") || (dep.Target.Key == "") == (dep.Target.ID == "") ||
 				(dep.Source.ID != "" && dep.Target.Key == "") || dep.Metadata != "" || dep.ThreadID != "" || dep.HasSpawner {
-				return nil, fmt.Errorf("%w: graph batch item %d requires a new source or one exact existing source with a new keyed target, and no edge metadata", ErrCapabilityUnavailable, index)
+				return nil, fmt.Errorf("%w: graph batch item %d requires a new source or an exact existing source with a new keyed target, and no edge metadata", ErrCapabilityUnavailable, index)
 			}
 			nativeType, err := previewDependencyType(dep.Type)
 			if err != nil {
@@ -114,7 +115,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			}
 		}
 		resolvedPairs := make(map[string]bool, len(edges))
-		existingSources := make(map[string]IssueRecord)
+		existingSources := make(map[string]existingBatchSource)
 		for index := range edges {
 			if edges[index].sourceID != "" {
 				sourceID := edges[index].sourceID
@@ -136,10 +137,13 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				if !nativeIssueTypeMatches(s.ScopeURL(), source.Type, issueType) || len(source.Owned) >= PreviewOwnedLinkLimit {
 					return fmt.Errorf("%w: graph batch existing source is not a local Issue with Link capacity", storage.ErrValidation)
 				}
-				if _, duplicate := existingSources[path]; duplicate {
-					return fmt.Errorf("%w: graph batch admits one new Link per existing source", ErrCapabilityUnavailable)
+				if _, known := existingSources[path]; !known {
+					var nativeRevision int64
+					if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, source.Properties.ID).Scan(&nativeRevision); err != nil {
+						return err
+					}
+					existingSources[path] = existingBatchSource{record: source, nativeRevision: nativeRevision}
 				}
-				existingSources[path] = source
 				edges[index].sourcePath = path
 				edges[index].sourceID = source.Properties.ID
 			}
@@ -187,6 +191,17 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				return err
 			}
 			edges[index].dependency.typeURL = typeURL
+		}
+		for path, source := range existingSources {
+			count := 0
+			for _, item := range edges {
+				if item.sourcePath == path {
+					count++
+				}
+			}
+			if len(source.record.Owned)+count > PreviewOwnedLinkLimit {
+				return fmt.Errorf("%w: preview source-owned Link limit %d exceeded", storage.ErrValidation, PreviewOwnedLinkLimit)
+			}
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
@@ -286,10 +301,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 		}
 		for path, dependencies := range byExistingSource {
 			source := existingSources[path]
-			if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, source.Properties.ID, plan.Actor, dependencies, false); err != nil {
-				return err
-			}
-			if err := s.recordIssueMappingInTx(ctx, tx, path, source.Properties.ID); err != nil {
+			if err := s.mapExistingBatchSourceInTx(ctx, tx, path, source, plan.Actor, dependencies); err != nil {
 				return err
 			}
 		}
@@ -299,4 +311,48 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 		return nil, err
 	}
 	return records, nil
+}
+
+type existingBatchSource struct {
+	record         IssueRecord
+	nativeRevision int64
+}
+
+// mapExistingBatchSourceInTx adds each Link through the checked local writer
+// and retains the source's canonical owned-Link set at each native revision.
+// This preserves intermediate History while keeping all writes in one graph
+// transaction.
+func (s *Store) mapExistingBatchSourceInTx(ctx context.Context, tx *sql.Tx, path string, source existingBatchSource, actor string, edges []resolvedIssueCreateDependency) error {
+	id := source.record.Properties.ID
+	for i, item := range edges {
+		if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, id, actor, []resolvedIssueCreateDependency{item}, false); err != nil {
+			return err
+		}
+		var ordinal int64
+		if err := tx.QueryRowContext(ctx, `SELECT current_revision FROM issues WHERE id=?`, id).Scan(&ordinal); err != nil {
+			return err
+		}
+		if ordinal != source.nativeRevision+int64(i)+1 {
+			return fmt.Errorf("%w: graph batch source Link did not mint one native version", ErrInvalidStore)
+		}
+		var retained int
+		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM issue_versions WHERE issue_id=? AND revision=?`, id, ordinal).Scan(&retained); err != nil {
+			return err
+		}
+		if retained != 1 {
+			return fmt.Errorf("%w: graph batch native source revision is missing", ErrInvalidStore)
+		}
+		owned, err := s.ownedLinksInTx(ctx, tx, id)
+		if err != nil {
+			return err
+		}
+		previous, err := currentIssueRevisionContextInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
+		if err := s.recordIssueMappingSnapshotInTx(ctx, tx, path, id, ordinal, owned, previous); err != nil {
+			return err
+		}
+	}
+	return nil
 }
