@@ -3901,7 +3901,7 @@ func collectRunArtifactUploads(t *testing.T, file string, with map[string]string
 			Steps []ciWorkflowStep `yaml:"steps"`
 		} `yaml:"jobs"`
 	}
-	if err := yaml.Unmarshal(data, &doc); err != nil {
+	if err := decodeCIWorkflowYAMLForRBE(file, data, false, &doc); err != nil {
 		t.Fatalf("parse %s: %v", path, err)
 	}
 	inputs := map[string]string{}

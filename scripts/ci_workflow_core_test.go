@@ -136,20 +136,26 @@ func readCIWorkflow(t *testing.T, name string) ciWorkflow {
 // policy tests. Only bazel-test's two reviewed mode-dependent expressions may
 // be resolved here; this is not a general GitHub expression evaluator.
 func decodeCIWorkflowForRBE(name string, data []byte, enabled bool) (ciWorkflow, error) {
-	var document yaml.Node
-	if err := yaml.Unmarshal(data, &document); err != nil {
-		return ciWorkflow{}, err
-	}
-	if name == "bazel.yml" {
-		if err := resolveBazelTestTimeouts(&document, enabled); err != nil {
-			return ciWorkflow{}, err
-		}
-	}
 	var workflow ciWorkflow
-	if err := document.Decode(&workflow); err != nil {
+	if err := decodeCIWorkflowYAMLForRBE(name, data, enabled, &workflow); err != nil {
 		return ciWorkflow{}, err
 	}
 	return workflow, nil
+}
+
+// decodeCIWorkflowYAMLForRBE preserves each policy test's destination schema
+// while applying the same narrow timeout normalization before typed decoding.
+func decodeCIWorkflowYAMLForRBE(name string, data []byte, enabled bool, destination any) error {
+	var document yaml.Node
+	if err := yaml.Unmarshal(data, &document); err != nil {
+		return err
+	}
+	if name == "bazel.yml" {
+		if err := resolveBazelTestTimeouts(&document, enabled); err != nil {
+			return err
+		}
+	}
+	return document.Decode(destination)
 }
 
 func ciWorkflowMapValue(mapping *yaml.Node, key string) (*yaml.Node, error) {
