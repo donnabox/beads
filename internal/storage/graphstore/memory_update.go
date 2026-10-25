@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -58,6 +59,7 @@ type MemoryPatchRequest struct {
 	Path               string
 	Title              *string
 	Body               *string
+	Status             *string
 	PropertiesProvided bool
 	Actor              string
 	ExpectedRevision   string
@@ -74,7 +76,7 @@ func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (Me
 		expectedRevision: request.ExpectedRevision, unconditional: request.Unconditional, metadataPatch: request.Metadata,
 		propertiesProvided: request.PropertiesProvided, fromRevision: request.FromRevision}
 	if len(request.PropertiesMerge) != 0 {
-		if len(request.PropertiesJSON) != 0 || request.Title != nil || request.Body != nil {
+		if len(request.PropertiesJSON) != 0 || request.Title != nil || request.Body != nil || request.Status != nil {
 			return MemoryMutationResult{}, fmt.Errorf("%w: property merge cannot accompany replacement fields", storage.ErrValidation)
 		}
 		canonical, err := graph.CanonicalizeJSON(request.PropertiesMerge)
@@ -88,7 +90,7 @@ func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (Me
 		patch.propertiesProvided = true
 	}
 	if len(request.PropertiesJSON) != 0 {
-		if request.Title != nil || request.Body != nil {
+		if request.Title != nil || request.Body != nil || request.Status != nil {
 			return MemoryMutationResult{}, fmt.Errorf("%w: complete properties cannot accompany individual fields", storage.ErrValidation)
 		}
 		var complete Properties
@@ -105,6 +107,9 @@ func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (Me
 	if request.Body != nil {
 		patch.body, patch.hasBody = *request.Body, true
 	}
+	if request.Status != nil {
+		patch.status, patch.hasStatus = *request.Status, true
+	}
 	return s.writeMemory(ctx, patch)
 }
 
@@ -112,11 +117,11 @@ type memoryWriteRequest struct {
 	path, actor, expectedRevision string
 	fromRevision                  string
 	unconditional                 bool
-	title, body                   string
+	title, body, status           string
 	typeURL                       string
 	completeProperties            *Properties
 	propertiesMerge               string
-	hasTitle, hasBody             bool
+	hasTitle, hasBody, hasStatus  bool
 	propertiesPatch               *graphpatch.Patch
 	propertiesProvided            bool
 	metadataPatch                 publicops.MetadataPatch
@@ -131,17 +136,17 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 			return MemoryMutationResult{}, err
 		}
 	}
-	if request.fromRevision == "" && request.typeURL == "" && request.completeProperties == nil && !request.hasTitle && !request.hasBody && request.propertiesPatch == nil && !request.propertiesProvided && !hasCommonMetadataPatch(request.metadataPatch) {
+	if request.fromRevision == "" && request.typeURL == "" && request.completeProperties == nil && !request.hasTitle && !request.hasBody && !request.hasStatus && request.propertiesPatch == nil && !request.propertiesProvided && !hasCommonMetadataPatch(request.metadataPatch) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: at least one Memory field must be supplied", storage.ErrValidation)
 	}
-	if request.propertiesPatch != nil && (request.hasTitle || request.hasBody) {
+	if request.propertiesPatch != nil && (request.hasTitle || request.hasBody || request.hasStatus) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: ordered Memory properties patch cannot be combined with field replacement", storage.ErrValidation)
 	}
 	if err := validateCommonMetadataPatch(request.metadataPatch); err != nil {
 		return MemoryMutationResult{}, err
 	}
-	if !utf8.ValidString(request.title) || !utf8.ValidString(request.body) || !utf8.ValidString(request.actor) {
-		return MemoryMutationResult{}, fmt.Errorf("%w: Memory title, body and actor must be UTF-8", storage.ErrValidation)
+	if !utf8.ValidString(request.title) || !utf8.ValidString(request.body) || !utf8.ValidString(request.actor) || (request.hasStatus && (!utf8.ValidString(request.status) || strings.TrimSpace(request.status) == "")) {
+		return MemoryMutationResult{}, fmt.Errorf("%w: Memory title, body and actor must be UTF-8; supplied status must be nonblank UTF-8", storage.ErrValidation)
 	}
 	var result MemoryMutationResult
 	err := s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
@@ -252,6 +257,16 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		}
 		if request.hasBody {
 			next.Body = request.body
+		}
+		if request.hasStatus {
+			statusJSON, err := json.Marshal(map[string]string{"status": request.status})
+			if err != nil {
+				return err
+			}
+			next, err = mergeMemoryProperties(next, statusJSON)
+			if err != nil {
+				return err
+			}
 		}
 		if request.propertiesPatch != nil {
 			next, err = applyMemoryPropertiesPatch(request.propertiesPatch, base.Properties)

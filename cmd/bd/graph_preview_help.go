@@ -83,19 +83,24 @@ is embedded. Existing .beads directories are never adopted or overwritten.`},
 [--title 'Policy'] [--metadata '{"team":"docs"}']. Alternatively,
 --properties '{"title":"Policy"}' initializes the typed Memory property;
 do not supply the same field with both --properties and a shorthand flag.
+bd memory remember is the same operation with the same flags and output.
 Metadata is a JSON object separate from Memory title/body properties. An omitted ID is generated; an omitted creation title
 summarizes the body. With --id, an unused ID creates and an existing Memory
 updates in place, as ordinary bd remember --key does. Bare policy means
 canonical beads/policy. Graph Memories use canonical IDs, not legacy keys.
 
-To refuse any previously allocated ID, add --create-only with --id.
+To refuse any previously allocated ID, add --create-only with --id. With
+--create-only, --type types/NAME selects an installed Memory refinement;
+otherwise creation uses plain Memory. Existing retyping uses bd update.
 To require an existing Memory, keep using --update instead of --id:
   bd remember 'Revised policy' --id policy
   bd remember 'Revised policy' --update policy
   bd remember --update policy --title 'New title'
 --update retains literal Memory-ID semantics, including raw @; it does not
 parse revision suffixes. The selected bd update targets refuse revision suffixes.
-Omitted fields remain unchanged on update. Use --body-file PATH or --stdin
+Omitted fields remain unchanged on update. --body TEXT (including empty),
+--title TEXT, and --status TEXT update only the named Memory fields. Status
+must be nonblank. Use --body-file PATH or --stdin
 instead of positional body text. An existing-ID update accepts the current
 revision by default; add --if-revision =TOKEN to reject a stale update. Read
 the token with bd show policy --json. --replace-properties JSON replaces all
