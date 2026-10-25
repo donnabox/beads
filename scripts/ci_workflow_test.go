@@ -4083,6 +4083,54 @@ func TestBazelWorkflowCacheTopology(t *testing.T) {
 	}
 }
 
+// Exercise the real subprocess boundary without starting Bazel or a storage engine.
+// A failing query must expose its diagnostics and still fail equivalence.
+func TestBazelEquivalenceQueryDiagnostics(t *testing.T) {
+	root := sourceRepoRoot(t)
+	python := requireHostTool(t, "python3")
+	const program = `
+import contextlib, importlib.util, io, os, subprocess, sys, tempfile
+from pathlib import Path
+sys.dont_write_bytecode = True
+spec = importlib.util.spec_from_file_location("equivalence", sys.argv[1])
+eq = importlib.util.module_from_spec(spec); spec.loader.exec_module(eq)
+with tempfile.TemporaryDirectory(prefix="query diagnostics ") as directory:
+    root = Path(directory).resolve()
+    bazel = root / "fake bazel"
+    for code, stdout, stderr in ((7, "partial query output", "actual query error\n"), (7, "", ""), (0, "//a:a_test\n//b:b_test\n", "success noise\n")):
+        bazel.write_text("#!" + sys.executable + "\nimport os, sys\n"
+                         + "assert sys.argv[1:] == " + repr(["query", 'kind("go_test rule", //...)', "--output=label"]) + "\n"
+                         + "assert os.getcwd() == " + repr(str(root)) + "\n"
+                         + "sys.stdout.write(" + repr(stdout) + "); sys.stderr.write(" + repr(stderr) + ")\n"
+                         + "sys.exit(" + str(code) + ")\n")
+        bazel.chmod(0o700)
+        captured = io.StringIO()
+        with contextlib.redirect_stderr(captured):
+            try:
+                result = eq.query_go_test_pkgs(str(root), str(bazel))
+            except subprocess.CalledProcessError as error:
+                assert code == 7, error
+                assert error.returncode == code, error
+                assert error.cmd == [str(bazel), "query", 'kind("go_test rule", //...)', "--output=label"], error.cmd
+                assert error.stdout == stdout and error.stderr == stderr, (error.stdout, error.stderr)
+            else:
+                assert code == 0, "failed query was accepted"
+                assert result == {"a", "b"}, result
+        output = captured.getvalue()
+        if code:
+            assert "Bazel query failed (exit 7)" in output, output
+            assert str(bazel) in output, output
+            if stdout: assert "stdout:" in output and stdout in output, output
+            if stderr: assert "stderr:" in output and stderr in output, output
+        else:
+            assert output == "", output
+`
+	cmd := exec.Command(python, "-c", program, filepath.Join(root, "tools", "bazel", "equivalence.py"))
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("equivalence query diagnostics: %v\n%s", err, out)
+	}
+}
+
 // The lane runs the committed ci config over //..., reports the critical path
 // and the go test equivalence even when tests fail, catches BUILD drift, and
 // hands secrets to nothing but setup-bazel.
