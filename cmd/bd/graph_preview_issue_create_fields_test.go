@@ -137,7 +137,6 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 		{"overflow", "--estimate=2147483648", "invalid_properties"},
 		{"external-long", "--external-ref=" + strings.Repeat("雪", 256), "invalid_properties"},
 		{"spec-long", "--spec-id=" + strings.Repeat("雪", 1025), "invalid_properties"},
-		{"defer", "--defer=tomorrow", "capability_unavailable"},
 		{"design-file", "--design-file=/missing-create-design", "capability_unavailable"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

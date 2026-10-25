@@ -115,8 +115,12 @@ Explicit IDs preserve every segment: no `beads/`, `links/` or `types/` segment
 is silently added or stripped. Local public IDs are opaque within the Scope;
 Resource kind comes from stored facts. A canonical same-Scope URL selects the
 same allocation. Private storage locators are not alternative public IDs.
-`--status` sets the initial Issue status and defaults to `open`; the native
-Issue writer validates built-in and configured custom statuses.
+`--status` sets the initial Issue status. Without it, a future `--defer DATE`
+makes the Issue `deferred`; otherwise creation defaults to `open`. An explicit
+`--status` wins over `--defer` while retaining the timestamp. The native Issue
+writer validates built-in and configured custom statuses. A graph JSON node
+may specify `defer_until` as an RFC3339 timestamp for the same initial
+deferral.
 
 For an ordinary Issue create, `--deps` accepts local Issue targets with the
 shipping dependency spellings. Bare `ID`, `blocked-by:ID`, and
