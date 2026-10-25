@@ -237,7 +237,7 @@ bd memory supersedes csv-guide
 
 The Link points from old to new, revises the retiring Memory and leaves the replacement unchanged. The old identity and earlier revisions remain readable, and existing References keep their targets until their authors change them. Each retiring Memory has at most one successor, and replacement chains cannot cycle.
 
-## Give obligations a structure
+## Give constraints a structure
 
 Some knowledge states what work must do, avoid or follow. A Constraint Bead records such an obligation in its body, and its Type tells a reader what kind of rule it is. Policy, Decision, Procedure, Requirement, Scenario and Specification refine Constraint, which itself refines Memory. Use Constraint directly when none of those more specific Types fits; a metadata label does not create Type membership.
 
@@ -281,7 +281,7 @@ bd create 'Use anonymized sample exports' --id sample-exports --type types/polic
 
 ```
 
-Defines makes a child part of its parent's definition. Requires names another obligation that must also be met, including one maintained in a separate defining tree. Defines refines Requires, so a Requires-family read includes both kinds of Link without changing their labels.
+Defines makes a child part of its parent's definition. Requires names another Constraint that must also be met, including one maintained in a separate defining tree. Defines refines Requires, so a Requires-family read includes both kinds of Link without changing their labels.
 
 ```sh
 # Make the selected-row Requirement a defining part of the Specification.
@@ -316,7 +316,7 @@ flowchart TD
     R -->|requires| L
 ```
 
-Both kinds of Link are owned by their source Constraint. A Link change revises that source without revising the target. The following reads distinguish the Specification's own defining parts from the broader set of obligations it requires.
+Both kinds of Link are owned by their source Constraint. A Link change revises that source without revising the target. The following reads distinguish the Specification's own defining parts from the broader set of constraints it requires.
 
 ```sh
 # Read the Specification's defining Requirement and Scenario.
@@ -335,7 +335,7 @@ bd memory required-by redact-logs
 
 ### Declare which work is governed
 
-A Subject To Link explicitly declares that a Constraint governs a Bead. The implementation Issue and a Memory describing a preview build can both be subject to the CSV Specification. Starting with either subject, a focused read follows the declared Constraints and their Requires family, including Defines. The paths tell a reader how each obligation was reached.
+A Subject To Link explicitly declares that a Constraint governs a Bead. The implementation Issue and a Memory describing a preview build can both be subject to the CSV Specification. Starting with either subject, a focused read follows the declared Constraints and their Requires family, including Defines. The paths tell a reader how each rule was reached.
 
 ```sh
 # Record the preview build as a second kind of subject.
@@ -356,7 +356,7 @@ bd memory subjects csv-format
 
 ```
 
-Subject To is owned by its source, so a Link change revises the subject while leaving the Constraint unchanged. It does not spread through another Subject To declaration: a document-review Policy governing the Specification does not automatically govern its implementation Issue. These declarations help people and agents discover obligations; they do not execute prose, prove compliance or change Issue readiness.
+Subject To is owned by its source, so a Link change revises the subject while leaving the Constraint unchanged. It does not spread through another Subject To declaration: a document-review Policy governing the Specification does not automatically govern its implementation Issue. These declarations help people and agents discover governing rules; they do not execute prose, prove compliance or change Issue readiness.
 
 ## Read a proposal as structured knowledge
 
@@ -427,7 +427,7 @@ memory-s16   scenario   S16. An application…
 
 The ellipses shorten this presentation; the stored titles and bodies remain complete. In a shared Scope, these commands would also list other matching Beads: the Type filter does not select membership in this particular Specification.
 
-### Follow the definition and its obligations
+### Follow the definition and its requirements
 
 The lists show what exists, but they do not explain how those Beads form a document. Defines Links make each extracted Requirement and Scenario part of the Specification's definition. Both kinds of child are directly defined by the root Specification, as siblings. A Scenario may exercise several Requirements, so its place in the document does not force it to belong to just one of them.
 
