@@ -70,7 +70,7 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 		}
 		filter.SkipCounts = false
 		if parent != nil && request.ReadyFlag {
-			parentNativeID, _, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
+			parentNativeID, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
 			if err != nil {
 				return err
 			}
@@ -91,7 +91,7 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 			return err
 		}
 		if parent != nil && !request.ReadyFlag {
-			parentNativeID, parentPath, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
+			parentNativeID, err := s.resolveIssueListParentInTx(ctx, tx, *parent)
 			if err != nil {
 				return err
 			}
@@ -107,7 +107,7 @@ func (s *Store) listIssuesLegacy(ctx context.Context, request publicops.ListRequ
 				if err := validatePath(path); err != nil {
 					return fmt.Errorf("%w: malformed counted Issue list path: %v", ErrInvalidStore, err)
 				}
-				if issueListParentMatches(row, path, parentNativeID, parentPath) {
+				if issueListParentMatches(row, parentNativeID) {
 					selected = append(selected, row)
 				}
 			}

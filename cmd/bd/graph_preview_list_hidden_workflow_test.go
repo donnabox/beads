@@ -194,10 +194,19 @@ func TestGraphPreviewListIDWorkflow(t *testing.T) {
 			}
 			first := graphMixedResult[graphstore.IssueRecord](t, call("create", "First", "--id", "beads/first", "--json", "--force"))
 			second := graphMixedResult[graphstore.IssueRecord](t, call("create", "Second", "--id", "beads/second", "--json", "--force"))
+			rootless := graphMixedResult[graphstore.IssueRecord](t, call("create", "Rootless", "--graph-path", "beads/private-rootless", "--json"))
 			call("remember", "context", "--id", "beads/memory", "--json")
 			paths, more := graphListBeads(t, bd, work, home, scope, "--id", first.Properties.ID)
 			if !slices.Equal(paths, []string{"beads/first"}) || more {
 				t.Fatalf("native --id selected %v, more=%t", paths, more)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--id", rootless.ID)
+			if !slices.Equal(paths, []string{rootless.Properties.ID}) || more {
+				t.Fatalf("canonical public ID selected %v, more=%t; want %q", paths, more, rootless.Properties.ID)
+			}
+			paths, more = graphListBeads(t, bd, work, home, scope, "--id", scope+"beads/private-rootless")
+			if len(paths) != 0 || more {
+				t.Fatalf("private path URL must not select rootless public ID: %v, more=%t", paths, more)
 			}
 			paths, more = graphListBeads(t, bd, work, home, scope, "--id", "beads/first,beads/second", "--sort=id", "--limit=1")
 			if !slices.Equal(paths, []string{"beads/first"}) || !more {

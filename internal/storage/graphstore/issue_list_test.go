@@ -314,12 +314,83 @@ func TestGraphIssueListIDCollision(t *testing.T) {
 			if err != nil || len(byID.Items) != 1 || byID.Items[0].Properties.ID != alias {
 				t.Fatalf("opaque public ID must select Issue despite a colliding Memory path: %+v %v", byID, err)
 			}
-			page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: s.ScopeURL() + "beads/other"})
-			if err != nil || len(page.Items) != 1 || page.Items[0].Properties.ID != alias {
-				t.Fatalf("explicit graph path should select Issue: %+v %v", page, err)
+			for _, id := range []string{alias, s.ScopeURL() + alias} {
+				page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: id})
+				if err != nil || len(page.Items) != 1 || page.Items[0].Properties.ID != alias {
+					t.Fatalf("public Issue ID %q selected %+v %v", id, page, err)
+				}
+			}
+			segmented := "teams/alpha/visible"
+			if _, err := s.CreateIssue(ctx, "beads/segmented-private", plainIssueAtPublicID("Segmented", segmented)); err != nil {
+				t.Fatal(err)
+			}
+			page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: s.ScopeURL() + segmented})
+			if err != nil || len(page.Items) != 1 || page.Items[0].Properties.ID != segmented {
+				t.Fatalf("segmented canonical public ID selected %+v %v", page, err)
+			}
+			for _, privatePath := range []string{"beads/other", "beads/segmented-private"} {
+				page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: s.ScopeURL() + privatePath})
+				if err != nil || len(page.Items) != 0 {
+					t.Fatalf("private path URL %q must not select an Issue: %+v %v", privatePath, page, err)
+				}
 			}
 			if _, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: "beads/missing", Status: "not-a-status"}); !errors.Is(err, storage.ErrValidation) {
 				t.Fatalf("missing IDs must not skip filter validation: %v", err)
+			}
+		})
+	}
+}
+
+func TestGraphIssueListParentUsesPublicDottedIDs(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := issueListFixture(t, backend)
+			for _, item := range []struct{ path, id string }{
+				{"beads/private-root", "root"},
+				{"beads/elsewhere-dotted", "root.1"},
+				{"beads/private-root.2", "unrelated"},
+				{"beads/elsewhere-linked", "root.3"},
+				{"beads/explicit-child", "child"},
+				{"beads/foreign", "foreign"},
+			} {
+				if _, err := s.CreateIssue(ctx, item.path, plainIssueAtPublicID(item.id, item.id)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			parentType, ok := RelationshipDependencyTypeURL(s.ScopeURL(), types.DepParentChild)
+			if !ok {
+				t.Fatal("parent-child Type unavailable")
+			}
+			for _, edge := range []struct{ path, child, parent string }{
+				{"links/explicit", "beads/explicit-child", "beads/private-root"},
+				{"links/elsewhere", "beads/elsewhere-linked", "beads/foreign"},
+			} {
+				if _, err := s.AddDependency(ctx, DependencyRequest{Path: edge.path, Type: types.DepParentChild, TypeURL: parentType, SourcePath: edge.child, TargetPath: edge.parent, Actor: "author"}); err != nil {
+					t.Fatal(err)
+				}
+			}
+			selector := IssueSelector{Path: "beads/root", NativeID: "root", Exact: true}
+			page, err := s.ListIssuesSelected(ctx, publicops.ListRequest{}, selector)
+			if err != nil {
+				t.Fatal(err)
+			}
+			ids := make(map[string]bool, len(page.Items))
+			for _, item := range page.Items {
+				ids[item.Properties.ID] = true
+			}
+			if len(ids) != 2 || !ids["root.1"] || !ids["child"] {
+				t.Fatalf("flat descendants must use public IDs and explicit edges: %+v", page)
+			}
+			legacy, err := s.ListIssuesLegacySelected(ctx, publicops.ListRequest{}, selector)
+			if err != nil {
+				t.Fatal(err)
+			}
+			legacyIDs := make(map[string]bool, len(legacy.Items))
+			for _, item := range legacy.Items {
+				legacyIDs[item.ID] = true
+			}
+			if len(legacyIDs) != 2 || !legacyIDs["root.1"] || !legacyIDs["child"] {
+				t.Fatalf("counted descendants must match the checked page: %+v", legacy)
 			}
 		})
 	}

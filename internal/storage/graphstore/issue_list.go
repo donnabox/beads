@@ -11,6 +11,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -206,10 +207,10 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 	} else {
 		request.IDFilter = ""
 	}
-	var parentNativeID, parentPath string
+	var parentNativeID string
 	if parent != nil {
 		var err error
-		parentNativeID, parentPath, err = s.resolveIssueListParentInTx(ctx, tx, *parent)
+		parentNativeID, err = s.resolveIssueListParentInTx(ctx, tx, *parent)
 		if err != nil {
 			return IssueListPage{}, err
 		}
@@ -284,7 +285,7 @@ func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, reques
 			return IssueListPage{}, err
 		}
 		records[row.ID] = record
-		if parent == nil || (request.ReadyFlag && parentNativeID != "") || (!request.ReadyFlag && issueListParentMatches(row, path, parentNativeID, parentPath)) {
+		if parent == nil || (request.ReadyFlag && parentNativeID != "") || (!request.ReadyFlag && issueListParentMatches(row, parentNativeID)) {
 			selectedRows = append(selectedRows, row)
 		}
 	}
@@ -344,8 +345,9 @@ func queryIssueListRowsInTx(ctx context.Context, tx *sql.Tx, filter types.IssueF
 }
 
 // resolveIssueListIDsInTx lowers the shipping --id set to native Issue keys.
-// Canonical Scope URLs select graph paths; every local spelling is an opaque
-// public ID, including IDs that happen to start with beads/.
+// Canonical Scope URLs and local spellings both name public identities, not
+// private catalog paths. URLs require an exact match; local IDs retain native
+// abbreviation resolution.
 func (s *Store) resolveIssueListIDsInTx(ctx context.Context, tx *sql.Tx, raw string) ([]string, error) {
 	selected := utils.NormalizeLabels(strings.Split(raw, ","))
 	ids := make([]string, 0, len(selected))
@@ -354,7 +356,11 @@ func (s *Store) resolveIssueListIDsInTx(ctx context.Context, tx *sql.Tx, raw str
 		selector := IssueSelector{}
 		switch {
 		case strings.HasPrefix(value, s.ScopeURL()):
-			selector.Path = strings.TrimPrefix(value, s.ScopeURL())
+			id, err := graph.ScopeLocalPublicResourceID(s.ScopeURL(), value)
+			if err != nil {
+				return nil, fmt.Errorf("%w: invalid Issue ID %q: %v", storage.ErrValidation, value, err)
+			}
+			selector.Path, selector.NativeID, selector.Exact = "beads/"+id, id, true
 		default:
 			selector.Path, selector.NativeID = "beads/"+value, value
 		}
@@ -379,33 +385,36 @@ func (s *Store) resolveIssueListIDsInTx(ctx context.Context, tx *sql.Tx, raw str
 	return ids, nil
 }
 
-func (s *Store) resolveIssueListParentInTx(ctx context.Context, tx *sql.Tx, parent IssueSelector) (string, string, error) {
-	path, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, parent)
+func (s *Store) resolveIssueListParentInTx(ctx context.Context, tx *sql.Tx, parent IssueSelector) (string, error) {
+	_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, parent)
 	switch {
 	case err == nil:
 		if issue.Properties == nil || issue.Properties.ID == "" {
-			return "", "", fmt.Errorf("%w: incomplete parent Issue mapping", ErrInvalidStore)
+			return "", fmt.Errorf("%w: incomplete parent Issue mapping", ErrInvalidStore)
 		}
-		return issue.Properties.ID, path, nil
+		return issue.Properties.ID, nil
 	case errors.Is(err, ErrNotFound):
 		// The ordinary filter also matches edge-less dotted descendants of a
 		// bare ID, even when that parent has no current Issue allocation.
 		if parent.NativeID != "" {
-			return parent.NativeID, parent.Path, nil
+			return parent.NativeID, nil
 		}
-		return "", parent.Path, nil
+		return "", nil
 	case errors.Is(err, errNonIssueSelector):
-		return "", parent.Path, nil
+		return "", nil
 	default:
-		return "", "", err
+		return "", err
 	}
 }
 
-func issueListParentMatches(row *types.IssueWithCounts, path, parentNativeID, parentPath string) bool {
-	if row.Parent != nil {
-		return parentNativeID != "" && *row.Parent == parentNativeID
+func issueListParentMatches(row *types.IssueWithCounts, parentNativeID string) bool {
+	if parentNativeID == "" {
+		return false
 	}
-	return strings.HasPrefix(path, parentPath+".")
+	if row.Parent != nil {
+		return *row.Parent == parentNativeID
+	}
+	return strings.HasPrefix(row.ID, parentNativeID+".")
 }
 
 type issueListConfigSource struct{ config workapi.ListConfig }
