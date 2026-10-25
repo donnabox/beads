@@ -484,6 +484,9 @@ session, with `CLAUDE_SESSION_ID` as its fallback. On a single Issue,
 `--if-revision =TOKEN` from `bd show ID --json` refuses a stale close, including
 an already-closed retry. It cannot be combined with multiple IDs,
 `--suggest-next` or `--claim-next`; omission accepts the current revision.
+`bd reopen ID --if-revision =TOKEN` uses the same checked Issue revision. It
+refuses a stale token before an already-open no-op and cannot be combined with
+multiple IDs.
 On a single Issue,
 `--suggest-next` reads Issues that this close newly unblocks; it does not claim
 them. `--claim-next` claims the highest-priority ready Issue in the same
@@ -501,6 +504,7 @@ bd close blocker --suggest-next --reason 'Dependency finished'
 bd close blocker --claim-next --reason 'Dependency finished and next work claimed'
 bd close work --if-revision "=$revision" --reason 'Finished the work'
 bd reopen work review --reason 'Follow-up needed'
+bd reopen work --if-revision "=$revision" --reason 'Follow-up needed'
 ```
 
 `bd delete ID` previews deletion of a Memory or Issue without changing

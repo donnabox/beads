@@ -107,6 +107,37 @@ func assertReopenEvents(t *testing.T, ctx context.Context, s *Store, id string, 
 	}
 }
 
+func TestIssueReopenRevisionGuard(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s, _, target, _ := reopenFixture(t, backend)
+			closed, err := s.CloseIssue(ctx, "beads/prereq", "done", "closer")
+			if err != nil {
+				t.Fatal(err)
+			}
+			before := reopenState(t, ctx, s)
+			request := IssueReopenRequest{Path: "beads/prereq", Reason: "retry", Actor: "reopener", ExpectedRevision: target.Revision}
+			if _, err := s.ReopenIssueWithOptions(ctx, request); !errors.Is(err, ErrConflict) || !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
+				t.Fatalf("stale guard changed closed Issue: %v", err)
+			}
+			request.ExpectedRevision = closed.Issue.Revision
+			opened, err := s.ReopenIssueWithOptions(ctx, request)
+			if err != nil || !opened.Changed || opened.Issue.Properties.Status != types.StatusOpen {
+				t.Fatalf("current guard did not reopen Issue: %+v %v", opened, err)
+			}
+			before = reopenState(t, ctx, s)
+			if _, err := s.ReopenIssueWithOptions(ctx, request); !errors.Is(err, ErrConflict) || !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
+				t.Fatalf("stale guard masked by already-open no-op: %v", err)
+			}
+			request.ExpectedRevision = opened.Issue.Revision
+			noop, err := s.ReopenIssueWithOptions(ctx, request)
+			if err != nil || noop.Changed || !reflect.DeepEqual(noop.Issue, opened.Issue) || !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
+				t.Fatalf("current already-open guard changed state: %+v %v", noop, err)
+			}
+		})
+	}
+}
+
 func TestIssueReopenLifecycle(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
