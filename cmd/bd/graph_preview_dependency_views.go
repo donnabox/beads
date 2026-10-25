@@ -157,6 +157,19 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 			nodes = g.tree(root, direction, maxDepth)
 		}
 		if len(nodes) == 1 {
+			hasDirect := len(g.down[root]) > 0
+			if direction == "up" {
+				hasDirect = len(g.up[root]) > 0
+			} else if direction == "both" {
+				hasDirect = hasDirect || len(g.up[root]) > 0
+			}
+			if hasDirect {
+				// A depth limit can leave only the root visible; that does not
+				// make the root isolated. Render the root without claiming that
+				// either direction has no edges.
+				issue := nodes[0].Issue
+				return nodes, fmt.Sprintf("Blocking dependency tree for %s (%s; graph preview)\n%s  %s", path, direction, graphPreviewDisplayLocalURL(issue.ID), issue.Properties.Title), nil
+			}
 			nodes = nil // An isolated Issue has no dependency tree.
 		}
 		if len(nodes) == 0 {
