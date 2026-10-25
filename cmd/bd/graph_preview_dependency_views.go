@@ -168,7 +168,7 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 				// make the root isolated. Render the root without claiming that
 				// either direction has no edges.
 				issue := nodes[0].Issue
-				return nodes, fmt.Sprintf("Blocking dependency tree for %s (%s; graph preview)\n%s  %s", path, direction, graphPreviewDisplayLocalURL(issue.ID), issue.Properties.Title), nil
+				return nodes, fmt.Sprintf("Blocking dependency tree for %s (%s; graph preview)\n%s  %s", identity.PublicID, direction, graphPreviewDisplayLocalURL(issue.ID), issue.Properties.Title), nil
 			}
 			nodes = nil // An isolated Issue has no dependency tree.
 		}
