@@ -92,6 +92,75 @@ func fixtureResourcePath(t *testing.T, ctx context.Context, store *Store, uri st
 	return identity.PrivatePath
 }
 
+func TestIssueCreateRetainsInitialDeferUntil(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			input := time.Date(2099, 1, 2, 3, 4, 5, 600_000_000, time.FixedZone("offset", -7*60*60))
+			want := input.UTC().Round(time.Second)
+			ordinary := plainIssue("Deferred ordinary Issue")
+			ordinary.Issue.Status = types.StatusDeferred
+			ordinary.Issue.DeferUntil = &input
+			created, err := s.CreateIssue(ctx, "", ordinary)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if ordinary.Issue.DeferUntil == nil || !ordinary.Issue.DeferUntil.Equal(input) ||
+				created.Properties.Status != types.StatusDeferred || created.Properties.DeferUntil == nil || !created.Properties.DeferUntil.Equal(want) {
+				t.Fatalf("ordinary create lost initial defer or mutated its caller: %+v", created.Properties)
+			}
+			planIssue := plainIssue("Deferred graph-plan Issue").Issue
+			planIssue.Status = types.StatusDeferred
+			planIssue.DeferUntil = &input
+			batch := publicops.ApplyBatchRequest{Actor: "test-author", Items: []publicops.ApplyItem{{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "deferred", Issue: planIssue}}}}
+			records, err := s.ApplyNewIssueGraph(ctx, batch)
+			if err != nil {
+				t.Fatal(err)
+			}
+			planned := records["deferred"]
+			if planned.Properties == nil || planned.Properties.Status != types.StatusDeferred || planned.Properties.DeferUntil == nil || !planned.Properties.DeferUntil.Equal(want) {
+				t.Fatalf("graph batch lost initial defer: %+v", planned)
+			}
+			batchIssue := plainIssue("Deferred Markdown-batch Issue").Issue
+			batchIssue.Status, batchIssue.DeferUntil = types.StatusDeferred, &input
+			batchRecords, err := s.CreateIssueBatch(ctx, publicops.CreateBatchRequest{Actor: "test-author", Items: []publicops.BatchCreateItem{{Issue: batchIssue}}})
+			if err != nil || len(batchRecords) != 1 || batchRecords[0].Properties.DeferUntil == nil || !batchRecords[0].Properties.DeferUntil.Equal(want) {
+				t.Fatalf("create batch lost initial defer: records=%+v err=%v", batchRecords, err)
+			}
+			parentIssue := plainIssue("Parent")
+			parentIssue.Issue.IssueType = types.TypeEpic
+			parent, err := s.CreateIssue(ctx, "beads/deferred-parent", parentIssue)
+			if err != nil {
+				t.Fatal(err)
+			}
+			childIssue := plainIssue("Deferred child")
+			childIssue.Issue.Status, childIssue.Issue.DeferUntil = types.StatusDeferred, &input
+			child, err := s.CreateChildIssue(ctx, IssueChildCreateRequest{ParentPath: "beads/deferred-parent", ExpectedParentRevision: parent.Revision, Create: childIssue})
+			if err != nil || child.Child.Properties == nil || child.Child.Properties.DeferUntil == nil || !child.Child.Properties.DeferUntil.Equal(want) {
+				t.Fatalf("child create lost initial defer: result=%+v err=%v", child, err)
+			}
+			for _, record := range []IssueRecord{created, planned, batchRecords[0]} {
+				var native, canonical int
+				if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM issue_versions WHERE issue_id=?`, record.Properties.ID).Scan(&native); err != nil {
+					t.Fatal(err)
+				}
+				if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?`, fixtureResourcePath(t, ctx, s, record.ID)).Scan(&canonical); err != nil {
+					t.Fatal(err)
+				}
+				if native != 1 || canonical != 1 {
+					t.Fatalf("deferred creation retained %d native/%d canonical versions, want 1/1", native, canonical)
+				}
+			}
+		})
+	}
+
+}
+
 func TestGeneratedIssuePathUsesNativePrefixAndReservedPaths(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {

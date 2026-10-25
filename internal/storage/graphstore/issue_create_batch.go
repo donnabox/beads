@@ -35,6 +35,11 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			return nil, issueops.CreateBatchItemError(index, err)
 		}
 		item.Issue.DueAt = due
+		deferUntil, err := normalizeIssueDefer(item.Issue.DeferUntil)
+		if err != nil {
+			return nil, issueops.CreateBatchItemError(index, err)
+		}
+		item.Issue.DeferUntil = deferUntil
 		request.Items[index] = item
 	}
 	var records []IssueRecord
