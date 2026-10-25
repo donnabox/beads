@@ -78,19 +78,28 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	}
 	path, err := resolve(selector)
 	if err != nil {
+		// A write-reference refusal must not become a native-ID abbreviation
+		// lookup, even when a separate Issue owns the literal ID@revision.
+		if _, referenceErr := graphPreviewWritableIdentity(selector); referenceErr != nil {
+			return err
+		}
 		// A bare native Issue abbreviation has no exact public allocation.
 		// Keep its selection inside UpdateIssue's checked write transaction.
 		if graphPreviewIssueEditFlagsChanged(cmd) && !cmd.Flags().Changed("from-revision") && !cmd.Flags().Changed("patch") && !cmd.Flags().Changed("replace-properties") {
 			if selected, selectErr := graphPreviewIssueSelector(selector); selectErr == nil && !selected.Exact {
 				// The read confirms this is an Issue before parsing Issue-only input.
 				// UpdateIssue resolves the abbreviation again in its write transaction.
+				var confirmed graphstore.IssueRecord
 				if readErr := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-					_, readErr := store.ShowIssueSelected(ctx, selected)
+					var readErr error
+					confirmed, readErr = store.ShowIssueSelected(ctx, selected)
 					return nil, "", readErr
 				}, func(any, string) error { return nil }); readErr != nil {
 					return readErr
 				}
-				return runGraphPreviewUpdateIssue(cmd, selected.Path, selector)
+				// Resolve a local ordinal against the confirmed full public ID.
+				// The writer still resolves the abbreviation and checks the guard.
+				return runGraphPreviewUpdateIssue(cmd, selected.Path, selector, confirmed.ID)
 			}
 		}
 		return err

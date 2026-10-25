@@ -136,6 +136,31 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			abbreviable := graphMixedResult[graphstore.IssueRecord](t, call("create", "Abbreviable", "--id", parts[0]+"-a3f8e9"))
 			partialID := "a3f8"
+			refuseStaleGuard := func(flag string) {
+				t.Helper()
+				stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "update", partialID, "--title", "Stale guard", "--if-revision", flag, "--json")
+				if exit != 4 || stdout != "" || !strings.Contains(stderr, `"code":"revision_conflict"`) {
+					t.Fatalf("stale abbreviated guard %q: exit=%d stdout=%q stderr=%q", flag, exit, stdout, stderr)
+				}
+			}
+			guarded := graphMixedResult[graphstore.IssueMutationResult](t, call("update", partialID, "--title", "Guarded by ordinal", "--if-revision", "1"))
+			if !guarded.Changed || guarded.Issue.Properties.ID != abbreviable.Properties.ID || guarded.Issue.Properties.Title != "Guarded by ordinal" {
+				t.Fatalf("abbreviated ordinal guard selected the wrong Issue: %+v", guarded)
+			}
+			guardedBefore := call("show", abbreviable.ID)
+			refuseStaleGuard("1")
+			if call("show", abbreviable.ID) != guardedBefore {
+				t.Fatal("stale abbreviated ordinal guard changed the Issue")
+			}
+			guardedToken := graphMixedResult[graphstore.IssueMutationResult](t, call("update", partialID, "--title", "Guarded by token", "--if-revision", "="+guarded.Issue.Revision))
+			if !guardedToken.Changed || guardedToken.Issue.Properties.ID != abbreviable.Properties.ID || guardedToken.Issue.Properties.Title != "Guarded by token" {
+				t.Fatalf("abbreviated token guard selected the wrong Issue: %+v", guardedToken)
+			}
+			guardedBefore = call("show", abbreviable.ID)
+			refuseStaleGuard("=" + guarded.Issue.Revision)
+			if call("show", abbreviable.ID) != guardedBefore {
+				t.Fatal("stale abbreviated token guard changed the Issue")
+			}
 			if got := issue(call("priority", partialID, "2")); got.ID != abbreviable.Properties.ID || got.Priority != 2 {
 				t.Fatalf("abbreviated priority selected the wrong Issue: %+v", got)
 			}
@@ -173,6 +198,20 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			if got := issue(call("priority", custom.ID, "0")); got.Priority != 0 {
 				t.Fatalf("canonical identity did not select custom Issue: %+v", got)
+			}
+			baseAt := graphMixedResult[graphstore.IssueRecord](t, call("create", "Base at", "--id", "task", "--force"))
+			literalAt := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal at", "--id", "task@1", "--force"))
+			baseBefore := call("show", baseAt.ID)
+			literalBefore := call("show", literalAt.ID)
+			for _, selector := range []string{"task@current", "task@1", "task@bogus", "task@"} {
+				refuse("invalid_selector", "update", selector, "--title", "Wrong target")
+			}
+			if call("show", baseAt.ID) != baseBefore || call("show", literalAt.ID) != literalBefore {
+				t.Fatal("revision-qualified write changed the base or literal-@ Issue")
+			}
+			literalEdited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", literalAt.ID, "--title", "Literal edited"))
+			if !literalEdited.Changed || literalEdited.Issue.Properties.ID != literalAt.Properties.ID || literalEdited.Issue.Properties.Title != "Literal edited" {
+				t.Fatalf("canonical URL did not select literal-@ Issue: %+v", literalEdited)
 			}
 		})
 	}

@@ -406,14 +406,18 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 	return nil
 }
 
-func runGraphPreviewUpdateIssue(cmd *cobra.Command, path, identity string) error {
+func runGraphPreviewUpdateIssue(cmd *cobra.Command, path, identity string, revisionIdentity ...string) error {
 	// Resolve the structured input and its source conflicts before a description
 	// flag can consume stdin or open a file.
 	values, err := graphPreviewIssuePropertyValues(cmd)
 	if err != nil {
 		return err
 	}
-	request, err := graphPreviewIssueEditRequest(cmd, path, identity)
+	guardIdentity := identity
+	if len(revisionIdentity) != 0 {
+		guardIdentity = revisionIdentity[0]
+	}
+	request, err := graphPreviewIssueEditRequest(cmd, path, guardIdentity)
 	if err != nil {
 		return err
 	}
