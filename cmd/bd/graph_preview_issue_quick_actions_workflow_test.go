@@ -50,13 +50,26 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			call(args...)
 			call("create", "Quick actions", "--id", "beads/work", "--force", "--description", "Keep this")
 			call("remember", "Memory text", "--id", "beads/context", "--title", "Context")
+			beforeTag := read()
+			tagged := issue(call("tag", "beads/work", " release "))
+			if tagged.ID != "beads/work" || !reflect.DeepEqual(tagged.Labels, []string{"release"}) || read().Revision == beforeTag.Revision {
+				t.Fatalf("tag did not update the native Issue and its graph revision: %+v", tagged)
+			}
+			state := graphMemoryReadSnapshot(t, work)
+			call("tag", "beads/work", "release")
+			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
+				t.Fatal("repeated tag changed native state")
+			}
+			if human := graphPolicyCLI(t, bd, work, home, nil, "", "tag", "beads/work", "review"); !strings.Contains(human, `Added label "review" to`) {
+				t.Fatalf("tag human confirmation missing: %q", human)
+			}
 			before := read()
 			priority := issue(call("priority", scope+"beads/work", "0"))
 			current := read()
 			if priority.ID != current.Properties.ID || priority.Priority != 0 || current.Properties.Priority != 0 || current.Revision == before.Revision || current.Properties.Description != "Keep this" {
 				t.Fatalf("priority write did not preserve Issue shape and fields: %+v %+v", priority, current)
 			}
-			state := graphMemoryReadSnapshot(t, work)
+			state = graphMemoryReadSnapshot(t, work)
 			call("priority", scope+"beads/work", "P0")
 			if got := read(); got.Revision != current.Revision || !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("same priority changed Resource version or native state")
@@ -94,9 +107,12 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			refuse("permission_denied", "assign", scope+"beads/work", "alice", "--readonly")
 			refuse("permission_denied", "priority", scope+"beads/work", "2", "--readonly")
 			refuse("permission_denied", "note", scope+"beads/work", "No", "--readonly")
+			refuse("permission_denied", "tag", scope+"beads/work", "no", "--readonly")
+			refuse("invalid_properties", "tag", scope+"beads/work", " ")
 			refuse("capability_unavailable", "priority", scope+"beads/context", "2")
 			refuse("capability_unavailable", "note", scope+"beads/context", "No")
 			refuse("capability_unavailable", "assign", scope+"beads/context", "alice")
+			refuse("capability_unavailable", "tag", scope+"beads/context", "x")
 
 			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--graph-path", "beads/custom-path"))
 			if custom.Properties.ID == "custom-path" || custom.ID != scope+custom.Properties.ID {
@@ -110,6 +126,9 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			if got := issue(call("assign", custom.Properties.ID, "carol")); got.ID != custom.Properties.ID || got.Assignee != "carol" {
 				t.Fatalf("native-ID assign selected the wrong Issue: %+v", got)
+			}
+			if got := issue(call("tag", custom.Properties.ID, "native-label")); got.ID != custom.Properties.ID || !reflect.DeepEqual(got.Labels, []string{"native-label"}) {
+				t.Fatalf("native-ID tag selected the wrong Issue: %+v", got)
 			}
 			parts := strings.SplitN(custom.Properties.ID, "-", 2)
 			if len(parts) != 2 {
@@ -139,6 +158,7 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			}
 			issue(call("note", custom.Properties.ID, "Public ID note"))
 			issue(call("assign", custom.Properties.ID, "dana"))
+			issue(call("tag", custom.Properties.ID, "public-label"))
 			if call("show", scope+"beads/"+custom.Properties.ID) != memoryBefore {
 				t.Fatal("public Issue actions changed colliding Memory path")
 			}

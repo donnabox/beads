@@ -8,10 +8,52 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/ui"
 	"github.com/steveyegge/beads/internal/validation"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 // These familiar Issue entry points use the same graph Issue writer as update.
 // The native writer remains responsible for no-ops and exactly-once History.
+func runGraphPreviewTag(cmd *cobra.Command, args []string) error {
+	if err := graphPreviewWritePolicy(); err != nil {
+		return err
+	}
+	if err := graphPreviewFlags(cmd); err != nil {
+		return err
+	}
+	selected, err := graphPreviewIssueSelector(args[0])
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	label, err := normalizeLabelForTag(args[1])
+	if err != nil {
+		return graphFailure("invalid_properties", err.Error(), 2)
+	}
+	var touched string
+	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		result, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{
+			Path: selected.Path, NativeID: selected.NativeID, Actor: getActorWithGit(),
+			Unconditional: true, Labels: publicops.LabelPatch{Add: []string{label}},
+		})
+		if err != nil {
+			return nil, "", err
+		}
+		issue := *result.Issue.Properties
+		issue.ID = graphPreviewDisplayLocalURL(result.Issue.ID)
+		touched = issue.ID
+		return &issue, fmt.Sprintf("%s Added label %q to %s\n", ui.RenderPass("✓"), label, formatFeedbackID(issue.ID, issue.Title)), nil
+	}, func(result any, human string) error {
+		if jsonOutput {
+			return outputJSON(result)
+		}
+		_, err := fmt.Fprint(cmd.OutOrStdout(), human)
+		return err
+	})
+	if err == nil {
+		SetLastTouchedID(touched)
+	}
+	return err
+}
+
 func runGraphPreviewAssign(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err

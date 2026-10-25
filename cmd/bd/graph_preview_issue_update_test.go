@@ -22,10 +22,12 @@ func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	cmd := &cobra.Command{}
 	cmd.Flags().String("type", "", "")
 	cmd.Flags().IntP("estimate", "e", 0, "")
-	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
+	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "design-file", "session", "if-assignee", "if-status", "if-revision", "if-source-revision") {
 		if cmd.Flags().Lookup(name) == nil {
 			if name == "clear-notes" || name == "stdin" {
 				cmd.Flags().Bool(name, false, "")
+			} else if name == "add-label" || name == "remove-label" || name == "set-labels" {
+				cmd.Flags().StringSlice(name, nil, "")
 			} else {
 				cmd.Flags().String(name, "", "")
 			}
@@ -52,6 +54,33 @@ func TestGraphPreviewIssueTextPresenceAndAliases(t *testing.T) {
 	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--design="), "beads/task")
 	if err != nil || request.Design == nil || *request.Design != "" || request.Title != nil || request.Description != nil || request.AcceptanceCriteria != nil || !request.Unconditional {
 		t.Fatalf("omitted fields did not remain absent: %+v %v", request, err)
+	}
+}
+
+func TestGraphPreviewIssueStatusIntent(t *testing.T) {
+	for _, tc := range []struct {
+		args        []string
+		wantStatus  types.Status
+		wantForce   bool
+		wantSession string
+		wantGuard   types.Status
+	}{
+		{[]string{"--status=in_progress"}, types.StatusInProgress, false, "", ""},
+		{[]string{"--status=closed", "--force", "--session=review"}, types.StatusClosed, true, "review", ""},
+		{[]string{"--status=closed", "--force=false"}, types.StatusClosed, false, "", ""},
+		{[]string{"--status=open", "--if-status=in_progress"}, types.StatusOpen, false, "", types.StatusInProgress},
+	} {
+		cmd := issueTextCommand(t, tc.args...)
+		request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+		if err != nil || request.Status == nil || *request.Status != tc.wantStatus || request.ForceClosePolicy != tc.wantForce {
+			t.Fatalf("status intent lost: %+v %v", request, err)
+		}
+		if tc.wantSession != "" && (request.ClosedBySession == nil || *request.ClosedBySession != tc.wantSession) {
+			t.Fatalf("session attribution lost: %+v", request)
+		}
+		if tc.wantGuard != "" && (request.ExpectedStatus == nil || *request.ExpectedStatus != tc.wantGuard) {
+			t.Fatalf("status guard lost: %+v", request)
+		}
 	}
 }
 
@@ -156,7 +185,8 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 		{"long-title", []string{"--title=" + strings.Repeat("x", 501)}, 2},
 		{"invalid-utf8", []string{"--design=\xff"}, 2},
 		{"different-aliases", []string{"--description=a", "--body=b"}, 2},
-		{"workflow", []string{"--design=Design", "--status=closed"}, 5},
+		{"empty-status", []string{"--design=Design", "--status="}, 2},
+		{"empty-status-guard", []string{"--design=Design", "--if-status="}, 2},
 		{"empty-notes", []string{"--notes="}, 2},
 		// Append still cannot be combined with replacement notes.
 		{"append", []string{"--design=Design", "--append-notes=More", "--notes=Replace"}, 2},
@@ -219,19 +249,6 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 			}
 		})
 	}
-	for _, args := range [][]string{
-		{"--priority=0", "--status=open"},
-	} {
-		t.Run(strings.Join(args, " "), func(t *testing.T) {
-			cmd := issueTextCommand(t, args...)
-			cmd.SetIn(failingMemoryBodyReader{})
-			_, err := graphPreviewIssueEditRequest(cmd, "beads/work")
-			var failure *exitError
-			if !errors.As(err, &failure) || failure.Code != 5 {
-				t.Fatalf("unsupported explicit option must refuse with exit5 before input: %v", err)
-			}
-		})
-	}
 	request, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--priority=0", "--stdin=false"), "beads/work")
 	if err != nil || request.Priority == nil || *request.Priority != 0 || request.Description != nil {
 		t.Fatalf("false stdin flag changed priority edit: %+v %v", request, err)
@@ -266,6 +283,28 @@ func TestGraphPreviewIssueAssigneePresence(t *testing.T) {
 	if err != nil || request.Assignee != nil {
 		t.Fatalf("omission became assignment: %+v %v", request, err)
 	}
+	for _, tc := range []struct {
+		args          []string
+		forceAssignee bool
+		forceNotes    bool
+	}{
+		{[]string{"--assignee=bob", "--force"}, true, false},
+		{[]string{"--assignee=bob", "--force=false"}, false, false},
+		{[]string{"--assignee=bob", "--notes=Revised", "--force"}, true, true},
+	} {
+		request, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
+		if err != nil || request.ForceAssigneeTransfer != tc.forceAssignee || request.ForceNotesOverwrite != tc.forceNotes {
+			t.Fatalf("force intent %v: %+v %v", tc.args, request, err)
+		}
+	}
+	cmd := issueTextCommand(t, `--properties={"assignee":"bob"}`, "--force")
+	request, err = graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err == nil {
+		err = graphPreviewIssuePropertyMerge(cmd, &request)
+	}
+	if err != nil || request.Assignee == nil || *request.Assignee != "bob" || !request.ForceAssigneeTransfer || request.ForceNotesOverwrite {
+		t.Fatalf("property assignee force intent: %+v %v", request, err)
+	}
 }
 
 func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
@@ -279,10 +318,10 @@ func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
 		{"empty-guard", []string{"--assignee=alice", "--if-revision="}, 2},
 		{"claim", []string{"--assignee=alice", "--claim"}, 5},
 		{"false-claim", []string{"--assignee=alice", "--claim=false"}, 5},
-		{"force-without-notes", []string{"--assignee=alice", "--force"}, 2},
-		{"assignee-precondition", []string{"--assignee=alice", "--if-assignee="}, 5},
-		{"status-precondition", []string{"--assignee=alice", "--if-status=open"}, 5},
-		{"status", []string{"--assignee=alice", "--status=in_progress"}, 5},
+		{"invalid-assignee-precondition", []string{"--assignee=alice", "--if-assignee=\xff"}, 2},
+		{"assignee-precondition-without-edit", []string{"--if-assignee="}, 2},
+		{"empty-status-precondition", []string{"--assignee=alice", "--if-status="}, 2},
+		{"status-precondition-without-edit", []string{"--if-status=open"}, 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")

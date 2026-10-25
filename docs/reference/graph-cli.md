@@ -613,6 +613,36 @@ inside the atomic claim. The remaining ordinary ready modes remain in
 the [draft CLI specification](/reference/graph-cli-specification-draft)
 and refuse in this graph slice until their supporting graph behavior is ready.
 
+## Change Issue status
+
+`bd update ID --status STATUS` changes a native Issue's lifecycle status. It
+accepts built-in statuses and configured custom statuses, and preserves the
+other Issue fields. Moving into a done status checks open children and live
+blocking dependencies in the same transaction; `--force` overrides that close
+policy, as it does on the shipping update command. A no-op status edit keeps
+the current revision. Use `--if-revision` to reject a stale revision, or
+`--if-status` to require the Issue's current status, or `--if-assignee` to
+require its current assignee (`--if-assignee=''` means unassigned). All guards
+are checked atomically; a stale value refuses even an otherwise no-op edit.
+For literal `closed`, `--session` (or `CLAUDE_SESSION_ID`) records the closing
+session.
+
+```sh
+bd update work --status in_progress --if-revision REVISION_FROM_SHOW
+bd update work --status closed --force --session review-session
+bd update work --status open --if-status in_progress
+bd update work --assignee review --if-assignee ''
+```
+
+`bd update ID --type CLASS` changes the native Issue classification using the
+shipping type aliases and configured custom types. It keeps the Bead's graph
+Type as Issue. Unknown classifications refuse, and an unchanged classification
+does not create a new revision. The edit can use `--if-revision`.
+
+```sh
+bd update work --type feature --if-revision REVISION_FROM_SHOW
+```
+
 ## Edit Issue notes
 
 An Issue's notes can carry progress across sessions. `--append-notes` adds a
@@ -628,9 +658,10 @@ bd update work --notes 'Revised handoff' --force --if-revision =NEW_REVISION
 bd update work --clear-notes --if-revision =LATEST_REVISION
 ```
 
-`bd assign ID PERSON`, `bd priority ID LEVEL` and `bd note ID TEXT` use the
-same native Issue writer as `bd update`. They accept a current Issue, preserve
-other fields, and reject Memory and Link targets. Assign accepts an optional
+`bd assign ID PERSON`, `bd priority ID LEVEL`, `bd note ID TEXT` and
+`bd tag ID LABEL` use the same native Issue writer as `bd update`. They accept
+a current Issue, preserve other fields, and reject Memory and Link targets.
+Assign accepts an optional
 `--if-revision` graph token and preserves the native live-claim transfer
 fence; `--force` is explicit when that fence must be bypassed. The note command
 also accepts its ordinary `--stdin` and `--file` text sources. These shortcuts
@@ -642,11 +673,18 @@ needed.
 bd priority work 1
 bd note work 'Checklist complete.'
 bd assign work alice
+bd tag work release
 ```
 
+`bd update work --assignee PERSON --force` uses the same live-claim transfer
+rule as `bd assign work PERSON --force`. It can combine the transfer with a
+notes replacement in one guarded update. An explicit `--force=false` leaves
+the transfer fence in place.
+
 An Issue edit accepts the current state by default. A stale `--if-revision`
-refuses even with `--force`; force only authorizes the notes overwrite. An
-identical value or a clear of already-empty notes leaves the revision alone.
+refuses even with `--force`; force authorizes only the requested notes
+overwrite, assignee transfer, or status close policy. An identical value or a clear of already-empty
+notes leaves the revision alone.
 Use `bd versions work` and `bd show work --revision =TOKEN` to inspect prior
 snapshots after an accepted change.
 
