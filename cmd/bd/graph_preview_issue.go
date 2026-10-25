@@ -28,6 +28,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if cmd.Flags().Changed("graph") {
+		return runGraphPreviewCreateGraph(cmd, args)
+	}
 	idRoot, idRootSet, rootErr := graphPreviewGeneratedIDRoot(cmd)
 	if rootErr != nil {
 		return graphFailure("invalid_selector", rootErr.Error(), 2)
@@ -51,7 +54,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		}
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "id", "id-root", "graph-path", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "id-root", "graph-path", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "status", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "defer", "metadata", "properties", "silent", "deps"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
@@ -172,11 +175,22 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	}
 	labels, _ := cmd.Flags().GetStringSlice("labels")
 	aliasLabels, _ := cmd.Flags().GetStringSlice("label")
+	initialStatus, _ := cmd.Flags().GetString("status")
+	deferUntil, err := graphPreviewIssueDeferInput(cmd)
+	if err != nil {
+		return err
+	}
+	if initialStatus == "" {
+		initialStatus = string(types.StatusOpen)
+		if deferUntil != nil && deferUntil.After(time.Now()) {
+			initialStatus = string(types.StatusDeferred)
+		}
+	}
 	creator := getActorWithGit()
 	forceIDPrefix, _ := cmd.Flags().GetBool("force")
 	request := publicops.CreateRequest{Actor: creator, ForceIDPrefix: forceIDPrefix, Issue: &types.Issue{
 		CreatedBy: creator, Owner: getOwner(),
-		Title: title, Description: description, Status: types.StatusOpen,
+		Title: title, Description: description, Status: types.Status(initialStatus), DeferUntil: deferUntil,
 		Priority: priority, IssueType: issueType, Labels: utils.NormalizeLabels(append(labels, aliasLabels...)),
 	}}
 	if cmd.Flags().Changed("id") {
@@ -196,8 +210,31 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewApplyIssueCreateProperties(cmd, request.Issue, properties); err != nil {
 		return err
 	}
-	var touchedURL string
-	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	deps, _ := cmd.Flags().GetStringSlice("deps")
+	for _, raw := range deps {
+		if strings.HasPrefix(strings.TrimSpace(raw), "external:") {
+			return graphFailure("capability_unavailable", "graph Issue create --deps requires local Issue targets; external: targets are unavailable", 5)
+		}
+	}
+	specs, err := parseDepSpecs(deps)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	createDependencies := make([]graphstore.IssueCreateDependency, 0, len(specs))
+	for _, spec := range specs {
+		if strings.HasPrefix(spec.TargetID, "external:") {
+			return graphFailure("capability_unavailable", "graph Issue create --deps requires local Issue targets; external: targets are unavailable", 5)
+		}
+		selector, err := graphPreviewIssueSelector(spec.TargetID)
+		if err != nil {
+			return graphFailure("invalid_selector", "--deps target "+spec.TargetID+": "+err.Error(), 2)
+		}
+		selector.Exact = true
+		createDependencies = append(createDependencies, graphstore.IssueCreateDependency{Target: selector, Type: spec.Type, Reverse: spec.SwapDirection})
+	}
+	silent, _ := cmd.Flags().GetBool("silent")
+	var touchedURL, createdID string
+	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		var record graphstore.IssueRecord
 		if parentSelector != "" {
 			parent, err := store.ShowIssueSelected(ctx, selectedParent)
@@ -212,7 +249,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 			noInherit, _ := cmd.Flags().GetBool("no-inherit-labels")
 			created, err := store.CreateChildIssue(ctx, graphstore.IssueChildCreateRequest{
 				ParentPath: parentPath, ExpectedParentRevision: parent.Revision,
-				InheritLabels: !noInherit, Create: request,
+				InheritLabels: !noInherit, Create: request, Dependencies: createDependencies,
 			})
 			if err != nil {
 				return nil, "", err
@@ -221,7 +258,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		} else {
 			var err error
 			if idRootSet {
-				record, err = store.CreateIssueWithIDRoot(ctx, idRoot, request)
+				record, err = store.CreateIssueWithIDRootAndDependencies(ctx, idRoot, request, createDependencies)
+			} else if len(createDependencies) != 0 {
+				record, err = store.CreateIssueWithDependencies(ctx, path, request, createDependencies)
 			} else {
 				record, err = store.CreateIssue(ctx, path, request)
 			}
@@ -230,7 +269,14 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 			}
 		}
 		touchedURL = record.ID
+		createdID = graphPreviewDisplayLocalURL(record.ID)
 		return record, graphHumanRow(store.ScopeURL(), record), nil
+	}, func(result any, human string) error {
+		if silent && !jsonOutput {
+			// Shipping create prints the ID even when --quiet is also set.
+			return graphPrint(result, createdID, false)
+		}
+		return graphPrint(result, human, quietFlag)
 	})
 	if err == nil {
 		SetLastTouchedID(touchedURL)

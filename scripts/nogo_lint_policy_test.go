@@ -8,8 +8,6 @@ import (
 	"sort"
 	"strings"
 	"testing"
-
-	"gopkg.in/yaml.v3"
 )
 
 // Lint and vet are nogo (//tools/nogo): go test's vet checks plus the
@@ -1192,8 +1190,8 @@ func TestNogoPolicyRejectsMutations(t *testing.T) {
 	}
 
 	check := func(rc, wf string) []string {
-		var workflow ciWorkflow
-		if err := yaml.Unmarshal([]byte(wf), &workflow); err != nil {
+		workflow, err := decodeCIWorkflowForRBE(bazelWorkflowName, []byte(wf), false)
+		if err != nil {
 			t.Fatalf("parse mutated %s: %v", bazelWorkflowName, err)
 		}
 		in := nogoPolicyInputs{rc: rc, workflow: workflow}

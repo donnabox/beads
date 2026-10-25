@@ -3901,7 +3901,7 @@ func collectRunArtifactUploads(t *testing.T, file string, with map[string]string
 			Steps []ciWorkflowStep `yaml:"steps"`
 		} `yaml:"jobs"`
 	}
-	if err := yaml.Unmarshal(data, &doc); err != nil {
+	if err := decodeCIWorkflowYAMLForRBE(file, data, false, &doc); err != nil {
 		t.Fatalf("parse %s: %v", path, err)
 	}
 	inputs := map[string]string{}
@@ -4083,6 +4083,54 @@ func TestBazelWorkflowCacheTopology(t *testing.T) {
 	}
 }
 
+// Exercise the real subprocess boundary without starting Bazel or a storage engine.
+// A failing query must expose its diagnostics and still fail equivalence.
+func TestBazelEquivalenceQueryDiagnostics(t *testing.T) {
+	root := sourceRepoRoot(t)
+	python := requireHostTool(t, "python3")
+	const program = `
+import contextlib, importlib.util, io, os, subprocess, sys, tempfile
+from pathlib import Path
+sys.dont_write_bytecode = True
+spec = importlib.util.spec_from_file_location("equivalence", sys.argv[1])
+eq = importlib.util.module_from_spec(spec); spec.loader.exec_module(eq)
+with tempfile.TemporaryDirectory(prefix="query diagnostics ") as directory:
+    root = Path(directory).resolve()
+    bazel = root / "fake bazel"
+    for code, stdout, stderr in ((7, "partial query output", "actual query error\n"), (7, "", ""), (0, "//a:a_test\n//b:b_test\n", "success noise\n")):
+        bazel.write_text("#!" + sys.executable + "\nimport os, sys\n"
+                         + "assert sys.argv[1:] == " + repr(["query", 'kind("go_test rule", //...)', "--output=label"]) + "\n"
+                         + "assert os.getcwd() == " + repr(str(root)) + "\n"
+                         + "sys.stdout.write(" + repr(stdout) + "); sys.stderr.write(" + repr(stderr) + ")\n"
+                         + "sys.exit(" + str(code) + ")\n")
+        bazel.chmod(0o700)
+        captured = io.StringIO()
+        with contextlib.redirect_stderr(captured):
+            try:
+                result = eq.query_go_test_pkgs(str(root), str(bazel))
+            except subprocess.CalledProcessError as error:
+                assert code == 7, error
+                assert error.returncode == code, error
+                assert error.cmd == [str(bazel), "query", 'kind("go_test rule", //...)', "--output=label"], error.cmd
+                assert error.stdout == stdout and error.stderr == stderr, (error.stdout, error.stderr)
+            else:
+                assert code == 0, "failed query was accepted"
+                assert result == {"a", "b"}, result
+        output = captured.getvalue()
+        if code:
+            assert "Bazel query failed (exit 7)" in output, output
+            assert str(bazel) in output, output
+            if stdout: assert "stdout:" in output and stdout in output, output
+            if stderr: assert "stderr:" in output and stderr in output, output
+        else:
+            assert output == "", output
+`
+	cmd := exec.Command(python, "-c", program, filepath.Join(root, "tools", "bazel", "equivalence.py"))
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("equivalence query diagnostics: %v\n%s", err, out)
+	}
+}
+
 // The lane runs the committed ci config over //..., reports the critical path
 // and the go test equivalence even when tests fail, catches BUILD drift, and
 // hands secrets to nothing but setup-bazel.
@@ -4132,6 +4180,101 @@ func TestBazelWorkflowRunsCIConfigWithReports(t *testing.T) {
 		if !strings.Contains(sync.Run, required) {
 			t.Errorf("sync step does not contain %q:\n%s", required, sync.Run)
 		}
+	}
+}
+
+// The rbe decision binds enabled=true only for remote execution. Keep the
+// local/cache budget that would have let the interrupted #326 BEP finish, while remote
+// and fork execution retain their previous limits.
+func TestBazelTestTimeoutsByExecutionMode(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", bazelWorkflowName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rbe := readCIWorkflow(t, bazelWorkflowName).job(t, bazelRBEJobName)
+	if !strings.Contains(rbe.step(t, "Decide remote execution").Run, "case \"$mode\" in remote|fork-ro|fork-rw) enabled=true ;; esac") {
+		t.Fatal("rbe enabled decision must be restricted to remote and fork modes")
+	}
+	for _, tc := range []struct {
+		mode      string
+		enabled   bool
+		step, job int
+	}{
+		{"local", false, 125, 130},
+		{"cache", false, 125, 130},
+		{"remote", true, 110, 115},
+		{"fork-ro", true, 110, 115},
+		{"fork-rw", true, 110, 115},
+	} {
+		t.Run(tc.mode, func(t *testing.T) {
+			workflow, err := decodeCIWorkflowForRBE(bazelWorkflowName, data, tc.enabled)
+			if err != nil {
+				t.Fatal(err)
+			}
+			job := workflow.job(t, bazelJobName)
+			step := job.step(t, "bazel test //... --config=ci")
+			if job.TimeoutMinutes != tc.job || step.TimeoutMinutes != tc.step || job.TimeoutMinutes-step.TimeoutMinutes != 5 {
+				t.Errorf("job/step timeouts = %d/%d, want %d/%d with 5-minute difference", job.TimeoutMinutes, step.TimeoutMinutes, tc.job, tc.step)
+			}
+			if !contains(job.Needs, bazelRBEJobName) || job.If != "${{ needs.rbe.outputs.mode != 'skip' }}" {
+				t.Errorf("bazel-test must depend on rbe and skip only mode skip: needs=%v if=%q", job.Needs, job.If)
+			}
+		})
+	}
+}
+
+func TestBazelTimeoutDecoderRejectsUnapprovedExpressions(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", bazelWorkflowName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	const jobExpr = "${{ needs.rbe.outputs.enabled == 'true' && 115 || 130 }}"
+	const stepExpr = "${{ needs.rbe.outputs.enabled == 'true' && 110 || 125 }}"
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"changed job", jobExpr, "${{ needs.rbe.outputs.enabled && 115 || 130 }}"},
+		{"changed step", stepExpr, "${{ needs.rbe.outputs.enabled && 110 || 125 }}"},
+		{"missing job expression", jobExpr, "115"},
+		{"missing step expression", stepExpr, "110"},
+		{"wrong step location", "id: test", "id: moved"},
+		{"wrong step name", "name: bazel test //... --config=ci", "name: unexpected bazel test"},
+		{"extra timeout expression", "timeout-minutes: 15", "timeout-minutes: ${{ arbitrary }}"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if !strings.Contains(string(data), tc.old) {
+				t.Fatalf("fixture lacks %q", tc.old)
+			}
+			changed := []byte(strings.Replace(string(data), tc.old, tc.replacement, 1))
+			if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, changed, false); err == nil {
+				t.Fatal("unapproved timeout expression decoded")
+			}
+		})
+	}
+	t.Run("approved expression aliased at another timeout", func(t *testing.T) {
+		anchored := strings.Replace(string(data), "timeout-minutes: "+jobExpr, "timeout-minutes: &budget "+jobExpr, 1)
+		if anchored == string(data) {
+			t.Fatal("fixture lacks approved job timeout")
+		}
+		if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, []byte(anchored), false); err != nil {
+			t.Fatalf("approved anchored timeout must still decode: %v", err)
+		}
+		aliased := strings.Replace(anchored, "timeout-minutes: 15", "timeout-minutes: *budget", 1)
+		if aliased == anchored {
+			t.Fatal("fixture lacks later unrelated timeout")
+		}
+		var document yaml.Node
+		if err := yaml.Unmarshal([]byte(aliased), &document); err != nil {
+			t.Fatalf("alias control must be valid YAML: %v", err)
+		}
+		if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, []byte(aliased), false); err == nil {
+			t.Fatal("approved expression alias at another timeout decoded")
+		}
+	})
+	pr, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", "pr.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := decodeCIWorkflowForRBE("pr.yml", pr, false); err != nil {
+		t.Fatalf("existing integer workflow no longer parses: %v", err)
 	}
 }
 

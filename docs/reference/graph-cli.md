@@ -64,14 +64,22 @@ explicit IDs only so later commands are easy to follow.
 
 ## Create Beads
 
-`bd remember` stores a Memory from text. It preserves the full body. Without
+`bd remember` and `bd memory remember` share one Memory operation, flags,
+output and errors. `bd memory recall`, `bd memory memories` and
+`bd memory forget` likewise use their top-level handlers; legacy workspaces
+retain the same behavior. `bd remember` stores a Memory from text. It preserves the full body. Without
 `--title`, it makes a title from the first nonempty body line (collapsed
 whitespace, at most 80 Unicode characters including an ellipsis) on creation.
 An explicit `--title` is used as supplied. It can also read a body from
-`--body-file PATH` or `--stdin` instead of the positional text. With `--id`,
+`--body TEXT` (including an explicit empty string), `--body-file PATH` or
+`--stdin` instead of the positional text. With `--id`,
 an unused ID creates and an existing Memory updates in place, matching
 ordinary `bd remember --key` behavior. `--create-only` with `--id` refuses
-any previously allocated ID, including one that has been deleted.
+any previously allocated ID, including one that has been deleted. With
+`--create-only`, `--type types/NAME` chooses an installed Memory Type or
+refinement; omission creates plain Memory. An existing Memory's Type is
+preserved by `remember`; use `bd update ID --type types/NAME` to retype it.
+`--status TEXT` supplies a nonblank status property on creation.
 
 ```sh
 bd remember 'Code flow policy: changes land on integration.' --id policy \
@@ -107,9 +115,34 @@ Explicit IDs preserve every segment: no `beads/`, `links/` or `types/` segment
 is silently added or stripped. Local public IDs are opaque within the Scope;
 Resource kind comes from stored facts. A canonical same-Scope URL selects the
 same allocation. Private storage locators are not alternative public IDs.
+`--status` sets the initial Issue status. Without it, a future `--defer DATE`
+makes the Issue `deferred`; otherwise creation defaults to `open`. An explicit
+`--status` wins over `--defer` while retaining the timestamp. The native Issue
+writer validates built-in and configured custom statuses. A graph JSON node
+may specify `defer_until` as an RFC3339 timestamp for the same initial
+deferral.
+
+For an ordinary Issue create, `--deps` accepts local Issue targets with the
+shipping dependency spellings. Bare `ID`, `blocked-by:ID`, and
+`depends-on:ID` make the new Issue depend on that target; `blocks:ID` makes
+the target depend on the new Issue. The Issue and each canonical Link are
+created in one transaction. `--parent` can be combined with local `--deps`;
+the dotted child Issue, its parent Link, and the requested dependency Links
+commit together. A Markdown `--file` batch can also name existing local
+Issues under a `### Dependencies` heading; every heading, native dependency,
+canonical Link, and retained version commits together. Targets must be live
+local Issues. Graph mode explicitly refuses `external:` targets. Use a full
+opaque public Issue ID or same-Scope canonical URL for a target; partial-ID
+abbreviations and dependencies on another new heading in the same file are
+not admitted. Markdown dependency spellings follow the Markdown parser, so
+use a bare ID for an ordinary blocking dependency. A spelling beginning with
+`beads/` remains one literal public ID.
 
 ```sh
-bd create 'Move the release branch' --id work --type task
+bd create 'Move the release branch' --id work --type task --status open
+bd create 'Run release checks' --deps blocked-by:work
+bd create 'Release gate' --id gate
+bd create 'Child release task' --parent work --deps blocked-by:gate
 bd create --type types/memory \
   --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```
@@ -122,6 +155,15 @@ an empty file or stdin replacement needs `--allow-empty-description`.
 ```sh
 bd create 'Review deployment plan' --body-file plan.md
 bd update work --stdin < revised-plan.md
+```
+
+For scripts that need the created Issue ID, use `--silent`. It prints the
+local public ID on one line, including when `--quiet` is set.
+`--json` takes precedence if both output flags are supplied.
+
+```sh
+bd create 'Move the release branch' --id work --silent
+# work
 ```
 
 Use `bd types` in the selected workspace to discover its installed
@@ -168,11 +210,11 @@ BDP Read returns the common `metadata` object on current Issues, Memories,
 informational Links and owned Links, using `{}` when no keys have been set.
 An older retained record can omit `metadata` without rewriting its history.
 
-The Issue filters are `--status` (or `--state`), `--type`, `--title`,
+The Issue filters are `--status` (or `--state`), `--type`, `--id`, `--title`,
 `--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
 `--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
-`--pinned`, `--no-pinned`, `--due-before`, `--due-after`, `--overdue`,
-`--sort` and `--reverse`. Supplying an Issue filter switches `bd list` to the existing Issue query,
+`--pinned`, `--no-pinned`, `--parent`, `--no-parent`, `--ready`, `--due-before`, `--due-after`, `--overdue`,
+`--sort`, `--reverse`, and `--long`. Supplying an Issue filter or `--long` switches `bd list` to the existing Issue query,
 even when an empty value such as `--assignee=` adds no restriction.
 `--type types/NAME` or a full Type URL instead selects a nominal Type;
 a bare `--type task` remains an Issue classification filter. A configured `directory.labels` entry that matches the current
@@ -183,6 +225,26 @@ selected the query. A directory label alone never refuses a nominal `--type`; it
 is not applied to a Memory. Its human rows add status and priority, for example
 `"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
 An Issue filter cannot be combined with a non-Issue nominal `--type`.
+`--long` renders the ordinary detailed Issue presentation, including descriptions
+and labels, for the selected Issue page.
+`--id` accepts comma-separated or repeated native Issue IDs, exact `beads/PATH`
+IDs, or local canonical URLs. It resolves the ID set in the same checked read
+as the Issue query and applies it before the result limit. Missing or non-Issue
+IDs contribute no rows; an ambiguous bare ID requires an explicit path.
+`--no-parent` keeps Issues without a parent-child dependency edge. Like the
+ordinary flat list, an edge-less dotted ID can still appear; the ID alone
+does not establish a parent.
+`--ready` switches to the blocker-aware Issue query and defaults to open
+Issues, as ordinary `bd list --ready` does. An explicit status intersects
+that ready set. Filters the ready query cannot honor are refused instead of
+silently dropped. With `--parent ID`, ready mode selects blocker-free Issue
+descendants recursively, including grandchildren reached through a filtered-out
+intermediary, and prints the ordinary flat ready list.
+Without `--ready`, `--parent ID` selects direct parent-child edges and edge-less dotted children
+under the selected graph Issue ID. It accepts a bare Issue ID or an explicit
+`beads/PATH`; `--filter-parent` is the ordinary compatibility alias. Use
+`--flat`, `--json`, or `--format records-json` with it to list direct children.
+Without a format switch, it renders the bounded recursive parent tree.
 
 `bd list --json` returns the ordinary Issue-only array, including the
 familiar Issue field names and Scope-relative IDs. Memories are omitted from
@@ -190,6 +252,12 @@ that shape. Use `--format records-json` to read all Bead Types as graph
 records; the formats serve different clients and are not interchangeable.
 
 ## Quick task Issues
+
+`bd q TITLE` creates an Issue and prints only its local ID, including with
+`--json`. In a fresh graph workspace, `bd q TITLE --parent PARENT` creates a
+child with a dotted native Issue ID, inherits the parent's labels, and adds
+the parent-child Link in the same transaction. Use `bd create` when you need
+the full Issue result or additional create options.
 
 `bd todo` is a shortcut for regular task Issues in a graph workspace. Add
 creates an open task at P2 by default and assigns it to the current actor.
@@ -380,7 +448,12 @@ For a Memory, `bd remember --id ID` changes only the fields you supply if
 that ID already exists. Omitted title or body stays unchanged, and the current
 revision is accepted by default. `--update ID` remains an existing-only
 spelling; it refuses a missing Memory. A title-only update needs no body
-argument. Add `--if-revision =TOKEN` to either spelling to reject a stale edit.
+argument. `--body TEXT` changes only the body and accepts an explicit empty
+string. `--status TEXT` changes only the nonblank status property. These three
+field shorthands preserve omitted properties and metadata in the checked
+transaction; an identical edit keeps its revision. Add `--if-revision =TOKEN`
+to either spelling to reject a stale edit. The nested `bd memory remember`
+spelling has the same behavior.
 
 ```sh
 bd remember 'Changes now land on the release branch.' --id policy
@@ -458,6 +531,19 @@ exact graph path. They refuse compatibility suffix shorthand, such as `policy`
 for Memory `beads/policy`, because its meaning could change before the write
 transaction. Reads and Link-pair writes retain their separate selector rules.
 
+On a fresh graph workspace, `bd update CHILD --parent PARENT` replaces the
+child's native parent-child dependency and canonical Link in one checked
+transaction. Use `--if-revision =TOKEN` to refuse a stale child. A repeated
+same-parent request makes no new version. Admitted scalar fields such as
+`--title`, `--priority`, and `--description` can accompany the move in the
+same transaction; a scalar edit against the current parent preserves the
+parent Link. The new parent must be a nonempty local Issue; detaching is
+unavailable. Labels are not inherited on reparent.
+
+```sh
+bd update child --parent review --title "Review the release branch"
+```
+
 `bd close ID...` and `bd reopen ID...` accept one or more local Issues. A
 single `--reason` applies to every close target, repeated reasons map to IDs
 in input order, and `--reason-file PATH` preserves the file's literal text.
@@ -471,6 +557,9 @@ session, with `CLAUDE_SESSION_ID` as its fallback. On a single Issue,
 `--if-revision =TOKEN` from `bd show ID --json` refuses a stale close, including
 an already-closed retry. It cannot be combined with multiple IDs,
 `--suggest-next` or `--claim-next`; omission accepts the current revision.
+`bd reopen ID --if-revision =TOKEN` uses the same checked Issue revision. It
+refuses a stale token before an already-open no-op and cannot be combined with
+multiple IDs.
 On a single Issue,
 `--suggest-next` reads Issues that this close newly unblocks; it does not claim
 them. `--claim-next` claims the highest-priority ready Issue in the same
@@ -488,6 +577,7 @@ bd close blocker --suggest-next --reason 'Dependency finished'
 bd close blocker --claim-next --reason 'Dependency finished and next work claimed'
 bd close work --if-revision "=$revision" --reason 'Finished the work'
 bd reopen work review --reason 'Follow-up needed'
+bd reopen work --if-revision "=$revision" --reason 'Follow-up needed'
 ```
 
 `bd delete ID` previews deletion of a Memory or Issue without changing
@@ -552,8 +642,8 @@ bd undefer work --if-revision =REVISION_FROM_SHOW
 
 The graph preview can narrow `bd ready` by priority, Issue classification,
 assignee, label (including glob or regex), top-level metadata, excluded Issue
-type, or defer state and can sort or limit the result. Listing and atomic
-`--claim` use the same native filter. `bd blocked`
+type, or defer state and can sort or limit the result. For options supported
+by both, listing and atomic `--claim` use the same native filter. `bd blocked`
 accepts the ordinary label, label-any, and exclude-label filters. Both use
 the native blocker-aware predicate, then return canonical graph Issue IDs.
 An explicitly supplied blank label filter is an error, so a typo cannot turn
@@ -562,6 +652,7 @@ an intended narrow query into the whole work queue.
 ```sh
 bd ready --priority 2 --type task --limit 10 --json
 bd ready --label release --sort priority
+bd ready --parent beads/release --json
 bd ready --metadata-field team=delivery --exclude-type bug --json
 bd ready --claim --label release --actor rig.agent --json
 bd blocked --label release --json
@@ -571,9 +662,45 @@ bd blocked --label release --json
 records, or an empty array when no matching ready Issue exists. An empty claim
 does not create a claim lease or revision. As with ordinary `ready`, the lazy
 defer-wake before selection may separately version an expired deferred Issue.
-The remaining ordinary ready modes and blocked `--parent` remain in
+`ready --parent` lists ready descendants of a parent Issue. It accepts an
+opaque local Issue ID (including a literal ID containing `beads/`) or its
+canonical Scope URL; an empty
+parent selector is an error. Combining
+`--parent` with `--claim` currently refuses until parent resolution can occur
+inside the atomic claim. The remaining ordinary ready modes remain in
 the [draft CLI specification](/reference/graph-cli-specification-draft)
 and refuse in this graph slice until their supporting graph behavior is ready.
+
+## Change Issue status
+
+`bd update ID --status STATUS` changes a native Issue's lifecycle status. It
+accepts built-in statuses and configured custom statuses, and preserves the
+other Issue fields. Moving into a done status checks open children and live
+blocking dependencies in the same transaction; `--force` overrides that close
+policy, as it does on the shipping update command. A no-op status edit keeps
+the current revision. Use `--if-revision` to reject a stale revision, or
+`--if-status` to require the Issue's current status, or `--if-assignee` to
+require its current assignee (`--if-assignee=''` means unassigned). All guards
+are checked atomically; a stale value refuses even an otherwise no-op edit.
+For literal `closed`, `--session` (or `CLAUDE_SESSION_ID`) records the closing
+session.
+
+```sh
+bd update work --status in_progress --if-revision =REVISION_FROM_SHOW
+bd update work --status closed --force --session review-session
+bd update work --status open --if-status in_progress
+bd update work --assignee review --if-assignee ''
+```
+
+`bd update ID --type CLASS` changes the native Issue classification using the
+shipping type aliases and configured custom types. The Bead retains its public
+identity while its graph Type becomes the concrete native Type for CLASS.
+Unknown classifications refuse, and an unchanged classification does not
+create a new revision. The edit can use `--if-revision`.
+
+```sh
+bd update work --type feature --if-revision =REVISION_FROM_SHOW
+```
 
 ## Edit Issue notes
 
@@ -590,9 +717,10 @@ bd update work --notes 'Revised handoff' --force --if-revision =NEW_REVISION
 bd update work --clear-notes --if-revision =LATEST_REVISION
 ```
 
-`bd assign ID PERSON`, `bd priority ID LEVEL` and `bd note ID TEXT` use the
-same native Issue writer as `bd update`. They accept a current Issue, preserve
-other fields, and reject Memory and Link targets. Assign accepts an optional
+`bd assign ID PERSON`, `bd priority ID LEVEL`, `bd note ID TEXT` and
+`bd tag ID LABEL` use the same native Issue writer as `bd update`. They accept
+a current Issue, preserve other fields, and reject Memory and Link targets.
+Assign accepts an optional
 `--if-revision` graph token and preserves the native live-claim transfer
 fence; `--force` is explicit when that fence must be bypassed. The note command
 also accepts its ordinary `--stdin` and `--file` text sources. These shortcuts
@@ -600,15 +728,27 @@ keep their ordinary Issue-shaped `--json` response; use
 `bd show ID --format graph-json` when the complete graph Resource envelope is
 needed.
 
+`bd label list ID` reads a current Issue's labels through the checked Issue
+detail view, sorted by name. Its `--json` output is an array, including `[]`
+for an unlabeled Issue. A unique native Issue ID abbreviation is accepted;
+Memory and Link targets refuse.
+
 ```sh
 bd priority work 1
 bd note work 'Checklist complete.'
 bd assign work alice
+bd tag work release
 ```
 
+`bd update work --assignee PERSON --force` uses the same live-claim transfer
+rule as `bd assign work PERSON --force`. It can combine the transfer with a
+notes replacement in one guarded update. An explicit `--force=false` leaves
+the transfer fence in place.
+
 An Issue edit accepts the current state by default. A stale `--if-revision`
-refuses even with `--force`; force only authorizes the notes overwrite. An
-identical value or a clear of already-empty notes leaves the revision alone.
+refuses even with `--force`; force authorizes only the requested notes
+overwrite, assignee transfer, or status close policy. An identical value or a clear of already-empty
+notes leaves the revision alone.
 Use `bd versions work` and `bd show work --revision =TOKEN` to inspect prior
 snapshots after an accepted change.
 
@@ -625,13 +765,13 @@ a properties edit.
 bd link policy work --type types/references \
   --id policy-work --properties '{"body":"work follows this policy"}' \
   --metadata '{"origin":"manual"}'
-bd links policy
+bd link list --incident-to policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
 bd link delete --force links/policy-work
 ```
 
-`bd links ID` lists current incident Links with Type first and in-Scope IDs
+`bd link list --incident-to ID` lists current incident Links with Type first and in-Scope IDs
 relative to the Scope URL; JSON retains canonical URLs. `bd link SOURCE TARGET`
 without `--type` is an Issue dependency shorthand. Direct References Links
 are unowned. Other selected families have source ownership: Memory owns
@@ -654,6 +794,12 @@ path. In the two-operand native Issue form, a bare Issue ID may be abbreviated
 when it uniquely identifies a live Issue; ambiguous abbreviations refuse.
 Current `bd show` and `bd link show` reads use the same public-ID rule for
 local spellings. `bd link delete` selects a Link by its Link ID.
+
+On Link collection reads, `bd link list --type KIND` and
+`bd link count --type KIND` select that exact native kind, including custom
+kinds and the literal `depends-on` or `blocked-by` spellings. Use
+`--type types/NAME` for an installed nominal Link Type; canonical collection
+output uses the same family selector without rewriting native kind aliases.
 
 Link updates and removal accept the current Link by default; `--if-revision
 TOKEN` rejects a stale Link. Removal retains the identity and prior snapshots.

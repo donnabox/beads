@@ -45,7 +45,6 @@ func TestGraphPreviewIssueEstimateRefusals(t *testing.T) {
 		code int
 	}{
 		{"negative", []string{"-e", "-1"}, 2},
-		{"status", []string{"-e", "0", "--status=open"}, 5},
 		{"claim", []string{"-e", "0", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

@@ -38,7 +38,7 @@ func TestGraphPreviewRememberFallbackRequiresDefiniteError(t *testing.T) {
 func selectedRememberCommand(t *testing.T, flags []string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
-	for _, name := range []string{"id", "title", "update", "if-revision", "body-file", "key", "properties"} {
+	for _, name := range []string{"id", "title", "type", "status", "update", "if-revision", "body-file", "key", "properties"} {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("stdin", false, "")
@@ -167,6 +167,9 @@ func TestGraphPreviewRememberSelectedRefusesBeforeInput(t *testing.T) {
 		{"create-only-false", []string{"--id=beads/new", "--create-only=false"}, false, 2},
 		{"create-only-with-guard", []string{"--id=beads/new", "--create-only", "--if-revision==observed"}, false, 2},
 		{"create-only-with-update", []string{"--id=beads/new", "--create-only", "--update=beads/plan"}, false, 2},
+		{"create-only-empty-type", []string{"--id=beads/new", "--create-only", "--type="}, false, 2},
+		{"create-only-empty-status", []string{"--id=beads/new", "--create-only", "--status="}, false, 2},
+		{"create-only-empty-title", []string{"--id=beads/new", "--create-only", "--title="}, false, 2},
 		{"malformed-explicit-key", []string{"--key=..", "--if-revision==observed"}, false, 2},
 		{"invalid-title", []string{"--update=beads/plan", "--if-revision==observed", "--title=\xff"}, false, 2},
 		{"legacy-key", []string{"--update=beads/plan", "--if-revision==observed", "--key=legacy"}, false, 2},

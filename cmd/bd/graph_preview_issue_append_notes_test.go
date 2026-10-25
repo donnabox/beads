@@ -94,13 +94,11 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 		{"replacement-notes", []string{"--append-notes=Progress", "--notes=Replacement"}, 2},
 		{"clear-replacement-notes", []string{"--append-notes=Progress", "--notes="}, 2},
 		{"force", []string{"--append-notes=Progress", "--force"}, 2},
-		{"false-force", []string{"--append-notes=Progress", "--force=false"}, 2},
 		{"claim", []string{"--append-notes=Progress", "--claim"}, 5},
 		{"false-claim-direct-request", []string{"--append-notes=Progress", "--claim=false"}, 5},
-		{"workflow", []string{"--append-notes=Progress", "--status=closed"}, 5},
 		{"source-guard", []string{"--append-notes=Progress", "--if-source-revision=other"}, 5},
-		{"assignee-guard", []string{"--append-notes=Progress", "--if-assignee="}, 5},
-		{"status-guard", []string{"--append-notes=Progress", "--if-status=open"}, 5},
+		{"invalid-assignee-guard", []string{"--append-notes=Progress", "--if-assignee=\xff"}, 2},
+		{"empty-status-guard", []string{"--append-notes=Progress", "--if-status="}, 2},
 		{"file", []string{"--append-notes=Progress", "--body-file=missing"}, 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -122,6 +120,12 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--append-notes=Progress", "--stdin=false"), "beads/work")
 	if err != nil || request.AppendNotes == nil || *request.AppendNotes != "Progress" || request.Description != nil {
 		t.Fatalf("false stdin flag changed append edit: %+v %v", request, err)
+	}
+	cmd = issueTextCommand(t, "--append-notes=Progress", "--force=false")
+	appendNotesNoInput(t, cmd)
+	request, err = graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || request.AppendNotes == nil || *request.AppendNotes != "Progress" || request.ForceNotesOverwrite || request.ForceAssigneeTransfer {
+		t.Fatalf("false force changed append intent: %+v %v", request, err)
 	}
 }
 
@@ -160,7 +164,7 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 	t.Run("selected-issue-route", func(t *testing.T) {
 		cmd := issueTextCommand(t, "--append-notes=\xff")
 		appendNotesNoInput(t, cmd)
-		err := runGraphPreviewUpdateIssue(cmd, "beads/work")
+		err := runGraphPreviewUpdateIssue(cmd, "beads/work", "work")
 		var failure *exitError
 		if !errors.As(err, &failure) || failure.Code != 2 {
 			t.Fatalf("selected Issue malformed text reached storage: %v", err)

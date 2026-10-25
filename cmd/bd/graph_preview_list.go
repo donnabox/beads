@@ -17,6 +17,7 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/validation"
 )
@@ -39,6 +40,17 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	in, structured, err := graphIssueListInput(cmd, os.Args[1:])
 	if err != nil {
 		return err
+	}
+	var parent *graphstore.IssueSelector
+	if in.ParentID != "" {
+		selected, err := graphPreviewIssueSelector(in.ParentID)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		parent = &selected
+		// The graph store resolves the selected path to a native Issue ID in
+		// the same checked transaction as the list and its counted projection.
+		in.ParentID = ""
 	}
 	jsonFlag, _ := cmd.Flags().GetBool("json")
 	legacyJSON := !structured && (jsonOutput || jsonFlag)
@@ -78,7 +90,13 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return graphFailure("capability_unavailable", "legacy list JSON contains Issues only", 5)
 		}
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-			page, err := s.ListIssuesLegacy(ctx, in.ListRequest)
+			var page graphstore.LegacyIssueListPage
+			var err error
+			if parent != nil {
+				page, err = s.ListIssuesLegacySelected(ctx, in.ListRequest, *parent)
+			} else {
+				page, err = s.ListIssuesLegacy(ctx, in.ListRequest)
+			}
 			if errors.Is(err, storage.ErrValidation) {
 				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
 			}
@@ -117,8 +135,46 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return nil, output, err
 		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
+	if parent != nil && !in.ReadyFlag && in.prettyFormat && !structured && !legacyJSON && !in.longFormat && !quietFlag {
+		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			tree, err := s.ListIssueTreeSelected(ctx, in.ListRequest, *parent)
+			if errors.Is(err, storage.ErrValidation) {
+				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
+			}
+			if err != nil {
+				return nil, "", err
+			}
+			output, err := renderGraphIssueTree(tree, plan.notice, in.SortBy, in.Reverse)
+			return nil, output, err
+		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
+	}
+	if in.longFormat && !structured && !quietFlag {
+		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			var page graphstore.LegacyIssueListPage
+			var err error
+			if parent != nil {
+				page, err = s.ListIssuesLegacySelected(ctx, in.ListRequest, *parent)
+			} else {
+				page, err = s.ListIssuesLegacy(ctx, in.ListRequest)
+			}
+			if errors.Is(err, storage.ErrValidation) {
+				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
+			}
+			if err != nil {
+				return nil, "", err
+			}
+			output, err := renderGraphIssueLongList(page, plan.notice)
+			return nil, output, err
+		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
+	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		page, err := s.ListIssues(ctx, in.ListRequest)
+		var page graphstore.IssueListPage
+		var err error
+		if parent != nil {
+			page, err = s.ListIssuesSelected(ctx, in.ListRequest, *parent)
+		} else {
+			page, err = s.ListIssues(ctx, in.ListRequest)
+		}
 		if errors.Is(err, storage.ErrValidation) {
 			return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
 		}
@@ -134,7 +190,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "tree", "format", "status", "state", "type", "exact-type", "conforms-to", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "tree", "format", "status", "state", "type", "exact-type", "conforms-to", "all", "limit", "id", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "parent", "filter-parent", "no-parent", "ready", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments", "long"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -149,7 +205,10 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	}
 	flat, _ := cmd.Flags().GetBool("flat")
 	tree, _ := cmd.Flags().GetBool("tree")
-	if (cmd.Flags().Changed("format") && !structured && !legacyFormatJSON) || (cmd.Flags().Changed("flat") && !flat) || (cmd.Flags().Changed("tree") && tree) {
+	parentValue, _ := cmd.Flags().GetString("parent")
+	filterParentValue, _ := cmd.Flags().GetString("filter-parent")
+	parentTree := parentValue != "" || filterParentValue != ""
+	if (cmd.Flags().Changed("format") && !structured && !legacyFormatJSON) || (cmd.Flags().Changed("flat") && !flat) || (cmd.Flags().Changed("tree") && tree && !parentTree) {
 		return fail("capability_unavailable", "graph list supports flat output, Issue-only --json/--format json, or --format records-json; tree output is unavailable", 5)
 	}
 	if err := graphIssueListRepeatedFilters(cmd, argv); err != nil {
@@ -165,8 +224,8 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 		}
 	}
 	sort, _ := cmd.Flags().GetString("sort")
-	if !map[string]bool{"": true, "priority": true, "created": true, "updated": true, "title": true, "status": true, "type": true}[sort] {
-		return fail("capability_unavailable", "graph list supports sort priority, created, updated, title, status or type", 5)
+	if !map[string]bool{"": true, "priority": true, "created": true, "updated": true, "closed": true, "title": true, "status": true, "type": true, "id": true, "assignee": true}[sort] {
+		return fail("capability_unavailable", "graph list supports sort priority, created, updated, closed, title, status, type, id or assignee", 5)
 	}
 	for _, name := range []string{"priority", "priority-min", "priority-max"} {
 		if cmd.Flags().Changed(name) {
@@ -203,6 +262,12 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	in, err := gatherListInput(cmd)
 	if err != nil {
 		return listInput{}, false, err
+	}
+	if (cmd.Flags().Changed("parent") || cmd.Flags().Changed("filter-parent")) && in.ParentID == "" {
+		return fail("invalid_selector", "--parent requires an Issue ID", 2)
+	}
+	if in.ParentID != "" && !in.ReadyFlag && quietFlag && !structured && !in.jsonOutput && !jsonFlag && !legacyFormatJSON && !flat && !(cmd.Flags().Changed("tree") && !tree) {
+		return fail("capability_unavailable", "graph list --parent --quiet currently requires --flat or JSON", 5)
 	}
 	// pflag returns a non-nil empty slice for an omitted StringSlice flag.
 	// Admission already refused explicit --exclude-type, including an empty one.
@@ -258,7 +323,7 @@ func (v *graphIssueListFlagCount) Type() string     { return v.kind }
 // An unfiltered graph list, or one narrowed only by nominal Bead Type, reads
 // the complete checked current inventory and projects its Beads. The options
 // below select the Issue query instead, and the notice names them in this order.
-var graphIssueListOptions = []string{"status", "state", "type", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"}
+var graphIssueListOptions = []string{"status", "state", "type", "id", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "parent", "filter-parent", "no-parent", "ready", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "long"}
 
 // graphIssueListTypedOptions names the Issue options the caller supplied, in
 // canonical order. A supplied flag counts even when its value, such as an empty
@@ -372,6 +437,108 @@ func renderGraphIssueList(page graphstore.IssueListPage, notice string, structur
 	}
 	if output.Len() > graphIssueListOutputLimit {
 		return "", fmt.Errorf("%w: Issue list output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+	}
+	return output.String(), nil
+}
+
+func renderGraphIssueLongList(page graphstore.LegacyIssueListPage, notice string) (string, error) {
+	var human strings.Builder
+	fmt.Fprintf(&human, "\nFound %d issues:\n\n", len(page.Items))
+	if notice != "" {
+		human.WriteString(notice + "\n\n")
+	}
+	for _, row := range page.Items {
+		if row == nil || row.Issue == nil {
+			return "", fmt.Errorf("%w: Issue list returned an empty row", graphstore.ErrInvalidStore)
+		}
+		formatIssueLong(&human, row.Issue, row.Labels, false)
+	}
+	if page.HasMore {
+		human.WriteString("More matching Issues exist; increase --limit or use --all within preview bounds.\n")
+	}
+	if human.Len() > graphIssueListOutputLimit {
+		return "", fmt.Errorf("%w: Issue list output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+	}
+	return human.String(), nil
+}
+
+func renderGraphIssueTree(tree graphstore.IssueTreeSelected, notice, sortBy string, reverse bool) (string, error) {
+	if tree.Root == nil {
+		return "", fmt.Errorf("%w: Issue tree has no root", graphstore.ErrInvalidStore)
+	}
+	var output strings.Builder
+	if notice != "" {
+		output.WriteString(notice + "\n")
+	}
+	if len(tree.Items) == 0 {
+		fmt.Fprintf(&output, "Issue '%s' has no children\n", tree.Root.ID)
+		return output.String(), nil
+	}
+	byID := map[string]*types.Issue{tree.Root.ID: tree.Root}
+	for _, item := range tree.Items {
+		if item == nil || item.ID == "" || byID[item.ID] != nil {
+			return "", fmt.Errorf("%w: invalid Issue tree row", graphstore.ErrInvalidStore)
+		}
+		byID[item.ID] = item
+	}
+	compare := compareIssuesForTree(sortBy, reverse)
+	var walk func(string, string, map[string]bool) error
+	walk = func(parentID, prefix string, onPath map[string]bool) error {
+		childIDs := tree.Children[parentID]
+		children := make([]*types.Issue, 0, len(childIDs))
+		for _, childID := range childIDs {
+			child := byID[childID]
+			if child == nil {
+				return fmt.Errorf("%w: Issue tree references an absent child", graphstore.ErrInvalidStore)
+			}
+			children = append(children, child)
+		}
+		slices.SortFunc(children, compare)
+		for i, child := range children {
+			last := i == len(children)-1
+			connector, extension := "├── ", "│   "
+			if last {
+				connector, extension = "└── ", "    "
+			}
+			fmt.Fprintf(&output, "%s%s%s", prefix, connector, formatPrettyIssueGated(child, nil))
+			if onPath[child.ID] {
+				output.WriteString(" " + treeCycleMarker + "\n")
+				if output.Len() > graphIssueListOutputLimit {
+					return fmt.Errorf("%w: Issue tree output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+				}
+				continue
+			}
+			output.WriteByte('\n')
+			if output.Len() > graphIssueListOutputLimit {
+				return fmt.Errorf("%w: Issue tree output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+			}
+			onPath[child.ID] = true
+			if err := walk(child.ID, prefix+extension, onPath); err != nil {
+				return err
+			}
+			delete(onPath, child.ID)
+		}
+		return nil
+	}
+	fmt.Fprintln(&output, formatPrettyIssueGated(tree.Root, nil))
+	if err := walk(tree.Root.ID, "", map[string]bool{tree.Root.ID: true}); err != nil {
+		return "", err
+	}
+	open, inProgress := 0, 0
+	for _, item := range append([]*types.Issue{tree.Root}, tree.Items...) {
+		switch item.Status {
+		case types.StatusOpen:
+			open++
+		case types.StatusInProgress:
+			inProgress++
+		}
+	}
+	output.WriteString("\n" + strings.Repeat("-", 80) + "\n")
+	output.WriteString(listFooterLine(len(tree.Items)+1, open, inProgress, false, false, "") + "\n\n")
+	output.WriteString("Status: ○ open  ◐ in_progress  ● blocked  ✓ closed  ❄ deferred\n")
+	output.WriteString("Priority: P0–P4 (label only; not a status icon)\n")
+	if output.Len() > graphIssueListOutputLimit {
+		return "", fmt.Errorf("%w: Issue tree output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
 	}
 	return output.String(), nil
 }

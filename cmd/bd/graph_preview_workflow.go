@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -128,8 +130,13 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		}
 		raw = string(native)
 	}
-	depType := canonicalDependencyType(types.DependencyType(raw))
-	if !depType.IsWellKnown() {
+	depType := types.DependencyType(raw)
+	if cmd.Name() != "link" {
+		// dep add and generic create retain their own well-known-kind policy
+		// and aliases. Shipping positional bd link stores the chosen kind.
+		depType = canonicalDependencyType(depType)
+	}
+	if !depType.IsValid() || !utf8.ValidString(string(depType)) || (cmd.Name() != "link" && !depType.IsWellKnown()) {
 		return graphFailure("capability_unavailable", "Dependency type is not registered in this preview", 5)
 	}
 	linkPath := ""
@@ -144,6 +151,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	}
 	ownedCreate := cmd.Name() == "create" && cmd.Flags().Lookup("from") != nil
 	guardedShorthand := cmd.Name() == "link" && cmd.Flags().Changed("if-source-revision")
+	familiarLink := cmd.Name() == "link" && !cmd.Flags().Changed("id") && !guardedShorthand
 	if ownedCreate || guardedShorthand {
 		sourceRevision, _ = cmd.Flags().GetString("if-source-revision")
 		if cmd.Flags().Changed("if-source-revision") && sourceRevision == "" {
@@ -157,7 +165,11 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 			return graphFailure("capability_unavailable", "this workspace generation does not support that native Dependency kind", 5)
 		}
 	}
-	familiarLink := cmd.Name() == "link" && !cmd.Flags().Changed("id") && !cmd.Flags().Changed("if-source-revision")
+	if familiarLink {
+		// The shipping two-operand route admits a valid native kind even when
+		// it has no separately installed Type selector in this workspace.
+		selectedType = ""
+	}
 	idRoot, _, err := graphPreviewGeneratedIDRoot(cmd)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
@@ -608,7 +620,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 }
 
 func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "limit", "priority", "assignee", "unassigned", "sort", "label", "label-any", "exclude-label", "label-pattern", "label-regex", "type", "exclude-type", "metadata-field", "has-metadata-key", "include-deferred", "claim"); err != nil {
+	if err := graphPreviewFlags(cmd, "limit", "priority", "assignee", "unassigned", "sort", "label", "label-any", "exclude-label", "label-pattern", "label-regex", "type", "exclude-type", "metadata-field", "has-metadata-key", "include-deferred", "claim", "parent"); err != nil {
 		return err
 	}
 	if len(args) != 0 {
@@ -620,6 +632,12 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 	in, err := gatherReadyInput(cmd, nil)
 	if err != nil {
 		return err
+	}
+	if in.claim && cmd.Flags().Changed("parent") {
+		return graphFailure("capability_unavailable", "ready --claim --parent is not available in graph workspaces yet", 5)
+	}
+	if cmd.Flags().Changed("parent") && strings.TrimSpace(in.ParentID) == "" {
+		return graphFailure("invalid_selector", "ready --parent requires a nonempty Issue ID", 2)
 	}
 	// The legacy resolver warns and ignores malformed environment values.
 	// This deliberately bounded preview refuses unsupported policy instead.
@@ -649,7 +667,24 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 		})
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		issues, err := store.ReadyIssuesFiltered(ctx, in.filter)
+		filter := in.filter
+		if in.ParentID != "" {
+			selector, err := graphPreviewIssueSelector(in.ParentID)
+			if err != nil {
+				return nil, "", graphFailure("invalid_selector", err.Error(), 2)
+			}
+			parent, err := store.ShowIssueSelected(ctx, selector)
+			// ParentID is a native/public Issue ID. The selector's synthetic
+			// beads/ path candidate may name a different literal public ID.
+			parentID := selector.NativeID
+			if err == nil {
+				parentID = parent.Properties.ID
+			} else if !errors.Is(err, graphstore.ErrNotFound) && !errors.Is(err, graphstore.ErrGone) {
+				return nil, "", err
+			}
+			filter.ParentID = &parentID
+		}
+		issues, err := store.ReadyIssuesFiltered(ctx, filter)
 		if err != nil {
 			return nil, "", err
 		}

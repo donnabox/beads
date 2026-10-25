@@ -29,6 +29,22 @@ func normalizeIssueDue(value *time.Time) (*time.Time, error) {
 	return &result, nil
 }
 
+// DeferUntil uses the same native DATETIME(0) cell as due_at. Normalize it
+// before comparing the native result with the graph create request, so both
+// the retained graph record and the native row describe the same instant.
+func normalizeIssueDefer(value *time.Time) (*time.Time, error) {
+	if value == nil {
+		return nil, nil
+	}
+	issue := types.Issue{DeferUntil: value}
+	issue.NormalizeOptionalTimestampsToUTC()
+	result := issue.DeferUntil.Round(time.Second)
+	if result.Year() < 1 || result.Year() > 9999 {
+		return nil, fmt.Errorf("%w: Issue defer date year must be between 1 and 9999 after rounding", storage.ErrValidation)
+	}
+	return &result, nil
+}
+
 func sameIssueDue(a, b *time.Time) bool {
 	return (a == nil && b == nil) || (a != nil && b != nil && a.Equal(*b))
 }

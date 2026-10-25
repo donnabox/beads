@@ -32,6 +32,9 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		}
 		args = []string{lastTouched}
 	}
+	if len(args) > 1 {
+		return runGraphPreviewUpdateIssues(cmd, args)
+	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph update requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
 	}
@@ -39,6 +42,9 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	var err error
 	if _, _, err := graphPreviewResourceReadSelector(selector); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if cmd.Flags().Changed("parent") {
+		return runGraphPreviewReparentIssue(cmd, selector)
 	}
 	// Preserve the C0 refusal boundary: unsupported patch flags and guards
 	// fail before opening the selected workspace or consuming patch input.
@@ -78,6 +84,30 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	}
 	path, err := resolve(selector)
 	if err != nil {
+		// A write-reference refusal must not become a native-ID abbreviation
+		// lookup, even when a separate Issue owns the literal ID@revision.
+		if _, referenceErr := graphPreviewWritableIdentity(selector); referenceErr != nil {
+			return err
+		}
+		// A bare native Issue abbreviation has no exact public allocation.
+		// Keep its selection inside UpdateIssue's checked write transaction.
+		if graphPreviewIssueEditFlagsChanged(cmd) && !cmd.Flags().Changed("from-revision") && !cmd.Flags().Changed("patch") && !cmd.Flags().Changed("replace-properties") {
+			if selected, selectErr := graphPreviewIssueSelector(selector); selectErr == nil && !selected.Exact {
+				// The read confirms this is an Issue before parsing Issue-only input.
+				// UpdateIssue resolves the abbreviation again in its write transaction.
+				var confirmed graphstore.IssueRecord
+				if readErr := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+					var readErr error
+					confirmed, readErr = store.ShowIssueSelected(ctx, selected)
+					return nil, "", readErr
+				}, func(any, string) error { return nil }); readErr != nil {
+					return readErr
+				}
+				// Resolve a local ordinal against the confirmed full public ID.
+				// The writer still resolves the abbreviation and checks the guard.
+				return runGraphPreviewUpdateIssue(cmd, selected.Path, selector, confirmed.ID)
+			}
+		}
 		return err
 	}
 	if graphPreviewLinkPinFlagsChanged(cmd) && !strings.HasPrefix(path, "links/") {
@@ -105,7 +135,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if native {
-			return runGraphPreviewUpdateIssue(cmd, path)
+			return runGraphPreviewUpdateIssue(cmd, path, selector)
 		}
 		return runGraphPreviewUpdateMemory(cmd, path)
 	}
@@ -119,7 +149,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewUpdateLink(cmd, []string{selector})
 	}
 	if graphPreviewIssueEditFlagsChanged(cmd) {
-		return runGraphPreviewUpdateIssue(cmd, path)
+		return runGraphPreviewUpdateIssue(cmd, path, selector)
 	}
 	return runGraphPreviewUpdateMemory(cmd, path)
 }

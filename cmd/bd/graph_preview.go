@@ -76,6 +76,9 @@ func init() {
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
 	rememberCmd.Flags().String("id", "", "Literal public Memory ID; creates or updates the same identity (--key is compatible; omitted ID derives from content in graph mode)")
 	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)")
+	rememberCmd.Flags().String("body", "", "Explicit Memory body, including an empty body (graph preview only)")
+	rememberCmd.Flags().String("status", "", "Nonblank Memory status property on create or update (graph preview only)")
+	rememberCmd.Flags().String("type", "", "Installed Memory Type or refinement for --create-only (graph preview only)")
 	rememberCmd.Flags().String("metadata", "", "Merge a JSON object into an existing Memory, or set initial metadata on create (graph preview only)")
 	rememberCmd.Flags().String("replace-metadata", "", "Replace all Memory metadata with a JSON object on an existing-ID edit (graph preview only)")
 	rememberCmd.Flags().String("properties", "", "Initialize or merge named Memory properties from a JSON object, @file, or @- (graph preview only)")
@@ -236,7 +239,11 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	// Explicit graph list and discovery formats select structured admission errors.
 	// Reset this state for every command; ordinary output policy is unchanged.
 	format, _ := cmd.Flags().GetString("format")
-	graphPreviewStructuredErrors = (cmd == memoriesCmd && format == "records-json") || (cmd == listCmd && (format == "records-json" || strings.EqualFold(format, "json"))) || ((cmd == searchCmd || cmd == countCmd || cmd == queryCmd) && cmd.Flags().Changed("format"))
+	memoryCommand := cmd
+	if top := graphPreviewMemoryTopCommand(cmd); top != nil {
+		memoryCommand = top
+	}
+	graphPreviewStructuredErrors = (memoryCommand == memoriesCmd && format == "records-json") || (cmd == listCmd && (format == "records-json" || strings.EqualFold(format, "json"))) || ((cmd == searchCmd || cmd == countCmd || cmd == queryCmd) && cmd.Flags().Changed("format"))
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir, graphPreviewTypeGeneration = false, nil, "", 0
 	flag, _ := cmd.Flags().GetString("graph-mode")
 	env := os.Getenv("BD_GRAPH_MODE")
@@ -340,16 +347,16 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		}
 		// delete's --if-revision is upstream's compare-and-swap here, not a graph
 		// guard: only forget's --if-revision is graph-only.
-		if cmd == forgetCmd && cmd.Flags().Changed("if-revision") {
+		if memoryCommand == forgetCmd && cmd.Flags().Changed("if-revision") {
 			return true, graphFailure("capability_unavailable", "Memory deletion guards require a workspace initialized with graph_mode link", 5)
 		}
-		if cmd == memoriesCmd && (cmd.Flags().Changed("all") || cmd.Flags().Changed("details") || (cmd.Flags().Changed("format") && !strings.EqualFold(format, "json"))) {
+		if memoryCommand == memoriesCmd && (cmd.Flags().Changed("all") || cmd.Flags().Changed("details") || (cmd.Flags().Changed("format") && !strings.EqualFold(format, "json"))) {
 			return true, graphFailure("capability_unavailable", "Memory discovery options require an experimental graph workspace", 5)
 		}
 		if cmd == showCmd && cmd.Flags().Changed("format") {
 			return true, graphFailure("capability_unavailable", "--format requires an experimental graph workspace", 5)
 		}
-		if (cmd == showCmd || cmd == recallCmd) && cmd.Flags().Changed("revision") {
+		if (cmd == showCmd || memoryCommand == recallCmd) && cmd.Flags().Changed("revision") {
 			return true, graphFailure("capability_unavailable", "--revision requires an experimental graph workspace", 5)
 		}
 		if cmd == graphCompareCmd || graphPreviewLinkNamespaceCommand(cmd) || graphPreviewMemoryNamespaceCommand(cmd) {
@@ -369,7 +376,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == updateCmd && (graphPreviewLinkPinFlagsChanged(cmd) || cmd.Flags().Changed("patch") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-source-revision")) {
 			return true, graphFailure("capability_unavailable", "generic update options require a workspace initialized with graph_mode link", 5)
 		}
-		if (cmd == rememberCmd && rememberGraphFlagsChanged(cmd)) || (cmd == initCmd && cmd.Flags().Changed("scope-url")) || (cmd == statusCmd && cmd.Flags().Changed("graph")) {
+		if (memoryCommand == rememberCmd && rememberGraphFlagsChanged(cmd)) || (cmd == initCmd && cmd.Flags().Changed("scope-url")) || (cmd == statusCmd && cmd.Flags().Changed("graph")) {
 			return true, graphFailure("capability_unavailable", "these graph options require a workspace initialized with graph_mode link", 5)
 		}
 		return false, nil
@@ -394,13 +401,13 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	case supersedeCmd:
 		return true, graphFailure("capability_unavailable", "graph supersede requires one atomic supersedes edge and native close reason; this graph CLI does not provide that journey yet", 5)
 	}
-	if !graphPreviewMemoryNamespaceCommand(cmd) && !graphPreviewLinkNamespaceCommand(cmd) && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
+	if !graphPreviewMemoryNamespaceCommand(cmd) && !graphPreviewLinkNamespaceCommand(cmd) && graphPreviewMemoryTopCommand(cmd) == nil && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != labelListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != tagCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
 		// runGraphPreviewVersions. Admission suppresses legacy store opening,
 		// so admitting a command WITHOUT its dispatch makes it panic on a nil
 		// store rather than refuse. See the note in history.go.
-		return true, graphFailure("capability_unavailable", "this graph preview supports import of legacy data into fresh workspaces, remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, comment, comments add, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link and link create/list/show/update/delete/versions/compare/count, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, children, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
+		return true, graphFailure("capability_unavailable", "this graph preview supports import of legacy data into fresh workspaces, remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, tag, comment, comments add, label list, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link and link create/list/show/update/delete/versions/compare/count, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, children, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = true, cfg, dir
 	graphPreviewTypeGeneration = graphstore.TypeGeneration
@@ -633,7 +640,7 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "key", "title", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "replace-properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "key", "title", "body", "status", "type", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "replace-properties"); err != nil {
 		return err
 	}
 	if cmd.Flags().Changed("id") && cmd.Flags().Changed("key") {
@@ -656,6 +663,9 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", "--create-only requires explicit --id/--key and cannot combine with write guards or --update", 2)
 		}
 	}
+	if cmd.Flags().Changed("type") && !cmd.Flags().Changed("create-only") {
+		return graphFailure("invalid_selector", "remember --type requires --create-only; use bd update to retype an existing Memory", 2)
+	}
 	if explicit {
 		name := "id"
 		if cmd.Flags().Changed("key") {
@@ -668,6 +678,9 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		if _, err := graphstore.PrepareMemoryIdentity(graphstore.CreateRequest{PublicID: id}); err != nil {
 			return graphStorageError(err)
 		}
+		if cmd.Flags().Changed("create-only") {
+			return runGraphPreviewRememberCreateOnly(cmd, args, id)
+		}
 	}
 	if cmd.Flags().Changed("update") {
 		if explicit {
@@ -676,6 +689,10 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewRememberUpdate(cmd, args)
 	}
 	title, body, err := graphPreviewRememberPatchInput(cmd, args)
+	if err != nil {
+		return err
+	}
+	status, err := graphPreviewRememberStatus(cmd)
 	if err != nil {
 		return err
 	}
@@ -711,27 +728,7 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 			}, func(_ any, body string) error { _, err := fmt.Fprintln(cmd.OutOrStdout(), body); return err })
 		}
 	}
-	if cmd.Flags().Changed("create-only") {
-		if body == nil {
-			return graphFailure("invalid_properties", "Memory creation requires a body", 2)
-		}
-		if title != nil && strings.TrimSpace(*title) == "" {
-			return graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
-		}
-		createTitle := graphPreviewMemoryTitle(*body)
-		if title != nil {
-			createTitle = *title
-		}
-		metadata, err := graphPreviewMetadataCreate(cmd)
-		if err != nil {
-			return err
-		}
-		return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-			r, err := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, Title: createTitle, Body: *body, Actor: getActorWithGit(), Metadata: metadata})
-			return r, graphHumanRow(store.ScopeURL(), r), err
-		})
-	}
-	return runGraphPreviewRememberUpsert(cmd, publicID, title, body)
+	return runGraphPreviewRememberUpsert(cmd, publicID, title, body, status)
 }
 
 func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
@@ -1035,7 +1032,7 @@ func graphStorageErrorWithFallback(err error, fallback string) error {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	case errors.Is(err, publicops.ErrNotesOverwrite):
 		return graphFailure("notes_overwrite_refused", err.Error()+"; use --force to replace existing notes or --append-notes to preserve them", 4)
-	case errors.Is(err, storage.ErrCloseBlocked), errors.Is(err, storage.ErrCloseOpenChildren), errors.Is(err, storage.ErrAlreadyClaimed), errors.Is(err, storage.ErrNotClaimable), errors.Is(err, storage.ErrNotOwner), errors.Is(err, storage.ErrAssigneeMismatch), errors.Is(err, publicops.ErrNotClaimed), errors.Is(err, publicops.ErrNotReleasable):
+	case errors.Is(err, storage.ErrCloseBlocked), errors.Is(err, storage.ErrCloseOpenChildren), errors.Is(err, storage.ErrAlreadyClaimed), errors.Is(err, storage.ErrNotClaimable), errors.Is(err, storage.ErrNotOwner), errors.Is(err, storage.ErrAssigneeMismatch), errors.Is(err, storage.ErrStatusMismatch), errors.Is(err, publicops.ErrNotClaimed), errors.Is(err, publicops.ErrNotReleasable):
 		return graphFailure("constraint_violation", err.Error(), 4)
 	case errors.Is(err, graphstore.ErrAlreadyExists), errors.Is(err, storage.ErrAlreadyExists), errors.Is(err, publicops.ErrAlreadyExists):
 		return graphFailure("identity_reserved", err.Error(), 4)

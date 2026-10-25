@@ -4,10 +4,12 @@ package graphstore
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 )
@@ -15,53 +17,72 @@ import (
 func TestMemoryPublicIdentityExactLifecycle(t *testing.T) {
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
-			ctx, _, s := memoryDeleteStore(t, engine)
-			keys := []string{"plain", "PLAIN", "snow/%E9%9B%AA", "%C3%A9", "e%CC%81", "beads/plain", "beads/free", "links/memory", "types/memory-copy", "a@b", strings.Repeat("long", 600)}
-			for _, key := range keys {
-				body := "  Exact body\n雪\n"
-				created, err := s.Create(ctx, CreateRequest{PublicID: key, Title: "Independent title", Body: body})
-				if err != nil {
-					t.Fatal(err)
-				}
-				path, err := s.ResolveExactAllocatedResourcePath(ctx, key)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if created.ID != s.ScopeURL()+key || created.PublicID != key || created.Properties.Body != body {
-					t.Fatalf("identity/content changed: %+v", created)
-				}
-				selected, err := s.ResolveExactAllocatedResourcePath(ctx, key)
-				if err != nil || selected != path {
-					t.Fatalf("resolve %q: %q %v", key, selected, err)
-				}
-				_, read, err := s.ReadResourceSelected(ctx, "beads/"+key, key)
-				if err != nil || !reflect.DeepEqual(read, created) {
-					t.Fatalf("read %q: %+v %v", key, read, err)
-				}
-				retained, err := s.ReadVersion(ctx, created.ID, created.Revision)
-				if err != nil || !reflect.DeepEqual(retained, created) {
-					t.Fatalf("retained %q: %+v %v", key, retained, err)
-				}
-				next := "Replacement body"
-				edited, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, Body: &next, ExpectedRevision: created.Revision})
-				if err != nil || edited.Memory.PublicID != key || edited.Memory.Properties.Title != created.Properties.Title {
-					t.Fatalf("overwrite: %+v %v", edited, err)
-				}
-				deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: path, ExpectedRevision: edited.Memory.Revision})
-				if err != nil || deleted.Terminal == nil {
-					t.Fatalf("delete: %+v %v", deleted, err)
-				}
-				before := workflowState(t, ctx, s)
-				if _, err := s.Create(ctx, CreateRequest{PublicID: key, Title: "Forbidden reuse"}); !errors.Is(err, ErrAlreadyExists) {
-					t.Fatalf("reuse: %v", err)
-				}
-				if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-					t.Fatal("reuse changed state")
-				}
-				restored, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, FromRevision: created.Revision, ExpectedRevision: deleted.Terminal.Revision})
-				if err != nil || restored.Memory.PublicID != key || restored.Memory.ID != created.ID || restored.Memory.Revision == created.Revision {
-					t.Fatalf("recovery: %+v %v", restored, err)
-				}
+			// The fixture's 90-second context bounds Init/Open. The Store does
+			// not retain it; each lifecycle needs a fresh operation budget.
+			_, _, s := memoryDeleteStore(t, engine)
+			cases := []struct{ name, key string }{
+				{"plain", "plain"},
+				{"upper", "PLAIN"},
+				{"encoded-snow", "snow/%E9%9B%AA"},
+				{"encoded-composed", "%C3%A9"},
+				{"encoded-decomposed", "e%CC%81"},
+				{"beads-plain", "beads/plain"},
+				{"beads-free", "beads/free"},
+				{"links-memory", "links/memory"},
+				{"types-memory-copy", "types/memory-copy"},
+				{"at-sign", "a@b"},
+				{"long", strings.Repeat("long", 600)},
+			}
+			for _, tc := range cases {
+				t.Run(tc.name, func(t *testing.T) {
+					ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+					t.Cleanup(cancel)
+					key := tc.key
+					body := "  Exact body\n雪\n"
+					created, err := s.Create(ctx, CreateRequest{PublicID: key, Title: "Independent title", Body: body})
+					if err != nil {
+						t.Fatal(err)
+					}
+					path, err := s.ResolveExactAllocatedResourcePath(ctx, key)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if created.ID != s.ScopeURL()+key || created.PublicID != key || created.Properties.Body != body {
+						t.Fatalf("identity/content changed: %+v", created)
+					}
+					selected, err := s.ResolveExactAllocatedResourcePath(ctx, key)
+					if err != nil || selected != path {
+						t.Fatalf("resolve %q: %q %v", key, selected, err)
+					}
+					_, read, err := s.ReadResourceSelected(ctx, "beads/"+key, key)
+					if err != nil || !reflect.DeepEqual(read, created) {
+						t.Fatalf("read %q: %+v %v", key, read, err)
+					}
+					retained, err := s.ReadVersion(ctx, created.ID, created.Revision)
+					if err != nil || !reflect.DeepEqual(retained, created) {
+						t.Fatalf("retained %q: %+v %v", key, retained, err)
+					}
+					next := "Replacement body"
+					edited, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, Body: &next, ExpectedRevision: created.Revision})
+					if err != nil || edited.Memory.PublicID != key || edited.Memory.Properties.Title != created.Properties.Title {
+						t.Fatalf("overwrite: %+v %v", edited, err)
+					}
+					deleted, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: path, ExpectedRevision: edited.Memory.Revision})
+					if err != nil || deleted.Terminal == nil {
+						t.Fatalf("delete: %+v %v", deleted, err)
+					}
+					before := workflowState(t, ctx, s)
+					if _, err := s.Create(ctx, CreateRequest{PublicID: key, Title: "Forbidden reuse"}); !errors.Is(err, ErrAlreadyExists) {
+						t.Fatalf("reuse: %v", err)
+					}
+					if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+						t.Fatal("reuse changed state")
+					}
+					restored, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, FromRevision: created.Revision, ExpectedRevision: deleted.Terminal.Revision})
+					if err != nil || restored.Memory.PublicID != key || restored.Memory.ID != created.ID || restored.Memory.Revision == created.Revision {
+						t.Fatalf("recovery: %+v %v", restored, err)
+					}
+				})
 			}
 		})
 	}

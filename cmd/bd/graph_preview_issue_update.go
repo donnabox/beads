@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -12,11 +14,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/validation"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "body-file", "description-file", "stdin", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "body-file", "description-file", "stdin", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due", "status", "add-label", "remove-label", "set-labels"}
 
 func graphPreviewDescriptionFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range []string{"description", "body", "message", "body-file", "description-file"} {
@@ -40,13 +43,20 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // This narrow preview keeps familiar Issue field meanings while requiring the
 // existing opaque graph guard for a canonical Resource selector. Broader
 // workflow flags remain explicit refusals; legacy routing is unchanged.
-func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
+func graphPreviewIssueEditRequest(cmd *cobra.Command, path string, identity ...string) (graphstore.UpdateIssueRequest, error) {
+	return graphPreviewIssueEditRequestWithParent(cmd, path, false, identity...)
+}
+
+func graphPreviewIssueEditRequestWithParent(cmd *cobra.Command, path string, allowParent bool, identity ...string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"type", "if-revision", "force", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"type", "if-revision", "if-status", "if-assignee", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
+	if allowParent {
+		allowed = append(allowed, "parent")
+	}
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
-	if !graphPreviewIssueEditFlagsChanged(cmd) && !graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("type") {
+	if !graphPreviewIssueEditFlagsChanged(cmd) && !graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("type") && !allowParent {
 		return request, graphFailure("invalid_properties", "Issue update requires at least one supported field", 2)
 	}
 	var err error
@@ -59,11 +69,44 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		return request, err
 	}
 	request.Metadata = metadata
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
+	if cmd.Flags().Changed("set-labels") {
+		values, _ := cmd.Flags().GetStringSlice("set-labels")
+		request.Labels.Replace = publicops.Field[[]string]{Set: true, Value: utils.NormalizeLabels(values)}
+		warnLabelsContainingWhitespace(request.Labels.Replace.Value)
+	}
+	if cmd.Flags().Changed("add-label") {
+		values, _ := cmd.Flags().GetStringSlice("add-label")
+		request.Labels.Add = utils.NormalizeLabels(values)
+		warnLabelsContainingWhitespace(request.Labels.Add)
+	}
+	if cmd.Flags().Changed("remove-label") {
+		values, _ := cmd.Flags().GetStringSlice("remove-label")
+		request.Labels.Remove = utils.NormalizeLabels(values)
+	}
+	revisionIdentity, privatePath := path, true
+	if len(identity) != 0 {
+		revisionIdentity, privatePath = identity[0], false
+	}
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, revisionIdentity, privatePath)
 	if err != nil {
 		return request, err
 	}
 	request.ExpectedRevision, request.Unconditional = revision, unconditional
+	if cmd.Flags().Changed("if-assignee") {
+		value, _ := cmd.Flags().GetString("if-assignee")
+		if !utf8.ValidString(value) {
+			return request, graphFailure("invalid_properties", "expected Issue assignee must be valid UTF-8", 2)
+		}
+		request.ExpectedAssignee = &value
+	}
+	if cmd.Flags().Changed("if-status") {
+		status, _ := cmd.Flags().GetString("if-status")
+		if status == "" || !utf8.ValidString(status) {
+			return request, graphFailure("invalid_properties", "expected Issue status must be a nonempty UTF-8 name", 2)
+		}
+		value := types.Status(status)
+		request.ExpectedStatus = &value
+	}
 	if cmd.Flags().Changed("notes") && (cmd.Flags().Changed("clear-notes") || cmd.Flags().Changed("append-notes")) ||
 		cmd.Flags().Changed("clear-notes") && cmd.Flags().Changed("append-notes") {
 		return request, graphFailure("invalid_properties", "--notes, --clear-notes and --append-notes are mutually exclusive", 2)
@@ -71,10 +114,33 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 	if cmd.Flags().Changed("clear-notes") && !clearNotesRequested(cmd) {
 		return request, graphFailure("invalid_properties", "--clear-notes=false does not request an edit", 2)
 	}
-	if cmd.Flags().Changed("force") && !cmd.Flags().Changed("notes") && !cmd.Flags().Changed("properties") {
-		return request, graphFailure("invalid_properties", "graph Issue update accepts --force only with a notes edit", 2)
+	force, _ := cmd.Flags().GetBool("force")
+	if force && !cmd.Flags().Changed("notes") && !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("assignee") && !cmd.Flags().Changed("status") {
+		return request, graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement, assignee, or status", 2)
 	}
-	request.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
+	request.ForceNotesOverwrite = force && cmd.Flags().Changed("notes")
+	if cmd.Flags().Changed("status") {
+		status, _ := cmd.Flags().GetString("status")
+		if status == "" || !utf8.ValidString(status) {
+			return request, graphFailure("invalid_properties", "Issue status must be a nonempty UTF-8 name", 2)
+		}
+		value := types.Status(status)
+		request.Status = &value
+		request.ForceClosePolicy = force
+		if status == string(types.StatusClosed) {
+			session, _ := cmd.Flags().GetString("session")
+			if session == "" {
+				session = os.Getenv("CLAUDE_SESSION_ID")
+			}
+			if session != "" {
+				request.ClosedBySession = &session
+			}
+		} else if cmd.Flags().Changed("session") {
+			return request, graphFailure("invalid_properties", "--session requires --status=closed", 2)
+		}
+	} else if cmd.Flags().Changed("session") {
+		return request, graphFailure("invalid_properties", "--session requires --status=closed", 2)
+	}
 	if clearNotesRequested(cmd) {
 		cleared := ""
 		request.Notes = &cleared
@@ -116,6 +182,9 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		// Preserve the existing update's literal value. A graph revision guard
 		// does not grant permission to take another actor's active assignment.
 		request.Assignee = &value
+		// A matching assignee guard authorizes a transfer in the native writer.
+		// It is mutually exclusive with the unconditional force-transfer bit.
+		request.ForceAssigneeTransfer = force && request.ExpectedAssignee == nil
 	}
 	if graphPreviewDescriptionFlagsChanged(cmd) {
 		// Keep graph's structured conflict error for incompatible inline aliases;
@@ -334,22 +403,38 @@ func graphPreviewApplyIssueProperties(cmd *cobra.Command, request *graphstore.Up
 			return graphFailure("invalid_properties", "Issue property "+name+" is not writable through update", 2)
 		}
 	}
-	if cmd.Flags().Changed("force") && !cmd.Flags().Changed("notes") && request.Notes == nil && request.FromRevision == "" {
-		return graphFailure("invalid_properties", "graph Issue update accepts --force only with a notes edit", 2)
+	force, _ := cmd.Flags().GetBool("force")
+	if request.FromRevision == "" {
+		request.ForceNotesOverwrite = force && request.Notes != nil
+		request.ForceAssigneeTransfer = force && request.Assignee != nil && request.ExpectedAssignee == nil
+		if force && !request.ForceNotesOverwrite && request.Assignee == nil && !request.ForceClosePolicy {
+			return graphFailure("invalid_properties", "graph Issue update accepts --force only with notes replacement, assignee, or status", 2)
+		}
 	}
 	return nil
 }
 
-func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
+func runGraphPreviewUpdateIssue(cmd *cobra.Command, path, identity string, revisionIdentity ...string) error {
 	// Resolve the structured input and its source conflicts before a description
 	// flag can consume stdin or open a file.
 	values, err := graphPreviewIssuePropertyValues(cmd)
 	if err != nil {
 		return err
 	}
-	request, err := graphPreviewIssueEditRequest(cmd, path)
+	guardIdentity := identity
+	if len(revisionIdentity) != 0 {
+		guardIdentity = revisionIdentity[0]
+	}
+	request, err := graphPreviewIssueEditRequest(cmd, path, guardIdentity)
 	if err != nil {
 		return err
+	}
+	selected, err := graphPreviewIssueSelector(identity)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if path == selected.Path {
+		request.NativeID = selected.NativeID
 	}
 	if values != nil {
 		if err := graphPreviewApplyIssueProperties(cmd, &request, values); err != nil {
@@ -399,4 +484,84 @@ func graphPreviewNativeIssueTypeFlag(cmd *cobra.Command, scope string) (string, 
 		return "", graphFailure("invalid_selector", "native Issue requires a concrete native Issue Type", 2)
 	}
 	return id, nil
+}
+
+// Shipping bd update treats multiple IDs as independent writes. Keep each
+// checked Issue edit in its own transaction so a missing sibling cannot undo
+// successful edits, and do not reinterpret a single revision as a set guard.
+func runGraphPreviewUpdateIssues(cmd *cobra.Command, args []string) error {
+	if cmd.Flags().Changed("if-revision") {
+		return graphFailure("invalid_selector", "multi-ID graph update cannot share one --if-revision; update each Issue separately", 2)
+	}
+	if cmd.Flags().Changed("patch") {
+		return graphFailure("invalid_selector", "multi-ID graph update --patch requires one Bead ID", 2)
+	}
+	if cmd.Flags().Changed("parent") || cmd.Flags().Changed("type") || cmd.Flags().Changed("claim") ||
+		cmd.Flags().Changed("from-revision") || cmd.Flags().Changed("replace-properties") ||
+		graphPreviewLinkPinFlagsChanged(cmd) {
+		return graphFailure("capability_unavailable", "multi-ID graph update admits only checked Issue field and property edits", 5)
+	}
+	selected := make([]graphstore.IssueSelector, len(args))
+	for i, arg := range args {
+		identity, err := graphPreviewWritableIdentity(arg)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		selected[i], err = graphPreviewIssueSelector(identity)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+	}
+	// Preflight every operand before edit flags can consume body stdin.
+	request, err := graphPreviewIssueEditRequest(cmd, "")
+	if err != nil {
+		return err
+	}
+	if err := graphPreviewIssuePropertyMerge(cmd, &request); err != nil {
+		return err
+	}
+	request.Actor = getActorWithGit()
+	results := make([]graphstore.IssueMutationResult, 0, len(args))
+	human := make([]string, 0, len(args))
+	failed, unknown := false, false
+	for i, selector := range selected {
+		item := request
+		item.Path, item.NativeID, item.Exact = selector.Path, selector.NativeID, selector.Exact
+		err := withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+			result, err := store.UpdateIssue(ctx, item)
+			if err != nil {
+				return nil, "", fmt.Errorf("updating %s: %w", args[i], err)
+			}
+			verb := "Unchanged"
+			if result.Changed {
+				verb = "Updated"
+			}
+			return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
+		}, func(value any, line string) error {
+			results = append(results, value.(graphstore.IssueMutationResult))
+			human = append(human, line)
+			SetLastTouchedID(value.(graphstore.IssueMutationResult).Issue.ID)
+			return nil
+		})
+		if err != nil {
+			failed = true
+			var reported *exitError
+			if errors.As(err, &reported) && reported.Code == 6 {
+				unknown = true
+				break // An uncertain commit needs inspection before any further writes.
+			}
+		}
+	}
+	if len(results) > 0 {
+		if err := graphPrint(results, strings.Join(human, "\n"), quietFlag); err != nil {
+			return err
+		}
+	}
+	if unknown {
+		return &exitError{Code: 6}
+	}
+	if failed {
+		return &exitError{Code: 1}
+	}
+	return nil
 }

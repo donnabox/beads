@@ -126,33 +126,94 @@ func TestAcquireLargeApplySerializesOneAtATime(t *testing.T) {
 		t.Fatalf("largeApplyDeadline while held = %v, want %v", got, dl1)
 	}
 
-	// A second, live caller blocks until the first releases.
-	second := make(chan struct{})
+	// A second, live caller must queue until the first releases. Hold it after
+	// acquisition so its own deadline cannot be mistaken for a stale first one.
+	type acquireResult struct {
+		deadline time.Time
+		err      error
+	}
+	second := make(chan acquireResult, 1)
+	releaseSecond := make(chan struct{})
+	secondDone := make(chan struct{})
+	firstReleased, secondReleased := false, false
 	go func() {
-		_, release2, err := s.acquireLargeApply(context.Background())
+		defer close(secondDone)
+		runCtx2, release2, err := s.acquireLargeApply(context.Background())
 		if err != nil {
-			t.Errorf("second acquireLargeApply: %v", err)
+			second <- acquireResult{err: err}
 			return
 		}
+		dl2, ok := runCtx2.Deadline()
+		if !ok {
+			second <- acquireResult{err: errors.New("second run context carries no deadline")}
+		} else {
+			second <- acquireResult{deadline: dl2}
+		}
+		<-releaseSecond
 		release2()
-		close(second)
+	}()
+	defer func() {
+		if !firstReleased {
+			release1()
+		}
+		if !secondReleased {
+			close(releaseSecond)
+		}
+		select {
+		case <-secondDone:
+		case <-time.After(2 * time.Second):
+			t.Error("second acquire goroutine did not finish during cleanup")
+		}
 	}()
 
+	// Observe that the second caller reached the wait gate, rather than merely
+	// assuming that a scheduled goroutine got there within a fixed sleep.
+	ticker := time.NewTicker(time.Millisecond)
+	defer ticker.Stop()
+	queueTimeout := time.NewTimer(2 * time.Second)
+	defer queueTimeout.Stop()
+	for !s.largeApplyWaiting.Load() {
+		select {
+		case result := <-second:
+			t.Fatalf("second acquire completed before first release: %v", result.err)
+		case <-ticker.C:
+		case <-queueTimeout.C:
+			t.Fatal("second acquire never queued behind the first")
+		}
+	}
 	select {
-	case <-second:
-		t.Fatal("the second acquire completed before the first released — the slot is not one-wide")
-	case <-time.After(50 * time.Millisecond):
+	case result := <-second:
+		t.Fatalf("second acquire completed while first still held the slot: %v", result.err)
+	default:
 	}
 
 	release1()
-	if got := s.largeApplyDeadline.Load(); got != nil {
-		t.Fatalf("largeApplyDeadline after release = %v, want nil", got)
-	}
+	firstReleased = true
 
+	var result acquireResult
 	select {
-	case <-second:
+	case result = <-second:
 	case <-time.After(2 * time.Second):
 		t.Fatal("the second acquire never completed after the first released")
+	}
+	if result.err != nil {
+		t.Fatalf("second acquireLargeApply: %v", result.err)
+	}
+	if remaining := time.Until(result.deadline); remaining <= 0 || remaining > s.largeApplyCeiling {
+		t.Fatalf("second run deadline has invalid remaining budget %s", remaining)
+	}
+	if got := s.largeApplyDeadline.Load(); got == nil || !got.Equal(result.deadline) {
+		t.Fatalf("largeApplyDeadline while second held = %v, want %v", got, result.deadline)
+	}
+	close(releaseSecond)
+	secondReleased = true
+	select {
+	case <-secondDone:
+	case <-time.After(2 * time.Second):
+		t.Fatal("second release never completed")
+	}
+	if got := s.largeApplyDeadline.Load(); got != nil {
+		t.Fatalf("largeApplyDeadline after both releases = %v, want nil", got)
 	}
 }
 

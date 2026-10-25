@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"maps"
 	"time"
 	"unicode/utf8"
 
@@ -31,6 +32,8 @@ import (
 // graph revision, including owned blocking Dependencies, not the storage ordinal.
 // Assignee nil preserves its value; empty clears it. Neither the graph guard nor
 // Unconditional bypasses the ordinary active-assignment transfer fence.
+// Labels uses the native Issue writer's ordered replace, add, then remove
+// semantics in the same checked transaction as the other Issue edits.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                             string
 	TypeURL                                                   string
@@ -38,23 +41,30 @@ type UpdateIssueRequest struct {
 	FromRevision                                              string
 	PropertiesPatch                                           []byte
 	NativeID                                                  string
+	Exact                                                     bool
 	Unconditional, ForceNotesOverwrite, ForceAssigneeTransfer bool
 	PropertiesProvided, ClearEstimatedMinutes                 bool
 	Title, Description, Design, AcceptanceCriteria            *string
 	Priority                                                  *int
+	Status                                                    *types.Status
+	ExpectedStatus                                            *types.Status
+	ExpectedAssignee                                          *string
+	ClosedBySession                                           *string
 	EstimatedMinutes                                          *int
 	Assignee                                                  *string
 	Notes, AppendNotes                                        *string
 	ExternalRef, SpecID                                       *string
 	DueAt                                                     publicops.Field[*time.Time]
+	Labels                                                    publicops.LabelPatch
 	Metadata                                                  publicops.MetadataPatch
+	ForceClosePolicy                                          bool
 }
 
 // UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
 // retained-version recorder. Payload, opaque graph revision and complete owned
 // state commit together; this adds no public History ordering or change context.
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
-	if err := validateIssueSelector(IssueSelector{Path: request.Path, NativeID: request.NativeID}); err != nil {
+	if err := validateIssueSelector(IssueSelector{Path: request.Path, NativeID: request.NativeID, Exact: request.Exact}); err != nil {
 		return IssueMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
 	if request.FromRevision != "" {
@@ -65,122 +75,14 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	if request.Actor == "" || !utf8.ValidString(request.Actor) {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires a nonempty UTF-8 actor", storage.ErrValidation)
 	}
-	patch := publicops.IssuePatch{}
-	count := 0
-	for _, field := range []struct {
-		name  string
-		value *string
-		dest  *publicops.Field[string]
-	}{
-		{"title", request.Title, &patch.Title},
-		{"assignee", request.Assignee, &patch.Assignee},
-		{"description", request.Description, &patch.Description},
-		{"design", request.Design, &patch.Design},
-		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
-		{"notes", request.Notes, &patch.Notes},
-		{"append_notes", request.AppendNotes, &patch.AppendNotes},
-	} {
-		if field.value == nil {
-			continue
-		}
-		if !utf8.ValidString(*field.value) {
-			return IssueMutationResult{}, fmt.Errorf("%w: Issue %s must be UTF-8", storage.ErrValidation, field.name)
-		}
-		*field.dest = publicops.Field[string]{Set: true, Value: *field.value}
-		count++
-	}
-	if patch.Assignee.Set {
-		if err := types.CheckFieldLen("assignee", patch.Assignee.Value); err != nil {
-			return IssueMutationResult{}, fmt.Errorf("%w: Issue assignee: %w", storage.ErrValidation, err)
-		}
-	}
-	if request.TypeURL != "" {
-		base, classification, ok := NativeTypeClassification(s.ScopeURL(), request.TypeURL)
-		if !ok || base != IssueTypeURL(s.ScopeURL()) {
-			return IssueMutationResult{}, fmt.Errorf("%w: native reclassification requires a concrete Issue Type", storage.ErrValidation)
-		}
-		native := types.IssueType(classification)
-		if native.Normalize() != native {
-			return IssueMutationResult{}, fmt.Errorf("%w: concrete Issue Type must use its normalized native classification", storage.ErrValidation)
-		}
-		if request.IssueType != nil && request.IssueType.Normalize() != native {
-			return IssueMutationResult{}, fmt.Errorf("%w: declared Type contradicts native classification", storage.ErrValidation)
-		}
-		request.IssueType = &native
-	}
-	if request.IssueType != nil {
-		patch.IssueType = publicops.Field[publicops.IssueType]{Set: true, Value: request.IssueType.Normalize()}
-		count++
-	}
-	if request.Priority != nil {
-		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
-		count++
-	}
-	if request.EstimatedMinutes != nil && request.ClearEstimatedMinutes {
-		return IssueMutationResult{}, fmt.Errorf("%w: Issue estimate cannot be set and cleared together", storage.ErrValidation)
-	}
-	if request.EstimatedMinutes != nil {
-		value := *request.EstimatedMinutes
-		// The existing Issue column is a signed SQL INT on both backends. Reject
-		// unrepresentable input before SQL so strict and coercing engines agree.
-		if err := validateIssueEstimateStorage(&value); err != nil {
-			return IssueMutationResult{}, err
-		}
-		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
-		count++
-	} else if request.ClearEstimatedMinutes {
-		patch.EstimatedMinutes = publicops.Field[*int]{Set: true}
-		count++
-	}
-	// These limits describe the existing VARCHAR columns, not reference syntax.
-	// Validate before SQL so strict and coercing engines both refuse data loss.
-	for _, field := range []struct {
-		name  string
-		value *string
-	}{
-		{"external_ref", request.ExternalRef},
-		{"spec_id", request.SpecID},
-	} {
-		if field.value == nil {
-			continue
-		}
-		value := *field.value
-		if err := validateIssueReferenceStorage(field.name, value); err != nil {
-			return IssueMutationResult{}, err
-		}
-		if field.name == "external_ref" {
-			patch.ExternalRef = publicops.Field[*string]{Set: true}
-			if value != "" {
-				patch.ExternalRef.Value = &value
-			}
-		} else {
-			patch.SpecID = publicops.Field[string]{Set: true, Value: value}
-		}
-		count++
-	}
-	if request.DueAt.Set {
-		value, err := normalizeIssueDue(request.DueAt.Value)
-		if err != nil {
-			return IssueMutationResult{}, err
-		}
-		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
-		count++
-	}
-	scalarCount := count
-	if len(request.PropertiesPatch) > 0 && (request.FromRevision == "" || scalarCount > 0) {
-		return IssueMutationResult{}, fmt.Errorf("%w: native property operations require a historical source and cannot combine with scalar setters", storage.ErrValidation)
-	}
-	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
+	patch, count, err := s.prepareIssueUpdatePatch(request)
+	if err != nil {
 		return IssueMutationResult{}, err
-	}
-	if request.Metadata.Replace.Set || request.Metadata.Merge.Set || len(request.Metadata.Set) > 0 || len(request.Metadata.Unset) > 0 {
-		patch.Metadata = request.Metadata
-		count++
 	}
 	if count == 0 && !request.PropertiesProvided && request.FromRevision == "" {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
-	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer}
+	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, ExpectedStatus: request.ExpectedStatus, ExpectedAssignee: request.ExpectedAssignee, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer, ForceClosePolicy: request.ForceClosePolicy}
 	// Historical composition supplies native setters (including Notes) before
 	// validating setter-dependent force intent. The composed request still goes
 	// through the same validator and native authorization fences in the transaction.
@@ -190,14 +92,26 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 	}
 	var result IssueMutationResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
+		}
+		if request.Status != nil || request.ExpectedStatus != nil {
+			custom, err := issueops.GetCustomStatusesTx(ctx, tx)
+			if err != nil {
+				return err
+			}
+			if request.Status != nil && !request.Status.IsValidWithCustom(custom) {
+				return fmt.Errorf("%w: invalid status %q", storage.ErrValidation, *request.Status)
+			}
+			if request.ExpectedStatus != nil && !request.ExpectedStatus.IsValidWithCustom(custom) {
+				return fmt.Errorf("%w: invalid expected status %q", storage.ErrValidation, *request.ExpectedStatus)
+			}
 		}
 		path := request.Path
 		if request.NativeID != "" {
 			var err error
-			path, _, err = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID})
+			path, _, err = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID, Exact: request.Exact})
 			if err != nil {
 				if errors.Is(err, errNonIssueSelector) {
 					return ErrCapabilityUnavailable
@@ -277,6 +191,16 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		beforeNative := *before.Properties
 		beforeNative.Metadata = before.Metadata
+		if request.ExpectedStatus != nil || request.ExpectedAssignee != nil {
+			var status *string
+			if request.ExpectedStatus != nil {
+				value := string(*request.ExpectedStatus)
+				status = &value
+			}
+			if err := issueops.CheckExpectedFieldsInTx(ctx, tx, before.Properties.ID, request.ExpectedAssignee, status); err != nil {
+				return err
+			}
+		}
 		// Resolve against the checked snapshot only for no-op planning. The native
 		// writer receives the original append intent and owns atomic composition.
 		updates, err := issueops.ResolveMergeOps(&beforeNative, issueops.UpdateFields(patch))
@@ -297,7 +221,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if _, err := commonMetadata(resolvedMetadata); err != nil {
 			return err
 		}
-		if len(updates) == 0 && !metadataChanged {
+		if len(updates) == 0 && !metadataChanged && !issueLabelsPatchChanges(before.Properties.Labels, patch.Labels) {
 			result = IssueMutationResult{Issue: before}
 			return nil
 		}
@@ -314,27 +238,8 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if !updated.Changed {
 			return fmt.Errorf("%w: Issue update unexpectedly became a no-op", ErrInvalidStore)
 		}
-		// Non-strict SQL may coerce an oversized Go integer into the column's
-		// range without returning an error. The shared writer hydrates the actual
-		// stored result; never publish or retain an estimate different from the
-		// accepted intent. Refusal rolls back sibling edits and audit effects too.
-		if patch.EstimatedMinutes.Set {
-			if updated.Issue == nil || (patch.EstimatedMinutes.Value == nil) != (updated.Issue.EstimatedMinutes == nil) ||
-				(patch.EstimatedMinutes.Value != nil && *updated.Issue.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
-				return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
-			}
-		}
-		if patch.ExternalRef.Set {
-			if updated.Issue == nil || (patch.ExternalRef.Value == nil) != (updated.Issue.ExternalRef == nil) ||
-				(patch.ExternalRef.Value != nil && *patch.ExternalRef.Value != *updated.Issue.ExternalRef) {
-				return fmt.Errorf("%w: Issue external reference cannot be represented exactly by storage", storage.ErrValidation)
-			}
-		}
-		if patch.SpecID.Set && (updated.Issue == nil || updated.Issue.SpecID != patch.SpecID.Value) {
-			return fmt.Errorf("%w: Issue spec ID cannot be represented exactly by storage", storage.ErrValidation)
-		}
-		if patch.DueAt.Set && (updated.Issue == nil || !sameIssueDue(patch.DueAt.Value, updated.Issue.DueAt)) {
-			return fmt.Errorf("%w: Issue due date cannot be represented exactly by storage", storage.ErrValidation)
+		if err := checkIssueScalarStoredIntent(patch, updated.Issue); err != nil {
+			return err
 		}
 		if err := s.afterStage("issue-update"); err != nil {
 			return err
@@ -368,4 +273,199 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		return IssueMutationResult{}, err
 	}
 	return result, nil
+}
+
+// issueLabelsPatchChanges mirrors the native writer's set-level no-op check.
+// Planning must include label-only writes before touching graph coordination;
+// the native writer remains responsible for validation and persistence.
+func issueLabelsPatchChanges(existing []string, patch publicops.LabelPatch) bool {
+	if !patch.Replace.Set && len(patch.Add) == 0 && len(patch.Remove) == 0 {
+		return false
+	}
+	before := make(map[string]struct{}, len(existing))
+	for _, label := range existing {
+		before[label] = struct{}{}
+	}
+	target := make(map[string]struct{}, len(before)+len(patch.Add))
+	if !patch.Replace.Set {
+		maps.Copy(target, before)
+	}
+	for _, label := range patch.Replace.Value {
+		if label != "" {
+			target[label] = struct{}{}
+		}
+	}
+	for _, label := range patch.Add {
+		if label != "" {
+			target[label] = struct{}{}
+		}
+	}
+	for _, label := range patch.Remove {
+		delete(target, label)
+	}
+	return !maps.Equal(before, target)
+}
+
+// prepareIssueUpdatePatch is shared by scalar Issue updates and checked
+// parent replacements so both routes enforce the same native field admission.
+func (s *Store) prepareIssueUpdatePatch(request UpdateIssueRequest) (publicops.IssuePatch, int, error) {
+	patch := publicops.IssuePatch{}
+	count := 0
+	for _, field := range []struct {
+		name  string
+		value *string
+		dest  *publicops.Field[string]
+	}{
+		{"title", request.Title, &patch.Title},
+		{"assignee", request.Assignee, &patch.Assignee},
+		{"description", request.Description, &patch.Description},
+		{"design", request.Design, &patch.Design},
+		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
+		{"notes", request.Notes, &patch.Notes},
+		{"append_notes", request.AppendNotes, &patch.AppendNotes},
+	} {
+		if field.value == nil {
+			continue
+		}
+		if !utf8.ValidString(*field.value) {
+			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: Issue %s must be UTF-8", storage.ErrValidation, field.name)
+		}
+		*field.dest = publicops.Field[string]{Set: true, Value: *field.value}
+		count++
+	}
+	if patch.Assignee.Set {
+		if err := types.CheckFieldLen("assignee", patch.Assignee.Value); err != nil {
+			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: Issue assignee: %w", storage.ErrValidation, err)
+		}
+	}
+	if request.TypeURL != "" {
+		base, classification, ok := NativeTypeClassification(s.ScopeURL(), request.TypeURL)
+		if !ok || base != IssueTypeURL(s.ScopeURL()) {
+			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: native reclassification requires a concrete Issue Type", storage.ErrValidation)
+		}
+		native := types.IssueType(classification)
+		if native.Normalize() != native {
+			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: concrete Issue Type must use its normalized native classification", storage.ErrValidation)
+		}
+		if request.IssueType != nil && request.IssueType.Normalize() != native {
+			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: declared Type contradicts native classification", storage.ErrValidation)
+		}
+		request.IssueType = &native
+	}
+	if request.IssueType != nil {
+		patch.IssueType = publicops.Field[publicops.IssueType]{Set: true, Value: request.IssueType.Normalize()}
+		count++
+	}
+	if request.Priority != nil {
+		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
+		count++
+	}
+	if request.Status != nil {
+		patch.Status = publicops.Field[types.Status]{Set: true, Value: *request.Status}
+		count++
+	}
+	if request.ClosedBySession != nil {
+		if request.Status == nil || *request.Status != types.StatusClosed {
+			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: closed_by_session requires status=closed", storage.ErrValidation)
+		}
+		patch.ClosedBySession = publicops.Field[string]{Set: true, Value: *request.ClosedBySession}
+		count++
+	}
+	if request.ForceClosePolicy && request.Status == nil {
+		return publicops.IssuePatch{}, 0, fmt.Errorf("%w: forced close policy requires a status edit", storage.ErrValidation)
+	}
+	if request.EstimatedMinutes != nil && request.ClearEstimatedMinutes {
+		return publicops.IssuePatch{}, 0, fmt.Errorf("%w: Issue estimate cannot be set and cleared together", storage.ErrValidation)
+	}
+	if request.EstimatedMinutes != nil {
+		value := *request.EstimatedMinutes
+		// The existing Issue column is a signed SQL INT on both backends. Reject
+		// unrepresentable input before SQL so strict and coercing engines agree.
+		if err := validateIssueEstimateStorage(&value); err != nil {
+			return publicops.IssuePatch{}, 0, err
+		}
+		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
+		count++
+	} else if request.ClearEstimatedMinutes {
+		patch.EstimatedMinutes = publicops.Field[*int]{Set: true}
+		count++
+	}
+	// These limits describe the existing VARCHAR columns, not reference syntax.
+	// Validate before SQL so strict and coercing engines both refuse data loss.
+	for _, field := range []struct {
+		name  string
+		value *string
+	}{
+		{"external_ref", request.ExternalRef},
+		{"spec_id", request.SpecID},
+	} {
+		if field.value == nil {
+			continue
+		}
+		value := *field.value
+		if err := validateIssueReferenceStorage(field.name, value); err != nil {
+			return publicops.IssuePatch{}, 0, err
+		}
+		if field.name == "external_ref" {
+			patch.ExternalRef = publicops.Field[*string]{Set: true}
+			if value != "" {
+				patch.ExternalRef.Value = &value
+			}
+		} else {
+			patch.SpecID = publicops.Field[string]{Set: true, Value: value}
+		}
+		count++
+	}
+	if request.DueAt.Set {
+		value, err := normalizeIssueDue(request.DueAt.Value)
+		if err != nil {
+			return publicops.IssuePatch{}, 0, err
+		}
+		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
+		count++
+	}
+	if request.Labels.Replace.Set || len(request.Labels.Add) > 0 || len(request.Labels.Remove) > 0 {
+		patch.Labels = request.Labels
+		count++
+	}
+	scalarCount := count
+	if len(request.PropertiesPatch) > 0 && (request.FromRevision == "" || scalarCount > 0) {
+		return publicops.IssuePatch{}, 0, fmt.Errorf("%w: native property operations require a historical source and cannot combine with scalar setters", storage.ErrValidation)
+	}
+	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
+		return publicops.IssuePatch{}, 0, err
+	}
+	if request.Metadata.Replace.Set || request.Metadata.Merge.Set || len(request.Metadata.Set) > 0 || len(request.Metadata.Unset) > 0 {
+		patch.Metadata = request.Metadata
+		count++
+	}
+	return patch, count, nil
+}
+
+// checkIssueScalarStoredIntent refuses storage coercion before graph state
+// or retained versions can publish a value different from the typed edit.
+func checkIssueScalarStoredIntent(patch publicops.IssuePatch, updated *types.Issue) error {
+	// Non-strict SQL may coerce an oversized Go integer into the column's
+	// range without returning an error. The shared writer hydrates the actual
+	// stored result; never publish or retain an estimate different from the
+	// accepted intent. Refusal rolls back sibling edits and audit effects too.
+	if patch.EstimatedMinutes.Set {
+		if updated == nil || (patch.EstimatedMinutes.Value == nil) != (updated.EstimatedMinutes == nil) ||
+			(patch.EstimatedMinutes.Value != nil && *updated.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
+			return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
+		}
+	}
+	if patch.ExternalRef.Set {
+		if updated == nil || (patch.ExternalRef.Value == nil) != (updated.ExternalRef == nil) ||
+			(patch.ExternalRef.Value != nil && *patch.ExternalRef.Value != *updated.ExternalRef) {
+			return fmt.Errorf("%w: Issue external reference cannot be represented exactly by storage", storage.ErrValidation)
+		}
+	}
+	if patch.SpecID.Set && (updated == nil || updated.SpecID != patch.SpecID.Value) {
+		return fmt.Errorf("%w: Issue spec ID cannot be represented exactly by storage", storage.ErrValidation)
+	}
+	if patch.DueAt.Set && (updated == nil || !sameIssueDue(patch.DueAt.Value, updated.DueAt)) {
+		return fmt.Errorf("%w: Issue due date cannot be represented exactly by storage", storage.ErrValidation)
+	}
+	return nil
 }

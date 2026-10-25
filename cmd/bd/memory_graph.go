@@ -19,10 +19,9 @@ import (
 )
 
 var memoryGraphCmd = &cobra.Command{
-	Use:         "memory",
-	Short:       "Explore and record Memory relationships",
-	Long:        "Explore and record Memory relationships in a graph-mode link workspace. Existing remember, recall, memories and forget retain their own contracts.",
-	Annotations: map[string]string{skipStoreAnnotation: "1", canonicalDefaultAnnotation: "1"},
+	Use:   "memory",
+	Short: "Explore and record Memory relationships",
+	Long:  "Use remember, recall, memories and forget with their existing top-level contracts, or explore Memory relationships in a graph-mode link workspace. Nested convenience spellings share the top-level handlers and output.",
 }
 
 // Direct declaration captures have a fixed one-hop root context, not a CLI depth.
@@ -58,8 +57,9 @@ func init() {
 
 func newMemoryReadCommand(op memoryReadOperation) *cobra.Command {
 	cmd := &cobra.Command{Use: op.name + " ID...", Short: op.description,
-		Args: func(*cobra.Command, []string) error { return nil },
-		RunE: func(cmd *cobra.Command, args []string) error { return runMemoryCurrentRead(cmd, args, op) },
+		Args:        func(*cobra.Command, []string) error { return nil },
+		RunE:        func(cmd *cobra.Command, args []string) error { return runMemoryCurrentRead(cmd, args, op) },
+		Annotations: map[string]string{skipStoreAnnotation: "1", canonicalDefaultAnnotation: "1"},
 	}
 	if op.name != "constraints" && op.name != "subjects" {
 		cmd.Flags().Int("depth", op.depth, "Maximum relationship hops for each input root (0..1000)")
@@ -76,6 +76,9 @@ func newMemoryReadCommand(op memoryReadOperation) *cobra.Command {
 }
 
 func graphPreviewMemoryNamespaceCommand(cmd *cobra.Command) bool {
+	if graphPreviewMemoryTopCommand(cmd) != nil {
+		return false
+	}
 	for c := cmd; c != nil; c = c.Parent() {
 		if c == memoryGraphCmd {
 			return true

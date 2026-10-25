@@ -794,8 +794,12 @@ jobs:
     # worker pool shared with gascity). Skipped only in mode skip (same-repo
     # runs while RBE_WEST_WORKERS is unset).
     if: ${{ needs.rbe.outputs.mode != 'skip' }}
-    # Preserve five minutes beyond the test step for setup/reports/cleanup.
-    timeout-minutes: 115
+    # The interrupted local PR #326 run's later BEP completed in 111m36s,
+    # after GitHub's 110m step cutoff; that run did not qualify as green.
+    # Give local/cache execution a 125m step and 130m job; their five-minute
+    # difference leaves time for setup and reporting/cleanup, subject to the
+    # job cutoff. Remote stays 110m/115m.
+    timeout-minutes: ${{ needs.rbe.outputs.enabled == 'true' && 115 || 130 }}
     outputs:
       result: ${{ steps.result.outputs.result }}
     env:
@@ -898,7 +902,7 @@ jobs:
       # beyond that cumulative cutoff; keep action limits and shards fixed.
       - name: bazel test //... --config=ci
         id: test
-        timeout-minutes: 110
+        timeout-minutes: ${{ needs.rbe.outputs.enabled == 'true' && 110 || 125 }}
         run: |
           set -o pipefail
           start=$(date +%s)
