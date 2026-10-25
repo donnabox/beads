@@ -132,6 +132,31 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if len(intermediate.Owned) != 2 {
 				t.Fatalf("multi-Link plan's intermediate History has wrong owned set: %+v", intermediate)
 			}
+			writePlan(`{"nodes":[{"key":"existing-pair-node","id":"batch-existing-pair-node","title":"New node"}],"edges":[{"from_id":"batch-existing-source","to_id":"` + result.IDs["parent"] + `"}]}`)
+			var existingPair GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &existingPair); err != nil {
+				t.Fatal(err)
+			}
+			if existingPair.IDs["existing-pair-node"] != "batch-existing-pair-node" {
+				t.Fatalf("existing-pair plan did not create its node: %+v", existingPair)
+			}
+			got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", "batch-existing-source"))
+			parentLinks := 0
+			for _, link := range got {
+				if link.Target == parent.ID {
+					parentLinks++
+				}
+			}
+			if len(got) != 4 || parentLinks != 1 {
+				t.Fatalf("existing-pair plan did not publish its Link: %+v", got)
+			}
+			_, kind, versions, _ = graphVersionsListed(t, call("versions", "batch-existing-source"))
+			if kind != "issue" || len(versions) != 5 {
+				t.Fatalf("existing-pair plan did not retain source History: %+v", versions)
+			}
+			writePlan(`{"nodes":[{"key":"repeat","id":"batch-repeat-must-not-exist","title":"Must not exist"}],"edges":[{"from_id":"batch-existing-source","to_id":"` + result.IDs["parent"] + `"}]}`)
+			refuse("capability_unavailable", "create", "--graph", path)
+			refuse("not_found", "show", "batch-repeat-must-not-exist")
 			writePlan(`{"nodes":[{"key":"missing-source-target","id":"batch-missing-source-target","title":"Must not exist"}],"edges":[{"from_id":"batch-missing-source","to_key":"missing-source-target"}]}`)
 			refuse("not_found", "create", "--graph", path)
 			refuse("not_found", "show", "batch-missing-source-target")

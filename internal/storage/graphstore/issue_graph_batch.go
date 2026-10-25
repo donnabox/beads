@@ -15,8 +15,9 @@ import (
 // ApplyNewIssueGraph is the bounded storage proof for a graph JSON plan whose
 // nodes are all new durable Issues. An edge may start at a new key and end at
 // a new key or exact existing local Issue, or start at an exact existing local
-// Issue and end at a new key. Several edges may share an existing source; each
-// native revision receives its matching retained canonical owned-Link set.
+// Issue and end at a new key or exact existing local Issue. Several edges may
+// share an existing source; each native revision receives its matching
+// retained canonical owned-Link set.
 // The native batch body and every canonical projection run in one graph write
 // transaction. Other ApplyBatch forms refuse before any write; this method is
 // not the CLI's complete graph-plan contract.
@@ -47,8 +48,8 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 		case publicops.ItemDepAdd:
 			dep := item.DepAdd
 			if (dep.Source.Key == "") == (dep.Source.ID == "") || (dep.Target.Key == "") == (dep.Target.ID == "") ||
-				(dep.Source.ID != "" && dep.Target.Key == "") || dep.Metadata != "" || dep.ThreadID != "" || dep.HasSpawner {
-				return nil, fmt.Errorf("%w: graph batch item %d requires a new source or an exact existing source with a new keyed target, and no edge metadata", ErrCapabilityUnavailable, index)
+				dep.Metadata != "" || dep.ThreadID != "" || dep.HasSpawner {
+				return nil, fmt.Errorf("%w: graph batch item %d requires a new or exact existing local Issue endpoint and no edge metadata", ErrCapabilityUnavailable, index)
 			}
 			nativeType, err := previewDependencyType(dep.Type)
 			if err != nil {
@@ -169,6 +170,16 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 				}
 				edges[index].dependency.targetID = target.Properties.ID
 				edges[index].dependency.targetPath = path
+			}
+			if edges[index].sourceID != "" && edges[index].targetID != "" {
+				var existing int
+				err := tx.QueryRowContext(ctx, `SELECT 1 FROM dependencies WHERE issue_id=? AND depends_on_issue_id=? AND depends_on_wisp_id IS NULL AND depends_on_external IS NULL LIMIT 1`, edges[index].sourceID, edges[index].dependency.targetID).Scan(&existing)
+				if err == nil {
+					return fmt.Errorf("%w: graph batch re-add of an existing Dependency requires an explicit re-add policy", ErrCapabilityUnavailable)
+				}
+				if err != sql.ErrNoRows {
+					return err
+				}
 			}
 			target := "key:" + edges[index].targetKey
 			if edges[index].targetID != "" {
