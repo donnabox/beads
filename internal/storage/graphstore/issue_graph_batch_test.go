@@ -78,6 +78,72 @@ func TestApplyNewIssueGraphDefersAssignmentAtomically(t *testing.T) {
 	}
 }
 
+func TestApplyNewIssueGraphResolvesMetadataRefsAtomically(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			first := plainIssue("First").Issue
+			first.Metadata = json.RawMessage(`{"note":"kept"}`)
+			request := publicops.ApplyBatchRequest{Actor: "test-author", Items: []publicops.ApplyItem{
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "first", Issue: first, MetadataRefs: map[string]publicops.Ref{
+					"peer": {Key: "second"}, "self": {Key: "first"},
+				}}},
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "second", Issue: plainIssue("Second").Issue}},
+				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{
+					Source: publicops.Ref{Key: "first"}, Target: publicops.Ref{Key: "second"}, Type: types.DepBlocks,
+				}},
+				{Kind: publicops.ItemUpdate, Update: &publicops.UpdateItem{
+					Target: publicops.Ref{Key: "first"},
+					Patch:  publicops.IssuePatch{Assignee: publicops.Field[string]{Set: true, Value: "agent"}},
+				}},
+			}}
+			before := workflowState(t, ctx, s)
+			fault := errors.New("metadata ref mapping failed")
+			s.afterWrite = func(stage string) error {
+				if stage == "issue" {
+					return fault
+				}
+				return nil
+			}
+			failed, err := s.ApplyNewIssueGraph(ctx, request)
+			s.afterWrite = nil
+			if !errors.Is(err, fault) || failed != nil {
+				t.Fatalf("metadata ref fault: result=%v err=%v", failed, err)
+			}
+			if after := workflowState(t, ctx, s); !reflect.DeepEqual(before, after) {
+				t.Fatal("failed metadata splice left native or graph state")
+			}
+			records, err := s.ApplyNewIssueGraph(ctx, request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			one, two := records["first"], records["second"]
+			var metadata map[string]any
+			if err := json.Unmarshal(one.Metadata, &metadata); err != nil {
+				t.Fatal(err)
+			}
+			if metadata["note"] != "kept" || metadata["peer"] != two.Properties.ID || metadata["self"] != one.Properties.ID || one.Properties.Assignee != "agent" || len(one.Owned) != 1 {
+				t.Fatalf("metadata refs or canonical Link lost: first=%+v second=%+v", one, two)
+			}
+			var nativeVersions, mappedVersions int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM issue_versions WHERE issue_id=?`, one.Properties.ID).Scan(&nativeVersions); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?`, fixtureResourcePath(t, ctx, s, one.ID)).Scan(&mappedVersions); err != nil {
+				t.Fatal(err)
+			}
+			if nativeVersions != 4 || mappedVersions != 1 {
+				t.Fatalf("metadata ref versions=%d native/%d canonical, want 4/1", nativeVersions, mappedVersions)
+			}
+		})
+	}
+}
+
 func TestApplyNewIssueGraphBindsForwardKeyAndRollsBackAfterNativeEdge(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
