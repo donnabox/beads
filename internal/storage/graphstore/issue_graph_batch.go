@@ -500,6 +500,9 @@ func (s *Store) mapExistingBatchSourceInTx(ctx context.Context, tx *sql.Tx, path
 		if retained != 1 {
 			return fmt.Errorf("%w: graph batch native source revision is missing", ErrInvalidStore)
 		}
+		if err := s.syncIssueMappingTypeInTx(ctx, tx, path, id); err != nil {
+			return err
+		}
 		owned, err := s.ownedLinksInTx(ctx, tx, id)
 		if err != nil {
 			return err
