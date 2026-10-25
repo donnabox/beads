@@ -1,0 +1,68 @@
+//go:build cgo
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/steveyegge/beads/internal/storage/graphstore"
+)
+
+func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := []string{"init", "--graph-mode", "link", "--prefix", "batch", "--scope-url", "https://example.invalid/batch/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for shared-server qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(code string, args ...string) {
+				t.Helper()
+				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			call(args...)
+			path := filepath.Join(work, "graph.json")
+			writePlan := func(raw string) {
+				t.Helper()
+				if err := os.WriteFile(path, []byte(raw), 0o600); err != nil {
+					t.Fatal(err)
+				}
+			}
+			writePlan(`{"nodes":[{"key":"child","title":"Child"},{"key":"parent","title":"Parent"}],"edges":[{"from_key":"child","to_key":"parent","type":"blocks"}]}`)
+			var result GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &result); err != nil {
+				t.Fatal(err)
+			}
+			if len(result.IDs) != 2 || result.IDs["child"] == "" || result.IDs["parent"] == "" {
+				t.Fatalf("symbolic keys did not bind to two Issues: %+v", result)
+			}
+			child := graphMixedResult[graphstore.IssueRecord](t, call("show", result.IDs["child"], "--format", "graph-json"))
+			parent := graphMixedResult[graphstore.IssueRecord](t, call("show", result.IDs["parent"], "--format", "graph-json"))
+			if child.Properties.ID != result.IDs["child"] || parent.Properties.ID != result.IDs["parent"] {
+				t.Fatalf("created IDs did not resolve: child=%+v parent=%+v", child, parent)
+			}
+			links := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", result.IDs["child"]))
+			if len(links) != 1 {
+				t.Fatalf("symbolic edge did not publish one canonical Link: %+v", links)
+			}
+			writePlan(`{"nodes":[{"key":"orphan","title":"Must not exist","id":"batch-orphan"}],"edges":[{"from_key":"orphan","to_id":"batch-missing"}]}`)
+			refuse("capability_unavailable", "create", "--graph", path)
+			refuse("not_found", "show", "batch-orphan")
+			writePlan(`{"nodes":[{"key":"closed","title":"Must not exist","id":"batch-closed","status":"closed"}]}`)
+			refuse("capability_unavailable", "create", "--graph", path)
+			refuse("not_found", "show", "batch-closed")
+		})
+	}
+}

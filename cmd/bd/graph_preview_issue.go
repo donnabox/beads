@@ -28,6 +28,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if cmd.Flags().Changed("graph") {
+		return runGraphPreviewCreateGraph(cmd, args)
+	}
 	idRoot, idRootSet, rootErr := graphPreviewGeneratedIDRoot(cmd)
 	if rootErr != nil {
 		return graphFailure("invalid_selector", rootErr.Error(), 2)
