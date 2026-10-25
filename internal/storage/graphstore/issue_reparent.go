@@ -153,6 +153,18 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err := issueops.ValidateUpdateRequest(attempt); err != nil {
 			return err
 		}
+		// Expected fields guard the checked snapshot even when the requested
+		// parent and scalar values already match and no native write is needed.
+		if request.Edit.ExpectedStatus != nil || request.Edit.ExpectedAssignee != nil {
+			var status *string
+			if request.Edit.ExpectedStatus != nil {
+				value := string(*request.Edit.ExpectedStatus)
+				status = &value
+			}
+			if err := issueops.CheckExpectedFieldsInTx(ctx, tx, child.Properties.ID, request.Edit.ExpectedAssignee, status); err != nil {
+				return err
+			}
+		}
 		if sameParent {
 			beforeNative := *child.Properties
 			beforeNative.Metadata = child.Metadata

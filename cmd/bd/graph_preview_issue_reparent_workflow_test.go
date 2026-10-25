@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -70,6 +71,20 @@ func TestGraphPreviewIssueReparentWorkflow(t *testing.T) {
 				"--parent", newParent.Properties.ID, "--if-revision", "="+result.Issue.Revision, "--json"))
 			if noOp.Changed || noOp.Issue.Revision != result.Issue.Revision {
 				t.Fatalf("same-parent retry was not a no-op: %+v", noOp)
+			}
+			beforeGuard := graphMixedResult[graphstore.IssueRecord](t, call("", "show", child.Properties.ID, "--format", "graph-json"))
+			matched := graphMixedResult[graphstore.IssueMutationResult](t, call("", "update", child.Properties.ID,
+				"--parent", newParent.Properties.ID, "--if-status", "open", "--if-assignee=",
+				"--if-revision", "="+beforeGuard.Revision, "--json"))
+			if matched.Changed || !reflect.DeepEqual(matched.Issue, beforeGuard) {
+				t.Fatalf("matching same-parent guards changed Issue: %+v", matched)
+			}
+			call("constraint_violation", "update", child.Properties.ID, "--parent", newParent.Properties.ID,
+				"--if-status", "closed", "--if-revision", "="+beforeGuard.Revision, "--json")
+			call("constraint_violation", "update", child.Properties.ID, "--parent", newParent.Properties.ID,
+				"--if-assignee", "other", "--if-revision", "="+beforeGuard.Revision, "--json")
+			if afterGuard := graphMixedResult[graphstore.IssueRecord](t, call("", "show", child.Properties.ID, "--format", "graph-json")); !reflect.DeepEqual(afterGuard, beforeGuard) {
+				t.Fatalf("stale same-parent guards changed Issue or owned Link: before=%+v after=%+v", beforeGuard, afterGuard)
 			}
 			sameParentEdit := graphMixedResult[graphstore.IssueMutationResult](t, call("", "update", child.Properties.ID,
 				"--parent", newParent.Properties.ID, "--description", "Edited in place", "--if-revision", "="+result.Issue.Revision, "--json"))
