@@ -71,6 +71,19 @@ func TestApplyNewIssueGraphBindsForwardKeyAndRollsBackAfterNativeEdge(t *testing
 			if got := graphBatchRowCount(t, ctx, s, "dependencies"); got != 1 {
 				t.Fatalf("native edges=%d, want 1", got)
 			}
+			var nativeVersions, mappedVersions int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM issue_versions WHERE issue_id=?`, first.Properties.ID).Scan(&nativeVersions); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?`, strings.TrimPrefix(first.ID, options.Binding.ScopeURL)).Scan(&mappedVersions); err != nil {
+				t.Fatal(err)
+			}
+			// Native create and edge insertion mint separate snapshots. The
+			// canonical Issue is allocated only after that atomic plan lands,
+			// so its first graph version represents the whole creation.
+			if nativeVersions != 2 || mappedVersions != 1 {
+				t.Fatalf("new source native versions=%d graph mappings=%d, want 2/1", nativeVersions, mappedVersions)
+			}
 			for _, record := range records {
 				path := fixtureResourcePath(t, ctx, s, record.ID)
 				var retained int
