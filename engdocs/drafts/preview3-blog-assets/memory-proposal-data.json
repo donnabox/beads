@@ -1,0 +1,696 @@
+{
+  "format": "Editorial example data, not a bd import format",
+  "source": "https://github.com/gastownhall/beads/issues/5877",
+  "source_updated_at": "2026-10-16T19:14:03Z",
+  "source_revision": "Revision 4, September 22, 2026",
+  "source_body_sha256": "efd69929dae04427e86c64dc88053f932ddf3e5151a7cc61fa631c1e56eeee83",
+  "root": {
+    "id": "memory-proposal",
+    "type": "types/specification",
+    "title": "Memory Beads",
+    "body": "Keep durable project knowledge in Beads so people and agents can find it, read it selectively, and understand its relationship to their work.\n\nGive each Memory a persistent identity and its own content. Preserve its evolution through recorded revisions, and connect it to tasks and other knowledge through explicit Links.\n\nThe defining Requirements and Scenarios describe the proposed behavior. They can be read individually or explored together through this Specification.",
+    "body_origin": "New introductory prose approved by Donna; not quoted proposal text"
+  },
+  "children": [
+    {
+      "id": "memory-r1",
+      "type": "types/requirement",
+      "title": "R1. Memory is a first-class core Bead kind.",
+      "body": "This feature intentionally expands the Beads charter from project work alone to peer core concepts for project work and durable project knowledge. A Memory Bead uses `type: \"memory\"`, participates in the Bead graph, and exists beside Task Beads rather than beneath the task model. Readiness, assignment, priority, claiming, completion, closure, and workflow dependencies do not apply to it. Queries and mutations whose meaning requires Task workflow state do not select or affect a Memory, and a workflow mutation addressed to one fails with a typed error. Generic Bead operations such as listing by kind, showing identity, and graph traversal can include Memory Beads. _(S1, S3)_",
+      "source_label": "R1",
+      "source_title_markdown": "**R1. Memory is a first-class core Bead kind.**"
+    },
+    {
+      "id": "memory-r2",
+      "type": "types/requirement",
+      "title": "R2. Canonical identity does not depend on a human key.",
+      "body": "Every Memory Bead has a canonical Bead ID — its full canonical path — an owning Project ID, and a supplied or derived title. A Memory has zero or more keys: human-assigned names, each resolving to that canonical ID. An application may encode prefixes, paths, or other structure in a key, but Beads treats the complete value as one opaque selector and assigns no meaning to its segments. A key can be added, repointed to another Memory, or released; keys share one project-wide uniqueness namespace, and deleting a Memory releases its keys. Canonical Bead ID wins positional ambiguity, while explicit selectors choose ID or key lookup. Unkeyed memories remain fully usable, and canonical machine-readable records and stored References never substitute a key for identity. Where keys live — and so whether changing one versions the Memory — is Open question 1. _(S1, S2)_",
+      "source_label": "R2",
+      "source_title_markdown": "**R2. Canonical identity does not depend on a human key.**"
+    },
+    {
+      "id": "memory-r3",
+      "type": "types/requirement",
+      "title": "R3. Core fields describe portable Memory semantics; `metadata` is the extension point.",
+      "body": "A core field holds only what is portable before an author knows how a memory will be used; a categorical field whose value would change with intended use is not core. Application-specific properties — ADR status, evidence, validity, confidence, context tier, a must-be-present marker, a class taxonomy — belong in the Bead's structured `metadata`, the extension point every Bead already carries. Metadata is part of durable Memory state: changing a metadata entry mints a version, it travels with the version, and — because versions are retained under policy — a value that must not persist does not belong in it. The Markdown body is content and carries no Bead properties. It may contain anything, including frontmatter and ordinary Markdown links to files, documents, websites, or other non-Bead resources; Beads preserves body content verbatim but does not interpret it, and never treats body text as Links or validates, synchronizes, authorizes, retargets, or promises the continued existence of link targets. Core Beads does not acquire each application's taxonomy. Links carry the same open `metadata`, and the metadata on a Memory's outgoing Links is part of that Memory's durable state (R22).\n\nTwo core fields record a Memory's own derivation, because a record that dropped its evidence must not read like one that never had any. **Derived-from** is a core field, not a graph edge: a list of References (Core model) with three observable states: absent (a pre-schema or converted record; derivation unknown), an empty list (the author asserts the content directly — a deliberate value), or one or more entries (the tasks, documents, Memories, or external sources it was written from). **Derivation completeness** is a tri-state — complete, incomplete, or unknown — unknown for converted records and never defaulted. A Bead source is checkable by ordinary read; a non-Bead source is carried without validation, and completeness still distinguishes \"source outside the graph\" from \"sources dropped at write time.\" A pinned entry names exactly the state the author used; an entry whose version is `latest` names the source Bead and claims no particular state of it; neither is re-resolved or rewritten when the source later changes. Completeness is the author's claim, which Beads records and does not verify. Inception says how the record got into this store; the derivation record says what its content came from. _(S1, S6, S11, S14)_",
+      "source_label": "R3",
+      "source_title_markdown": "**R3. Core fields describe portable Memory semantics; `metadata` is the extension point.**"
+    },
+    {
+      "id": "memory-r4",
+      "type": "types/requirement",
+      "title": "R4. `bd remember` is an explicit write.",
+      "body": "It creates an unkeyed or keyed Memory Bead or updates an explicitly selected existing one. Positional text is body text, including a single token; stdin and file input use explicit forms. On creation, at least one of title or body contains non-whitespace content. When a non-empty body is supplied without a title, Beads derives a title; an empty body is valid when the caller supplies a non-empty title. Other omitted fields preserve current values. A successful `remember` result identifies the created or updated Memory — its canonical ID and title — so a write is always visibly a write. Beads never synthesizes a body from prompts, transcripts, tasks, tool activity, or search failure. _(S1, S2, S12)_",
+      "source_label": "R4",
+      "source_title_markdown": "**R4.** `bd remember` **is an explicit write.**"
+    },
+    {
+      "id": "memory-r5",
+      "type": "types/requirement",
+      "title": "R5. Deletion keeps history; erasure removes it.",
+      "body": "`bd forget` and `bd delete` addressed to a Memory perform the same operation — a disappearance in the shared History sense: the current state is removed and the disappearance announced, its keys are released, Links are removed or kept as R20 states, and every retained version stays addressable under retention policy, so a read reports no current state and answers from history. Because history is not rewritten, deletion is reversible through the shared History capability R13 names: a restored Memory comes back under the same identity; it never takes back a key another live Memory now holds, and whether a restore returns any keys follows Open question 1. Restoring a Memory does not re-add Links that its deletion removed. `forget` acts immediately because it is recoverable; `delete` keeps its shipped confirmation model — an unforced run previews, `--force` executes. A successful result says the Memory was deleted with its history retrievable subject to retention, and lists the keys it released; it never implies erasure.\n\nErasure removes what must not exist. An erased version is removed, its address afterward answers gone with erasure as the reason (R16), and the removal is announced and propagated to every replica and cache holding it. Erasing one retained version is a shared History operation that never leaves a Memory without a current state; `bd delete --erase` erases every retained version and the identity with them, releases its keys, and requires `--force`. No Link blocks deletion or erasure. Erasure is irreversible: nothing restores the erased versions, their addresses, or the identity; content someone still holds can be re-recorded only as new versions at new addresses. _(S3, S15)_",
+      "source_label": "R5",
+      "source_title_markdown": "**R5. Deletion keeps history; erasure removes it.**"
+    },
+    {
+      "id": "memory-r6",
+      "type": "types/requirement",
+      "title": "R6. Discovery is compact, deterministic, and honest about bounds.",
+      "body": "`bd memories [search]` searches existing Memory Beads across keys, title, and body. Results return in a documented deterministic order with stable positions — plain key or alphabetical order is an adequate contract — and relevance ranking is consumer-owned: conformance requires no full-text index, embeddings, persisted scores, or service. Ordinary and `--details` discovery returns each match once as a summary with canonical ID, title, an exact address for the selected state, bounded excerpt, keys, match provenance, and continuation or completeness information, and an explicit control returns the complete result set rather than one page. A key match identifies the matching key. Continuation is bound to the original query and ordering; when relevant state may have changed, or on incompatible or expired reuse, it fails accurately rather than returning silently mixed, duplicated, or skipped results. Discovery never expands complete bodies; callers recall selected memories explicitly. _(S2, S4, S6, S12)_",
+      "source_label": "R6",
+      "source_title_markdown": "**R6. Discovery is compact, deterministic, and honest about bounds.**"
+    },
+    {
+      "id": "memory-r7",
+      "type": "types/requirement",
+      "title": "R7. Exact recall is complete and attributable.",
+      "body": "`bd recall` returns one selected current or retained historical Memory state. Plain output contains the complete body without mixed diagnostics. Structured output keeps Project ID, Bead ID, keys, the pinned Reference for the selected state, Change Attribution, Inception, derivation record, metadata, outgoing Links, and complete body together. Memory presence is independent of body content: recalling an existing Memory with an empty body succeeds and returns that empty body, while an absent selector reports not found. Exact reads never silently truncate or substitute a different state. _(S4, S5, S6, S10)_",
+      "source_label": "R7",
+      "source_title_markdown": "**R7. Exact recall is complete and attributable.**"
+    },
+    {
+      "id": "memory-r8",
+      "type": "types/requirement",
+      "title": "R8. Retrieval is selective.",
+      "body": "Task display, project initialization, `bd prime`, ordinary search, `--details`, and Link summaries never load Memory bodies automatically. Generated guidance tells agents to inspect Links, search compact results, recall chosen bodies explicitly, search before writing, record only deliberately chosen durable knowledge, and keep short-lived progress or scratch state with the task or runtime. For each of those, the guidance shows the exact command to run, not a description of it. Those discovery paths never invoke explicit bulk compatibility projections. Generated guidance states what determines its surface's output budget, including who or what is reading it, and whether the guidance was delivered whole: content over budget but delivered complete is reported as such, truncated content is reported as truncated, and truncation is never recorded as complete delivery. This requirement prescribes neither truncation nor any client's limits. _(S2, S4, S5, S12)_",
+      "source_label": "R8",
+      "source_title_markdown": "**R8. Retrieval is selective.**"
+    },
+    {
+      "id": "memory-r9",
+      "type": "types/requirement",
+      "title": "R9. Tasks expose Links as structured data.",
+      "body": "A task record reports its Links — each with its Link ID, Type, target Reference, expected target kind, and the target information R20 requires — separately from workflow dependencies and without expanding target bodies. The task body remains responsible for explaining why a Link matters. _(S5, S6, S9)_",
+      "source_label": "R9",
+      "source_title_markdown": "**R9. Tasks expose Links as structured data.**"
+    },
+    {
+      "id": "memory-r10",
+      "type": "types/requirement",
+      "title": "R10. Context consumers receive stable building blocks, not a core context-pack policy.",
+      "body": "Structured Beads interfaces expose exact identities, historically addressed Memory states, Change Attribution, Inception, deterministic bounded traversal, and truthful completeness. Applications such as MindSpec own artifact schemas, required-versus-optional tiers, token counting, cross-source ordering, hashing, file snapshots, and receipt rendering. _(S6)_",
+      "source_label": "R10",
+      "source_title_markdown": "**R10. Context consumers receive stable building blocks, not a core context-pack policy.**"
+    },
+    {
+      "id": "memory-r11",
+      "type": "types/requirement",
+      "title": "R11. Memory Beads participate in shared Beads History.",
+      "body": "Every change to the durable Memory state the Core model enumerates creates a new version through Beads History. A request that leaves durable Memory state unchanged creates no version, even when the caller or other Change Attribution differs. Participation is unconditional: the Memory kind refuses a `storage_class: unversioned` marker at write time — typed and before mutation — rather than accepting a record whose marker the store would not honor. _(S1, S3, S7, S10)_",
+      "source_label": "R11",
+      "source_title_markdown": "**R11. Memory Beads participate in shared Beads History.**"
+    },
+    {
+      "id": "memory-r12",
+      "type": "types/requirement",
+      "title": "R12. Change Attribution and Inception stay distinct.",
+      "body": "Beads History associates Change Attribution with each accepted Memory version. Inception is editable Memory state. Changing Inception creates a version; changing only the caller or change context on an otherwise identical request does not. As Memory Capability Requirements on shared History, each accepted Memory version lets consumers obtain at least a responsible actor, an assisting agent when present, a timestamp, and a change message when present; richer attribution belongs to the shared History contract. Change Attribution alone does not claim that an identity was authenticated or authorized. _(S6, S7, S14)_",
+      "source_label": "R12",
+      "source_title_markdown": "**R12. Change Attribution and Inception stay distinct.**"
+    },
+    {
+      "id": "memory-r13",
+      "type": "types/requirement",
+      "title": "R13. Memory exposes inherited history outcomes.",
+      "body": "Shared Beads History lets callers view retained history, compare historical Memory states, inspect Change Attribution, cite an exact historical state, restore a deleted Memory's current state from a retained version — the latest by default, or a chosen one — as a new attributed version under the same identity, and find Memory Bead changes through the ordinary History query for all Bead changes in the project from a caller-held position — or from a caller-supplied instant on a first read, after which the position is the order. That change feed includes removals of retained versions with their reasons, so an application that mirrors Memory content can honor an erasure. The application consuming those changes owns any application-specific synchronization behavior. _(S5, S7, S10, S14, S16)_",
+      "source_label": "R13",
+      "source_title_markdown": "**R13. Memory exposes inherited history outcomes.**"
+    },
+    {
+      "id": "memory-r14",
+      "type": "types/requirement",
+      "title": "R14. Memory writes use the common Versioned Bead rules.",
+      "body": "Retries, concurrent edits, stale-state handling, conflicts, and their results follow the same shared Versioned Bead contracts. An accepted update that names no prior version reports the version it replaced and that version's Change Attribution, so an overwrite is never silent. Providers may impose documented finite limits; an oversized write fails before mutation. _(S7)_",
+      "source_label": "R14",
+      "source_title_markdown": "**R14. Memory writes use the common Versioned Bead rules.**"
+    },
+    {
+      "id": "memory-r15",
+      "type": "types/requirement",
+      "title": "R15. Memory Beads requires the shared history capability.",
+      "body": "Any Beads implementation advertising Memory Beads support supplies the Beads History capabilities Memory consumes. _(S7, S14)_",
+      "source_label": "R15",
+      "source_title_markdown": "**R15. Memory Beads requires the shared history capability.**"
+    },
+    {
+      "id": "memory-r16",
+      "type": "types/requirement",
+      "title": "R16. Retention is policy-dependent and removal is observable.",
+      "body": "Availability follows an explicit user or provider retention policy governed by the shared Beads History contract. While a historical Memory state is retained, its specific version ID continues to resolve to exactly that state. When a state is removed, exact recall reports it gone with the reason — retention, erasure, or another disclosed reason — distinguishably from an identity that never existed, and never substitutes current content or rebinds the address. _(S3, S5, S10)_",
+      "source_label": "R16",
+      "source_title_markdown": "**R16. Retention is policy-dependent and removal is observable.**"
+    },
+    {
+      "id": "memory-r17",
+      "type": "types/requirement",
+      "title": "R17. Links connect work and knowledge.",
+      "body": "A Link is an explicit directional relationship. `related` is the built-in baseline Type this proposal's scenarios use, not a closed vocabulary: user-defined, non-workflow Link Types are first-class and may connect Task→Memory, Memory→Task, or Memory→Memory, with the Type preserved verbatim whether or not the reading binary recognizes it. The boundary is workflow semantics: a Link Type whose meaning depends on Task workflow — blocking readiness above all — cannot use a Memory endpoint; informational and user-defined Types can. Links carry open `metadata` for application data about the relationship (R3). The shared graph owns declaration, registration, validation, filtering, traversal, and, when available, federation of Link Types; a Type's meaning is its consumers', and can itself be recorded in a Memory Bead. A Link carries no prompt, trust, permission, or workflow effect, and prose never creates one implicitly. _(S5, S8)_",
+      "source_label": "R17",
+      "source_title_markdown": "**R17. Links connect work and knowledge.**"
+    },
+    {
+      "id": "memory-r18",
+      "type": "types/requirement",
+      "title": "R18. Every Reference has a version.",
+      "body": "A Reference whose version is `latest` — the default when none is stated — follows its target's current state. A pinned Reference identifies one exact retained state, is valid only for a Bead participating in versioning, and resolves to exactly that state or to a typed refusal, never to a different state. Historical addressing is a shared Beads capability, not a Memory-only identifier. _(S5, S10)_",
+      "source_label": "R18",
+      "source_title_markdown": "**R18. Every Reference has a version.**"
+    },
+    {
+      "id": "memory-r19",
+      "type": "types/requirement",
+      "title": "R19. Links are validated within their Scope.",
+      "body": "A Scope's authority enforces integrity only for its own Beads. For a Link with a Memory endpoint whose target is in the same Scope, a `latest` Reference identifies a live Bead of the expected kind, and a pinned Reference identifies a valid retained state. Invalid, self-referential, or ambiguous Links fail before changing the Memory, and the refusal distinguishes by type an invalid selector from a target known to be gone. A fully qualified Reference to another Scope is accepted without resolving its target, because this store cannot guarantee that a remote target exists, remains available, or retains a version. Reading such a Link reports the expected kind separately from any observed kind, and reports an unreachable Scope or unresolved target as unavailable, never as gone. Carrying a cross-Scope Reference never requires importing or controlling its target. Endpoint representation and validation mechanics belong to the shared graph contract. _(S8, S10)_",
+      "source_label": "R19",
+      "source_title_markdown": "**R19. Links are validated within their Scope.**"
+    },
+    {
+      "id": "memory-r20",
+      "type": "types/requirement",
+      "title": "R20. Deleting a Bead removes the Links that follow it and keeps pinned ones.",
+      "body": "When a Bead is deleted, every in-Scope Link with a Memory endpoint whose Reference to that Bead is `latest` is removed with it; removing a Memory's outgoing Link creates a new version of that Memory, as R22 requires. A Link whose Reference to the deleted Bead is pinned survives and resolves to its retained state under the shared History contract, or reports gone with the reason once that state is removed (R16). The delete preview, where one exists, and the delete result list every removed Link and every newly versioned source. Deletion never edits body text, never silently retargets a Link, and never changes task readiness through a Memory Link; restoring the Bead does not re-add removed Links. A cross-Scope Link is not changed by a deletion its store cannot see; reading it reports what it observes (R19). Reading any Link truthfully reports whether its target resolves and, when it does, its kind-specific lifecycle, separately from the stored Link. The shared Beads graph contract owns the observation vocabulary and representation, and Links between Tasks; Memory requires only these observable outcomes. _(S9)_",
+      "source_label": "R20",
+      "source_title_markdown": "**R20. Deleting a Bead removes the Links that follow it and keeps pinned ones.**"
+    },
+    {
+      "id": "memory-r21",
+      "type": "types/requirement",
+      "title": "R21. Links are neither instructions nor context expansion.",
+      "body": "Creating, inspecting, or following a Link never loads a body recursively and grants nothing beyond its informational meaning. The source body explains intended use; the caller decides whether to read the target. _(S5, S8)_",
+      "source_label": "R21",
+      "source_title_markdown": "**R21. Links are neither instructions nor context expansion.**"
+    },
+    {
+      "id": "memory-r22",
+      "type": "types/requirement",
+      "title": "R22. Link direction and completeness remain explicit.",
+      "body": "A Memory stores its outgoing Links, including their metadata, as durable state, so adding, removing, or changing one versions that Memory and never versions the target. A version carries the Memory's whole outgoing Link set as it then stood, and that set shares the version's acceptance and retention fate; removing a Link creates a new source version without it, and every retained earlier version still carries it. Incoming views — cited-by among them — are computed views, never stored Memory state, and disclose whether bounded output is complete through the shared graph contract. _(S9, S10, S14)_",
+      "source_label": "R22",
+      "source_title_markdown": "**R22. Link direction and completeness remain explicit.**"
+    },
+    {
+      "id": "memory-r23",
+      "type": "types/requirement",
+      "title": "R23. Shared link surfaces expose Links without changing task workflow.",
+      "body": "Today `bd link <source> <target> --type related` records the directional non-blocking `related` Link Memory uses. Memory additionally needs two operations: removing one specific Link, addressed by its Link ID, and updating a Link's version and metadata in place without changing its Link ID. A Link with a Memory endpoint rejects blocking and other Task workflow Types. The shared graph contract owns the command grammar and link-surface design. `bd show` reads a selected Bead, and `bd recall` reads current or historically addressed Memory content without recursive expansion. _(S8, S10, S12)_",
+      "source_label": "R23",
+      "source_title_markdown": "**R23. Shared link surfaces expose Links without changing task workflow.**"
+    },
+    {
+      "id": "memory-r24",
+      "type": "types/requirement",
+      "title": "R24. Legacy Memory conversion never claims false success.",
+      "body": "Valid legacy key/value content can become canonical Memory Beads without silent loss. Conversion preserves keys, bodies, and any history or Inception that can be represented truthfully, and it does not invent unavailable historical authorship. A converted record's derivation record is absent and its completeness unknown (R3). Each legacy key becomes a key of its converted Memory, never its canonical path. A legacy key with an empty value is valid: conversion preserves the key, derives a title from it, and preserves the empty body. The accepted conversion change receives ordinary Change Attribution; absence of legacy authorship is disclosed rather than treated as missing Memory state. Ambiguity, identity or type collision, corruption, or credible loss stops with an actionable failure. Every currently supported way of storing or reaching legacy Memory data is accounted for so conversion cannot silently strand, duplicate, or split it; the broader compatibility policy decides whether a particular surface projects canonical Memory or is retired. Callers never receive a mixed or partially converted view presented as success. After interruption, they can use the unchanged legacy view or the complete canonical view, or inspect an unavailable conversion state with enough information to retry or recover. _(S11)_",
+      "source_label": "R24",
+      "source_title_markdown": "**R24. Legacy Memory conversion never claims false success.**"
+    },
+    {
+      "id": "memory-r25",
+      "type": "types/requirement",
+      "title": "R25. Compatibility surfaces have explicit target meanings.",
+      "body": "`remember`, `memories`, `recall`, and `forget` remain public entry points: `remember` writes, `forget` deletes without erasing history, canonical creation does not require or invent keys, and `prime` provides the selective-retrieval and deliberate-capture guidance in R8 without injecting bodies. `bd memories --json`, the Go memory-listing interface, and the HTTP memory list each return one complete record per Memory — canonical ID, keys, and body — replacing today's key-organized projections. This is a deliberate breaking change: a Memory can have several keys or none, so a key-organized projection cannot represent each Memory exactly once. Lookup by key remains supported on every surface. The exact JSON envelope and transition mechanics belong to the broader structured-output compatibility policy. Across the CLI, Go, and HTTP surfaces, presence is independent of body content: an empty-body Memory is found, recalled, and deleted successfully, while an absent selector remains not found. _(S12)_",
+      "source_label": "R25",
+      "source_title_markdown": "**R25. Compatibility surfaces have explicit target meanings.**"
+    },
+    {
+      "id": "memory-r26",
+      "type": "types/requirement",
+      "title": "R26. One canonical core model serves every supported surface.",
+      "body": "CLI commands, structured interfaces, HTTP handlers, embedded, proxied, and remote operation, conversion, interchange, and compatibility surfaces use the same Memory Beads semantics. A compatibility surface projects canonical Memory Beads and never creates or exposes a second key/value Memory store. A writer that cannot honor the store's canonical Memory model refuses before mutation; it never reports success for a write the canonical view will not carry. _(S11, S12, S14)_",
+      "source_label": "R26",
+      "source_title_markdown": "**R26. One canonical core model serves every supported surface.**"
+    },
+    {
+      "id": "memory-r27",
+      "type": "types/requirement",
+      "title": "R27. Memory participates safely in shared interchange.",
+      "body": "The shared Beads interchange capability can carry selected Memory state and Memory-related Links while preserving their identity and meaning. A destination either publishes the connected Memory-containing unit or rejects it without partial success. It never identifies or retargets a Memory by a matching human key or a similar-looking destination ID. Formats, mappings, validation, publication, and treatment of deleted, omitted, or historical endpoints belong to the shared interchange, graph, and history contracts. No shipped interchange path satisfies this requirement today; connected-interchange conformance is not claimed until one does. _(S13)_",
+      "source_label": "R27",
+      "source_title_markdown": "**R27. Memory participates safely in shared interchange.**"
+    },
+    {
+      "id": "memory-r27a",
+      "type": "types/requirement",
+      "title": "R27a. Bulk exposure of Memory bodies is enumerated.",
+      "body": "A projection surface is any operation returning Bead state beyond a single explicit read of one selected Bead — bulk and automatic export, interchange units, kind-agnostic listing, generated guidance. Every shipped projection surface declares one posture toward Memory Beads: **excluded** — no Memory rows; **summary** — canonical and Project IDs, keys, title, addresses, Change Attribution, and at most R6's bounded excerpt, never a body and never metadata values; or **body-carrying** — complete records, metadata included, selected only by an explicit caller argument such as `--full`, never by stored configuration, which may narrow a surface toward excluded and nothing else. An unenumerated surface carries summary at most; a unit that merely references a Memory carries its summary; body-carrying output discloses that it carries bodies (a record-level kind marker suffices). The one exception is a provider-level whole-store backup whose stated purpose is restoring that store; a canonical export is never that backup. `bd export` excludes Memory Beads unless the caller explicitly asks for them. Automatic export generates no Memory records, summaries included, and Memory records a manual export already placed in a file never authorize automatic export to add or refresh them. A whole-store backup includes Memory Beads because it exists to restore the whole store. Changing a surface's posture is an R31 change. _(S3, S11, S13, S14)_",
+      "source_label": "R27a",
+      "source_title_markdown": "**R27a. Bulk exposure of Memory bodies is enumerated.**"
+    },
+    {
+      "id": "memory-r28",
+      "type": "types/requirement",
+      "title": "R28. Structured records support viewers and independent implementations.",
+      "body": "Provider-independent records expose current and retained historical Memory state, existence or deletion, Links, comparison, Change Attribution, and honest bounds through shared Beads semantics. _(S14)_",
+      "source_label": "R28",
+      "source_title_markdown": "**R28. Structured records support viewers and independent implementations.**"
+    },
+    {
+      "id": "memory-r29",
+      "type": "types/requirement",
+      "title": "R29. Deployment and governance do not change portable meaning.",
+      "body": "Local or remote storage, single-user or multi-user operation, authentication, authorization, and governance are shared Beads concerns. Memory Beads defines no separate policy for them. Whatever facilities are present, portable Memory identity, content, lifecycle, and Link semantics stay the same. _(S14)_",
+      "source_label": "R29",
+      "source_title_markdown": "**R29. Deployment and governance do not change portable meaning.**"
+    },
+    {
+      "id": "memory-r30",
+      "type": "types/requirement",
+      "title": "R30. Core preserves evidence; external tools judge quality.",
+      "body": "Beads does not decide whether Memory content is true, fresh, useful, duplicated, contradictory, or applicable. It supplies bodies, Change Attribution, Inception, shared history, Links, and structured interfaces so humans and specialized applications can make and explain those judgments. _(S2, S14)_",
+      "source_label": "R30",
+      "source_title_markdown": "**R30. Core preserves evidence; external tools judge quality.**"
+    },
+    {
+      "id": "memory-r31",
+      "type": "types/requirement",
+      "title": "R31. Every target addition or behavioral change to a `bd` command selected by this proposal is explicit and justified.",
+      "body": "Against the pinned compatibility baseline in the Summary, the table below is exhaustive for command behavior this proposal selects; R25 defines the surviving compatibility meanings. Shared History and interchange command grammar remain outside this proposal. _(S1–S5, S8, S10, S12, S15)_\n\n| Command | Today | Target | Why |\n| --- | --- | --- | --- |\n| `bd remember` | A bare token matching an existing derived key reads it and reports a recall; an omitted key is invented from the content | Always writes — a single token is body text; never invents a key; success output names the created or updated Memory | Store-state-dependent reads and writes under one verb caused ambiguity and previously led to silent overwrites and junk keys; write-only behavior with a visible success result removes that ambiguity, and canonical identity makes invented keys unnecessary |\n| `bd recall` | Key-addressed; a stored empty value is indistinguishable from absence | Selects by canonical ID or any key; presence is independent of body content; reads exact historical states | The empty-equals-absent conflation leaves recall and forget unable to manage an empty row; historical reads let a task cite the exact knowledge it used |\n| `bd memories` | Lists or searches the key/value set; `--json` silently replaces the body of a memory keyed `schema_version` with the schema-version number | Compact bounded summaries with honest completeness over existing memories, in a documented deterministic order; `--json` returns one complete record per Memory — canonical ID, keys, body — body-carrying by contract (R25) and named as such under R27a | Discovery must stay cheap enough that agents search before writing or bulk-reading; a Memory can have several keys or none, so the key-to-body map cannot represent each Memory once — a deliberate breaking change that also retires the `schema_version` collision |\n| `bd forget` | Hard-deletes a found non-empty entry; out-of-band empty rows survive and need recovery | Deletes the Memory per R5 — a disappearance with every retained version still addressable — immediately, because it is recoverable; works for any present Memory; releases its keys and removes Links per R20, listing both | Current deletion loses the record; a disappearance removes the entry and keeps the history, and presence-independence eliminates the stuck-empty-row class |\n| `bd delete` | Deletes issues and cleans up references; an unforced run behaves as a dry-run and `--force` confirms | For a Memory, the same disappearance as `forget` under the shipped preview-unless-`--force` model; `--erase` (requires `--force`) erases the whole Bead per R5; for any Bead, Links with a Memory endpoint follow R20 | Delete disappears without rewriting history; erase removes history for content that must not exist — two operations the shared History model already distinguishes, and Memory must not fuse them |\n| `bd prime` | Injects memory bodies at session start and supports optional count and byte caps | Injects no bodies; generated guidance teaches selective search, explicit recall, and deliberate capture | Injection spends context before the agent knows what it needs and grows with the corpus; selective retrieval scales with it |\n| `bd link` | Records a dependency between issues, defaulting to blocking; `--type related` already creates a non-blocking relationship | `--type related` and user-defined non-workflow Types accept Memory endpoints; a Link with a Memory endpoint rejects blocking and other Task workflow Types; a Link's version and metadata can be updated in place, keeping its Link ID | Knowledge must never gate readiness; a default-blocking edge to a Memory would turn knowledge into workflow |\n| Link removal (new) | `bd dep remove` removes a dependency by source and target; nothing addresses one specific Link | Removes one Link by its Link ID; removing a Memory's outgoing Link versions the source, never the target; the command grammar is the shared graph's (R23) | Several Links can join the same two Beads, so only a Link ID names exactly one; removal is a durable change to the source Memory |\n| `bd list` | Lists records from the Task-oriented issue model | Generic listing by kind can include `type: memory`; Task-workflow filters do not select Memories; Memory rows are summary per R27a | Memory is a peer core Bead kind but has no Task workflow state |\n| `bd show` | Reads Task-oriented issue records | Reads a selected Task or Memory Bead and exposes its identity and Links without recursively expanding referenced bodies | Humans and tools need one generic Bead inspection surface without turning a reference into implicit context loading |\n| `bd graph` and other generic graph traversal | Traverse the Task-oriented issue graph | Can include Memory nodes and informational Links without loading bodies or changing readiness; Memory nodes are summary per R27a | Memory is a first-class graph node, while its Links remain informational |\n| `bd export`, automatic export, `bd backup` | Export issues to JSONL and back up the database, with no stated Memory posture | `bd export` excludes Memories unless the caller asks for them; automatic export generates no Memory records; `bd backup`, a whole-store backup, includes them (R27a) | Bulk surfaces are where silent body exposure would hide; R27a makes each posture a stated choice rather than an inheritance |\n| Any command or query whose meaning requires Task workflow state | Operates on the existing Task-oriented issue model, which has no first-class Memory kind | Does not select or affect Memory Beads; a workflow mutation explicitly addressed to one fails with a typed error | Memory is knowledge rather than work and must not acquire readiness, assignment, claiming, priority, completion, closure, or blocking semantics |",
+      "source_label": "R31",
+      "source_title_markdown": "**R31. Every target addition or behavioral change to a `bd` command selected by this proposal is explicit and justified.**"
+    },
+    {
+      "id": "memory-s1",
+      "type": "types/scenario",
+      "title": "S1. Record durable knowledge without inventing a name",
+      "body": "A developer records why the project avoids a tempting dependency. They supply a Markdown body but no title or key. Beads derives a short title, creates a Memory Bead with a canonical ID and first attributed version, and does not invent a key. A human may add a familiar key later, or repoint one, while agents can continue using the canonical ID.",
+      "source_label": "S1",
+      "source_title_markdown": "S1. Record durable knowledge without inventing a name"
+    },
+    {
+      "id": "memory-s2",
+      "type": "types/scenario",
+      "title": "S2. Search before writing and improve the existing memory",
+      "body": "An agent is asked to preserve a newly discovered release convention. It searches compact memory results and finds an existing convention that already covers the subject. It recalls the complete body and updates that same Memory Bead using the common write rules for Versioned Beads rather than leaving a duplicate. An external quality tool may flag a possible duplicate or stale statement, but Beads does not decide that itself.",
+      "source_label": "S2",
+      "source_title_markdown": "S2. Search before writing and improve the existing memory"
+    },
+    {
+      "id": "memory-s3",
+      "type": "types/scenario",
+      "title": "S3. Retire knowledge without losing the record",
+      "body": "A workaround is no longer current. A maintainer forgets its Memory Bead. It disappears from current state and from search, but its retained versions and their Change Attribution remain readable by version according to the project's retention policy, pinned References to it still resolve, and Links that followed its `latest` state are removed and listed in the result. If the workaround becomes relevant again, restoring it revives the same identity from a retained version rather than creating a replacement; the removed Links are not re-added.",
+      "source_label": "S3",
+      "source_title_markdown": "S3. Retire knowledge without losing the record"
+    },
+    {
+      "id": "memory-s4",
+      "type": "types/scenario",
+      "title": "S4. A fresh agent recalls only what it needs",
+      "body": "A fresh supported coding agent starts from generated Beads guidance. It searches compact summaries, selects two plausible memories, recalls their complete bodies, and reports the Bead IDs and pinned References that informed its work. `bd prime`, task loading, and search results do not inject unrelated memory bodies.",
+      "source_label": "S4",
+      "source_title_markdown": "S4. A fresh agent recalls only what it needs"
+    },
+    {
+      "id": "memory-s5",
+      "type": "types/scenario",
+      "title": "S5. A task cites the policy it depends on",
+      "body": "A task has a Link to a security policy. Its structured record exposes the Link and its target Reference, pinned or `latest`, without loading the target body. The task body explains why the policy matters. The executing agent explicitly recalls it before acting, and a pinned Reference continues to identify the same retained policy state after the policy changes.",
+      "source_label": "S5",
+      "source_title_markdown": "S5. A task cites the policy it depends on"
+    },
+    {
+      "id": "memory-s6",
+      "type": "types/scenario",
+      "title": "S6. MindSpec builds a deterministic context pack",
+      "body": "A [MindSpec-like context consumer](https://github.com/mrmaxsteel/mindspec/blob/09f62bd97b28bae7b171054066117cb19a33874d/.mindspec/core/ARCHITECTURE.md) reads a task's structured record, follows selected Links, and recalls exact historical Memory states. It combines those records with its own specs, ADRs, domain documents, and source files under a deterministic token policy. The resulting receipt identifies or hashes every input and explains why each was included. Beads makes each selected Memory's canonical identity, exact content, and Change Attribution available together; MindSpec decides which of those facts to record and owns the taxonomy, ordering, token tiers, file handling, and receipt format. Its pinned [context-pack budgeter specification](https://github.com/mrmaxsteel/mindspec/blob/09f62bd97b28bae7b171054066117cb19a33874d/.mindspec/specs/088-context-pack-budgeter/spec.md#L246-L355) documents its consumer-owned ordering, budgeting, input hashing, and receipt behavior.",
+      "source_label": "S6",
+      "source_title_markdown": "S6. MindSpec builds a deterministic context pack"
+    },
+    {
+      "id": "memory-s7",
+      "type": "types/scenario",
+      "title": "S7. Two writers do not silently overwrite each other",
+      "body": "Two agents edit the same Memory Bead, both starting from the same version. Nothing either writes is lost: every accepted write is a retained version. A writer that names the version it started from is refused if another write landed first, and the refusal names the current version and its Change Attribution, so the writer can recall it, merge, and retry. A writer that names no version replaces the current state, and its result names the version it replaced and that version's Change Attribution, so the overwrite is never silent. Retained history and comparison show what changed.",
+      "source_label": "S7",
+      "source_title_markdown": "S7. Two writers do not silently overwrite each other"
+    },
+    {
+      "id": "memory-s8",
+      "type": "types/scenario",
+      "title": "S8. A task and a memory link without changing workflow",
+      "body": "A task links to the project's release policy, and that Memory Bead links to a supporting design rationale. Both links are explicit, directional, and non-blocking. The task keeps its existing dependency and readiness behavior, the source body explains why the Link matters, and neither task display nor Link traversal loads the target body. A caller can later remove either Link by its Link ID; removing a Memory's outgoing Link versions that source Memory without changing the target.",
+      "source_label": "S8",
+      "source_title_markdown": "S8. A task and a memory link without changing workflow"
+    },
+    {
+      "id": "memory-s9",
+      "type": "types/scenario",
+      "title": "S9. A referenced target changes state",
+      "body": "A task links to the release policy's `latest` state, and a Memory Bead links to a supporting task pinned at the version it relied on. Both targets are later deleted. The task's Link is removed with the policy, and the delete result lists it. The Memory's pinned Link survives and still resolves to the retained version, and reading it reports that the target was deleted. No Link is silently retargeted, and task readiness is unchanged.",
+      "source_label": "S9",
+      "source_title_markdown": "S9. A referenced target changes state"
+    },
+    {
+      "id": "memory-s10",
+      "type": "types/scenario",
+      "title": "S10. A pinned Reference does not drift",
+      "body": "A Reference whose version is `latest` follows the Memory Bead's current state. A pinned Reference continues to identify the same retained state after the target changes: it resolves to exactly that state or to a typed refusal, never to a different one — a pinned Reference can be superseded by newer versions of its target, but what it names never changes. Outgoing views for an exact historical state remain bound to that state, and a bounded incoming-Link view reports whether it is complete.",
+      "source_label": "S10",
+      "source_title_markdown": "S10. A pinned Reference does not drift"
+    },
+    {
+      "id": "memory-s11",
+      "type": "types/scenario",
+      "title": "S11. Existing key/value memory converts without silent loss",
+      "body": "Converting legacy key/value memory to canonical Memory Beads preserves keys, bodies, and any history or Inception that can be represented truthfully. Each legacy key becomes a key of its converted Memory. A legacy key with an empty value becomes a Memory with that key, a title derived from it, and an empty body. The accepted conversion change receives ordinary Change Attribution, while missing legacy authorship is disclosed rather than invented. Ambiguity, collisions, corruption, or another credible loss risk produces an actionable failure rather than false success, partial visibility, or invented evidence. If conversion is interrupted, callers see the still-usable legacy view, the complete canonical view, or an inspectable unavailable state that can be retried or recovered; they never receive an unexplained mixed view.",
+      "source_label": "S11",
+      "source_title_markdown": "S11. Existing key/value memory converts without silent loss"
+    },
+    {
+      "id": "memory-s12",
+      "type": "types/scenario",
+      "title": "S12. Familiar commands map onto canonical Memory Beads",
+      "body": "Existing users keep `bd remember`, `bd memories`, `bd recall`, and `bd forget`, but their target meanings are unambiguous. `remember` writes, canonical memories need no key, `forget` deletes without erasing history, structured discovery uses Bead IDs and compact records, and `prime` teaches selective retrieval instead of injecting bodies. `bd memories --json` and the Go and HTTP listing interfaces return one complete record per Memory, with its keys; this deliberately replaces the key-to-body map, since a Memory can have several keys or none. Lookup by key still works on every surface. `bd remember release-policy` writes a Memory whose body is `release-policy`; reading a Memory uses `bd recall`.",
+      "source_label": "S12",
+      "source_title_markdown": "S12. Familiar commands map onto canonical Memory Beads"
+    },
+    {
+      "id": "memory-s13",
+      "type": "types/scenario",
+      "title": "S13. Memory participates safely in shared interchange",
+      "body": "A team transfers a selected graph containing tasks, memories, and their Links through the shared Beads interchange facility. The destination either preserves the selected Memory state and Link meaning or rejects the transfer without a partial connected graph. A Memory is never identified or retargeted merely because a human key or similar-looking ID matches.",
+      "source_label": "S13",
+      "source_title_markdown": "S13. Memory participates safely in shared interchange"
+    },
+    {
+      "id": "memory-s14",
+      "type": "types/scenario",
+      "title": "S14. A viewer and a quality tool use the same public records",
+      "body": "A viewer renders memory summaries, complete current and retained historical state, existence or deletion, Links, comparisons, and Change Attribution without reading provider tables. A separate quality tool examines the same structured data for possible staleness, contradiction, duplication, or weak evidence. Beads preserves the material and exposes shared history capabilities; the tool makes the judgment.",
+      "source_label": "S14",
+      "source_title_markdown": "S14. A viewer and a quality tool use the same public records"
+    },
+    {
+      "id": "memory-s15",
+      "type": "types/scenario",
+      "title": "S15. Temporary knowledge carries its own validity",
+      "body": "A developer records a workaround that is only valid until a dependency ships its fix, and records that validity window in the Memory's metadata at write time. Beads moves nothing on a clock: consumers that care filter on the window, and when the fix ships the developer forgets the Memory. If the fix slips, the developer changes the window with an ordinary attributed edit; if the workaround is needed again after being forgotten, restoring it revives the same identity from its retained history.",
+      "source_label": "S15",
+      "source_title_markdown": "S15. Temporary knowledge carries its own validity"
+    },
+    {
+      "id": "memory-s16",
+      "type": "types/scenario",
+      "title": "S16. An application uses Beads History to update its own representation of memories",
+      "body": "An application queries ordinary Beads History for all Bead changes from the position it last processed — or from a chosen instant on a first read — selects the Memory Bead changes, including removals of retained versions with their reasons, and reads the affected Memories through their public structured interfaces. The application decides how to synchronize those changes into Obsidian or any other application-specific representation. Beads does not own that synchronization process.",
+      "source_label": "S16",
+      "source_title_markdown": "S16. An application uses Beads History to update its own representation of memories"
+    }
+  ],
+  "links": [
+    {
+      "id": "defines-memory-r1",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r1"
+    },
+    {
+      "id": "defines-memory-r2",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r2"
+    },
+    {
+      "id": "defines-memory-r3",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r3"
+    },
+    {
+      "id": "defines-memory-r4",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r4"
+    },
+    {
+      "id": "defines-memory-r5",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r5"
+    },
+    {
+      "id": "defines-memory-r6",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r6"
+    },
+    {
+      "id": "defines-memory-r7",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r7"
+    },
+    {
+      "id": "defines-memory-r8",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r8"
+    },
+    {
+      "id": "defines-memory-r9",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r9"
+    },
+    {
+      "id": "defines-memory-r10",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r10"
+    },
+    {
+      "id": "defines-memory-r11",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r11"
+    },
+    {
+      "id": "defines-memory-r12",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r12"
+    },
+    {
+      "id": "defines-memory-r13",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r13"
+    },
+    {
+      "id": "defines-memory-r14",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r14"
+    },
+    {
+      "id": "defines-memory-r15",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r15"
+    },
+    {
+      "id": "defines-memory-r16",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r16"
+    },
+    {
+      "id": "defines-memory-r17",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r17"
+    },
+    {
+      "id": "defines-memory-r18",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r18"
+    },
+    {
+      "id": "defines-memory-r19",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r19"
+    },
+    {
+      "id": "defines-memory-r20",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r20"
+    },
+    {
+      "id": "defines-memory-r21",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r21"
+    },
+    {
+      "id": "defines-memory-r22",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r22"
+    },
+    {
+      "id": "defines-memory-r23",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r23"
+    },
+    {
+      "id": "defines-memory-r24",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r24"
+    },
+    {
+      "id": "defines-memory-r25",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r25"
+    },
+    {
+      "id": "defines-memory-r26",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r26"
+    },
+    {
+      "id": "defines-memory-r27",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r27"
+    },
+    {
+      "id": "defines-memory-r27a",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r27a"
+    },
+    {
+      "id": "defines-memory-r28",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r28"
+    },
+    {
+      "id": "defines-memory-r29",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r29"
+    },
+    {
+      "id": "defines-memory-r30",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r30"
+    },
+    {
+      "id": "defines-memory-r31",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-r31"
+    },
+    {
+      "id": "defines-memory-s1",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s1"
+    },
+    {
+      "id": "defines-memory-s2",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s2"
+    },
+    {
+      "id": "defines-memory-s3",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s3"
+    },
+    {
+      "id": "defines-memory-s4",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s4"
+    },
+    {
+      "id": "defines-memory-s5",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s5"
+    },
+    {
+      "id": "defines-memory-s6",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s6"
+    },
+    {
+      "id": "defines-memory-s7",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s7"
+    },
+    {
+      "id": "defines-memory-s8",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s8"
+    },
+    {
+      "id": "defines-memory-s9",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s9"
+    },
+    {
+      "id": "defines-memory-s10",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s10"
+    },
+    {
+      "id": "defines-memory-s11",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s11"
+    },
+    {
+      "id": "defines-memory-s12",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s12"
+    },
+    {
+      "id": "defines-memory-s13",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s13"
+    },
+    {
+      "id": "defines-memory-s14",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s14"
+    },
+    {
+      "id": "defines-memory-s15",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s15"
+    },
+    {
+      "id": "defines-memory-s16",
+      "type": "types/defines",
+      "source": "memory-proposal",
+      "target": "memory-s16"
+    }
+  ],
+  "rules": [
+    "Titles retain complete Rn/Sn prefixes and wording, with source bold emphasis removed; inline code and all body Markdown are preserved.",
+    "Bodies exclude only source section/group headings and separators, which are outside the individual requirement/scenario.",
+    "No Requires or dependency Links are inferred from S-number citations.",
+    "Defines children are siblings, not a Requirement-to-Scenario hierarchy."
+  ]
+}
