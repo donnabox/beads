@@ -115,9 +115,11 @@ Explicit IDs preserve every segment: no `beads/`, `links/` or `types/` segment
 is silently added or stripped. Local public IDs are opaque within the Scope;
 Resource kind comes from stored facts. A canonical same-Scope URL selects the
 same allocation. Private storage locators are not alternative public IDs.
+`--status` sets the initial Issue status and defaults to `open`; the native
+Issue writer validates built-in and configured custom statuses.
 
 ```sh
-bd create 'Move the release branch' --id work --type task
+bd create 'Move the release branch' --id work --type task --status open
 bd create --type types/memory \
   --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```
