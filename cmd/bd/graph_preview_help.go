@@ -192,6 +192,10 @@ metadata. Owned-source pins remain unavailable. Native Dependency properties and
 edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
 unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.
+Multiple Issue IDs accept the same scalar/property edit per ID in input order:
+successful edits remain committed after a sibling fails, and any failure exits
+nonzero. A single --if-revision cannot guard multiple IDs; update them
+separately. Multi-ID reparent, retype, claim and historical edits are unavailable.
 On a fresh graph workspace, bd update CHILD --parent PARENT replaces the
 native parent-child edge and its canonical Link in one checked write.
 Admitted scalar edits can accompany the move, and same-parent scalar edits
