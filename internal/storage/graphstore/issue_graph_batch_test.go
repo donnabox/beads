@@ -82,11 +82,43 @@ func TestApplyNewIssueGraphBindsForwardKeyAndRollsBackAfterNativeEdge(t *testing
 				}
 			}
 
+			existing := publicops.ApplyBatchRequest{Actor: "test-author", Items: []publicops.ApplyItem{
+				{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "new", Issue: plainIssue("New source").Issue}},
+				{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{
+					Source: publicops.Ref{Key: "new"}, Target: publicops.Ref{ID: second.Properties.ID}, Type: types.DepBlocks,
+				}},
+			}}
 			before = workflowState(t, ctx, s)
-			request.Items[2].DepAdd.Target = publicops.Ref{ID: second.Properties.ID}
-			refused, err := s.ApplyNewIssueGraph(ctx, request)
-			if !errors.Is(err, ErrCapabilityUnavailable) || refused != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatalf("existing-ID edge was not a no-write refusal: result=%v err=%v", refused, err)
+			s.afterWrite = func(stage string) error {
+				if stage == "create-dependency-retained" {
+					return fault
+				}
+				return nil
+			}
+			failed, err = s.ApplyNewIssueGraph(ctx, existing)
+			s.afterWrite = nil
+			if !errors.Is(err, fault) || failed != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("existing-target edge fault left partial state: result=%v err=%v", failed, err)
+			}
+			linked, err := s.ApplyNewIssueGraph(ctx, existing)
+			if err != nil || len(linked["new"].Owned) != 1 {
+				t.Fatalf("existing-target edge did not publish one Link: result=%v err=%v", linked, err)
+			}
+			if existing.Items[1].DepAdd.Target != (publicops.Ref{ID: second.Properties.ID}) {
+				t.Fatalf("batch resolution mutated caller request: %+v", existing.Items[1].DepAdd.Target)
+			}
+			var existingLink LinkRecord
+			if err := json.Unmarshal(linked["new"].Owned[0], &existingLink); err != nil {
+				t.Fatal(err)
+			}
+			if existingLink.Source != linked["new"].ID || existingLink.Target != second.ID {
+				t.Fatalf("existing-target Link endpoints changed: %+v", existingLink)
+			}
+			before = workflowState(t, ctx, s)
+			existing.Items[1].DepAdd.Target = publicops.Ref{ID: "missing-issue"}
+			refused, err := s.ApplyNewIssueGraph(ctx, existing)
+			if err == nil || refused != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("missing existing target was not a no-write refusal: result=%v err=%v", refused, err)
 			}
 		})
 	}

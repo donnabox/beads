@@ -57,8 +57,22 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if len(links) != 1 {
 				t.Fatalf("symbolic edge did not publish one canonical Link: %+v", links)
 			}
+			writePlan(`{"nodes":[{"key":"later","title":"Later","id":"batch-later"}],"edges":[{"from_key":"later","to_id":"` + result.IDs["parent"] + `"}]}`)
+			var linked GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &linked); err != nil {
+				t.Fatal(err)
+			}
+			if linked.IDs["later"] != "batch-later" {
+				t.Fatalf("existing-target batch lost explicit source ID: %+v", linked)
+			}
+			if got := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", "batch-later")); len(got) != 1 || got[0].Target != parent.ID {
+				t.Fatalf("existing-target batch did not publish its Link: %+v", got)
+			}
+			writePlan(`{"nodes":[{"key":"dupe","title":"Must not exist","id":"batch-dupe"}],"edges":[{"from_key":"dupe","to_id":"` + result.IDs["parent"] + `"},{"from_key":"dupe","to_id":"https://example.invalid/batch/` + result.IDs["parent"] + `"}]}`)
+			refuse("invalid_properties", "create", "--graph", path)
+			refuse("not_found", "show", "batch-dupe")
 			writePlan(`{"nodes":[{"key":"orphan","title":"Must not exist","id":"batch-orphan"}],"edges":[{"from_key":"orphan","to_id":"batch-missing"}]}`)
-			refuse("capability_unavailable", "create", "--graph", path)
+			refuse("not_found", "create", "--graph", path)
 			refuse("not_found", "show", "batch-orphan")
 			writePlan(`{"nodes":[{"key":"closed","title":"Must not exist","id":"batch-closed","status":"closed"}]}`)
 			refuse("capability_unavailable", "create", "--graph", path)
