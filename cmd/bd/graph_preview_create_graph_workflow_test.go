@@ -59,6 +59,27 @@ func TestGraphPreviewCreateGraphAtomicWorkflow(t *testing.T) {
 			if len(links) != 1 {
 				t.Fatalf("symbolic edge did not publish one canonical Link: %+v", links)
 			}
+			writePlan(`{"nodes":[{"key":"root","title":"Root","type":"epic"},{"key":"child","title":"Child","parent_key":"root"},{"key":"alias","title":"Alias","parent":"root","parent_id":"missing-parent"}]}`)
+			var hierarchy GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &hierarchy); err != nil {
+				t.Fatal(err)
+			}
+			root := graphMixedResult[graphstore.IssueRecord](t, call("show", hierarchy.IDs["root"], "--format", "graph-json"))
+			for _, key := range []string{"child", "alias"} {
+				owned := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", hierarchy.IDs[key]))
+				if len(owned) != 1 || owned[0].Target != root.ID || owned[0].Properties["dep_type"] != "parent-child" {
+					t.Fatalf("graph parent key %s did not publish parent-child Link: %+v", key, owned)
+				}
+			}
+			writePlan(`{"nodes":[{"key":"external-child","title":"External child","parent_id":"` + hierarchy.IDs["root"] + `"}]}`)
+			var externalChild GraphApplyResult
+			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &externalChild); err != nil {
+				t.Fatal(err)
+			}
+			owned := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", externalChild.IDs["external-child"]))
+			if len(owned) != 1 || owned[0].Target != root.ID || owned[0].Properties["dep_type"] != "parent-child" {
+				t.Fatalf("graph parent_id did not publish parent-child Link: %+v", owned)
+			}
 			writePlan(`{"nodes":[{"key":"later","title":"Later","id":"batch-later"}],"edges":[{"from_key":"later","to_id":"` + result.IDs["parent"] + `"}]}`)
 			var linked GraphApplyResult
 			if err := json.Unmarshal([]byte(call("create", "--graph", path)), &linked); err != nil {
