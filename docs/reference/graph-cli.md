@@ -715,6 +715,11 @@ keep their ordinary Issue-shaped `--json` response; use
 `bd show ID --format graph-json` when the complete graph Resource envelope is
 needed.
 
+`bd label list ID` reads a current Issue's labels through the checked Issue
+detail view, sorted by name. Its `--json` output is an array, including `[]`
+for an unlabeled Issue. A unique native Issue ID abbreviation is accepted;
+Memory and Link targets refuse.
+
 ```sh
 bd priority work 1
 bd note work 'Checklist complete.'
