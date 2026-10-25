@@ -186,6 +186,17 @@ func TestGraphPreviewReadyParentListsDescendants(t *testing.T) {
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready", "--parent", "missing")); len(got) != 0 {
 				t.Fatalf("missing parent selected work: %+v", got)
 			}
+			neighbor := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Literal prefixed neighbor", "--id", "beads/missing", "--force"))
+			neighborChild := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Neighbor child", "--id", "beads/neighbor-child", "--force"))
+			call("", "dep", "add", neighborChild.ID, neighbor.ID, "--type", "parent-child")
+			for _, missing := range []string{"missing", scope + "missing"} {
+				if got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready", "--parent", missing)); len(got) != 0 {
+					t.Fatalf("missing parent %q selected literal-prefixed neighbor's child: %+v", missing, got)
+				}
+			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("", "ready", "--parent", neighbor.ID)); len(got) != 1 || got[0].ID != neighborChild.ID {
+				t.Fatalf("literal-prefixed neighbor lost its child: %+v", got)
+			}
 			call("capability_unavailable", "ready", "--claim", "--parent", parent.Properties.ID, "--actor", "ready-agent")
 			call("capability_unavailable", "ready", "--claim", "--parent=", "--actor", "ready-agent")
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("", "show", "--format", "graph-json", child.ID)); got.Revision != child.Revision {

@@ -663,7 +663,9 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 				return nil, "", graphFailure("invalid_selector", err.Error(), 2)
 			}
 			parent, err := store.ShowIssueSelected(ctx, selector)
-			parentID := selector.Path // A missing parent has no descendants, as in ordinary ready.
+			// ParentID is a native/public Issue ID. The selector's synthetic
+			// beads/ path candidate may name a different literal public ID.
+			parentID := selector.NativeID
 			if err == nil {
 				parentID = parent.Properties.ID
 			} else if !errors.Is(err, graphstore.ErrNotFound) && !errors.Is(err, graphstore.ErrGone) {
