@@ -493,3 +493,38 @@ func TestStageCancellationBeforeFilesystemSteps(t *testing.T) {
 		})
 	}
 }
+
+// Invalid counts must refuse on the first read, before any limit or stall guard.
+func TestStageInvalidReaderCounts(t *testing.T) {
+	for _, negative := range []bool{false, true} {
+		name := "excess-full-buffer"
+		if negative {
+			name = "negative"
+		}
+		t.Run(name, func(t *testing.T) {
+			calls := 0
+			reader := readerFunc(func(p []byte) (int, error) {
+				calls++
+				if negative {
+					return -1, nil
+				}
+				return len(p) + 1, nil
+			})
+			dir := t.TempDir()
+			staged, err := Stage(context.Background(), reader, Options{Dir: dir, MaxBytes: chunkBytes + 1})
+			if staged != nil || err == nil || calls != 1 || errors.Is(err, ErrLimitExceeded) || errors.Is(err, io.ErrNoProgress) {
+				t.Fatalf("invalid count: staged=%v err=%v calls=%d", staged, err, calls)
+			}
+			noResidue(t, dir)
+		})
+	}
+}
+
+func TestStageMissingParent(t *testing.T) {
+	dir := t.TempDir()
+	staged, err := Stage(context.Background(), strings.NewReader("x"), Options{Dir: filepath.Join(dir, "absent"), MaxBytes: 1})
+	if staged != nil || !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("missing parent: staged=%v err=%v", staged, err)
+	}
+	noResidue(t, dir)
+}
