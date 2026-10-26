@@ -158,19 +158,19 @@ func TestGraphPreviewReopenLocalRevisionCannotBecomeLiteralID(t *testing.T) {
 			}
 			refuse := func() {
 				t.Helper()
-				stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "reopen", "task@1", "--json")
+				stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "reopen", "work-base@1", "--json")
 				if exit != 2 || stdout != "" || !strings.Contains(stderr, "invalid_selector") {
 					t.Fatalf("revision-qualified reopen: exit=%d stdout=%q stderr=%q", exit, stdout, stderr)
 				}
 			}
-			base := graphMixedResult[graphstore.IssueRecord](t, call("create", "Base", "--id", "task", "--force"))
+			base := graphMixedResult[graphstore.IssueRecord](t, call("create", "Base", "--id", "work-base", "--force"))
 			call("close", base.ID)
 			closedBase := show(base.ID)
 			refuse()
 			if after := show(base.ID); after.Revision != closedBase.Revision || after.Properties.Status != types.StatusClosed {
 				t.Fatalf("rejected suffix changed base: %+v", after)
 			}
-			literal := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal", "--id", "task@1", "--force"))
+			literal := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal", "--id", "work-base@1", "--force"))
 			call("close", literal.ID)
 			closedLiteral := show(literal.ID)
 			refuse()

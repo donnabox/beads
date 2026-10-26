@@ -182,8 +182,8 @@ func TestGraphPreviewAssessmentAvailabilityWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", append(args, "--json")...)
 			}
 			inventory := graphMixedResult[graphTypeInventory](t, call("types"))
-			if len(inventory.BeadTypes) != 22 || len(inventory.LinkTypes) != 25 {
-				t.Fatal("default assessment inventory is not22 Bead/25 Link Types")
+			if len(inventory.BeadTypes) != 20 || len(inventory.LinkTypes) != 25 {
+				t.Fatal("default assessment inventory is not20 Bead/25 Link Types")
 			}
 			for _, args := range [][]string{{"create", "E", "--type", "evaluation", "--id", "denied"}, {"create", "E", "--type", scope + "evaluation", "--id", "denied"}} {
 				refuse(args...)
@@ -196,7 +196,7 @@ func TestGraphPreviewAssessmentAvailabilityWorkflow(t *testing.T) {
 			}
 			graphAssessmentSwitch(t, work, true)
 			all := graphMixedResult[graphTypeInventory](t, call("types", "--details"))
-			if len(all.BeadTypes) != 23 || len(all.LinkTypes) != 29 {
+			if len(all.BeadTypes) != 21 || len(all.LinkTypes) != 29 {
 				t.Fatal("enabled CLI inventory lost definitions")
 			}
 			eval := graphMixedResult[graphstore.Record](t, call("create", "--type", "evaluation", "--id", "eval", "--properties", string(props)))

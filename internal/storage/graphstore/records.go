@@ -164,7 +164,7 @@ func (s *Store) createPreparedMemoryInTx(ctx context.Context, tx *sql.Tx, req Cr
 	if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
 		return Record{}, err
 	} else if exists {
-		return Record{}, ErrAlreadyExists
+		return Record{}, publicResourceIDReservedErrorInTx(ctx, tx, publicID)
 	}
 	privatePath, err := choosePrivateResourcePathInTx(ctx, tx, req.Path, req.privatePathGenerated, graph.KindBead)
 	if err != nil {

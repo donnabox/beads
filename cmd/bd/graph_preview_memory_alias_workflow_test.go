@@ -37,8 +37,8 @@ func TestGraphPreviewMemoryConvenienceWorkflow(t *testing.T) {
 				t.Helper()
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
-			created := graphMixedResult[graphstore.Record](t, call("memory", "remember", "--id", "policy", "--type", "policy", "--create-only", "--body", "First body", "--title", "Policy title", "--status", "reviewed"))
-			if created.ID != scope+"policy" || created.Type != scope+"policy" || created.Properties.Body != "First body" {
+			created := graphMixedResult[graphstore.Record](t, call("memory", "remember", "--id", "policy-note", "--type", "policy", "--create-only", "--body", "First body", "--title", "Policy title", "--status", "reviewed"))
+			if created.ID != scope+"policy-note" || created.Type != scope+"policy" || created.Properties.Body != "First body" {
 				t.Fatalf("nested typed creation lost identity, Type or body: %+v", created)
 			}
 			assertStatus := func(record graphstore.Record, want string) {
@@ -84,36 +84,36 @@ func TestGraphPreviewMemoryConvenienceWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "memory", "forget", issue.Properties.ID)
 			call("link", "create", "--from", issue.ID, "--to", fromProperties.ID, "--id", "links/protect", "--type", "references")
 			refuse("constraint_violation", "memory", "forget", "policy-props")
-			graphPolicyCLI(t, bd, work, home, nil, "stderr:revision_unknown", "memory", "recall", "policy", "--revision", "=no-such-token")
-			if got := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "recall", "policy"); got != "First body\n" {
+			graphPolicyCLI(t, bd, work, home, nil, "stderr:revision_unknown", "memory", "recall", "policy-note", "--revision", "=no-such-token")
+			if got := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "recall", "policy-note"); got != "First body\n" {
 				t.Fatalf("nested recall changed body output: %q", got)
 			}
-			if top := graphPolicyCLI(t, bd, work, home, nil, "", "recall", "policy"); top != "First body\n" {
+			if top := graphPolicyCLI(t, bd, work, home, nil, "", "recall", "policy-note"); top != "First body\n" {
 				t.Fatalf("top-level recall diverged: %q", top)
 			}
-			updated := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "policy", "--body=", "--status", "approved", "--if-revision", "="+created.Revision))
+			updated := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "policy-note", "--body=", "--status", "approved", "--if-revision", "="+created.Revision))
 			if !updated.Changed || updated.Memory.Properties.Title != "Policy title" || updated.Memory.Properties.Body != "" || updated.Memory.Type != created.Type {
 				t.Fatalf("body/status shorthand did not preserve omitted fields and Type: %+v", updated)
 			}
 			assertStatus(updated.Memory, "approved")
-			if got := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "recall", "policy", "--quiet"); got != "\n" {
+			if got := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "recall", "policy-note", "--quiet"); got != "\n" {
 				t.Fatalf("empty quiet recall must emit one newline, got %q", got)
 			}
-			unchanged := graphMixedResult[graphstore.MemoryMutationResult](t, call("memory", "remember", "--update", "policy", "--status", "approved", "--if-revision", "="+updated.Memory.Revision))
+			unchanged := graphMixedResult[graphstore.MemoryMutationResult](t, call("memory", "remember", "--update", "policy-note", "--status", "approved", "--if-revision", "="+updated.Memory.Revision))
 			if unchanged.Changed || unchanged.Memory.Revision != updated.Memory.Revision {
 				t.Fatalf("status no-op changed revision: %+v", unchanged)
 			}
-			refuse("revision_conflict", "memory", "remember", "--update", "policy", "--status", "stale", "--if-revision", "="+created.Revision)
+			refuse("revision_conflict", "memory", "remember", "--update", "policy-note", "--status", "stale", "--if-revision", "="+created.Revision)
 			refuse("invalid_selector", "memory", "remember", "--id", "other", "--type", "policy", "--body", "Other")
 			refuse("invalid_properties", "memory", "remember", "--id", "wrong-kind", "--type", "types/task", "--create-only", "--body", "Wrong")
-			refuse("identity_reserved", "memory", "remember", "--id", "policy", "--create-only", "--body", "Duplicate")
+			refuse("identity_reserved", "memory", "remember", "--id", "policy-note", "--create-only", "--body", "Duplicate")
 			if nested, top := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "memories", "Policy", "--format", "records-json"), graphPolicyCLI(t, bd, work, home, nil, "", "memories", "Policy", "--format", "records-json"); nested != top {
 				t.Fatalf("nested memories changed summary output: nested=%s top=%s", nested, top)
 			}
-			if got := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "forget", "policy", "--if-revision", "="+updated.Memory.Revision, "--json"); !strings.Contains(got, "policy") {
+			if got := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "forget", "policy-note", "--if-revision", "="+updated.Memory.Revision, "--json"); !strings.Contains(got, "policy-note") {
 				t.Fatalf("nested forget lacked deletion receipt: %s", got)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "stderr:gone", "memory", "recall", "policy")
+			graphPolicyCLI(t, bd, work, home, nil, "stderr:gone", "memory", "recall", "policy-note")
 		})
 	}
 }

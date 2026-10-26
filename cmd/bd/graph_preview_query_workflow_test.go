@@ -181,7 +181,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				t.Fatalf("mixed human inventory leaked Memory body: %s", humanList)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "references", "--format", "records-json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/uninstalled", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "list", "--type", "types/uninstalled", "--format", "records-json")
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "memory", "--status", "open", "--format", "records-json")
 
 			page := list("--limit", "1", "--sort", "priority")

@@ -86,16 +86,15 @@ do not supply the same field with both --properties and a shorthand flag.
 bd memory remember is the same operation with the same flags and output.
 Metadata is a JSON object separate from Memory title/body properties. An omitted ID is generated; an omitted creation title
 summarizes the body. With --id, an unused ID creates and an existing Memory
-updates in place, as ordinary bd remember --key does. Bare policy means
-canonical beads/policy. Graph Memories use canonical IDs, not legacy keys.
+updates in place, as ordinary bd remember --key does. Bare policy-note selects its complete Scope-local public identity policy-note. Graph Memories use canonical IDs, not legacy keys.
 
 To refuse any previously allocated ID, add --create-only with --id. With
 --create-only, --type NAME selects an installed Memory refinement;
 otherwise creation uses plain Memory. Existing retyping uses bd update.
 To require an existing Memory, keep using --update instead of --id:
   bd remember 'Revised policy' --id policy-note
-  bd remember 'Revised policy' --update policy
-  bd remember --update policy --title 'New title'
+  bd remember 'Revised policy' --update policy-note
+  bd remember --update policy-note --title 'New title'
 --update retains literal Memory-ID semantics, including raw @; it does not
 parse revision suffixes. The selected bd update targets refuse revision suffixes.
 Omitted fields remain unchanged on update. --body TEXT (including empty),

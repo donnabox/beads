@@ -163,8 +163,8 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 		t.Fatalf("persisted schema_version = %d, want 11", persisted)
 	}
 	// Availability changes discovery, not the immutable installed catalog.
-	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 52 {
-		t.Fatalf("fresh registered Types = %d; want all 52 definitions", registered)
+	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 50 {
+		t.Fatalf("fresh registered Types = %d; want all 50 definitions", registered)
 	}
 	var installed struct {
 		Result struct {
@@ -191,10 +191,10 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("marker %q: refused read changed workspace", marker)
 		}
 	}
-	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n", "link-preview-v10\n", "link-preview-v11\n"} {
+	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n", "link-preview-v10\n", "link-preview-v11\n", "link-preview-v12\n"} {
 		refuse(old, graphGenerationFirstGateRefusal)
 	}
-	refuse("link-preview-v13\n", "graph_mode workspace format link-preview-v13 is newer than this bd supports (link-preview-v12); upgrade bd; no database was opened")
+	refuse("link-preview-v14\n", "graph_mode workspace format link-preview-v14 is newer than this bd supports (link-preview-v13); upgrade bd; no database was opened")
 	refuse("link-preview-v9", graphGenerationFirstGateRefusal)
 	refuse("link-preview-v9x\n", graphGenerationFirstGateRefusal)
 

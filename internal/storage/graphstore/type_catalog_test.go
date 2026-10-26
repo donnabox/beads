@@ -109,7 +109,7 @@ func TestSelectedTypeInventoryMatchesCompleteCatalog(t *testing.T) {
 		t.Fatal("abstract Conformance must remain visible in inventory")
 	}
 	for _, name := range []string{"type", "bead-type", "link-type", "conforms-to", "refines", "Type", "BeadType", "LinkType", "ConformsTo", "Refines", "example-follows", "example-cites", "preview-memory", "preview-issue", "preview-dependency", "preview-related"} {
-		if _, present := byID[scope+"types/"+name]; present {
+		if _, present := byID[scope+name]; present {
 			t.Fatalf("intrinsic/obsolete %s leaked into external catalog", name)
 		}
 	}

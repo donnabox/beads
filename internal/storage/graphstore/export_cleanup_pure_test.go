@@ -418,7 +418,7 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 		return &exportCleanupRows{columns: []string{"path", "backing", "kind"}}, nil
 	case strings.HasPrefix(q, "select path from graph_preview_catalog"):
 		return &exportCleanupRows{columns: []string{"path"}}, nil
-	case strings.HasPrefix(q, "select d.type,case when octet_length(c.type_url)"):
+	case strings.HasPrefix(q, "select distinct cast(d.type as binary),cast(case when octet_length(c.type_url)"):
 		return &exportCleanupRows{columns: []string{"type", "type_url"}}, nil
 	case strings.HasPrefix(q, "select 1 from graph_preview_catalog"):
 		return &exportCleanupRows{columns: []string{"invalid"}}, nil

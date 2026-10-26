@@ -29,7 +29,7 @@ func (s *memoryAuthoringStore) ListInstalledTypes(context.Context) ([]graph.Type
 	s.events = append(s.events, "types")
 	return s.types, s.contextErr
 }
-func (s *memoryAuthoringStore) SelectedOwnedLinkTypes(string) ([]string, error) {
+func (s *memoryAuthoringStore) SelectedOwnedLinkTypesWithDescriptors(_ string, _ []graph.TypeDescriptor, _ ...string) ([]string, error) {
 	s.events = append(s.events, "ownership")
 	return s.owned, nil
 }

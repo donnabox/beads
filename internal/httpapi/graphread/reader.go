@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
@@ -15,9 +14,8 @@ import (
 )
 
 // Reader leaves storage lifetime with its caller. Each Resource read includes
-// its complete owned state in the store's one read transaction. A subsequent
-// Type read is safe because the admitted preview descriptors are immutable and
-// every store operation checks their persisted bytes and fingerprints.
+// its complete owned state, checked Type and ownership context in one store
+// transaction. Projection does not reopen mutable configuration or Link rows.
 type Reader struct{ store *graphstore.Store }
 
 func New(store *graphstore.Store) *Reader { return &Reader{store: store} }
@@ -51,22 +49,21 @@ func (r *Reader) PublicRouteKind(ctx context.Context, id string) (string, error)
 // The result is either bdpwire.BeadRecord or bdpwire.LinkRecord, never a private
 // preview envelope. This method does not select historical versions.
 func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
-	record, err := r.store.Read(ctx, path)
+	record, projection, err := r.store.ReadForProjection(ctx, path)
 	if err != nil {
 		return nil, err
 	}
-	return r.projectResource(ctx, record)
+	return r.projectResource(record, projection)
 }
 
 // ResourceSelected resolves a local opaque public ID in storage's checked
-// snapshot before projecting its Resource. Immutable Type descriptors may be
-// read afterward without reselecting the Resource.
+// snapshot with its checked projection context before projecting its Resource.
 func (r *Reader) ResourceSelected(ctx context.Context, path, localID string) (string, any, error) {
-	selected, record, err := r.store.ReadResourceSelected(ctx, path, localID)
+	selected, record, projection, err := r.store.ReadSelectedForProjection(ctx, path, localID)
 	if err != nil {
 		return "", nil, err
 	}
-	projected, err := r.projectResource(ctx, record)
+	projected, err := r.projectResource(record, projection)
 	return selected, projected, err
 }
 
@@ -75,11 +72,11 @@ func (r *Reader) ResourceSelected(ctx context.Context, path, localID string) (st
 // or advertises HTTP History support. Installed preview Type definitions are
 // immutable; owned Links come from the retained snapshot.
 func (r *Reader) ResourceVersion(ctx context.Context, path, revision string) (any, error) {
-	record, err := r.store.ReadVersion(ctx, path, revision)
+	record, projection, err := r.store.ReadVersionForProjection(ctx, path, revision)
 	if err != nil {
 		return nil, err
 	}
-	projected, err := r.projectResource(ctx, record)
+	projected, err := r.projectResource(record, projection)
 	if err != nil {
 		return nil, err
 	}
@@ -107,12 +104,12 @@ func (r *Reader) ResourceVersion(ctx context.Context, path, revision string) (an
 	return projected, nil
 }
 
-func (r *Reader) projectResource(ctx context.Context, record any) (any, error) {
+func (r *Reader) projectResource(record any, projection graphstore.ResourceProjectionContext) (any, error) {
 	switch v := record.(type) {
 	case graphstore.Record:
-		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)
+		return bead(projection.Descriptor, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution, projection.OwnedLinkTypes)
 	case graphstore.IssueRecord:
-		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)
+		return bead(projection.Descriptor, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution, projection.OwnedLinkTypes)
 	case graphstore.LinkRecord:
 		return link(v)
 	default:
@@ -132,35 +129,6 @@ func (r *Reader) Type(ctx context.Context, path string) (bdpwire.TypeDescriptor,
 		return result, fmt.Errorf("%w: installed Type wire shape: %v", graphstore.ErrInvalidStore, err)
 	}
 	return result, nil
-}
-
-func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
-	if !strings.HasPrefix(typ, r.store.ScopeURL()) {
-		return bdpwire.BeadRecord{}, fmt.Errorf("%w: Resource Type is outside installed Scope", graphstore.ErrInvalidStore)
-	}
-	descriptor, err := r.store.ReadType(ctx, strings.TrimPrefix(typ, r.store.ScopeURL()))
-	if err != nil {
-		return bdpwire.BeadRecord{}, err
-	}
-	// Derive dynamic native ownership from the already captured immutable Links.
-	// Do not reread mutable Link rows after the Bead snapshot.
-	var observed []string
-	for _, raw := range owned {
-		var link graphstore.LinkRecord
-		if err := json.Unmarshal(raw, &link); err != nil {
-			return bdpwire.BeadRecord{}, err
-		}
-		observed = append(observed, link.Type)
-	}
-	facts, err := r.store.ListInstalledTypes(ctx)
-	if err != nil {
-		return bdpwire.BeadRecord{}, err
-	}
-	ownedTypes, err := r.store.SelectedOwnedLinkTypesWithDescriptors(typ, facts, observed...)
-	if err != nil {
-		return bdpwire.BeadRecord{}, err
-	}
-	return bead(descriptor, id, typ, revision, properties, metadata, owned, attribution, ownedTypes)
 }
 
 func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution, ownedTypes []string) (bdpwire.BeadRecord, error) {

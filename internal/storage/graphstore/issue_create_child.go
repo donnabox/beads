@@ -130,7 +130,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
 			return err
 		} else if exists {
-			return ErrAlreadyExists
+			return publicResourceIDReservedErrorInTx(ctx, tx, created.Issue.ID)
 		}
 		if !sameIssueCreateFields(create.Issue, created.Issue, create.Actor) || issueops.IsWisp(created.Issue) ||
 			!strings.HasPrefix(created.Issue.ID, parent.Properties.ID+".") {

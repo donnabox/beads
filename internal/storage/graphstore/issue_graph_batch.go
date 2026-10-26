@@ -356,7 +356,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			if exists, err := publicResourceIDExistsInTx(ctx, tx, id); err != nil {
 				return err
 			} else if exists {
-				return ErrAlreadyExists
+				return publicResourceIDReservedErrorInTx(ctx, tx, id)
 			}
 			path, err := generatedIssuePath(ctx, tx, id)
 			if err != nil {

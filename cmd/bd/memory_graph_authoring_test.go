@@ -38,7 +38,7 @@ func TestMemoryLinkInput(t *testing.T) {
 		} {
 			c := memoryLinkTestCommand(t, op, append(form.flags, "--id=relationship", "--if-source-revision=owner-now")...)
 			r, err := memoryLinkRequest(c, form.args, scope, op)
-			if err != nil || r.SourcePath != "beads/a" || r.TargetPath != "beads/b" || r.PublicID != "relationship" || r.Path != "" || r.TypeURL != scope+"types/"+op.family || r.ExpectedSourceRevision != "owner-now" || r.UnconditionalSource {
+			if err != nil || r.SourcePath != "beads/a" || r.TargetPath != "beads/b" || r.PublicID != "relationship" || r.Path != "" || r.TypeURL != scope+op.family || r.ExpectedSourceRevision != "owner-now" || r.UnconditionalSource {
 				t.Fatalf("%s %v %v: %+v %v", op.name, form.flags, form.args, r, err)
 			}
 		}

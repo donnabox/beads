@@ -33,6 +33,10 @@ const PreviewVersionTokenLimit = 4096
 // Issue fields excluded from Jim's JSON snapshot (including the current row-lock
 // token and content hash) remain zero; they cannot be recovered from current state.
 func (s *Store) ReadVersion(ctx context.Context, path, version string) (any, error) {
+	return s.readVersionWithProjectionContext(ctx, path, version, nil)
+}
+
+func (s *Store) readVersionWithProjectionContext(ctx context.Context, path, version string, projection *ResourceProjectionContext) (any, error) {
 	if err := s.validateResourceReadAddress(path); err != nil {
 		return nil, err
 	}
@@ -50,7 +54,10 @@ func (s *Store) ReadVersion(ctx context.Context, path, version string) (any, err
 			return err
 		}
 		result, err = s.readVersionInTx(ctx, tx, path, version)
-		return err
+		if err != nil {
+			return err
+		}
+		return s.captureResourceProjectionInTx(ctx, tx, result, projection)
 	})
 	if err != nil {
 		return nil, err

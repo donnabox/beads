@@ -85,6 +85,13 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 					t.Fatalf("refusal not canonical %s %s %v", &out, &stderr, err)
 				}
 			}
+			// Configured-unused native declarations must not break Memory Link
+			// projection; retained custom bindings remain usable after config edits.
+			graphListConfig(t, work, "types.custom: \"review-class\"\n")
+			create("reference", "a", "b", "--id=configured-native-context")
+			custom := graphMixedResult[graphstore.IssueRecord](t, old("create", "Custom native", "--type", "review-class"))
+			graphListConfig(t, work, "types.custom: \"\"\n")
+			create("reference", custom.ID, "b", "--id=retained-native-context")
 			beforeA, beforeB := snapshot("a"), snapshot("b")
 			beforeLinks := old("link", "list", "--incident-to", "a")
 			for _, op := range memoryLinkOperations {

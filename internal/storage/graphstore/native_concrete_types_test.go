@@ -637,3 +637,128 @@ func TestConfiguredUnusedTypeRefusesAllocatedIdentity(t *testing.T) {
 		})
 	}
 }
+
+func TestSelectedTypeResourceReservationReportsOwner(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			before := workflowState(t, ctx, s)
+			for _, name := range []string{"memory", "policy", "task", "decision", "bdp.json"} {
+				_, err := s.Create(ctx, CreateRequest{PublicID: name, Title: "Reserved identity"})
+				cause := "installed Type"
+				if name == "bdp.json" {
+					cause = "Scope discovery document"
+				}
+				if !errors.Is(err, ErrAlreadyExists) || !strings.Contains(err.Error(), name) || !strings.Contains(err.Error(), cause) {
+					t.Fatalf("%s reservation has no precise owner: %v", name, err)
+				}
+				if _, err := s.ResolveExactAllocatedResourcePath(ctx, name); !errors.Is(err, ErrNotFound) {
+					t.Fatalf("refusal allocated %s: %v", name, err)
+				}
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("reserved Type Resource attempts changed state")
+			}
+		})
+	}
+}
+
+func TestNativeMappingPairsUseExactBinaryBindings(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			for _, path := range []string{"beads/a0", "beads/a1", "beads/a2", "beads/b", "beads/c"} {
+				if _, err := s.CreateIssue(ctx, path, plainIssue(path)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			for i, kind := range []types.DependencyType{"pair-a", "PAIR-A", "p%q"} {
+				for j, target := range []string{"beads/b", "beads/c"} {
+					if _, err := s.AddDependency(ctx, DependencyRequest{Path: fmt.Sprintf("links/pair-%d-%d", i, j), SourcePath: fmt.Sprintf("beads/a%d", i), TargetPath: target, Type: kind, Actor: "tester"}); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+			check := func() error {
+				return s.withTx(ctx, false, func(tx *sql.Tx) error { return s.checkLinkMappingsInTx(ctx, tx) })
+			}
+			if err := check(); err != nil {
+				t.Fatalf("repeated exact pairs refused: %v", err)
+			}
+			before := workflowState(t, ctx, s)
+			lower, _ := NativeDependencyTypeURL(s.ScopeURL(), "pair-a")
+			upper, _ := NativeDependencyTypeURL(s.ScopeURL(), "PAIR-A")
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path='links/pair-1-0'`, lower); err != nil {
+				t.Fatal(err)
+			}
+			if err := check(); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("binary-different native mapping hidden: %v", err)
+			}
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path='links/pair-1-0'`, upper); err != nil {
+				t.Fatal(err)
+			}
+			if err := check(); err != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("mapping check changed authority: %v", err)
+			}
+		})
+	}
+}
+
+func TestNativeResourceProjectionContextCapturesExactRead(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			if _, err := s.db.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('types.custom','review-class') ON DUPLICATE KEY UPDATE value=VALUES(value)"); err != nil {
+				t.Fatal(err)
+			}
+			req := plainIssue("Custom source")
+			req.Issue.IssueType = "review-class"
+			original, err := s.CreateIssue(ctx, "beads/source", req)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/target", plainIssue("Target")); err != nil {
+				t.Fatal(err)
+			}
+			edge, err := s.AddDependency(ctx, DependencyRequest{Path: "links/context", SourcePath: "beads/source", TargetPath: "beads/target", Type: "projection-edge", Actor: "tester"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			current, projection, err := s.ReadForProjection(ctx, original.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			ordinary, err := s.Read(ctx, original.ID)
+			if err != nil || !reflect.DeepEqual(ordinary, current) || projection.Descriptor.ID() != original.Type {
+				t.Fatalf("projection changed ordinary read: %v", err)
+			}
+			contains := func(values []string, want string) bool {
+				for _, v := range values {
+					if v == want {
+						return true
+					}
+				}
+				return false
+			}
+			if !contains(projection.OwnedLinkTypes, edge.Link.Type) {
+				t.Fatal("captured current custom native ownership missing")
+			}
+			selected, record, selectedContext, err := s.ReadSelectedForProjection(ctx, "beads/"+original.Properties.ID, original.Properties.ID)
+			if err != nil || selected != "beads/source" || !reflect.DeepEqual(record, current) || !reflect.DeepEqual(selectedContext, projection) {
+				t.Fatalf("selected snapshot context disagreement: %s %v", selected, err)
+			}
+			retained, retainedContext, err := s.ReadVersionForProjection(ctx, original.ID, original.Revision)
+			if err != nil || retained.(IssueRecord).Revision != original.Revision || retainedContext.Descriptor.ID() != original.Type || contains(retainedContext.OwnedLinkTypes, edge.Link.Type) {
+				t.Fatalf("retained read borrowed newer owned state: %v", err)
+			}
+			if _, err := s.db.ExecContext(ctx, "DELETE FROM config WHERE `key`='types.custom'"); err != nil {
+				t.Fatal(err)
+			}
+			projection.OwnedLinkTypes[0] = "tampered-output"
+			_, next, err := s.ReadForProjection(ctx, original.ID)
+			if err != nil || contains(next.OwnedLinkTypes, "tampered-output") || next.Descriptor.ID() != original.Type {
+				t.Fatalf("projection context cached mutable output or lost retained binding: %v", err)
+			}
+		})
+	}
+}

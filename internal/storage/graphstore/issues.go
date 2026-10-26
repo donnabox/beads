@@ -108,7 +108,7 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 			if exists, err := publicResourceIDExistsInTx(ctx, tx, request.Issue.ID); err != nil {
 				return err
 			} else if exists {
-				return ErrAlreadyExists
+				return publicResourceIDReservedErrorInTx(ctx, tx, request.Issue.ID)
 			}
 		}
 		if path != "" {
@@ -164,7 +164,7 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
 			return err
 		} else if exists {
-			return ErrAlreadyExists
+			return publicResourceIDReservedErrorInTx(ctx, tx, created.Issue.ID)
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
             (path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
@@ -234,6 +234,10 @@ func generatedIssuePath(ctx context.Context, tx *sql.Tx, issueID string) (string
 // Read dispatches the immutable backing selection and reads its authoritative
 // state in one snapshot. Unsupported resource families remain explicit errors.
 func (s *Store) Read(ctx context.Context, path string) (any, error) {
+	return s.readWithProjectionContext(ctx, path, nil)
+}
+
+func (s *Store) readWithProjectionContext(ctx context.Context, path string, projection *ResourceProjectionContext) (any, error) {
 	if err := s.validateResourceReadAddress(path); err != nil {
 		return nil, err
 	}
@@ -251,7 +255,10 @@ func (s *Store) Read(ctx context.Context, path string) (any, error) {
 			return err
 		}
 		result, err = s.readCurrentVerifiedInTx(ctx, tx, path)
-		return err
+		if err != nil {
+			return err
+		}
+		return s.captureResourceProjectionInTx(ctx, tx, result, projection)
 	})
 	if err != nil {
 		return nil, err

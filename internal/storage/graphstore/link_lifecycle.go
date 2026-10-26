@@ -510,14 +510,25 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 	}
 	// Validate the authoritative native column through the same Go constructor
 	// used by writers. SQL does not duplicate canonical percent/Unicode encoding.
-	rows, err := tx.QueryContext(ctx, `SELECT d.type,CASE WHEN OCTET_LENGTH(c.type_url)<=? THEN c.type_url ELSE NULL END FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key WHERE c.backing='dependency' AND c.allocation_state='live'`, len(s.ScopeURL())+512)
+	// Repeated edges share a checked immutable binding. Transfer distinct binary
+	// pairs only, bounded by that inventory, not by the global edge population.
+	rows, err := tx.QueryContext(ctx, `SELECT DISTINCT CAST(d.type AS BINARY),CAST(CASE WHEN OCTET_LENGTH(c.type_url)<=? THEN c.type_url ELSE NULL END AS BINARY) FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key WHERE c.backing='dependency' AND c.allocation_state='live' LIMIT ?`, len(s.ScopeURL())+512, len(dependencyTypes)+1)
 	if err != nil {
 		return err
 	}
+	var pairs, acquired int
 	for rows.Next() {
+		pairs++
+		if pairs > len(dependencyTypes) {
+			return errors.Join(fmt.Errorf("%w: native Type mapping exceeds checked binding inventory", ErrInvalidStore), rows.Close())
+		}
 		var native, stored string
 		if err := rows.Scan(&native, &stored); err != nil {
 			return errors.Join(fmt.Errorf("%w: native Dependency type acquisition: %v", ErrInvalidStore, err), rows.Close())
+		}
+		acquired += 256 + len(native) + len(stored)
+		if acquired > PreviewCurrentReadByteLimit {
+			return errors.Join(ErrLimitExceeded, rows.Close())
 		}
 		expected, err := NativeDependencyTypeURL(s.ScopeURL(), native)
 		if err != nil || expected != stored {

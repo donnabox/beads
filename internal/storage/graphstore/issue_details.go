@@ -110,7 +110,7 @@ func (s *Store) ReadBeadWithIssueDetailsSelected(ctx context.Context, selector I
 // familiar Issue detail projection. Transport adapters use this to keep their
 // dependency boundary and read only the canonical Resource record.
 func (s *Store) ReadResourceSelected(ctx context.Context, path, localID string) (string, any, error) {
-	selected, record, _, err := s.readResourceSelected(ctx, path, localID, workapi.DetailOptions{}, false)
+	selected, record, _, err := s.readResourceSelected(ctx, path, localID, workapi.DetailOptions{}, false, nil)
 	return selected, record, err
 }
 
@@ -119,10 +119,10 @@ func (s *Store) ReadResourceSelected(ctx context.Context, path, localID string) 
 // canonical Scope URL supplies only an exact path. No local spelling is
 // interpreted as a graph path, including beads/ and links/ prefixes.
 func (s *Store) ReadResourceWithIssueDetailsSelected(ctx context.Context, path, localID string, opts workapi.DetailOptions) (string, any, *types.IssueDetails, error) {
-	return s.readResourceSelected(ctx, path, localID, opts, true)
+	return s.readResourceSelected(ctx, path, localID, opts, true, nil)
 }
 
-func (s *Store) readResourceSelected(ctx context.Context, path, localID string, opts workapi.DetailOptions, includeDetails bool) (string, any, *types.IssueDetails, error) {
+func (s *Store) readResourceSelected(ctx context.Context, path, localID string, opts workapi.DetailOptions, includeDetails bool, projection *ResourceProjectionContext) (string, any, *types.IssueDetails, error) {
 	if localID == "" {
 		if err := s.validateResourceReadAddress(path); err != nil {
 			return "", nil, nil, err
@@ -262,6 +262,9 @@ func (s *Store) readResourceSelected(ctx context.Context, path, localID string, 
 					return err
 				}
 			}
+		}
+		if err := s.captureResourceProjectionInTx(ctx, tx, record, projection); err != nil {
+			return err
 		}
 		if issue, ok := record.(IssueRecord); ok && includeDetails {
 			var err error

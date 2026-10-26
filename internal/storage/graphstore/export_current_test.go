@@ -390,7 +390,12 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if len(expectedNative) != 32 {
 				t.Fatalf("fixed native catalog = %d, want32", len(expectedNative))
 			}
-			rows, err := s.db.QueryContext(ctx, `SELECT name,OCTET_LENGTH(descriptor),OCTET_LENGTH(fingerprint) FROM graph_preview_types WHERE name LIKE 'native-issue/%' OR name LIKE 'native-dependency/%' ORDER BY name LIMIT 33`)
+			nativeNames := make([]string, 0, len(expectedNative))
+			for name := range expectedNative {
+				nativeNames = append(nativeNames, name)
+			}
+			placeholders, args := informationalTypeSQL(nativeNames)
+			rows, err := s.db.QueryContext(ctx, `SELECT name,OCTET_LENGTH(descriptor),OCTET_LENGTH(fingerprint) FROM graph_preview_types WHERE name IN (`+placeholders+`) ORDER BY name LIMIT 33`, args...)
 			if err != nil {
 				t.Fatal(err)
 			}

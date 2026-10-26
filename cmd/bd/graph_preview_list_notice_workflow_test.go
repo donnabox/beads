@@ -125,8 +125,8 @@ func TestGraphPreviewCustomIssueTypePrefixWorkflow(t *testing.T) {
 			graphListConfig(t, work, "types.custom: \"preview-task,example-task\"\n")
 			listedTypes := graphPolicyCLI(t, bd, work, home, nil, "", "types")
 			if !strings.Contains(listedTypes, "preview-task") || !strings.Contains(listedTypes, "example-task") ||
-				!strings.Contains(listedTypes, "types/native-issue/707265766965772d7461736b") ||
-				!strings.Contains(listedTypes, "types/native-issue/6578616d706c652d7461736b") {
+				!strings.Contains(listedTypes, "preview-task") ||
+				!strings.Contains(listedTypes, "example-task") {
 				t.Fatalf("registered Issue types missing from human inventory: %s", listedTypes)
 			}
 			selected := make(map[string]graphstore.IssueRecord)

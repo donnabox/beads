@@ -186,7 +186,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
 			return err
 		} else if exists {
-			return ErrAlreadyExists
+			return publicResourceIDReservedErrorInTx(ctx, tx, publicID)
 		}
 		path, err = choosePrivateResourcePathInTx(ctx, tx, path, generatedPath, graph.KindLink)
 		if err != nil {

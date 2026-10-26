@@ -73,33 +73,33 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				t.Fatalf("full Link descriptor unavailable: %s", detailsText)
 			}
 			refuse("capability_unavailable", "types", "--sections")
-			memory := graphMixedResult[graphstore.Record](t, call("create", "--type", "memory", "--id", "policy", "--body", "Code flow policy\nTarget integration."))
+			memory := graphMixedResult[graphstore.Record](t, call("create", "--type", "memory", "--id", "policy-note", "--body", "Code flow policy\nTarget integration."))
 			other := graphMixedResult[graphstore.Record](t, call("create", "Old code flow policy", "--type", graphstore.MemoryTypeURL(scope)))
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Move the branch", "--graph-path", "beads/work", "--type", "task"))
-			if memory.ID != scope+"policy" || memory.Properties.Title != "Code flow policy" || other.ID == memory.ID || other.Properties.Body != "" || issue.ID != scope+issue.Properties.ID || issue.Type != taskType {
+			if memory.ID != scope+"policy-note" || memory.Properties.Title != "Code flow policy" || other.ID == memory.ID || other.Properties.Body != "" || issue.ID != scope+issue.Properties.ID || issue.Type != taskType {
 				t.Fatal("typed creation lost identity, body or Type")
 			}
-			if shown := graphMixedResult[graphstore.Record](t, call("show", "policy")); shown.ID != memory.ID {
+			if shown := graphMixedResult[graphstore.Record](t, call("show", "policy-note")); shown.ID != memory.ID {
 				t.Fatal("short Bead selector did not resolve to its canonical identity")
 			}
-			refuse("identity_reserved", "create", "No overwrite", "--type", "memory", "--id", "policy")
+			refuse("identity_reserved", "create", "No overwrite", "--type", "memory", "--id", "policy-note")
 			refuse("capability_unavailable", "create", "Bad", "--type", "memory", "--priority", "2")
 			refuse("invalid_properties", "link", memory.ID, other.ID, "--type", "unregistered-dependency")
 			refuse("invalid_selector", "link", memory.ID, other.ID, "--type", "https://foreign.invalid/types/example-follows")
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "types/missing")
 			refuse("capability_unavailable", "create", "--type", "types/memory-preview", "--properties", `{"title":"One","body":"One is the loneliest number."}`)
-			refuse("capability_unavailable", "link", "create", "policy", "work", "--type", "types/missing", "--properties", `{"note":"test"}`)
-			refuse("invalid_selector", "link", "create", "policy", "work", "--from", "policy", "--type", "example-cites")
-			beforeLinks := call("link", "list", "--incident-to", "policy")
+			refuse("capability_unavailable", "link", "create", "policy-note", "work", "--type", "types/missing", "--properties", `{"note":"test"}`)
+			refuse("invalid_selector", "link", "create", "policy-note", "work", "--from", "policy-note", "--type", "example-cites")
+			beforeLinks := call("link", "list", "--incident-to", "policy-note")
 			for _, flags := range [][]string{
-				{"--from=policy", "--from=policy", "--to=work"},
-				{"--from=policy", "--from=rule", "--to=work"},
-				{"--from=policy", "--to=work", "--to=work"},
-				{"--from=policy", "--to=work", "--to=rule"},
+				{"--from=policy-note", "--from=policy-note", "--to=work"},
+				{"--from=policy-note", "--from=rule", "--to=work"},
+				{"--from=policy-note", "--to=work", "--to=work"},
+				{"--from=policy-note", "--to=work", "--to=rule"},
 			} {
 				refuse("invalid_selector", append([]string{"link", "create", "--type", "references"}, flags...)...)
 			}
-			if call("link", "list", "--incident-to", "policy") != beforeLinks {
+			if call("link", "list", "--incident-to", "policy-note") != beforeLinks {
 				t.Fatal("duplicate endpoint flags created a Link")
 			}
 			refuse("invalid_properties", "link", memory.ID, other.ID, "--type", blocksType)
@@ -120,9 +120,9 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			}
 			constraint := graphMixedResult[graphstore.Record](t, call("create", "Rule", "--type", "constraint", "--id", "rule"))
 			for index, spec := range []struct{ typ, target string }{{"superseded-by", other.ID}, {"subject-to", constraint.ID}} {
-				args := []string{"link", "create", "policy", strings.TrimPrefix(spec.target, scope), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
+				args := []string{"link", "create", "policy-note", strings.TrimPrefix(spec.target, scope), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
 				if index == 1 {
-					args = []string{"link", "create", "--from", "policy", "--to", strings.TrimPrefix(spec.target, scope), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
+					args = []string{"link", "create", "--from", "policy-note", "--to", strings.TrimPrefix(spec.target, scope), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
 				}
 				link := graphMixedResult[graphstore.LinkMutationResult](t, call(args...))
 				if link.Link.Type != scope+spec.typ || link.Link.Source != memory.ID || link.Link.Target != spec.target || link.ReplacedSource == nil {
@@ -133,7 +133,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				if len(owner.Owned) != 1 || json.Unmarshal(owner.Owned[0], &owned) != nil || owned.Type != scope+spec.typ {
 					t.Fatal("selected Type not retained as owned")
 				}
-				incident := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", "policy", "--type", spec.typ))
+				incident := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", "policy-note", "--type", spec.typ))
 				if len(incident) != 1 || incident[0].Type != scope+spec.typ {
 					t.Fatal("local Type filter failed")
 				}
@@ -181,12 +181,12 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			if shown := graphMixedResult[graphstore.Record](t, call("show", "beads/edge")); shown.ID != sameIDBead.ID {
 				t.Fatal("Link-only unlink selected the Bead with the same basename")
 			}
-			call("remember", "Updated code flow policy", "--update", "policy")
-			current := graphMixedResult[graphstore.Record](t, call("show", "policy"))
+			call("remember", "Updated code flow policy", "--update", "policy-note")
+			current := graphMixedResult[graphstore.Record](t, call("show", "policy-note"))
 			if current.ID != memory.ID || current.Properties.Body != "Updated code flow policy" {
 				t.Fatal("short Memory update changed identity or lost its body")
 			}
-			call("compare", "policy", "--from", memory.Revision, "--to", current.Revision)
+			call("compare", "policy-note", "--from", memory.Revision, "--to", current.Revision)
 			ordinaryWork, ordinaryHome := t.TempDir(), t.TempDir()
 			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "create", "--type", "memory", "--body", "No store", "--json")
 			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "list", "--type", "memory", "--format", "records-json")

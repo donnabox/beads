@@ -53,8 +53,8 @@ func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 			marker(first.ID)
 			second := graphMixedResult[graphstore.IssueRecord](t, call("create", "Second", "--graph-path", "beads/second", "--priority", "1"))
 			marker(second.ID)
-			call("remember", "A note", "--id", "memory")
-			call("show", "memory")
+			call("remember", "A note", "--id", "memory-note")
+			call("show", "memory-note")
 			marker(second.ID)
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector",
 				"update", "--properties", `{"title":"Wrong","body":"Target"}`, "--json")

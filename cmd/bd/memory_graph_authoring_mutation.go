@@ -21,7 +21,7 @@ import (
 // may be projected afterward. The command never retries a mutation.
 type memoryLinkStore interface {
 	ListInstalledTypes(context.Context) ([]graph.TypeDescriptor, error)
-	SelectedOwnedLinkTypes(string) ([]string, error)
+	SelectedOwnedLinkTypesWithDescriptors(string, []graph.TypeDescriptor, ...string) ([]string, error)
 	AddInformationalLink(context.Context, graphstore.LinkCreateRequest) (graphstore.LinkMutationResult, error)
 	Close() error
 }
@@ -164,7 +164,7 @@ func memoryLinkProjectionContext(ctx context.Context, store memoryLinkStore) (gr
 		if typ.Describes() != graph.KindBead {
 			continue
 		}
-		owned, err := store.SelectedOwnedLinkTypes(typ.ID())
+		owned, err := store.SelectedOwnedLinkTypesWithDescriptors(typ.ID(), types)
 		if err != nil {
 			return graphstore.Snapshot{}, err
 		}
