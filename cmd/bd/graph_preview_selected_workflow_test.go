@@ -76,7 +76,11 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			call("link", "create", "m1", "m2", "--id", "pin", "--type", "references", "--target-revision", pin.Revision)
 			call("update", "m2", "--properties", `{"title":"New current title"}`)
 			implicit := call("graph", "i1")
-			explicit := call("graph", "i1", "--link-type", "Dependency")
+			explicit := call("graph", "i1", "--link-type", "dependency")
+			// Bare Type IDs keep their exact spelling; display names are not aliases.
+			for _, absent := range []string{"Dependency", "References"} {
+				graphSelectedWorkflowCapture(t, bd, work, home, "capability_unavailable", "graph", "i1", "--link-type", absent, "--json")
+			}
 			if implicit != explicit {
 				t.Fatalf("omitted Dependency differs: %s\n%s", implicit, explicit)
 			}
@@ -106,7 +110,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 				}
 			}
 			implicitJSON, implicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--json")
-			explicitJSON, explicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--link-type=Dependency", "--json")
+			explicitJSON, explicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--link-type=dependency", "--json")
 			if implicitJSON != implicit || explicitJSON != implicitJSON || !strings.Contains(implicitNotice, scope+"references") || !strings.Contains(implicitNotice, "--link-type any") || strings.Contains(explicitNotice, "omitted Link Types") {
 				t.Fatalf("default disclosure changed stdout or explicit selection: implicit=%s explicit=%s implicit stderr=%s explicit stderr=%s", implicitJSON, explicitJSON, implicitNotice, explicitNotice)
 			}
@@ -118,7 +122,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			if strings.Contains(refusedNotice, "omitted Link Types") {
 				t.Fatalf("refusal emitted success disclosure: %s", refusedNotice)
 			}
-			generic := graphSelectedTestSummary(t, call("graph", "i1", "--link-type", "References", "--direction", "out", "--depth", "10"))
+			generic := graphSelectedTestSummary(t, call("graph", "i1", "--link-type", "references", "--direction", "out", "--depth", "10"))
 			if len(generic.Nodes) != 4 || len(generic.Links) != 6 || !generic.Complete {
 				t.Fatalf("mixed path or parallel/cycle lost: %+v", generic)
 			}

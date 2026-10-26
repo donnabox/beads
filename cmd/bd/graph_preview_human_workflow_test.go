@@ -96,7 +96,7 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 				}
 				id := "edge-" + op.name
 				got := call("memory", op.name, src, dst, "--id", id)
-				want := id + " [types/" + op.family + "] " + src + " → " + dst
+				want := id + " [" + op.family + "] " + src + " → " + dst
 				if strings.TrimSpace(got) != want {
 					t.Fatalf("%s got %s want %s", op.name, got, want)
 				}
