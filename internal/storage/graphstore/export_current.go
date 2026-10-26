@@ -17,11 +17,17 @@ import (
 
 // ExportCurrentState is an internal acquisition result, not an interchange
 // envelope. Comments are keyed by canonical relative Issue path; their native
-// IssueID and comment identity are preserved. Historical endpoint payloads are validation-only and are absent from this
-// result, so it is not closed over its exact endpoint References.
+// IssueID and comment identity are preserved. PinnedEndpoints contains independently
+// hydrated retained Beads selected by exact endpoints of current Links. It is not
+// recursive transfer closure: References inside retained owned Links are not
+// traversed. The existing ReadVersion projection is preserved, including native
+// Issue metadata relocation and omitted Dependencies. Live Issue lease observations
+// may differ from retained state even at equal ID/revision, so Snapshot.Records
+// and PinnedEndpoints are separate inventories, not a unique concatenated set.
 // DeletedAllocations counts tombstones outside the live Snapshot.
 type ExportCurrentState struct {
 	Snapshot            Snapshot
+	PinnedEndpoints     []any
 	CommentsByIssuePath map[string][]types.Comment
 	IssuePrefix         string
 	DeletedAllocations  uint64
@@ -36,11 +42,11 @@ const exportCommentLimit = PreviewCurrentReadByteLimit / exportReadRowOverhead
 // ExportCurrentSnapshot acquires the controlled graph's live records, installed
 // Types, current durable Issue comments, exact persisted issue_prefix and count
 // of deleted allocations in one rollback-only transaction. Exact endpoints
-// are dereferenced for availability in that transaction; their historical
-// payloads are validation-only and never enter Snapshot or the comment feed.
-// Deleted Beads are validated through their terminal or legacy final head. These integrity reads
-// do not add archival history to the returned inventory or establish archive
-// completeness. Event journals, counters and unrelated configuration are excluded.
+// are independently dereferenced in that transaction into PinnedEndpoints,
+// including pins at a current revision. They never replace Snapshot records or
+// enter the current comment feed. Deleted Beads are validated through their
+// terminal or legacy final head; those integrity reads do not add archival
+// history to the result. No archive or recursive transfer completeness is claimed. Event journals, counters and unrelated configuration are excluded.
 //
 // Present wisp data or legacy KV Memories are refused: they are alternative
 // live data planes not represented by this graph inventory. Orphan durable
@@ -89,7 +95,8 @@ func (s *Store) exportCurrentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Expo
 	if err != nil {
 		return ExportCurrentState{}, err
 	}
-	if err := s.validateExportEndpointPinsInTx(ctx, tx, snapshot); err != nil {
+	pinned, err := s.exportEndpointPinsInTx(ctx, tx, snapshot)
+	if err != nil {
 		return ExportCurrentState{}, err
 	}
 	if err := s.afterStage("export-endpoints"); err != nil {
@@ -102,7 +109,7 @@ func (s *Store) exportCurrentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Expo
 	if err := s.afterStage("export-inventory"); err != nil {
 		return ExportCurrentState{}, err
 	}
-	result := ExportCurrentState{Snapshot: snapshot}
+	result := ExportCurrentState{Snapshot: snapshot, PinnedEndpoints: pinned}
 	// ReadConfigPrefix normalizes a trailing hyphen. Acquisition must preserve
 	// the persisted value; currentSnapshotInTx already checked configuration.
 	if err := tx.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`='issue_prefix'").Scan(&result.IssuePrefix); err != nil {
@@ -278,37 +285,37 @@ func validateExportComment(comment types.Comment) error {
 	return nil
 }
 
-// Validate selected exact addresses under the acquisition transaction. The shared
+// Acquire selected exact addresses under the acquisition transaction. The shared
 // current reader preserves References without resolving their historical payloads.
 // The export preflight charges each distinct pinned acquisition before decoding.
-// Retain only its selected Type for later source ownership checks.
-func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, snapshot Snapshot) error {
-	seen := make(map[EndpointReference]string)
-	ownedByHistoricalType := make(map[string][]string)
+// Retaining the independently hydrated values increases simultaneous detached
+// retention; the persisted-byte admission budget is not a heap-size bound.
+func (s *Store) exportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, snapshot Snapshot) ([]any, error) {
+	seen := make(map[EndpointReference]any)
 	for _, record := range snapshot.Records {
 		link, ok := record.(LinkRecord)
 		if !ok {
 			continue
 		}
 		for _, ref := range []EndpointReference{link.SourceReference(), link.TargetReference()} {
-			if ref.Revision == "" || seen[ref] != "" {
+			if _, present := seen[ref]; ref.Revision == "" || present {
 				continue
 			}
 			path, err := s.publicResourcePathInTx(ctx, tx, ref.URI, graph.KindBead)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			if validateVersionToken(ref.Revision) != nil {
-				return fmt.Errorf("%w: invalid exact export endpoint Reference", ErrInvalidStore)
+				return nil, fmt.Errorf("%w: invalid exact export endpoint Reference", ErrInvalidStore)
 			}
 			// This shared availability check rejects removed native Issue editions
 			// before the exact reader can hydrate their still-retained bytes.
 			if err := s.checkRetainedSubjectReference(ctx, tx, path, ref.Revision); err != nil {
-				return err
+				return nil, err
 			}
 			value, err := s.readVersionInTx(ctx, tx, path, ref.Revision)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			var id, revision string
 			switch endpoint := value.(type) {
@@ -317,27 +324,40 @@ func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, 
 			case IssueRecord:
 				id, revision = endpoint.ID, endpoint.Revision
 			default:
-				return fmt.Errorf("%w: exact export endpoint must select a Bead", ErrInvalidStore)
+				return nil, fmt.Errorf("%w: exact export endpoint must select a Bead", ErrInvalidStore)
 			}
 			if id != ref.URI || revision != ref.Revision {
-				return fmt.Errorf("%w: exact export endpoint differs from selected address", ErrInvalidStore)
+				return nil, fmt.Errorf("%w: exact export endpoint differs from selected address", ErrInvalidStore)
 			}
-			seen[ref] = recordType(value)
+			seen[ref] = value
 		}
+		// Ownership is checked for every Link even when its source address
+		// was already acquired for another Link or its target.
 		if source := seen[link.SourceReference()]; link.SourceRevision != "" {
-			if _, known := ownedByHistoricalType[source]; !known {
-				ownedTypes, err := s.SelectedOwnedLinkTypes(source)
-				if err != nil {
-					return err
-				}
-				ownedByHistoricalType[source] = ownedTypes
+			owned, err := s.ownsLink(source, link.Type)
+			if err != nil {
+				return nil, fmt.Errorf("%w: retained source ownership contract: %w", ErrInvalidStore, err)
 			}
-			if slices.Contains(ownedByHistoricalType[source], link.Type) {
-				return fmt.Errorf("%w: pinned owned source observation point is not selected", ErrCapabilityUnavailable)
+			if owned {
+				return nil, fmt.Errorf("%w: pinned owned source observation point is not selected (retained source)", ErrCapabilityUnavailable)
 			}
 		}
 	}
-	return nil
+	refs := make([]EndpointReference, 0, len(seen))
+	for ref := range seen {
+		refs = append(refs, ref)
+	}
+	slices.SortFunc(refs, func(a, b EndpointReference) int {
+		if cmp := graph.CompareCodeUnits(a.URI, b.URI); cmp != 0 {
+			return cmp
+		}
+		return graph.CompareCodeUnits(a.Revision, b.Revision)
+	})
+	result := make([]any, 0, len(refs))
+	for _, ref := range refs {
+		result = append(result, seen[ref])
+	}
+	return result, nil
 }
 
 // This pure check establishes current identity/owned membership, not retained

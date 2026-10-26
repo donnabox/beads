@@ -1,7 +1,8 @@
 # Independent graph export milestone
 
-Status: internal reader and detached publication implemented; current-core source
-review and runtime qualification pending.
+Status: internal reader and detached publication implemented; October 25
+retained-inventory source refresh is P4-held, with review and runtime
+qualification pending. It is not selected for Preview 3 integration.
 Interchange format and CLI contract are proposals
 until coordinated and reviewed. Governing plan: donnabox/agent-coordination#6.
 Supporting export issue: donnabox/agent-coordination#10.
@@ -168,7 +169,7 @@ current snapshot reader or supplies transactional comments/configuration.
 | Classic `kv.memory.*` configuration and wisp live planes | Not graph Memory/Issue inventory; initial reader refuses present rows by plane name. Inclusion requires a distinct approved acquisition contract. |
 | Live leases | Acquire faithfully as current observation; final format must preserve as non-restorable observation, explicitly omit, or refuse. Never clear source claims during export. |
 | Deleted/reserved allocations and tombstones | Current-only profile discloses omission/count; absence does not certify that a source-authority path is unallocated. Never claim source never-reuse state was preserved. |
-| Prior graph/Issue versions, journal, Dolt branches/history | Explicit current-only omission; a history/archive profile requires separate bounded acquisition. |
+| Prior graph/Issue versions, journal, Dolt branches/history | Direct exact versions selected by live top-level Link endpoints are retained separately in the internal inventory. Other versions, journals and branches remain omitted; no archive or recursive preservation closure is claimed. |
 | WriterToken/local ordinals | Internal consistency inputs, not public revision, cursor, Scope epoch or durable snapshot handle. |
 
 Storage JSON contains `version` and attribution actor/status/recordedAt. CLI
@@ -225,17 +226,20 @@ from the existing 256-byte row charge. Deleted Issue final retained heads also
 share that budget because mapping validation reads them. Original UTF-8 is
 validated before a future encoder can replace bytes. Current wisp payloads,
 relations, comments, labels and legacy KV Memories refuse by plane name.
-History, journals, counters and unrelated configuration remain outside the
-result. Source-preservation tests compare logical rows; engine filesystem
+Unselected history, journals, counters and unrelated configuration remain
+outside the result. Direct selected exact endpoint values are a separate
+internal inventory, as described below. Source-preservation tests compare logical rows; engine filesystem
 bookkeeping is not claimed unchanged.
 
 Pure tests and compile checks do not qualify an engine. Authored embedded/server
 lifecycle, rollback, bounds and controlled-interleaving cases require source-bound execution. Callback stage faults do not stand in for actual
 driver rollback/connection/rows-close fault injection. Authored test-owned
 connector cases exercise those real database/sql cleanup paths on an empty
-controlled workspace with the complete six-Type installation. They are neither
-an engine nor proof of cleanup with records present; current-source execution
-of these cases remains unrun. Installed acquisition, serializer/publication
+controlled workspace with the complete selected Type installation (52
+descriptors on the October 25 base). The populated connector also exercises
+a distinct noncurrent Memory edition through the actual public-identity
+lookup queries. These are database/sql connector checks, not engine
+qualification; refreshed source-bound execution is recorded separately. Installed acquisition, serializer/publication
 checks and the final output contract also remain gates before exporter readiness.
 
 ## Detached publication boundary
@@ -262,9 +266,12 @@ The internal reader consumes the shared endpoint carrier from PR133
 (`202bbf215ce8cb7995bd237855a0669892c958e4`). Endpoint identity and optional
 revision remain separate. Floating references remain floating. Complete
 canonical Link bytes, including both pins, must agree with source-owned state;
-ownership comes from `Snapshot.OwnedLinkTypes`, captured in the same transaction
-by the published Type bridge `716af68f7e531108e4b1f09ae47cacefa18ee93a`. Missing
-metadata refuses. Installed inventory Type descriptors deliberately omit some
+ownership was initially supplied by the published Type bridge
+`716af68f7e531108e4b1f09ae47cacefa18ee93a`. On the October 25 base, the
+current snapshot captures both `OwnedLinkTypes` and the concrete
+`OwnedLinkTypesByResource` facts in the same transaction. Current closure retains the
+authoritative by-Type facts, seeded with every installed Link descriptor. The
+returned per-Resource map is preserved; it does not narrow that validation. Installed inventory Type descriptors deliberately omit some
 selected constraints and are not an ownership fallback.
 
 Export validates distinct exact endpoint addresses using the existing retained
@@ -273,14 +280,69 @@ checks refuse removed native Issue editions before decoding. The aggregate
 export preflight charges each distinct historical endpoint address together
 with current records and comments. A source/target UNION selects only referenced
 addresses before joining retained payloads; repeated References decode and are
-charged once. Validation retains only the selected Type for ownership checks,
-not historical payloads. No new transaction
-or current-head fallback is used. Owned-source pins remain deferred and refuse.
+charged once. The acquisition retains the selected endpoint payloads in a
+separate detached inventory. Historical ownership is checked for every Link
+with the existing family-aware `ownsLink` helper, including already acquired
+source addresses. A custom native Dependency source-pin test is a defensive
+synthetic helper control: current native writers do not admit those pins. No new Type semantics,
+transaction or current-head fallback is used.
+Owned-source pins remain deferred and refuse, including when several Links
+share an already acquired source address.
 
-`Snapshot.Records` still contains live current records only. Exact historical
-payloads acquired for validation are not included in that result. URI membership
-establishes current identity coverage, not portable retained-version closure.
+`Snapshot.Records` still contains live current records only.
+`ExportCurrentState.PinnedEndpoints` separately contains distinct exact Bead
+endpoint versions selected by those current top-level Links. It is nonnil and
+empty on successful pin-free acquisition; every failed acquisition or cleanup
+returns the literal zero state. URI membership establishes current identity
+coverage, not portable retained-version closure. References inside retained
+owned Links are not traversed by this slice.
 This internal reader therefore does not establish roundtrippable public export,
 a wire format, CLI support or new-format import. Detached byte publication is
 unchanged. Earlier qualification applies only to its recorded source; fresh
 adapter evidence must identify the combined source and engines separately.
+
+
+## Retained endpoint inventory boundary
+
+This internal follow-on uses the existing `ReadVersion` projection as its value
+oracle, not raw database rows. Native Issue dependencies are omitted and
+metadata is exposed in the common record position by that existing reader;
+retained owned bytes and native revision context remain those of the selected
+version. Current comments are not added to a retained Issue version.
+
+Each exact endpoint is hydrated independently, including a pin at the current
+revision. A current native Issue can carry live lease/heartbeat observations
+that changed without minting another retained revision, while its exact reader
+returns the retained observations. Thus equal `(ID, Revision)` across
+`Snapshot.Records` and `PinnedEndpoints` does not prove equal full values.
+These inventories must not be concatenated into a supposedly unique current
+snapshot or normalized to one another. This preserves two existing internal
+read views; it does not select a public live-observation export policy.
+
+Public endpoint URIs are resolved through the selected allocation identity
+resolver; public IDs can differ from private storage locators and can begin
+with literal kind-looking segments. Private locators are used only for SQL,
+never inferred by stripping the Scope. The value oracle receives the complete
+public URI.
+
+Distinct selections deduplicate across both endpoint roles. Ordering uses the
+shared code-unit comparator on canonical URI and then opaque revision. Floating
+endpoints add no retained value; separate exact revisions remain separate.
+Returned nested properties, metadata, owned bytes and attribution are detached
+from current records and subsequent acquisitions.
+
+The persisted-byte preflight and native-context charge remain aggregate.
+Retaining all selected payloads increases simultaneous result retention even
+though the same payloads were already read for validation; the 16 MiB
+persisted-byte guard is not a Go heap bound. Selection is bounded by the
+existing live-Link inventory. No all-history scan is introduced.
+
+The original follow-on starts from Janet's PR141 assembly
+`e8c3b9516c60c5191d34408e8861917522bc7e35`. The October 25 refresh ordinarily
+merges existing PR155 head `9441301e3bb6118703018cf5a24fda9480575f29` into
+selected feature base `2c56673347b2bfb38022b3917580b58c7b2f6642`, preserving
+PR120/141/155 ancestry. Its runtime/review evidence must identify the new
+combined source and dependencies; all earlier proof remains historical.
+Engine execution is held until the coordinated runtime slot and receiving
+composition are explicitly available. Public serialization, CLI output, recursive
+closure, import and round-trip qualification remain separate work.

@@ -5,11 +5,24 @@ identity independently of each optional exact endpoint revision. The CLI
 adapter accepts endpoint selectors at Link creation and explicit source/target
 revision flags at Link update. The internal current export reader preserves
 these References and validates selected retained availability in the same
-rollback-only transaction. Historical payloads are validation-only; current
-inventory is not portable retained-version closure. See
+rollback-only transaction. Direct selected exact endpoint values are returned
+as a separate detached internal inventory. References inside retained owned
+Links are not traversed; current inventory is not portable retained-version
+closure. See
 [export acquisition](design/graph-export-milestone.md) and the `ExportEndpoint`
 tests in [graphstore](../internal/storage/graphstore/export_current_test.go).
 It does not adopt a new public BDP contract or enable external endpoints.
+
+The October 25 internal inventory refresh preserves the selected base's public
+URI-to-private allocation resolver, concrete native Type catalog and captured
+per-Resource ownership facts. Current closure retains the selected base's
+authoritative by-Type ownership captured from all installed Link types. Exact
+endpoints deduplicate by public URI and revision; historical source ownership
+checks every Link with the existing family-aware Type seam. Its custom native
+Dependency pin control is defensive and synthetic: current writers do not
+admit native Dependency endpoint pins. The
+refresh is P4-held pending independent source review and exact-source runtime
+qualification; earlier endpoint/storage proof does not qualify it.
 
 ## Carrier and writer API
 
@@ -52,9 +65,11 @@ the complete pinned snapshot bytes.
 
 ## Fresh workspace boundary
 
-The new durable pin columns require graph schema version **8**. Existing
-version-7 workspaces are refused; this slice does not migrate or reinterpret
-them. The separate installed Type marker is unchanged.
+The original durable pin columns introduced graph schema version **8** and
+refused version-7 workspaces. The selected October 25 base uses schema version
+**11**, with its complete installed-Type checks. This internal inventory
+refresh preserves those selected guards; it does not migrate or reinterpret
+older workspaces.
 
 ## Focused acceptance
 
