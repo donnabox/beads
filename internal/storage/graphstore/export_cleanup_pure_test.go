@@ -377,15 +377,20 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 			rows.values = append(rows.values, []driver.Value{name, raw, descriptor.Fingerprint()})
 		}
 		return rows, nil
-	case strings.HasPrefix(q, "select descriptor, fingerprint from graph_preview_types where name=?"):
-		if len(args) != 2 {
-			return nil, fmt.Errorf("cleanup descriptor lookup arguments: %v", args)
+	case q == strings.ToLower(fixedTypeDescriptorQuery(len(previewTypeDefinitions()))):
+		definitions := previewTypeDefinitions()
+		if len(args) != 2*len(definitions) {
+			return nil, fmt.Errorf("cleanup fixed descriptor lookup arguments: %v", args)
 		}
-		descriptor, ok := d.descriptors[fmt.Sprint(args[0].Value)]
-		if !ok || args[1].Value != int64(len(descriptor.CanonicalJSON())) {
-			return nil, errors.New("cleanup descriptor lookup did not match persisted Type")
+		rows := &exportCleanupRows{columns: []string{"name", "descriptor", "fingerprint"}}
+		for i, definition := range definitions {
+			descriptor, ok := d.descriptors[definition.name]
+			if !ok || args[2*i].Value != definition.name || args[2*i+1].Value != int64(len(descriptor.CanonicalJSON())) {
+				return nil, errors.New("cleanup fixed descriptor lookup did not match persisted Type")
+			}
+			rows.values = append(rows.values, []driver.Value{definition.name, descriptor.CanonicalJSON(), descriptor.Fingerprint()})
 		}
-		return row([]string{"descriptor", "fingerprint"}, descriptor.CanonicalJSON(), descriptor.Fingerprint()), nil
+		return rows, nil
 	case strings.HasPrefix(q, "select workspace, scope_url, authority_id, schema_version, writer_token from graph_preview_scope"):
 		b := d.options.Binding
 		return row([]string{"workspace", "scope", "authority", "schema", "token"}, b.WorkspaceID, b.ScopeURL, b.AuthorityID, int64(b.SchemaVersion), exportCleanupToken), nil
