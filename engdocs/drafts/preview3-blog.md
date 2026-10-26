@@ -173,7 +173,7 @@ This release is the first one containing intentionally designed bead types; Prev
 ## Using Memory Beads and Links (informative)
 
 The [Memory Type
-spec](https://github.com/gastownhall/bdp/blob/21fa91d3e189bff3832bd977c3d6be49f2b5d93c/specs/types/memory/memory.md#overview-informative)
+spec](https://github.com/gastownhall/bdp/blob/94f699b947382e3a52385b1895a941575fcc08cb/specs/types/memory/memory.md#overview-informative)
 introduces the model for Memory Beads in great detail. Here we describe the new
 CLI surface for memory (`bd memory`) by walking through one small example: adding CSV
 export to a product, keeping the design notes, and recording the rules the
