@@ -135,7 +135,7 @@ func TestGraphRelationshipTreePreservesLiteralSegmentsAndForeignURLs(t *testing.
 	r := graphTreeTestResult("a", "out", []string{"a", "b"}, genericTestEdge{"ab", "a", "b"})
 	foreign := "https://elsewhere.invalid/graph/beads/b"
 	r.Nodes[1].ID = foreign
-	r.Nodes[1].Type = "https://elsewhere.invalid/policy"
+	r.Nodes[1].Type = "https://elsewhere.invalid/types/policy"
 	r.Links[0].Target = foreign
 	text := graphTreeTestText(t, r)
 	for _, want := range []string{"beads/a [memory]", "[references] (links/ab)", foreign + " [https://elsewhere.invalid/types/policy]"} {
