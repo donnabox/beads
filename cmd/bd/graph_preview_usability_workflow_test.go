@@ -193,7 +193,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			}
 			call("compare", "policy-note", "--from", memory.Revision, "--to", current.Revision)
 			ordinaryWork, ordinaryHome := t.TempDir(), t.TempDir()
-			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "create", "--type", "memory", "--body", "No store", "--json")
+			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "create", "--type", "memory", "--properties", `{"title":"No store","body":""}`, "--json")
 			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "list", "--type", "memory", "--format", "records-json")
 		})
 	}
