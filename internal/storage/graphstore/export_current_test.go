@@ -16,6 +16,8 @@ import (
 	"testing"
 	"time"
 
+	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -24,7 +26,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 		t.Run(backend, func(t *testing.T) {
 			ctx, options, s := memoryDeleteStore(t, backend)
 			empty, err := s.ExportCurrentSnapshot(ctx)
-			if err != nil || len(empty.Snapshot.Records) != 0 || len(empty.Snapshot.Types) != len(previewTypeDefinitions()) || empty.IssuePrefix != "exp" || empty.DeletedAllocations != 0 || len(empty.CommentsByIssuePath) != 0 {
+			if err != nil || len(empty.Snapshot.Records) != 0 || len(empty.Snapshot.Types) != len(previewTypeDefinitions()) || empty.IssuePrefix != "exp" || empty.DeletedAllocations != 0 || len(empty.CommentsByIssuePath) != 0 || empty.PinnedEndpoints == nil || len(empty.PinnedEndpoints) != 0 {
 				t.Fatalf("empty export: %+v %v", empty, err)
 			}
 			if err := exportSetPrefix(ctx, s, "web-app-"); err != nil {
@@ -722,7 +724,8 @@ func exportSourceState(t *testing.T, ctx context.Context, s *Store) map[string]s
 }
 
 // This exercises the real transaction and persistence boundary; the internal
-// inventory preserves exact References without including historical endpoints.
+// inventory preserves exact References and separately returns their selected
+// retained endpoints without replacing current records.
 func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
@@ -764,6 +767,7 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 				if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 					t.Fatal("export mutated source")
 				}
+				assertExportPinnedInventory(t, ctx, s, state)
 				if len(state.Snapshot.Records) != 5 {
 					t.Fatalf("historical payload leaked into current inventory: %d", len(state.Snapshot.Records))
 				}
@@ -1214,6 +1218,240 @@ func TestExportNativeDeletionContextProjection(t *testing.T) {
 				}
 				if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 					t.Fatal("export or rollback changed native deletion source state")
+				}
+			}
+		})
+	}
+}
+
+// The oracle is the existing retained reader's projection, not raw native
+// durable_state bytes or a claim of recursive portable transfer closure.
+func assertExportPinnedInventory(t *testing.T, ctx context.Context, s *Store, state ExportCurrentState) {
+	t.Helper()
+	want := map[EndpointReference]bool{}
+	for _, value := range state.Snapshot.Records {
+		if link, ok := value.(LinkRecord); ok {
+			for _, ref := range []EndpointReference{link.SourceReference(), link.TargetReference()} {
+				if ref.Revision != "" {
+					want[ref] = true
+				}
+			}
+		}
+	}
+	if state.PinnedEndpoints == nil || len(state.PinnedEndpoints) != len(want) {
+		t.Fatalf("selected endpoint count: got %d want %d", len(state.PinnedEndpoints), len(want))
+	}
+	var previous EndpointReference
+	for _, value := range state.PinnedEndpoints {
+		var ref EndpointReference
+		switch record := value.(type) {
+		case Record:
+			ref = EndpointReference{URI: record.ID, Revision: record.Revision}
+		case IssueRecord:
+			ref = EndpointReference{URI: record.ID, Revision: record.Revision}
+		default:
+			t.Fatalf("unexpected pinned endpoint: %T", value)
+		}
+		if !want[ref] {
+			t.Fatalf("duplicate or unselected endpoint: %+v", ref)
+		}
+		delete(want, ref)
+		if previous.URI != "" && (graph.CompareCodeUnits(previous.URI, ref.URI) > 0 || (previous.URI == ref.URI && graph.CompareCodeUnits(previous.Revision, ref.Revision) >= 0)) {
+			t.Fatalf("endpoint order: %+v then %+v", previous, ref)
+		}
+		previous = ref
+		oracle, err := s.ReadVersion(ctx, ref.URI, ref.Revision)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := canonicalJSON(value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		original, err := canonicalJSON(oracle)
+		if err != nil || !reflect.DeepEqual(got, original) {
+			t.Fatalf("pinned endpoint differs from retained reader: %+v %v", ref, err)
+		}
+	}
+}
+
+func TestExportPinnedEndpointInventoryDetachedViews(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, backend)
+			memory, err := s.Create(ctx, CreateRequest{Path: "beads/memory", PublicID: "links/literal-memory", Title: "Memory", Metadata: json.RawMessage(`{"original":true}`)})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", TypeURL: s.ScopeURL() + "types/constraint", Title: "Constraint"}); err != nil {
+				t.Fatal(err)
+			}
+			owned, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/memory", TargetPath: "beads/constraint", ExpectedSourceRevision: memory.Revision})
+			if err != nil {
+				t.Fatal(err)
+			}
+			request := plainIssueAtPublicID("Issue", "types/literal-native-issue")
+			request.Issue.Metadata = json.RawMessage(`{"original":true}`)
+			if _, err := s.CreateIssue(ctx, "beads/issue", request); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/prerequisite", plainIssue("Prerequisite")); err != nil {
+				t.Fatal(err)
+			}
+			dependency, err := s.AddDependency(ctx, DependencyRequest{Path: "links/custom-native", SourcePath: "beads/issue", TargetPath: "beads/prerequisite", Type: types.DependencyType("custom-kind"), Actor: "holder"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			claimed, err := s.ClaimIssue(ctx, "beads/issue", "holder")
+			if err != nil {
+				t.Fatal(err)
+			}
+			title := "Edited"
+			edited, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/issue", Title: &title, ExpectedRevision: claimed.Issue.Revision, Actor: "holder"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			historical, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/issue", FromRevision: claimed.Issue.Revision, ExpectedRevision: edited.Issue.Revision, Actor: "holder"})
+			if err != nil || historical.Issue.Attribution.HistoricalUpdate == nil {
+				t.Fatalf("historical fixture: %v", err)
+			}
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/pins", SourcePath: "beads/memory", TargetPath: "beads/issue", SourcePin: EndpointPin{Revision: owned.Source.(Record).Revision}, TargetPin: EndpointPin{Revision: historical.Issue.Revision}}); err != nil {
+				t.Fatal(err)
+			}
+			live, err := s.HeartbeatIssue(issueops.WithLeaseTTL(ctx, 10*time.Minute), "beads/issue", "holder")
+			if err != nil || live.Revision != historical.Issue.Revision {
+				t.Fatalf("lease-only observation: %v", err)
+			}
+			before := exportSourceState(t, ctx, s)
+			state, err := s.ExportCurrentSnapshot(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			assertExportPinnedInventory(t, ctx, s, state)
+			baseline, err := canonicalJSON(state)
+			if err != nil {
+				t.Fatal(err)
+			}
+			currentBytes, err := canonicalJSON(state.Snapshot)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var retainedIssue IssueRecord
+			for _, value := range state.PinnedEndpoints {
+				switch record := value.(type) {
+				case Record:
+					if len(record.Owned) != 1 {
+						t.Fatal("retained owned fixture missing")
+					}
+					record.Metadata[0] = 'x'
+					record.Owned[0][0] = 'x'
+				case IssueRecord:
+					retainedIssue = record
+					// Heartbeats in the same second may retain HeartbeatAt;
+					// the changed TTL guarantees a distinct expiry without sleeps.
+					if record.Revision != live.Revision || reflect.DeepEqual(record.Properties.LeaseExpiresAt, live.Properties.LeaseExpiresAt) {
+						t.Fatal("live observations substituted into retained exact address")
+					}
+					var currentIssue IssueRecord
+					for _, current := range state.Snapshot.Records {
+						if issue, ok := current.(IssueRecord); ok && issue.ID == record.ID {
+							currentIssue = issue
+						}
+					}
+					currentSerialized, currentErr := canonicalJSON(currentIssue)
+					liveSerialized, liveErr := canonicalJSON(live)
+					if currentErr != nil || liveErr != nil || !reflect.DeepEqual(currentSerialized, liveSerialized) {
+						t.Fatal("current inventory did not preserve public live lease observation")
+					}
+					// Properties is a pointer: mutate both a scalar and nested
+					// labels to exercise retained/current object detachment.
+					record.Properties.Title = "caller mutation"
+					record.Properties.Labels[0] = "caller mutation"
+					record.Metadata[0] = 'x'
+					if record.Attribution.HistoricalUpdate == nil {
+						t.Fatal("selected native edition lacks historical-update context")
+					}
+					record.Attribution.HistoricalUpdate.FromRevision = "caller mutation"
+				}
+			}
+			if retainedIssue.ID == "" {
+				t.Fatal("native retained endpoint missing")
+			}
+			now, err := canonicalJSON(state.Snapshot)
+			if err != nil || !reflect.DeepEqual(currentBytes, now) {
+				t.Fatalf("pinned caller mutation contaminated current view: %v", err)
+			}
+			fresh, err := s.ExportCurrentSnapshot(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			now, err = canonicalJSON(fresh)
+			if err != nil || !reflect.DeepEqual(baseline, now) || !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
+				t.Fatalf("caller mutation contaminated store/reacquisition: %v", err)
+			}
+			// The second Link reuses an already acquired source address but has
+			// an owned family. Dedup must never skip its per-Link refusal.
+			var repeated LinkRecord
+			for _, value := range fresh.Snapshot.Records {
+				if link, ok := value.(LinkRecord); ok && link.SourceRevision != "" {
+					repeated = link
+				}
+			}
+			ownedSource := repeated
+			ownedSource.ID = s.ScopeURL() + "links/unsupported-observation"
+			ownedSource.Type = s.ScopeURL() + "types/subject-to"
+			err = s.withTx(ctx, false, func(tx *sql.Tx) error {
+				values, err := s.exportEndpointPinsInTx(ctx, tx, Snapshot{Records: []any{repeated, ownedSource}})
+				if !errors.Is(err, ErrCapabilityUnavailable) || values != nil {
+					return fmt.Errorf("reused owned source admitted or leaked inventory: %+v %w", values, err)
+				}
+				return nil
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if dependency.Link.Type == DependencyTypeURL(s.ScopeURL()) {
+				t.Fatal("custom native kind lost its concrete Type")
+			}
+			var pinnedNative LinkRecord
+			for _, value := range fresh.Snapshot.Records {
+				if link, ok := value.(LinkRecord); ok && link.Target == historical.Issue.ID && link.TargetRevision == historical.Issue.Revision {
+					pinnedNative = link
+				}
+			}
+			if pinnedNative.ID == "" {
+				t.Fatal("native exact dedup fixture missing")
+			}
+			// Defensive synthetic control: native Dependency writers do not admit
+			// endpoint pins. This probes the helper, not a writer-admitted state.
+			unsupportedNative := dependency.Link
+			unsupportedNative.SourceRevision = historical.Issue.Revision
+			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+				values, err := s.exportEndpointPinsInTx(ctx, tx, Snapshot{Records: []any{pinnedNative, unsupportedNative}})
+				if !errors.Is(err, ErrCapabilityUnavailable) || values != nil {
+					return fmt.Errorf("deduplicated custom native owned source admitted: %+v %w", values, err)
+				}
+				return nil
+			}); err != nil {
+				t.Fatal(err)
+			}
+			combined := fresh.Snapshot
+			combined.Records = append(append([]any{}, combined.Records...), fresh.PinnedEndpoints...)
+			if _, err := exportSnapshotClosure(s.ScopeURL(), combined); !errors.Is(err, ErrInvalidStore) || !strings.Contains(err.Error(), "duplicate or noncanonical acquired identity") {
+				t.Fatalf("concatenation of overlapping current/exact views admitted: %v", err)
+			}
+			for _, stage := range []string{"export-endpoints", "export-comments"} {
+				fault := errors.New("after nonempty pinned acquisition")
+				s.afterWrite = func(at string) error {
+					if at == stage {
+						return fault
+					}
+					return nil
+				}
+				got, err := s.ExportCurrentSnapshot(ctx)
+				s.afterWrite = nil
+				if !errors.Is(err, fault) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+					t.Fatalf("%s retained inventory leaked: %+v %v", stage, got, err)
 				}
 			}
 		})
