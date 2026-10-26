@@ -172,7 +172,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				t.Fatalf("Memory Type filter: %+v more=%t", memories, more)
 			}
 			humanList := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", "any", "--all")
-			for _, row := range []string{"beads/context [types/memory]", "beads/plan [types/memory]", strings.TrimPrefix(createdWork.ID, scope) + " [task]", strings.TrimPrefix(createdGate.ID, scope) + " [task]"} {
+			for _, row := range []string{"beads/context [memory]", "beads/plan [memory]", strings.TrimPrefix(createdWork.ID, scope) + " [task]", strings.TrimPrefix(createdGate.ID, scope) + " [task]"} {
 				if !strings.Contains(humanList, row) {
 					t.Fatalf("mixed human inventory omitted identity/Type %q: %s", row, humanList)
 				}

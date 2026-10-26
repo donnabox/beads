@@ -41,7 +41,7 @@ func currentFamilyStore(t *testing.T) *Store {
 	return s
 }
 func currentFamilyRequest(s *Store, family string, roots ...memoryquery.CurrentRoot) CurrentFamilyRequest {
-	return CurrentFamilyRequest{Roots: roots, Family: typecatalog.Reference{URI: s.ScopeURL() + "types/" + family}, Direction: graph.DirectionOut, Limits: memoryquery.Limits{MaxNodes: 100, MaxLinks: 100, MaxInspected: 10000}, MaxBytes: PreviewCurrentReadByteLimit}
+	return CurrentFamilyRequest{Roots: roots, Family: typecatalog.Reference{URI: s.ScopeURL() + family}, Direction: graph.DirectionOut, Limits: memoryquery.Limits{MaxNodes: 100, MaxLinks: 100, MaxInspected: 10000}, MaxBytes: PreviewCurrentReadByteLimit}
 }
 func currentFamilyContext(t *testing.T) context.Context {
 	t.Helper()
@@ -51,7 +51,7 @@ func currentFamilyContext(t *testing.T) context.Context {
 }
 func currentFamilyAdd(t *testing.T, s *Store, name, typ, src, dst string, pin EndpointPin) LinkRecord {
 	t.Helper()
-	r, err := s.AddInformationalLink(currentFamilyContext(t), LinkCreateRequest{Path: "links/" + name, TypeURL: s.ScopeURL() + "types/" + typ, SourcePath: "beads/" + src, TargetPath: "beads/" + dst, TargetPin: pin, UnconditionalSource: true, Properties: map[string]any{"body": "evidence"}, Metadata: json.RawMessage(`{"keep":"link"}`), Actor: "family-author"})
+	r, err := s.AddInformationalLink(currentFamilyContext(t), LinkCreateRequest{Path: "links/" + name, TypeURL: s.ScopeURL() + typ, SourcePath: "beads/" + src, TargetPath: "beads/" + dst, TargetPin: pin, UnconditionalSource: true, Properties: map[string]any{"body": "evidence"}, Metadata: json.RawMessage(`{"keep":"link"}`), Actor: "family-author"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +59,7 @@ func currentFamilyAdd(t *testing.T, s *Store, name, typ, src, dst string, pin En
 }
 func currentFamilyCreate(t *testing.T, s *Store, name, typ string) Record {
 	t.Helper()
-	r, err := s.Create(currentFamilyContext(t), CreateRequest{Path: "beads/" + name, TypeURL: s.ScopeURL() + "types/" + typ, Title: name, Metadata: json.RawMessage(`{"keep":"bead"}`), Actor: "family-author"})
+	r, err := s.Create(currentFamilyContext(t), CreateRequest{Path: "beads/" + name, TypeURL: s.ScopeURL() + typ, Title: name, Metadata: json.RawMessage(`{"keep":"bead"}`), Actor: "family-author"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +197,7 @@ func TestMemoryCurrentFamilyMixedAndRoots(t *testing.T) {
 			if r.Attribution.Actor != "family-author" || r.Attribution.Status != "claimed" || r.Attribution.RecordedAt == "" {
 				t.Fatal("lost Link attribution", r.Attribution)
 			}
-			if r.ID == s.ScopeURL()+"links/defines" && r.Type != s.ScopeURL()+"types/defines" {
+			if r.ID == s.ScopeURL()+"links/defines" && r.Type != s.ScopeURL()+"defines" {
 				t.Fatal("family erased declared Type")
 			}
 			if string(r.Metadata) != `{"keep":"link"}` {
@@ -455,7 +455,7 @@ func TestMemoryCurrentFamilySuccessionPinsAndScope(t *testing.T) {
 	got, err = s.ReadCurrentFamily(currentFamilyContext(t), r)
 	assertCurrentFamilyError(t, got, err, graph.ErrValidation)
 	r.Roots[0].Path = "beads/source"
-	r.Family = typecatalog.Reference{URI: s.ScopeURL() + "types/requires"}
+	r.Family = typecatalog.Reference{URI: s.ScopeURL() + "requires"}
 	got, err = s.ReadCurrentFamily(currentFamilyContext(t), r)
 	// Requires is admitted by the Constraint successor, but this Memory root
 	// does not conform to Constraint and must still return zero state.

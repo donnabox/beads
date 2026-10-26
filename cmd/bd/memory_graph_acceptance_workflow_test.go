@@ -193,14 +193,14 @@ func memoryAcceptanceSeed(t *testing.T, work, scope string, corpus memoryAccepta
 				// specifying only its private path would generate another ID.
 				_, err = store.CreateIssue(ctx, path, publicops.CreateRequest{Actor: "memory-cli-test", ForceIDPrefix: true, Issue: &publicops.Issue{ID: path, Title: b.ID, Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}})
 			} else {
-				_, err = store.Create(ctx, graphstore.CreateRequest{Path: path, TypeURL: scope + "types/" + b.Type, Title: b.ID, Body: "Acceptance fixture", Actor: "memory-cli-test"})
+				_, err = store.Create(ctx, graphstore.CreateRequest{Path: path, TypeURL: scope + b.Type, Title: b.ID, Body: "Acceptance fixture", Actor: "memory-cli-test"})
 			}
 			if err != nil {
 				t.Fatalf("seed Bead %s: %v", path, err)
 			}
 		}
 		for _, l := range fixture.Links {
-			_, err = store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/" + name + "/" + l.ID, SourcePath: "beads/" + name + "/" + l.Source, TargetPath: "beads/" + name + "/" + l.Target, TypeURL: scope + "types/" + l.Type, Actor: "memory-cli-test", UnconditionalSource: true})
+			_, err = store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/" + name + "/" + l.ID, SourcePath: "beads/" + name + "/" + l.Source, TargetPath: "beads/" + name + "/" + l.Target, TypeURL: scope + l.Type, Actor: "memory-cli-test", UnconditionalSource: true})
 			if err != nil {
 				t.Fatalf("seed Link %s/%s: %v", name, l.ID, err)
 			}

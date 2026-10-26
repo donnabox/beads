@@ -54,7 +54,7 @@ func TestAllocatedResourceIdentityUsesCatalogKind(t *testing.T) {
 			if err != nil || issueIdentity.Kind != graph.KindBead || issueIdentity.PrivatePath != "beads/private-issue" || issueIdentity.PublicID != "types/an-issue" {
 				t.Fatalf("native Issue public identity: %+v %v", issueIdentity, err)
 			}
-			link, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/reference", TypeURL: store.ScopeURL() + "types/references", SourcePath: path, TargetPath: "beads/private-issue"})
+			link, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/reference", TypeURL: store.ScopeURL() + "references", SourcePath: path, TargetPath: "beads/private-issue"})
 			if err != nil {
 				t.Fatal(err)
 			}

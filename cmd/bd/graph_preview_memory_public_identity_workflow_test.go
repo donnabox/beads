@@ -77,7 +77,7 @@ func TestGraphPreviewMemoryPublicIdentityWorkflow(t *testing.T) {
 			const sourceKey, targetKey = "source/%E6%BA%90/@literal", "target-literal"
 			source := graphMixedResult[graphstore.Record](t, call("remember", "Source body", "--id", sourceKey))
 			target := graphMixedResult[graphstore.Record](t, call("remember", "Target body", "--id", targetKey))
-			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", source.ID, "--to", target.ID, "--type", "types/references", "--id", "literal-endpoints"))
+			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", source.ID, "--to", target.ID, "--type", "references", "--id", "literal-endpoints"))
 			if linked.Link.Source != source.ID || linked.Link.Target != target.ID {
 				t.Fatal("literal public endpoints selected different allocations")
 			}
@@ -124,11 +124,11 @@ func TestGraphPreviewCommonIdentityGraphAndNativeLinkWorkflow(t *testing.T) {
 			}
 			source := graphMixedResult[graphstore.Record](t, call("remember", "Source", "--id", "source"))
 			target := graphMixedResult[graphstore.Record](t, call("remember", "Target", "--id", "links/target"))
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", source.ID, "--to", target.ID, "--type", "types/references", "--id", "beads/edge"))
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", source.ID, "--to", target.ID, "--type", "references", "--id", "beads/edge"))
 			if link.Link.ID != scope+"beads/edge" || link.Link.Source != source.ID || link.Link.Target != target.ID {
 				t.Fatal("informational identity changed", link)
 			}
-			selected := call("graph", "source", "--link-type", "types/references", "--direction", "out")
+			selected := call("graph", "source", "--link-type", "references", "--direction", "out")
 			for _, id := range []string{source.ID, target.ID, link.Link.ID} {
 				if !strings.Contains(selected, id) {
 					t.Fatalf("graph omitted exact identity %q: %s", id, selected)

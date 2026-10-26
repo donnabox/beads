@@ -35,7 +35,7 @@ func TestObsoleteInformationalTypesAreNotInstalledOrAdmitted(t *testing.T) {
 			}
 			for _, name := range []string{"example-follows", "example-cites", "preview-related", "preview-memory", "preview-issue", "preview-dependency", "type", "bead-type", "link-type", "conforms-to", "refines"} {
 				t.Run(name, func(t *testing.T) {
-					id := store.ScopeURL() + "types/" + name
+					id := store.ScopeURL() + name
 					if IsInformationalTypeURL(store.ScopeURL(), id) {
 						t.Fatalf("obsolete/intrinsic identity %s was classified as informational", id)
 					}

@@ -48,7 +48,7 @@ func TestMemoryConstraintsAndSubjectsEmbeddedCapture(t *testing.T) {
 		}
 	}
 	for _, e := range [][4]string{{"ba", "requires", "b", "a"}, {"ad", "defines", "a", "d"}, {"not-replayed", "subject-to", "a", "c"}} {
-		if _, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/" + e[0], TypeURL: genericTestScope + "types/" + e[1], SourcePath: "beads/" + e[2], TargetPath: "beads/" + e[3], UnconditionalSource: true, Actor: "presenter"}); err != nil {
+		if _, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/" + e[0], TypeURL: genericTestScope + e[1], SourcePath: "beads/" + e[2], TargetPath: "beads/" + e[3], UnconditionalSource: true, Actor: "presenter"}); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -76,7 +76,7 @@ func TestMemoryConstraintsAndSubjectsEmbeddedCapture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(text, `beads/work [task] (open) "Work"`) || !strings.Contains(text, `target revision="`+b.Revision+`"`) || !strings.Contains(text, "[types/defines] (links/ad) → beads/d [types/policy]") || strings.Contains(text, "not-replayed") || !strings.Contains(text, "4 Beads, 3 Links across 1 views") {
+	if !strings.Contains(text, `beads/work [task] (open) "Work"`) || !strings.Contains(text, `target revision="`+b.Revision+`"`) || !strings.Contains(text, "[defines] (links/ad) → beads/d [policy]") || strings.Contains(text, "not-replayed") || !strings.Contains(text, "4 Beads, 3 Links across 1 views") {
 		t.Fatal(text)
 	}
 	t.Logf("actual staged capture after Close:\n%s", text)
@@ -84,7 +84,7 @@ func TestMemoryConstraintsAndSubjectsEmbeddedCapture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(text, "[types/subject-to] (links/subject) ← beads/work [task]") || strings.Contains(text, "complete:") || strings.Contains(text, "frontier:") || strings.Contains(text, "requires") || strings.Contains(text, "depth") {
+	if !strings.Contains(text, "[subject-to] (links/subject) ← beads/work [task]") || strings.Contains(text, "complete:") || strings.Contains(text, "frontier:") || strings.Contains(text, "requires") || strings.Contains(text, "depth") {
 		t.Fatal(text)
 	}
 	t.Logf("actual direct capture after Close:\n%s", text)

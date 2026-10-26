@@ -258,7 +258,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatalf("Evaluation claim group missing: %+v", assessment)
 			}
 			for _, name := range []string{"addresses", "violates"} {
-				if group, exists := assessment.OwnedLinks[o.Binding.ScopeURL+"types/"+name]; !exists || len(group) != 0 {
+				if group, exists := assessment.OwnedLinks[o.Binding.ScopeURL+name]; !exists || len(group) != 0 {
 					t.Fatalf("empty inherited owned group %s missing", name)
 				}
 			}

@@ -62,7 +62,7 @@ class MemoryCreationProjection(unittest.TestCase):
         scope = "https://example.invalid/ci-c0/embedded/"
         record = {
             "id": scope + "beads/plan",
-            "type": scope + "types/memory",
+            "type": scope + "memory",
             "properties": {"title": "Plan", "body": "Durable C0 body — 記憶"},
             "owned": [],
             "revision": "opaque-token",
@@ -437,7 +437,7 @@ class CaptureMemoryDeletion(unittest.TestCase):
         self.smoke = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.smoke)
         self.live = {"id": "https://example.invalid/beads/alpha", "revision": "live-token",
-                     "type": "https://example.invalid/types/memory", "metadata": {}, "owned": [],
+                     "type": "https://example.invalid/memory", "metadata": {}, "owned": [],
                      "properties": {"title": "First memory", "body": "Deployment context — 雪"},
                      "attribution": {"actor": "writer", "recordedAt": "before", "inception": "create"}}
         self.terminal = {"id": self.live["id"], "revision": "deletion-token", "version": "deletion-token",

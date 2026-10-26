@@ -78,7 +78,7 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 			memoryRows := human("--type", "memory")
 			if len(memoryRows) != 3 || memoryRows[0] != "Beads (1; more: false; graph preview)" ||
 				memoryRows[1] != `directory.labels "frontend" is not applied to this Bead Type.` ||
-				memoryRows[2] != `beads/plan [types/memory] "Plan"` {
+				memoryRows[2] != `beads/plan [memory] "Plan"` {
 				t.Fatalf("configured Issue label changed Memory selection: %q", memoryRows)
 			}
 			// A typed label replaces the configured one.

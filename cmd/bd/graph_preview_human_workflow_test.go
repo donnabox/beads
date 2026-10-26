@@ -18,7 +18,7 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string { t.Helper(); return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			create := call("create", "First", "--type", "memory", "--id", "beads/first", "--body", "Old body")
-			if strings.TrimSpace(create) != `beads/first [types/memory] "First"` {
+			if strings.TrimSpace(create) != `beads/first [memory] "First"` {
 				t.Fatal(create)
 			}
 			one := graphMixedResult[graphstore.Record](t, call("show", "beads/first", "--json"))
@@ -37,7 +37,7 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 			}
 			createdLink := call("link", "create", "beads/first", "second@1", "--type", "references", "--id", "links/context")
 			second := graphMixedResult[graphstore.Record](t, call("show", "second", "--json"))
-			row := "links/context [types/references] beads/first → second@=" + second.Revision
+			row := "links/context [references] beads/first → second@=" + second.Revision
 			if strings.TrimSpace(createdLink) != row {
 				t.Fatal(createdLink)
 			}

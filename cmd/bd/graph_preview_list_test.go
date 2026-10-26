@@ -233,7 +233,7 @@ func TestGraphPreviewBeadListOutput(t *testing.T) {
 	// An Issue row adds its status and priority between the kind and the title;
 	// the Memory row and the header keep their layout.
 	human, err := renderGraphBeadList(page, scope, false, "", false, false)
-	want := "Beads (3; more: false; graph preview)\nbeads/work [task] open P1 \"Ship the release\"\nbeads/plan [types/memory] \"Release plan\"\nbeads/odd [task] on-ice P4 \"quote\\\"\\n雪\"\n"
+	want := "Beads (3; more: false; graph preview)\nbeads/work [task] open P1 \"Ship the release\"\nbeads/plan [memory] \"Release plan\"\nbeads/odd [task] on-ice P4 \"quote\\\"\\n雪\"\n"
 	if err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
@@ -372,7 +372,7 @@ func TestGraphPreviewListNoticeRendering(t *testing.T) {
 	const labelNotice = "directory.labels \"frontend\" is not applied to this Bead Type."
 	beads := graphstore.BeadListPage{Items: []any{graphstore.Record{ID: scope + "beads/plan", Type: scope + "memory", Properties: graphstore.Properties{Title: "Plan"}}}}
 	human, err = renderGraphBeadList(beads, scope, false, labelNotice, false, false)
-	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\nbeads/plan [types/memory] \"Plan\"\n"; err != nil || human != want {
+	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\nbeads/plan [memory] \"Plan\"\n"; err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
 	if quiet, err := renderGraphBeadList(beads, scope, false, labelNotice, false, true); err != nil || quiet != "" {

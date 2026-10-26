@@ -87,7 +87,7 @@ func TestGraphRelationshipTreeReferencesAndCycles(t *testing.T) {
 
 func TestGraphRelationshipTreeLayoutAndDirections(t *testing.T) {
 	r := graphTreeTestResult("a", "out", []string{"a", "b", "c", "d"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"bd", "b", "d"}, genericTestEdge{"cd", "c", "d"})
-	want := "beads/a [types/memory] \"A\"\n├── [types/references] (links/ab) → beads/b [types/memory] \"B\"\n│   └── [types/references] (links/bd) → beads/d [types/memory] \"D\"\n└── [types/references] (links/ac) → beads/c [types/memory] \"C\"\n    └── [types/references] (links/cd) → beads/d [types/memory] (shown elsewhere)\n\n4 Beads, 4 Links\n"
+	want := "beads/a [memory] \"A\"\n├── [references] (links/ab) → beads/b [memory] \"B\"\n│   └── [references] (links/bd) → beads/d [memory] \"D\"\n└── [references] (links/ac) → beads/c [memory] \"C\"\n    └── [references] (links/cd) → beads/d [memory] (shown elsewhere)\n\n4 Beads, 4 Links\n"
 	if got := graphTreeTestText(t, r); got != want {
 		t.Fatalf("relationship layout:\n%s\nwant:\n%s", got, want)
 	}
@@ -106,7 +106,7 @@ func TestGraphRelationshipTreeLayoutAndDirections(t *testing.T) {
 		r.Links[i].Type = genericTestScope + "superseded-by"
 	}
 	text := graphTreeTestText(t, r)
-	for _, fragment := range []string{"beads/c [types/memory]", "[types/superseded-by] (links/bc) ← beads/b", "[types/superseded-by] (links/ab) ← beads/a", "[types/superseded-by] (links/db) ← beads/d", "4 Beads, 3 Links"} {
+	for _, fragment := range []string{"beads/c [memory]", "[superseded-by] (links/bc) ← beads/b", "[superseded-by] (links/ab) ← beads/a", "[superseded-by] (links/db) ← beads/d", "4 Beads, 3 Links"} {
 		if !strings.Contains(text, fragment) {
 			t.Fatalf("reverse ancestry lost %q:\n%s", fragment, text)
 		}
@@ -117,12 +117,12 @@ func TestGraphRelationshipTreeZeroHopFrontierAndForest(t *testing.T) {
 	r := graphTreeTestResult("a", "out", []string{"a"})
 	r.Depth, r.Complete, r.Frontier = 0, false, []string{r.Root}
 	text := graphTreeTestText(t, r)
-	if !strings.HasPrefix(text, "beads/a [types/memory] \"A\"\n") || !strings.Contains(text, "1 Beads, 0 Links") || !strings.Contains(text, "Depth limit 0 reached at beads/a; further relationships are outside this view.") || strings.Contains(text, "└──") {
+	if !strings.HasPrefix(text, "beads/a [memory] \"A\"\n") || !strings.Contains(text, "1 Beads, 0 Links") || !strings.Contains(text, "Depth limit 0 reached at beads/a; further relationships are outside this view.") || strings.Contains(text, "└──") {
 		t.Fatalf("zero-hop root or honest boundary lost:\n%s", text)
 	}
 	r = graphTreeTestResult("", "out", []string{"a", "b", "c"}, genericTestEdge{"ab", "a", "b"})
 	text = graphTreeTestText(t, r)
-	if !strings.Contains(text, "\nbeads/c [types/memory] \"C\"\n") || !strings.Contains(text, "3 Beads, 1 Links") {
+	if !strings.Contains(text, "\nbeads/c [memory] \"C\"\n") || !strings.Contains(text, "3 Beads, 1 Links") {
 		t.Fatalf("selected isolate missing from --all forest:\n%s", text)
 	}
 	r = graphTreeTestResult("", "out", nil)
@@ -138,7 +138,7 @@ func TestGraphRelationshipTreePreservesLiteralSegmentsAndForeignURLs(t *testing.
 	r.Nodes[1].Type = "https://elsewhere.invalid/policy"
 	r.Links[0].Target = foreign
 	text := graphTreeTestText(t, r)
-	for _, want := range []string{"beads/a [types/memory]", "[types/references] (links/ab)", foreign + " [https://elsewhere.invalid/types/policy]"} {
+	for _, want := range []string{"beads/a [memory]", "[references] (links/ab)", foreign + " [https://elsewhere.invalid/types/policy]"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("literal identity changed; want %q:\n%s", want, text)
 		}
@@ -195,16 +195,16 @@ func TestGraphRelationshipTreeEscapesAndPreservesData(t *testing.T) {
 	r.Nodes[0].Status = "open"
 	r.Nodes[1].Type = genericTestScope + "requirement"
 	r.Nodes[1].Title = "Line\nTab\tESC\x1b\" 雪\u2028end"
-	r.Links[0].Type = genericTestScope + "types/defines"
+	r.Links[0].Type = genericTestScope + "defines"
 	r.Links[0].SourceRevision, r.Links[0].TargetRevision = "pin\n\x1b", "v2"
 	before := r.Nodes[1].Title
 	text := graphTreeTestText(t, r)
-	for _, want := range []string{"beads/a [types/issue] (open)", "[types/defines] (links/ab) → beads/b [types/requirement]", `Line\nTab\tESC\x1b\" 雪\u2028end`, `source revision="pin\n\x1b" target revision="v2"`} {
+	for _, want := range []string{"beads/a [issue] (open)", "[defines] (links/ab) → beads/b [requirement]", `Line\nTab\tESC\x1b\" 雪\u2028end`, `source revision="pin\n\x1b" target revision="v2"`} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("data lost or controls injected; need %q:\n%s", want, text)
 		}
 	}
-	if strings.ContainsAny(text, "\x1b\t\u2028") || strings.Contains(text, genericTestScope) || strings.Contains(text, "[types/requirement] (open)") || r.Nodes[1].Title != before {
+	if strings.ContainsAny(text, "\x1b\t\u2028") || strings.Contains(text, genericTestScope) || strings.Contains(text, "[requirement] (open)") || r.Nodes[1].Title != before {
 		t.Fatalf("Scope elision/escaping changed authoritative data or invented status:\n%s", text)
 	}
 }
@@ -248,7 +248,7 @@ func TestGraphRelationshipTreeUsesOnlySelectedLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := graphTreeTestText(t, r)
-	if strings.Contains(text, "excluded") || strings.Contains(text, "beads/c [types/memory]") || len(r.Links) != 1 {
+	if strings.Contains(text, "excluded") || strings.Contains(text, "beads/c [memory]") || len(r.Links) != 1 {
 		t.Fatalf("presenter crossed excluded Link:\n%s", text)
 	}
 	// Rendering mutates neither the selected graph nor the complete JSON path.
@@ -324,14 +324,14 @@ func TestGraphRelationshipTreeCanonicalExpansion(t *testing.T) {
 	t.Run("both-parallel-keeps-first-endpoint-owner", func(t *testing.T) {
 		r := graphTreeTestResult("a", "both", []string{"a", "b"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ab2", "a", "b"})
 		text := graphTreeTestText(t, r)
-		if !strings.Contains(text, "\n└── [types/references] (links/ab2) → beads/b [types/memory] (shown elsewhere)") || strings.Contains(text, "[types/references] (links/ab2) ← beads/a") {
+		if !strings.Contains(text, "\n└── [references] (links/ab2) → beads/b [memory] (shown elsewhere)") || strings.Contains(text, "[references] (links/ab2) ← beads/a") {
 			t.Fatalf("child stole a parallel Link from its earlier canonical endpoint:\n%s", text)
 		}
 	})
 	t.Run("both-diamond-keeps-sibling", func(t *testing.T) {
 		r := graphTreeTestResult("a", "both", []string{"a", "b", "c", "d"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"ac", "a", "c"}, genericTestEdge{"bd", "b", "d"}, genericTestEdge{"cd", "c", "d"})
 		text := graphTreeTestText(t, r)
-		if !strings.Contains(text, "\n└── [types/references] (links/ac) → beads/c [types/memory] \"C\"") || !strings.Contains(text, "[types/references] (links/cd) ← beads/c [types/memory] (shown elsewhere)") {
+		if !strings.Contains(text, "\n└── [references] (links/ac) → beads/c [memory] \"C\"") || !strings.Contains(text, "[references] (links/cd) ← beads/c [memory] (shown elsewhere)") {
 			t.Fatalf("induced reverse edge changed canonical tree parent:\n%s", text)
 		}
 	})
@@ -342,13 +342,13 @@ func TestGraphRelationshipTreeCanonicalExpansion(t *testing.T) {
 			t.Fatal(err)
 		}
 		text := graphTreeTestText(t, r)
-		if !strings.Contains(text, "\n└── [types/references] (links/ac) → beads/c [types/memory] \"Title c") || strings.Contains(text, "│   └── [types/references] (links/bc) → beads/c [types/memory] \"Title c") {
+		if !strings.Contains(text, "\n└── [references] (links/ac) → beads/c [memory] \"Title c") || strings.Contains(text, "│   └── [references] (links/bc) → beads/c [memory] \"Title c") {
 			t.Fatalf("induced cross-Link deepened a depth-one expansion:\n%s", text)
 		}
-		if !strings.Contains(text, "[types/references] (links/cb) → beads/b [types/memory]") {
+		if !strings.Contains(text, "[references] (links/cb) → beads/b [memory]") {
 			t.Fatalf("outgoing non-tree Link lost its authored source placement:\n%s", text)
 		}
-		if !strings.Contains(text, "[types/references] (links/bc) → beads/c [types/memory] (shown elsewhere) (cycle)") {
+		if !strings.Contains(text, "[references] (links/bc) → beads/c [memory] (shown elsewhere) (cycle)") {
 			t.Fatalf("future cyclic sibling lost its reference marker:\n%s", text)
 		}
 	})
@@ -359,7 +359,7 @@ func TestGraphRelationshipTreeCanonicalExpansion(t *testing.T) {
 			t.Fatal(err)
 		}
 		text := graphTreeTestText(t, r)
-		if strings.Contains(text, "(links/cb)") || strings.Contains(text, "beads/c [types/memory]") || !strings.Contains(text, "2 Beads, 1 Links") {
+		if strings.Contains(text, "(links/cb)") || strings.Contains(text, "beads/c [memory]") || !strings.Contains(text, "2 Beads, 1 Links") {
 			t.Fatalf("display crossed an incoming unselected bridge:\n%s", text)
 		}
 	})

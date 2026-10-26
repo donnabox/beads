@@ -91,7 +91,7 @@ func TestMemoryCurrentGraphIndependentRoots(t *testing.T) {
 	r := memoryPresentationFixture(t, roots, graph.DirectionOut, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"bd", "b", "d"})
 	before := fmt.Sprintf("%#v", r)
 	s := memoryPresentationText(t, r, graph.DirectionOut)
-	if strings.Count(s, "3 Beads, 2 Links across 2 views") != 1 || strings.Count(s, "(links/ab)") != 1 || strings.Count(s, "(links/bd)") != 1 || strings.Count(s, "beads/b [types/policy] \"B\"") != 2 {
+	if strings.Count(s, "3 Beads, 2 Links across 2 views") != 1 || strings.Count(s, "(links/ab)") != 1 || strings.Count(s, "(links/bd)") != 1 || strings.Count(s, "beads/b [policy] \"B\"") != 2 {
 		t.Fatalf("lost per-root expansion or aggregate identity counts:\n%s", s)
 	}
 	if strings.Count(s, "For beads/a: Depth limit 1 reached at beads/b; further relationships are outside this view.") != 1 || strings.Count(s, "Depth limit") != 1 || strings.Contains(s, "For beads/b:") || strings.Contains(s, "complete:") || strings.Contains(s, "frontier:") {
@@ -106,7 +106,7 @@ func TestMemoryCurrentGraphIndependentRoots(t *testing.T) {
 	// Same root identity at a different depth is still an independent view.
 	r = memoryPresentationFixture(t, []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 0}, {Path: "beads/a", Depth: 2}}, graph.DirectionOut, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"bd", "b", "d"})
 	s = memoryPresentationText(t, r, graph.DirectionOut)
-	if strings.Count(s, "beads/a [types/policy] \"A\"") != 2 || strings.Count(s, "3 Beads, 2 Links across 2 views") != 1 || !strings.Contains(s, "For beads/a: Depth limit 0 reached at beads/a; further relationships are outside this view.") {
+	if strings.Count(s, "beads/a [policy] \"A\"") != 2 || strings.Count(s, "3 Beads, 2 Links across 2 views") != 1 || !strings.Contains(s, "For beads/a: Depth limit 0 reached at beads/a; further relationships are outside this view.") {
 		t.Fatal(s)
 	}
 }
@@ -138,10 +138,10 @@ func TestMemoryCurrentGraphParentsCyclesAndPins(t *testing.T) {
 			if !strings.Contains(s, `source revision="current"`) {
 				t.Fatal("lost pin", s)
 			}
-			if tc.name == "diamond" && !strings.Contains(s, "\n└── [types/references] (links/ac) → beads/c [types/policy] \"C\"") {
+			if tc.name == "diamond" && !strings.Contains(s, "\n└── [references] (links/ac) → beads/c [policy] \"C\"") {
 				t.Fatal("cross-link displaced root sibling", s)
 			}
-			if tc.name == "incoming" && !strings.Contains(s, "(links/ba) ← beads/b [types/policy]") {
+			if tc.name == "incoming" && !strings.Contains(s, "(links/ba) ← beads/b [policy]") {
 				t.Fatal("lost authored direction", s)
 			}
 		})
@@ -163,7 +163,7 @@ func TestMemoryCurrentGraphMixedTypesAndEscapes(t *testing.T) {
 		}
 	}
 	s := memoryPresentationText(t, r, graph.DirectionOut)
-	if !strings.Contains(s, `beads/a [types/issue] (open) "A\nRoot fake"`) || strings.Contains(s, "\x1b") || strings.Contains(s, "\u202e") || strings.Contains(s, "beads/b [types/policy] (open)") {
+	if !strings.Contains(s, `beads/a [issue] (open) "A\nRoot fake"`) || strings.Contains(s, "\x1b") || strings.Contains(s, "\u202e") || strings.Contains(s, "beads/b [policy] (open)") {
 		t.Fatal(s)
 	}
 }
@@ -235,7 +235,7 @@ func TestMemoryCurrentGraphActualFamilyLabels(t *testing.T) {
 		t.Run(typ, func(t *testing.T) {
 			r := memoryPresentationFixture(t, []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 1}}, graph.DirectionOut, genericTestEdge{"ab", "a", "b"})
 			l := r.Graph.Links[0]
-			typed, err := graph.NewLink(graph.LinkSpec{Path: l.Path(), TypeURL: genericTestScope + "types/" + typ, Revision: l.Revision(), Source: l.Source(), Target: l.Target()})
+			typed, err := graph.NewLink(graph.LinkSpec{Path: l.Path(), TypeURL: genericTestScope + typ, Revision: l.Revision(), Source: l.Source(), Target: l.Target()})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -247,7 +247,7 @@ func TestMemoryCurrentGraphActualFamilyLabels(t *testing.T) {
 				}
 			}
 			s := memoryPresentationText(t, r, graph.DirectionOut)
-			if !strings.Contains(s, "[types/"+typ+"] (links/ab) → beads/b [types/policy]") || strings.Count(s, "2 Beads, 1 Links") != 1 {
+			if !strings.Contains(s, "["+typ+"] (links/ab) → beads/b [policy]") || strings.Count(s, "2 Beads, 1 Links") != 1 {
 				t.Fatal(s)
 			}
 		})
@@ -265,7 +265,7 @@ func TestMemoryCurrentGraphKeepsRootLocalEdges(t *testing.T) {
 	roots[0].Depth, roots[1].Depth = 1, 1
 	r = memoryPresentationFixture(t, roots, graph.DirectionBoth, edges...)
 	s = memoryPresentationText(t, r, graph.DirectionBoth)
-	if strings.Count(s, "(links/ab)") != 2 || strings.Count(s, "2 Beads, 1 Links") != 1 || !strings.Contains(s, "(links/ab) → beads/b [types/policy]") || !strings.Contains(s, "(links/ab) ← beads/a [types/policy]") {
+	if strings.Count(s, "(links/ab)") != 2 || strings.Count(s, "2 Beads, 1 Links") != 1 || !strings.Contains(s, "(links/ab) → beads/b [policy]") || !strings.Contains(s, "(links/ab) ← beads/a [policy]") {
 		t.Fatalf("shared Link lost per-root placement or unique count:\n%s", s)
 	}
 }

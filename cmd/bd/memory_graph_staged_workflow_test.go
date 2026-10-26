@@ -44,11 +44,11 @@ func TestMemoryConstraintReadCLIWorkflow(t *testing.T) {
 				t.Fatalf("phase witnesses lost: %+v", root.Stages)
 			}
 			human := call("memory", "constraints", "beads/recurrence/s")
-			if strings.Count(human, "beads/recurrence/s [types/policy]") != 2 || !strings.Contains(human, "(links/recurrence/sd)") || strings.Contains(human, "(links/recurrence/ce)") || !strings.Contains(human, "Discovery: explicit Subject To declarations and their Requires dependencies") {
+			if strings.Count(human, "beads/recurrence/s [policy]") != 2 || !strings.Contains(human, "(links/recurrence/sd)") || strings.Contains(human, "(links/recurrence/ce)") || !strings.Contains(human, "Discovery: explicit Subject To declarations and their Requires dependencies") {
 				t.Fatalf("phase recurrence/scope:\n%s", human)
 			}
 			human = call("memory", "constraints", "beads/recurrence/s", "beads/recurrence/c")
-			if strings.Count(human, "Discovery: explicit Subject To declarations") != 1 || !strings.Contains(human, "beads/recurrence/s [types/policy]") || !strings.Contains(human, "beads/recurrence/c [types/specification]") {
+			if strings.Count(human, "Discovery: explicit Subject To declarations") != 1 || !strings.Contains(human, "beads/recurrence/s [policy]") || !strings.Contains(human, "beads/recurrence/c [specification]") {
 				t.Fatalf("multi-root scope attribution:\n%s", human)
 			}
 			direct := decode(call("memory", "subjects", "beads/recurrence/c", "--json"))

@@ -462,7 +462,7 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			// The human rows carry an Issue's status and priority, and the hint
 			// offers --all only while it would still help.
 			rows := human("--all")
-			for _, want := range []string{"beads/done [task] closed P2 \"Finished work\"\n", "beads/open [task] open P1 \"Open work\"\n", "beads/pin [task] pinned P3 \"Pinned note\"\n", "beads/plan [types/memory] \"Plan\"\n"} {
+			for _, want := range []string{"beads/done [task] closed P2 \"Finished work\"\n", "beads/open [task] open P1 \"Open work\"\n", "beads/pin [task] pinned P3 \"Pinned note\"\n", "beads/plan [memory] \"Plan\"\n"} {
 				if !strings.Contains(rows, want) {
 					t.Fatalf("human rows lack %q: %s", want, rows)
 				}
@@ -473,7 +473,7 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			if out := human("--limit", "1"); !strings.Contains(out, "More Beads exist; increase --limit or use --all within preview bounds.") {
 				t.Fatalf("hint without --all must offer it: %s", out)
 			}
-			if out := human(); !strings.HasPrefix(out, "Beads (2; more: false; graph preview)\n") || strings.Contains(out, "beads/done") || strings.Contains(out, "beads/pin") || !strings.Contains(out, "beads/plan [types/memory] \"Plan\"\n") {
+			if out := human(); !strings.HasPrefix(out, "Beads (2; more: false; graph preview)\n") || strings.Contains(out, "beads/done") || strings.Contains(out, "beads/pin") || !strings.Contains(out, "beads/plan [memory] \"Plan\"\n") {
 				t.Fatalf("default human list: %s", out)
 			}
 		})

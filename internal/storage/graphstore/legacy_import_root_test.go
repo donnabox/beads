@@ -91,7 +91,7 @@ func TestLegacyImportRootIdentityAndAtomicity(t *testing.T) {
 				}
 				paths[source] = selected.PrivatePath
 				issue, err := store.ShowIssue(operation(), selected.PrivatePath)
-				if err != nil || issue.ID != id || issue.Type != scope+"types/native-issue/7461736b" || issue.Properties.ID != "foo/bar/"+source {
+				if err != nil || issue.ID != id || issue.Type != scope+"task" || issue.Properties.ID != "foo/bar/"+source {
 					t.Fatalf("rooted Issue identity: %+v %v", issue, err)
 				}
 				old, err := store.ReadVersion(operation(), selected.PrivatePath, issue.Revision)
@@ -220,15 +220,14 @@ func TestLegacyImportRootAndAuthorityRefusals(t *testing.T) {
 {"id":"old-b","title":"B"}`, LegacyImportOptions{IDRoot: "external:x"}},
 				{`{"id":"old-a","title":"A"}`, LegacyImportOptions{IDRoot: strings.Repeat("r", 250)}},
 				{`{"_type":"memory","key":"a//b","value":"incompatible"}`, LegacyImportOptions{IDRoot: "root"}},
-				{`{"_type":"memory","key":"issue","value":"root creates a reserved identity"}`, LegacyImportOptions{IDRoot: "types"}},
 				{`{"id":"old-a","title":"A"}
-{"_type":"memory","key":"types/native-issue/7461736b","value":"reserved native task Type"}`, LegacyImportOptions{}},
-				{`{"id":"types/native-issue/7461736b","title":"Issue colliding with its own Type"}`, LegacyImportOptions{SourcePrefix: "types/native"}},
+{"_type":"memory","key":"task","value":"reserved native task Type"}`, LegacyImportOptions{}},
+				{`{"id":"task","title":"Issue colliding with its own Type"}`, LegacyImportOptions{SourcePrefix: "task"}},
 				{`{"id":"old-a","title":"A","dependencies":[{"depends_on_id":"old-b","type":"custom-kind"}]}
 {"id":"old-b","title":"B"}
-{"_type":"memory","key":"types/native-dependency/637573746f6d2d6b696e64","value":"prospective later dependency Type"}`, LegacyImportOptions{}},
+{"_type":"memory","key":"custom-kind","value":"prospective later dependency Type"}`, LegacyImportOptions{}},
 			}
-			for _, id := range []string{"types/issue", "types/memory", "types/dependency", "bdp.json"} {
+			for _, id := range []string{"issue", "memory", "dependency", "bdp.json"} {
 				raw, err := json.Marshal(legacyimport.Memory{Key: id, Value: "reserved"})
 				if err != nil {
 					t.Fatal(err)
@@ -259,7 +258,12 @@ func TestLegacyImportRootAndAuthorityRefusals(t *testing.T) {
 					if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(got, LegacyImportResult{}) || !reflect.DeepEqual(before, legacyImportState(t, operation(), store)) {
 						t.Fatalf("root/authority refusal leaked: %+v %v", got, err)
 					}
-					if (strings.Contains(test.input, "prospective later dependency Type") || strings.Contains(test.input, "Issue colliding with its own Type")) && !strings.Contains(err.Error(), "reserved public ID") {
+					// The flat built-in Type task cannot be an ordinary native
+					// Issue ID: importer prefix admission rejects it first.
+					if strings.Contains(test.input, "Issue colliding with its own Type") && !strings.Contains(err.Error(), "ordinary ID prefix") {
+						t.Fatalf("native ID prerequisite changed: %v", err)
+					}
+					if strings.Contains(test.input, "prospective later dependency Type") && !strings.Contains(err.Error(), "reserved public ID") {
 						t.Fatalf("prospective binding collision failed at wrong boundary: %v", err)
 					}
 					after, err := json.Marshal(input)

@@ -378,14 +378,14 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				expectedNative[strings.TrimPrefix(id, s.ScopeURL()+"types/")] = true
+				expectedNative[strings.TrimPrefix(id, s.ScopeURL())] = true
 			}
 			for _, kind := range types.WellKnownDependencyTypes() {
 				id, err := NativeDependencyTypeURL(s.ScopeURL(), string(kind))
 				if err != nil {
 					t.Fatal(err)
 				}
-				expectedNative[strings.TrimPrefix(id, s.ScopeURL()+"types/")] = true
+				expectedNative[strings.TrimPrefix(id, s.ScopeURL())] = true
 			}
 			if len(expectedNative) != 32 {
 				t.Fatalf("fixed native catalog = %d, want32", len(expectedNative))

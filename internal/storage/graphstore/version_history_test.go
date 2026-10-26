@@ -698,7 +698,7 @@ func TestVersionsOfSelectedInformationalLinks(t *testing.T) {
 			// mints a Memory version that the next write guards.
 			source := policy.Revision
 			for _, typ := range []string{s.ScopeURL() + "subject-to", s.ScopeURL() + "superseded-by"} {
-				name := strings.TrimPrefix(typ, s.ScopeURL()+"types/")
+				name := strings.TrimPrefix(typ, s.ScopeURL())
 				path := "links/" + name
 				added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: path, TypeURL: typ,
 					SourcePath: "beads/policy", TargetPath: "beads/rule", ExpectedSourceRevision: source,

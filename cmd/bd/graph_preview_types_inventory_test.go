@@ -156,8 +156,8 @@ func TestGraphTypesInventoryEmptyCatalogIsEmpty(t *testing.T) {
 	}
 }
 
-// Nominal Type selectors keep their namespace so Memory Decision cannot be
-// confused with the existing native Issue decision classification.
+// Synthetic literal segmented Type IDs retain every segment. They do not
+// assert installation of the removed Memory Decision Type.
 func TestGraphTypesInventoryKeepsNominalSelectorsAndAbstractDefinitions(t *testing.T) {
 	issue := inventoryDescriptor(t, graphstore.IssueTypeURL(typesInventoryScope), "Issue", graph.KindBead)
 	decision := inventoryDescriptor(t, typesInventoryScope+"types/decision", "Decision", graph.KindBead)

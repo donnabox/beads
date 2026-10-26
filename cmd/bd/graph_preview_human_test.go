@@ -21,7 +21,7 @@ func TestGraphHumanIdentityRowsAndDocuments(t *testing.T) {
 		t.Fatal(got)
 	}
 	link := graphstore.LinkRecord{ID: scope + "links/L", Type: scope + "references", Source: issue.ID, Target: "https://foreign.invalid/scope/beads/m", TargetRevision: "old-token", Revision: "link-token"}
-	want := "links/L [types/references] beads/work → https://foreign.invalid/scope/beads/m@=old-token"
+	want := "links/L [references] beads/work → https://foreign.invalid/scope/beads/m@=old-token"
 	if got := graphHumanRow(scope, link); got != want {
 		t.Fatal(got)
 	}

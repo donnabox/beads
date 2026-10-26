@@ -81,7 +81,7 @@ func TestSelectedMemoryRetypeRefusesInvalidIncidentLinksAtomically(t *testing.T)
 			if err != nil {
 				t.Fatal(err)
 			}
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/requires", TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/requires", TypeURL: s.ScopeURL() + "requires", SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -273,12 +273,12 @@ func TestSelectedLinkFamilyLimitsAtCommit(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/defines", TypeURL: s.ScopeURL() + "types/defines", SourcePath: "beads/a", TargetPath: "beads/c", UnconditionalSource: true}); err != nil {
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/defines", TypeURL: s.ScopeURL() + "defines", SourcePath: "beads/a", TargetPath: "beads/c", UnconditionalSource: true}); err != nil {
 				t.Fatal(err)
 			}
 			for _, bad := range []LinkCreateRequest{
-				{Path: "links/second-parent", TypeURL: s.ScopeURL() + "types/defines", SourcePath: "beads/b", TargetPath: "beads/c", UnconditionalSource: true},
-				{Path: "links/defines-cycle", TypeURL: s.ScopeURL() + "types/defines", SourcePath: "beads/c", TargetPath: "beads/a", UnconditionalSource: true},
+				{Path: "links/second-parent", TypeURL: s.ScopeURL() + "defines", SourcePath: "beads/b", TargetPath: "beads/c", UnconditionalSource: true},
+				{Path: "links/defines-cycle", TypeURL: s.ScopeURL() + "defines", SourcePath: "beads/c", TargetPath: "beads/a", UnconditionalSource: true},
 			} {
 				witness := workflowState(t, ctx, s)
 				if _, err := s.AddInformationalLink(ctx, bad); !errors.Is(err, storage.ErrValidation) {
@@ -290,7 +290,7 @@ func TestSelectedLinkFamilyLimitsAtCommit(t *testing.T) {
 			}
 			// A broader Requires-family cycle is legal; Defines restrictions do
 			// not leak upward into every Requires Link.
-			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/requires-back", TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/c", TargetPath: "beads/a", UnconditionalSource: true}); err != nil {
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/requires-back", TypeURL: s.ScopeURL() + "requires", SourcePath: "beads/c", TargetPath: "beads/a", UnconditionalSource: true}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/replacement", TypeURL: s.ScopeURL() + "superseded-by", SourcePath: "beads/a", TargetPath: "beads/b", UnconditionalSource: true}); err != nil {

@@ -111,7 +111,7 @@ func TestMemoryGraphInstalledWorkflow(t *testing.T) {
 					t.Fatalf("quiet %s wrote output: %s", format, output)
 				}
 			}
-			if !strings.Contains(human, "[types/references]") || !strings.HasPrefix(human, "a [task]") || !strings.Contains(human, "(ab)") || strings.Contains(human, scope) {
+			if !strings.Contains(human, "[references]") || !strings.HasPrefix(human, "a [task]") || !strings.Contains(human, "(ab)") || strings.Contains(human, scope) {
 				t.Fatalf("literal created IDs lost or Scope prefix retained:\n%s", human)
 			}
 			legacy("link", "create", "b", "d", "--type", "superseded-by", "--id", "retirement")

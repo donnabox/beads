@@ -90,7 +90,7 @@ func TestGraphPreviewSelectedTypeKeepsNativeDecisionClassification(t *testing.T)
 
 func TestGraphPreviewSelectedCreatePreservesCompleteProperties(t *testing.T) {
 	input := `{"title":"Exact subjects","body":"Original","subjects":[{"uri":"https://example.invalid/beads/a","revision":"one"}],"extra":{"null":null,"items":[1,true,"雪"]}}`
-	cmd := graphCreateTypeCommand(t, []string{"--type=types/evaluation", "--properties=" + input})
+	cmd := graphCreateTypeCommand(t, []string{"--type=evaluation", "--properties=" + input})
 	raw, err := graphPreviewCreateMemoryPropertiesJSON(cmd, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -116,7 +116,7 @@ func TestGraphPreviewSelectedCreatePreservesCompleteProperties(t *testing.T) {
 		}
 	}
 	for _, invalid := range []string{`{"title":"Good","body":null}`, `{"title":"Good","body":3}`, `{"title":"One","title":"Two"}`} {
-		cmd := graphCreateTypeCommand(t, []string{"--type=types/evaluation", "--properties=" + invalid})
+		cmd := graphCreateTypeCommand(t, []string{"--type=evaluation", "--properties=" + invalid})
 		if _, err := graphPreviewCreateMemoryPropertiesJSON(cmd, nil); err == nil {
 			t.Fatalf("invalid complete input admitted: %s", invalid)
 		}
@@ -129,11 +129,11 @@ func TestGraphPreviewSelectedTypeFlowsIntoOrderedPatch(t *testing.T) {
 	t.Cleanup(func() { graphPreviewConfig = previous })
 	cmd := memoryPropertiesPatchCommand(t)
 	cmd.Flags().String("type", "", "")
-	if err := cmd.ParseFlags([]string{"--type=types/policy", `--patch=[{"op":"add","path":"/extra","value":true}]`}); err != nil {
+	if err := cmd.ParseFlags([]string{"--type=policy", `--patch=[{"op":"add","path":"/extra","value":true}]`}); err != nil {
 		t.Fatal(err)
 	}
 	request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, "beads/a")
-	if err != nil || request.TypeURL != typesInventoryScope+"types/policy" || !strings.Contains(string(request.Patch), "extra") {
+	if err != nil || request.TypeURL != typesInventoryScope+"policy" || !strings.Contains(string(request.Patch), "extra") {
 		t.Fatalf("retype/patch request lost intent: %+v %v", request, err)
 	}
 }
@@ -193,7 +193,7 @@ func TestGraphPreviewSelectedGenericProjectionUsesInstalledRefinements(t *testin
 	snapshot := genericTestSnapshot(t, genericTestEdge{"ab", "a", "b"})
 	snapshot.Types = selectedTypeTestDescriptors(t, genericTestScope)
 	record := snapshot.Records[0].(graphstore.Record)
-	record.Type = genericTestScope + "types/policy"
+	record.Type = genericTestScope + "policy"
 	snapshot.Records[0] = record
 	got, err := projectGraphGeneric(snapshot, genericTestScope, genericTestInput("a", "out", 1))
 	if err != nil || len(got.Nodes) != 2 || got.Nodes[0].Type != record.Type {

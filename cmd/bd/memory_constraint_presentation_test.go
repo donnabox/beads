@@ -31,7 +31,7 @@ func constraintPresentationFixture(t *testing.T, edges ...[4]string) memoryPrese
 		if err != nil {
 			t.Fatal(err)
 		}
-		l, err := graph.NewLink(graph.LinkSpec{Path: "links/" + e[0], TypeURL: genericTestScope + "types/" + e[1], Source: src, Target: dst, Revision: rev})
+		l, err := graph.NewLink(graph.LinkSpec{Path: "links/" + e[0], TypeURL: genericTestScope + e[1], Source: src, Target: dst, Revision: rev})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -53,7 +53,7 @@ func constraintPresentationFamily(_ context.Context, typ string) (bool, error) {
 	return typ == genericTestScope+"subject-to", nil
 }
 func constraintPresentationRequires(_ context.Context, typ string) (bool, error) {
-	return typ == genericTestScope+"types/requires" || typ == genericTestScope+"types/defines", nil
+	return typ == genericTestScope+"requires" || typ == genericTestScope+"defines", nil
 }
 func constraintPresentationRead(t *testing.T, roots []memoryquery.ConstraintRoot, edges ...[4]string) graphstore.CurrentConstraintsRead {
 	t.Helper()
@@ -77,7 +77,7 @@ func TestMemoryConstraintsPhaseOccurrences(t *testing.T) {
 	r := constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: 4}}, edges...)
 	before := fmt.Sprintf("%#v", r)
 	s := constraintPresentationText(t, r)
-	if strings.Count(s, `beads/a [types/constraint] "A"`) != 2 || !strings.Contains(s, "\n    └── [types/requires] (links/ba) → beads/a [types/constraint] \"A\"") || !strings.Contains(s, "\n        └── [types/requires] (links/ad) → beads/d [types/constraint]") || strings.Contains(s, "(links/sde)") || strings.Contains(s, "(cycle)") {
+	if strings.Count(s, `beads/a [constraint] "A"`) != 2 || !strings.Contains(s, "\n    └── [requires] (links/ba) → beads/a [constraint] \"A\"") || !strings.Contains(s, "\n        └── [requires] (links/ad) → beads/d [constraint]") || strings.Contains(s, "(links/sde)") || strings.Contains(s, "(cycle)") {
 		t.Fatalf("phase1 root stole phase2 expansion or union invented a cycle:\n%s", s)
 	}
 	if !strings.Contains(s, "3 Beads, 3 Links across 1 views") || before != fmt.Sprintf("%#v", r) {
@@ -120,10 +120,10 @@ func TestMemoryConstraintsSeedAnchorsAndCycles(t *testing.T) {
 			if strings.Count(s, "(cycle)") != tc.cycles || !strings.Contains(s, `source revision="current"`) {
 				t.Fatal(s)
 			}
-			if tc.name == "multiple-seeds" && (!strings.Contains(s, "\n└── [types/subject-to] (links/sac) → beads/c [types/constraint] \"C\"") || !strings.Contains(s, "[types/requires] (links/bc) → beads/c [types/constraint] (shown elsewhere)") || !strings.Contains(s, "\n    └── [types/defines] (links/cd) → beads/d [types/constraint]")) {
+			if tc.name == "multiple-seeds" && (!strings.Contains(s, "\n└── [subject-to] (links/sac) → beads/c [constraint] \"C\"") || !strings.Contains(s, "[requires] (links/bc) → beads/c [constraint] (shown elsewhere)") || !strings.Contains(s, "\n    └── [defines] (links/cd) → beads/d [constraint]")) {
 				t.Fatalf("cross-seed edge displaced anchor:\n%s", s)
 			}
-			if tc.name == "self-subject-entry" && strings.Count(s, `beads/a [types/constraint] "A"`) != 2 {
+			if tc.name == "self-subject-entry" && strings.Count(s, `beads/a [constraint] "A"`) != 2 {
 				t.Fatal("phase2 self entry collapsed", s)
 			}
 			for i, j := 0, len(tc.edges)-1; i < j; i, j = i+1, j-1 {
@@ -140,7 +140,7 @@ func TestMemoryConstraintsSeedAnchorsAndCycles(t *testing.T) {
 func TestMemoryConstraintsIndependentSlotsAndBudget(t *testing.T) {
 	r := constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: 0}, {Path: "beads/a", RequiresDepth: 2}, {Path: "beads/e", RequiresDepth: 1}}, [4]string{"sab", "subject-to", "a", "b"}, [4]string{"ba", "requires", "b", "a"}, [4]string{"ad", "requires", "a", "d"})
 	s := constraintPresentationText(t, r)
-	if strings.Count(s, "(links/sab)") != 2 || strings.Count(s, "(links/ba)") != 1 || strings.Count(s, "(links/ad)") != 1 || !strings.Contains(s, "4 Beads, 3 Links across 3 views") || !strings.Contains(s, `beads/e [types/constraint] "E"`) {
+	if strings.Count(s, "(links/sab)") != 2 || strings.Count(s, "(links/ba)") != 1 || strings.Count(s, "(links/ad)") != 1 || !strings.Contains(s, "4 Beads, 3 Links across 3 views") || !strings.Contains(s, `beads/e [constraint] "E"`) {
 		t.Fatal(s)
 	}
 	for _, budget := range []int{1, len(s) / 2, len(s) - 1} {
@@ -214,10 +214,10 @@ func TestMemorySubjectsFixedDirectScope(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(s, "[types/subject-to] (links/ab) ← beads/a [types/constraint]") || !strings.Contains(s, "No explicitly declared subjects.") || strings.Contains(s, "complete:") || strings.Contains(s, "frontier:") || strings.Contains(s, "depth") || strings.Contains(s, "bound") || strings.Contains(s, "(links/ca)") || strings.Contains(s, "(links/ac)") || !strings.Contains(s, "5 Beads, 4 Links across 3 views") {
+	if !strings.Contains(s, "[subject-to] (links/ab) ← beads/a [constraint]") || !strings.Contains(s, "No explicitly declared subjects.") || strings.Contains(s, "complete:") || strings.Contains(s, "frontier:") || strings.Contains(s, "depth") || strings.Contains(s, "bound") || strings.Contains(s, "(links/ca)") || strings.Contains(s, "(links/ac)") || !strings.Contains(s, "5 Beads, 4 Links across 3 views") {
 		t.Fatal(s)
 	}
-	if strings.Count(s, "(links/parallel)") != 1 || !strings.Contains(s, `beads/e [types/constraint] "E"`) {
+	if strings.Count(s, "(links/parallel)") != 1 || !strings.Contains(s, `beads/e [constraint] "E"`) {
 		t.Fatal(s)
 	}
 	if got, err := renderMemorySubjectsGraph(read, genericTestScope, len(s)); err != nil || got != s {
@@ -235,7 +235,7 @@ func TestMemorySubjectsFixedDirectScope(t *testing.T) {
 func TestMemoryConstraintEmptyDeclarationsAreExplicit(t *testing.T) {
 	constraints := constraintPresentationRead(t, []memoryquery.ConstraintRoot{{Path: "beads/a", RequiresDepth: 5}})
 	text := constraintPresentationText(t, constraints)
-	if !strings.Contains(text, "beads/a [types/constraint]") || !strings.Contains(text, "No explicitly declared constraints.") || !strings.Contains(text, "1 Beads, 0 Links across 1 views") {
+	if !strings.Contains(text, "beads/a [constraint]") || !strings.Contains(text, "No explicitly declared constraints.") || !strings.Contains(text, "1 Beads, 0 Links across 1 views") {
 		t.Fatal(text)
 	}
 	fixture := constraintPresentationFixture(t)
@@ -410,7 +410,7 @@ func TestMemorySubjectsSelfDeclarationAndStrayNode(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(s, "[types/subject-to] (links/self) ← beads/a [types/constraint] (shown elsewhere) (cycle)") || strings.Count(s, "(links/self)") != 1 || strings.Contains(s, "complete:") || strings.Contains(s, "frontier:") {
+	if !strings.Contains(s, "[subject-to] (links/self) ← beads/a [constraint] (shown elsewhere) (cycle)") || strings.Count(s, "(links/self)") != 1 || strings.Contains(s, "complete:") || strings.Contains(s, "frontier:") {
 		t.Fatal(s)
 	}
 	n := memoryquery.CurrentNode{Path: "beads/e", TypeURL: genericTestScope + "constraint", Version: "current"}

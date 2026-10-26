@@ -34,7 +34,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 			}
 			inventory := graphMixedResult[graphTypeInventory](t, call("types"))
 			// Native concrete declarations extend the inventory; the fixed
-			// selected catalog must still contain its original ten per Kind.
+			// selected catalog must still contain its selected eight Bead and ten Link declarations.
 			baseCount := func(descriptors []json.RawMessage, nativeBase string) int {
 				t.Helper()
 				count := 0
@@ -57,7 +57,7 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 				}
 				return count
 			}
-			if beads, links := baseCount(inventory.BeadTypes, graphstore.IssueTypeURL(scope)), baseCount(inventory.LinkTypes, graphstore.DependencyTypeURL(scope)); beads != 10 || links != 10 {
+			if beads, links := baseCount(inventory.BeadTypes, graphstore.IssueTypeURL(scope)), baseCount(inventory.LinkTypes, graphstore.DependencyTypeURL(scope)); beads != 8 || links != 10 {
 				t.Fatalf("selected catalog not installed: BeadTypes=%d LinkTypes=%d", beads, links)
 			}
 			for _, descriptor := range append(inventory.BeadTypes, inventory.LinkTypes...) {
@@ -131,10 +131,12 @@ func TestGraphPreviewSelectedTypesWorkflow(t *testing.T) {
 				t.Fatal("abstract Type was instantiated")
 			}
 			for _, intrinsic := range []string{"Type", "BeadType", "LinkType", "ConformsTo", "Refines"} {
-				refuse("invalid_selector", "list", "--type", "types/"+intrinsic, "--format", "records-json")
+				refuse("capability_unavailable", "list", "--type", intrinsic, "--format", "records-json")
 			}
 			for _, removed := range []string{"preview-memory", "example-cites", "example-follows"} {
-				refuse("capability_unavailable", "create", "Removed", "--type", "types/"+removed)
+				// Whole literal IDs have no deprecated-prefix alias. The native
+				// admission path refuses these unconfigured classifications.
+				refuse("invalid_properties", "create", "Removed", "--type", "types/"+removed)
 			}
 			decision := graphMixedResult[graphstore.IssueRecord](t, call("create", "Native decision", "--graph-path", "beads/decision", "--type", "decision"))
 			nativeDecisionType, err := graphstore.NativeIssueTypeURL(scope, "decision")
@@ -349,6 +351,54 @@ func TestGraphPreviewFlatTypeIdentityWorkflow(t *testing.T) {
 					t.Fatalf("nonexistent flag admitted: %v exit%d %s", args, exit, stderr)
 				}
 			}
+		})
+	}
+}
+
+func TestGraphPreviewNativeIssueAliasParity(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			const scope = "https://example.invalid/alias-parity/"
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			for _, alias := range []struct{ raw, name string }{{"feat", "feature"}, {"adr", "decision"}} {
+				created := graphMixedResult[graphstore.IssueRecord](t, call("create", "Alias parity", "--type", alias.raw))
+				if created.Type != scope+alias.name {
+					t.Fatalf("alias %s create Type %s", alias.raw, created.Type)
+				}
+				shown := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--format", "graph-json"))
+				if shown.Type != created.Type {
+					t.Fatalf("alias %s show Type %s", alias.raw, shown.Type)
+				}
+				for _, literal := range []string{scope + alias.raw, "types/" + alias.raw} {
+					graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "list", "--type", literal, "--format", "records-json", "--json")
+				}
+				for _, flag := range []string{"--type", "--exact-type"} {
+					page := graphMixedResult[struct{ Items []graphstore.IssueRecord }](t, call("list", flag, alias.raw, "--format", "records-json", "--all"))
+					found := false
+					for _, item := range page.Items {
+						if item.ID == created.ID && item.Type == created.Type {
+							found = true
+						}
+					}
+					if !found {
+						t.Fatalf("alias %s %s list lost created Issue", alias.raw, flag)
+					}
+					var count struct{ Count int }
+					if err := json.Unmarshal([]byte(call("count", flag, alias.raw)), &count); err != nil || count.Count != len(page.Items) {
+						t.Fatalf("alias %s count/list disagreement: %+v %v", alias.raw, count, err)
+					}
+				}
+				updated := graphMixedResult[graphstore.IssueMutationResult](t, call("update", created.ID, "--type", alias.raw))
+				if updated.Issue.Type != created.Type {
+					t.Fatalf("alias %s update Type %s", alias.raw, updated.Issue.Type)
+				}
+			}
+
 		})
 	}
 }

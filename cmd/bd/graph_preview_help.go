@@ -93,7 +93,7 @@ To refuse any previously allocated ID, add --create-only with --id. With
 --create-only, --type NAME selects an installed Memory refinement;
 otherwise creation uses plain Memory. Existing retyping uses bd update.
 To require an existing Memory, keep using --update instead of --id:
-  bd remember 'Revised policy' --id policy
+  bd remember 'Revised policy' --id policy-note
   bd remember 'Revised policy' --update policy
   bd remember --update policy --title 'New title'
 --update retains literal Memory-ID semantics, including raw @; it does not

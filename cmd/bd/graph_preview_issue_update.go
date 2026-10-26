@@ -469,13 +469,6 @@ func graphPreviewNativeIssueTypeFlag(cmd *cobra.Command, scope string) (string, 
 		return "", nil
 	}
 	raw, _ := cmd.Flags().GetString("type")
-	if !graphPreviewNominalSelector(raw) {
-		classification := types.IssueType(raw).Normalize()
-		if classification.IsBuiltIn() {
-			return graphstore.NativeIssueTypeURL(scope, string(classification))
-		}
-	}
-
 	id, err := graphPreviewCollectionTypeURL(scope, raw, false)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)

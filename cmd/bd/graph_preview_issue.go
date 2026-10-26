@@ -457,13 +457,6 @@ func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error
 	if selector == "" {
 		return "", graphFailure("invalid_selector", "--type requires a value", 2)
 	}
-	if !graphPreviewNominalSelector(selector) {
-		classification := types.IssueType(selector).Normalize()
-		if classification.IsBuiltIn() {
-			return graphstore.NativeIssueTypeURL(scope, string(classification))
-		}
-	}
-
 	typeURL, err := graphPreviewCollectionTypeURL(scope, selector, false)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)

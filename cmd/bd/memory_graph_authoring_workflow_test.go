@@ -118,7 +118,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("repeated supersede revised source")
 			}
 			parent := create("defines", "b", "c", "--id=definition")
-			if parent.Link.Type != scope+"types/defines" || parent.Source.ID != scope+"b" || len(parent.ReplacedSource) == 0 {
+			if parent.Link.Type != scope+"defines" || parent.Source.ID != scope+"b" || len(parent.ReplacedSource) == 0 {
 				t.Fatal(parent)
 			}
 			beforeC := snapshot("c")
@@ -130,7 +130,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			}
 			// A cycle with a Requires edge is legal; only the Defines subgraph is a tree.
 			required := create("requires", "c", "b", "--id=mixed-requirement")
-			if required.Link.Type != scope+"types/requires" {
+			if required.Link.Type != scope+"requires" {
 				t.Fatal(required)
 			}
 			governed := create("subject-to", native.ID, "b", "--id=issue-rule")
@@ -179,7 +179,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			// operation result, and quiet success never suppresses explicit JSON.
 			human := call("memory", "reference", "d", "--to=b", "--id=human-link")
 			t.Logf("ACTUAL_EXAMPLE provider=%s args=%q output=%s", engine, []string{"memory", "reference", "d", "--to=b", "--id=human-link"}, human)
-			if strings.TrimSpace(human) != "human-link [types/references] d → b" {
+			if strings.TrimSpace(human) != "human-link [references] d → b" {
 				t.Fatalf("human confirmation lost Link identity: %s", human)
 			}
 			var raw memoryAuthoredLink

@@ -92,7 +92,7 @@ func exerciseCurrentConstraintReads(t *testing.T, s *Store) {
 			if string(r.Metadata) != `{"keep":"link"}` || r.Attribution.Actor != "family-author" || r.Properties["body"] != "evidence" {
 				t.Fatal("Link fields lost", r)
 			}
-			if r.ID == s.ScopeURL()+"links/defab" && r.Type != s.ScopeURL()+"types/defines" {
+			if r.ID == s.ScopeURL()+"links/defab" && r.Type != s.ScopeURL()+"defines" {
 				t.Fatal("declared Type erased", r)
 			}
 		}
