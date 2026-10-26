@@ -79,7 +79,8 @@ and do not recreate source history. Blank lines are ignored. Other schema versio
 | Source history | Ordinary export contains no retained revisions, events or Dolt history. Each imported Bead and Link starts new retained graph history. Initial Issue/Memory writes name the importing actor; Link attribution carries the source dependency creator and timestamp when supplied; otherwise it uses the importing actor and import time. Earlier source history is neither reconstructed nor advertised as preserved. |
 | Compound lineage | Nonempty `bonded_from`, `source_formula` and `source_location` refuse because ordinary storage does not persist them. |
 | Ephemeral, no-history, live leases and explicit storage-class markers | Refused (including an explicit `versioned` marker that the ordinary writer normalizes away). Import does not recreate active claims or change storage planes. |
-| Tombstones, graph records and unknown fields | Refused. This stage imports the existing format only. Graph-format import follows graph export. |
+| Tombstones and graph records | Refused. This conversion imports the existing ordinary format only. Graph-format import is separate. |
+| Unrecognized fields | Refused by default. Explicit `--ignore-unknown-fields` can discard only unrecognized fields, with bounded field paths and counts on stderr. Known unsupported data and malformed input still refuse. |
 
 Admission rejects input above 16 MiB, JSON deeper than 128 levels, and more than
 1,000 total Beads and Links or 1,000 total comments. The comment ceiling is separate from the Bead/Link count. These are rejection ceilings, not guaranteed accepted
@@ -136,5 +137,47 @@ Results include `id_root`, `source_issue_prefix` and the effective `issue_prefix
 A successful dry-run reserves nothing. Only source-derived Issue and Memory
 mapping is stable across dry-run and apply; new Link IDs and revision tokens
 remain provisional. A collision or compatibility refusal leaves the whole
-package unapplied. Unrecognized fields and known unsupported data fail by
-default; no ignore-fields flag is provided by this candidate.
+package unapplied.
+
+## Explicitly discarding unknown fields
+
+Use this option only when you have reviewed the fields a newer ordinary producer
+added and accept losing them:
+
+```bash
+bd import old-issues.jsonl --ignore-unknown-fields --dry-run --json
+bd import old-issues.jsonl --ignore-unknown-fields --json
+```
+
+The default remains strict. This option discards unrecognized fields in ordinary
+Issue, dependency, comment and key/value Memory records. Arbitrary Issue metadata
+keys and their values are preserved. Known fields are still validated and known
+unsupported data still refuses the whole package, including live leases,
+ephemeral state, lineage, unsupported relationship payloads and identity
+collisions. Malformed known values always refuse. Invalid JSON, UTF-8,
+duplicate keys and excessive nesting refuse even inside a field that would
+otherwise be discarded.
+Schema headers and record kinds remain strict; unknown header provenance,
+reserved graph Resource/package fields and case aliases are never discarded.
+This option cannot convert a graph package into legacy Issues. Detail/list
+completeness markers such as `comments_omitted` refuse even when `false`; those
+projections are not the ordinary export record family.
+
+Warnings go to stderr even with `--json`; stdout keeps its normal result format.
+Warnings name paths and occurrence counts without source values or record IDs.
+Array elements share a path. An unknown object counts once for its containing
+field. Up to 32 distinct paths are displayed in sorted order; each path component
+is limited to 64 UTF-8 bytes and encoded with ASCII JSON escapes, so terminal
+controls cannot alter the warning. Truncation notices include a stable short
+full-path digest to distinguish names sharing the same prefix. The warning
+reports the original distinct-path total and occurrence counts, including omitted
+paths. Warnings describe
+parsing only: they do not mean the destination admitted or committed anything.
+The complete source must parse before warnings are emitted. If a warning cannot
+be written, the command reports `output_error` (exit 5), stops before storage
+admission, and imports nothing.
+
+The flag belongs only to legacy conversion into a graph workspace. Supplying it
+outside graph mode refuses before opening ordinary storage, including explicit
+`--ignore-unknown-fields=false`. In graph conversion, explicit `false` keeps the
+strict default. Ordinary dependency-workspace import behavior is unchanged.
