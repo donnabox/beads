@@ -175,17 +175,17 @@ func TestGraphRelationshipTreeHumanTypeLabels(t *testing.T) {
 	if before != fmt.Sprintf("%#v", r) {
 		t.Fatal("human Type labels mutated canonical selection")
 	}
-	// The shared Type helper already escapes display text. Applying the tree's
-	// data escaper again would double the backslash in this one-line label.
-	escaped, err := graphstore.NativeIssueTypeURL(genericTestScope, "label\nline")
+	// Human labels retain canonical percent escapes as identity data. They must
+	// neither decode the native label nor escape the canonical percent again.
+	escaped, err := graphstore.NativeIssueTypeURL(genericTestScope, "label%line")
 	if err != nil {
 		t.Fatal(err)
 	}
 	r = graphTreeTestResult("a", "out", []string{"a"})
 	r.Nodes[0].Type = escaped
 	text = graphTreeTestText(t, r)
-	if !strings.Contains(text, `[label\nline]`) || strings.Contains(text, `[label\\nline]`) {
-		t.Fatalf("shared Type display was escaped twice: %q", text)
+	if !strings.Contains(text, `[label%25line]`) || strings.Contains(text, `[label%2525line]`) {
+		t.Fatalf("canonical Type identity changed during display: %q", text)
 	}
 }
 

@@ -279,7 +279,7 @@ func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
 				hint := "use an informational Link Type for Memory endpoints"
 				if depType == types.DepSupersedes {
-					hint = "use informational Link Type superseded-by for Memory succession"
+					hint = "use Link Type superseded-by for Memory succession"
 				}
 				return nil, "", fmt.Errorf("native %s Dependency requires two live Issues; %s: %w", depType, hint, err)
 			}

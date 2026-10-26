@@ -184,8 +184,11 @@ func TestGraphPreviewPositionalLinkPreservesShippingKinds(t *testing.T) {
 			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "link", "create", "blocked-by-source", "blocked-by-target", "--type", "my-own-kind", "--json")
 			for _, kind := range []string{"", strings.Repeat("x", 33)} {
 				graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "blocked-by-source", "blocked-by-target", "--type", kind, "--json")
-				graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "list", "--type", kind, "--json")
 			}
+			graphPatchProcess(t, bd, work, home, nil, "invalid_selector", 90*time.Second, "link", "list", "--type", "", "--json")
+			// A well-formed complete collection Type ID is not a raw native
+			// classification; its independent installed-Type admission refuses.
+			graphPatchProcess(t, bd, work, home, nil, "capability_unavailable", 90*time.Second, "link", "list", "--type", strings.Repeat("x", 33), "--json")
 		})
 	}
 }

@@ -162,11 +162,11 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			}
 
 			// Native Dependency kinds are Issue-only. A Memory successor uses
-			// the informational superseded-by Type, not native supersedes.
+			// Link Type superseded-by for Memory succession, not native supersedes.
 			planBefore, workBefore := call("show", scope+"beads/plan"), call("show", scope+"work")
 			for _, kind := range []struct{ selected, hint string }{
 				{"blocks", "native blocks Dependency requires two live Issues; use an informational Link Type for Memory endpoints: "},
-				{"supersedes", "native supersedes Dependency requires two live Issues; use informational Link Type types/superseded-by for Memory succession: "},
+				{"supersedes", "native supersedes Dependency requires two live Issues; use Link Type superseded-by for Memory succession: "},
 			} {
 				for _, endpoints := range [][2]string{{scope + "beads/plan", scope + "work"}, {scope + "work", scope + "beads/plan"}} {
 					stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", kind.selected, "--json")
