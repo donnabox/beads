@@ -38,17 +38,25 @@ type Batch struct {
 
 // Parse refuses unknown fields so newer or graph vocabulary cannot be lost.
 func Parse(r io.Reader) (Batch, error) {
+	batch, _, err := ParseWithOptions(r, Options{})
+	return batch, err
+}
+
+// ParseWithOptions optionally discards unknown legacy fields. Reports describe
+// parsing only, never storage admission. Failure returns no batch or report.
+func ParseWithOptions(r io.Reader, options Options) (Batch, Report, error) {
 	data, err := io.ReadAll(io.LimitReader(r, MaxBytes+1))
 	if err != nil {
-		return Batch{}, err
+		return Batch{}, Report{}, err
 	}
 	if len(data) > MaxBytes {
-		return Batch{}, fmt.Errorf("%w: legacy import exceeds %d bytes", ErrLimitExceeded, MaxBytes)
+		return Batch{}, Report{}, fmt.Errorf("%w: legacy import exceeds %d bytes", ErrLimitExceeded, MaxBytes)
 	}
 	if !utf8.Valid(data) {
-		return Batch{}, fmt.Errorf("legacy import must be UTF-8")
+		return Batch{}, Report{}, fmt.Errorf("legacy import must be UTF-8")
 	}
 	var result Batch
+	ignored := ignoredFields{}
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 	scanner.Buffer(make([]byte, 4096), MaxBytes+1)
 	for line := 1; scanner.Scan(); line++ {
@@ -56,14 +64,17 @@ func Parse(r io.Reader) (Batch, error) {
 		if len(raw) == 0 {
 			continue
 		}
-		if err := parseLine(raw, &result); err != nil {
-			return Batch{}, fmt.Errorf("legacy import line %d: %w", line, err)
+		if err := parseLine(raw, &result, options, ignored); err != nil {
+			return Batch{}, Report{}, fmt.Errorf("legacy import line %d: %w", line, err)
 		}
 	}
-	return result, scanner.Err()
+	if err := scanner.Err(); err != nil {
+		return Batch{}, Report{}, err
+	}
+	return result, ignored.report(), nil
 }
 
-func parseLine(raw []byte, result *Batch) error {
+func parseLine(raw []byte, result *Batch, options Options, ignored ignoredFields) error {
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.UseNumber()
 	if err := uniqueKeys(decoder, raw, 0); err != nil {
@@ -109,6 +120,12 @@ func parseLine(raw []byte, result *Batch) error {
 		if err != nil {
 			return err
 		}
+		if options.IgnoreUnknownFields {
+			body, err = discardUnknownFields(body, reflect.TypeOf(Memory{}), []string{"memory"}, ignored)
+			if err != nil {
+				return err
+			}
+		}
 		var memory Memory
 		if err := strictDecode(body, &memory); err != nil {
 			return err
@@ -144,6 +161,20 @@ func parseLine(raw []byte, result *Batch) error {
 				return fmt.Errorf("%s records are unavailable in graph import", name)
 			}
 			delete(fields, name)
+		}
+	}
+	if options.IgnoreUnknownFields {
+		body, err := json.Marshal(fields)
+		if err != nil {
+			return err
+		}
+		body, err = discardUnknownFields(body, reflect.TypeOf(types.Issue{}), []string{"issue"}, ignored)
+		if err != nil {
+			return err
+		}
+		fields = nil // Unmarshal into an existing map would retain discarded keys.
+		if err := json.Unmarshal(body, &fields); err != nil {
+			return err
 		}
 	}
 	// Comment has a compatibility UnmarshalJSON for old numeric IDs. Check its
