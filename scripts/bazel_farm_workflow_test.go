@@ -274,6 +274,14 @@ func TestBazelWorkflowForkFarmInputs(t *testing.T) {
 				}
 				continue
 			}
+			if name == bazelDispatchCoverageJobName {
+				// The direct-dispatch gate always reads the event's exact source;
+				// it never checks out an authorized fork head.
+				if want := map[string]string{"persist-credentials": "false", "ref": "${{ github.sha }}"}; !reflect.DeepEqual(step.With, want) {
+					t.Errorf("dispatch gate checkout with = %v, want %v", step.With, want)
+				}
+				continue
+			}
 			checkouts++
 			want := map[string]string{"ref": bazelCheckoutRef, "persist-credentials": "false", "allow-unsafe-pr-checkout": bazelAllowUnsafeCheckout}
 			// F3: package-mcp/package-npm's detect step diffs PR_BASE_SHA
@@ -299,8 +307,8 @@ func TestBazelWorkflowForkFarmInputs(t *testing.T) {
 	// shared gascity credential). rbe's checkout (sparse) comes after its
 	// decide step, for the worker-env preflight
 	// (TestBazelRBEWorkerEnvPreflight).
-	if want := len(workflow.Jobs) - 1 - len(bazelRRCJobs); checkouts != want {
-		t.Errorf("%d checkouts in %s, want one per job excluding %s and the rrc jobs (%d)", checkouts, bazelWorkflowName, bazelRBEPrewarmJobName, want)
+	if want := len(workflow.Jobs) - 2 - len(bazelRRCJobs); checkouts != want {
+		t.Errorf("%d checkouts in %s, want one per job excluding %s and the rrc/dispatch result jobs (%d)", checkouts, bazelWorkflowName, bazelRBEPrewarmJobName, want)
 	}
 	if got := workflow.job(t, bazelRBEJobName).Steps[0].Env["FORK_FARM"]; got != bazelForkFarmValue {
 		t.Errorf("rbe FORK_FARM = %q, want %q", got, bazelForkFarmValue)

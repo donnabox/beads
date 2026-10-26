@@ -360,9 +360,10 @@ func TestBazelDoltIntIsGated(t *testing.T) {
 		}
 	}
 
-	// No job depends on it, and every member's output reads it first.
+	// No test lane depends on it; the opt-in dispatch-only result gate does.
+	// Every member's output reads it first.
 	for name, other := range workflow.Jobs {
-		if slices.Contains(other.Needs, bazelDoltIntJobName) {
+		if slices.Contains(other.Needs, bazelDoltIntJobName) && (name != bazelDispatchCoverageJobName || other.If != bazelDispatchCoverageIf) {
 			t.Errorf("job %s needs %s", name, bazelDoltIntJobName)
 		}
 	}

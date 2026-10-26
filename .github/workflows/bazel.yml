@@ -45,8 +45,11 @@
 # (rbe-fork closed) unlike the remote-only lanes: with the read-only cache
 # only what the PR changed is built and tested on the runner, and it is
 # their only PR-time integration run (no legacy job runs it on PRs). Mode
-# local (rbe=off) still skips it. Direct runs (push to main,
-# workflow_dispatch, nightly.yml's call) gate nothing. In mode remote the
+# local (rbe=off) still skips it. Push to main and nightly.yml's call
+# have no separate required-lane gate. A direct workflow_dispatch may opt into
+# cmd-dolt-required: its dispatch-only coverage gate then requires successful
+# integration and actual cmd tier results, rejecting local/skip execution.
+# In mode remote the
 # dolt-server and proxied-server tiers run as one union job, bazel-dolt-race
 # (`bazel test --config=dolt-race`), whose job.status is both the
 # bazel-doltserver and the bazel-proxied output; in every other mode
@@ -192,6 +195,11 @@ on:
     branches: [ main ]
   workflow_dispatch:
     inputs:
+      cmd-dolt-required:
+        description: "Require cmd/bd tier coverage and leave bd_test to that tier (PR selection parity)"
+        required: false
+        type: boolean
+        default: false
       rbe:
         description: "Remote execution: on (use secrets), cache (fork simulation: anonymous read-only cache) or off (local only)"
         required: true
@@ -234,10 +242,9 @@ on:
       # bazel-cmd-dolt, which runs the whole integration-tagged cmd/bd suite
       # (//cmd/bd:bd_dolt_server_test wraps the integration build's
       # bd_test), so bazel-integration leaves //cmd/bd:bd_test to it and
-      # each of those tests runs once. A boolean: on push and dispatch it is
-      # null, which is not == true, so bazel-farm.yml, nightly.yml, push and
-      # dispatch (bazel-cmd-dolt advisory there) keep bd_test in
-      # bazel-integration.
+      # each of those tests runs once. Push and callers that omit this input
+      # keep bd_test in bazel-integration. Direct dispatch defaults false too;
+      # opting in requires the dispatch-only fail-closed coverage gate below.
       cmd-dolt-required:
         description: >
           true (pr.yml only) drops //cmd/bd:bd_test from bazel-integration:
@@ -3256,3 +3263,26 @@ jobs:
           else
             gh issue create -R "$GITHUB_REPOSITORY" --label rrc-verify --title "$title" --body "$body"
           fi
+
+  # Only direct dispatches opt into this gate; workflow_call keeps pr.yml's
+  # existing required-lane gate. The dedicated job stays advisory, so read its
+  # recorded job.status, not its continue-on-error-masked needs result.
+  bazel-dispatch-coverage:
+    name: dispatch command coverage
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.cmd-dolt-required == true }}
+    needs: [rbe, bazel-integration, bazel-cmd-dolt, bazel-dolt-int]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require integration and command coverage
+        env:
+          BAZEL_RBE_MODE: ${{ needs.rbe.outputs.mode }}
+          BAZEL_RBE_ENABLED: ${{ needs.rbe.outputs.enabled }}
+          BAZEL_INTEGRATION: ${{ needs.bazel-integration.outputs.result }}
+          BAZEL_CMD_DOLT_DIRECT: ${{ needs.bazel-cmd-dolt.outputs.result }}
+          BAZEL_CMD_DOLT_COMBINED: ${{ needs.bazel-dolt-int.outputs.cmd_dolt_result }}
+        run: .github/scripts/bazel-gate.sh dispatch-cmd
