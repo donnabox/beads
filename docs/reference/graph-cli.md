@@ -184,7 +184,7 @@ Type shown in another workspace is installed in this one.
 ```sh
 bd memories --all
 bd memories 'code flow' --details
-bd recall policy
+bd recall policy-note
 bd show work --json
 bd show work --format graph-json
 bd list --all
@@ -343,17 +343,17 @@ do not produce that default-filter notice. Direction and depth still apply
 when selecting all Types.
 
 ```sh
-bd graph work --link-type References --direction out --depth 3
-bd graph work --exact-link-type References --direction out --depth 3
+bd graph work --link-type references --direction out --depth 3
+bd graph work --exact-link-type references --direction out --depth 3
 bd graph work --link-type any
-bd graph policy --link-type Requires --dot > requirements.dot
-bd graph --all --link-type References --html > graph.html
+bd graph policy-note --link-type requires --dot > requirements.dot
+bd graph --all --link-type references --html > graph.html
 ```
 
 With `--all`, only the sole Dependency-family selector (implicit or explicit
-`--link-type Dependency`) retains open native Issues, including isolates.
+`--link-type dependency`) retains open native Issues, including isolates.
 Every other selection uses matching Link endpoint components and excludes
-unrelated isolates; this includes `--exact-link-type Dependency`, which can
+unrelated isolates; this includes `--exact-link-type dependency`, which can
 include closed Issues when they are matching endpoints.
 Explicit depth/direction with `--all` refuses. A named root
 remains without matching Links. Default text and `--compact` both render a
@@ -456,7 +456,7 @@ spelling has the same behavior.
 
 ```sh
 bd remember 'Changes now land on the release branch.' --id policy-note
-bd remember --update policy --title 'Current code flow policy'
+bd remember --update policy-note --title 'Current code flow policy'
 ```
 
 `--properties JSON` initializes writable Type properties on `bd create` and
@@ -756,22 +756,24 @@ snapshots after an accepted change.
 Use `bd types` to find installed Link Types. Select a concrete nominal Type
 with `--type NAME` or its full local Type URL. `References` can connect
 a Memory to a Memory or Issue; its optional common properties are `title`,
-`body` and `status`. An explicit `--id ID` is shorthand for `--id links/ID`;
-omit it to allocate an ID. Type and endpoint identities remain fixed during
+`body` and `status`. An explicit `--id ID` preserves the whole local ID;
+`--id links/ID` explicitly selects a different, segmented ID. Omit the flag to
+allocate an ID. Type and endpoint identities remain fixed during
 a properties edit.
 
 ```sh
-bd link policy work --type references \
-  --id policy-work --properties '{"body":"work follows this policy"}' \
+bd link policy-note work --type references \
+  --id links/policy-work --properties '{"body":"work follows this policy"}' \
   --metadata '{"origin":"manual"}'
-bd link list --incident-to policy
+bd link list --incident-to policy-note
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
 bd link delete --force links/policy-work
 ```
 
-`bd link list --incident-to ID` lists current incident Links with Type first and in-Scope IDs
-relative to the Scope URL; JSON retains canonical URLs. `bd link SOURCE TARGET`
+`bd link list --incident-to ID` lists current incident Links with the Link ID
+first, followed by Type. In-Scope IDs are relative to the Scope URL; JSON
+retains canonical URLs. `bd link SOURCE TARGET`
 without `--type` is an Issue dependency shorthand. Direct References Links
 are unowned. Other selected families have source ownership: Memory owns
 Subject To and Superseded By, Constraint owns Requires, and Evaluation owns
@@ -873,10 +875,10 @@ unchanged.
 For everyday exact reads, use the stable store-local revision number:
 
 ```sh
-bd show policy@4
-bd show policy@current
-bd link create notes policy@4 --type references
-bd show policy@=84fbc901cc4c906468f97a65b6263b32
+bd show policy-note@4
+bd show policy-note@current
+bd link create notes policy-note@4 --type references
+bd show policy-note@=84fbc901cc4c906468f97a65b6263b32
 ```
 
 `ID@N` resolves a positive decimal local ordinal to the full retained token.
@@ -916,11 +918,11 @@ their chronological order.
 
 ```sh
 bd memories 'code flow' --details
-bd recall policy --revision =SAVED_TOKEN
-bd show policy --revision =SAVED_TOKEN --json
-bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --json
-bd versions policy
-bd history policy  # same listing in a graph workspace
+bd recall policy-note --revision =SAVED_TOKEN
+bd show policy-note --revision =SAVED_TOKEN --json
+bd compare policy-note --from FIRST_TOKEN --to SECOND_TOKEN --json
+bd versions policy-note
+bd history policy-note  # same listing in a graph workspace
 ```
 
 | Flag | Current use |
@@ -988,10 +990,10 @@ JSON; the command refuses the ambiguous contract choice.
 | `compare`, `link compare` | `default` (detail), `detail`, `json` |
 
 ```bash
-bd versions policy --output-format json
+bd versions policy-note --output-format json
 bd link versions links/related --output-format table
-bd versions policy --output-format json --include /change_at
-bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --output-format json
+bd versions policy-note --output-format json --include /change_at
+bd compare policy-note --from FIRST_TOKEN --to SECOND_TOKEN --output-format json
 bd link compare links/related --from FIRST_TOKEN --to SECOND_TOKEN \
   --output-format json --omit envelope
 ```
@@ -1049,12 +1051,10 @@ bd types --json
 
 All three formats use the same public visibility rules. `--details` may show
 a partial description; it does not promise a complete HTTP Type descriptor.
-In the default text, Bead Types and Link Types list their installed Type IDs
-(`issue`, `dependency`, and other `NAME` values). Separate
-Issue classifications (`task`, `bug`, and configured names) and Dependency
-kinds (`blocks`, `parent-child`, and others) remain visible under their own
-headings. Each concrete native classification has its own Scope-local Type ID and
-retains its native classification property. Configured unused Issue Types are
+In the default text, Bead Types and Link Types list their available Scope-local
+Type IDs, such as `memory`, `task`, `references` and `blocks`. Concrete native
+classifications appear under those same Resource-kind headings. Each has its
+own Type ID and retains its native classification property. Configured unused Issue Types are
 visible without installing a binding; native first use persists the checked binding. `--details` and `--json` describe installed Types.
 The Preview 3 `--json` shape has no Preview 3-to-Preview 4 compatibility
 guarantee. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
