@@ -115,13 +115,12 @@ func graphPreviewNominalTypeFlagChanged(cmd *cobra.Command) bool {
 		return false
 	}
 	selector, _ := cmd.Flags().GetString("type")
-	// A native Issue shorthand remains admitted in ordinary dependency-mode
-	// workspaces even when its flat ID is also in the graph catalog. Complete
-	// IDs and URIs keep their nominal meaning; this is only route admission.
-	if types.IssueType(selector).Normalize().IsBuiltIn() {
-		return false
-	}
-	return graphPreviewNominalSelector(selector)
+	// Ordinary workspace admission retains its explicit graph-operand boundary.
+	// Bare and other custom native classifications belong to the native domain
+	// validator, even if they coincide with a fresh graph catalog name. This
+	// check does not resolve or strip a complete Type identity.
+	return strings.HasPrefix(selector, "types/") || strings.Contains(selector, "://") ||
+		graphPreviewReservedTypeSelector(selector)
 }
 
 func graphPreviewNominalSelector(selector string) bool {
