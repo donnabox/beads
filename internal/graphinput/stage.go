@@ -10,6 +10,7 @@ import (
 	"io/fs"
 	"math"
 	"os"
+	"path/filepath"
 )
 
 var (
@@ -104,7 +105,11 @@ func stage(ctx context.Context, input io.Reader, options Options, ops fileOperat
 	if options.MaxBytes <= 0 || options.MaxBytes == math.MaxInt64 {
 		return nil, ErrInvalidLimit
 	}
-	dir, err := ops.mkdir(options.Dir)
+	parent, err := filepath.Abs(options.Dir)
+	if err != nil {
+		return nil, fmt.Errorf("resolve staging directory: %w", err)
+	}
+	dir, err := ops.mkdir(parent)
 	if err != nil {
 		return nil, fmt.Errorf("create staging directory: %w", err)
 	}
@@ -114,6 +119,9 @@ func stage(ctx context.Context, input io.Reader, options Options, ops fileOperat
 			err = errors.Join(err, s.Close())
 		}
 	}()
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	s.file, err = ops.create(dir)
 	if err != nil {
 		return nil, fmt.Errorf("create staging file: %w", err)
@@ -141,6 +149,9 @@ func stage(ctx context.Context, input io.Reader, options Options, ops fileOperat
 	s.file, err = ops.open(s.path)
 	if err != nil {
 		return nil, fmt.Errorf("open staged input: %w", err)
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
 	info, err := s.file.Stat()
 	if err != nil {

@@ -414,3 +414,82 @@ func TestStagePreservesOperationAndCleanupErrors(t *testing.T) {
 	}
 	noResidue(t, dir)
 }
+
+func TestStageRelativeParentCleanup(t *testing.T) {
+	parent := t.TempDir()
+	t.Chdir(parent)
+	s, err := Stage(context.Background(), strings.NewReader("relative"), Options{Dir: ".", MaxBytes: 8})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = s.Close() })
+	t.Chdir(t.TempDir())
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	noResidue(t, parent)
+}
+
+func TestStageNoProgressThreshold(t *testing.T) {
+	dir := t.TempDir()
+	calls := 0
+	r := readerFunc(func([]byte) (int, error) { calls++; return 0, nil })
+	if s, err := Stage(context.Background(), r, Options{Dir: dir, MaxBytes: 2}); s != nil || !errors.Is(err, io.ErrNoProgress) || calls != 100 {
+		t.Fatalf("no-progress threshold: %v %v calls=%d", s, err, calls)
+	}
+	noResidue(t, dir)
+	calls = 0
+	r = readerFunc(func(p []byte) (int, error) {
+		calls++
+		if calls > 200 {
+			return 0, io.EOF
+		}
+		if calls%100 == 0 {
+			p[0] = byte('a' + calls/100 - 1)
+			return 1, nil
+		}
+		return 0, nil
+	})
+	s, err := Stage(context.Background(), r, Options{Dir: dir, MaxBytes: 2})
+	if err != nil {
+		t.Fatal("99 empty reads followed by progress must reset the counter", err)
+	}
+	t.Cleanup(func() { _ = s.Close() })
+	got, err := io.ReadAll(s)
+	if err != nil || string(got) != "ab" || calls != 201 {
+		t.Fatalf("progress reset lost bytes: %q %v calls=%d", got, err, calls)
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	noResidue(t, dir)
+}
+
+func TestStageCancellationBeforeFilesystemSteps(t *testing.T) {
+	for _, point := range []string{"create", "stat"} {
+		t.Run(point, func(t *testing.T) {
+			dir := t.TempDir()
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			ops := diskOperations()
+			mkdir, open := ops.mkdir, ops.open
+			if point == "create" {
+				ops.mkdir = func(parent string) (string, error) { child, err := mkdir(parent); cancel(); return child, err }
+				ops.create = func(string) (stageFile, error) { t.Fatal("created file after cancellation"); return nil, nil }
+			} else {
+				ops.open = func(path string) (stageFile, error) {
+					f, err := open(path)
+					if err != nil {
+						return nil, err
+					}
+					cancel()
+					return &faultFile{stageFile: f, stat: func() (os.FileInfo, error) { t.Fatal("stat after cancellation"); return nil, nil }}, nil
+				}
+			}
+			if s, err := stage(ctx, strings.NewReader("x"), Options{Dir: dir, MaxBytes: 1}, ops); s != nil || !errors.Is(err, context.Canceled) {
+				t.Fatalf("cancellation before %s: %v %v", point, s, err)
+			}
+			noResidue(t, dir)
+		})
+	}
+}
