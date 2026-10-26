@@ -91,7 +91,7 @@ bd remember 'Keep review branches until their changes land.' --title 'Review bra
 selects an existing Issue classification. To select a nominal Bead Type,
 pass its printed `NAME` selector or full local Type URL to `--type`.
 `--properties JSON` supplies the selected Type's properties.
-The [Memory Type CLI facade](/reference/bdp/cli/memory/memory) gives
+The [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory) gives
 property, retyping and refusal details for the Preview 3 candidate.
 
 When an Issue is created without `--id`, its public ID uses the native
@@ -777,7 +777,7 @@ are unowned. Other selected families have source ownership: Memory owns
 Subject To and Superseded By, Constraint owns Requires, and Evaluation owns
 Conformance claims. The selected nominal subtypes inherit those rules.
 Changing an owned Link changes its owner; its target does not change merely
-because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/memory/memory)
+because it is linked. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for constraints and exact Evaluation subject rules.
 
 For the shipping two-operand form, `bd link BLOCKED BLOCKER --type KIND`
@@ -1057,7 +1057,7 @@ headings. Each concrete native classification has its own Scope-local Type ID an
 retains its native classification property. Configured unused Issue Types are
 visible without installing a binding; native first use persists the checked binding. `--details` and `--json` describe installed Types.
 The Preview 3 `--json` shape has no Preview 3-to-Preview 4 compatibility
-guarantee. See the [Memory Type CLI facade](/reference/bdp/cli/memory/memory)
+guarantee. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for the exact typedef source and candidate qualification boundary. Ordinary
 workspaces retain their existing Issue classification inventory.
 
