@@ -16,19 +16,18 @@ func TestGraphPreviewParseReference(t *testing.T) {
 		explicit, wrapped               bool
 	}{
 		{"bare local", "beads/plan", "beads/plan", "", false, false},
-		{"rooted colon local pin", "beads/plan:v1@r7", "beads/plan:v1", "r7", true, false},
-		{"canonical colon literal at", "https://example.test/beads/plan:v1@r7", "https://example.test/beads/plan:v1@r7", "", false, false},
-		{"local pin", "plan@r7", "plan", "r7", true, false},
+		{"rooted colon local pin", "beads/plan:v1@=r7", "beads/plan:v1", "r7", true, false},
+		{"canonical colon literal at", "https://example.test/beads/plan:v1@=r7", "https://example.test/beads/plan:v1@=r7", "", false, false},
+		{"local pin", "plan@=r7", "plan", "r7", true, false},
 		{"local current", "plan@current", "plan", "current", true, false},
-		{"local floating", "plan@unpinned", "plan", "unpinned", true, false},
 		{"raw uri userinfo", "https://user@example.test/beads/x", "https://user@example.test/beads/x", "", false, false},
 		{"raw uri path", "https://example.test/a@b", "https://example.test/a@b", "", false, false},
-		{"wrapped uri", "[https://example.test/beads/x]@r7", "https://example.test/beads/x", "r7", true, true},
+		{"wrapped uri", "[https://example.test/beads/x]@=r7", "https://example.test/beads/x", "r7", true, true},
 		{"literal local canonical URI", "https://example.test/beads/a@b", "https://example.test/beads/a@b", "", false, false},
-		{"opaque suffix containing at", "plan@r@7", "plan", "r@7", true, false},
-		{"wrapped uppercase scheme ipv6", "[HTTPS://[2001:db8::1]/beads/x]@r7", "HTTPS://[2001:db8::1]/beads/x", "r7", true, true},
-		{"wrapped mixed scheme ipv6", "[HtTpS://[2001:db8::1]/beads/x]@r7", "HtTpS://[2001:db8::1]/beads/x", "r7", true, true},
-		{"wrapped ipv6", "[https://[2001:db8::1]/beads/x]@r7", "https://[2001:db8::1]/beads/x", "r7", true, true},
+		{"opaque suffix containing at", "plan@=r@7", "plan", "r@7", true, false},
+		{"wrapped uppercase scheme ipv6", "[HTTPS://[2001:db8::1]/beads/x]@=r7", "HTTPS://[2001:db8::1]/beads/x", "r7", true, true},
+		{"wrapped mixed scheme ipv6", "[HtTpS://[2001:db8::1]/beads/x]@=r7", "HtTpS://[2001:db8::1]/beads/x", "r7", true, true},
+		{"wrapped ipv6", "[https://[2001:db8::1]/beads/x]@=r7", "https://[2001:db8::1]/beads/x", "r7", true, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := graphPreviewParseReference(tc.input)
@@ -44,15 +43,15 @@ func TestGraphPreviewParseReference(t *testing.T) {
 
 func TestGraphPreviewReferenceRefusals(t *testing.T) {
 	for _, input := range []string{
-		"", "@r7", "plan@", "[https://example.test/x]", "[https://[2001:db8::1]/x@r7",
-		"[HTTPS://[2001:db8::1]/x[y]]@r7", "[HtTpS://[2001:db8::1]/x?y=[z]]@r7",
-		"[https://example.test/x]oops@r7", "[https://example.test/x[y]]@r7", "[https://example.test/x?y=[z]]@r7", "[not-a-uri]@r7", "https://[broken/x@r7", "beads/a://b",
+		"", "plan@unpinned", "plan@r7", "@=r7", "plan@", "[https://example.test/x]", "[https://[2001:db8::1]/x@=r7",
+		"[HTTPS://[2001:db8::1]/x[y]]@=r7", "[HtTpS://[2001:db8::1]/x?y=[z]]@=r7",
+		"[https://example.test/x]oops@=r7", "[https://example.test/x[y]]@=r7", "[https://example.test/x?y=[z]]@=r7", "[not-a-uri]@=r7", "https://[broken/x@=r7", "beads/a://b",
 	} {
 		if _, err := graphPreviewParseReference(input); err == nil {
 			t.Errorf("accepted %q", input)
 		}
 	}
-	for _, input := range []string{"plan@current", "plan@unpinned", "plan@r7"} {
+	for _, input := range []string{"plan@current", "plan@4", "plan@=r7"} {
 		if _, err := graphPreviewWritableIdentity(input); err == nil {
 			t.Errorf("accepted suffixed mutation target %q", input)
 		}
@@ -73,13 +72,13 @@ func TestGraphPreviewReferenceRefusals(t *testing.T) {
 	if got, err := graphPreviewWritableIdentity("https://example.test/beads/a@b"); err != nil || got != "https://example.test/beads/a@b" {
 		t.Fatalf("canonical URL escape = %q, %v", got, err)
 	}
-	if _, err := graphPreviewReferenceWithFlag("plan@r7", "r8", true); err == nil {
+	if _, err := graphPreviewReferenceWithFlag("plan@=r7", "r8", true); err == nil {
 		t.Fatal("suffix and flag both accepted")
 	}
 	if _, err := graphPreviewReferenceWithFlag("plan", "", true); err == nil {
 		t.Fatal("empty explicit flag accepted")
 	}
-	if _, err := graphPreviewWritableIdentity("links/context@r7"); err == nil {
+	if _, err := graphPreviewWritableIdentity("links/context@=r7"); err == nil {
 		t.Fatal("historical write target accepted")
 	}
 	if got, err := graphPreviewWritableIdentity("links/context"); err != nil || got != "links/context" {
@@ -119,11 +118,11 @@ func TestGraphPreviewCanonicalLocalIDCanContainAt(t *testing.T) {
 // This decision is lexical; an existing literal-@ sibling cannot select it.
 func TestGraphPreviewColonReferencePrecedence(t *testing.T) {
 	for _, tc := range []struct{ input, identity, revision string }{
-		{"plan:v1@r7", "plan:v1", "r7"},
-		{"urn:x@y", "urn:x", "y"},
-		{"plan:v1@r@7", "plan:v1", "r@7"},
-		{"beads/plan:v1@r7", "beads/plan:v1", "r7"},
-		{"context:v1@r7", "context:v1", "r7"},
+		{"plan:v1@=r7", "plan:v1", "r7"},
+		{"urn:x@=y", "urn:x", "y"},
+		{"plan:v1@=r@7", "plan:v1", "r@7"},
+		{"beads/plan:v1@=r7", "beads/plan:v1", "r7"},
+		{"context:v1@=r7", "context:v1", "r7"},
 	} {
 		t.Run(tc.input, func(t *testing.T) {
 			got, err := graphPreviewParseReference(tc.input)
@@ -135,7 +134,7 @@ func TestGraphPreviewColonReferencePrecedence(t *testing.T) {
 			}
 		})
 	}
-	for _, identity := range []string{"plan:v1", "urn:x", "https://example.test/beads/plan:v1@r7"} {
+	for _, identity := range []string{"plan:v1", "urn:x", "https://example.test/beads/plan:v1@=r7"} {
 		if got, err := graphPreviewWritableIdentity(identity); err != nil || got != identity {
 			t.Errorf("bare identity %q = %q, %v", identity, got, err)
 		}
@@ -144,10 +143,10 @@ func TestGraphPreviewColonReferencePrecedence(t *testing.T) {
 
 func TestGraphPreviewBracketedLocatorAdmission(t *testing.T) {
 	for _, input := range []string{
-		"[urn:x@y]@r7", "[https:plan]@r7", "[https:/plan]@r7",
-		"[https:///beads/plan]@r7", "[file:///beads/plan]@r7",
-		"[ftp://example.test/beads/plan]@r7", "[//example.test/beads/plan]@r7",
-		"[https://[broken/beads/plan]@r7",
+		"[urn:x@y]@=r7", "[https:plan]@=r7", "[https:/plan]@=r7",
+		"[https:///beads/plan]@=r7", "[file:///beads/plan]@=r7",
+		"[ftp://example.test/beads/plan]@=r7", "[//example.test/beads/plan]@=r7",
+		"[https://[broken/beads/plan]@=r7",
 	} {
 		t.Run(input, func(t *testing.T) {
 			if _, err := graphPreviewParseReference(input); err == nil {
@@ -155,12 +154,12 @@ func TestGraphPreviewBracketedLocatorAdmission(t *testing.T) {
 			}
 		})
 	}
-	if _, err := graphPreviewParseReference("[urn:x@y]@r7"); err == nil || !strings.Contains(err.Error(), "canonical HTTP(S) Scope URL") {
+	if _, err := graphPreviewParseReference("[urn:x@y]@=r7"); err == nil || !strings.Contains(err.Error(), "canonical HTTP(S) Scope URL") {
 		t.Fatalf("opaque URI refusal lacks canonical Scope guidance: %v", err)
 	}
 	// Scope membership is checked downstream; parsing must preserve a foreign
 	// canonical locator verbatim rather than reinterpret it as a local ID.
-	if got, err := graphPreviewParseReference("[https://foreign.example/beads/plan]@r7"); err != nil || got.Identity != "https://foreign.example/beads/plan" || !got.Wrapped {
+	if got, err := graphPreviewParseReference("[https://foreign.example/beads/plan]@=r7"); err != nil || got.Identity != "https://foreign.example/beads/plan" || !got.Wrapped {
 		t.Fatalf("foreign locator parsing = %+v, %v", got, err)
 	}
 }

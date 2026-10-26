@@ -25,7 +25,7 @@ func TestGraphPreviewMemoryDiscoveryRendering(t *testing.T) {
 			t.Fatalf("unescaped data in human output: %q", human)
 		}
 	}
-	if !strings.Contains(human, "--version 'saved'\"'\"'quoted'") || !strings.Contains(human, "Owned Links: 2") || !strings.Contains(human, `basis="writer-supplied"`) {
+	if !strings.Contains(human, "--revision 'saved'\"'\"'quoted'") || !strings.Contains(human, "Owned Links: 2") || !strings.Contains(human, `basis="writer-supplied"`) {
 		t.Fatalf("missing exact recall or details: %s", human)
 	}
 	structured, err := renderGraphMemoryDiscovery(result, true, true)
@@ -91,7 +91,7 @@ func TestGraphPreviewMemoryDiscoveryCompactRendering(t *testing.T) {
 			t.Fatalf("missing compact content %q in %q", want, output)
 		}
 	}
-	for _, unwanted := range []string{result.Scope, "saved-version", "actor-secret", "timestamp-secret", "Attribution:", "Owned Links:", "--version", "Matched:"} {
+	for _, unwanted := range []string{result.Scope, "saved-version", "actor-secret", "timestamp-secret", "Attribution:", "Owned Links:", "--revision", "=Matched:"} {
 		if strings.Contains(output, unwanted) {
 			t.Fatalf("default output exposed details %q: %q", unwanted, output)
 		}

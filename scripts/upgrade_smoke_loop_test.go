@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/steveyegge/beads/scripts/internal/testbash"
 )
 
 func TestUpgradeSmokeMultiVersionDispatch(t *testing.T) {
@@ -105,6 +107,88 @@ fi
 			}
 			if string(got) != want.String() {
 				t.Fatalf("child dispatch = %q, want %q; output: %s", got, want.String(), out)
+			}
+		})
+	}
+}
+
+// Exercise the production consent predicate directly, without starting a
+// database or replacing a bd binary. Guidance may include arbitrarily long
+// diagnostics; finding it must not depend on an early-exiting pipeline.
+func TestUpgradeSmokeConsentGuidance(t *testing.T) {
+	bash, err := testbash.Resolve()
+	if err != nil {
+		t.Fatal(err)
+	}
+	script, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), "scripts/upgrade-smoke-test.sh"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry := strings.SplitN(string(script), "\n", 3)
+	if len(entry) < 3 || entry[0] != "#!/bin/bash" || entry[1] != "set -euo pipefail" {
+		t.Fatal("consent predicate harness requires the production Bash/pipefail entrypoint")
+	}
+	before, _, ok := strings.Cut(string(script), "; then\n        pass \"Candidate refuses un-migrated database with consent guidance\"")
+	start := strings.LastIndex(before, "\n    elif ")
+	if !ok || start < 0 {
+		t.Fatal("cannot locate production migration-consent predicate")
+	}
+	predicate := before[start+len("\n    elif "):]
+	// Verbatim guidance captured by the failed PR262 hosted smoke test.
+	const capturedGuidance = `This database is at schema v23; this bd release uses schema v72.
+bd no longer upgrades a database automatically (see the release notes).
+
+  To upgrade this database (one-way; older bd releases cannot read it):
+      bd migrate schema
+
+  To keep the current schema, keep using the bd release that created it.
+
+  Scripted/CI consent: BD_ALLOW_MIGRATE=1 bd <command>
+`
+	path := os.Getenv("PATH")
+	if runtime.GOOS == "windows" {
+		path = "/usr/bin:/bin"
+	}
+	for _, tc := range []struct {
+		name, output string
+		wantExit     int
+		withoutTools bool
+		missingFile  bool
+	}{
+		{"PR262 captured guidance", capturedGuidance, 0, false, false},
+		{"guidance before long diagnostics", "bd migrate schema\n" + strings.Repeat("diagnostic context\n", 100000), 0, false, false},
+		{"guidance after long diagnostics", strings.Repeat("diagnostic context\n", 100000) + "bd migrate schema\n", 0, false, false},
+		{"empty", "", 3, false, false},
+		{"unrelated failure", "Error: database unavailable", 3, false, false},
+		{"consent variable alone", "BD_ALLOW_MIGRATE=1", 3, false, false},
+		{"incomplete command", "bd migrate", 3, false, false},
+		{"literal backslash before guidance", "diagnostic \\c\nbd migrate schema\n", 0, false, false},
+		{"guidance without grep on PATH", capturedGuidance, 0, true, false},
+		{"missing fixture is not a no-match", "", 90, false, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			fixture := filepath.Join(t.TempDir(), "output")
+			if !tc.missingFile {
+				if err := os.WriteFile(fixture, []byte(tc.output), 0600); err != nil {
+					t.Fatal(err)
+				}
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+			defer cancel()
+			body := entry[1] + "\n[[ -f \"$1\" && -r \"$1\" ]] || exit 90\nGATE_OUT=$(<\"$1\") || exit 91\nif " + predicate + "; then exit 0; else exit 3; fi\n"
+			cmd := exec.CommandContext(ctx, bash, "--noprofile", "--norc", "-c", body, "consent-predicate", msysPath(fixture))
+			testPath := path
+			if tc.withoutTools {
+				testPath = msysPath(t.TempDir())
+			}
+			cmd.Env = []string{"PATH=" + testPath, "LC_ALL=C", "LANG=C", "ENV=", "BASH_ENV="}
+			out, err := cmd.CombinedOutput()
+			code := -1
+			if cmd.ProcessState != nil {
+				code = cmd.ProcessState.ExitCode()
+			}
+			if ctx.Err() != nil || code != tc.wantExit {
+				t.Fatalf("consent predicate exit = %d (%v), want %d: %s", code, err, tc.wantExit, out)
 			}
 		})
 	}

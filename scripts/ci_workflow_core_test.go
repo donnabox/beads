@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -124,11 +125,149 @@ func readCIWorkflow(t *testing.T, name string) ciWorkflow {
 		t.Fatal(err)
 	}
 
-	var workflow ciWorkflow
-	if err := yaml.Unmarshal(data, &workflow); err != nil {
+	workflow, err := decodeCIWorkflowForRBE(name, data, false)
+	if err != nil {
 		t.Fatalf("parse %s: %v", path, err)
 	}
 	return workflow
+}
+
+// decodeCIWorkflowForRBE keeps timeout fields typed as integers for all
+// policy tests. Only bazel-test's two reviewed mode-dependent expressions may
+// be resolved here; this is not a general GitHub expression evaluator.
+func decodeCIWorkflowForRBE(name string, data []byte, enabled bool) (ciWorkflow, error) {
+	var workflow ciWorkflow
+	if err := decodeCIWorkflowYAMLForRBE(name, data, enabled, &workflow); err != nil {
+		return ciWorkflow{}, err
+	}
+	return workflow, nil
+}
+
+// decodeCIWorkflowYAMLForRBE preserves each policy test's destination schema
+// while applying the same narrow timeout normalization before typed decoding.
+func decodeCIWorkflowYAMLForRBE(name string, data []byte, enabled bool, destination any) error {
+	var document yaml.Node
+	if err := yaml.Unmarshal(data, &document); err != nil {
+		return err
+	}
+	if name == "bazel.yml" {
+		if err := resolveBazelTestTimeouts(&document, enabled); err != nil {
+			return err
+		}
+	}
+	return document.Decode(destination)
+}
+
+func ciWorkflowMapValue(mapping *yaml.Node, key string) (*yaml.Node, error) {
+	if mapping.Kind != yaml.MappingNode {
+		return nil, fmt.Errorf("expected mapping at %q, got YAML kind %d", key, mapping.Kind)
+	}
+	var found *yaml.Node
+	for i := 0; i < len(mapping.Content); i += 2 {
+		if mapping.Content[i].Value != key {
+			continue
+		}
+		if found != nil {
+			return nil, fmt.Errorf("duplicate %q key", key)
+		}
+		found = mapping.Content[i+1]
+	}
+	if found == nil {
+		return nil, fmt.Errorf("missing %q key", key)
+	}
+	return found, nil
+}
+
+func resolveBazelTestTimeouts(document *yaml.Node, enabled bool) error {
+	if document.Kind != yaml.DocumentNode || len(document.Content) != 1 {
+		return fmt.Errorf("bazel workflow must contain one YAML document")
+	}
+	jobs, err := ciWorkflowMapValue(document.Content[0], "jobs")
+	if err != nil {
+		return err
+	}
+	job, err := ciWorkflowMapValue(jobs, "bazel-test")
+	if err != nil {
+		return err
+	}
+	jobTimeout, err := ciWorkflowMapValue(job, "timeout-minutes")
+	if err != nil {
+		return err
+	}
+	steps, err := ciWorkflowMapValue(job, "steps")
+	if err != nil {
+		return err
+	}
+	if steps.Kind != yaml.SequenceNode {
+		return fmt.Errorf("bazel-test steps must be a sequence")
+	}
+	var testStep *yaml.Node
+	for _, step := range steps.Content {
+		if step.Kind != yaml.MappingNode {
+			return fmt.Errorf("bazel-test step must be a mapping")
+		}
+		for i := 0; i < len(step.Content); i += 2 {
+			if step.Content[i].Value == "id" && step.Content[i+1].Value == "test" {
+				if testStep != nil {
+					return fmt.Errorf("duplicate bazel-test id:test step")
+				}
+				testStep = step
+			}
+		}
+	}
+	if testStep == nil {
+		return fmt.Errorf("missing bazel-test id:test step")
+	}
+	stepName, err := ciWorkflowMapValue(testStep, "name")
+	if err != nil {
+		return err
+	}
+	if stepName.Value != "bazel test //... --config=ci" {
+		return fmt.Errorf("bazel-test id:test step has unexpected name %q", stepName.Value)
+	}
+	stepTimeout, err := ciWorkflowMapValue(testStep, "timeout-minutes")
+	if err != nil {
+		return err
+	}
+	const jobExpression = "${{ needs.rbe.outputs.enabled == 'true' && 115 || 130 }}"
+	const stepExpression = "${{ needs.rbe.outputs.enabled == 'true' && 110 || 125 }}"
+	if jobTimeout.Kind != yaml.ScalarNode || jobTimeout.Value != jobExpression {
+		return fmt.Errorf("bazel-test job timeout must be exact approved expression, got %q", jobTimeout.Value)
+	}
+	if stepTimeout.Kind != yaml.ScalarNode || stepTimeout.Value != stepExpression {
+		return fmt.Errorf("bazel-test id:test timeout must be exact approved expression, got %q", stepTimeout.Value)
+	}
+	var rejectOtherTimeoutExpressions func(*yaml.Node) error
+	rejectOtherTimeoutExpressions = func(node *yaml.Node) error {
+		if node.Kind == yaml.MappingNode {
+			for i := 0; i < len(node.Content); i += 2 {
+				key, value := node.Content[i], node.Content[i+1]
+				if key.Value == "timeout-minutes" && value != jobTimeout && value != stepTimeout &&
+					(value.Kind == yaml.AliasNode || strings.Contains(value.Value, "${{")) {
+					return fmt.Errorf("unexpected timeout expression or alias at line %d", value.Line)
+				}
+			}
+		}
+		for _, child := range node.Content {
+			if err := rejectOtherTimeoutExpressions(child); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	if err := rejectOtherTimeoutExpressions(document); err != nil {
+		return err
+	}
+	jobMinutes, stepMinutes := 130, 125
+	if enabled {
+		jobMinutes, stepMinutes = 115, 110
+	}
+	for node, minutes := range map[*yaml.Node]int{jobTimeout: jobMinutes, stepTimeout: stepMinutes} {
+		node.Value = strconv.Itoa(minutes)
+		node.Tag = "!!int"
+		node.Style = 0
+	}
+	return nil
 }
 
 func (workflow ciWorkflow) job(t *testing.T, name string) ciWorkflowJob {

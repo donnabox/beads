@@ -66,3 +66,28 @@ func TestGraphModeAbsentConfigPreservesLegacyDefault(t *testing.T) {
 		t.Fatalf("absent config mode = %q, %v", mode, err)
 	}
 }
+
+func TestGraphAssessmentAvailabilityRoundTrip(t *testing.T) {
+	for _, value := range []string{"", `,"graph_assessments_enabled":false`, `,"graph_assessments_enabled":true`} {
+		dir := t.TempDir()
+		input := `{"backend":"dolt","graph_mode":"link"` + value + `}`
+		if err := os.WriteFile(filepath.Join(dir, ConfigFileName), []byte(input), 0600); err != nil {
+			t.Fatal(err)
+		}
+		cfg, err := LoadForDiscovery(dir)
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := value == `,"graph_assessments_enabled":true`
+		if cfg.GraphAssessmentsEnabled != want {
+			t.Fatal("missing/false assessment switch must stay off")
+		}
+		if err := cfg.Save(dir); err != nil {
+			t.Fatal(err)
+		}
+		again, err := LoadForDiscovery(dir)
+		if err != nil || again.GraphAssessmentsEnabled != want {
+			t.Fatalf("assessment switch lost: %v", err)
+		}
+	}
+}

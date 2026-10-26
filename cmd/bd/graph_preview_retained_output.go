@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -149,13 +150,15 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 		return err
 	}
 	jsonl := len(options.Formats) != 0 && options.Formats[0] == "jsonl"
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
-	if cmd.Parent() != nil && cmd.Parent().Name() == "link" {
-		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
-	}
+	identity, err := graphPreviewWritableIdentity(args[0])
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
+	path, localID, err := graphPreviewResourceReadSelector(identity)
+	if err != nil {
+		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
+	}
+	linkOnly := cmd.Parent() != nil && cmd.Parent().Name() == "link"
 	var stream *clioutput.JSONLWriter
 	var failure canonicalFailureRenderer = renderer
 	if jsonl {
@@ -166,7 +169,27 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 		failure = graphVersionJSONLFailure{stream}
 	}
 	var count int
+	var selectorErr error
 	return canonicalReadWithGraphStore(cmd, failure, func(ctx context.Context, store *graphstore.Store) (any, error) {
+		// Resolve under the canonical reader, which owns exactly one failure
+		// renderer. Legacy resolvers print before returning an exitError and
+		// must not be wrapped into a second invalid-selector failure here.
+		if localID != "" {
+			path, err = store.ResolveExactAllocatedResourcePath(ctx, localID)
+		} else {
+			identity, resolveErr := store.ResolveCanonicalPublicResourceIdentity(ctx, path)
+			err = resolveErr
+			path = identity.PrivatePath
+		}
+		if err != nil {
+			return nil, err
+		}
+		if linkOnly {
+			selectorErr = graph.ValidateLinkPath(path)
+			if selectorErr != nil {
+				return nil, nil
+			}
+		}
 		history, err := store.History(ctx, path)
 		kind, rows := history.Kind, history.Versions
 		if errors.Is(err, graphstore.ErrNotFound) {
@@ -180,15 +203,18 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 			return nil, err
 		}
 		count = len(citable)
-		result := map[string]any{"resource": path, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}
+		result := map[string]any{"resource": history.PublicID, "kind": string(kind), "versions": graphVersionRowsJSON(citable)}
 		if history.CurrentState != nil {
 			result["currentState"] = history.CurrentState
 		}
-		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue) && len(terminals) != 0 {
+		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue || kind == graphstore.KindLink) && len(terminals) != 0 {
 			result["terminal_versions"] = graphVersionRowsJSON(terminals)
 		}
 		return result, nil
 	}, func(result any) error {
+		if selectorErr != nil {
+			return canonicalFailure(cmd, failure, "invalid_selector", selectorErr.Error(), 2)
+		}
 		if jsonl {
 			data := result.(map[string]any)
 			if err := graphVersionJSONLContextSupported(data); err != nil {
@@ -196,7 +222,7 @@ func runCanonicalGraphVersions(cmd *cobra.Command, args []string, options cliout
 			}
 			rows := data["versions"].([]map[string]any)
 			for _, row := range rows {
-				item, err := graphVersionStreamItem(path, data["kind"].(string), row)
+				item, err := graphVersionStreamItem(data["resource"].(string), data["kind"].(string), row)
 				if err != nil {
 					return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
 				}

@@ -19,8 +19,9 @@ import (
 )
 
 // --if-revision is one flag with two meanings, and which one applies depends on
-// the workspace. In a graph_mode link workspace it is an opaque observed graph
-// token. Everywhere else on update, delete, close and assign it is the
+// the workspace. In a graph_mode link workspace a number selects local History
+// and =TOKEN escapes an exact graph token. Everywhere else on update, delete,
+// close and assign it is the
 // compare-and-swap upstream added in #7203: a decimal bead revision whose
 // mismatch exits 13, which gascity's bdstore_conditional.go classifier reads.
 //
@@ -202,7 +203,7 @@ func TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS(t *testing.T) {
 
 // In a graph_mode link workspace the same flag still carries a graph token. Both
 // of these tokens would go wrong in upstream's parser (a typo, and a stale
-// decimal), so a typed revision_conflict is the proof that the graph handler,
+// decimal), so a typed revision_conflict for =TOKEN is proof that the graph handler,
 // not upstream's compare-and-swap, received them.
 func TestGraphPreviewIfRevisionInLinkModeStaysGraphToken(t *testing.T) {
 	bd := buildBDUnderTest(t)
@@ -218,50 +219,51 @@ func TestGraphPreviewIfRevisionInLinkModeStaysGraphToken(t *testing.T) {
 	call("init", "--graph-mode", "link", "--scope-url", "https://example.invalid/if-revision/", "--skip-hooks", "--skip-agents", "--non-interactive")
 	memory := graphMixedResult[graphstore.Record](t, call("remember", "Guarded body", "--id", "beads/plan", "--title", "Plan"))
 	const replacement = `{"title":"Plan","body":"Replaced body"}`
-	before := call("show", "beads/plan")
-	for _, token := range []string{"observed", "7"} {
+	before := call("show", "https://example.invalid/if-revision/beads/plan")
+	for _, token := range []string{"=observed", "=7"} {
 		refuse("revision_conflict", "update", "beads/plan", "--properties", replacement, "--if-revision", token)
 		refuse("revision_conflict", "delete", "beads/plan", "--if-revision", token)
 		refuse("revision_conflict", "delete", "beads/plan", "--force", "--if-revision", token)
 	}
-	if call("show", "beads/plan") != before {
+	if call("show", "https://example.invalid/if-revision/beads/plan") != before {
 		t.Fatal("a refused graph token changed the Memory")
 	}
 
-	replaced := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", memory.Revision))
+	replaced := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", "="+memory.Revision))
 	if !replaced.Changed || replaced.Memory.Revision == memory.Revision {
 		t.Fatal("the observed graph token did not guard-and-apply the update")
 	}
-	deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/plan", "--force", "--if-revision", replaced.Memory.Revision))
+	deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/plan", "--force", "--if-revision", "="+replaced.Memory.Revision))
 	if !deleted.Deleted || deleted.Preview {
 		t.Fatal("the observed graph token did not guard-and-apply the deletion")
 	}
 }
 
-// In graph mode close and assign interpret --if-revision as the opaque observed
-// graph Issue token; neither accepts an upstream numeric revision as a guard.
+// In graph mode close and assign interpret =TOKEN as an exact graph Issue
+// guard. Bare numbers select local History rather than upstream CAS values.
 func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
+	const closeURL = "https://example.invalid/close-if-revision/beads/close-guard"
 	call := func(args ...string) string {
 		t.Helper()
 		return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 	}
 	call("init", "--graph-mode", "link", "--scope-url", "https://example.invalid/close-if-revision/", "--skip-hooks", "--skip-agents", "--non-interactive")
-	call("create", "Close guard", "--id", "beads/close-guard")
-	before := call("show", "--format", "graph-json", "beads/close-guard")
+	call("create", "Close guard", "--id", "beads/close-guard", "--force")
+	before := call("show", "--format", "graph-json", closeURL)
 	for _, args := range [][]string{
-		{"close", "beads/close-guard", "--if-revision", "1"},
-		{"close", "beads/close-guard", "--reason", "Done", "--if-revision", "1"},
+		{"close", closeURL, "--if-revision", "=1"},
+		{"close", closeURL, "--reason", "Done", "--if-revision", "=1"},
 	} {
 		graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", args...)
 	}
-	graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", "assign", "beads/close-guard", "alice", "--if-revision", "1")
-	if call("show", "--format", "graph-json", "beads/close-guard") != before {
+	graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", "assign", closeURL, "alice", "--if-revision", "=1")
+	if call("show", "--format", "graph-json", closeURL) != before {
 		t.Fatal("a refused guarded close changed the Issue")
 	}
 	observed := graphMixedResult[graphstore.IssueRecord](t, before)
-	if closed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", "beads/close-guard", "--reason", "Done", "--if-revision", observed.Revision)); !closed.Changed {
+	if closed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", closeURL, "--reason", "Done", "--if-revision", "="+observed.Revision)); !closed.Changed {
 		t.Fatal("a close with the observed graph revision did not apply")
 	}
 }

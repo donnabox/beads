@@ -184,7 +184,7 @@ func TestIssueBlockedIsNotNotReady(t *testing.T) {
 			}
 			assertReadyIDs(t, ctx, s, wantReady...)
 			for _, record := range records {
-				current, err := s.ShowIssue(ctx, strings.TrimPrefix(record.ID, s.ScopeURL()))
+				current, err := s.ShowIssue(ctx, fixtureResourcePath(t, ctx, s, record.ID))
 				if err != nil || !sameBlockedJSON(t, current, record) {
 					t.Fatalf("inspection changed fixture: %v", err)
 				}
@@ -331,7 +331,9 @@ func TestIssueBlockedCanonicalOrder(t *testing.T) {
 			expected := make([]BlockedIssue, 0, 2)
 			for index, path := range []string{"beads/a", "beads/z"} {
 				request := plainIssue(path)
-				request.Issue.Priority = 4 - index*4
+				request.Issue.ID = []string{"blocked-z", "blocked-a"}[index]
+				request.ForceIDPrefix = true
+				request.Issue.Priority = index * 4
 				if _, err := s.CreateIssue(ctx, path, request); err != nil {
 					t.Fatal(err)
 				}
@@ -341,6 +343,8 @@ func TestIssueBlockedCanonicalOrder(t *testing.T) {
 				}
 				expected = append(expected, BlockedIssue{Issue: dependency.Source, BlockedBy: []string{target.ID}})
 			}
+			// Public order deliberately opposes the private a/z allocation order.
+			sort.Slice(expected, func(i, j int) bool { return expected[i].Issue.ID < expected[j].Issue.ID })
 			before := reopenState(t, ctx, s)
 			for range 2 {
 				got, err := s.BlockedIssues(ctx)
@@ -431,7 +435,7 @@ func TestIssueBlockedDependencySubjectStatuses(t *testing.T) {
 				t.Fatal(err)
 			}
 			for _, record := range []IssueRecord{source, target, closed, pinned} {
-				path := strings.TrimPrefix(record.ID, s.ScopeURL())
+				path := fixtureResourcePath(t, ctx, s, record.ID)
 				current, err := s.ShowIssue(ctx, path)
 				if err != nil || !sameBlockedJSON(t, current, record) {
 					t.Fatalf("read changed complete subject: %v", err)

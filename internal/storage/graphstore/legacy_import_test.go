@@ -4,7 +4,6 @@ package graphstore
 
 import (
 	"context"
-	"crypto/sha256"
 	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
@@ -16,7 +15,6 @@ import (
 	"testing"
 	"time"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/legacyimport"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
@@ -154,49 +152,62 @@ func TestLegacyImportUnsupportedRecordState(t *testing.T) {
 	}
 }
 
+// An ordinary export can contain nonblocking and custom native Dependency
+// kinds. Import must preserve that kind rather than reject or reinterpret it.
+func TestLegacyImportDependencyKinds(t *testing.T) {
+	kinds := append(types.WellKnownDependencyTypes(), types.DependencyType("custom-kind"), types.DependencyType(strings.Repeat("x", types.MaxDependencyTypeLen)))
+	for _, kind := range kinds {
+		t.Run(string(kind), func(t *testing.T) {
+			dep := &types.Dependency{IssueID: "scratch-35t", DependsOnID: "scratch-8b8", Type: kind, Metadata: "{}"}
+			input := legacyimport.Batch{Issues: []*types.Issue{
+				{ID: "scratch-35t", Title: "Source", Dependencies: []*types.Dependency{dep}},
+				{ID: "scratch-8b8", Title: "Target"},
+			}}
+			prepared, err := prepareLegacyImport(input, "importer")
+			if err != nil {
+				t.Fatalf("ordinary native Dependency %q refused: %v", kind, err)
+			}
+			if got := prepared.Issues[0].Dependencies[0]; got.Type != kind || got.DependsOnID != dep.DependsOnID || got.IssueID != dep.IssueID {
+				t.Fatalf("native dependency changed: got %+v, want %+v", got, dep)
+			}
+		})
+	}
+	for _, kind := range []types.DependencyType{"", types.DependencyType(strings.Repeat("x", types.MaxDependencyTypeLen+1))} {
+		input := legacyimport.Batch{Issues: []*types.Issue{
+			{ID: "scratch-35t", Title: "Source", Dependencies: []*types.Dependency{{IssueID: "scratch-35t", DependsOnID: "scratch-8b8", Type: kind}}},
+			{ID: "scratch-8b8", Title: "Target"},
+		}}
+		if _, err := prepareLegacyImport(input, "importer"); !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), "dependency kind") {
+			t.Fatalf("wrong refusal for invalid native kind %q: %v", kind, err)
+		}
+	}
+}
+
 func TestLegacyImportMemoryPaths(t *testing.T) {
-	keys := []string{"safe", "old-a", "has space", "has%20space", "雪", "%", ".", "..", "a/b", "a//b", "back\\slash", "control\x00", " leading ", "Case", "case", strings.Repeat("long", 300)}
-	// A direct key must retain its address even if it occupies a remap's
-	// preferred hash path. Remap allocation must not depend on input order.
-	digest := sha256.Sum256([]byte("."))
-	reserved := fmt.Sprintf("imported-memory-%x", digest)
-	keys = append(keys, reserved)
-	batch := legacyimport.Batch{Issues: []*types.Issue{{ID: "old-a", Title: "Issue"}}}
-	for _, key := range keys {
-		batch.Memories = append(batch.Memories, legacyimport.Memory{Key: key, Value: ""})
-	}
-	prepared, err := prepareLegacyImport(batch, "importer")
-	if err != nil {
-		t.Fatal(err)
-	}
-	paths := legacyImportMemoryPaths(prepared)
-	seen := map[string]bool{"beads/old-a": true}
-	for _, key := range keys {
-		path := paths[key]
-		if err := validatePath(path); err != nil || seen[path] {
-			t.Fatalf("key=%q path=%q duplicate=%v err=%v", key, path, seen[path], err)
+	// Previously encoded, hashed or renamed keys now have an explicit
+	// compatibility disposition. Accepted canonical spellings stay exact.
+	for _, key := range []string{"safe", "has%20space", "%E9%9B%AA", "a/b", "Case", "case", "beads/literal", strings.Repeat("long", 300)} {
+		prepared, err := prepareLegacyImportWithPrefix(legacyimport.Batch{Memories: []legacyimport.Memory{{Key: key}}}, "importer", "")
+		if err != nil {
+			t.Fatal(err)
 		}
-		seen[path] = true
-	}
-	for _, key := range []string{"safe", "has%20space", "a/b", "Case", "case", reserved} {
-		if paths[key] != "beads/"+key {
-			t.Fatalf("safe direct mapping changed: %q -> %q", key, paths[key])
+		mounted, err := mountLegacyImport(prepared, "")
+		if err != nil || mounted.memoryIDs[key] != key {
+			t.Fatalf("canonical key %q changed: %+v %v", key, mounted, err)
 		}
 	}
-	if paths["雪"] != "beads/"+graph.CanonicalSegment("雪") || paths["has space"] == paths["has%20space"] {
-		t.Fatal("encoded keys collide or Unicode path is not canonical")
+	for _, key := range []string{"old-a", "has space", "雪", "%", ".", "..", "a//b", "back\\slash", "control\x00", " leading "} {
+		input := legacyimport.Batch{Issues: []*types.Issue{{ID: "old-a", Title: "Issue"}}, Memories: []legacyimport.Memory{{Key: key}}}
+		prepared, err := prepareLegacyImportWithPrefix(input, "importer", "old")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := mountLegacyImport(prepared, ""); !errors.Is(err, storage.ErrValidation) {
+			t.Fatalf("incompatible or colliding key %q admitted: %v", key, err)
+		}
 	}
-	if paths["."] != "beads/"+reserved+"-1" {
-		t.Fatalf("fallback displaced direct key: %q", paths["."])
-	}
-	for i, j := 0, len(prepared.Memories)-1; i < j; i, j = i+1, j-1 {
-		prepared.Memories[i], prepared.Memories[j] = prepared.Memories[j], prepared.Memories[i]
-	}
-	if got := legacyImportMemoryPaths(prepared); !reflect.DeepEqual(paths, got) {
-		t.Fatalf("order changed mappings: %v -> %v", paths, got)
-	}
-	batch.Memories = append(batch.Memories, legacyimport.Memory{Key: "safe", Value: "different"})
-	if _, err := prepareLegacyImport(batch, "importer"); err == nil {
+	duplicate := legacyimport.Batch{Memories: []legacyimport.Memory{{Key: "safe"}, {Key: "safe", Value: "different"}}}
+	if _, err := prepareLegacyImport(duplicate, "importer"); err == nil {
 		t.Fatal("duplicate memory key admitted")
 	}
 	for _, memory := range []legacyimport.Memory{{Key: ""}, {Key: "bad\xff"}, {Key: "valid", Value: "bad\xff"}} {
@@ -277,7 +288,7 @@ func parseLegacyFixture(t *testing.T, input string) legacyimport.Batch {
 func legacyImportState(t *testing.T, ctx context.Context, s *Store) map[string]string {
 	t.Helper()
 	state := reopenState(t, ctx, s)
-	for _, table := range []string{"labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "wisp_events", "wisp_child_counters", "provenance_events", "issue_snapshots", "compaction_snapshots", "issue_counter", "epoch_minted_addresses", "store_epoch", "interactions", "config"} {
+	for _, table := range []string{"graph_preview_types", "labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "wisp_events", "wisp_child_counters", "provenance_events", "issue_snapshots", "compaction_snapshots", "issue_counter", "epoch_minted_addresses", "store_epoch", "interactions", "config"} {
 		rows, err := s.db.QueryContext(ctx, "SELECT * FROM "+table)
 		if err != nil {
 			t.Fatal(err)
@@ -503,6 +514,58 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 					}
 				}
 			})
+		})
+	}
+}
+
+// Parent-child admission reaches native hierarchy validation; its refusal
+// must remain a data error with no partial import, not an unavailable route.
+func TestLegacyImportNativeHierarchyAndKinds(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := store.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			conflict := parseLegacyFixture(t, `{"id":"old-a","title":"Ancestor"}
+{"id":"old-b","title":"Child","dependencies":[{"depends_on_id":"old-a","type":"parent-child"}]}
+{"id":"old-c","title":"Grandchild","dependencies":[{"depends_on_id":"old-b","type":"parent-child"},{"depends_on_id":"old-a","type":"blocks"}]}`)
+			before := legacyImportState(t, ctx, store)
+			for _, dryRun := range []bool{true, false} {
+				result, err := store.ImportLegacy(ctx, conflict, "importer", dryRun)
+				if !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), "ancestor") {
+					t.Fatalf("hierarchy conflict must be a validation refusal: result=%+v error=%v", result, err)
+				}
+				if !reflect.DeepEqual(result, LegacyImportResult{}) || !reflect.DeepEqual(before, legacyImportState(t, ctx, store)) {
+					t.Fatal("hierarchy refusal returned partial results or changed data")
+				}
+			}
+			valid := parseLegacyFixture(t, `{"id":"old-a","title":"Child","dependencies":[{"depends_on_id":"old-b","type":"parent-child"},{"depends_on_id":"old-c","type":"blocks"}]}
+{"id":"old-b","title":"Parent"}
+{"id":"old-c","title":"Other","dependencies":[{"depends_on_id":"old-b","type":"custom-kind"}]}`)
+			result, err := store.ImportLegacy(ctx, valid, "importer", false)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for pair, kind := range map[string]string{
+				"old-a -> old-b": "parent-child", "old-a -> old-c": "blocks", "old-c -> old-b": "custom-kind",
+			} {
+				identity, err := store.ResolveCanonicalPublicResourceIdentity(ctx, result.DependencyIDs[pair])
+				if err != nil {
+					t.Fatal(err)
+				}
+				link, err := store.ShowLink(ctx, identity.PrivatePath)
+				base, classification, concrete := NativeTypeClassification(store.ScopeURL(), link.Type)
+				if err != nil || !concrete || base != DependencyTypeURL(store.ScopeURL()) || classification != kind || link.Properties["dep_type"] != kind {
+					t.Fatalf("native kind %s not preserved: %+v, %v", pair, link, err)
+				}
+			}
 		})
 	}
 }
@@ -742,7 +805,7 @@ func TestLegacyImportValidationRollsBack(t *testing.T) {
 			})
 			before := legacyImportState(t, operationContext(t), s)
 			for _, input := range []string{
-				strings.Replace(legacyImportFixture, `"type":"blocks"`, `"type":"parent-child"`, 1),
+				strings.Replace(legacyImportFixture, `"type":"blocks"`, `"type":"`+strings.Repeat("x", types.MaxDependencyTypeLen+1)+`"`, 1),
 				strings.Replace(legacyImportFixture, `"depends_on_id":"old-a"`, `"depends_on_id":"old-missing"`, 1),
 				strings.Replace(legacyImportFixture, `"metadata":{"custom":{"flag":true}}`, `"metadata":[1]`, 1),
 				strings.Replace(legacyImportFixture, `"closed_at":"2026-01-02T00:00:00Z"`, `"closed_at":"2026-01-02T00:00:00.123Z"`, 1),
@@ -943,7 +1006,7 @@ func TestLegacyImportCommentFeedPersistence(t *testing.T) {
 			}
 			byText, ids := map[string]*types.Comment{}, map[string]bool{}
 			for _, comment := range feed {
-				if comment.ID == "" || ids[comment.ID] || comment.IssueID != "beads/"+issue.ID || comment.Author != "author" || comment.CreatedAt.IsZero() {
+				if comment.ID == "" || ids[comment.ID] || comment.IssueID != issue.ID || comment.Author != "author" || comment.CreatedAt.IsZero() {
 					t.Fatalf("invalid normalized comment: %+v", comment)
 				}
 				ids[comment.ID] = true

@@ -22,9 +22,9 @@ func canonicalLinkProtection() *clioutput.Protection {
 	return &clioutput.Protection{Required: []string{"id", "type", "revision", "source", "target"}}
 }
 
-func canonicalShowDescriptor(path string, record any) clioutput.Descriptor {
+func canonicalShowDescriptor(_ string, record any) clioutput.Descriptor {
 	descriptor := canonicalResourceDescriptor()
-	if strings.HasPrefix(path, "links/") {
+	if _, isLink := record.(bdpwire.LinkRecord); isLink {
 		descriptor.Protection = canonicalLinkProtection()
 	}
 	if bead, ok := record.(bdpwire.BeadRecord); ok {
@@ -48,40 +48,81 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if err != nil {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
+	literalFlag := false
+	ids, _ := cmd.Flags().GetStringArray("id")
+	if len(ids) != 0 {
+		if len(args) != 0 || len(ids) != 1 {
+			return canonicalFailure(cmd, renderer, "invalid_selector", "canonical show requires one positional selector or one literal --id", 2)
+		}
+		args = ids
+		literalFlag = true
+	}
 	if len(args) != 1 {
 		return canonicalFailure(cmd, renderer, "invalid_selector", "canonical show requires exactly one Resource identity", 2)
 	}
-	if err := canonicalGraphFlags(cmd, renderer, "version"); err != nil {
+	if err := canonicalGraphFlags(cmd, renderer, "id", "revision"); err != nil {
 		return err
 	}
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "version"); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "revision"); err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	ref, err := graphPreviewParseReference(args[0])
-	if err != nil {
-		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
-	}
-	var path string
-	if linkOnly {
-		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, ref.Identity)
+	var literal string
+	if literalFlag {
+		literal, err = graphPreviewResolveLiteralArgument(args[0])
 	} else {
-		path, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, ref.Identity)
+		literal, err = graphPreviewResolveMemoryArgument(args[0])
 	}
+	if err != nil {
+		return err
+	}
+	ref, err := graphPreviewParseReference(literal)
+	if err != nil {
+		if graphPreviewReferenceStorageError(err) {
+			return canonicalReadError(cmd, renderer, err, "route_unavailable")
+		}
+		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
+	}
+	if ref.Explicit && cmd.Flags().Changed("revision") {
+		return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --revision, not both", 2)
+	}
+	ref, err = graphPreviewResolveParsedReference(ref)
+	if err != nil {
+		if graphPreviewReferenceStorageError(err) {
+			return canonicalReadError(cmd, renderer, err, "route_unavailable")
+		}
+		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
+	}
+	path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	version, _ := cmd.Flags().GetString("version")
-	versioned := cmd.Flags().Changed("version")
-	if ref.Explicit {
-		if versioned {
-			return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --version, not both", 2)
+	if linkOnly && localID == "" && !strings.HasPrefix(path, graphPreviewConfig.GraphScopeURL) && !strings.HasPrefix(path, "links/") {
+		return canonicalFailure(cmd, renderer, "invalid_selector", "link show requires a Link Resource", 2)
+	}
+	version, _ := cmd.Flags().GetString("revision")
+	versioned := cmd.Flags().Changed("revision")
+	if ref.Explicit && versioned {
+		return canonicalFailure(cmd, renderer, "invalid_selector", "choose ID@revision or --revision, not both", 2)
+	}
+	if versioned {
+		version, err = graphPreviewRevisionValue("revision", version, ref.Identity, false)
+		if err != nil {
+			if graphPreviewReferenceStorageError(err) {
+				return canonicalReadError(cmd, renderer, err, "route_unavailable")
+			}
+			return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 		}
-		if ref.Revision != "current" && ref.Revision != "unpinned" {
+	}
+	if ref.Explicit {
+		if !ref.currentSelection() {
 			version, versioned = ref.Revision, true
 		}
 	}
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
-		return canonicalFailure(cmd, renderer, "invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
+		return canonicalFailure(cmd, renderer, "invalid_selector", "--revision requires a nonempty UTF-8 token of at most 4096 bytes", 2)
+	}
+	if versioned && localID != "" {
+		return canonicalFailure(cmd, renderer, "capability_unavailable", "retained versions require an exact canonical Scope URL", 5)
 	}
 	renderer, err = clioutput.New(canonicalShowDescriptor(path, nil), opts)
 	if err != nil {
@@ -89,10 +130,21 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	}
 	return canonicalReadWithGraphStore(cmd, renderer, func(ctx context.Context, store *graphstore.Store) (any, error) {
 		reader := graphread.New(store)
+		var result any
 		if versioned {
-			return reader.ResourceVersion(ctx, path, version)
+			result, err = reader.ResourceVersion(ctx, path, version)
+		} else {
+			path, result, err = reader.ResourceSelected(ctx, path, localID)
 		}
-		return reader.Resource(ctx, path)
+		if err != nil {
+			return nil, err
+		}
+		if linkOnly {
+			if _, ok := result.(bdpwire.LinkRecord); !ok {
+				return nil, graphstore.ErrCapabilityUnavailable
+			}
+		}
+		return result, nil
 	}, func(result any) error {
 		descriptor := canonicalShowDescriptor(path, result)
 		renderer, err := clioutput.New(descriptor, opts)

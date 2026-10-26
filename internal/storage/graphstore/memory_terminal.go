@@ -6,13 +6,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 )
 
-// BeadTerminalState is retained deletion evidence, not a live Bead snapshot.
-// It deliberately omits the Type, properties, metadata and owned Links. The
-// previous live snapshot supplies the separately acquired protected baseline.
-type BeadTerminalState struct {
+// ResourceTerminalState is retained deletion evidence, not a live Resource.
+// Links include their immutable Type; Beads omit it. Properties, metadata and
+// owned Links remain in the separately acquired last-live protected baseline.
+type ResourceTerminalState struct {
 	ID              string      `json:"id"`
+	Type            string      `json:"type,omitempty"`
 	Revision        string      `json:"revision"`
 	Version         string      `json:"version"`
 	State           string      `json:"state"`
@@ -20,14 +22,19 @@ type BeadTerminalState struct {
 	Attribution     Attribution `json:"attribution"`
 }
 
-// MemoryTerminalState retains the existing Go name for the shared Bead carrier.
-type MemoryTerminalState = BeadTerminalState
+// Existing Go names remain aliases of the shared terminal History carrier.
+type BeadTerminalState = ResourceTerminalState
+type MemoryTerminalState = ResourceTerminalState
 
-func (s *Store) decodeMemoryTerminal(path, version string, raw []byte, actor string) (MemoryTerminalState, error) {
+func (s *Store) decodeMemoryTerminal(ctx context.Context, tx *sql.Tx, path, version string, raw []byte, actor string) (MemoryTerminalState, error) {
+	expectedID, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return MemoryTerminalState{}, err
+	}
 	var terminal MemoryTerminalState
 	if json.Unmarshal(raw, &terminal) != nil || !sameVersionJSON(raw, terminal) ||
-		terminal.ID != s.ScopeURL()+path || terminal.Revision != version || terminal.Version != version ||
-		terminal.State != "deleted" || !authorityID.MatchString(version) ||
+		terminal.ID != expectedID || terminal.Revision != version || terminal.Version != version ||
+		terminal.Type != "" || terminal.State != "deleted" || !authorityID.MatchString(version) ||
 		!authorityID.MatchString(terminal.PreviousVersion) || terminal.PreviousVersion == version ||
 		terminal.Attribution.HistoricalUpdate != nil || !validVersionAttribution(terminal.Attribution, actor) {
 		return MemoryTerminalState{}, fmt.Errorf("%w: invalid retained Bead deletion marker", ErrInvalidStore)
@@ -63,7 +70,7 @@ func (s *Store) deletedMemoryStateInTx(ctx context.Context, tx *sql.Tx, path str
 	var terminal *MemoryTerminalState
 	baselineRevision := revision
 	if marker.State != "" {
-		decoded, err := s.decodeMemoryTerminal(path, revision, raw, actor)
+		decoded, err := s.decodeMemoryTerminal(ctx, tx, path, revision, raw, actor)
 		if err != nil {
 			return Record{}, nil, err
 		}
@@ -88,6 +95,7 @@ func (s *Store) deletedMemoryStateInTx(ctx context.Context, tx *sql.Tx, path str
 // evidence. Rows and current state are acquired in one checked snapshot. It is
 // separate from ordinary Read, which continues refusing a deleted subject.
 type VersionHistoryResult struct {
+	PublicID     string               `json:"-"`
 	Kind         ResourceKind         `json:"kind"`
 	Versions     []VersionRow         `json:"versions"`
 	CurrentState *MemoryTerminalState `json:"currentState,omitempty"`
@@ -107,7 +115,12 @@ func (s *Store) History(ctx context.Context, path string) (VersionHistoryResult,
 		if err != nil {
 			return err
 		}
-		if result.Kind == KindMemory || result.Kind == KindIssue {
+		identity, err := allocatedResourceIdentityForPathInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
+		result.PublicID = identity.PublicID
+		if result.Kind == KindMemory || result.Kind == KindIssue || result.Kind == KindLink {
 			var state string
 			if err := tx.QueryRowContext(ctx, `SELECT allocation_state FROM graph_preview_catalog WHERE path=?`, path).Scan(&state); err != nil {
 				return err
@@ -122,7 +135,7 @@ func (s *Store) History(ctx context.Context, path string) (VersionHistoryResult,
 						return nil
 					} // Legacy Issue deletion retained only a live head.
 				}
-				result.CurrentState, err = s.memoryTerminalDescriptorInTx(ctx, tx, path, result.Versions)
+				result.CurrentState, err = s.resourceTerminalDescriptorInTx(ctx, tx, path, result.Versions)
 				return err
 			}
 		}
@@ -136,11 +149,11 @@ func (s *Store) History(ctx context.Context, path string) (VersionHistoryResult,
 
 // A History descriptor discloses D alone. It never needs to hydrate the last
 // live payload (which recovery separately acquires and validates).
-func (s *Store) memoryTerminalDescriptorInTx(ctx context.Context, tx *sql.Tx, path string, rows []VersionRow) (*MemoryTerminalState, error) {
-	var head string
+func (s *Store) resourceTerminalDescriptorInTx(ctx context.Context, tx *sql.Tx, path string, rows []VersionRow) (*MemoryTerminalState, error) {
+	var head, typ string
 	var terminal bool
-	if err := tx.QueryRowContext(ctx, `SELECT c.revision,CASE WHEN JSON_VALID(CAST(v.snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(v.snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END
- FROM graph_preview_catalog c JOIN graph_preview_versions v ON v.path=c.path AND v.version=c.revision WHERE c.path=?`, path).Scan(&head, &terminal); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT c.revision,c.type_url,CASE WHEN JSON_VALID(CAST(v.snapshot AS CHAR)) THEN COALESCE(JSON_UNQUOTE(JSON_EXTRACT(CAST(v.snapshot AS CHAR),'$.state'))='deleted',FALSE) ELSE FALSE END
+ FROM graph_preview_catalog c JOIN graph_preview_versions v ON v.path=c.path AND v.version=c.revision WHERE c.path=?`, path).Scan(&head, &typ, &terminal); err != nil {
 		return nil, err
 	}
 	if !terminal {
@@ -161,7 +174,14 @@ func (s *Store) memoryTerminalDescriptorInTx(ctx context.Context, tx *sql.Tx, pa
 	if err != nil {
 		return nil, err
 	}
-	descriptor, err := s.decodeMemoryTerminal(path, head, raw, actor)
+	if strings.HasPrefix(path, "links/") {
+		descriptor, err := s.decodeLinkTerminal(ctx, tx, path, typ, head, raw, actor)
+		if err != nil {
+			return nil, err
+		}
+		return &ResourceTerminalState{ID: descriptor.ID, Type: descriptor.Type, Revision: descriptor.Revision, Version: descriptor.Version, State: descriptor.State, PreviousVersion: descriptor.PreviousVersion, Attribution: descriptor.Attribution}, nil
+	}
+	descriptor, err := s.decodeMemoryTerminal(ctx, tx, path, head, raw, actor)
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +192,7 @@ func (s *Store) memoryTerminalDescriptorInTx(ctx context.Context, tx *sql.Tx, pa
 // snapshot. Charge those roles together before decoding any of them.
 func checkDeletedMemoryReadBytes(ctx context.Context, tx *sql.Tx, path, head, source string) error {
 	var size uint64
-	if err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(d.snapshot)+OCTET_LENGTH(d.actor)
+	if err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(d.snapshot)+OCTET_LENGTH(d.actor)+COALESCE((SELECT OCTET_LENGTH(public_id) FROM graph_preview_catalog WHERE path=d.path),0)
  +COALESCE(OCTET_LENGTH(b.snapshot)+OCTET_LENGTH(b.actor),0)
  +CASE WHEN s.version<>d.version AND s.version<>COALESCE(b.version,'') THEN OCTET_LENGTH(s.snapshot)+OCTET_LENGTH(s.actor) ELSE 0 END
  FROM graph_preview_versions d

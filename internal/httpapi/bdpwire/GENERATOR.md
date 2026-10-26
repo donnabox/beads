@@ -279,3 +279,20 @@ is `2db57a82d9bf99f3fb5d18646e8bd6c7646590d1e806aa266de8af415ee83545`.
 All verbatim files and the spec-derived JSON fences are re-pinned in
 `schema/PROVENANCE`. Native graphstore snapshots retain their historical
 `status` encoding; the Read projection changes only the public wire form.
+
+## Literal Resource ID Read proposal — 2026-10-24
+
+The proposed input is BDP `bad780f19761e5714873aa3a85adeb75bc885928`,
+a minimal successor of `de99030d13a57e77f4f2660b91ea3c39b82823cb`.
+It removes mandatory `beads/` and `links/` Resource ID roots from the Read
+contract and client resolver. IDs retain their literal segments; resource
+kind comes from the record, not its path. Fixed inventory navigation URLs
+remain distinct from Resource IDs.
+
+The complete schema, selected 47-definition projection and attribution
+shape are byte-identical to the previous input. The projection digest stays
+`2db57a82d9bf99f3fb5d18646e8bd6c7646590d1e806aa266de8af415ee83545`.
+The upstream Read source witness and exact spec blob are refreshed; examples
+are re-extracted at their new line ranges. The manifest names the proposed
+commit. This proposal does not adopt the broader actor/schema changes from
+BDP PR301, or claim live HTTP interoperability or integration approval.

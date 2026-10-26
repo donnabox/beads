@@ -26,6 +26,7 @@ import (
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/graphpatch"
+	"github.com/steveyegge/beads/internal/memoryapi"
 	"github.com/steveyegge/beads/internal/migration"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -40,7 +41,7 @@ const graphPreviewMarker = "graph-preview-format"
 // are not upgraded in place. Changing installed Types changes this marker.
 const (
 	graphPreviewGenerationPrefix = "link-preview-v"
-	graphPreviewGeneration       = "link-preview-v10\n"
+	graphPreviewGeneration       = "link-preview-v12\n"
 )
 
 var graphPreviewSupportedGenerations = []string{graphPreviewGeneration}
@@ -66,14 +67,18 @@ func graphPreviewIssueTypeURL(scope string) string {
 }
 
 func graphPreviewBlockingTypeURL(scope string) string {
-	return graphstore.DependencyTypeURL(scope)
+	id, _ := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	return id
 }
 
 func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
-	rememberCmd.Flags().String("id", "", "Memory ID or beads/PATH; creates if unused or updates existing Memory (generated when omitted; graph preview only)")
+	rememberCmd.Flags().String("id", "", "Literal public Memory ID; creates or updates the same identity (--key is compatible; omitted ID derives from content in graph mode)")
 	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)")
+	rememberCmd.Flags().String("body", "", "Explicit Memory body, including an empty body (graph preview only)")
+	rememberCmd.Flags().String("status", "", "Nonblank Memory status property on create or update (graph preview only)")
+	rememberCmd.Flags().String("type", "", "Installed Memory Type or refinement for --create-only (graph preview only)")
 	rememberCmd.Flags().String("metadata", "", "Merge a JSON object into an existing Memory, or set initial metadata on create (graph preview only)")
 	rememberCmd.Flags().String("replace-metadata", "", "Replace all Memory metadata with a JSON object on an existing-ID edit (graph preview only)")
 	rememberCmd.Flags().String("properties", "", "Initialize or merge named Memory properties from a JSON object, @file, or @- (graph preview only)")
@@ -81,20 +86,20 @@ func init() {
 	rememberCmd.Flags().StringArray("set-metadata", nil, "Set Memory metadata key=value (repeatable; graph preview only)")
 	rememberCmd.Flags().StringArray("unset-metadata", nil, "Remove Memory metadata key (repeatable; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
-	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id; refuse an allocated ID (graph preview only)")
-	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for an existing-ID update (graph preview only)")
+	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id or --key; refuse an allocated ID (graph preview only)")
+	rememberCmd.Flags().String("if-revision", "", "Require Memory revision N or =TOKEN for an existing-ID update (graph preview only)")
 	rememberCmd.Flags().String("body-file", "", "Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)")
 	rememberCmd.Flags().Bool("stdin", false, "Read graph Memory body from stdin (preview: at most 1 MiB)")
 	// delete already has upstream's --if-revision (as do update, close and
 	// assign), which link mode reads through cmd.Flags(); registering it again
 	// panics at init. forget has no upstream flag, so it keeps the preview's own.
-	forgetCmd.Flags().String("if-revision", "", "Require this observed Memory revision (graph preview only)")
+	forgetCmd.Flags().String("if-revision", "", "Require Memory revision N or =TOKEN (graph preview only)")
 	statusCmd.Flags().Bool("graph", false, "Report graph preview capabilities")
 	memoriesCmd.Flags().Bool("all", false, "Return all matching graph Memory summaries within preview bounds")
 	memoriesCmd.Flags().Bool("details", false, "Include Memory versions, attribution and owned-Link counts")
 	memoriesCmd.Flags().String("format", "table", "Graph Memory summaries: table or records-json (preview only)")
-	recallCmd.Flags().String("version", "", "Recall an exact retained Memory version token (graph preview only)")
-	showCmd.Flags().String("version", "", "Read an exact retained version token (graph preview only)")
+	recallCmd.Flags().String("revision", "", "Recall retained Memory revision N or =TOKEN (graph preview only)")
+	showCmd.Flags().String("revision", "", "Read retained revision N or =TOKEN (graph preview only)")
 	createCmd.Flags().String("properties", "", "Initialize installed Bead Type properties from a JSON object, @file, or @- (graph preview only)")
 	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
@@ -234,7 +239,11 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	// Explicit graph list and discovery formats select structured admission errors.
 	// Reset this state for every command; ordinary output policy is unchanged.
 	format, _ := cmd.Flags().GetString("format")
-	graphPreviewStructuredErrors = (cmd == memoriesCmd && format == "records-json") || (cmd == listCmd && (format == "records-json" || strings.EqualFold(format, "json"))) || ((cmd == searchCmd || cmd == countCmd || cmd == queryCmd) && cmd.Flags().Changed("format"))
+	memoryCommand := cmd
+	if top := graphPreviewMemoryTopCommand(cmd); top != nil {
+		memoryCommand = top
+	}
+	graphPreviewStructuredErrors = (memoryCommand == memoriesCmd && format == "records-json") || (cmd == listCmd && (format == "records-json" || strings.EqualFold(format, "json"))) || ((cmd == searchCmd || cmd == countCmd || cmd == queryCmd) && cmd.Flags().Changed("format"))
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir, graphPreviewTypeGeneration = false, nil, "", 0
 	flag, _ := cmd.Flags().GetString("graph-mode")
 	env := os.Getenv("BD_GRAPH_MODE")
@@ -247,6 +256,14 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	}
 	if requested != "" && requested != "link" && requested != "dependency" {
 		return true, graphFailure("invalid_selector", "unknown graph_mode; expected dependency or link", 2)
+	}
+
+	// Root only displays help or --version. Informational commands use the
+	// root hook's ordinary no-store path. Keep
+	// its global output/config setup without requiring a workspace engine or
+	// weakening admission for any operational command.
+	if cmd == cmd.Root() || cmd == versionCmd || (cmd.Name() == "help" && cmd.Parent() == cmd.Root()) {
+		return false, nil
 	}
 	dir, err := graphCandidateDir(cmd)
 	if err != nil {
@@ -267,7 +284,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 			// command's corrupt-metadata refusal and its diagnostic context.
 			// A damaged graph workspace must still fail before legacy opening.
 			if !markerPresent && requested != "link" {
-				if (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && cmd.Flags().Changed("source-prefix")) {
+				if (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root"))) {
 					return true, graphFailure("graph_not_initialized", err.Error(), 5)
 				}
 				return false, nil
@@ -300,8 +317,15 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
-		if cmd == importCmd && cmd.Flags().Changed("source-prefix") {
-			return true, graphFailure("capability_unavailable", "--source-prefix requires a workspace initialized with graph_mode link", 5)
+		if cmd.Flags().Lookup("exact-type") != nil && cmd.Flags().Changed("exact-type") {
+			return true, graphFailure("capability_unavailable", "--exact-type requires a workspace initialized with graph_mode link", 5)
+		}
+		if cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root")) {
+			flag := "--source-prefix"
+			if cmd.Flags().Changed("id-root") {
+				flag = "--id-root"
+			}
+			return true, graphFailure("capability_unavailable", flag+" requires a workspace initialized with graph_mode link", 5)
 		}
 		if cmd == doneTodoCmd && cmd.Flags().Changed("if-revision") {
 			return true, graphFailure("capability_unavailable", "todo done --if-revision requires an experimental graph workspace", 5)
@@ -323,19 +347,19 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		}
 		// delete's --if-revision is upstream's compare-and-swap here, not a graph
 		// guard: only forget's --if-revision is graph-only.
-		if cmd == forgetCmd && cmd.Flags().Changed("if-revision") {
+		if memoryCommand == forgetCmd && cmd.Flags().Changed("if-revision") {
 			return true, graphFailure("capability_unavailable", "Memory deletion guards require a workspace initialized with graph_mode link", 5)
 		}
-		if cmd == memoriesCmd && (cmd.Flags().Changed("all") || cmd.Flags().Changed("details") || (cmd.Flags().Changed("format") && !strings.EqualFold(format, "json"))) {
+		if memoryCommand == memoriesCmd && (cmd.Flags().Changed("all") || cmd.Flags().Changed("details") || (cmd.Flags().Changed("format") && !strings.EqualFold(format, "json"))) {
 			return true, graphFailure("capability_unavailable", "Memory discovery options require an experimental graph workspace", 5)
 		}
 		if cmd == showCmd && cmd.Flags().Changed("format") {
 			return true, graphFailure("capability_unavailable", "--format requires an experimental graph workspace", 5)
 		}
-		if (cmd == showCmd || cmd == recallCmd) && cmd.Flags().Changed("version") {
-			return true, graphFailure("capability_unavailable", "--version requires an experimental graph workspace", 5)
+		if (cmd == showCmd || memoryCommand == recallCmd) && cmd.Flags().Changed("revision") {
+			return true, graphFailure("capability_unavailable", "--revision requires an experimental graph workspace", 5)
 		}
-		if cmd == graphCompareCmd || graphPreviewLinkNamespaceCommand(cmd) {
+		if cmd == graphCompareCmd || graphPreviewLinkNamespaceCommand(cmd) || graphPreviewMemoryNamespaceCommand(cmd) {
 			return true, graphFailure("capability_unavailable", "this command requires an experimental graph workspace", 5)
 		}
 		if cmd == createCmd && (cmd.Flags().Changed("properties") || graphPreviewNominalTypeFlagChanged(cmd)) {
@@ -352,7 +376,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == updateCmd && (graphPreviewLinkPinFlagsChanged(cmd) || cmd.Flags().Changed("patch") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-source-revision")) {
 			return true, graphFailure("capability_unavailable", "generic update options require a workspace initialized with graph_mode link", 5)
 		}
-		if (cmd == rememberCmd && rememberGraphFlagsChanged(cmd)) || (cmd == initCmd && cmd.Flags().Changed("scope-url")) || (cmd == statusCmd && cmd.Flags().Changed("graph")) {
+		if (memoryCommand == rememberCmd && rememberGraphFlagsChanged(cmd)) || (cmd == initCmd && cmd.Flags().Changed("scope-url")) || (cmd == statusCmd && cmd.Flags().Changed("graph")) {
 			return true, graphFailure("capability_unavailable", "these graph options require a workspace initialized with graph_mode link", 5)
 		}
 		return false, nil
@@ -377,13 +401,13 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	case supersedeCmd:
 		return true, graphFailure("capability_unavailable", "graph supersede requires one atomic supersedes edge and native close reason; this graph CLI does not provide that journey yet", 5)
 	}
-	if !graphPreviewLinkNamespaceCommand(cmd) && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
+	if !graphPreviewMemoryNamespaceCommand(cmd) && !graphPreviewLinkNamespaceCommand(cmd) && graphPreviewMemoryTopCommand(cmd) == nil && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != labelListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != tagCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
 		// runGraphPreviewVersions. Admission suppresses legacy store opening,
 		// so admitting a command WITHOUT its dispatch makes it panic on a nil
 		// store rather than refuse. See the note in history.go.
-		return true, graphFailure("capability_unavailable", "this graph preview supports import of legacy data into fresh workspaces, remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, comment, comments add, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link and link create/list/show/update/delete/versions/compare/count, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, children, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
+		return true, graphFailure("capability_unavailable", "this graph preview supports import of legacy data into fresh workspaces, remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, tag, comment, comments add, label list, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link and link create/list/show/update/delete/versions/compare/count, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, children, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = true, cfg, dir
 	graphPreviewTypeGeneration = graphstore.TypeGeneration
@@ -566,8 +590,8 @@ func graphOptions(cfg *configfile.Config) graphstore.Options {
 	}
 	return graphstore.Options{Backend: cfg.DoltMode, DataDir: filepath.Join(graphPreviewDir, "embeddeddolt"), Database: cfg.DoltDatabase, Branch: "main",
 		Binding:        graphstore.Binding{WorkspaceID: cfg.GraphWorkspace, ScopeURL: cfg.GraphScopeURL, AuthorityID: cfg.GraphAuthorityID, SchemaVersion: cfg.GraphSchemaVersion},
-		TypeGeneration: graphPreviewTypeGeneration,
-		ServerHost:     cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
+		TypeGeneration: graphPreviewTypeGeneration, AssessmentsEnabled: cfg.GraphAssessmentsEnabled,
+		ServerHost: cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
 }
 
 func withGraphStore(fn func(context.Context, *graphstore.Store) (any, string, error)) error {
@@ -616,73 +640,129 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "replace-properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "key", "title", "body", "status", "type", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "replace-properties"); err != nil {
 		return err
+	}
+	if cmd.Flags().Changed("id") && cmd.Flags().Changed("key") {
+		return graphFailure("invalid_selector", "choose --id or --key, not both", 2)
 	}
 	if cmd.Flags().Changed("replace-properties") {
 		return runGraphPreviewRememberPropertiesReplacement(cmd, args)
 	}
-	createOnly := cmd.Flags().Changed("create-only")
-	if createOnly {
-		enabled, _ := cmd.Flags().GetBool("create-only")
-		if !enabled {
-			return graphFailure("invalid_selector", "--create-only must be true when supplied", 2)
+	explicit := cmd.Flags().Changed("id") || cmd.Flags().Changed("key")
+	if cmd.Flags().Changed("if-revision") {
+		raw, _ := cmd.Flags().GetString("if-revision")
+		if _, err := graphPreviewParseRevisionFlag("if-revision", raw); err != nil {
+			return err
 		}
-		if !cmd.Flags().Changed("id") || cmd.Flags().Changed("update") || cmd.Flags().Changed("if-revision") {
-			return graphFailure("invalid_selector", "--create-only requires --id and cannot combine with --update or write guards", 2)
+	}
+	// Pure flag contradictions must not consume a requested body source.
+	if cmd.Flags().Changed("create-only") {
+		enabled, _ := cmd.Flags().GetBool("create-only")
+		if !enabled || !explicit || cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("update") {
+			return graphFailure("invalid_selector", "--create-only requires explicit --id/--key and cannot combine with write guards or --update", 2)
+		}
+	}
+	if cmd.Flags().Changed("type") && !cmd.Flags().Changed("create-only") {
+		return graphFailure("invalid_selector", "remember --type requires --create-only; use bd update to retype an existing Memory", 2)
+	}
+	if explicit {
+		name := "id"
+		if cmd.Flags().Changed("key") {
+			name = "key"
+		}
+		id, _ := cmd.Flags().GetString(name)
+		if _, err := memoryapi.ValidateKey(id); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		if _, err := graphstore.PrepareMemoryIdentity(graphstore.CreateRequest{PublicID: id}); err != nil {
+			return graphStorageError(err)
+		}
+		if cmd.Flags().Changed("create-only") {
+			return runGraphPreviewRememberCreateOnly(cmd, args, id)
 		}
 	}
 	if cmd.Flags().Changed("update") {
-		if cmd.Flags().Changed("id") {
-			return graphFailure("invalid_selector", "remember requires either --id for creation or --update for an existing Memory, not both", 2)
+		if explicit {
+			return graphFailure("invalid_selector", "choose --update or explicit --id/--key, not both", 2)
 		}
 		return runGraphPreviewRememberUpdate(cmd, args)
 	}
-	if cmd.Flags().Changed("id") && !createOnly {
-		return runGraphPreviewRememberUpsert(cmd, args)
-	}
-	if cmd.Flags().Changed("if-revision") {
-		return graphFailure("capability_unavailable", "remember write guards require --id or --update; generated-ID creation does not accept them", 5)
-	}
-	path, err := graphPreviewCreateBeadPath(cmd)
+	title, body, err := graphPreviewRememberPatchInput(cmd, args)
 	if err != nil {
 		return err
 	}
-	if len(args) == 0 && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") && !cmd.Flags().Changed("title") && !cmd.Flags().Changed("properties") {
-		return graphFailure("invalid_properties", "Memory creation requires a body source or --properties with body", 2)
-	}
-	titleInput, bodyInput, err := graphPreviewRememberPatchInput(cmd, args)
+	status, err := graphPreviewRememberStatus(cmd)
 	if err != nil {
 		return err
 	}
-	if titleInput != nil && strings.TrimSpace(*titleInput) == "" {
-		return graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
-	}
-	if bodyInput == nil {
-		return graphFailure("invalid_properties", "Memory creation requires a body source or --properties with body", 2)
-	}
-	title := graphPreviewMemoryTitle(*bodyInput)
-	if titleInput != nil {
-		title = *titleInput
-	}
-	metadata, err := graphPreviewMetadataCreate(cmd)
-	if err != nil {
-		return err
-	}
-	return withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		r, err := s.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: *bodyInput, Actor: getActorWithGit(), Metadata: metadata})
-		if err != nil {
-			return nil, "", err
+	publicID := ""
+	if explicit {
+		name := "id"
+		if cmd.Flags().Changed("key") {
+			name = "key"
 		}
-		return r, fmt.Sprintf("Created %s\n", path), nil
-	})
+		publicID, _ = cmd.Flags().GetString(name)
+		if _, err := memoryapi.ValidateKey(publicID); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+	} else {
+		if body == nil {
+			return graphFailure("invalid_properties", "remember without an explicit ID requires content", 2)
+		}
+		if name, ok := matchesKnownCommand(cmd, *body); ok {
+			return graphFailure("invalid_properties", fmt.Sprintf("%q looks like a command, not content; use an explicit --key to store it", name), 2)
+		}
+		publicID, err = memoryapi.ResolveKey("", *body)
+		if err != nil {
+			return graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if publicID == *body {
+			return withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+				path, err := store.ResolveExactAllocatedResourcePath(ctx, publicID)
+				if err != nil {
+					return nil, "", fmt.Errorf("%w: bare key-like content requires an explicit --key to write", err)
+				}
+				value, err := store.Show(ctx, path)
+				return nil, value.Properties.Body, err
+			}, func(_ any, body string) error { _, err := fmt.Fprintln(cmd.OutOrStdout(), body); return err })
+		}
+	}
+	return runGraphPreviewRememberUpsert(cmd, publicID, title, body, status)
 }
 
 func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
+	return runGraphPreviewShowKind(cmd, args, false)
+}
+
+func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if canonicalOutputSelected(cmd) {
-		return runCanonicalShow(cmd, args, false)
+		return runCanonicalShow(cmd, args, linkOnly)
 	}
-	if err := graphPreviewFlags(cmd, "version", "format", "include-dependents", "include-comments", "brief-deps"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "current", "refs", "children", "watch", "revision", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
+		return err
+	}
+	idFlags, _ := cmd.Flags().GetStringArray("id")
+	args = append(args, idFlags...)
+	currentMode, _ := cmd.Flags().GetBool("current")
+	if currentMode {
+		if len(args) != 0 {
+			return graphFailure("invalid_selector", "--current cannot be combined with explicit Issue IDs", 2)
+		}
+		currentID, err := graphPreviewCurrentIssueID(getActorWithGit())
+		if err != nil {
+			return err
+		}
+		if currentID == "" {
+			return graphFailure("not_found", "no current Issue found (no in-progress, hooked, or recently touched Issues)", 3)
+		}
+		args = []string{currentID}
+	}
+	shortMode, _ := cmd.Flags().GetBool("short")
+	longMode, _ := cmd.Flags().GetBool("long")
+	localTime, _ := cmd.Flags().GetBool("local-time")
+	commentsTail, _ := cmd.Flags().GetInt("comments-tail")
+	if err := validateCommentsTail(commentsTail); err != nil {
 		return err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -692,70 +772,132 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if format != "" && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags require legacy Issue --json output", 5)
 	}
+	if format != "" && (cmd.Flags().Changed("short") || cmd.Flags().Changed("long") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+		return graphFailure("capability_unavailable", "Issue display flags require the familiar Issue output format", 5)
+	}
+	watchMode, _ := cmd.Flags().GetBool("watch")
+	if watchMode {
+		return runGraphPreviewShowWatch(cmd, args, format, commentsTail)
+	}
+	showRefs, _ := cmd.Flags().GetBool("refs")
+	showChildren, _ := cmd.Flags().GetBool("children")
+	if showRefs || showChildren {
+		return runGraphPreviewShowRelated(cmd, args, showRefs, shortMode, format)
+	}
+	if len(args) > 1 {
+		return runGraphPreviewShowMany(cmd, args, shortMode, longMode, localTime, commentsTail, format)
+	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
+		return graphFailure("invalid_selector", "graph show requires one local public ID or canonical Scope URL; use a positional ID or --id", 2)
 	}
-	ref, err := graphPreviewParseReference(args[0])
+	var literal string
+	var err error
+	if cmd.Flags().Changed("id") {
+		literal, err = graphPreviewResolveLiteralArgument(args[0])
+	} else {
+		literal, err = graphPreviewResolveMemoryArgument(args[0])
+	}
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, ref.Identity)
+	ref, err := graphPreviewParseReference(literal)
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return graphPreviewReferenceFailure(err)
 	}
-	version, _ := cmd.Flags().GetString("version")
-	versioned := cmd.Flags().Changed("version")
+	if ref.Explicit && cmd.Flags().Changed("revision") {
+		return graphFailure("invalid_selector", "choose ID@revision or --revision, not both", 2)
+	}
+	ref, err = graphPreviewResolveParsedReference(ref)
+	if err != nil {
+		return graphPreviewReferenceFailure(err)
+	}
+	version, _ := cmd.Flags().GetString("revision")
+	versioned := cmd.Flags().Changed("revision")
+	if versioned {
+		version, err = graphPreviewRevisionFlag(cmd, "revision", ref.Identity, false)
+		if err != nil {
+			return err
+		}
+	}
 	if ref.Explicit {
 		if versioned {
-			return graphFailure("invalid_selector", "choose ID@revision or --version, not both", 2)
+			return graphFailure("invalid_selector", "choose ID@revision or --revision, not both", 2)
 		}
-		if ref.Revision != "current" && ref.Revision != "unpinned" {
+		if !ref.currentSelection() {
 			version, versioned = ref.Revision, true
 		}
 	}
 	if versioned && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
 		return graphFailure("capability_unavailable", "Issue detail flags cannot describe an exact retained version", 5)
 	}
-	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
-		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
+	if versioned && (cmd.Flags().Changed("short") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+		return graphFailure("capability_unavailable", "Issue display flags require a current Issue", 5)
 	}
-	var shownIssue, legacyIssue bool
+	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
+		return graphFailure("invalid_selector", "--revision requires a nonempty UTF-8 token of at most 4096 bytes", 2)
+	}
+	path, localID, err := graphPreviewResourceReadSelector(ref.Identity)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if versioned && localID != "" {
+		return graphFailure("capability_unavailable", "retained versions require an exact canonical Scope URL", 5)
+	}
+	var shownIssue, legacyIssue, legacyShort bool
+	var touchedID string
 	err = withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
+		var details *types.IssueDetails
 		var err error
 		if versioned {
 			r, err = s.ReadVersion(ctx, path, version)
 		} else {
-			r, err = s.Read(ctx, path)
-		}
-		if err != nil {
-			return nil, "", err
-		}
-		_, shownIssue = r.(graphstore.IssueRecord)
-		if shownIssue && jsonOutput && format == "" && !versioned {
 			includeDependents, _ := cmd.Flags().GetBool("include-dependents")
 			includeComments, _ := cmd.Flags().GetBool("include-comments")
 			briefDeps, _ := cmd.Flags().GetBool("brief-deps")
-			details, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
-			if err != nil {
-				return nil, "", err
+			if !jsonOutput && format == "" {
+				includeDependents, includeComments = true, true
 			}
+			_, r, details, err = s.ReadResourceWithIssueDetailsSelected(ctx, path, localID, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
+		}
+		if err != nil {
+			return nil, "", err
+		}
+		if linkOnly {
+			if _, ok := r.(graphstore.LinkRecord); !ok {
+				return nil, "", graphFailure("capability_unavailable", "link show requires a Link Resource", 5)
+			}
+		}
+		if selected, ok := r.(graphstore.IssueRecord); ok {
+			shownIssue, touchedID = true, selected.ID
+		}
+		if shortMode && shownIssue && !versioned && format == "" {
+			legacyShort = true
+			issue := *r.(graphstore.IssueRecord).Properties
+			return r, formatShortIssue(&issue), nil
+		}
+		if shownIssue && jsonOutput && format == "" && !versioned {
 			legacyIssue = true
 			return []*types.IssueDetails{details}, "", nil
 		}
-		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
-			return nil, "", graphFailure("capability_unavailable", "Issue detail flags require an Issue", 5)
+		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps") || cmd.Flags().Changed("short") || cmd.Flags().Changed("local-time") || cmd.Flags().Changed("comments-tail")) {
+			return nil, "", graphFailure("capability_unavailable", "Issue detail and display flags require an Issue", 5)
 		}
-		projected, err := graphProjectCompleteRecords(r)
-		if err != nil {
-			return nil, "", err
+		id, token := graphHumanRecordIdentity(r)
+		revision := ""
+		if !jsonOutput && format == "" {
+			revision = graphHumanRevision(ctx, s, id, token)
 		}
-		data, err := json.MarshalIndent(projected, "", "  ")
-		if err != nil {
-			return nil, "", err
+		human := graphHumanDocument(s.ScopeURL(), r, revision, versioned, longMode)
+		if !versioned {
+			human += graphHumanCurrentIssueDetails(s.ScopeURL(), details, graphIssueDetailOptions{Long: longMode, LocalTime: localTime, CommentsTail: commentsTail})
 		}
-		return r, string(data), nil
+		return r, human, nil
 	}, func(result any, human string) error {
+		if legacyShort {
+			_, err := fmt.Fprintln(cmd.OutOrStdout(), human)
+			return err
+		}
 		if legacyIssue {
 			return outputJSON(result)
 		}
@@ -765,7 +907,7 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		return graphPrint(result, human, quietFlag)
 	})
 	if err == nil && shownIssue {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }
@@ -820,9 +962,9 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"memory": false, "memoryDelete": false, "memoryPropertiesPatch": true, "linkPropertiesPatch": true,
 					"issueList": true, "beadList": true, "beadTypeFilter": true, "issueBlocked": true, "genericTraversal": true,
 					"issueListTree": false, "issueListLegacyJSON": true, "issueAssigneeFilter": true, "issueDueDate": true, "issueDueFilter": true, "issueClaim": true, "issueUnclaim": true, "issueTodo": true, "issueHeartbeat": true, "issueReclaim": true, "issueStateRead": true, "issueStateSet": false, "issueStatus": true, "issueGate": false, "issueMergeSlot": true, "issueWorkflows": false,
-					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "versionList": true, "exactVersionRead": true, "exactVersionCompare": true,
+					"blockingDependencyPairUnlink": true, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "versionList": true, "exactVersionRead": true, "exactVersionCompare": true,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone Issue assign, priority and note shortcuts, native Issue comments, quick capture and editor-backed Issue edits, bounded Issue search/count/query with ordinary JSON, and task-Issue todo add/list/done, atomic Issue claims with five-minute leases, node-local history-free heartbeat, native stale-lease reclaim, native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), state-label read, durable Issue status summary and merge-slot create/check/acquire/release. Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with local endpoint pins, same-ID re-pin, shallow property merge and guarded unlink (owned-source pins remain unavailable), blocking Dependencies with canonical-ID unlink or native pair-level dep remove, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake are available. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Human blocking dep list/tree/cycles and graph ISSUE views plus flat graph check are available within their bounded snapshot and format guards. Bounded current all-Bead listing with nominal Bead Type filtering and Issue-only legacy list JSON are available; Issue-specific filters retain the native Issue query and due/assignee filters. Native immediate children has human and ordinary JSON views; tree formatting is not yet available. Fresh graph workspaces admit atomic create --parent with a native dotted child ID and parent-child Link, plus epic status and close-eligible (including dry-run) from native parent-child Links. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, gate, set-state, duplicate/supersede journeys, HTTP History and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone Issue assign, priority and note shortcuts, native Issue comments, quick capture and editor-backed Issue edits, bounded Issue search/count/query with ordinary JSON, and task-Issue todo add/list/done, atomic Issue claims with five-minute leases, node-local history-free heartbeat, native stale-lease reclaim, native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), state-label read, durable Issue status summary and merge-slot create/check/acquire/release. Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with local endpoint pins, same-ID re-pin, shallow property merge and guarded unlink (owned-source pins remain unavailable), blocking Dependencies with canonical-ID unlink or native pair-level dep remove, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake are available. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Human all-kind dep list and blocking tree/cycles plus flat graph check are available within their bounded snapshot and format guards. Bounded current all-Bead listing with nominal Bead Type filtering and Issue-only legacy list JSON are available; Issue-specific filters retain the native Issue query and due/assignee filters. Native immediate children has human and ordinary JSON views; tree formatting is not yet available. Fresh graph workspaces admit atomic create --parent with a native dotted child ID and parent-child Link, plus epic status and close-eligible (including dry-run) from native parent-child Links. Complete dependency-blocked inspection and bounded current typed Bead graph traversal with Link-Type unions/refinements, canonical JSON and ordinary output formats are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --revision, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, gate, set-state, duplicate/supersede journeys, HTTP History and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 
@@ -876,6 +1018,8 @@ func graphStorageErrorWithFallback(err error, fallback string) error {
 		return graphFailure("revision_unknown", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrIncidentLinkConstraint):
 		return graphFailure("constraint_violation", err.Error(), 4)
+	case errors.Is(err, publicops.ErrDependentsOutsideRequest):
+		return graphFailure("constraint_violation", err.Error(), 4)
 	case errors.Is(err, graphstore.ErrGone):
 		return graphFailure("gone", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrCapabilityUnavailable), errors.Is(err, graphstore.ErrLimitExceeded):
@@ -888,9 +1032,9 @@ func graphStorageErrorWithFallback(err error, fallback string) error {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	case errors.Is(err, publicops.ErrNotesOverwrite):
 		return graphFailure("notes_overwrite_refused", err.Error()+"; use --force to replace existing notes or --append-notes to preserve them", 4)
-	case errors.Is(err, storage.ErrCloseBlocked), errors.Is(err, storage.ErrCloseOpenChildren), errors.Is(err, storage.ErrAlreadyClaimed), errors.Is(err, storage.ErrNotClaimable), errors.Is(err, storage.ErrNotOwner), errors.Is(err, storage.ErrAssigneeMismatch), errors.Is(err, publicops.ErrNotClaimed), errors.Is(err, publicops.ErrNotReleasable):
+	case errors.Is(err, storage.ErrCloseBlocked), errors.Is(err, storage.ErrCloseOpenChildren), errors.Is(err, storage.ErrAlreadyClaimed), errors.Is(err, storage.ErrNotClaimable), errors.Is(err, storage.ErrNotOwner), errors.Is(err, storage.ErrAssigneeMismatch), errors.Is(err, storage.ErrStatusMismatch), errors.Is(err, publicops.ErrNotClaimed), errors.Is(err, publicops.ErrNotReleasable):
 		return graphFailure("constraint_violation", err.Error(), 4)
-	case errors.Is(err, graphstore.ErrAlreadyExists):
+	case errors.Is(err, graphstore.ErrAlreadyExists), errors.Is(err, storage.ErrAlreadyExists), errors.Is(err, publicops.ErrAlreadyExists):
 		return graphFailure("identity_reserved", err.Error(), 4)
 	case errors.Is(err, graphstore.ErrConflict):
 		return graphFailure("revision_conflict", err.Error(), 4)

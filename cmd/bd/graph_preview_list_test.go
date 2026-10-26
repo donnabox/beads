@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"slices"
 	"strings"
 	"testing"
@@ -17,14 +18,16 @@ import (
 func graphListTestCommand(t *testing.T, args []string) *cobra.Command {
 	t.Helper()
 	cmd := newListLimitCommand(t)
-	for _, name := range []string{"format", "state", "title", "title-contains", "priority", "priority-min", "priority-max", "sort", "due-before", "due-after"} {
+	for _, name := range []string{"format", "state", "id", "title", "title-contains", "priority", "priority-min", "priority-max", "sort", "due-before", "due-after"} {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().StringP("status", "s", "", "")
 	cmd.Flags().StringP("type", "t", "", "")
 	cmd.Flags().StringP("assignee", "a", "", "")
 	cmd.Flags().StringSlice("exclude-type", nil, "")
-	for _, name := range []string{"flat", "json", "quiet", "pinned", "no-pinned", "reverse", "ready", "tree", "no-assignee", "overdue", "include-comments"} {
+	cmd.Flags().String("parent", "", "")
+	cmd.Flags().String("filter-parent", "", "")
+	for _, name := range []string{"flat", "json", "quiet", "pinned", "no-pinned", "no-parent", "reverse", "ready", "tree", "no-assignee", "overdue", "include-comments"} {
 		cmd.Flags().Bool(name, false, "")
 	}
 	for _, name := range []string{"label", "label-any", "exclude-label"} {
@@ -54,6 +57,7 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		limit      int
 	}{
 		{"flat", []string{"--flat", "--limit=2"}, false, 0, false, 2},
+		{"tree-false", []string{"--tree=false", "--limit=2"}, false, 0, false, 2},
 		{"records", []string{"--format=records-json", "--all"}, false, 0, true, 0},
 		{"records-with-flat", []string{"--format=records-json", "--flat", "--limit=2"}, false, 0, true, 2},
 		{"records-ambient", []string{"--format=records-json", "--limit=3"}, true, 0, true, 3},
@@ -63,15 +67,27 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		{"legacy-json-comments", []string{"--json", "--include-comments"}, false, 0, false, 0},
 		{"comments-need-json", []string{"--include-comments"}, false, 5, false, 0},
 		{"false-json", []string{"--flat", "--json=false"}, false, 5, false, 0},
-		{"format-json", []string{"--format=JSON"}, false, 5, false, 0},
+		{"format-json", []string{"--format=JSON"}, false, 0, false, 0},
+		{"format-json-comments", []string{"--format=json", "--include-comments"}, false, 0, false, 0},
 		{"ambient-flat", []string{"--flat"}, true, 0, false, 0},
 		{"false-flat", []string{"--flat=false"}, false, 5, false, 0},
-		{"false-ready", []string{"--flat", "--ready=false"}, false, 5, false, 0},
-		{"false-tree", []string{"--flat", "--tree=false"}, false, 5, false, 0},
+		{"false-ready", []string{"--flat", "--ready=false"}, false, 0, false, 0},
+		{"flat-and-tree-false", []string{"--flat", "--tree=false"}, false, 0, false, 0},
+		{"tree-true", []string{"--tree=true"}, false, 5, false, 0},
 		{"negative-limit", []string{"--flat", "--limit=-1"}, false, 2, false, 0},
 		{"bad-priority", []string{"--flat", "--priority=bad"}, false, 2, false, 0},
-		{"sort-id", []string{"--flat", "--sort=id"}, false, 5, false, 0},
+		{"sort-id", []string{"--flat", "--sort=id"}, false, 0, false, 0},
+		{"id-set", []string{"--id=one", "--id=two,three", "--sort=id"}, false, 0, false, 0},
+		{"sort-assignee", []string{"--flat", "--sort=assignee"}, false, 0, false, 0},
+		{"sort-closed", []string{"--flat", "--sort=closed", "--all"}, false, 0, false, 0},
 		{"both-pin", []string{"--flat", "--pinned", "--no-pinned"}, false, 2, false, 0},
+		{"no-parent", []string{"--flat", "--no-parent"}, false, 0, false, 0},
+		{"parent-flat", []string{"--flat", "--parent=beads/work"}, false, 0, false, 0},
+		{"parent-tree-false", []string{"--tree=false", "--parent=beads/work"}, false, 0, false, 0},
+		{"parent-json", []string{"--json", "--parent=beads/work"}, false, 0, false, 0},
+		{"parent-records", []string{"--format=records-json", "--parent=beads/work"}, false, 0, true, 0},
+		{"parent-default-tree", []string{"--parent=beads/work"}, false, 0, false, 0},
+		{"parent-empty", []string{"--flat", "--parent="}, false, 2, false, 0},
 		{"both-status-aliases", []string{"--flat", "--status=open", "--state=closed"}, false, 2, false, 0},
 		{"repeat-status", []string{"--flat", "--status=open", "-sclosed"}, false, 5, false, 0},
 		{"repeat-type", []string{"--flat", "--type=task", "-tbug"}, false, 5, false, 0},
@@ -124,16 +140,18 @@ func TestGraphPreviewIssueListReplayPreservesFlags(t *testing.T) {
 }
 
 func TestGraphPreviewIssueListOutput(t *testing.T) {
-	page := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: "https://example.invalid/a/beads/work", Properties: &types.Issue{Title: "quote\"\n雪", Status: types.StatusOpen, Priority: 2}}}, HasMore: true}
-	human, err := renderGraphIssueList(page, "", false, false)
-	if err != nil || human != "Issues (1; more: true; graph preview)\n\"https://example.invalid/a/beads/work\" \"open\" P2 \"quote\\\"\\n雪\"\nMore matching Issues exist; increase --limit or use --all within preview bounds.\n" {
+	const scope = "https://example.invalid/a/"
+	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
+	page := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: "https://example.invalid/a/beads/work", Type: task, Properties: &types.Issue{Title: "quote\"\n雪", Status: types.StatusOpen, Priority: 2}}}, HasMore: true}
+	human, err := renderGraphIssueList(page, "", false, false, scope)
+	if err != nil || human != "Issues (1; more: true; graph preview)\nbeads/work [task] open P2 \"quote\\\"\\n雪\"\nMore matching Issues exist; increase --limit or use --all within preview bounds.\n" {
 		t.Fatalf("human=%q err=%v", human, err)
 	}
-	quiet, err := renderGraphIssueList(page, "", false, true)
+	quiet, err := renderGraphIssueList(page, "", false, true, scope)
 	if err != nil || quiet != "" {
 		t.Fatalf("quiet=%q %v", quiet, err)
 	}
-	output, err := renderGraphIssueList(page, "", true, false)
+	output, err := renderGraphIssueList(page, "", true, false, scope)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -144,31 +162,78 @@ func TestGraphPreviewIssueListOutput(t *testing.T) {
 	if err := json.Unmarshal([]byte(output), &envelope); err != nil || !envelope.Preview || !envelope.Result.HasMore || len(envelope.Result.Items) != 1 || envelope.Result.Items[0].Properties.Title != page.Items[0].Properties.Title {
 		t.Fatalf("JSON=%s %v", output, err)
 	}
-	empty, err := renderGraphIssueList(graphstore.IssueListPage{Items: []graphstore.IssueRecord{}}, "", false, false)
+	empty, err := renderGraphIssueList(graphstore.IssueListPage{Items: []graphstore.IssueRecord{}}, "", false, false, scope)
 	if err != nil || empty != "Issues (0; more: false; graph preview)\n" {
 		t.Fatalf("empty=%q %v", empty, err)
 	}
 	page.Items[0].Properties.Title = strings.Repeat("x", graphIssueListOutputLimit)
-	if output, err := renderGraphIssueList(page, "", true, false); err == nil || output != "" {
+	if output, err := renderGraphIssueList(page, "", true, false, scope); err == nil || output != "" {
 		t.Fatal("oversized page emitted partial output")
+	}
+}
+
+func TestRenderGraphIssueTree(t *testing.T) {
+	root := &types.Issue{ID: "beads/root", Title: "Root", Status: types.StatusOpen, Priority: 1}
+	child := &types.Issue{ID: "beads/child", Title: "Child", Status: types.StatusOpen, Priority: 2}
+	grand := &types.Issue{ID: "beads/grand", Title: "Grand", Status: types.StatusInProgress, Priority: 2}
+	tree := graphstore.IssueTreeSelected{
+		Root: root, Items: []*types.Issue{grand, child},
+		Children: map[string][]string{"beads/root": {"beads/child"}, "beads/child": {"beads/grand"}},
+	}
+	output, err := renderGraphIssueTree(tree, "", "priority", false)
+	if err != nil || !strings.Contains(output, "Root") || !strings.Contains(output, "├") && !strings.Contains(output, "└") || strings.Index(output, "Child") > strings.Index(output, "Grand") || !strings.Contains(output, "Total: 3 issues") {
+		t.Fatalf("tree output: %q %v", output, err)
+	}
+	noChildren, err := renderGraphIssueTree(graphstore.IssueTreeSelected{Root: root}, "", "", false)
+	if err != nil || noChildren != "Issue 'beads/root' has no children\n" {
+		t.Fatalf("empty tree output: %q %v", noChildren, err)
+	}
+	bad := graphstore.IssueTreeSelected{Root: root, Items: []*types.Issue{child}, Children: map[string][]string{"beads/root": {"beads/missing"}}}
+	if output, err := renderGraphIssueTree(bad, "", "", false); err == nil || output != "" {
+		t.Fatalf("invalid tree emitted partial output: %q %v", output, err)
+	}
+	tree.Children["beads/grand"] = []string{"beads/child"}
+	cyclic, err := renderGraphIssueTree(tree, "", "", false)
+	if err != nil || strings.Count(cyclic, treeCycleMarker) != 1 {
+		t.Fatalf("stored parent-child cycle must terminate with one marker: %q %v", cyclic, err)
+	}
+}
+
+func TestRenderGraphIssueTreeBoundsRepeatedDiamondPaths(t *testing.T) {
+	root := &types.Issue{ID: "beads/root", Title: "Root", Status: types.StatusOpen}
+	tree := graphstore.IssueTreeSelected{Root: root, Children: make(map[string][]string)}
+	parents := []string{root.ID}
+	// Two children at each level, each with both previous-level parents,
+	// yield exponentially many display paths from only a small Issue set.
+	for level := 0; level < 22; level++ {
+		children := []string{fmt.Sprintf("beads/a%d", level), fmt.Sprintf("beads/b%d", level)}
+		for _, id := range children {
+			tree.Items = append(tree.Items, &types.Issue{ID: id, Title: id, Status: types.StatusOpen})
+		}
+		for _, parent := range parents {
+			tree.Children[parent] = append([]string(nil), children...)
+		}
+		parents = children
+	}
+	output, err := renderGraphIssueTree(tree, "", "", false)
+	if !errors.Is(err, graphstore.ErrLimitExceeded) || output != "" {
+		t.Fatalf("repeated diamond paths must stop at the buffered output bound: bytes=%d err=%v", len(output), err)
 	}
 }
 
 func TestGraphPreviewBeadListOutput(t *testing.T) {
 	const scope = "https://example.invalid/a/"
+	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
 	page := graphstore.BeadListPage{Items: []any{
-		graphstore.IssueRecord{ID: scope + "beads/work", Properties: &types.Issue{Title: "Ship the release", Status: types.StatusOpen, Priority: 1}},
+		graphstore.IssueRecord{ID: scope + "beads/work", Type: task, Properties: &types.Issue{Title: "Ship the release", Status: types.StatusOpen, Priority: 1}},
 		graphstore.Record{ID: scope + "beads/plan", Type: scope + "types/memory", Properties: graphstore.Properties{Title: "Release plan"}},
-		graphstore.IssueRecord{ID: scope + "beads/odd", Properties: &types.Issue{Title: "quote\"\n雪", Status: "on-ice", Priority: 4}},
+		graphstore.IssueRecord{ID: scope + "beads/odd", Type: task, Properties: &types.Issue{Title: "quote\"\n雪", Status: "on-ice", Priority: 4}},
 	}}
 
 	// An Issue row adds its status and priority between the kind and the title;
 	// the Memory row and the header keep their layout.
 	human, err := renderGraphBeadList(page, scope, false, "", false, false)
-	want := "Beads (3; more: false; graph preview)\n" +
-		"  beads/work  Issue   open  P1  Ship the release\n" +
-		"  beads/plan  types/memory  Release plan\n" +
-		"  beads/odd  Issue   on-ice  P4  quote\"\\n雪\n"
+	want := "Beads (3; more: false; graph preview)\nbeads/work [task] open P1 \"Ship the release\"\nbeads/plan [types/memory] \"Release plan\"\nbeads/odd [task] on-ice P4 \"quote\\\"\\n雪\"\n"
 	if err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
@@ -183,7 +248,7 @@ func TestGraphPreviewBeadListOutput(t *testing.T) {
 		{true, "More Beads exist; increase --limit within preview bounds.\n"},
 	} {
 		got, err := renderGraphBeadList(page, scope, tc.all, "", false, false)
-		if err != nil || !strings.HasPrefix(got, "Beads (3; more: true; graph preview)\n") || !strings.HasSuffix(got, "P4  quote\"\\n雪\n"+tc.hint) {
+		if err != nil || !strings.HasPrefix(got, "Beads (3; more: true; graph preview)\n") || !strings.HasSuffix(got, "P4 \"quote\\\"\\n雪\"\n"+tc.hint) {
 			t.Fatalf("all=%t: %q %v", tc.all, got, err)
 		}
 	}
@@ -286,27 +351,28 @@ func TestGraphPreviewIssueListSelection(t *testing.T) {
 // The notice is one line directly under the header, in human output only.
 func TestGraphPreviewListNoticeRendering(t *testing.T) {
 	const scope = "https://example.invalid/a/"
+	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
 	const notice = "Memories are not listed (Issue query selected by: --status)."
-	issues := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: scope + "beads/work", Properties: &types.Issue{Title: "Work", Status: types.StatusOpen, Priority: 1}}}}
-	human, err := renderGraphIssueList(issues, notice, false, false)
-	if want := "Issues (1; more: false; graph preview)\n" + notice + "\n\"" + scope + "beads/work\" \"open\" P1 \"Work\"\n"; err != nil || human != want {
+	issues := graphstore.IssueListPage{Items: []graphstore.IssueRecord{{ID: scope + "beads/work", Type: task, Properties: &types.Issue{Title: "Work", Status: types.StatusOpen, Priority: 1}}}}
+	human, err := renderGraphIssueList(issues, notice, false, false, scope)
+	if want := "Issues (1; more: false; graph preview)\n" + notice + "\nbeads/work [task] open P1 \"Work\"\n"; err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
-	if quiet, err := renderGraphIssueList(issues, notice, false, true); err != nil || quiet != "" {
+	if quiet, err := renderGraphIssueList(issues, notice, false, true, scope); err != nil || quiet != "" {
 		t.Fatalf("quiet=%q %v", quiet, err)
 	}
-	withNotice, err := renderGraphIssueList(issues, notice, true, false)
+	withNotice, err := renderGraphIssueList(issues, notice, true, false, scope)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if withoutNotice, err := renderGraphIssueList(issues, "", true, false); err != nil || withNotice != withoutNotice {
+	if withoutNotice, err := renderGraphIssueList(issues, "", true, false, scope); err != nil || withNotice != withoutNotice {
 		t.Fatalf("structured output must not carry the notice: %q vs %q (%v)", withNotice, withoutNotice, err)
 	}
 
 	const labelNotice = "directory.labels \"frontend\" is not applied to this Bead Type."
 	beads := graphstore.BeadListPage{Items: []any{graphstore.Record{ID: scope + "beads/plan", Type: scope + "types/memory", Properties: graphstore.Properties{Title: "Plan"}}}}
 	human, err = renderGraphBeadList(beads, scope, false, labelNotice, false, false)
-	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\n  beads/plan  types/memory  Plan\n"; err != nil || human != want {
+	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\nbeads/plan [types/memory] \"Plan\"\n"; err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
 	}
 	if quiet, err := renderGraphBeadList(beads, scope, false, labelNotice, false, true); err != nil || quiet != "" {

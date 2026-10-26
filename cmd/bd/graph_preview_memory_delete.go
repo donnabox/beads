@@ -13,6 +13,9 @@ import (
 // The default preview is a read; neither --force nor forget implies a cascade
 // or a missing guard.
 func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool) error {
+	if !forget && graphPreviewDeleteSetRequested(cmd, args) {
+		return runGraphPreviewDeleteIssueSet(cmd, args)
+	}
 	request, err := graphPreviewMemoryDeleteInput(cmd, args, forget)
 	if err != nil {
 		return err
@@ -23,14 +26,44 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 		}
 	}
 	request.Actor = getActorWithGit()
+	selectedArgument := args[0]
+	if !forget {
+		selectedArgument, err = graphPreviewWritableResourceArgument(selectedArgument)
+		if err != nil {
+			return err
+		}
+	}
+	readPath, localID, err := graphPreviewResourceReadSelector(selectedArgument)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		if !forget {
-			current, err := store.Read(ctx, request.Path)
-			if err != nil {
-				return nil, "", err
+		var selectedPath string
+		var current any
+		var err error
+		if forget {
+			selectedPath, err = store.ResolveMemorySelector(ctx, args[0])
+			if err == nil {
+				current, err = store.Read(ctx, selectedPath)
 			}
+		} else {
+			selectedPath, current, err = store.ReadResourceSelected(ctx, readPath, localID)
+		}
+		if err != nil {
+			return nil, "", err
+		}
+		request.Path = selectedPath
+		if !forget {
 			if _, issue := current.(graphstore.IssueRecord); issue {
-				result, err := store.DeleteIssue(ctx, graphstore.IssueDeleteRequest(request))
+				issueRequest := graphstore.IssueDeleteRequest{Path: selectedPath,
+					Actor: request.Actor, ExpectedRevision: request.ExpectedRevision,
+					Unconditional: request.Unconditional, Preview: request.Preview}
+				var result graphstore.IssueDeleteResult
+				if issueRequest.Preview {
+					result, err = store.PreviewDeleteIssueWithIncidentLinks(ctx, issueRequest)
+				} else {
+					result, err = store.DeleteIssueWithIncidentLinks(ctx, issueRequest)
+				}
 				if err != nil {
 					return nil, "", err
 				}
@@ -41,6 +74,13 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 				summary := fmt.Sprintf("%s %s at final live revision %s; identity and prior snapshots remain retained", verb, result.Issue.ID, result.Issue.Revision)
 				if result.Terminal != nil {
 					summary = fmt.Sprintf("%s %s at deletion revision %s; final live revision %s remains retained", verb, result.Issue.ID, result.Terminal.Revision, result.Issue.Revision)
+				}
+				if count := len(result.IncidentLinkIDs); count != 0 {
+					if result.Preview {
+						summary += fmt.Sprintf("; %d incident Link(s) would be removed", count)
+					} else {
+						summary += fmt.Sprintf("; %d incident Link(s) removed", count)
+					}
 				}
 				return result, summary, nil
 			}
@@ -53,7 +93,7 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 		if result.Preview {
 			verb = "Would delete"
 		}
-		summary := fmt.Sprintf("%s %s at final live revision %s; identity and prior snapshots remain retained", verb, result.Memory.ID, result.Memory.Revision)
+		summary := fmt.Sprintf("%s %s at final live revision %s; identity and prior snapshots remain retained", verb, graphPreviewMemoryDisplayID(result.Memory), result.Memory.Revision)
 		if result.Terminal != nil {
 			summary += fmt.Sprintf("; deletion revision %s", result.Terminal.Revision)
 		}
@@ -64,7 +104,7 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget bool) (graphstore.MemoryDeleteRequest, error) {
 	allowed := []string{"if-revision"}
 	if !forget {
-		allowed = append(allowed, "force")
+		allowed = append(allowed, "force", "dry-run")
 	}
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return graphstore.MemoryDeleteRequest{}, err
@@ -72,17 +112,14 @@ func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget boo
 	if len(args) != 1 {
 		return graphstore.MemoryDeleteRequest{}, graphFailure("invalid_selector", "deletion requires exactly one Bead ID or beads/PATH", 2)
 	}
-	selector, err := graphPreviewWritableIdentity(args[0])
+	path, _, err := graphPreviewResourceReadSelector(args[0])
 	if err != nil {
 		return graphstore.MemoryDeleteRequest{}, graphFailure("invalid_selector", err.Error(), 2)
 	}
-	path, err := graphPreviewBeadSelector(selector)
-	if err != nil {
-		return graphstore.MemoryDeleteRequest{}, err
-	}
 	force, _ := cmd.Flags().GetBool("force")
-	preview := !forget && !force
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
+	dryRun, _ := cmd.Flags().GetBool("dry-run")
+	preview := !forget && (dryRun || !force)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, path, true)
 	if err != nil {
 		return graphstore.MemoryDeleteRequest{}, err
 	}

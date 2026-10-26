@@ -11,9 +11,9 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 )
 
-// ListInstalledTypes returns the persisted, validated descriptor set in stable
-// ID order. Partial or older preview installations are refused; this read
-// never installs Types or enumerates binary-only descriptors.
+// ListInstalledTypes returns checked fixed/retained bindings and currently
+// configured unused native Issue declarations in stable ID order. This read
+// never installs a binding; partial or older generations are refused.
 func (s *Store) ListInstalledTypes(ctx context.Context) ([]graph.TypeDescriptor, error) {
 	var descriptors []graph.TypeDescriptor
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
@@ -21,7 +21,7 @@ func (s *Store) ListInstalledTypes(ctx context.Context) ([]graph.TypeDescriptor,
 			return err
 		}
 		var err error
-		descriptors, err = installedPreviewTypes(ctx, tx, s.ScopeURL())
+		descriptors, err = s.selectedDescriptorsInTx(ctx, tx)
 		return err
 	})
 	if err != nil {
@@ -33,11 +33,11 @@ func (s *Store) ListInstalledTypes(ctx context.Context) ([]graph.TypeDescriptor,
 	return descriptors, nil
 }
 
-// ReadType reads an admitted installed descriptor, never a reconstructed stand-in.
-// The preview fixes its installed descriptors at initialization; every record read
-// and write checks that immutable binding. Separate Type and record reads thus
-// cannot silently adopt a changed Type contract. Custom Type installation is not
-// supported by this accessor or by the preview writer.
+// ReadType reads a checked selected declaration. Native adapter definitions are
+// deterministic; used concrete bindings persist immutably across configuration
+// edits and retained reads. Configured unused classes may be derived, and their
+// visibility does not authorize new native use. This accessor never registers
+// or edits a Type, and every record validates its concrete binding.
 func (s *Store) ReadType(ctx context.Context, path string) (graph.TypeDescriptor, error) {
 	if !strings.HasPrefix(path, "types/") {
 		return graph.TypeDescriptor{}, fmt.Errorf("%w: expected a local types/ path", graph.ErrValidation)
@@ -64,6 +64,8 @@ func (s *Store) ReadType(ctx context.Context, path string) (graph.TypeDescriptor
 }
 
 // readTypeInTx requires the caller to validate the binding in this transaction.
+// Concrete native identities are authoritative adapter-derived descriptors;
+// their existence does not bypass native classification admission.
 func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.TypeDescriptor, error) {
 	// Resolve against the complete selected installer definition set, rather than
 	// a hardcoded command alias switch or an unbounded persisted descriptor.
@@ -84,6 +86,18 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 		break
 	}
 	if name == "" {
+		if isConcreteNativeIssue(s.ScopeURL(), id) || isConcreteNativeDependency(s.ScopeURL(), id) {
+			descriptors, err := s.selectedDescriptorsInTx(ctx, tx)
+			if err != nil {
+				return graph.TypeDescriptor{}, err
+			}
+			for _, d := range descriptors {
+				if d.ID() == id {
+					return d, nil
+				}
+			}
+			return graph.TypeDescriptor{}, ErrNotFound
+		}
 		return graph.TypeDescriptor{}, ErrNotFound
 	}
 	var raw []byte

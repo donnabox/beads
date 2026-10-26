@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
@@ -257,7 +258,7 @@ func TestGraphPreviewAgentInstructionsWorkflow(t *testing.T) {
 					}
 					graphMemoryReadRaw(t, bd, work, home, "Use UTC for timestamps", "", "recall", "beads/time-policy")
 					found := graphMixedResult[graphMemoryDiscoveryResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "memories", "timestamps", "--format", "records-json"))
-					if !found.Complete || found.Next != nil || len(found.Items) != 1 || found.Items[0].ID != record.ID || found.Items[0].Version != record.Revision {
+					if !found.Complete || found.Next != nil || len(found.Items) != 1 || found.Items[0].ID != "beads/time-policy" || found.Items[0].Version != record.Revision {
 						t.Fatalf("new process did not discover documented Memory: %+v", found)
 					}
 				})
@@ -267,6 +268,25 @@ func TestGraphPreviewAgentInstructionsWorkflow(t *testing.T) {
 }
 
 func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
+	t.Run("selector-before-store", func(t *testing.T) {
+		t.Chdir(t.TempDir())
+		oldConfig, oldJSON, oldStructured := graphPreviewConfig, jsonOutput, graphPreviewStructuredErrors
+		t.Cleanup(func() {
+			graphPreviewConfig, jsonOutput, graphPreviewStructuredErrors = oldConfig, oldJSON, oldStructured
+		})
+		graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/memory-reads/"}
+		jsonOutput, graphPreviewStructuredErrors = false, false
+		for _, selector := range []string{"https://foreign.invalid/beads/plan", "a//b"} {
+			cmd := &cobra.Command{}
+			cmd.Flags().String("revision", "", "")
+			var refusal error
+			stderr := captureStderr(t, func() { refusal = runGraphPreviewRecall(cmd, []string{selector}) })
+			var failure *exitError
+			if !errors.As(refusal, &failure) || failure.Code != 2 || !strings.HasPrefix(stderr, "invalid_selector:") {
+				t.Fatalf("lexical refusal reached uninitialized storage: %q %v %q", selector, refusal, stderr)
+			}
+		}
+	})
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
@@ -289,6 +309,13 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				args := append([]string{"memories", search, "--format", "records-json", "--all", "--details"}, extra...)
 				return graphMixedResult[graphMemoryDiscoveryResult](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
 			}
+			ownedLinkValue := func(link graphstore.LinkRecord) graphstore.VersionValue {
+				// The CLI receipt carries revision only. Reconstitute the storage
+				// alias on this expected-value copy before the public-wire oracle
+				// projects it; the saved record and every other field stay intact.
+				link.Version = link.Revision
+				return graphMemoryReadValue(t, link)
+			}
 			recall := func(want string, args ...string) {
 				t.Helper()
 				graphMemoryReadRaw(t, bd, work, home, want, "", append([]string{"recall"}, args...)...)
@@ -309,27 +336,27 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			original := graphMixedResult[graphstore.Record](t, call("remember", body, "--id", "beads/plan", "--title", "Straße plan"))
 			empty := graphMixedResult[graphstore.Record](t, call("remember", "", "--id", "beads/empty", "--title", "Empty"))
 			contextMemory := graphMixedResult[graphstore.Record](t, call("remember", "Surviving context", "--id", "beads/context", "--title", "Context"))
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Surviving Issue", "--id", "beads/work"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Surviving Issue", "--graph-path", "beads/work"))
 			selected := discover("STRASSE")
-			if selected.Projection != "summary" || selected.Scope != scope || !selected.Complete || selected.Next != nil || len(selected.Items) != 1 || selected.Items[0].ID != original.ID || selected.Items[0].Version != original.Revision || !reflect.DeepEqual(selected.Items[0].MatchedFields, []string{"title"}) || selected.Items[0].Excerpt != nil {
+			if selected.Projection != "summary" || selected.Scope != scope || !selected.Complete || selected.Next != nil || len(selected.Items) != 1 || selected.Items[0].ID != "beads/plan" || selected.Items[0].Version != original.Revision || !reflect.DeepEqual(selected.Items[0].MatchedFields, []string{"title"}) || selected.Items[0].Excerpt == nil || selected.Items[0].Excerpt.Text != body || selected.Items[0].Excerpt.Truncated {
 				t.Fatalf("literal case-folded discovery: %+v", selected)
 			}
-			recall(body, selected.Items[0].ID, "--version", selected.Items[0].Version)
+			recall(body, selected.Items[0].ID, "--revision", "="+selected.Items[0].Version)
 			recall(body, "beads/plan", "--quiet")
 			recall("", empty.ID)
-			recall("", empty.ID, "--version", empty.Revision, "--quiet")
+			recall("", empty.ID, "--revision", "="+empty.Revision, "--quiet")
 			properties := graphstore.Properties{Title: "Revised plan", Body: "new-body-sentinel\n雪"}
 			rawProperties, err := json.Marshal(properties)
 			if err != nil {
 				t.Fatal(err)
 			}
-			edited := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", string(rawProperties), "--if-revision", original.Revision)).Memory
+			edited := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", string(rawProperties), "--if-revision", "="+original.Revision)).Memory
 			related := scope + "types/superseded-by"
 			firstLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--id", "links/owned", "--type", related, "--properties", `{"note":"first"}`, "--if-source-revision", edited.Revision)).Link
-			linked := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			changedLink := graphMixedResult[graphstore.LinkMutationResult](t, call("update", "links/owned", "--properties", `{"note":"second"}`, "--if-revision", firstLink.Revision, "--if-source-revision", linked.Revision)).Link
-			current := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			survivingLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/survivor", "--type", "types/references")).Link
+			linked := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
+			changedLink := graphMixedResult[graphstore.LinkMutationResult](t, call("update", "links/owned", "--properties", `{"note":"second"}`, "--if-revision", "="+firstLink.Revision, "--if-source-revision", linked.Revision)).Link
+			current := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
+			survivingLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, "beads/context", "--id", "links/survivor", "--type", "types/references")).Link
 			issueCurrent := call("show", issue.ID)
 			if current.Properties != properties || original.Properties.Body != body || empty.Properties.Body != "" {
 				t.Fatal("fixture did not preserve authored body bytes")
@@ -340,35 +367,35 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			saved := []graphstore.Record{original, edited, linked, current, empty, contextMemory}
 			exactBefore := map[string]string{}
 			for _, memory := range saved {
-				out := call("show", memory.ID, "--version", memory.Revision)
+				out := call("show", memory.ID, "--revision", "="+memory.Revision)
 				if got := graphMixedResult[graphstore.Record](t, out); !reflect.DeepEqual(got, memory) {
 					t.Fatalf("exact Memory: %+v want=%+v", got, memory)
 				}
 				exactBefore[memory.ID+"@"+memory.Revision] = out
 			}
-			issueExact := call("show", issue.ID, "--version", issue.Revision)
+			issueExact := call("show", issue.ID, "--revision", "="+issue.Revision)
 			issueOld := graphMixedResult[graphstore.IssueRecord](t, issueExact)
 			if issueOld.ID != issue.ID || issueOld.Revision != issue.Revision || issueOld.Properties == nil || issueOld.Properties.Title != "Surviving Issue" {
 				t.Fatal("exact Issue lost saved identity or title")
 			}
 			for _, link := range []graphstore.LinkRecord{firstLink, changedLink, survivingLink} {
-				if got := graphMixedResult[graphstore.LinkRecord](t, call("show", link.ID, "--version", link.Revision)); !reflect.DeepEqual(got, link) {
+				if got := graphMixedResult[graphstore.LinkRecord](t, call("show", link.ID, "--revision", "="+link.Revision)); !reflect.DeepEqual(got, link) {
 					t.Fatalf("exact Link: %+v want=%+v", got, link)
 				}
 			}
 			before := graphMemoryReadSnapshot(t, work)
 			all := discover("")
-			if !all.Complete || all.Next != nil || len(all.Items) != 3 || all.Items[0].ID != contextMemory.ID || all.Items[1].ID != empty.ID || all.Items[2].ID != current.ID || all.Items[2].Version != current.Revision || all.Items[2].Details == nil || all.Items[2].Details.OwnedLinkCount != 1 {
+			if !all.Complete || all.Next != nil || len(all.Items) != 3 || all.Items[0].ID != "beads/context" || all.Items[1].ID != "beads/empty" || all.Items[2].ID != "beads/plan" || all.Items[2].Version != current.Revision || all.Items[2].Details == nil || all.Items[2].Details.OwnedLinkCount != 1 {
 				t.Fatalf("complete current discovery: %+v", all)
 			}
 			matched := discover("BODY-SENTINEL")
-			if len(matched.Items) != 1 || matched.Items[0].ID != current.ID || !reflect.DeepEqual(matched.Items[0].MatchedFields, []string{"body"}) || matched.Items[0].Excerpt == nil || matched.Items[0].Excerpt.Text != properties.Body || matched.Items[0].Excerpt.Truncated {
+			if len(matched.Items) != 1 || matched.Items[0].ID != "beads/plan" || !reflect.DeepEqual(matched.Items[0].MatchedFields, []string{"body"}) || matched.Items[0].Excerpt == nil || matched.Items[0].Excerpt.Text != properties.Body || matched.Items[0].Excerpt.Truncated {
 				t.Fatalf("body excerpt: %+v", matched)
 			}
 			if got := discover("STRASSE"); len(got.Items) != 0 || !got.Complete || got.Next != nil {
 				t.Fatalf("discovery used old state: %+v", got)
 			}
-			recall(body, selected.Items[0].ID, "--version", selected.Items[0].Version, "--readonly")
+			recall(body, selected.Items[0].ID, "--revision", "="+selected.Items[0].Version, "--readonly")
 			recall(properties.Body, current.ID, "--quiet", "--readonly")
 			contentChanges := []graphstore.VersionChange{
 				{Area: "properties", Member: "body", From: graphMemoryReadValue(t, body), To: graphMemoryReadValue(t, properties.Body)},
@@ -381,8 +408,8 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			}
 			compare(edited, original, reverse)
 			compare(current, current, []graphstore.VersionChange{})
-			compare(edited, linked, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: graphstore.VersionValue{}, To: graphMemoryReadValue(t, firstLink)}})
-			compare(linked, current, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: graphMemoryReadValue(t, firstLink), To: graphMemoryReadValue(t, changedLink)}})
+			compare(edited, linked, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: graphstore.VersionValue{}, To: ownedLinkValue(firstLink)}})
+			compare(linked, current, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: ownedLinkValue(firstLink), To: ownedLinkValue(changedLink)}})
 			linkComparison := call("compare", firstLink.ID, "--from", firstLink.Revision, "--to", changedLink.Revision)
 			graphMemoryReadComparison(t, linkComparison, graphstore.VersionComparison{Resource: graphstore.VersionComparisonResource{ID: firstLink.ID, Type: firstLink.Type, Source: firstLink.Source, Target: firstLink.Target}, From: graphstore.VersionComparisonEndpoint{Version: firstLink.Revision, Attribution: firstLink.Attribution}, To: graphstore.VersionComparisonEndpoint{Version: changedLink.Revision, Attribution: changedLink.Attribution}, Compared: []string{"properties", "metadata", "endpoints"}, Unsupported: []string{}, Changes: []graphstore.VersionChange{{Area: "properties", Member: "note", From: graphMemoryReadValue(t, "first"), To: graphMemoryReadValue(t, "second")}}})
 			graphMemoryReadComparison(t, call("compare", issue.ID, "--from", issue.Revision, "--to", issue.Revision), graphstore.VersionComparison{Resource: graphstore.VersionComparisonResource{ID: issue.ID, Type: issue.Type}, From: graphstore.VersionComparisonEndpoint{Version: issueOld.Revision, Attribution: issueOld.Attribution}, To: graphstore.VersionComparisonEndpoint{Version: issueOld.Revision, Attribution: issueOld.Attribution}, Compared: []string{"properties", "metadata", "owned"}, Unsupported: []string{}, Changes: []graphstore.VersionChange{}})
@@ -391,8 +418,8 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				if token == "" || len(token) > 4096 || token == string([]byte{255}) {
 					code = "invalid_selector"
 				}
-				graphPolicyCLI(t, bd, work, home, nil, code, "show", current.ID, "--version", token, "--json")
-				graphMemoryReadRaw(t, bd, work, home, "", code, "recall", current.ID, "--version", token)
+				graphPolicyCLI(t, bd, work, home, nil, code, "show", current.ID, "--revision", "="+token, "--json")
+				graphMemoryReadRaw(t, bd, work, home, "", code, "recall", current.ID, "--revision", "="+token)
 				graphPolicyCLI(t, bd, work, home, nil, code, "compare", current.ID, "--from", original.Revision, "--to", token, "--json")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "revision_unknown", "compare", current.ID, "--from", "unknown-token", "--to", "unknown-token", "--json")
@@ -417,8 +444,8 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				t.Fatal("frozen comparison differs")
 			}
 			recall(properties.Body, current.ID)
-			recall(body, original.ID, "--version", original.Revision)
-			if got := call("show", original.ID, "--version", original.Revision); got != exactBefore[original.ID+"@"+original.Revision] {
+			recall(body, original.ID, "--revision", "="+original.Revision)
+			if got := call("show", original.ID, "--revision", "="+original.Revision); got != exactBefore[original.ID+"@"+original.Revision] {
 				t.Fatal("frozen exact read differs")
 			}
 			if err := os.Remove(freeze); err != nil {
@@ -430,47 +457,47 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				t.Fatal("reads/refusals changed complete current snapshot or writer token")
 			}
 			for _, memory := range saved {
-				if out := call("show", memory.ID, "--version", memory.Revision); out != exactBefore[memory.ID+"@"+memory.Revision] {
+				if out := call("show", memory.ID, "--revision", "="+memory.Revision); out != exactBefore[memory.ID+"@"+memory.Revision] {
 					t.Fatal("reads changed retained Memory")
 				}
 			}
-			if out := call("show", issue.ID, "--version", issue.Revision); out != issueExact {
+			if out := call("show", issue.ID, "--revision", "="+issue.Revision); out != issueExact {
 				t.Fatal("reads changed retained Issue")
 			}
 
-			unlinked := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", changedLink.ID, "--if-revision", changedLink.Revision, "--if-source-revision", current.Revision))
+			unlinked := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", changedLink.ID, "--if-revision", "="+changedLink.Revision, "--if-source-revision", current.Revision))
 			if !unlinked.Changed || unlinked.Link.State != "deleted" || unlinked.Link.PreviousVersion != changedLink.Revision {
 				t.Fatalf("unlink receipt: %+v", unlinked)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", changedLink.ID, "--version", unlinked.Link.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", changedLink.ID, "--revision", "="+unlinked.Link.Revision, "--json")
 			final := graphMixedResult[graphstore.Record](t, call("show", current.ID))
 			if len(final.Owned) != 0 || final.Properties != current.Properties {
 				t.Fatal("unlink did not preserve final live body")
 			}
-			removed := []graphstore.VersionChange{{Area: "owned", ID: changedLink.ID, From: graphMemoryReadValue(t, changedLink), To: graphstore.VersionValue{}}}
+			removed := []graphstore.VersionChange{{Area: "owned", ID: changedLink.ID, From: ownedLinkValue(changedLink), To: graphstore.VersionValue{}}}
 			compare(current, final, removed)
-			call("delete", final.ID, "--force", "--if-revision", final.Revision)
+			call("delete", final.ID, "--force", "--if-revision", "="+final.Revision)
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", final.ID, "--json")
 			graphMemoryReadRaw(t, bd, work, home, "", "gone", "recall", final.ID)
 			remaining := discover("")
-			if !remaining.Complete || remaining.Next != nil || len(remaining.Items) != 2 || remaining.Items[0].ID != contextMemory.ID || remaining.Items[1].ID != empty.ID {
+			if !remaining.Complete || remaining.Next != nil || len(remaining.Items) != 2 || remaining.Items[0].ID != "beads/context" || remaining.Items[1].ID != "beads/empty" {
 				t.Fatalf("deleted discovery: %+v", remaining)
 			}
 			for _, memory := range append(saved, final) {
-				if got := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--version", memory.Revision)); !reflect.DeepEqual(got, memory) {
+				if got := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--revision", "="+memory.Revision)); !reflect.DeepEqual(got, memory) {
 					t.Fatalf("retained after delete: %+v want=%+v", got, memory)
 				}
-				recall(memory.Properties.Body, memory.ID, "--version", memory.Revision, "--readonly", "--quiet")
+				recall(memory.Properties.Body, memory.ID, "--revision", "="+memory.Revision, "--readonly", "--quiet")
 			}
 			compare(current, final, removed)
-			compare(final, current, []graphstore.VersionChange{{Area: "owned", ID: changedLink.ID, From: graphstore.VersionValue{}, To: graphMemoryReadValue(t, changedLink)}})
+			compare(final, current, []graphstore.VersionChange{{Area: "owned", ID: changedLink.ID, From: graphstore.VersionValue{}, To: ownedLinkValue(changedLink)}})
 			compare(final, final, []graphstore.VersionChange{})
 			for _, link := range []graphstore.LinkRecord{firstLink, changedLink, survivingLink} {
-				if got := graphMixedResult[graphstore.LinkRecord](t, call("show", link.ID, "--version", link.Revision)); !reflect.DeepEqual(got, link) {
+				if got := graphMixedResult[graphstore.LinkRecord](t, call("show", link.ID, "--revision", "="+link.Revision)); !reflect.DeepEqual(got, link) {
 					t.Fatal("delete changed retained Link")
 				}
 			}
-			if out := call("show", issue.ID, "--version", issue.Revision); out != issueExact {
+			if out := call("show", issue.ID, "--revision", "="+issue.Revision); out != issueExact {
 				t.Fatal("delete changed retained Issue")
 			}
 			if out := call("show", issue.ID); out != issueCurrent {
@@ -483,6 +510,15 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				t.Fatal("delete changed surviving unowned Link")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "cannot reuse", "--id", "beads/plan", "--title", "Reserved", "--json")
+			// A legacy content-derived identity cannot be known before reading
+			// its body. A guard remains supported once that exact ID is derived.
+			const derivedBody = "A content derived Memory supports an observed revision guard"
+			derived := graphMixedResult[graphstore.Record](t, call("remember", derivedBody))
+			guarded := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", derivedBody, "--title", "Guarded derived title", "--if-revision", "="+derived.Revision)).Memory
+			if guarded.ID != derived.ID || guarded.Properties.Body != derivedBody || guarded.Properties.Title != "Guarded derived title" || guarded.Revision == derived.Revision {
+				t.Fatalf("content-derived guarded update lost identity or body: before=%+v after=%+v", derived, guarded)
+			}
+
 		})
 	}
 }

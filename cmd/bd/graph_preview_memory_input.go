@@ -25,7 +25,7 @@ func rememberArgs(cmd *cobra.Command, args []string) error {
 // Shared by argument and workspace admission: a graph-only flag must never
 // fall into the legacy remember path or read input there, even without a body.
 func rememberGraphFlagsChanged(cmd *cobra.Command) bool {
-	for _, name := range []string{"id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "set-metadata", "unset-metadata", "properties"} {
+	for _, name := range []string{"id", "title", "body", "status", "type", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "set-metadata", "unset-metadata", "properties"} {
 		if cmd.Flags().Changed(name) {
 			return true
 		}
@@ -34,7 +34,7 @@ func rememberGraphFlagsChanged(cmd *cobra.Command) bool {
 }
 
 func graphPreviewRememberBody(cmd *cobra.Command, args []string) (string, error) {
-	fileSet, stdinSet := cmd.Flags().Changed("body-file"), cmd.Flags().Changed("stdin")
+	fileSet, stdinSet, bodySet := cmd.Flags().Changed("body-file"), cmd.Flags().Changed("stdin"), cmd.Flags().Changed("body")
 	count := len(args)
 	if fileSet {
 		count++
@@ -42,8 +42,15 @@ func graphPreviewRememberBody(cmd *cobra.Command, args []string) (string, error)
 	if stdinSet {
 		count++
 	}
+	if bodySet {
+		count++
+	}
 	if count != 1 {
-		return "", graphFailure("invalid_properties", "remember requires exactly one body source: positional text, --body-file FILE, or --stdin", 2)
+		return "", graphFailure("invalid_properties", "remember requires exactly one body source: positional text, --body TEXT, --body-file FILE, or --stdin", 2)
+	}
+	if bodySet {
+		value, _ := cmd.Flags().GetString("body")
+		return graphPreviewReadMemoryBody(strings.NewReader(value))
 	}
 	if stdinSet {
 		enabled, _ := cmd.Flags().GetBool("stdin")

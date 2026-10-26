@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 )
@@ -18,21 +18,15 @@ import (
 // to the existing Memory writer, which resolves omitted fields and the accepted
 // predecessor in its own transaction. A deleted ID cannot be reused, and an
 // Issue at that ID cannot be patched as a Memory.
-func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
-	path, err := graphPreviewCreateBeadPath(cmd)
-	if err != nil {
-		return err
-	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+func runGraphPreviewRememberUpsert(cmd *cobra.Command, publicID string, title, body, status *string) error {
+	path := ""
+	var err error
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, publicID, false)
 	if err != nil {
 		return err
 	}
 	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
 		return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
-	}
-	title, body, err := graphPreviewRememberPatchInput(cmd, args)
-	if err != nil {
-		return err
 	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
@@ -49,15 +43,28 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 			if title != nil {
 				createTitle = *title
 			}
-			created, createErr := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: createTitle, Body: *body, Actor: actor, Metadata: createMetadata})
+			create := graphstore.CreateRequest{PublicID: publicID, Title: createTitle, Body: *body, Actor: actor, Metadata: createMetadata}
+			if status != nil {
+				properties, marshalErr := json.Marshal(map[string]string{"title": createTitle, "body": *body, "status": *status})
+				if marshalErr != nil {
+					return nil, "", marshalErr
+				}
+				create.Title, create.Body, create.PropertiesJSON = "", "", properties
+			}
+			created, createErr := store.Create(ctx, create)
 			if createErr == nil {
-				return created, fmt.Sprintf("Created %s\n", path), nil
+				return created, fmt.Sprintf("Created %s\n", publicID), nil
 			}
 			if !graphPreviewRememberDefiniteError(createErr, graphstore.ErrAlreadyExists) {
 				return nil, "", createErr
 			}
+			var resolveErr error
+			path, resolveErr = store.ResolveExactAllocatedResourcePath(ctx, publicID)
+			if resolveErr != nil {
+				return nil, "", resolveErr
+			}
 			result, patchErr := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-				Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
+				Path: path, Title: title, Body: body, Status: status, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
 				ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 			})
 			if graphPreviewRememberDefiniteError(patchErr, graphstore.ErrNotFound) || graphPreviewRememberDefiniteError(patchErr, graphstore.ErrGone) || graphPreviewRememberDefiniteError(patchErr, graphstore.ErrCapabilityUnavailable) {
@@ -65,8 +72,15 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 			}
 			return graphPreviewRememberPatchResult(result, patchErr)
 		}
+		path, err = store.ResolveExactAllocatedResourcePath(ctx, publicID)
+		if err != nil {
+			if graphPreviewRememberDefiniteError(err, graphstore.ErrNotFound) && title != nil && strings.TrimSpace(*title) == "" {
+				return nil, "", graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
+			}
+			return nil, "", err
+		}
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-			Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
+			Path: path, Title: title, Body: body, Status: status, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
 			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
 		if graphPreviewRememberDefiniteError(err, graphstore.ErrNotFound) && title != nil && strings.TrimSpace(*title) == "" {
@@ -91,7 +105,7 @@ func graphPreviewRememberPatchResult(result graphstore.MemoryMutationResult, err
 	if !result.Changed {
 		verb = "Unchanged"
 	}
-	return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s: %q", verb, result.Memory.ID, result.Memory.Properties.Title), result.Replaced, nil)
+	return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s: %q", verb, graphPreviewMemoryDisplayID(result.Memory), result.Memory.Properties.Title), result.Replaced, nil)
 }
 
 // Replacement needs an existing Memory. Creation initializes the complete
@@ -99,27 +113,24 @@ func graphPreviewRememberPatchResult(result graphstore.MemoryMutationResult, err
 // by this edit route. The checked Memory writer applies properties and metadata
 // together, retaining its revision/no-op rules.
 func runGraphPreviewRememberPropertiesReplacement(cmd *cobra.Command, args []string) error {
-	if len(args) != 0 || cmd.Flags().Changed("title") || cmd.Flags().Changed("body-file") || cmd.Flags().Changed("stdin") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("create-only") {
+	if len(args) != 0 || cmd.Flags().Changed("title") || cmd.Flags().Changed("body") || cmd.Flags().Changed("status") || cmd.Flags().Changed("type") || cmd.Flags().Changed("body-file") || cmd.Flags().Changed("stdin") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("create-only") {
 		return graphFailure("invalid_properties", "--replace-properties requires an existing --id or --update and cannot combine with body, title or --properties", 2)
 	}
-	if cmd.Flags().Changed("id") == cmd.Flags().Changed("update") {
-		return graphFailure("invalid_selector", "--replace-properties requires exactly one of --id or --update", 2)
+	literal := cmd.Flags().Changed("id") || cmd.Flags().Changed("key")
+	if literal == cmd.Flags().Changed("update") {
+		return graphFailure("invalid_selector", "replacement requires exactly one identity selector", 2)
+	}
+	selector := ""
+	if cmd.Flags().Changed("id") {
+		selector, _ = cmd.Flags().GetString("id")
+	} else if cmd.Flags().Changed("key") {
+		selector, _ = cmd.Flags().GetString("key")
+	} else {
+		selector, _ = cmd.Flags().GetString("update")
 	}
 	var path string
 	var err error
-	if cmd.Flags().Changed("id") {
-		path, err = graphPreviewCreateBeadPath(cmd)
-	} else {
-		selector, _ := cmd.Flags().GetString("update")
-		path, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
-	}
-	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, selector, false)
 	if err != nil {
 		return err
 	}
@@ -135,6 +146,15 @@ func runGraphPreviewRememberPropertiesReplacement(cmd *cobra.Command, args []str
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		if literal {
+			path, err = store.ResolveExactAllocatedResourcePath(ctx, selector)
+		} else {
+			path, err = store.ResolveMemorySelector(ctx, selector)
+		}
+		if err != nil {
+			return nil, "", err
+		}
+
 		result, err := store.PatchMemoryProperties(ctx, graphstore.MemoryPropertiesPatchRequest{
 			Path: path, Patch: raw, Actor: getActorWithGit(), ExpectedRevision: revision,
 			Unconditional: unconditional, Metadata: metadata,
@@ -148,14 +168,13 @@ func runGraphPreviewRememberPropertiesReplacement(cmd *cobra.Command, args []str
 // a guard, manufactures an unconditional replacement from stale content, or retries.
 func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	selector, _ := cmd.Flags().GetString("update")
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
-	if err != nil {
+	// Lexical admission is independent of catalog kind and precedes any body read.
+	if _, _, err := graphPreviewResourceReadSelector(selector); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	var path string
+	var err error
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, selector, false)
 	if err != nil {
 		return err
 	}
@@ -166,13 +185,22 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	status, err := graphPreviewRememberStatus(cmd)
+	if err != nil {
+		return err
+	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		path, err = store.ResolveMemorySelector(ctx, selector)
+		if err != nil {
+			return nil, "", err
+		}
+
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-			Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: getActorWithGit(),
+			Path: path, Title: title, Body: body, Status: status, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: getActorWithGit(),
 			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
 		if err != nil {
@@ -182,7 +210,7 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 		if !result.Changed {
 			verb = "Unchanged"
 		}
-		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s: %q", verb, result.Memory.ID, result.Memory.Properties.Title), result.Replaced, nil)
+		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s: %q", verb, graphPreviewMemoryDisplayID(result.Memory), result.Memory.Properties.Title), result.Replaced, nil)
 	})
 }
 
@@ -215,9 +243,9 @@ func graphPreviewRememberPatchInput(cmd *cobra.Command, args []string) (*string,
 	} else {
 		title = propertyTitle
 	}
-	if len(args) == 0 && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") {
-		if title == nil && propertyBody == nil && !cmd.Flags().Changed("properties") && !graphPreviewMetadataFlagsChanged(cmd) {
-			return nil, nil, graphFailure("invalid_properties", "an existing-ID remember write requires --properties, --title, a metadata edit or one explicit body source", 2)
+	if len(args) == 0 && !cmd.Flags().Changed("body") && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") {
+		if title == nil && propertyBody == nil && !cmd.Flags().Changed("status") && !cmd.Flags().Changed("properties") && !graphPreviewMetadataFlagsChanged(cmd) {
+			return nil, nil, graphFailure("invalid_properties", "an existing-ID remember write requires --properties, --title, --status, a metadata edit or one explicit body source", 2)
 		}
 		return title, propertyBody, nil
 	}

@@ -35,7 +35,7 @@ func TestGraphEpicProgressAndEligibleClose(t *testing.T) {
 				t.Fatal(err)
 			}
 			statuses, err := store.EpicStatuses(ctx)
-			if err != nil || len(statuses) != 1 || statuses[0].Epic.ID != "beads/epic" ||
+			if err != nil || len(statuses) != 1 || statuses[0].Epic.ID != epic.Properties.ID ||
 				statuses[0].TotalChildren != 1 || statuses[0].ClosedChildren != 0 || statuses[0].EligibleForClose {
 				t.Fatalf("initial epic status: %+v %v", statuses, err)
 			}

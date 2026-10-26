@@ -17,8 +17,10 @@ var linkCmd = &cobra.Command{
 	Short:   "Create, inspect, update and delete Links",
 	Long: `Use bd link create/list/show/update/delete/versions/compare/count for Links
 in a graph workspace. The graph two-ID form additionally accepts the selected
-endpoint revision syntax, whose exact pins and @current still refuse pending
-implementation; native bd dep add/remove retain literal IDs.
+endpoint revision syntax for informational Links. Exact local pins and
+@current are supported where the selected Link Type permits them; owned-source
+pins remain unavailable. Native Dependency endpoints remain floating, and
+bd dep add/remove retain literal Issue IDs.
 
 In ordinary Issue workspaces, shorthand for 'bd dep add <id1> <id2>'. By default creates a "blocks"
 dependency (id2 blocks id1). Use --type to specify a different relationship.

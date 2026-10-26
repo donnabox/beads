@@ -18,11 +18,11 @@ func runGraphPreviewUpdateMetadataOnly(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return err
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, path, true)
 	if err != nil {
 		return err
 	}

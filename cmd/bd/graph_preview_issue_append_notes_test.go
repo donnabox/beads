@@ -38,7 +38,7 @@ func TestGraphPreviewIssueAppendNotesInput(t *testing.T) {
 		{"above-memory-input-limit", strings.Repeat("x", (1<<20)+1)},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := issueTextCommand(t, "--append-notes="+tc.value, "--if-revision=stale-observed-token")
+			cmd := issueTextCommand(t, "--append-notes="+tc.value, "--if-revision==stale-observed-token")
 			appendNotesNoInput(t, cmd)
 			if !graphPreviewIssueEditFlagsChanged(cmd) {
 				t.Fatal("append-only presence did not select the Issue field route")
@@ -94,15 +94,12 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 		{"replacement-notes", []string{"--append-notes=Progress", "--notes=Replacement"}, 2},
 		{"clear-replacement-notes", []string{"--append-notes=Progress", "--notes="}, 2},
 		{"force", []string{"--append-notes=Progress", "--force"}, 2},
-		{"false-force", []string{"--append-notes=Progress", "--force=false"}, 2},
 		{"claim", []string{"--append-notes=Progress", "--claim"}, 5},
 		{"false-claim-direct-request", []string{"--append-notes=Progress", "--claim=false"}, 5},
-		{"workflow", []string{"--append-notes=Progress", "--status=closed"}, 5},
 		{"source-guard", []string{"--append-notes=Progress", "--if-source-revision=other"}, 5},
-		{"assignee-guard", []string{"--append-notes=Progress", "--if-assignee="}, 5},
-		{"status-guard", []string{"--append-notes=Progress", "--if-status=open"}, 5},
-		{"file", []string{"--append-notes=Progress", "--body-file=missing"}, 5},
-		{"stdin-false", []string{"--append-notes=Progress", "--stdin=false"}, 5},
+		{"invalid-assignee-guard", []string{"--append-notes=Progress", "--if-assignee=\xff"}, 2},
+		{"empty-status-guard", []string{"--append-notes=Progress", "--if-status="}, 2},
+		{"file", []string{"--append-notes=Progress", "--body-file=missing"}, 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
@@ -120,6 +117,16 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 	if err != nil || !cmd.Flags().Changed("properties") || request.AppendNotes == nil || *request.AppendNotes != "Progress" {
 		t.Fatalf("mixed append and empty property merge: %+v %v", request, err)
 	}
+	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--append-notes=Progress", "--stdin=false"), "beads/work")
+	if err != nil || request.AppendNotes == nil || *request.AppendNotes != "Progress" || request.Description != nil {
+		t.Fatalf("false stdin flag changed append edit: %+v %v", request, err)
+	}
+	cmd = issueTextCommand(t, "--append-notes=Progress", "--force=false")
+	appendNotesNoInput(t, cmd)
+	request, err = graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || request.AppendNotes == nil || *request.AppendNotes != "Progress" || request.ForceNotesOverwrite || request.ForceAssigneeTransfer {
+		t.Fatalf("false force changed append intent: %+v %v", request, err)
+	}
 }
 
 func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
@@ -134,14 +141,14 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 		flags    []string
 		code     int
 	}{
-		// Invalid text reaches Issue admission (exit2), rather than falling
-		// through to Memory's unsupported-field refusal (exit5).
-		{"issue-route", "beads/work", []string{"--append-notes=\xff"}, 2},
-		{"canonical-issue-route", "https://example.invalid/beads/work", []string{"--append-notes=\xff"}, 2},
+		// An opaque local ID needs the catalog before its backing kind is known.
+		// Canonical URLs also require allocation lookup; their segments do not establish Kind.
+		{"opaque-local-needs-catalog", "beads/work", []string{"--append-notes=\xff"}, 5},
+		{"canonical-needs-catalog", "https://example.invalid/beads/work", []string{"--append-notes=\xff"}, 5},
 		{"link-route", "links/context", []string{"--append-notes=Progress"}, 5},
 		{"foreign-selector", "https://foreign.invalid/beads/work", []string{"--append-notes=Progress"}, 2},
-		{"unsupported-selector", "alias/work-123", []string{"--append-notes=Progress"}, 2},
-		{"false-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim=false"}, 2},
+		{"unknown-local-needs-catalog", "alias/work-123", []string{"--append-notes=Progress"}, 5},
+		{"false-claim-needs-catalog", "https://example.invalid/beads/work", []string{"--append-notes=Progress", "--claim=false"}, 5},
 		{"true-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -154,6 +161,15 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 			}
 		})
 	}
+	t.Run("selected-issue-route", func(t *testing.T) {
+		cmd := issueTextCommand(t, "--append-notes=\xff")
+		appendNotesNoInput(t, cmd)
+		err := runGraphPreviewUpdateIssue(cmd, "beads/work", "work")
+		var failure *exitError
+		if !errors.As(err, &failure) || failure.Code != 2 {
+			t.Fatalf("selected Issue malformed text reached storage: %v", err)
+		}
+	})
 	// This tests the Memory route's own field admission, not the store-backed
 	// classification of a healthy Memory selected through generic update.
 	t.Run("direct-memory-route", func(t *testing.T) {

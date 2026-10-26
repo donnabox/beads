@@ -251,9 +251,27 @@ func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
 	if code != 3 || stdout != "" || stderr == "" {
 		t.Fatalf("raw failure wrote result or lost status: code=%d out=%q err=%q", code, stdout, stderr)
 	}
-	call("link", "delete", "links/edge", "--force", "--json")
-	if afterDelete := call("link", "versions", "links/edge", "--output-format", "json"); afterDelete != listed {
-		t.Fatalf("private deletion marker became a citable version: before=%s after=%s", listed, afterDelete)
+	removedLink := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "links/edge", "--force", "--json"))
+	var beforeLink, afterLink struct {
+		Data struct {
+			Versions     []map[string]any                  `json:"versions"`
+			CurrentState *graphstore.ResourceTerminalState `json:"currentState"`
+			Terminals    []map[string]any                  `json:"terminal_versions"`
+		} `json:"data"`
+	}
+	afterDelete := call("link", "versions", "links/edge", "--output-format", "json")
+	if err := json.Unmarshal([]byte(listed), &beforeLink); err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal([]byte(afterDelete), &afterLink); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(beforeLink.Data.Versions, afterLink.Data.Versions) || afterLink.Data.CurrentState == nil || afterLink.Data.CurrentState.Revision != removedLink.Link.Revision || len(afterLink.Data.Terminals) != 1 {
+		t.Fatalf("Link deletion context missing or became citable: before=%s after=%s", listed, afterDelete)
+	}
+	linkStream, linkStderr, linkCode := graphVersionsProcess(t, bd, work, home, "link", "versions", "links/edge", "--output-format", "jsonl")
+	if linkCode != 5 || linkStderr == "" || strings.Contains(linkStream, `"record_type":"item"`) || !strings.Contains(linkStream, `"record_type":"terminal"`) {
+		t.Fatalf("Link terminal context was silently dropped from JSONL: code=%d out=%s err=%s", linkCode, linkStream, linkStderr)
 	}
 	// The merged History adapter must preserve real deletion context in JSON,
 	// and refuse JSONL before emitting items it cannot interpret independently.
@@ -315,7 +333,7 @@ func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
 		}
 	}
 	assertHistoryContext(deleted.Terminal, 1)
-	call("update", "beads/context", "--from-revision", original.Revision, "--if-revision", deleted.Terminal.Revision, "--json")
+	call("update", "beads/context", "--from-revision", "="+original.Revision, "--if-revision", "="+deleted.Terminal.Revision, "--json")
 	// Recovery removes currentState but must not drop the retained terminal.
 	assertHistoryContext(nil, 2)
 	// Admission fails before the provider opens, but must still use the chosen

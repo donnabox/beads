@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"strings"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -18,12 +17,14 @@ import (
 // IssueChildCreateRequest binds an ordinary child create to one checked graph
 // parent. The native create writer allocates the dotted ID and parent-child
 // Dependency; the graph writer publishes their Issue and Link identities in
-// the same transaction. No explicit child ID or other edge is admitted here.
+// the same transaction. Optional local Issue dependencies use that transaction
+// too; an explicit child ID is still not admitted.
 type IssueChildCreateRequest struct {
 	ParentPath             string
 	ExpectedParentRevision string
 	InheritLabels          bool
 	Create                 publicops.CreateRequest
+	Dependencies           []IssueCreateDependency
 }
 
 type IssueChildCreateResult struct {
@@ -50,6 +51,11 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		return IssueChildCreateResult{}, err
 	}
 	create.Issue.DueAt = due
+	deferUntil, err := normalizeIssueDefer(create.Issue.DeferUntil)
+	if err != nil {
+		return IssueChildCreateResult{}, err
+	}
+	create.Issue.DeferUntil = deferUntil
 	var result IssueChildCreateResult
 	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
@@ -73,7 +79,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
-		if parent.Type != issueType {
+		if !nativeIssueTypeMatches(s.ScopeURL(), parent.Type, issueType) {
 			return fmt.Errorf("%w: parent is not an Issue of the installed relationship Type", storage.ErrValidation)
 		}
 		if parent.Revision != request.ExpectedParentRevision {
@@ -85,7 +91,24 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		// The selected graph path can differ from the native backing ID. The
 		// native writer must receive that backing ID so its counter and edge
 		// refer to the same parent the graph read just checked.
-		native := issueops.CloneCreateRequest(create)
+		resolved, native, err := s.prepareIssueCreateDependenciesInTx(ctx, tx, issueType, create, request.Dependencies)
+		if err != nil {
+			return err
+		}
+		forward := 0
+		for _, dependency := range resolved {
+			if !dependency.reverse {
+				forward++
+			}
+		}
+		if forward+1 > PreviewOwnedLinkLimit {
+			return fmt.Errorf("%w: preview source-owned Link limit %d exceeded", storage.ErrValidation, PreviewOwnedLinkLimit)
+		}
+		for _, dependency := range resolved {
+			if !dependency.reverse && dependency.targetID == parent.Properties.ID {
+				return fmt.Errorf("%w: parent is already linked by the native child create", storage.ErrValidation)
+			}
+		}
 		native.ParentID = parent.Properties.ID
 		native.InheritLabelsFromParent = request.InheritLabels
 		if err := issueops.ValidatePublicCreateRequest(native); err != nil {
@@ -100,6 +123,14 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
+		// The native counter allocated this ID, but another Resource may have
+		// reserved its public spelling. Refusal must roll the counter, Issue,
+		// and native parent edge back in this same transaction.
+		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
+			return err
+		} else if exists {
+			return ErrAlreadyExists
+		}
 		if !sameIssueCreateFields(create.Issue, created.Issue, create.Actor) || issueops.IsWisp(created.Issue) ||
 			!strings.HasPrefix(created.Issue.ID, parent.Properties.ID+".") {
 			return fmt.Errorf("%w: native child Issue cannot be represented exactly", storage.ErrValidation)
@@ -113,6 +144,13 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		}
 		childRevision, err := freshToken()
 		if err != nil {
+			return err
+		}
+		issueType, err = NativeIssueTypeURL(s.ScopeURL(), string(created.Issue.IssueType))
+		if err != nil {
+			return err
+		}
+		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
@@ -157,11 +195,15 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err := s.afterStage("child-link-catalog"); err != nil {
 			return err
 		}
-		link, err := s.currentLinkInTx(ctx, tx, linkPath)
+		link, err := s.currentLinkForCreationInTx(ctx, tx, linkPath)
 		if err != nil {
 			return err
 		}
-		if link.Source != graph.CanonicalURL(s.ScopeURL(), childPath) || link.Target != parent.ID || link.Type != linkType {
+		childURL, err := s.publicResourceURLInTx(ctx, tx, childPath)
+		if err != nil {
+			return err
+		}
+		if link.Source != childURL || link.Target != parent.ID || link.Type != linkType {
 			return fmt.Errorf("%w: child Link endpoints or Type differ from native Dependency", ErrInvalidStore)
 		}
 		linkBytes, err := canonicalJSON(link)
@@ -173,6 +215,11 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		}
 		if err := s.afterStage("child-link-retained"); err != nil {
 			return err
+		}
+		if len(resolved) != 0 {
+			if err := s.mapIssueCreateDependenciesInTx(ctx, tx, childPath, created.Issue.ID, create.Actor, resolved, false); err != nil {
+				return fmt.Errorf("map child Issue dependencies: %w", err)
+			}
 		}
 		// The child has no prior graph mapping whose context could be preserved.
 		if err := s.recordIssueMappingContextInTx(ctx, tx, childPath, created.Issue.ID, issueRevisionContext{Inception: "create"}); err != nil {
@@ -190,7 +237,11 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
-		if len(child.Owned) != 1 || !bytes.Equal(child.Owned[0], linkBytes) {
+		foundParent := false
+		for _, owned := range child.Owned {
+			foundParent = foundParent || bytes.Equal(owned, linkBytes)
+		}
+		if len(child.Owned) != forward+1 || !foundParent {
 			return fmt.Errorf("%w: child has no exact owned parent Link", ErrInvalidStore)
 		}
 		result = IssueChildCreateResult{Child: child, Link: link}

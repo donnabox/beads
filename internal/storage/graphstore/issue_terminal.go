@@ -92,7 +92,7 @@ func (s *Store) NativeIssueAllocation(ctx context.Context, path string) (bool, e
 		}
 		var backing, kind, state string
 		var typ, key sql.NullString
-		err := tx.QueryRowContext(ctx, `SELECT backing,resource_kind,allocation_state,CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&backing, &kind, &state, &typ, &key)
+		err := tx.QueryRowContext(ctx, `SELECT backing,resource_kind,allocation_state,CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+512, path).Scan(&backing, &kind, &state, &typ, &key)
 		if errors.Is(err, sql.ErrNoRows) {
 			return ErrNotFound
 		}
@@ -109,7 +109,7 @@ func (s *Store) NativeIssueAllocation(ctx context.Context, path string) (bool, e
 		if err != nil {
 			return err
 		}
-		if kind != "bead" || (!typ.Valid || typ.String != issueType) || !key.Valid || key.String == "" {
+		if kind != "bead" || (!typ.Valid || !nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType)) || !key.Valid || key.String == "" {
 			return ErrInvalidStore
 		}
 		native = true
@@ -176,7 +176,7 @@ func (s *Store) issueTerminalInTx(ctx context.Context, tx *sql.Tx, path, version
 	if err != nil {
 		return nil, generation, err
 	}
-	terminal, err := s.decodeMemoryTerminal(path, version, raw, actor)
+	terminal, err := s.decodeMemoryTerminal(ctx, tx, path, version, raw, actor)
 	if err != nil {
 		return nil, generation, err
 	}

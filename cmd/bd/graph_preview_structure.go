@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 func runGraphPreviewDepList(cmd *cobra.Command, selectors []string) error {
@@ -18,8 +19,8 @@ func runGraphPreviewDepList(cmd *cobra.Command, selectors []string) error {
 		return graphFailure("invalid_selector", "dependency direction must be down or up", 2)
 	}
 	typ, _ := cmd.Flags().GetString("type")
-	if typ != "" && typ != "blocks" {
-		return graphFailure("capability_unavailable", "graph dependency listing currently supports only blocking Dependencies", 5)
+	if typ != "" && !types.DependencyType(typ).IsValid() {
+		return graphFailure("invalid_properties", "dependency type must be non-empty and fit the native type column", 2)
 	}
 	paths := make([]string, 0, len(selectors))
 	seen := make(map[string]bool, len(selectors))
@@ -34,7 +35,7 @@ func runGraphPreviewDepList(cmd *cobra.Command, selectors []string) error {
 		}
 	}
 	if jsonOutput {
-		return graphFailure("capability_unavailable", "graph dep list --json cannot preserve native single-Issue versus batch Dependency record shapes; use the human blocking view", 5)
+		return graphFailure("capability_unavailable", "graph dep list --json cannot preserve native single-Issue versus batch Dependency record shapes; use the human dependency view", 5)
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		links := make([]graphstore.LinkRecord, 0)
@@ -43,7 +44,7 @@ func runGraphPreviewDepList(cmd *cobra.Command, selectors []string) error {
 			if direction == "up" {
 				linkDirection = "in"
 			}
-			found, err := store.ListIssueDependencies(ctx, path, linkDirection)
+			found, err := store.ListIssueDependencies(ctx, path, linkDirection, typ)
 			if err != nil {
 				return nil, "", err
 			}
@@ -51,10 +52,10 @@ func runGraphPreviewDepList(cmd *cobra.Command, selectors []string) error {
 		}
 		var human strings.Builder
 		for _, link := range links {
-			fmt.Fprintf(&human, "%s  %s depends on %s\n", graphPreviewDisplayLocalURL(link.ID), graphPreviewDisplayLocalURL(link.Source), graphPreviewDisplayLocalURL(link.Target))
+			fmt.Fprintf(&human, "%s  %s depends on %s via %s\n", graphPreviewDisplayLocalURL(link.ID), graphPreviewDisplayLocalURL(link.Source), graphPreviewDisplayLocalURL(link.Target), link.Properties["dep_type"])
 		}
 		if len(links) == 0 {
-			human.WriteString("No blocking Dependencies.\n")
+			human.WriteString("No Dependencies.\n")
 		}
 		return links, strings.TrimSuffix(human.String(), "\n"), nil
 	})

@@ -46,7 +46,7 @@ func TestGraphPreviewRevisionGuardIsExplicit(t *testing.T) {
 		wantCurrent, wantErr bool
 	}{
 		{"absent accepts current", "", nil, true, false},
-		{"observed", "observed", []string{"--if-revision=observed"}, false, false},
+		{"observed", "observed", []string{"--if-revision==observed"}, false, false},
 		{"empty", "", []string{"--if-revision="}, false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestGraphPreviewRevisionGuardIsExplicit(t *testing.T) {
 			if err := cmd.ParseFlags(tc.args); err != nil {
 				t.Fatal(err)
 			}
-			revision, current, err := graphPreviewRevisionGuard(cmd, false)
+			revision, current, err := graphPreviewRevisionGuard(cmd, false, "plan", false)
 			if revision != tc.wantRevision || current != tc.wantCurrent || (err != nil) != tc.wantErr {
 				t.Fatalf("revision=%q current=%t err=%v", revision, current, err)
 			}
@@ -76,7 +76,7 @@ func TestGraphPreviewEditRevisionGuardDefaultsToCurrent(t *testing.T) {
 		wantError    bool
 	}{
 		{nil, "", true, false},
-		{[]string{"--if-revision=observed"}, "observed", false, false},
+		{[]string{"--if-revision==observed"}, "observed", false, false},
 		{[]string{"--if-revision="}, "", false, true},
 	} {
 		cmd := &cobra.Command{}
@@ -84,9 +84,28 @@ func TestGraphPreviewEditRevisionGuardDefaultsToCurrent(t *testing.T) {
 		if err := cmd.ParseFlags(tc.args); err != nil {
 			t.Fatal(err)
 		}
-		revision, current, err := graphPreviewEditRevisionGuard(cmd)
+		revision, current, err := graphPreviewEditRevisionGuard(cmd, "plan", false)
 		if revision != tc.wantRevision || current != tc.wantCurrent || (err != nil) != tc.wantError {
 			t.Fatalf("args=%v revision=%q current=%t err=%v", tc.args, revision, current, err)
+		}
+	}
+}
+
+func TestGraphPreviewUniformRevisionFlagSyntax(t *testing.T) {
+	for _, raw := range []string{"1", "3", "9223372036854775807", "=3", "=saved-r1"} {
+		if _, err := graphPreviewParseRevisionFlag("revision", raw); err != nil {
+			t.Errorf("valid --revision %q: %v", raw, err)
+		}
+	}
+	for _, raw := range []string{"", "0", "-1", "current", "saved-r1", "=", "9223372036854775808"} {
+		if _, err := graphPreviewParseRevisionFlag("revision", raw); err == nil {
+			t.Errorf("invalid --revision %q accepted", raw)
+		}
+	}
+	for _, tc := range []struct{ raw, token string }{{"=3", "3"}, {"=saved-r1", "saved-r1"}} {
+		got, err := graphPreviewRevisionValue("revision", tc.raw, "", false)
+		if err != nil || got != tc.token {
+			t.Errorf("exact %q = %q, %v; want %q", tc.raw, got, err, tc.token)
 		}
 	}
 }
@@ -141,8 +160,8 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		{nil, "", false},
 		{[]string{"--type", "types/references"}, "https://example.invalid/demo/types/references", false},
 		{[]string{"--type", "types/preview-related"}, "", true},
-		{[]string{"--type", "blocks"}, "https://example.invalid/demo/types/dependency", false},
-		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/types/dependency", false},
+		{[]string{"--type", "blocks"}, "https://example.invalid/demo/types/native-dependency/626c6f636b73", false},
+		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/types/native-dependency/706172656e742d6368696c64", false},
 		{[]string{"--type", "random"}, "", true},
 		{[]string{"--type="}, "", true},
 	} {

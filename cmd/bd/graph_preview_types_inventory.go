@@ -9,14 +9,13 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
-	"github.com/steveyegge/beads/internal/types"
 )
 
 // graphPreviewTypesInventory renders the provider's selected definitions. It
 // neither installs definitions nor assumes a particular Memory catalog or parent
-// graph. The default text expands the existing Issue/Dependency classifications;
-// JSON and details describe the installed nominal Types themselves.
-func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, customTypes []string, details bool) (graphTypeInventory, string, error) {
+// graph. Text, JSON and details describe the actual declared Types; native
+// classification shorthands do not form a second inventory authority.
+func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, details, assessmentsEnabled bool) (graphTypeInventory, string, error) {
 	descriptors := append([]graph.TypeDescriptor(nil), selected...)
 	sort.Slice(descriptors, func(i, j int) bool {
 		return graph.CompareCodeUnits(descriptors[i].ID(), descriptors[j].ID()) < 0
@@ -29,7 +28,7 @@ func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, c
 		*count = *count + 1
 	}
 	for _, descriptor := range descriptors {
-		if graphPreviewIntrinsicType(descriptor) {
+		if (!graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) && graphPreviewIntrinsicType(descriptor)) || !graphstore.AssessmentTypeAvailable(scope, descriptor.ID(), assessmentsEnabled) {
 			continue
 		}
 		var out *strings.Builder
@@ -44,34 +43,12 @@ func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, c
 		default:
 			return graphTypeInventory{}, "", fmt.Errorf("%w: installed Type has unknown resource category", graphstore.ErrInvalidStore)
 		}
-		if !details && descriptor.Describes() == graph.KindBead && descriptor.ID() == graphstore.IssueTypeURL(scope) {
-			for _, entry := range coreWorkTypes {
-				name := string(entry.Type)
-				add(out, count, name, graphPreviewTypeTitle(name)+" Issue")
-			}
-			for _, entry := range systemWorkTypes() {
-				add(out, count, entry.Name, graphPreviewTypeTitle(entry.Name)+" Issue")
-			}
-			for _, name := range customTypes {
-				add(out, count, name, graphPreviewTypeTitle(name)+" Issue")
-			}
-			continue
-		}
-		if !details && descriptor.Describes() == graph.KindLink && descriptor.ID() == graphstore.DependencyTypeURL(scope) {
-			for _, kind := range types.WellKnownDependencyTypes() {
-				name, title := string(kind), graphPreviewTypeTitle(string(kind))
-				if kind == types.DepBlocks {
-					title = "Blocking"
-				}
-				if kind == types.DepParentChild {
-					title = "Parent/Child"
-				}
-				add(out, count, name, title+" Dependency")
-			}
-			continue
-		}
 		id := strings.TrimPrefix(descriptor.ID(), scope)
-		add(out, count, id, descriptor.Name())
+		label := descriptor.Name()
+		if descriptor.ID() == graphstore.IssueTypeURL(scope) || descriptor.ID() == graphstore.DependencyTypeURL(scope) {
+			label += " (abstract)"
+		}
+		add(out, count, id, label)
 		if details {
 			var pretty bytes.Buffer
 			if err := json.Indent(&pretty, descriptor.CanonicalJSON(), "", "  "); err != nil {
@@ -86,7 +63,10 @@ func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, c
 	if details {
 		prefix = "Installed "
 	}
-	return inventory, fmt.Sprintf("%sBead Types (%d):\n%s\n%sLink Types (%d):\n%s", prefix, beadCount, beads.String(), prefix, linkCount, links.String()), nil
+	var text strings.Builder
+	fmt.Fprintf(&text, "%sBead Types (%d):\n%s", prefix, beadCount, beads.String())
+	fmt.Fprintf(&text, "\n%sLink Types (%d):\n%s", prefix, linkCount, links.String())
+	return inventory, text.String(), nil
 }
 
 // The legacy descriptor has no visibility member. Reserve both intrinsic names

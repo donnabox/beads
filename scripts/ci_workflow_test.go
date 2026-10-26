@@ -398,10 +398,10 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 		t.Fatal(err)
 	}
 	strategy := raw.Jobs["pr-core-wrapper"].Strategy
-	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string]any{"scope": []any{"graphstore", "remaining"}}) {
-		t.Error("PR Core must run both disjoint scopes without fail-fast cancellation")
+	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string]any{"scope": []any{"graphstore-odd", "graphstore-even", "remaining"}}) {
+		t.Error("PR Core must run all three disjoint scopes without fail-fast cancellation")
 	}
-	for _, scope := range []string{"graphstore", "remaining"} {
+	for _, scope := range []string{"graphstore-odd", "graphstore-even", "remaining"} {
 		download := gate.step(t, "Download PR core "+scope+" evidence")
 		if download.If != "needs.pr-core-wrapper.result == 'success'" || download.TimeoutMinutes != 3 || download.Uses != "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" || download.With["name"] != "pr-core-go-test-${{ github.sha }}-"+scope || download.With["path"] != "artifacts/pr-core-scope-results/"+scope || download.With["pattern"] != "" {
 			t.Error("required CI gate must retrieve only the exact named source scope artifacts")
@@ -412,7 +412,7 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 		t.Error("required CI gate must propagate bounded complete-union proof failures")
 	}
 	assertStepRunsExactly(t, gate, "Verify complete PR core coverage and cleanup", `python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/pr-core-scope-results --source-sha "$(git rev-parse HEAD)" --package-parallel 4 --test-parallel 4`)
-	assertStepsBefore(t, gate, []string{"Download PR core graphstore evidence", "Download PR core remaining evidence", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
+	assertStepsBefore(t, gate, []string{"Download PR core graphstore-odd evidence", "Download PR core graphstore-even evidence", "Download PR core remaining evidence", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
 
 }
 
@@ -3901,7 +3901,7 @@ func collectRunArtifactUploads(t *testing.T, file string, with map[string]string
 			Steps []ciWorkflowStep `yaml:"steps"`
 		} `yaml:"jobs"`
 	}
-	if err := yaml.Unmarshal(data, &doc); err != nil {
+	if err := decodeCIWorkflowYAMLForRBE(file, data, false, &doc); err != nil {
 		t.Fatalf("parse %s: %v", path, err)
 	}
 	inputs := map[string]string{}
@@ -4083,6 +4083,54 @@ func TestBazelWorkflowCacheTopology(t *testing.T) {
 	}
 }
 
+// Exercise the real subprocess boundary without starting Bazel or a storage engine.
+// A failing query must expose its diagnostics and still fail equivalence.
+func TestBazelEquivalenceQueryDiagnostics(t *testing.T) {
+	root := sourceRepoRoot(t)
+	python := requireHostTool(t, "python3")
+	const program = `
+import contextlib, importlib.util, io, os, subprocess, sys, tempfile
+from pathlib import Path
+sys.dont_write_bytecode = True
+spec = importlib.util.spec_from_file_location("equivalence", sys.argv[1])
+eq = importlib.util.module_from_spec(spec); spec.loader.exec_module(eq)
+with tempfile.TemporaryDirectory(prefix="query diagnostics ") as directory:
+    root = Path(directory).resolve()
+    bazel = root / "fake bazel"
+    for code, stdout, stderr in ((7, "partial query output", "actual query error\n"), (7, "", ""), (0, "//a:a_test\n//b:b_test\n", "success noise\n")):
+        bazel.write_text("#!" + sys.executable + "\nimport os, sys\n"
+                         + "assert sys.argv[1:] == " + repr(["query", 'kind("go_test rule", //...)', "--output=label"]) + "\n"
+                         + "assert os.getcwd() == " + repr(str(root)) + "\n"
+                         + "sys.stdout.write(" + repr(stdout) + "); sys.stderr.write(" + repr(stderr) + ")\n"
+                         + "sys.exit(" + str(code) + ")\n")
+        bazel.chmod(0o700)
+        captured = io.StringIO()
+        with contextlib.redirect_stderr(captured):
+            try:
+                result = eq.query_go_test_pkgs(str(root), str(bazel))
+            except subprocess.CalledProcessError as error:
+                assert code == 7, error
+                assert error.returncode == code, error
+                assert error.cmd == [str(bazel), "query", 'kind("go_test rule", //...)', "--output=label"], error.cmd
+                assert error.stdout == stdout and error.stderr == stderr, (error.stdout, error.stderr)
+            else:
+                assert code == 0, "failed query was accepted"
+                assert result == {"a", "b"}, result
+        output = captured.getvalue()
+        if code:
+            assert "Bazel query failed (exit 7)" in output, output
+            assert str(bazel) in output, output
+            if stdout: assert "stdout:" in output and stdout in output, output
+            if stderr: assert "stderr:" in output and stderr in output, output
+        else:
+            assert output == "", output
+`
+	cmd := exec.Command(python, "-c", program, filepath.Join(root, "tools", "bazel", "equivalence.py"))
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("equivalence query diagnostics: %v\n%s", err, out)
+	}
+}
+
 // The lane runs the committed ci config over //..., reports the critical path
 // and the go test equivalence even when tests fail, catches BUILD drift, and
 // hands secrets to nothing but setup-bazel.
@@ -4092,6 +4140,19 @@ func TestBazelWorkflowRunsCIConfigWithReports(t *testing.T) {
 		t.Errorf("%s has no timeout-minutes", bazelJobName)
 	}
 	testStep := job.step(t, "bazel test //... --config=ci")
+	// PR #276 job 120799042314 exhausted 95 minutes with 221/222 tests
+	// complete and the last bd_test shard still progressing. Retain the
+	// five-minute outer margin while adding cumulative cold-run headroom;
+	// individual action/test deadlines remain governed by .bazelrc.
+	const observedCutoffMinutes = 95
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; testStep.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cutoff plus %d minutes headroom)",
+			bazelJobName, testStep.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
+	}
+	if job.TimeoutMinutes < testStep.TimeoutMinutes+5 || job.TimeoutMinutes > testStep.TimeoutMinutes+15 {
+		t.Errorf("%s timeout-minutes = %d, want the test step's %d plus 5 to 15 minutes for setup/reports/cleanup", bazelJobName, job.TimeoutMinutes, testStep.TimeoutMinutes)
+	}
 	for _, required := range []string{"bazel test //... --config=ci", "--profile=", "--build_event_json_file=", "set -o pipefail"} {
 		if !strings.Contains(testStep.Run, required) {
 			t.Errorf("test step does not contain %q:\n%s", required, testStep.Run)
@@ -4119,6 +4180,101 @@ func TestBazelWorkflowRunsCIConfigWithReports(t *testing.T) {
 		if !strings.Contains(sync.Run, required) {
 			t.Errorf("sync step does not contain %q:\n%s", required, sync.Run)
 		}
+	}
+}
+
+// The rbe decision binds enabled=true only for remote execution. Keep the
+// local/cache budget that would have let the interrupted #326 BEP finish, while remote
+// and fork execution retain their previous limits.
+func TestBazelTestTimeoutsByExecutionMode(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", bazelWorkflowName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rbe := readCIWorkflow(t, bazelWorkflowName).job(t, bazelRBEJobName)
+	if !strings.Contains(rbe.step(t, "Decide remote execution").Run, "case \"$mode\" in remote|fork-ro|fork-rw) enabled=true ;; esac") {
+		t.Fatal("rbe enabled decision must be restricted to remote and fork modes")
+	}
+	for _, tc := range []struct {
+		mode      string
+		enabled   bool
+		step, job int
+	}{
+		{"local", false, 125, 130},
+		{"cache", false, 125, 130},
+		{"remote", true, 110, 115},
+		{"fork-ro", true, 110, 115},
+		{"fork-rw", true, 110, 115},
+	} {
+		t.Run(tc.mode, func(t *testing.T) {
+			workflow, err := decodeCIWorkflowForRBE(bazelWorkflowName, data, tc.enabled)
+			if err != nil {
+				t.Fatal(err)
+			}
+			job := workflow.job(t, bazelJobName)
+			step := job.step(t, "bazel test //... --config=ci")
+			if job.TimeoutMinutes != tc.job || step.TimeoutMinutes != tc.step || job.TimeoutMinutes-step.TimeoutMinutes != 5 {
+				t.Errorf("job/step timeouts = %d/%d, want %d/%d with 5-minute difference", job.TimeoutMinutes, step.TimeoutMinutes, tc.job, tc.step)
+			}
+			if !contains(job.Needs, bazelRBEJobName) || job.If != "${{ needs.rbe.outputs.mode != 'skip' }}" {
+				t.Errorf("bazel-test must depend on rbe and skip only mode skip: needs=%v if=%q", job.Needs, job.If)
+			}
+		})
+	}
+}
+
+func TestBazelTimeoutDecoderRejectsUnapprovedExpressions(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", bazelWorkflowName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	const jobExpr = "${{ needs.rbe.outputs.enabled == 'true' && 115 || 130 }}"
+	const stepExpr = "${{ needs.rbe.outputs.enabled == 'true' && 110 || 125 }}"
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"changed job", jobExpr, "${{ needs.rbe.outputs.enabled && 115 || 130 }}"},
+		{"changed step", stepExpr, "${{ needs.rbe.outputs.enabled && 110 || 125 }}"},
+		{"missing job expression", jobExpr, "115"},
+		{"missing step expression", stepExpr, "110"},
+		{"wrong step location", "id: test", "id: moved"},
+		{"wrong step name", "name: bazel test //... --config=ci", "name: unexpected bazel test"},
+		{"extra timeout expression", "timeout-minutes: 15", "timeout-minutes: ${{ arbitrary }}"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if !strings.Contains(string(data), tc.old) {
+				t.Fatalf("fixture lacks %q", tc.old)
+			}
+			changed := []byte(strings.Replace(string(data), tc.old, tc.replacement, 1))
+			if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, changed, false); err == nil {
+				t.Fatal("unapproved timeout expression decoded")
+			}
+		})
+	}
+	t.Run("approved expression aliased at another timeout", func(t *testing.T) {
+		anchored := strings.Replace(string(data), "timeout-minutes: "+jobExpr, "timeout-minutes: &budget "+jobExpr, 1)
+		if anchored == string(data) {
+			t.Fatal("fixture lacks approved job timeout")
+		}
+		if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, []byte(anchored), false); err != nil {
+			t.Fatalf("approved anchored timeout must still decode: %v", err)
+		}
+		aliased := strings.Replace(anchored, "timeout-minutes: 15", "timeout-minutes: *budget", 1)
+		if aliased == anchored {
+			t.Fatal("fixture lacks later unrelated timeout")
+		}
+		var document yaml.Node
+		if err := yaml.Unmarshal([]byte(aliased), &document); err != nil {
+			t.Fatalf("alias control must be valid YAML: %v", err)
+		}
+		if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, []byte(aliased), false); err == nil {
+			t.Fatal("approved expression alias at another timeout decoded")
+		}
+	})
+	pr, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", "pr.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := decodeCIWorkflowForRBE("pr.yml", pr, false); err != nil {
+		t.Fatalf("existing integer workflow no longer parses: %v", err)
 	}
 }
 
@@ -4417,12 +4573,15 @@ func TestBazelIntegrationJob(t *testing.T) {
 	// (rbe-west's 1200s limit). The job adds setup and log upload. In mode
 	// cache it runs on a 4-CPU GitHub-hosted runner, and with the read-only
 	// cache closed (the farm's kill switch) the whole suite builds and runs
-	// there cold, about 30 minutes simulated: the step keeps twice that.
+	// there cold. PR276 job120799042322 exhausted 75 minutes while the
+	// last shard still progressed after 178/179 tests; reserve 15 minutes
+	// beyond that observed cumulative cutoff without raising action limits.
 	const coldCompileMinutes = 20
-	const cacheClosedMinutes = 30
-	if test.TimeoutMinutes < 2*cacheClosedMinutes {
-		t.Errorf("%s test step timeout-minutes = %d, want at least %d (mode cache with the cache closed: ~%d minutes cold on a GitHub-hosted runner)",
-			bazelIntegJobName, test.TimeoutMinutes, 2*cacheClosedMinutes, cacheClosedMinutes)
+	const observedCutoffMinutes = 75
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; test.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cumulative cutoff plus %d minutes headroom)",
+			bazelIntegJobName, test.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
 	}
 	actionCapMinutes := 0
 	for line := range bazelrcLines(t) {
@@ -5887,6 +6046,7 @@ from unittest import mock
 sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location("macos_go", sys.argv.pop(1))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+real_go = sys.argv.pop(1)
 
 FAKE = r'''#!/usr/bin/env python3
 import json, os, sys
@@ -5908,7 +6068,11 @@ if "-list" in args:
     if mode == "empty": sys.exit(0)
     print("TestEmbeddedOld")
     if mode == "excluded-only": sys.exit(0)
-    for name in ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"]: print(name)
+    names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"]
+    if mode == "last-group":
+        names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds", "TestAardvark", "TestZZLast"]
+    if mode == "census-416": names = [f"TestStore{index:03d}" for index in range(416)]
+    for name in names: print(name)
     print("BenchmarkIgnored")
     if mode == "duplicate-name": print("TestNew")
     print("ok  " + graph + " 0.01s")
@@ -5950,20 +6114,22 @@ class DispatchControls(unittest.TestCase):
             if case != "good": return
             plan = json.loads((output / "plan.json").read_text())
             self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
-            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"])
+            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"])
             self.assertEqual(sorted(sum(plan["groups"], [])), expected)
             self.assertEqual(len(sum(plan["groups"], [])), len(expected))
-            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"]))))
-            self.assertEqual(len(summary["groups"]), 4)
+            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"])), m.GRAPHSTORE_GROUPS))
+            self.assertEqual(len(summary["groups"]), m.GRAPHSTORE_GROUPS)
+            self.assertTrue(all(len(group) >= 2 for group in plan["groups"]))
             self.assertTrue(any(g["skipped"] for g in summary["groups"]))
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             self.assertEqual(calls[0], ["list", "-race", "-tags", "gms_pure_go", "./..."])
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 9)
+            self.assertEqual(len(executions), m.GRAPHSTORE_GROUPS + m.GROUPS + 1)
             self.assertEqual(plan["command"]["excluded"], ["TestEmbeddedOld"])
             self.assertEqual(sorted(sum(plan["command"]["groups"], [])), expected)
             self.assertEqual(len(sum(plan["command"]["groups"], [])), len(expected))
-            self.assertEqual(len(summary["commandGroups"]), 4)
+            self.assertEqual(plan["command"]["groups"], m.partition(plan["command"]["discovered"], m.GROUPS))
+            self.assertEqual(len(summary["commandGroups"]), m.GROUPS)
             self.assertTrue(any(g["skipped"] for g in summary["commandGroups"]))
             for call in executions:
                 for flag in ["-race", "-short", "-timeout=30m", "-json"]: self.assertIn(flag, call)
@@ -5980,13 +6146,29 @@ class DispatchControls(unittest.TestCase):
                 census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
 
+    def test_eighth_graphstore_group_has_a_real_terminal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            output = root / "evidence"
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "last-group"}):
+                m.execute(root, output, str(fake), scope="graphstore", source_sha="a" * 40)
+            summary = json.loads((output / "summary.json").read_text())
+            self.assertTrue(summary["passed"])
+            self.assertEqual(len(summary["groups"]), 8)
+            last = summary["groups"][-1]
+            self.assertEqual(last["label"], "graphstore-8")
+            self.assertEqual(last["roots"], ["TestZZLast"])
+            self.assertEqual(summary["groups"][0]["roots"], ["ExampleValue", "TestZulu"])
+            self.assertEqual(last["skipped"], [])
+            self.assertEqual(json.loads((output / "graphstore-8-census.json").read_text())["roots"], last["roots"])
+
     def test_macos_scope_policy_stays_distinct_from_pr_core(self):
         source = "a" * 40
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
             output = root / "scopes"; output.mkdir()
             with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
-                for scope in ("graphstore", "remaining"):
+                for scope in m.CI_SCOPES:
                     m.execute(root, output / scope, str(fake), scope=scope, source_sha=source)
             self.assertTrue(m.verify_scopes(output, source)["passed"])
             with self.assertRaises(RuntimeError): m.verify_scopes(output, source, 4, 4)
@@ -5998,16 +6180,16 @@ class DispatchControls(unittest.TestCase):
             root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
             outputs = root / "scopes"; outputs.mkdir()
             with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
-                for scope in ("graphstore", "remaining"):
+                for scope in m.CI_SCOPES:
                     m.execute(root, outputs / scope / "run.fixture" / "evidence", str(fake), scope=scope, source_sha=source, package_parallel=4, test_parallel=4)
             proof = m.verify_scopes(outputs, source, 4, 4)
             self.assertTrue(proof["passed"])
-            self.assertEqual(proof["scopes"], ["graphstore", "remaining"])
+            self.assertEqual(proof["scopes"], sorted(m.CI_SCOPES))
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 9)
-            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), 4)
-            self.assertEqual(sum(call[-1] == m.COMMAND for call in executions), 4)
+            self.assertEqual(len(executions), m.GRAPHSTORE_GROUPS + m.GROUPS + 1)
+            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), m.GRAPHSTORE_GROUPS)
+            self.assertEqual(sum(call[-1] == m.COMMAND for call in executions), m.GROUPS)
             for case in ("missing", "duplicate", "source", "flags", "packages", "raw", "failed", "cleanup", "receipt", "discovery"):
                 with self.subTest(case=case):
                     changed = root / case; shutil.copytree(outputs, changed)
@@ -6028,6 +6210,56 @@ class DispatchControls(unittest.TestCase):
                         path.write_text(json.dumps(value))
                     with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
                         m.verify_scopes(changed, source, 4, 4)
+
+    def test_alternating_scopes_preserve_416_roots_and_refuse_partial_proof(self):
+        from collections import Counter
+        import shutil
+        source = "a" * 40
+        self.assertEqual(m.TOTAL_SECONDS, 6900)
+        self.assertEqual(m.GROUP_SECONDS, 2100)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 8)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            outputs = root / "scopes"; outputs.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "census-416"}):
+                for scope in m.CI_SCOPES:
+                    m.execute(root, outputs / scope, str(fake), scope=scope, source_sha=source)
+            coverage = Counter()
+            for scope, expected in (("graphstore-odd", [1, 3, 5, 7]), ("graphstore-even", [2, 4, 6, 8])):
+                plan = json.loads((outputs / scope / "plan.json").read_text())
+                summary = json.loads((outputs / scope / "summary.json").read_text())
+                self.assertEqual(plan["selectedGroups"], expected)
+                self.assertEqual([len(g) for g in plan["groups"]], [52] * 8)
+                self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
+                self.assertEqual([g["label"] for g in summary["groups"]], [f"graphstore-{n}" for n in expected])
+                self.assertEqual(sum(len(g["roots"]) for g in summary["groups"]), 208)
+                self.assertEqual(summary["commandGroups"], [])
+                self.assertNotIn("other", summary)
+                coverage.update(name for g in summary["groups"] for name in g["roots"])
+            self.assertEqual(coverage, Counter({f"TestStore{index:03d}": 1 for index in range(416)}))
+            self.assertTrue(m.verify_scopes(outputs, source)["passed"])
+            calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+            executions = [c for c in calls if c[0] == "test" and "-list" not in c]
+            self.assertEqual(sum(c[-1] == m.GRAPHSTORE for c in executions), 8)
+            self.assertEqual(sum(c[-1] == m.COMMAND for c in executions), 4)
+            self.assertEqual(sum(c[-1] not in (m.GRAPHSTORE, m.COMMAND) for c in executions), 1)
+            for case in ("missing-half", "duplicate-half", "wrong-selection", "missing-group", "raw", "discovery", "excluded"):
+                with self.subTest(case=case):
+                    changed = root / case; shutil.copytree(outputs, changed)
+                    half = changed / "graphstore-odd"
+                    if case == "missing-half": shutil.rmtree(half)
+                    elif case == "duplicate-half": shutil.copytree(half, changed / "extra")
+                    elif case == "raw": (half / "graphstore-7.stdout").write_text("")
+                    elif case == "discovery": (half / "graphstore-discovery.stdout").write_text("TestIncomplete\n")
+                    else:
+                        path = half / ("summary.json" if case == "missing-group" else "plan.json")
+                        value = json.loads(path.read_text())
+                        if case == "wrong-selection": value["selectedGroups"] = [2, 4, 6, 8]
+                        elif case == "missing-group": value["groups"].pop()
+                        elif case == "excluded": value["excluded"] = []
+                        path.write_text(json.dumps(value))
+                    with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
+                        m.verify_scopes(changed, source)
 
     def test_pr_core_options_and_raw_json_compatibility(self):
         for case in ("good", "json-fail", "other-failure"):
@@ -6060,7 +6292,7 @@ class DispatchControls(unittest.TestCase):
                 eq_spec = importlib.util.spec_from_file_location("equivalence", eq_path)
                 eq = importlib.util.module_from_spec(eq_spec); eq_spec.loader.exec_module(eq)
                 statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", m.COMMAND: "cmd/bd", "github.com/steveyegge/beads/scripts": "scripts"})
-                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"})
+                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"})
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestServer"], "skipped")
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestNew"], "passed")
                 self.assertEqual(statuses["cmd/bd"], statuses["internal/storage/graphstore"])
@@ -6113,7 +6345,7 @@ class DispatchControls(unittest.TestCase):
             runner = m.Runner(root, root)
             # A cold race-enabled Go toolchain can compile this tiny fixture
             # slowly when the Bazel worker is also running the full suite.
-            events = runner.run("framing", ["go", "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 120)
+            events = runner.run("framing", [real_go, "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 120)
             census = m.verify_events(events, ["example.invalid/dispatch-framing"], ["TestFragment"])
             self.assertEqual(census["tests"], 2)
             self.assertEqual(census["skipped"], [])
@@ -6124,9 +6356,38 @@ class DispatchControls(unittest.TestCase):
                      "duplicate-name", "test-failure", "other-failure", "missing-root", "extra-root",
                      "unfinished-child", "duplicate-terminal", "bad-json", "json-fail", "build-fail", "missing-package-terminal", "other-missing-terminal"]:
             with self.subTest(case=case): self.exercise(case)
+    def test_large_partition_is_exhaustive_balanced_and_disjoint(self):
+        # Cover more than one root per group, not just the group-count constant.
+        names = ["TestRoot%03d" % index for index in range(335)] + ["TestEmbeddedOld"]
+        groups = m.partition(names, m.GRAPHSTORE_GROUPS)
+        self.assertEqual(len(groups), 8)
+        self.assertEqual(sorted(sum(groups, [])), sorted(n for n in names if not n.startswith("TestEmbedded")))
+        self.assertEqual(len(set(sum(groups, []))), 335)
+        self.assertLessEqual(max(map(len, groups)) - min(map(len, groups)), 1)
+        self.assertTrue(all(groups))
+        self.assertEqual(groups, m.partition(list(reversed(names)), m.GRAPHSTORE_GROUPS))
+        self.assertTrue(all(len(group) >= 2 for group in groups))
+
+    def test_dispatch_budgets_remain_unchanged(self):
+        self.assertIn("-timeout=30m", m.FLAGS)
+        self.assertEqual(m.GROUP_SECONDS, 2100)
+        self.assertGreater(m.GROUP_SECONDS, 1800)
+        self.assertEqual(m.TOTAL_SECONDS, 6900)
+        self.assertLess(m.TOTAL_SECONDS, 120 * 60)
+        self.assertEqual(m.GROUPS, 4)
+
     def test_partition_refuses_empty_or_duplicate(self):
         for names in [[], ["TestA", "TestA"], ["TestEmbeddedOnly"]]:
             with self.assertRaises(RuntimeError): m.partition(names)
+    def test_partition_counts_and_unchanged_limits(self):
+        for count in (0, -1, None, True, "8", 1.5):
+            with self.subTest(count=count), self.assertRaises(RuntimeError):
+                m.partition(["TestOne"], count)
+        self.assertEqual(len(m.partition(["TestOne"])), 4)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 8)
+        self.assertEqual((m.GROUP_SECONDS, m.TOTAL_SECONDS), (2100, 6900))
+        self.assertIn("-timeout=30m", m.FLAGS)
+
     def test_unexpected_package_refused(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "events"
@@ -6206,7 +6467,7 @@ func TestMacOSGoTestDispatcherControls(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "-c", macOSDispatcherControls,
-		filepath.Join(sourceRepoRoot(t), "scripts", "ci", "macos-go-test.py"))
+		filepath.Join(sourceRepoRoot(t), "scripts", "ci", "macos-go-test.py"), testGo(t))
 	cmd.Env = append(os.Environ(), "PYTHONDONTWRITEBYTECODE=1")
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("offline macOS dispatch controls: %v\n%s", err, output)

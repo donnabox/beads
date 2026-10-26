@@ -7,24 +7,33 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
 
 func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
+	priorConfig := graphPreviewConfig
+	if graphPreviewConfig == nil {
+		graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/"}
+		t.Cleanup(func() { graphPreviewConfig = priorConfig })
+	}
 	cmd := &cobra.Command{}
+	cmd.Flags().String("type", "", "")
 	cmd.Flags().IntP("estimate", "e", 0, "")
-	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "body-file", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
+	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "design-file", "session", "if-assignee", "if-status", "if-revision", "if-source-revision") {
 		if cmd.Flags().Lookup(name) == nil {
-			if name == "clear-notes" {
+			if name == "clear-notes" || name == "stdin" {
 				cmd.Flags().Bool(name, false, "")
+			} else if name == "add-label" || name == "remove-label" || name == "set-labels" {
+				cmd.Flags().StringSlice(name, nil, "")
 			} else {
 				cmd.Flags().String(name, "", "")
 			}
 		}
 	}
-	cmd.Flags().Bool("stdin", false, "")
+	cmd.Flags().Bool("allow-empty-description", false, "")
 	cmd.Flags().Bool("claim", false, "")
 	cmd.Flags().Bool("force", false, "")
 	if err := cmd.ParseFlags(args); err != nil {
@@ -34,7 +43,7 @@ func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 }
 
 func TestGraphPreviewIssueTextPresenceAndAliases(t *testing.T) {
-	cmd := issueTextCommand(t, "--title=  Revised 雪  ", "--description=", "--body=", "--message=", "--design=-", "--acceptance=Done", "--if-revision=observed")
+	cmd := issueTextCommand(t, "--title=  Revised 雪  ", "--description=", "--body=", "--message=", "--design=-", "--acceptance=Done", "--if-revision==observed")
 	request, err := graphPreviewIssueEditRequest(cmd, "beads/task")
 	if err != nil {
 		t.Fatal(err)
@@ -48,19 +57,46 @@ func TestGraphPreviewIssueTextPresenceAndAliases(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewIssueStatusIntent(t *testing.T) {
+	for _, tc := range []struct {
+		args        []string
+		wantStatus  types.Status
+		wantForce   bool
+		wantSession string
+		wantGuard   types.Status
+	}{
+		{[]string{"--status=in_progress"}, types.StatusInProgress, false, "", ""},
+		{[]string{"--status=closed", "--force", "--session=review"}, types.StatusClosed, true, "review", ""},
+		{[]string{"--status=closed", "--force=false"}, types.StatusClosed, false, "", ""},
+		{[]string{"--status=open", "--if-status=in_progress"}, types.StatusOpen, false, "", types.StatusInProgress},
+	} {
+		cmd := issueTextCommand(t, tc.args...)
+		request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+		if err != nil || request.Status == nil || *request.Status != tc.wantStatus || request.ForceClosePolicy != tc.wantForce {
+			t.Fatalf("status intent lost: %+v %v", request, err)
+		}
+		if tc.wantSession != "" && (request.ClosedBySession == nil || *request.ClosedBySession != tc.wantSession) {
+			t.Fatalf("session attribution lost: %+v", request)
+		}
+		if tc.wantGuard != "" && (request.ExpectedStatus == nil || *request.ExpectedStatus != tc.wantGuard) {
+			t.Fatalf("status guard lost: %+v", request)
+		}
+	}
+}
+
 func TestGraphPreviewIssuePropertyMerge(t *testing.T) {
 	for _, tc := range []struct {
 		name      string
 		args      []string
 		wantError bool
 	}{
-		{"empty", []string{"--properties={}", "--if-revision=seen"}, false},
-		{"typed", []string{"--properties={\"title\":\"New\",\"priority\":2,\"estimated_minutes\":7}", "--if-revision=seen"}, false},
-		{"clear-estimate", []string{"--properties={\"estimated_minutes\":null}", "--if-revision=seen"}, false},
-		{"duplicate", []string{"--title=New", "--properties={\"title\":\"New\"}", "--if-revision=seen"}, true},
-		{"duplicate-alias", []string{"--body=New", "--properties={\"description\":\"New\"}", "--if-revision=seen"}, true},
-		{"read-only", []string{"--properties={\"status\":\"closed\"}", "--if-revision=seen"}, true},
-		{"wrong-type", []string{"--properties={\"priority\":\"2\"}", "--if-revision=seen"}, true},
+		{"empty", []string{"--properties={}", "--if-revision==seen"}, false},
+		{"typed", []string{"--properties={\"title\":\"New\",\"priority\":2,\"estimated_minutes\":7}", "--if-revision==seen"}, false},
+		{"clear-estimate", []string{"--properties={\"estimated_minutes\":null}", "--if-revision==seen"}, false},
+		{"duplicate", []string{"--title=New", "--properties={\"title\":\"New\"}", "--if-revision==seen"}, true},
+		{"duplicate-alias", []string{"--body=New", "--properties={\"description\":\"New\"}", "--if-revision==seen"}, true},
+		{"read-only", []string{"--properties={\"status\":\"closed\"}", "--if-revision==seen"}, true},
+		{"wrong-type", []string{"--properties={\"priority\":\"2\"}", "--if-revision==seen"}, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
@@ -84,6 +120,27 @@ func TestGraphPreviewIssuePropertyMerge(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewIssuePropertyInputRejectsDescriptionSourceBeforeReading(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+	}{
+		{"inline-description-and-stdin", []string{`--properties={"description":"Property"}`, "--stdin"}},
+		{"shared-stdin", []string{"--properties=-", "--description=-"}},
+		{"shared-file-alias", []string{"--properties=-", "--body-file=-"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := issueTextCommand(t, tc.args...)
+			input := strings.NewReader("must remain unread")
+			cmd.SetIn(input)
+			_, err := graphPreviewIssuePropertyValues(cmd)
+			if err == nil || input.Len() != len("must remain unread") {
+				t.Fatalf("conflicting input was consumed: remaining=%d, error=%v", input.Len(), err)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewIssueNotesInput(t *testing.T) {
 	for _, tc := range []struct {
 		name       string
@@ -92,9 +149,9 @@ func TestGraphPreviewIssueNotesInput(t *testing.T) {
 		wantForce  bool
 		wantAppend bool
 	}{
-		{"replace", []string{"--notes=New", "--force", "--if-revision=seen"}, "New", true, false},
-		{"clear", []string{"--clear-notes", "--if-revision=seen"}, "", false, false},
-		{"append", []string{"--append-notes=Next", "--if-revision=seen"}, "", false, true},
+		{"replace", []string{"--notes=New", "--force", "--if-revision==seen"}, "New", true, false},
+		{"clear", []string{"--clear-notes", "--if-revision==seen"}, "", false, false},
+		{"append", []string{"--append-notes=Next", "--if-revision==seen"}, "", false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
@@ -128,11 +185,8 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 		{"long-title", []string{"--title=" + strings.Repeat("x", 501)}, 2},
 		{"invalid-utf8", []string{"--design=\xff"}, 2},
 		{"different-aliases", []string{"--description=a", "--body=b"}, 2},
-		{"workflow", []string{"--design=Design", "--status=closed"}, 5},
-		{"file", []string{"--design=Design", "--body-file=missing"}, 5},
-		{"stdin-flag", []string{"--design=Design", "--stdin"}, 5},
-		{"stdin-description", []string{"--description=-"}, 5},
-		{"stdin-alias", []string{"--body=-"}, 5},
+		{"empty-status", []string{"--design=Design", "--status="}, 2},
+		{"empty-status-guard", []string{"--design=Design", "--if-status="}, 2},
 		{"empty-notes", []string{"--notes="}, 2},
 		// Append still cannot be combined with replacement notes.
 		{"append", []string{"--design=Design", "--append-notes=More", "--notes=Replace"}, 2},
@@ -165,7 +219,7 @@ func TestGraphPreviewIssuePriorityInput(t *testing.T) {
 		{"2suffix", 2},
 	} {
 		t.Run(tc.input, func(t *testing.T) {
-			cmd := issueTextCommand(t, "--priority="+tc.input, "--if-revision=observed")
+			cmd := issueTextCommand(t, "--priority="+tc.input, "--if-revision==observed")
 			if !graphPreviewIssueEditFlagsChanged(cmd) {
 				t.Fatal("priority-only update did not select Issue route")
 			}
@@ -195,23 +249,17 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 			}
 		})
 	}
-	for _, args := range [][]string{
-		{"--priority=0", "--status=open"},
-		{"--priority=0", "--body-file=missing"},
-		{"--priority=0", "--stdin=false"},
-	} {
-		t.Run(strings.Join(args, " "), func(t *testing.T) {
-			cmd := issueTextCommand(t, args...)
-			cmd.SetIn(failingMemoryBodyReader{})
-			_, err := graphPreviewIssueEditRequest(cmd, "beads/work")
-			var failure *exitError
-			if !errors.As(err, &failure) || failure.Code != 5 {
-				t.Fatalf("unsupported explicit option must refuse with exit5 before input: %v", err)
-			}
-		})
+	request, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--priority=0", "--stdin=false"), "beads/work")
+	if err != nil || request.Priority == nil || *request.Priority != 0 || request.Description != nil {
+		t.Fatalf("false stdin flag changed priority edit: %+v %v", request, err)
+	}
+	_, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--priority=0", "--body-file=missing"), "beads/work")
+	var missing *exitError
+	if !errors.As(err, &missing) || missing.Code != 1 {
+		t.Fatalf("missing body file must refuse before storage: %v", err)
 	}
 	cmd := issueTextCommand(t, "--priority=0", "--properties={}")
-	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	request, err = graphPreviewIssueEditRequest(cmd, "beads/work")
 	if err != nil || !cmd.Flags().Changed("properties") || request.Priority == nil || *request.Priority != 0 {
 		t.Fatalf("mixed priority and empty property merge: %+v %v", request, err)
 	}
@@ -220,7 +268,7 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 func TestGraphPreviewIssueAssigneePresence(t *testing.T) {
 	for _, value := range []string{"", "alice", "  雪 / agent  ", strings.Repeat("雪", types.MaxFieldLen)} {
 		t.Run(fmt.Sprintf("value-%q", value), func(t *testing.T) {
-			cmd := issueTextCommand(t, "--assignee="+value, "--if-revision=observed")
+			cmd := issueTextCommand(t, "--assignee="+value, "--if-revision==observed")
 			request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
 			if err != nil || !graphPreviewIssueEditFlagsChanged(cmd) || request.Assignee == nil || *request.Assignee != value || request.ExpectedRevision != "observed" || request.Unconditional {
 				t.Fatalf("assignment/presence/guard lost: %+v %v", request, err)
@@ -235,6 +283,28 @@ func TestGraphPreviewIssueAssigneePresence(t *testing.T) {
 	if err != nil || request.Assignee != nil {
 		t.Fatalf("omission became assignment: %+v %v", request, err)
 	}
+	for _, tc := range []struct {
+		args          []string
+		forceAssignee bool
+		forceNotes    bool
+	}{
+		{[]string{"--assignee=bob", "--force"}, true, false},
+		{[]string{"--assignee=bob", "--force=false"}, false, false},
+		{[]string{"--assignee=bob", "--notes=Revised", "--force"}, true, true},
+	} {
+		request, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
+		if err != nil || request.ForceAssigneeTransfer != tc.forceAssignee || request.ForceNotesOverwrite != tc.forceNotes {
+			t.Fatalf("force intent %v: %+v %v", tc.args, request, err)
+		}
+	}
+	cmd := issueTextCommand(t, `--properties={"assignee":"bob"}`, "--force")
+	request, err = graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err == nil {
+		err = graphPreviewIssuePropertyMerge(cmd, &request)
+	}
+	if err != nil || request.Assignee == nil || *request.Assignee != "bob" || !request.ForceAssigneeTransfer || request.ForceNotesOverwrite {
+		t.Fatalf("property assignee force intent: %+v %v", request, err)
+	}
 }
 
 func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
@@ -248,10 +318,10 @@ func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
 		{"empty-guard", []string{"--assignee=alice", "--if-revision="}, 2},
 		{"claim", []string{"--assignee=alice", "--claim"}, 5},
 		{"false-claim", []string{"--assignee=alice", "--claim=false"}, 5},
-		{"force-without-notes", []string{"--assignee=alice", "--force"}, 2},
-		{"assignee-precondition", []string{"--assignee=alice", "--if-assignee="}, 5},
-		{"status-precondition", []string{"--assignee=alice", "--if-status=open"}, 5},
-		{"status", []string{"--assignee=alice", "--status=in_progress"}, 5},
+		{"invalid-assignee-precondition", []string{"--assignee=alice", "--if-assignee=\xff"}, 2},
+		{"assignee-precondition-without-edit", []string{"--if-assignee="}, 2},
+		{"empty-status-precondition", []string{"--assignee=alice", "--if-status="}, 2},
+		{"status-precondition-without-edit", []string{"--if-status=open"}, 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")

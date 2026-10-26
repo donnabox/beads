@@ -51,7 +51,7 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 			if created.ID == "" || created.IssueType != types.TypeTask || created.Status != types.StatusOpen || created.Priority != 1 || created.Description != "Keep context" {
 				t.Fatalf("TODO add lost native task defaults: %+v", created)
 			}
-			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "A bug", "--id", "bug", "--type", "bug"))
+			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "A bug", "--graph-path", "beads/bug", "--type", "bug"))
 			call("remember", "Memory body", "--id", "memo")
 			for _, args := range [][]string{{"todo"}, {"todo", "list"}} {
 				got := list(args...)
@@ -61,8 +61,8 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 			}
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--format", "graph-json"))
 			_, _, initialVersions, _ := graphVersionsListed(t, call("versions", created.ID))
-			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "todo", "done", created.ID, "--if-revision", "stale", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "todo", "done", created.ID, other.ID, "--if-revision", before.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "todo", "done", created.ID, "--if-revision", "=stale", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "todo", "done", created.ID, other.ID, "--if-revision", "="+before.Revision, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "todo", "add", "No", "--readonly", "--json")
 			if len(initialVersions) != 1 {
 				t.Fatalf("TODO creation should retain one native version; got %d", len(initialVersions))
@@ -71,7 +71,7 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 				Closed []string `json:"closed"`
 				Reason string   `json:"reason"`
 			}
-			if raw := call("todo", "done", created.ID, "--if-revision", before.Revision); json.Unmarshal([]byte(raw), &done) != nil || len(done.Closed) != 1 || done.Closed[0] != created.ID || done.Reason != "Completed" {
+			if raw := call("todo", "done", created.ID, "--if-revision", "="+before.Revision); json.Unmarshal([]byte(raw), &done) != nil || len(done.Closed) != 1 || done.Closed[0] != created.ID || done.Reason != "Completed" {
 				t.Fatalf("guarded TODO completion: %s", raw)
 			}
 			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", created.ID, "--format", "graph-json"))

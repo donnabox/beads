@@ -15,6 +15,7 @@ import (
 type graphReadRoute struct {
 	kind, path string
 	selection  *graphread.Selection
+	parameters url.Values
 }
 
 // Inspect the original escaped spelling before any ServeMux/URL normalization.
@@ -50,9 +51,6 @@ func (g *GraphRead) requestTarget(r *http.Request) (string, url.Values, bdpwire.
 		return "", nil, bdpwire.CodeResourceNotFound
 	}
 	path := strings.TrimPrefix(rawPath, g.path)
-	if strings.HasPrefix(path, "alias/") {
-		return path, nil, ""
-	} // Unadvertised aliases are uniformly absent, including queries.
 	parameters, err := url.ParseQuery(rawQuery)
 	if err != nil {
 		return "", nil, bdpwire.CodeInvalidParameter
@@ -89,27 +87,18 @@ func (g *GraphRead) compileRoute(path string, parameters url.Values) (graphReadR
 		}
 		return g.selectionRoute("selection", path, q)
 	}
-	root, _, hasPath := strings.Cut(path, "/")
-	if !hasPath {
+	if graph.ValidateCanonicalResourceID(path) != nil {
 		return result, graphstore.ErrNotFound
 	}
-	switch root {
-	case "beads":
-		if graph.ValidateBeadPath(path) != nil {
-			return result, graphstore.ErrNotFound
-		}
-	case "links":
-		if graph.ValidateLinkPath(path) != nil {
-			return result, graphstore.ErrNotFound
-		}
-	case "types":
-		if graph.ValidateBeadPath("beads/"+strings.TrimPrefix(path, "types/")) != nil {
-			return result, graphstore.ErrNotFound
-		}
-	default:
-		return result, graphstore.ErrNotFound
-	}
-	if root == "types" {
+	// Route syntax cannot establish Resource kind. Resolve the immutable
+	// catalog only after the request's authority check has succeeded.
+	result.kind, result.parameters = "identity", parameters
+	return result, nil
+}
+
+func (g *GraphRead) compileResourceRoute(path string, parameters url.Values, kind string) (graphReadRoute, error) {
+	result := graphReadRoute{path: path}
+	if kind == "type" {
 		if err := graphReadParameters(parameters); err != nil {
 			return result, err
 		}
@@ -117,7 +106,7 @@ func (g *GraphRead) compileRoute(path string, parameters url.Values) (graphReadR
 		return result, nil
 	}
 	if values, exists := parameters["include"]; exists {
-		if root != "beads" || len(values) != 1 || values[0] != "links" {
+		if kind != "bead" || len(values) != 1 || values[0] != "links" {
 			return result, &graphread.ParameterError{Name: "include"}
 		}
 		if err := graphReadParameters(parameters, "include", "direction", "limit"); err != nil {
@@ -154,7 +143,7 @@ func (g *GraphRead) compileRoute(path string, parameters url.Values) (graphReadR
 		result.kind = "properties"
 		return result, nil
 	case "links":
-		if root != "beads" {
+		if kind != "bead" {
 			return result, &graphread.ParameterError{Name: "view"}
 		}
 		q, err := graphread.CompileIncident(g.scope, path, parameters, g.limits)

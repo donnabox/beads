@@ -38,7 +38,8 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if err != nil || work.Properties == nil || !strings.HasPrefix(work.Properties.ID, "web-app-") {
 				t.Fatalf("hyphenated native prefix: %+v %v", work, err)
 			}
-			if _, err := s.CreateIssue(ctx, "beads/prereq", plainIssue("Prerequisite")); err != nil {
+			prereq, err := s.CreateIssue(ctx, "beads/prereq", plainIssue("Prerequisite"))
+			if err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "test-author"}); err != nil {
@@ -74,10 +75,10 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			}
 			before := exportSourceState(t, ctx, s)
 			current, err := s.ExportCurrentSnapshot(ctx)
-			if err != nil || current.IssuePrefix != "web-app-" || current.DeletedAllocations != 0 || len(current.Snapshot.Records) != 6 || !reflect.DeepEqual(current.CommentsByIssuePath["beads/work"], wantComments) {
+			if err != nil || current.IssuePrefix != "web-app-" || current.DeletedAllocations != 0 || len(current.Snapshot.Records) != 6 || !reflect.DeepEqual(current.CommentsByIssuePath[work.Properties.ID], wantComments) {
 				t.Fatalf("complete current export: %+v %v", current, err)
 			}
-			if comments, present := current.CommentsByIssuePath["beads/prereq"]; !present || comments == nil || len(comments) != 0 {
+			if comments, present := current.CommentsByIssuePath[prereq.Properties.ID]; !present || comments == nil || len(comments) != 0 {
 				t.Fatal("Issue with no comments was absent or null")
 			}
 			ordinary, err := s.CurrentSnapshot(ctx)
@@ -93,8 +94,8 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			}
 			// Returned feeds are detached: caller mutations cannot affect records
 			// or the next acquisition and survive neither close nor reopen.
-			current.CommentsByIssuePath["beads/work"][0].Text = "caller mutation"
-			delete(current.CommentsByIssuePath, "beads/prereq")
+			current.CommentsByIssuePath[work.Properties.ID][0].Text = "caller mutation"
+			delete(current.CommentsByIssuePath, prereq.Properties.ID)
 			mutatedIssue, mutatedOwned := false, false
 			for _, raw := range current.Snapshot.Records {
 				if issue, ok := raw.(IssueRecord); ok {
@@ -111,7 +112,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			}
 			fresh, err := s.ExportCurrentSnapshot(ctx)
 			freshSnapshot, snapshotErr := canonicalJSON(fresh.Snapshot)
-			if err != nil || snapshotErr != nil || !reflect.DeepEqual(fresh.CommentsByIssuePath["beads/work"], wantComments) || string(freshSnapshot) != string(wantSnapshot) {
+			if err != nil || snapshotErr != nil || !reflect.DeepEqual(fresh.CommentsByIssuePath[work.Properties.ID], wantComments) || string(freshSnapshot) != string(wantSnapshot) {
 				t.Fatalf("same-Store detachment: %+v %v", fresh, err)
 			}
 			// TypeDescriptor fields are private: JSON fingerprints capture only
@@ -122,7 +123,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("same-Store reacquisition changed source rows")
 			}
-			if comments, present := fresh.CommentsByIssuePath["beads/prereq"]; !present || comments == nil || len(comments) != 0 {
+			if comments, present := fresh.CommentsByIssuePath[prereq.Properties.ID]; !present || comments == nil || len(comments) != 0 {
 				t.Fatal("caller deletion affected the next acquisition")
 			}
 			if err := s.Close(); err != nil {
@@ -139,7 +140,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			})
 			reopened, err := s.ExportCurrentSnapshot(ctx)
 			reopenedSnapshot, snapshotErr := canonicalJSON(reopened.Snapshot)
-			if err != nil || snapshotErr != nil || !reflect.DeepEqual(reopened.CommentsByIssuePath["beads/work"], wantComments) || string(reopenedSnapshot) != string(wantSnapshot) || reopened.IssuePrefix != "web-app-" {
+			if err != nil || snapshotErr != nil || !reflect.DeepEqual(reopened.CommentsByIssuePath[work.Properties.ID], wantComments) || string(reopenedSnapshot) != string(wantSnapshot) || reopened.IssuePrefix != "web-app-" {
 				t.Fatalf("reopen preservation: %+v %v", reopened, err)
 			}
 			if !reflect.DeepEqual(reopened.Snapshot.Types, ordinary.Types) {
@@ -164,7 +165,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if err != nil || deleted.DeletedAllocations != 1 || len(deleted.Snapshot.Records) != 6 {
 				t.Fatalf("deleted allocation disclosure: %+v %v", deleted, err)
 			}
-			if _, present := deleted.CommentsByIssuePath["beads/removed"]; present {
+			if _, present := deleted.CommentsByIssuePath[removed.Properties.ID]; present {
 				t.Fatal("deleted Issue acquired as a current comment owner")
 			}
 			var surviving uint64
@@ -368,7 +369,56 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Title: "Filler", Body: strings.Repeat("m", 12<<10)}); err != nil {
 				t.Fatal(err)
 			}
-			const byteLimit = 64 << 10
+			// The small aggregate quotas predate generation12's fixed32 native
+			// descriptors. Offset only that catalog cost, never variable payload
+			// bytes, preserving the original64/40/88KiB resource windows.
+			expectedNative := map[string]bool{}
+			for _, kind := range append(append([]types.IssueType(nil), types.AllIssueTypes...), types.TypeEvent) {
+				id, err := NativeIssueTypeURL(s.ScopeURL(), string(kind))
+				if err != nil {
+					t.Fatal(err)
+				}
+				expectedNative[strings.TrimPrefix(id, s.ScopeURL()+"types/")] = true
+			}
+			for _, kind := range types.WellKnownDependencyTypes() {
+				id, err := NativeDependencyTypeURL(s.ScopeURL(), string(kind))
+				if err != nil {
+					t.Fatal(err)
+				}
+				expectedNative[strings.TrimPrefix(id, s.ScopeURL()+"types/")] = true
+			}
+			if len(expectedNative) != 32 {
+				t.Fatalf("fixed native catalog = %d, want32", len(expectedNative))
+			}
+			rows, err := s.db.QueryContext(ctx, `SELECT name,OCTET_LENGTH(descriptor),OCTET_LENGTH(fingerprint) FROM graph_preview_types WHERE name LIKE 'native-issue/%' OR name LIKE 'native-dependency/%' ORDER BY name LIMIT 33`)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var nativeCatalogBytes uint64
+			for rows.Next() {
+				var name string
+				var descriptorBytes, fingerprintBytes uint64
+				if err := rows.Scan(&name, &descriptorBytes, &fingerprintBytes); err != nil {
+					t.Fatal(err)
+				}
+				if !expectedNative[name] {
+					t.Fatalf("unexpected/duplicate native catalog Type %q", name)
+				}
+				delete(expectedNative, name)
+				// The reader charges one fixed row overhead plus these persisted
+				// fields for each Type. No Resource row contributes to this offset.
+				nativeCatalogBytes += exportReadRowOverhead + uint64(len(name)) + descriptorBytes + fingerprintBytes
+			}
+			if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+				t.Fatal(err)
+			}
+			if len(expectedNative) != 0 || nativeCatalogBytes == 0 {
+				t.Fatalf("incomplete fixed catalog: %v bytes=%d", expectedNative, nativeCatalogBytes)
+			}
+			byteLimit := uint64(64<<10) + nativeCatalogBytes
+			if byteLimit >= PreviewCurrentReadByteLimit {
+				t.Fatal("fixture quota reached production aggregate limit")
+			}
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				_, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, byteLimit)
 				return err
@@ -401,7 +451,7 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if !reflect.DeepEqual(before, exportSourceState(t, ctx, s)) {
 				t.Fatal("bounded refusal changed state")
 			}
-			const deletedHeadByteLimit = 40 << 10
+			deletedHeadByteLimit := uint64(40<<10) + nativeCatalogBytes
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				// Match the isolated state used below: the retained filler head
 				// remains charged once, without its live payload or comment feed.
@@ -460,10 +510,10 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 				if err := s.validateDeletedIssueInTx(ctx, tx, "beads/removed"); err != nil {
 					return fmt.Errorf("validate legacy deleted native head: %w", err)
 				}
-				// The <=40 KiB baseline plus one ~40 KiB legacy head fits
+				// After the fixed catalog offset, the <=40KiB baseline plus one ~40KiB legacy head fits
 				// this window; charging that head twice does not. Keep the
 				// stricter refusal below to protect aggregate accounting too.
-				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, 88<<10); err != nil {
+				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, uint64(88<<10)+nativeCatalogBytes); err != nil {
 					return fmt.Errorf("legacy deleted final head charged more than once: %v", err)
 				}
 				if _, err := checkExportReadBoundsAtLimit(ctx, tx, exportCommentLimit, deletedHeadByteLimit); !errors.Is(err, ErrLimitExceeded) {
@@ -494,7 +544,7 @@ func TestExportCurrentSnapshotConcurrentWriter(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			_, err = reader.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			work, err := reader.CreateIssue(ctx, "beads/work", plainIssue("Work"))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -608,12 +658,12 @@ func TestExportCurrentSnapshotConcurrentWriter(t *testing.T) {
 			workers.Wait()
 			reader.afterWrite = nil
 			after, err := reader.ExportCurrentSnapshot(ctx)
-			if err != nil || after.Snapshot.WriterToken == before.Snapshot.WriterToken || after.IssuePrefix != "web-app-" || after.DeletedAllocations != 1 || len(after.CommentsByIssuePath["beads/work"]) != 1 {
+			if err != nil || after.Snapshot.WriterToken == before.Snapshot.WriterToken || after.IssuePrefix != "web-app-" || after.DeletedAllocations != 1 || len(after.CommentsByIssuePath[work.Properties.ID]) != 1 {
 				t.Fatalf("next acquisition did not observe complete writer state: %+v %v", after, err)
 			}
 			var owned int
 			for _, record := range after.Snapshot.Records {
-				if memory, ok := record.(IssueRecord); ok && memory.ID == options.Binding.ScopeURL+"beads/work" {
+				if memory, ok := record.(IssueRecord); ok && memory.ID == work.ID {
 					owned = len(memory.Owned)
 				}
 			}
@@ -945,11 +995,15 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			}); err != nil {
 				t.Fatal(err)
 			}
+			// Each independent export proof gets the existing bounded operation
+			// window; fixture setup and earlier proofs must not consume it.
+			ctx = currentReadBudgetContext(t, ctx)
 			before := exportSourceState(t, ctx, s)
 			got, err := s.ExportCurrentSnapshot(ctx)
 			if err != nil || len(got.Snapshot.Records) != 8 {
 				t.Fatalf("distinct decode falsely charged five times: %d %v", len(got.Snapshot.Records), err)
 			}
+			ctx = currentReadBudgetContext(t, ctx)
 			fault := errors.New("after exact endpoint validation")
 			s.afterWrite = func(stage string) error {
 				if stage == "export-endpoints" {
@@ -962,9 +1016,12 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			if !errors.Is(err, fault) || !reflect.DeepEqual(got, ExportCurrentState{}) {
 				t.Fatalf("endpoint-stage fault: %+v %v", got, err)
 			}
+			ctx = currentReadBudgetContext(t, ctx)
 			canceled, cancel := context.WithCancel(ctx)
+			cancellationReached := false
 			s.afterWrite = func(stage string) error {
 				if stage == "export-endpoints" {
+					cancellationReached = true
 					cancel()
 				}
 				return nil
@@ -972,9 +1029,10 @@ func TestExportEndpointDistinctValidationBudget(t *testing.T) {
 			got, err = s.ExportCurrentSnapshot(canceled)
 			s.afterWrite = nil
 			cancel()
-			if !errors.Is(err, context.Canceled) || !reflect.DeepEqual(got, ExportCurrentState{}) {
-				t.Fatalf("endpoint-stage cancellation: %+v %v", got, err)
+			if !cancellationReached || !errors.Is(err, context.Canceled) || !reflect.DeepEqual(got, ExportCurrentState{}) {
+				t.Fatalf("endpoint-stage cancellation: reached=%t %+v %v", cancellationReached, got, err)
 			}
+			ctx = currentReadBudgetContext(t, ctx)
 			reached, reachedPreflight := false, false
 			s.afterWrite = func(stage string) error {
 				if stage == "export-preflight" {

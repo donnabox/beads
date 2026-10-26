@@ -47,7 +47,8 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			call(args...)
 			memory := call("remember", "Private body", "--id", "beads/plan", "--title", "Plan")
 			memoryRevision := graphAssertCompleteRecordRevisionOnly(t, memory)
-			graphAssertCompleteRecordRevisionOnly(t, call("create", "Work", "--id", "beads/work"))
+			graphAssertCompleteRecordRevisionOnly(t, call("create", "Work", "--graph-path", "beads/work"))
+			graphAssertCompleteRecordRevisionOnly(t, call("create", "Generated work", "--id-root", "work"))
 			call("create", "Rule", "--type", "types/constraint", "--id", "beads/rule")
 			var receipt struct {
 				Link   json.RawMessage `json:"link"`
@@ -59,7 +60,7 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			graphAssertCompleteRecordRevisionOnly(t, receipt.Link)
 			graphAssertCompleteRecordRevisionOnly(t, receipt.Source)
 			var linked graphstore.Record
-			if err := json.Unmarshal(call("show", "beads/plan"), &linked); err != nil || len(linked.Owned) != 1 {
+			if err := json.Unmarshal(call("show", scope+"beads/plan"), &linked); err != nil || len(linked.Owned) != 1 {
 				t.Fatalf("owner did not expose its complete owned Link: %+v (%v)", linked, err)
 			}
 			graphAssertCompleteRecordRevisionOnly(t, linked.Owned[0])
@@ -70,7 +71,7 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			if string(link["properties"]) != `{"note":"user value"}` {
 				t.Fatalf("caller-authored Link property changed: %s", receipt.Link)
 			}
-			graphAssertCompleteRecordRevisionOnly(t, call("show", "beads/plan", "--version", memoryRevision))
+			graphAssertCompleteRecordRevisionOnly(t, call("show", scope+"beads/plan", "--revision", "="+memoryRevision))
 		})
 	}
 }

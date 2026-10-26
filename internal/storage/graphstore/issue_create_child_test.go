@@ -4,6 +4,7 @@ package graphstore
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"reflect"
 	"strings"
@@ -90,10 +91,14 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			wantType, ok := RelationshipDependencyTypeURL(options.Binding.ScopeURL, types.DepParentChild)
+			if !ok {
+				t.Fatal("missing concrete parent-child mapping")
+			}
 			if !strings.HasPrefix(created.Child.Properties.ID, parent.Properties.ID+".") ||
-				created.Child.ID != options.Binding.ScopeURL+"beads/"+created.Child.Properties.ID ||
+				created.Child.ID != options.Binding.ScopeURL+created.Child.Properties.ID ||
 				created.Link.Source != created.Child.ID || created.Link.Target != parent.ID ||
-				created.Link.Type != DependencyTypeURL(options.Binding.ScopeURL) ||
+				created.Link.Type != wantType ||
 				created.Link.Properties["dep_type"] != string(types.DepParentChild) ||
 				len(created.Child.Owned) != 1 {
 				t.Fatalf("child Issue and Link disagree: %+v", created)
@@ -101,7 +106,7 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 			if created.Child.Attribution.Inception != "create" || created.Child.Attribution.HistoricalUpdate != nil {
 				t.Fatalf("child initial context: %+v", created.Child.Attribution)
 			}
-			retained, err := store.ReadVersion(ctx, strings.TrimPrefix(created.Child.ID, options.Binding.ScopeURL), created.Child.Revision)
+			retained, err := store.ReadVersion(ctx, created.Child.ID, created.Child.Revision)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -135,6 +140,158 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 			}
 			if nativeVersions != 1 || graphVersions != 1 || dependencies != 1 {
 				t.Fatalf("native/graph History=%d/%d, Dependencies=%d", nativeVersions, graphVersions, dependencies)
+			}
+		})
+	}
+}
+
+func TestCreateChildIssueRejectsReservedPublicIDWithoutEffects(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = store.Close() })
+			parentRequest := plainIssue("Parent")
+			parentRequest.Issue.ID = "beads/exp-parent"
+			parentRequest.ForceIDPrefix = true
+			parent, err := store.CreateIssue(ctx, "beads/parent", parentRequest)
+			if err != nil {
+				t.Fatal(err)
+			}
+			childID := parent.Properties.ID + ".1"
+			if _, err := store.Create(ctx, CreateRequest{Path: childID, Title: "Memory with child ID"}); err != nil {
+				t.Fatal(err)
+			}
+			var reservedPath, reservedBacking string
+			if err := store.db.QueryRowContext(ctx, `SELECT path,backing FROM graph_preview_catalog WHERE path=?`, childID).Scan(&reservedPath, &reservedBacking); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, store)
+			var counters int
+			if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM child_counters`).Scan(&counters); err != nil {
+				t.Fatal(err)
+			}
+			created, err := store.CreateChildIssue(ctx, IssueChildCreateRequest{
+				ParentPath: "beads/parent", ExpectedParentRevision: parent.Revision,
+				Create: publicops.CreateRequest{Actor: "child-author", ForceIDPrefix: true, Issue: &types.Issue{
+					Title: "Rejected child", Status: types.StatusOpen, Priority: 2, IssueType: types.TypeTask,
+				}},
+			})
+			if !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
+				t.Fatalf("child reused Memory public ID %q (%s %s) or changed state: created=%+v err=%v", childID, reservedPath, reservedBacking, created, err)
+			}
+			var afterCounters int
+			if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM child_counters`).Scan(&afterCounters); err != nil || afterCounters != counters {
+				t.Fatalf("refused child burned a counter: before=%d after=%d err=%v", counters, afterCounters, err)
+			}
+		})
+	}
+}
+
+func TestCreateChildIssueWithDependenciesAtomic(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			_, options := issueExperimentOptions(t, backend)
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+			t.Cleanup(cancel)
+			ctx = issueops.WithEventsJournal(ctx, true)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = store.Close() })
+			makeIssue := func(path, title string, issueType types.IssueType) IssueRecord {
+				t.Helper()
+				got, err := store.CreateIssue(ctx, path, publicops.CreateRequest{Actor: "author", Issue: &types.Issue{
+					Title: title, Status: types.StatusOpen, Priority: 2, IssueType: issueType,
+				}})
+				if err != nil {
+					t.Fatal(err)
+				}
+				return got
+			}
+			parent := makeIssue("beads/parent", "Parent", types.TypeEpic)
+			prereq := makeIssue("beads/prereq", "Prerequisite", types.TypeTask)
+			consumer := makeIssue("beads/consumer", "Consumer", types.TypeTask)
+			request := IssueChildCreateRequest{
+				ParentPath: "beads/parent", ExpectedParentRevision: parent.Revision, InheritLabels: true,
+				Create: publicops.CreateRequest{Actor: "author", Issue: &types.Issue{
+					Title: "Child", Status: types.StatusOpen, Priority: 2, IssueType: types.TypeTask,
+				}},
+				Dependencies: []IssueCreateDependency{
+					{Target: IssueSelector{Path: "beads/prereq"}, Type: types.DepBlocks},
+					{Target: IssueSelector{Path: "beads/consumer"}, Type: types.DepBlocks, Reverse: true},
+				},
+			}
+			before := workflowState(t, ctx, store)
+			fault := errors.New("injected child dependency retention failure")
+			for _, failStage := range []string{"create-dependency-retained", "child-retained"} {
+				store.afterWrite = func(stage string) error {
+					if stage == failStage {
+						return fault
+					}
+					return nil
+				}
+				_, err = store.CreateChildIssue(ctx, request)
+				store.afterWrite = nil
+				if !errors.Is(err, fault) || !reflect.DeepEqual(workflowState(t, ctx, store), before) {
+					t.Fatalf("failed child dependency create at %s left effects: %v", failStage, err)
+				}
+			}
+			duplicateParent := request
+			duplicateParent.Dependencies = []IssueCreateDependency{{Target: IssueSelector{Path: "beads/parent"}, Type: types.DepBlocks}}
+			if _, err := store.CreateChildIssue(ctx, duplicateParent); !errors.Is(err, storage.ErrValidation) ||
+				!reflect.DeepEqual(workflowState(t, ctx, store), before) {
+				t.Fatalf("duplicate parent dependency changed state: %v", err)
+			}
+			cycleParent := request
+			cycleParent.Dependencies = []IssueCreateDependency{{Target: IssueSelector{Path: "beads/parent"}, Type: types.DepBlocks, Reverse: true}}
+			if _, err := store.CreateChildIssue(ctx, cycleParent); !errors.Is(err, storage.ErrValidation) ||
+				!reflect.DeepEqual(workflowState(t, ctx, store), before) {
+				t.Fatalf("cyclic parent dependency changed state: %v", err)
+			}
+			created, err := store.CreateChildIssue(ctx, request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !strings.HasPrefix(created.Child.Properties.ID, parent.Properties.ID+".") ||
+				len(created.Child.Owned) != 2 || created.Link.Target != parent.ID {
+				t.Fatalf("child parent/dependency mapping differs: %+v", created)
+			}
+			targets := map[string]bool{}
+			for _, owned := range created.Child.Owned {
+				var link LinkRecord
+				if err := json.Unmarshal(owned, &link); err != nil {
+					t.Fatal(err)
+				}
+				targets[link.Target] = true
+			}
+			if !targets[parent.ID] || !targets[prereq.ID] {
+				t.Fatalf("child lacks parent or prerequisite Link: %+v", created.Child.Owned)
+			}
+			consumer, err = store.ShowIssue(ctx, "beads/consumer")
+			if err != nil || len(consumer.Owned) != 1 {
+				t.Fatalf("reverse source lacks its Link: %+v %v", consumer, err)
+			}
+			var childEdges, consumerEdges, childVersions int
+			for _, check := range []struct {
+				query string
+				id    string
+				out   *int
+			}{
+				{`SELECT COUNT(*) FROM dependencies WHERE issue_id=?`, created.Child.Properties.ID, &childEdges},
+				{`SELECT COUNT(*) FROM dependencies WHERE issue_id=?`, consumer.Properties.ID, &consumerEdges},
+				{`SELECT COUNT(*) FROM graph_preview_issue_versions WHERE issue_id=?`, created.Child.Properties.ID, &childVersions},
+			} {
+				if err := store.db.QueryRowContext(ctx, check.query, check.id).Scan(check.out); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if childEdges != 2 || consumerEdges != 1 || childVersions != 1 {
+				t.Fatalf("native/graph child create counts: edges=%d reverse=%d versions=%d", childEdges, consumerEdges, childVersions)
 			}
 		})
 	}

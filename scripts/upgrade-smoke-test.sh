@@ -314,7 +314,9 @@ else
     GATE_OUT=$(cand list 2>&1) && GATE_RC=0 || GATE_RC=$?
     if [ "$GATE_RC" -eq 0 ]; then
         pass "Candidate operates database directly (schema already current)"
-    elif echo "$GATE_OUT" | grep -q "bd migrate schema"; then
+    # Match captured guidance without depending on an external tool or the
+    # status of an early-exiting pipeline.
+    elif [[ "$GATE_OUT" == *"bd migrate schema"* ]]; then
         pass "Candidate refuses un-migrated database with consent guidance"
     else
         fail "Candidate failed on old database without consent guidance"

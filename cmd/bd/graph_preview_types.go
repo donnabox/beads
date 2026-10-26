@@ -14,8 +14,8 @@ type graphTypeInventory struct {
 	LinkTypes []json.RawMessage `json:"linkTypes"`
 }
 
-// The source of this inventory is the selected workspace's checked, persisted
-// Type installation.
+// Inventory comes from checked workspace declarations, including immutable
+// used native bindings and configured unused native Issue definitions.
 func runGraphPreviewTypes(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "details"); err != nil {
 		return err
@@ -29,14 +29,7 @@ func runGraphPreviewTypes(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		var customTypes []string
-		if !details {
-			customTypes, err = resolveWorkspaceCustomTypes(ctx)
-			if err != nil {
-				return nil, "", err
-			}
-		}
-		return graphPreviewTypesInventory(store.ScopeURL(), descriptors, customTypes, details)
+		return graphPreviewTypesInventory(store.ScopeURL(), descriptors, details, store.AssessmentsEnabled())
 	})
 }
 

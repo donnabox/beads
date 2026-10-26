@@ -22,7 +22,31 @@ type Reader struct{ store *graphstore.Store }
 
 func New(store *graphstore.Store) *Reader { return &Reader{store: store} }
 
-// Resource reads a canonical local beads/... or links/... path. Storage absence,
+// PublicRouteKind acquires kind from immutable installed descriptors or the
+// allocation catalog, never from the spelling of a public identifier. Deleted
+// allocations remain reserved; a subsequent current read reports their state.
+func (r *Reader) PublicRouteKind(ctx context.Context, id string) (string, error) {
+	uri, err := graph.CanonicalPublicResourceURL(r.ScopeURL(), id)
+	if err != nil {
+		return "", err
+	}
+	types, err := r.store.ListInstalledTypes(ctx)
+	if err != nil {
+		return "", err
+	}
+	for _, typ := range types {
+		if typ.ID() == uri {
+			return "type", nil
+		}
+	}
+	allocation, err := r.store.ResolveAllocatedResourceIdentity(ctx, id)
+	if err != nil {
+		return "", err
+	}
+	return string(allocation.Kind), nil
+}
+
+// Resource reads a canonical public Scope URL or an internal locator. Storage absence,
 // deletion and corruption errors remain distinct for the future HTTP adapter.
 // The result is either bdpwire.BeadRecord or bdpwire.LinkRecord, never a private
 // preview envelope. This method does not select historical versions.
@@ -32,6 +56,18 @@ func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
 		return nil, err
 	}
 	return r.projectResource(ctx, record)
+}
+
+// ResourceSelected resolves a local opaque public ID in storage's checked
+// snapshot before projecting its Resource. Immutable Type descriptors may be
+// read afterward without reselecting the Resource.
+func (r *Reader) ResourceSelected(ctx context.Context, path, localID string) (string, any, error) {
+	selected, record, err := r.store.ReadResourceSelected(ctx, path, localID)
+	if err != nil {
+		return "", nil, err
+	}
+	projected, err := r.projectResource(ctx, record)
+	return selected, projected, err
 }
 
 // ResourceVersion projects one exact retained snapshot through the same BDP
@@ -106,7 +142,17 @@ func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties 
 	if err != nil {
 		return bdpwire.BeadRecord{}, err
 	}
-	ownedTypes, err := r.store.SelectedOwnedLinkTypes(typ)
+	// Derive dynamic native ownership from the already captured immutable Links.
+	// Do not reread mutable Link rows after the Bead snapshot.
+	var observed []string
+	for _, raw := range owned {
+		var link graphstore.LinkRecord
+		if err := json.Unmarshal(raw, &link); err != nil {
+			return bdpwire.BeadRecord{}, err
+		}
+		observed = append(observed, link.Type)
+	}
+	ownedTypes, err := r.store.SelectedOwnedLinkTypesWithObserved(typ, observed...)
 	if err != nil {
 		return bdpwire.BeadRecord{}, err
 	}

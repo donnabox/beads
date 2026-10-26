@@ -62,16 +62,16 @@ func TestForkMacOSLane(t *testing.T) {
 		t.Fatal(err)
 	}
 	strategy := raw.Jobs["test-macos-scope"].Strategy
-	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string][]string{"scope": {"graphstore", "remaining"}}) {
+	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string][]string{"scope": {"graphstore-odd", "graphstore-even", "remaining"}}) {
 		t.Error("macOS scopes must be disjoint, exhaustive and independently completed")
 	}
 	gate := readCIWorkflow(t, forkMacOSWorkflow).job(t, "test-macos")
 	if gate.Name != "Test (macos-latest)" || gate.RunsOn != "ubuntu-latest" || gate.If != "always()" || gate.TimeoutMinutes != 10 || !equalStrings(gate.Needs, []string{"test-macos-scope"}) {
-		t.Error("original macOS check must require both bounded scopes")
+		t.Error("original macOS check must require all three bounded scopes")
 	}
-	download := gate.step(t, "Download both macOS scope artifacts")
+	download := gate.step(t, "Download all macOS scope artifacts")
 	if download.Uses != "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" || download.TimeoutMinutes != 3 || download.With["pattern"] != "macos-go-test-${{ github.sha }}-*" || download.With["path"] != "artifacts/macos-scope-results" {
-		t.Error("aggregate must consume both exact-source artifacts")
+		t.Error("aggregate must consume all three exact-source artifacts")
 	}
 	assertStepRunsExactly(t, gate, "Verify complete macOS coverage and cleanup", `test "$SCOPES_RESULT" = success
 python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/macos-scope-results --source-sha "$(git rev-parse HEAD)"

@@ -31,10 +31,66 @@ const memoryType = id('types/memory');
 const ownedType = id('types/subject-to');
 const referencesType = id('types/references');
 const expectedBeadIDs = ['beads/alpha', 'beads/constraint', 'beads/plan', 'beads/prereq', 'beads/work'].map(id);
-const installedTypeIDs = ['memory', 'evaluation', 'constraint', 'policy', 'decision', 'procedure',
-  'requirement', 'scenario', 'specification', 'issue', 'references', 'superseded-by', 'requires',
-  'defines', 'subject-to', 'conformance', 'addresses', 'satisfies', 'violates', 'dependency']
-  .map(name => id(`types/${name}`)).sort();
+// Generation 12 installs the 20 selected families plus 13 concrete native
+// Issue Types and 19 concrete native Dependency Types. Keep these expected
+// identities literal and independent of the inventory being checked.
+const installedTypeIDs = [
+  'types/memory',
+  'types/evaluation',
+  'types/constraint',
+  'types/policy',
+  'types/decision',
+  'types/procedure',
+  'types/requirement',
+  'types/scenario',
+  'types/specification',
+  'types/issue',
+  'types/references',
+  'types/superseded-by',
+  'types/requires',
+  'types/defines',
+  'types/subject-to',
+  'types/conformance',
+  'types/addresses',
+  'types/satisfies',
+  'types/violates',
+  'types/dependency',
+  'types/native-issue/627567', // bug
+  'types/native-issue/66656174757265', // feature
+  'types/native-issue/7461736b', // task
+  'types/native-issue/65706963', // epic
+  'types/native-issue/63686f7265', // chore
+  'types/native-issue/6465636973696f6e', // decision
+  'types/native-issue/6d657373616765', // message
+  'types/native-issue/6d6f6c6563756c65', // molecule
+  'types/native-issue/67617465', // gate
+  'types/native-issue/7370696b65', // spike
+  'types/native-issue/73746f7279', // story
+  'types/native-issue/6d696c6573746f6e65', // milestone
+  'types/native-issue/6576656e74', // event
+  'types/native-dependency/626c6f636b73', // blocks
+  'types/native-dependency/706172656e742d6368696c64', // parent-child
+  'types/native-dependency/636f6e646974696f6e616c2d626c6f636b73', // conditional-blocks
+  'types/native-dependency/77616974732d666f72', // waits-for
+  'types/native-dependency/72656c61746564', // related
+  'types/native-dependency/646973636f76657265642d66726f6d', // discovered-from
+  'types/native-dependency/7265706c6965732d746f', // replies-to
+  'types/native-dependency/72656c617465732d746f', // relates-to
+  'types/native-dependency/6475706c696361746573', // duplicates
+  'types/native-dependency/73757065727365646573', // supersedes
+  'types/native-dependency/617574686f7265642d6279', // authored-by
+  'types/native-dependency/61737369676e65642d746f', // assigned-to
+  'types/native-dependency/617070726f7665642d6279', // approved-by
+  'types/native-dependency/61747465737473', // attests
+  'types/native-dependency/747261636b73', // tracks
+  'types/native-dependency/756e74696c', // until
+  'types/native-dependency/6361757365642d6279', // caused-by
+  'types/native-dependency/76616c696461746573', // validates
+  'types/native-dependency/64656c6567617465642d66726f6d', // delegated-from
+].map(id).sort();
+// Every collection is requested one item per page; the full Type catalog
+// is the largest expected inventory. This remains a finite fixture bound.
+const collectionPageCap = 52;
 
 // Observational decoration only: delegates to native fetch without synthesizing
 // any status, body, routing, or discovery. It does not log credentials.
@@ -71,7 +127,7 @@ async function collect(collection, parameters = {}) {
   try {
     let page = await perform({ kind: 'collection', collection, limit: 1, ...parameters }, { continuationScope });
     for (;;) {
-      assert.ok(pages.length < 20, 'collection page cap');
+      assert.ok(pages.length < collectionPageCap, 'collection page cap');
       pages.push(page);
       if (page.next === null) break;
       page = await perform({ kind: 'collection', collection, continuation: page.next }, { continuationScope });
@@ -170,7 +226,7 @@ try {
     acceptance_criteria: 'The public BDP client sees all four edited fields.\n' };
   const issueArgs = ['update', workID, '--title', issueFields.title,
     '--description', issueFields.description, '--design', issueFields.design,
-    '--acceptance', issueFields.acceptance_criteria, '--if-revision', workBefore.revision, '--json'];
+    '--acceptance', issueFields.acceptance_criteria, '--if-revision', '=' + workBefore.revision, '--json'];
   const issueBinary = digest(await readFile(process.env.BDP_BD));
   let issueExecution;
   let issueExitCode = null;
@@ -282,7 +338,7 @@ try {
   const claimNetworkIndex = network.length - 1;
   await writeFile(join(output, "client-issue-notes-before.body"), claimedHTTP.bytes);
   const noopMutation = await notesCLI('client-cli-issue-append-noop',
-    ['update', workID, '--append-notes=', '--if-revision', claimed.revision, '--actor', notesActor, '--json']);
+    ['update', workID, '--append-notes=', '--if-revision', '=' + claimed.revision, '--actor', notesActor, '--json']);
   assert.equal(noopMutation.result.changed, false);
   assert.deepEqual(noopMutation.result.issue, claimMutation.result.issue);
   const noopRecord = await perform({ kind: 'resource', resource: 'bead', id: workID });
@@ -297,7 +353,7 @@ try {
 
   const appendText = '  Progress — 雪\r\nsecond line\t  ';
   const appendMutation = await notesCLI('client-cli-issue-append',
-    ['update', workID, '--append-notes', appendText, '--if-revision', claimed.revision, '--actor', notesActor, '--json']);
+    ['update', workID, '--append-notes', appendText, '--if-revision', '=' + claimed.revision, '--actor', notesActor, '--json']);
   assert.equal(appendMutation.result.changed, true);
   const appended = await perform({ kind: 'resource', resource: 'bead', id: workID });
   assert.equal(appended.revision, appendMutation.result.issue.revision);
@@ -356,7 +412,7 @@ try {
     assert.equal(first.items[0].id, id('beads/alpha'));
     assert.ok(first.next);
     const args = ['update', 'links/context', '--properties', '{"note":"after page"}',
-      '--if-revision', plan.ownedLinks[ownedType][0].revision,
+      '--if-revision', '=' + plan.ownedLinks[ownedType][0].revision,
       '--if-source-revision', plan.revision, '--json'];
     const beforeBinary = digest(await readFile(process.env.BDP_BD));
     let mutation;
@@ -480,7 +536,7 @@ try {
 
   const memoryProperties = { title: 'Edited plan — 雪', body: 'Updated through the installed CLI.\n' };
   const memoryArgs = ['update', planID, '--properties', JSON.stringify(memoryProperties),
-    '--if-revision', record.revision, '--json'];
+    '--if-revision', '=' + record.revision, '--json'];
   const memoryBinary = digest(await readFile(process.env.BDP_BD));
   let memoryExecution;
   try {
@@ -527,7 +583,7 @@ try {
     assert.equal(retainedFirst.items[0].id, id('beads/alpha'));
     assert.ok(retainedFirst.next);
 
-    const deletionArgs = ['link', 'delete', dependencyID, '--force', '--if-revision', deletionLinkBefore.revision,
+    const deletionArgs = ['link', 'delete', dependencyID, '--force', '--if-revision', '=' + deletionLinkBefore.revision,
       '--if-source-revision', deletionSourceBefore.revision, '--actor', 'bdp-read-dependency-remover', '--json'];
     const deletionBinary = digest(await readFile(process.env.BDP_BD));
     let deletionExecution;
@@ -624,7 +680,7 @@ try {
   const authoredMutation = await notesCLI('client-cli-issue-authoring-edit',
     ['update', authoringID, '--estimate=45', '--external-ref=revised', '--spec-id=revised spec', '--due=2100-01-01T00:00:00Z',
       '--design=Revised', '--acceptance=Accepted', '--append-notes=Progress',
-      '--if-revision', authored.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + authored.revision, '--actor', authoringActor, '--json']);
   assert.equal(authoredMutation.result.changed, true);
   const editedAuthoring = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
   assert.equal(editedAuthoring.revision, authoredMutation.result.issue.revision);
@@ -642,7 +698,7 @@ try {
   await writeFile(join(output, 'client-issue-authoring-edited.body'), editedHTTP.bytes);
   const authoringNoop = await notesCLI('client-cli-issue-authoring-noop',
     ['update', authoringID, '--estimate=45', '--external-ref=revised', '--spec-id=revised spec', '--due=2100-01-01T00:00:00Z',
-      '--if-revision', editedAuthoring.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + editedAuthoring.revision, '--actor', authoringActor, '--json']);
   assert.equal(authoringNoop.result.changed, false);
   assert.deepEqual(authoringNoop.result.issue, authoredMutation.result.issue);
   const authoringNoopIndex = network.length;
@@ -653,7 +709,7 @@ try {
   await writeFile(join(output, 'client-issue-authoring-noop.body'), noopAuthoringHTTP.bytes);
   const clearAuthoring = await notesCLI('client-cli-issue-authoring-clear',
     ['update', authoringID, '--estimate=0', '--external-ref=', '--spec-id=', '--due=',
-      '--if-revision', editedAuthoring.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + editedAuthoring.revision, '--actor', authoringActor, '--json']);
   assert.equal(clearAuthoring.result.changed, true);
   const clearedAuthoring = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
   assert.equal(clearedAuthoring.revision, clearAuthoring.result.issue.revision);

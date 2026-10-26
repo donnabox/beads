@@ -61,6 +61,8 @@ func TestLegacyImportSourcePrefixAdmissionBeforeLegacyOpen(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			cmd := &cobra.Command{Use: "import"}
+			parent := &cobra.Command{Use: "bd"}
+			parent.AddCommand(cmd)
 			cmd.Flags().String("source-prefix", "", "")
 			if test.supplied {
 				if err := cmd.Flags().Set("source-prefix", test.value); err != nil {
@@ -103,6 +105,8 @@ func TestLegacyImportSourcePrefixAdmissionBeforeLegacyOpen(t *testing.T) {
 		t.Fatal(err)
 	}
 	cmd := &cobra.Command{Use: "import"}
+	parent := &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	cmd.Flags().String("source-prefix", "", "")
 	if err := cmd.Flags().Set("source-prefix", ""); err != nil {
 		t.Fatal(err)
@@ -517,13 +521,19 @@ func TestGraphPreviewStoreOpenDispatchesOnlyOpenMapper(t *testing.T) {
 }
 
 func TestGraphPreviewLegacyImportSummaryPrefix(t *testing.T) {
-	withPrefix := graphPreviewLegacyImportSummary("Imported", "source.jsonl", graphstore.LegacyImportResult{IssuePrefix: "web-app", Issues: 1})
+	withPrefix := graphPreviewLegacyImportSummary("Imported", "source.jsonl", graphstore.LegacyImportResult{IssuePrefix: "web-app", SourceIssuePrefix: "web-app", Issues: 1})
 	if !strings.Contains(withPrefix, "Workspace Issue prefix: web-app.") {
 		t.Fatalf("adopted prefix not disclosed: %s", withPrefix)
 	}
-	preview := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{IssuePrefix: "web-app", DryRun: true})
+	preview := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{IssuePrefix: "web-app", SourceIssuePrefix: "web-app", DryRun: true})
 	if !strings.Contains(preview, "Would adopt Issue prefix: web-app.") || strings.Contains(preview, "Workspace Issue prefix:") {
 		t.Fatalf("dry-run prefix adoption claimed: %s", preview)
+	}
+	rooted := graphPreviewLegacyImportSummary("Imported", "source.jsonl", graphstore.LegacyImportResult{IssuePrefix: "destination", SourceIssuePrefix: "web-app", IDRoot: "legacy/trial", Issues: 1})
+	for _, want := range []string{"ID root: legacy/trial.", "Workspace Issue prefix remains destination.", "Source Issue prefix: web-app."} {
+		if !strings.Contains(rooted, want) {
+			t.Fatalf("rooted import lost source/destination placement %q: %s", want, rooted)
+		}
 	}
 	memories := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{Memories: 1})
 	if strings.Contains(memories, "Issue prefix:") {

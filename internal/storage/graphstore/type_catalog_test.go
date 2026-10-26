@@ -1,6 +1,8 @@
 package graphstore
 
 import (
+	"bytes"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"strings"
@@ -34,8 +36,33 @@ func TestSelectedTypeInventoryMatchesCompleteCatalog(t *testing.T) {
 		}
 		byID[descriptor.ID()] = descriptor
 	}
-	if len(byID) != 20 {
-		t.Fatalf("installed %d Types, want 18 selected Memory Types plus native Issue/Dependency", len(byID))
+	if TypeGeneration != 12 || len(byID) != 52 {
+		t.Fatalf("generation%d installed%d Types, want generation12 ordered catalog52", TypeGeneration, len(byID))
+	}
+	for _, family := range []struct {
+		path, base string
+		kind       graph.ResourceKind
+		names      []string
+	}{
+		{"native-issue", IssueTypeURL(scope), graph.KindBead, []string{"bug", "feature", "task", "epic", "chore", "decision", "message", "molecule", "gate", "spike", "story", "milestone", "event"}},
+		{"native-dependency", DependencyTypeURL(scope), graph.KindLink, []string{"blocks", "parent-child", "conditional-blocks", "waits-for", "related", "discovered-from", "replies-to", "relates-to", "duplicates", "supersedes", "authored-by", "assigned-to", "approved-by", "attests", "tracks", "until", "caused-by", "validates", "delegated-from"}},
+	} {
+		base, present := catalog.types.Definition(family.base)
+		if !present || !base.Abstract || base.Kind != family.kind {
+			t.Fatalf("native family lost abstract kind: %+v", base)
+		}
+		for _, name := range family.names {
+			id := scope + "types/" + family.path + "/" + hex.EncodeToString([]byte(name))
+			descriptor, present := byID[id]
+			expected, err := nativeConcreteDescriptor(scope, id)
+			if !present || err != nil || descriptor.Name() != name || descriptor.Describes() != family.kind || !bytes.Equal(descriptor.CanonicalJSON(), expected.CanonicalJSON()) {
+				t.Fatalf("native descriptor mismatch for %q: %s %v", id, descriptor.CanonicalJSON(), err)
+			}
+			parents := descriptor.ConformsTo()
+			if len(parents) != 1 || parents[0] != family.base {
+				t.Fatalf("native %q lost exact family: %v", id, parents)
+			}
+		}
 	}
 	for _, declaration := range catalog.projection.Definitions() {
 		descriptor, present := byID[declaration.Binding.Type.URI]
