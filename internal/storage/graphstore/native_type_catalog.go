@@ -83,11 +83,14 @@ func (s *Store) selectedDescriptorsInTx(ctx context.Context, tx *sql.Tx) ([]grap
 				return nil, fmt.Errorf("%w: configured native classification conflicts with an installed Type", ErrAlreadyExists)
 			}
 		} else {
-			allocated, err := allocatedPublicIDExistsInTx(ctx, tx, id[len(s.ScopeURL()):])
+			// The complete checked installed set above already proves this
+			// exact Type identity absent; do not rescan every descriptor for
+			// each configured unused class. Other reservations stay checked.
+			owner, err := allocatedResourceIDOwnerInTx(ctx, tx, id[len(s.ScopeURL()):])
 			if err != nil {
 				return nil, err
 			}
-			if allocated {
+			if owner != "" {
 				return nil, fmt.Errorf("%w: configured Type identity is already reserved by a Resource or discovery", ErrAlreadyExists)
 			}
 			result = append(result, d)

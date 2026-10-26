@@ -57,27 +57,35 @@ func TestObsoleteInformationalTypesAreNotInstalledOrAdmitted(t *testing.T) {
 }
 
 func TestSelectedInformationalTypeInstallationCorruptionIsReadOnly(t *testing.T) {
-	ctx, options := issueExperimentOptions(t, "embedded")
-	store, err := OpenExisting(ctx, options)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := store.Close(); err != nil {
-			t.Error(err)
-		}
-	})
-	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint='bad' WHERE name='references'`); err != nil {
-		t.Fatal(err)
-	}
-	before := workflowState(t, ctx, store)
-	if _, err := store.CurrentSnapshot(ctx); !errors.Is(err, ErrInvalidStore) {
-		t.Fatalf("inventory hid corrupt selected Type: %v", err)
-	}
-	if _, err := store.ReadType(ctx, "references"); !errors.Is(err, ErrInvalidStore) {
-		t.Fatalf("Type read hid corruption: %v", err)
-	}
-	if !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
-		t.Fatal("invalid installed Type reads changed state")
+	for _, tc := range []struct{ name, sql string }{
+		{"fingerprint", `UPDATE graph_preview_types SET fingerprint='bad' WHERE name='references'`},
+		{"byte length", `UPDATE graph_preview_types SET descriptor=CONCAT(descriptor,' ') WHERE name='references'`},
+		{"missing fixed name with unchanged row count", `UPDATE graph_preview_types SET name='not-fixed-references' WHERE name='references'`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, "embedded")
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := store.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			if _, err := store.db.ExecContext(ctx, tc.sql); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, store)
+			if _, err := store.CurrentSnapshot(ctx); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("inventory hid corrupt selected Type: %v", err)
+			}
+			if _, err := store.ReadType(ctx, "references"); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("Type read hid corruption: %v", err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, store)) {
+				t.Fatal("invalid installed Type reads changed state")
+			}
+		})
 	}
 }

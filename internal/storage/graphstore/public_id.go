@@ -90,8 +90,21 @@ func allocatedPublicIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (str
 	if !errors.Is(err, sql.ErrNoRows) {
 		return "", err
 	}
+	return allocatedResourceIDOwnerInTx(ctx, tx, id)
+}
+
+// allocatedResourceIDOwnerInTx excludes installed Types. A caller omitting
+// that check must already hold the complete checked Type set in this same
+// transaction and have proved this exact identity absent from it.
+func allocatedResourceIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (string, error) {
+	if err := validatePublicID(id); err != nil {
+		return "", err
+	}
+	if id == "bdp.json" {
+		return "the Scope discovery document", nil
+	}
 	var exists int
-	err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog
+	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog
 		WHERE (
 			(backing='issue' AND backing_key=?) OR
 			(backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)
