@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -16,7 +17,7 @@ func runGraphPreviewImport(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "input", "dry-run", "source-prefix", "id-root"); err != nil {
+	if err := graphPreviewFlags(cmd, "input", "dry-run", "source-prefix", "id-root", "ignore-unknown-fields"); err != nil {
 		return err
 	}
 	if cmd.Flags().Changed("id-root") && importIDRoot == "" {
@@ -38,8 +39,12 @@ func runGraphPreviewImport(cmd *cobra.Command, args []string) error {
 }
 
 func runGraphPreviewImportReader(reader io.Reader, source string) error {
-	batch, err := legacyimport.Parse(reader)
+	batch, err := parseGraphLegacyInput(reader, importIgnoreUnknownFields, os.Stderr)
 	if err != nil {
+		var warningError *graphLegacyImportWarningError
+		if errors.As(err, &warningError) {
+			return graphFailure("output_error", warningError.Error(), 5)
+		}
 		if errors.Is(err, legacyimport.ErrLimitExceeded) {
 			return graphStorageError(fmt.Errorf("%w: %w", graphstore.ErrLimitExceeded, err))
 		}
@@ -59,6 +64,49 @@ func runGraphPreviewImportReader(reader io.Reader, source string) error {
 		return graphPrint(result, human, quietFlag)
 	}, graphLegacyImportOpenError, graphLegacyImportError)
 }
+
+// Warnings describe discarded source fields, not a successful storage operation.
+// This seam stays independent of providers, so diagnostics are written before
+// admission and cannot contaminate graphPrint's structured stdout.
+func parseGraphLegacyInput(reader io.Reader, ignoreUnknown bool, warnings io.Writer) (legacyimport.Batch, error) {
+	batch, report, err := legacyimport.ParseWithOptions(reader, legacyimport.Options{IgnoreUnknownFields: ignoreUnknown})
+	if err != nil {
+		return legacyimport.Batch{}, err
+	}
+	if report.Total == 0 {
+		return batch, nil
+	}
+	if _, err := fmt.Fprintf(warnings, "Warning: legacy parsing discarded %s across %s; storage admission has not occurred.\n", pluralCount(report.Total, "unknown field", "unknown fields"), pluralCount(report.Distinct, "distinct path", "distinct paths")); err != nil { //nolint:gosec // G705: stderr diagnostics, not a browser; source values are excluded.
+		return legacyimport.Batch{}, &graphLegacyImportWarningError{cause: err}
+	}
+	for _, field := range report.Fields {
+		suffix := ""
+		if field.Truncated {
+			suffix = " (path component truncated; full-path digest " + field.PathDigest + ")"
+		}
+		if _, err := fmt.Fprintf(warnings, "  %s: %s%s\n", field.Path, pluralCount(field.Count, "occurrence", "occurrences"), suffix); err != nil { //nolint:gosec // G705: stderr only; path components are bounded and JSON-escaped.
+			return legacyimport.Batch{}, &graphLegacyImportWarningError{cause: err}
+		}
+	}
+	if report.OmittedDistinct != 0 {
+		if _, err := fmt.Fprintf(warnings, "  %s omitted (%s).\n", pluralCount(report.OmittedDistinct, "additional distinct path", "additional distinct paths"), pluralCount(report.OmittedOccurrences, "occurrence", "occurrences")); err != nil { //nolint:gosec // G705: stderr-only numeric counts, not a browser context.
+			return legacyimport.Batch{}, &graphLegacyImportWarningError{cause: err}
+		}
+	}
+	return batch, nil
+}
+
+// A diagnostic write fails before provider admission. Preserve its cause while
+// keeping it distinct from malformed input and storage outcome uncertainty.
+type graphLegacyImportWarningError struct {
+	cause error
+}
+
+func (e *graphLegacyImportWarningError) Error() string {
+	return "cannot report ignored legacy fields; storage admission has not occurred: " + e.cause.Error()
+}
+
+func (e *graphLegacyImportWarningError) Unwrap() error { return e.cause }
 
 // Import inspections use a bounded-operation refusal for cancellation. Keep
 // uncertainty and already-reported errors ahead of this route-local mapping.

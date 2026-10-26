@@ -362,6 +362,8 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		{"import", "--source-prefix="},
 		{"import", "--id-root", "restored/team"},
 		{"import", "--id-root="},
+		{"import", "--ignore-unknown-fields"},
+		{"import", "--ignore-unknown-fields=false"},
 		{"remember", "--update", "beads/plan", "--title", "Refused"},
 		{"link", "demo-one", "demo-two", "--properties", `{}`},
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
