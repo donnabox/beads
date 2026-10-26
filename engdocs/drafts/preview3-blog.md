@@ -191,7 +191,7 @@ to perform the same operation.
 
 ### Creating Memories
 
-Memory Beads record knowledge for later use by both humans and agents. Memory beads can represent policies, requirements, decisions, or generic information that doesn't fit into a particular category.
+Memory Beads record knowledge for later use by both humans and agents. Memory beads can represent policies, requirements, decisions, or generic information that doesn't fit into a particular category. Plain Memory is informative; the Constraint refinement introduced below adds normative rules while remaining a Memory.
 
 A Memory Bead has a `title` and a Markdown `body`; its third property (`status`) is optional. Unlike Issues, where status defines a lifecycle specific to work tracking, the `status` field on Memory Beads is free-form text and can map onto whatever lifecycle you, your project, or your organization uses (e.g., PROPOSED or APPROVED).
 
@@ -420,6 +420,13 @@ Error: remember-demo already exists; --create-only refused the write.
 ### Linking Memories
 
 References Links connect memory beads so that readers can follow useful related context.  There is a distinct new link type, `references`, that connects memory beads to one another or to beads of any type (e.g., `task`). Reference links share the same three properties as memory beads (title, body, status) allowing you to treat references between memories as full-fledged parts of the memory graph; unlike memory beads however, all three of these fields are optional. Reference links can be created using the memory-specific `bd memory reference` command or the generic `bd link create` command that works with all link types.
+
+Direct References provide informative context. Requires and Subject To state
+obligations, and Defines adds defining structure to Requires; these specialized
+Links are also References. Superseded By expresses normative succession: it
+directs readers to the successor for current guidance. It does not automatically
+approve that successor, change status, rewrite Subject To declarations or erase
+history.
 
 Three commands create and follow References Links:
 
@@ -746,8 +753,11 @@ Created encoding-replacement: csv-encoding --superseded-by--> csv-guide
 
 ```
 
-The replacement Link points from old to new. This view shows it beside the
-original forward Reference; the other References remain unchanged.
+The replacement Link points from old to new and directs readers to the
+successor for current guidance. This succession is normative: continuing to
+follow the replaced guidance can conflict with that direction. This view shows
+the Link beside the original forward Reference; the other References remain
+unchanged.
 
 ```mermaid
 flowchart LR
@@ -799,22 +809,26 @@ carried out. A Constraint Bead records one of these obligations. Its body
 describes the rule, and its Type tells readers what kind of rule they are
 reading. Use Constraint directly when none of the more specific Bead Types fits.
 
-- Policy states governing rules of a system, project or team.
-- Decision records choices that constrain later work.
-- Procedure describes how work is carried out, with the flow in the body.
+- Policy states governing rules or adopted directions for a system, project or team.
 - Requirement states an outcome or condition that must be met.
 - Scenario describes required behavior in a particular situation.
 - Specification describes intended results at any useful level of detail.
 
-These six Types refine Constraint, which itself refines Memory. The Type diagram
+An adopted choice that governs later work is a Policy; record its scope,
+rationale and authority in existing content and metadata. A historical account
+of a choice that imposes no continuing rule is a plain Memory. A `superseded-by`
+Link can connect a Policy to its replacement, but does not approve that
+replacement or rewrite existing Subject To declarations. A required way of
+working is a Policy with the steps and conditions in its body; optional how-to
+guidance is a plain Memory.
+
+These four Types refine Constraint, which itself refines Memory. The Type diagram
 points from each refinement to its parent.
 
 ```mermaid
 flowchart BT
     Constraint -->|refines| Memory
     Policy -->|refines| Constraint
-    Decision -->|refines| Constraint
-    Procedure -->|refines| Constraint
     Requirement -->|refines| Constraint
     Scenario -->|refines| Constraint
     Specification -->|refines| Constraint
@@ -982,7 +996,7 @@ can find relevant rules from context or follow explicit declarations in the grap
 The constraint graphs we just looked at express what conditions must be true in a given context, but they are silent on how that context is established.
 
 The most obvious and flexible way to determine who or what is subject to a constraint graph is implicit inference. An agent may infer relevant constraints from a prompt or ambient context. For example,
-a Policy may state that all bug fixes must follow a given Procedure. The constraint's subjects can be identified this way, but we are relying on inference to find them.
+a Policy may state that all bug fixes must include a regression test. The constraint's subjects can be identified this way, but we are relying on inference to find them.
 
 The alternative way to determine the subject(s) of a constraint are using the `subject-to` link, A `subject-to` Link explicitly connects a Bead to a Constraint that governs it.
 Any Bead, including an Issue, can be the source, and it can have several such
