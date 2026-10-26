@@ -339,11 +339,8 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == listCmd && format == "records-json" {
 			return true, graphFailure("capability_unavailable", "records-json listing requires an experimental graph workspace", 5)
 		}
-		if cmd == listCmd && cmd.Flags().Changed("type") {
-			selector, _ := cmd.Flags().GetString("type")
-			if graphPreviewNominalSelector(selector) {
-				return true, graphFailure("capability_unavailable", "graph Bead Types require a workspace initialized with graph_mode link", 5)
-			}
+		if cmd == listCmd && graphPreviewNominalTypeFlagChanged(cmd) {
+			return true, graphFailure("capability_unavailable", "graph Bead Types require a workspace initialized with graph_mode link", 5)
 		}
 		// delete's --if-revision is upstream's compare-and-swap here, not a graph
 		// guard: only forget's --if-revision is graph-only.

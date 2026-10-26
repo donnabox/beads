@@ -115,6 +115,12 @@ func graphPreviewNominalTypeFlagChanged(cmd *cobra.Command) bool {
 		return false
 	}
 	selector, _ := cmd.Flags().GetString("type")
+	// A native Issue shorthand remains admitted in ordinary dependency-mode
+	// workspaces even when its flat ID is also in the graph catalog. Complete
+	// IDs and URIs keep their nominal meaning; this is only route admission.
+	if types.IssueType(selector).Normalize().IsBuiltIn() {
+		return false
+	}
 	return graphPreviewNominalSelector(selector)
 }
 

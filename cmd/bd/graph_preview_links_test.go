@@ -190,3 +190,28 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		}
 	}
 }
+
+// Catalog identity selection must not turn ordinary native Issue shorthand
+// into a graph-only option at the workspace admission boundary.
+func TestOrdinaryNativeTypeShorthandAdmission(t *testing.T) {
+	for _, value := range []string{"feature", "task", "decision", "feat", "adr", "dec", "user-story", "ms"} {
+		cmd := &cobra.Command{}
+		cmd.Flags().String("type", "", "")
+		if err := cmd.Flags().Set("type", value); err != nil {
+			t.Fatal(err)
+		}
+		if graphPreviewNominalTypeFlagChanged(cmd) {
+			t.Fatalf("ordinary native shorthand %q requires graph workspace", value)
+		}
+	}
+	for _, value := range []string{"memory", "policy", "types/feature", "foo/feature", "https://example.test/work/feature", "Type"} {
+		cmd := &cobra.Command{}
+		cmd.Flags().String("type", "", "")
+		if err := cmd.Flags().Set("type", value); err != nil {
+			t.Fatal(err)
+		}
+		if !graphPreviewNominalTypeFlagChanged(cmd) {
+			t.Fatalf("nominal graph operand %q escaped graph workspace admission", value)
+		}
+	}
+}

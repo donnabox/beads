@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -50,17 +51,21 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					LinkTypes []json.RawMessage `json:"linkTypes"`
 				} `json:"result"`
 			}
-			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 22 || len(installed.Result.LinkTypes) != 25 {
+			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 20 || len(installed.Result.LinkTypes) != 25 {
 				t.Fatalf("installed graph Types unavailable: %+v %v", installed, err)
 			}
 			for _, item := range append(installed.Result.BeadTypes, installed.Result.LinkTypes...) {
 				var descriptor struct{ ID, Describes string }
-				if err := json.Unmarshal(item, &descriptor); err != nil || !strings.HasPrefix(descriptor.ID, scope+"types/") {
+				if err := json.Unmarshal(item, &descriptor); err != nil {
 					t.Fatalf("invalid installed descriptor: %s %v", item, err)
+				}
+				localID, err := graph.ScopeLocalPublicResourceID(scope, descriptor.ID)
+				if err != nil || strings.Contains(localID, "/") {
+					t.Fatalf("fresh generated Type is not a meaningful flat ID: %s %v", item, err)
 				}
 			}
 			visible := graphPolicyCLI(t, bd, work, home, nil, "", "types")
-			if !strings.Contains(visible, "Bead Types (22):") || !strings.Contains(visible, strings.TrimPrefix(taskType, scope)) ||
+			if !strings.Contains(visible, "Bead Types (20):") || !strings.Contains(visible, strings.TrimPrefix(taskType, scope)) ||
 				!strings.Contains(visible, "Link Types (25):") || !strings.Contains(visible, strings.TrimPrefix(blocksType, scope)) ||
 				!strings.Contains(visible, "task") || strings.Contains(visible, "Issue classifications (") ||
 				!strings.Contains(visible, "blocks") || strings.Contains(visible, "Dependency kinds (") ||
@@ -85,9 +90,9 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			refuse("identity_reserved", "create", "No overwrite", "--type", "memory", "--id", "policy-note")
 			refuse("capability_unavailable", "create", "Bad", "--type", "memory", "--priority", "2")
 			refuse("invalid_properties", "link", memory.ID, other.ID, "--type", "unregistered-dependency")
-			refuse("invalid_selector", "link", memory.ID, other.ID, "--type", "https://foreign.invalid/types/example-follows")
+			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "https://foreign.invalid/types/example-follows")
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "types/missing")
-			refuse("capability_unavailable", "create", "--type", "types/memory-preview", "--properties", `{"title":"One","body":"One is the loneliest number."}`)
+			refuse("invalid_properties", "create", "One", "--type", "types/memory-preview")
 			refuse("capability_unavailable", "link", "create", "policy-note", "work", "--type", "types/missing", "--properties", `{"note":"test"}`)
 			refuse("invalid_selector", "link", "create", "policy-note", "work", "--from", "policy-note", "--type", "example-cites")
 			beforeLinks := call("link", "list", "--incident-to", "policy-note")
