@@ -57,7 +57,7 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if _, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", TypeURL: scope + "types/superseded-by", SourcePath: "beads/plan", TargetPath: "beads/other", UnconditionalSource: true, Properties: map[string]any{"note": "initial"}, Metadata: json.RawMessage(`{"origin":"manual"}`)}); err != nil {
+	if _, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", TypeURL: scope + "superseded-by", SourcePath: "beads/plan", TargetPath: "beads/other", UnconditionalSource: true, Properties: map[string]any{"note": "initial"}, Metadata: json.RawMessage(`{"origin":"manual"}`)}); err != nil {
 		t.Fatal(err)
 	}
 	graph, err := NewGraphRead(graphread.New(store), scope)
@@ -223,7 +223,7 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		if response.StatusCode != 200 || bdpwire.Unmarshal(body, &aggregate) != nil || aggregate.Links == nil || len(aggregate.Links.Items) != 1 {
 			t.Fatalf("aggregate: %d %s", response.StatusCode, body)
 		}
-		owned := aggregate.OwnedLinks[scope+"types/superseded-by"]
+		owned := aggregate.OwnedLinks[scope+"superseded-by"]
 		if len(owned) != 1 || owned[0].Revision != aggregate.Links.Items[0].Revision || string(owned[0].Properties["note"]) != string(aggregate.Links.Items[0].Properties["note"]) {
 			t.Fatal("aggregate mixed two storage snapshots")
 		}
@@ -449,7 +449,7 @@ func TestGraphReadHTTPCommonCanonicalIDs(t *testing.T) {
 			if err != nil || createdIssue.ID != scope+"issue-rootless" {
 				t.Fatalf("Issue identity: %+v %v", createdIssue, err)
 			}
-			link, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{PublicID: "beads/context", TypeURL: scope + "types/references", SourcePath: scope + "rootless", TargetPath: scope + "links/memory", UnconditionalSource: true})
+			link, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{PublicID: "beads/context", TypeURL: scope + "references", SourcePath: scope + "rootless", TargetPath: scope + "links/memory", UnconditionalSource: true})
 			if err != nil {
 				t.Fatal(err)
 			}

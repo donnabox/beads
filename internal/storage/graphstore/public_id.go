@@ -57,7 +57,7 @@ func publicResourceIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (stri
 		return "", err
 	}
 	for _, value := range custom {
-		uri, err := NativeIssueTypeURL(scope, value)
+		uri, err := configuredNativeIssueTypeURL(scope, value)
 		if err != nil {
 			return "", err
 		}

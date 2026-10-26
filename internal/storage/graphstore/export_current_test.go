@@ -390,6 +390,10 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 			if len(expectedNative) != 32 {
 				t.Fatalf("fixed native catalog = %d, want32", len(expectedNative))
 			}
+			var totalTypes int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&totalTypes); err != nil || totalTypes != len(previewTypeDefinitions()) {
+				t.Fatalf("baseline Type rows = %d, want %d: %v", totalTypes, len(previewTypeDefinitions()), err)
+			}
 			nativeNames := make([]string, 0, len(expectedNative))
 			for name := range expectedNative {
 				nativeNames = append(nativeNames, name)
@@ -407,7 +411,7 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 					t.Fatal(err)
 				}
 				if !expectedNative[name] {
-					t.Fatalf("unexpected/duplicate native catalog Type %q", name)
+					t.Fatalf("duplicate native catalog Type %q", name)
 				}
 				delete(expectedNative, name)
 				// The reader charges one fixed row overhead plus these persisted

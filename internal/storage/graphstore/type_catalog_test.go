@@ -113,6 +113,11 @@ func TestSelectedTypeInventoryMatchesCompleteCatalog(t *testing.T) {
 			t.Fatalf("intrinsic/obsolete %s leaked into external catalog", name)
 		}
 	}
+	for _, name := range []string{"types/example-follows", "types/example-cites", "types/preview-memory", "types/preview-issue", "types/preview-dependency", "types/preview-related"} {
+		if _, present := byID[scope+name]; present {
+			t.Fatalf("obsolete generated Type %s leaked into external catalog", name)
+		}
+	}
 	if RelatedTypeURL(scope) != scope+"references" || IsInformationalTypeURL(scope, DependencyTypeURL(scope)) {
 		t.Fatal("legacy Related alias or native Dependency separation differs")
 	}

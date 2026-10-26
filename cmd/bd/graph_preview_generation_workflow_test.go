@@ -177,7 +177,7 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 		t.Fatalf("read fresh Type inventory: %v\n%s", err, out)
 	}
 	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 22 || links != 25 {
-		t.Fatalf("fresh available Types = %d Bead, %d Link; want 22 and 25", beads, links)
+		t.Fatalf("fresh available Types = %d Bead, %d Link; want 20 and 25", beads, links)
 	}
 
 	refuse := func(marker, want string) {

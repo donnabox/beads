@@ -124,9 +124,14 @@ func TestGraphPreviewCustomIssueTypePrefixWorkflow(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/custom-prefix/")
 			graphListConfig(t, work, "types.custom: \"preview-task,example-task\"\n")
 			listedTypes := graphPolicyCLI(t, bd, work, home, nil, "", "types")
-			if !strings.Contains(listedTypes, "preview-task") || !strings.Contains(listedTypes, "example-task") ||
-				!strings.Contains(listedTypes, "preview-task") ||
-				!strings.Contains(listedTypes, "example-task") {
+			ids := map[string]bool{}
+			for _, line := range strings.Split(listedTypes, "\n") {
+				fields := strings.Fields(line)
+				if len(fields) >= 2 {
+					ids[fields[0]] = true
+				}
+			}
+			if !ids["preview-task"] || !ids["example-task"] || strings.Contains(listedTypes, "types/native-issue/") || strings.Contains(listedTypes, "native-dependency/") {
 				t.Fatalf("registered Issue types missing from human inventory: %s", listedTypes)
 			}
 			selected := make(map[string]graphstore.IssueRecord)

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/domain"
 	"github.com/steveyegge/beads/internal/storage/issueops"
@@ -328,6 +329,9 @@ func (s *Store) projectIssueDetailIDsInTx(ctx context.Context, tx *sql.Tx, detai
 		}
 		if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || state != "live" || validatePath(path) != nil {
 			return fmt.Errorf("%w: invalid Issue detail allocation", ErrInvalidStore)
+		}
+		if err := s.requireNativeBindingInTx(ctx, tx, typ, graph.KindBead); err != nil {
+			return err
 		}
 		validated[nativeID] = true
 		return nil

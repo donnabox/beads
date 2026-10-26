@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"math"
 	"sort"
+
+	graph "github.com/steveyegge/beads/graphops"
 )
 
 // A graph Issue terminal occupies the graph history sequence, never a native
@@ -111,6 +113,9 @@ func (s *Store) NativeIssueAllocation(ctx context.Context, path string) (bool, e
 		}
 		if kind != "bead" || (!typ.Valid || !nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType)) || !key.Valid || key.String == "" {
 			return ErrInvalidStore
+		}
+		if err := s.requireNativeBindingInTx(ctx, tx, typ.String, graph.KindBead); err != nil {
+			return err
 		}
 		native = true
 		return nil

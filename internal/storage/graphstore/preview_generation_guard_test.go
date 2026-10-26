@@ -137,8 +137,8 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 		descriptors, err := installedPreviewTypes(ctx, tx, s.ScopeURL())
 		return len(descriptors), err
 	}
-	if count, err := installed(); err != nil || count != 52 {
-		t.Fatalf("fresh installation has %d Types with %v; want 52", count, err)
+	if count, err := installed(); err != nil || count != 50 {
+		t.Fatalf("fresh installation has %d Types with %v; want 50", count, err)
 	}
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='dependency'`); err != nil {
 		t.Fatal(err)
@@ -193,8 +193,8 @@ func TestPriorPreviewTypeInstallationIsNotSilentlyAdopted(t *testing.T) {
 }
 
 // An unspecified direct Store generation uses the checked catalog, not a CLI
-// marker. A valid old twenty-Type baseline is insufficient, even at schema 11.
-func TestUnspecifiedStoreGenerationRefusesPriorTwentyTypes(t *testing.T) {
+// marker. A incomplete non-native baseline is insufficient, even at schema 11.
+func TestUnspecifiedStoreGenerationRefusesPriorNonNativeCatalog(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, options := issueExperimentOptions(t, backend)
@@ -210,14 +210,23 @@ func TestUnspecifiedStoreGenerationRefusesPriorTwentyTypes(t *testing.T) {
 					t.Error(err)
 				}
 			})
-			if current, err := store.ListInstalledTypes(ctx); err != nil || len(current) != 52 {
+			if current, err := store.ListInstalledTypes(ctx); err != nil || len(current) != 50 {
 				t.Fatalf("complete current catalog refused: %d %v", len(current), err)
 			}
-			if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name LIKE 'native-issue/%' OR name LIKE 'native-dependency/%'`); err != nil {
+			descriptors, err := store.ListInstalledTypes(ctx)
+			if err != nil {
 				t.Fatal(err)
 			}
+			for _, descriptor := range descriptors {
+				if !IsNativeConcreteTypeDescriptor(store.ScopeURL(), descriptor) {
+					continue
+				}
+				if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE descriptor=? AND fingerprint=?`, descriptor.CanonicalJSON(), descriptor.Fingerprint()); err != nil {
+					t.Fatal(err)
+				}
+			}
 			var count int
-			if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil || count != 20 {
+			if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil || count != 18 {
 				t.Fatalf("old catalog fixture: %d %v", count, err)
 			}
 			before := workflowState(t, ctx, store)

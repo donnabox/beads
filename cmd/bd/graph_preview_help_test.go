@@ -28,7 +28,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		cmd  *cobra.Command
 		want []string
 	}{
-		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision =TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
+		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy-note\n", "bd remember 'Revised policy' --update policy-note\n", "https://example.test/work/policy-note.", "--create-only", "--if-revision =TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
 		{"create", createCmd, []string{"Graph preview workspaces:", "--type memory", "--id policy", "--id ID keeps the entire spelling", "--graph-path beads/PATH", "--force overrides that shipping", "--properties JSON", "NAME", "--parent ID creates a dotted child ID"}},
 		{"q", quickCmd, []string{"Graph preview workspaces:", "bd q -- -follow-up", "--parent is unavailable here", "Ordinary Issue workspaces:", "bd q \"Subtask\" --parent"}},
 		{"dep", depCmd, []string{"Graph preview workspaces:", "bd dep BLOCKER --blocks BLOCKED", "--no-cycle-check"}},

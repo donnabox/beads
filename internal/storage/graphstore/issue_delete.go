@@ -200,6 +200,9 @@ func (s *Store) validDeletedIssueAllocationInTx(ctx context.Context, tx *sql.Tx,
 		!authorityID.MatchString(head) || state != "deleted" || backing != "issue" || !key.Valid || key.String == "" {
 		return fmt.Errorf("%w: invalid deleted Issue allocation", ErrInvalidStore)
 	}
+	if err := s.requireNativeBindingInTx(ctx, tx, typ, graph.KindBead); err != nil {
+		return err
+	}
 	var current int
 	if err := tx.QueryRowContext(ctx, `SELECT (SELECT COUNT(*) FROM issues WHERE id=?) +
 	 (SELECT COUNT(*) FROM graph_preview_payloads WHERE path=?) +

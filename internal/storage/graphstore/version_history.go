@@ -219,7 +219,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		// name the same Issue the catalog is bound to before it is trusted. The
 		// type URL is compared too: backing alone was never enough to establish
 		// that this allocation is the kind of thing it claims to be.
-		if !nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType) || !key.Valid || key.String == "" {
+		if (!nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType) || !isConcreteNativeIssue(s.ScopeURL(), typ.String, facts...)) || !key.Valid || key.String == "" {
 			return "", nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
 		rows, err := s.nativeIssueVersionsInTx(ctx, tx, path, key.String, head, bounds)

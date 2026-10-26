@@ -160,11 +160,17 @@ func memoryLinkProjectionContext(ctx context.Context, store memoryLinkStore) (gr
 		return graphstore.Snapshot{}, fmt.Errorf("%w: missing installed Type context", graphstore.ErrInvalidStore)
 	}
 	selection := graphstore.Snapshot{Types: types, OwnedLinkTypes: map[string][]string{}, Records: []any{}}
+	var linkTypes []string
+	for _, typ := range types {
+		if typ.Describes() == graph.KindLink {
+			linkTypes = append(linkTypes, typ.ID())
+		}
+	}
 	for _, typ := range types {
 		if typ.Describes() != graph.KindBead {
 			continue
 		}
-		owned, err := store.SelectedOwnedLinkTypesWithDescriptors(typ.ID(), types)
+		owned, err := store.SelectedOwnedLinkTypesWithDescriptors(typ.ID(), types, linkTypes...)
 		if err != nil {
 			return graphstore.Snapshot{}, err
 		}

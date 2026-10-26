@@ -70,7 +70,7 @@ func (s *Store) selectedDescriptorsInTx(ctx context.Context, tx *sql.Tx) ([]grap
 		return nil, err
 	}
 	for _, value := range custom {
-		id, err := NativeIssueTypeURL(s.ScopeURL(), value)
+		id, err := configuredNativeIssueTypeURL(s.ScopeURL(), value)
 		if err != nil {
 			return nil, err
 		}

@@ -79,14 +79,17 @@ Ordinary Issue workspaces:
 The Scope URL names local identities; it does not start a web server.
 --server --external selects an ordinary shared Dolt server; otherwise storage
 is embedded. Existing .beads directories are never adopted or overwritten.`},
-		{rememberCmd, `Store a Memory with bd remember 'Policy text' [--id policy]
+		{rememberCmd, `Store a Memory with bd remember 'Policy text' [--id policy-note]
 [--title 'Policy'] [--metadata '{"team":"docs"}']. Alternatively,
 --properties '{"title":"Policy"}' initializes the typed Memory property;
 do not supply the same field with both --properties and a shorthand flag.
 bd memory remember is the same operation with the same flags and output.
-Metadata is a JSON object separate from Memory title/body properties. An omitted ID is generated; an omitted creation title
-summarizes the body. With --id, an unused ID creates and an existing Memory
-updates in place, as ordinary bd remember --key does. Bare policy-note selects its complete Scope-local public identity policy-note. Graph Memories use canonical IDs, not legacy keys.
+Metadata is a JSON object separate from Memory title/body properties. An
+omitted ID is generated; an omitted creation title summarizes the body. With --id, an unused ID creates and an existing Memory
+updates in place, as ordinary bd remember --key does. With Scope
+https://example.test/work/, policy-note selects
+https://example.test/work/policy-note. Graph Memories use canonical IDs,
+not legacy keys.
 
 To refuse any previously allocated ID, add --create-only with --id. With
 --create-only, --type NAME selects an installed Memory refinement;
@@ -102,7 +105,7 @@ Omitted fields remain unchanged on update. --body TEXT (including empty),
 must be nonblank. Use --body-file PATH or --stdin
 instead of positional body text. An existing-ID update accepts the current
 revision by default; add --if-revision =TOKEN to reject a stale update. Read
-the token with bd show policy --json. --replace-properties JSON replaces all
+the token with bd show policy-note --json. --replace-properties JSON replaces all
 Memory properties where the Type permits it, and --replace-metadata JSON
 replaces all metadata; {} clears the selected document.`},
 		{memoriesCmd, `Search Memory titles and bodies with bd memories [SEARCH].

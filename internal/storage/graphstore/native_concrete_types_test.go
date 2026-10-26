@@ -3,6 +3,7 @@
 package graphstore
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -346,17 +347,20 @@ func TestNativeConcreteTypeBindingCorruptionRefusesWithoutWrites(t *testing.T) {
 					case "fingerprint":
 						fp = strings.Repeat("0", 64)
 					case "wrong-namespace":
-						raw = []byte(strings.Replace(string(raw), "types/native-dependency/", "types/unregistered/", 1))
+						raw = []byte(strings.Replace(string(raw), expected.ID(), "https://foreign.invalid/custom-kind", 1))
 					case "wrong-kind":
 						raw = []byte(strings.Replace(string(raw), `"describes":"link"`, `"describes":"bead"`, 1))
 					case "noncanonical-identity":
-						raw = []byte(strings.Replace(string(raw), "637573746f6d2d6b696e64", "637573746F6d2d6b696e64", 1))
+						raw = []byte(strings.Replace(string(raw), expected.ID(), s.ScopeURL()+"%63ustom-kind", 1))
 					case "unknown-key":
 						rowKey = "unregistered-extra"
 					case "duplicate":
 						if _, err := s.db.ExecContext(ctx, `INSERT INTO graph_preview_types (name,descriptor,fingerprint) VALUES (?,?,?)`, "native-binding-"+strings.Repeat("f", 32), raw, fp); err != nil {
 							t.Fatal(err)
 						}
+					}
+					if (corruption == "wrong-namespace" || corruption == "noncanonical-identity") && bytes.Equal(raw, expected.CanonicalJSON()) {
+						t.Fatal("identity corruption fixture did not change bytes")
 					}
 					if corruption != "duplicate" {
 						if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_types SET name=?,descriptor=?,fingerprint=? WHERE name=?`, rowKey, raw, fp, key); err != nil {
@@ -438,6 +442,13 @@ func TestNativeConcreteTypePublicIdentityCollision(t *testing.T) {
 					}
 					if !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 						t.Fatalf("%s/%s public-ID collision changed state: %v", family, state, err)
+					}
+					// Repair only the deliberately conflicting configuration
+					// before preparing the next independent fixture.
+					if family == "issue" {
+						if _, err := s.db.ExecContext(ctx, "DELETE FROM config WHERE `key`='types.custom'"); err != nil {
+							t.Fatal(err)
+						}
 					}
 				}
 			}
@@ -758,6 +769,94 @@ func TestNativeResourceProjectionContextCapturesExactRead(t *testing.T) {
 			_, next, err := s.ReadForProjection(ctx, original.ID)
 			if err != nil || contains(next.OwnedLinkTypes, "tampered-output") || next.Descriptor.ID() != original.Type {
 				t.Fatalf("projection context cached mutable output or lost retained binding: %v", err)
+			}
+		})
+	}
+}
+
+func TestConfiguredNativeAliasesDescribeEffectiveTypes(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			if _, err := s.db.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('types.custom',?) ON DUPLICATE KEY UPDATE value=VALUES(value)", "feat,adr,MS,FutureCase,foo/feat"); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			declarations, err := s.ListInstalledTypes(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			ids := map[string]bool{}
+			for _, d := range declarations {
+				if ids[d.ID()] {
+					t.Fatal("duplicate effective Type", d.ID())
+				}
+				ids[d.ID()] = true
+			}
+			for _, name := range []string{"feature", "decision", "milestone", "FutureCase", "foo/feat"} {
+				if !ids[s.ScopeURL()+name] {
+					t.Fatal("effective configured Type absent", name)
+				}
+			}
+			for _, name := range []string{"feat", "adr", "MS"} {
+				if ids[s.ScopeURL()+name] {
+					t.Fatal("configured shorthand advertised a ghost Type", name)
+				}
+				if _, err := s.ReadType(ctx, name); !errors.Is(err, ErrNotFound) {
+					t.Fatalf("shorthand acquired exact Type identity %s: %v", name, err)
+				}
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("effective configured enumeration installed/rewrote bindings")
+			}
+			for _, name := range []string{"feat", "adr", "MS", "types/feat"} {
+				r, err := s.Create(ctx, CreateRequest{PublicID: name, Title: "Exact Resource identity"})
+				if err != nil || r.ID != s.ScopeURL()+name {
+					t.Fatalf("configured alias reserved another complete Resource ID %s: %v", name, err)
+				}
+			}
+			for _, name := range []string{"feature", "decision", "milestone", "FutureCase", "foo/feat"} {
+				if _, err := s.Create(ctx, CreateRequest{PublicID: name, Title: "Refused effective Type identity"}); !errors.Is(err, ErrAlreadyExists) {
+					t.Fatalf("effective Type did not reserve %s: %v", name, err)
+				}
+			}
+		})
+	}
+}
+
+func TestConfiguredAliasDoesNotRewriteInstalledBinding(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			// Explicit retained-binding fixture, not a public registration operation.
+			// The raw adapter identity remains exact even when new configuration uses
+			// that spelling as an ordinary native shorthand.
+			raw, err := nativeConcreteDescriptor(s.ScopeURL(), s.ScopeURL()+"feat", graph.KindBead)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := s.withTx(ctx, true, func(tx *sql.Tx) error { return s.ensureNativeTypeInTx(ctx, tx, raw.ID(), graph.KindBead) }); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			if _, err := s.db.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('types.custom','feat') ON DUPLICATE KEY UPDATE value=VALUES(value)"); err != nil {
+				t.Fatal(err)
+			}
+			declarations, err := s.ListInstalledTypes(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			found := false
+			for _, d := range declarations {
+				if d.ID() == raw.ID() {
+					found = true
+					if string(d.CanonicalJSON()) != string(raw.CanonicalJSON()) {
+						t.Fatal("installed exact binding normalized")
+					}
+				}
+			}
+			if !found || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("configured alias changed persisted binding/history bytes")
 			}
 		})
 	}

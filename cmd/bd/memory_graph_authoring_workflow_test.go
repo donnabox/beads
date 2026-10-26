@@ -7,7 +7,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -90,8 +92,37 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			graphListConfig(t, work, "types.custom: \"review-class\"\n")
 			create("reference", "a", "b", "--id=configured-native-context")
 			custom := graphMixedResult[graphstore.IssueRecord](t, old("create", "Custom native", "--type", "review-class"))
-			graphListConfig(t, work, "types.custom: \"\"\n")
-			create("reference", custom.ID, "b", "--id=retained-native-context")
+			configPath := filepath.Join(work, ".beads", "config.yaml")
+			configBytes, err := os.ReadFile(configPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			updatedConfig := bytes.Replace(configBytes, []byte("types.custom: \"review-class\""), []byte("types.custom: \"\""), 1)
+			if bytes.Equal(configBytes, updatedConfig) {
+				t.Fatal("custom configuration fixture was not replaced")
+			}
+			if err := os.WriteFile(configPath, updatedConfig, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			retained := create("reference", custom.ID, "b", "--id=retained-native-context")
+			if retained.Source.ID != custom.ID || retained.Source.Type != custom.Type {
+				t.Fatal("retained custom native Type lost in Memory authoring projection")
+			}
+			// An Issue postimage retains custom owned Dependency slots even when
+			// the newly authored Memory References link is unowned.
+			old("link", custom.ID, native.ID, "--type", "review-dependency", "--id", "custom-owned-dependency")
+			command := graphMemoryReadCommand(t.Context(), bd, work, home, "memory", "reference", custom.ID, "--to", "c", "--id=custom-owned-reference", "--json")
+			ownedOutput, ownedErr := command.CombinedOutput()
+			if ownedErr != nil {
+				t.Logf("failed authoring output: %s", ownedOutput)
+				t.Logf("post-failure persisted Link: %s", old("link", "show", "custom-owned-reference"))
+				t.Fatalf("custom owned Dependency authoring: %v", ownedErr)
+			}
+			ownedReference := decode(string(ownedOutput))
+			encodedSource, err := json.Marshal(ownedReference.Source)
+			if err != nil || !bytes.Contains(encodedSource, []byte(scope+"review-dependency")) {
+				t.Fatalf("custom owned Dependency disappeared from mutation postimage: %s %v", encodedSource, err)
+			}
 			beforeA, beforeB := snapshot("a"), snapshot("b")
 			beforeLinks := old("link", "list", "--incident-to", "a")
 			for _, op := range memoryLinkOperations {

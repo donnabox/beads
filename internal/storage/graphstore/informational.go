@@ -619,6 +619,11 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && s.isMemoryType(typ)) || (backing == "issue" && nativeIssueTypeMatches(s.ScopeURL(), typ, issueType))) {
 			return LinkRecord{}, fmt.Errorf("%w: invalid informational endpoint", ErrInvalidStore)
 		}
+		if backing == "issue" {
+			if err := s.requireNativeBindingInTx(ctx, tx, typ, graph.KindBead); err != nil {
+				return LinkRecord{}, err
+			}
+		}
 		pin := []string{sourcePin, targetPin}[index]
 		if pin != "" {
 			if err := validateVersionToken(pin); err != nil {

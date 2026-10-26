@@ -23,6 +23,13 @@ func NativeIssueTypeURL(scope, classification string) (string, error) {
 	return nativeConcreteTypeURL(scope, graph.KindBead, classification)
 }
 
+// configuredNativeIssueTypeURL describes effective unused configuration, using
+// the same alias policy as native creation. Stored bindings and complete caller
+// IDs use the exact raw mapping above and are never rewritten through this seam.
+func configuredNativeIssueTypeURL(scope, classification string) (string, error) {
+	return NativeIssueTypeURL(scope, string(types.IssueType(classification).Normalize()))
+}
+
 // NativeDependencyTypeURL preserves the exact validated native kind. Its
 // identity is the meaningful selected name. Conflicting selected names refuse;
 // custom cross-role bindings are checked by the storage transaction.

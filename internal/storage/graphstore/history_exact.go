@@ -144,7 +144,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		}
 	}
 	if backing == "issue" {
-		if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType) || !key.Valid || key.String == "" {
+		if kind != "bead" || (!nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType) || !isConcreteNativeIssue(s.ScopeURL(), typ.String, facts...)) || !key.Valid || key.String == "" {
 			return nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
 		return s.readNativeIssueRetainedInTx(ctx, tx, path, version, head, key.String)
