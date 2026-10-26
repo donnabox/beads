@@ -10,6 +10,7 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 )
 
 // A public ID is reserved across Issues, Memories, and Links for the Scope's
@@ -18,35 +19,103 @@ import (
 // continue to publish their original path. The writer_token coordination fence
 // serializes check-and-insert reservations; no suffix alias is reserved.
 func publicResourceIDExistsInTx(ctx context.Context, tx *sql.Tx, id string) (bool, error) {
+	owner, err := publicResourceIDOwnerInTx(ctx, tx, id)
+	return owner != "", err
+}
+
+func allocatedPublicIDExistsInTx(ctx context.Context, tx *sql.Tx, id string) (bool, error) {
+	owner, err := allocatedPublicIDOwnerInTx(ctx, tx, id)
+	return owner != "", err
+}
+
+// The allocation check and diagnosis use the same transaction authority. This
+// runs only on conflict; generated candidates keep their ordinary retry path.
+func publicResourceIDReservedErrorInTx(ctx context.Context, tx *sql.Tx, id string) error {
+	owner, err := publicResourceIDOwnerInTx(ctx, tx, id)
+	if err != nil {
+		return err
+	}
+	if owner == "" {
+		return fmt.Errorf("%w: public ID %q reservation changed within snapshot", ErrInvalidStore, id)
+	}
+	return fmt.Errorf("%w: public ID %q is reserved by %s", ErrAlreadyExists, id, owner)
+}
+
+func publicResourceIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (string, error) {
+	allocated, err := allocatedPublicIDOwnerInTx(ctx, tx, id)
+	if err != nil || allocated != "" {
+		return allocated, err
+	}
+	// Configured unused declarations reserve their exact IDs without installing
+	// bindings. Reads and failed Resource writes must not register a Type.
+	custom, err := issueops.ResolveCustomTypesInTx(ctx, tx)
+	if err != nil {
+		return "", err
+	}
+	var scope string
+	if err := tx.QueryRowContext(ctx, `SELECT scope_url FROM graph_preview_scope WHERE singleton=1`).Scan(&scope); err != nil {
+		return "", err
+	}
+	for _, value := range custom {
+		uri, err := configuredNativeIssueTypeURL(scope, value)
+		if err != nil {
+			return "", err
+		}
+		if uri == scope+id {
+			return "a configured Type", nil
+		}
+	}
+	return "", nil
+}
+
+// allocatedPublicIDOwnerInTx excludes prospective declarations so a Type's
+// first native use can persist its own already-checked declaration.
+func allocatedPublicIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (string, error) {
 	if err := validatePublicID(id); err != nil {
-		return false, err
+		return "", err
 	}
 	// The discovery document and installed descriptors already own these
 	// exact public URLs. Prefix families are not reserved: spelling never
 	// establishes Resource kind.
 	if id == "bdp.json" {
-		return true, nil
+		return "the Scope discovery document", nil
 	}
 	var authority int
 	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_types
  WHERE CAST(JSON_UNQUOTE(JSON_EXTRACT(CAST(descriptor AS CHAR),'$.id')) AS BINARY) =
  CONCAT((SELECT CAST(scope_url AS BINARY) FROM graph_preview_scope WHERE singleton=1),CAST(? AS BINARY)) LIMIT 1`, id).Scan(&authority)
 	if err == nil {
-		return true, nil
+		return "an installed Type", nil
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
-		return false, err
+		return "", err
+	}
+	return allocatedResourceIDOwnerInTx(ctx, tx, id)
+}
+
+// allocatedResourceIDOwnerInTx excludes installed Types. A caller omitting
+// that check must already hold the complete checked Type set in this same
+// transaction and have proved this exact identity absent from it.
+func allocatedResourceIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (string, error) {
+	if err := validatePublicID(id); err != nil {
+		return "", err
+	}
+	if id == "bdp.json" {
+		return "the Scope discovery document", nil
 	}
 	var exists int
-	err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog
+	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog
 		WHERE (
 			(backing='issue' AND backing_key=?) OR
 			(backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)
 		) LIMIT 1`, id, id).Scan(&exists)
 	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
+		return "", nil
 	}
-	return err == nil, err
+	if err != nil {
+		return "", err
+	}
+	return "a live or retained Resource allocation", nil
 }
 
 // ResolveAllocatedResourcePath finds a public ID even after its Resource has

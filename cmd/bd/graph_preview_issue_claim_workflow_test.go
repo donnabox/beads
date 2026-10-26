@@ -72,7 +72,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			call("create", "Claim work", "--id", "beads/work", "--force", "--labels", "demo,graph", "--actor", "creator")
 			target := call("create", "Prerequisite", "--id", "beads/gate", "--force")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"references"))
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--claim", "--actor", "rig.agent"))
 			if !claimed.Changed {

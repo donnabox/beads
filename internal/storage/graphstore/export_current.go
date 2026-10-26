@@ -326,7 +326,7 @@ func (s *Store) validateExportEndpointPinsInTx(ctx context.Context, tx *sql.Tx, 
 		}
 		if source := seen[link.SourceReference()]; link.SourceRevision != "" {
 			if _, known := ownedByHistoricalType[source]; !known {
-				ownedTypes, err := s.SelectedOwnedLinkTypes(source)
+				ownedTypes, err := s.selectedOwnedLinkTypesInTx(ctx, tx, source)
 				if err != nil {
 					return err
 				}

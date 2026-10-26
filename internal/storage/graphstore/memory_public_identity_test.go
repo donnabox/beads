@@ -121,7 +121,7 @@ func TestMemoryPublicIdentityCrossKindAndAmbiguity(t *testing.T) {
 					t.Fatal("rejected identity changed state")
 				}
 			}
-			_, mismatch := s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "mismatched", TypeURL: s.ScopeURL() + "types/references", SourcePath: "beads/another", SourceLocalID: "one", TargetPath: one.ID})
+			_, mismatch := s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "mismatched", TypeURL: s.ScopeURL() + "references", SourcePath: "beads/another", SourceLocalID: "one", TargetPath: one.ID})
 			if !errors.Is(mismatch, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatal("mismatched path/public ID did not refuse atomically", mismatch)
 			}

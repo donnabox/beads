@@ -72,7 +72,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			other, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/other", TypeURL: o.Binding.ScopeURL + "types/constraint", Title: "Target"})
+			other, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/other", TypeURL: o.Binding.ScopeURL + "constraint", Title: "Target"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -98,7 +98,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				return bead
 			}
 			first := readBead("beads/plan")
-			if first.ID != memory.ID || first.Revision != memory.Revision || first.OwnedLinks == nil || len(first.OwnedLinks) != 2 || len(first.OwnedLinks[o.Binding.ScopeURL+"types/subject-to"]) != 0 || len(first.OwnedLinks[o.Binding.ScopeURL+"types/superseded-by"]) != 0 || string(first.Properties["body"]) != `""` || first.Attribution.Principal != memory.Attribution.Actor {
+			if first.ID != memory.ID || first.Revision != memory.Revision || first.OwnedLinks == nil || len(first.OwnedLinks) != 2 || len(first.OwnedLinks[o.Binding.ScopeURL+"subject-to"]) != 0 || len(first.OwnedLinks[o.Binding.ScopeURL+"superseded-by"]) != 0 || string(first.Properties["body"]) != `""` || first.Attribution.Principal != memory.Attribution.Actor {
 				t.Fatalf("Memory projection changed identity/content: %+v", first)
 			}
 			if string(first.Metadata["reviewed"]) != "true" || len(readBead("beads/other").Metadata) != 0 {
@@ -128,7 +128,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			}
 			var created graphstore.LinkRecord
 			for _, path := range []string{"links/z", "links/a"} {
-				v, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: path, TypeURL: o.Binding.ScopeURL + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/other", Actor: "human:Donna", UnconditionalSource: true, Properties: map[string]any{"note": path}, Metadata: json.RawMessage(`{"origin":"manual"}`)})
+				v, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: path, TypeURL: o.Binding.ScopeURL + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/other", Actor: "human:Donna", UnconditionalSource: true, Properties: map[string]any{"note": path}, Metadata: json.RawMessage(`{"origin":"manual"}`)})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -242,12 +242,12 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			evaluation, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/assessment", TypeURL: o.Binding.ScopeURL + "types/evaluation", PropertiesJSON: properties})
+			evaluation, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/assessment", TypeURL: o.Binding.ScopeURL + "evaluation", PropertiesJSON: properties})
 			if err != nil {
 				t.Fatal(err)
 			}
 			claim, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
-				Path: "links/claim", TypeURL: o.Binding.ScopeURL + "types/satisfies",
+				Path: "links/claim", TypeURL: o.Binding.ScopeURL + "satisfies",
 				SourcePath: "beads/assessment", TargetPath: "beads/other", ExpectedSourceRevision: evaluation.Revision,
 			})
 			if err != nil {
@@ -258,7 +258,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatalf("Evaluation claim group missing: %+v", assessment)
 			}
 			for _, name := range []string{"addresses", "violates"} {
-				if group, exists := assessment.OwnedLinks[o.Binding.ScopeURL+"types/"+name]; !exists || len(group) != 0 {
+				if group, exists := assessment.OwnedLinks[o.Binding.ScopeURL+name]; !exists || len(group) != 0 {
 					t.Fatalf("empty inherited owned group %s missing", name)
 				}
 			}

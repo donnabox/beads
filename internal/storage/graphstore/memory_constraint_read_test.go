@@ -29,7 +29,7 @@ func exerciseCurrentConstraintReads(t *testing.T, s *Store) {
 	t.Helper()
 	// Different declared Types must be admitted through their Constraint
 	// affiliation, while canonical records keep those actual Types.
-	for i, typ := range []string{"specification", "requirement", "policy", "decision", "procedure"} {
+	for i, typ := range []string{"specification", "requirement", "policy", "scenario", "constraint"} {
 		currentFamilyCreate(t, s, []string{"a", "b", "c", "d", "e"}[i], typ)
 	}
 	currentFamilyCreate(t, s, "m", "memory")
@@ -92,7 +92,7 @@ func exerciseCurrentConstraintReads(t *testing.T, s *Store) {
 			if string(r.Metadata) != `{"keep":"link"}` || r.Attribution.Actor != "family-author" || r.Properties["body"] != "evidence" {
 				t.Fatal("Link fields lost", r)
 			}
-			if r.ID == s.ScopeURL()+"links/defab" && r.Type != s.ScopeURL()+"types/defines" {
+			if r.ID == s.ScopeURL()+"links/defab" && r.Type != s.ScopeURL()+"defines" {
 				t.Fatal("declared Type erased", r)
 			}
 		}

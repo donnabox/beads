@@ -27,7 +27,7 @@ func TestSelectedMemoryTypeRetypePreservesPropertiesAndHistory(t *testing.T) {
 					t.Error(err)
 				}
 			})
-			policyType, specType := s.ScopeURL()+"types/policy", s.ScopeURL()+"types/specification"
+			policyType, specType := s.ScopeURL()+"policy", s.ScopeURL()+"specification"
 			before, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: policyType,
 				PropertiesJSON: json.RawMessage(`{"title":"Rule","body":"Keep data private","status":"draft","authority":{"uri":"urn:example:authority","revision":"r1"},"extension":{"team":"blue"}}`)})
 			if err != nil {
@@ -72,7 +72,7 @@ func TestSelectedMemoryRetypeRefusesInvalidIncidentLinksAtomically(t *testing.T)
 					t.Error(err)
 				}
 			})
-			constraintType := s.ScopeURL() + "types/constraint"
+			constraintType := s.ScopeURL() + "constraint"
 			source, err := s.Create(ctx, CreateRequest{Path: "beads/source", TypeURL: constraintType, Title: "Source"})
 			if err != nil {
 				t.Fatal(err)
@@ -81,7 +81,7 @@ func TestSelectedMemoryRetypeRefusesInvalidIncidentLinksAtomically(t *testing.T)
 			if err != nil {
 				t.Fatal(err)
 			}
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/requires", TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/requires", TypeURL: s.ScopeURL() + "requires", SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -124,7 +124,7 @@ func TestRetypeValidatesCombinedPropertyEdits(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			evaluationType := s.ScopeURL() + "types/evaluation"
+			evaluationType := s.ScopeURL() + "evaluation"
 			witness := workflowState(t, ctx, s)
 			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/assessment", TypeURL: evaluationType, ExpectedRevision: before.Revision}); !errors.Is(err, storage.ErrValidation) {
 				t.Fatalf("missing required subjects admitted: %v", err)
@@ -164,7 +164,7 @@ func TestEvaluationExactSubjectsAndClaimOwnership(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			constraint, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", TypeURL: s.ScopeURL() + "types/constraint", Title: "Constraint"})
+			constraint, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", TypeURL: s.ScopeURL() + "constraint", Title: "Constraint"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -172,11 +172,11 @@ func TestEvaluationExactSubjectsAndClaimOwnership(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			evaluation, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: properties})
+			evaluation, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: properties})
 			if err != nil {
 				t.Fatal(err)
 			}
-			claim, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/claim", TypeURL: s.ScopeURL() + "types/satisfies", SourcePath: "beads/evaluation", TargetPath: "beads/constraint", ExpectedSourceRevision: evaluation.Revision, Properties: map[string]any{"evidence": "Test run"}})
+			claim, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/claim", TypeURL: s.ScopeURL() + "satisfies", SourcePath: "beads/evaluation", TargetPath: "beads/constraint", ExpectedSourceRevision: evaluation.Revision, Properties: map[string]any{"evidence": "Test run"}})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -190,8 +190,8 @@ func TestEvaluationExactSubjectsAndClaimOwnership(t *testing.T) {
 				t.Fatalf("claim revised target: %v", err)
 			}
 			for _, bad := range []LinkCreateRequest{
-				{Path: "links/direct", TypeURL: s.ScopeURL() + "types/satisfies", SourcePath: "beads/build", TargetPath: "beads/constraint", ExpectedSourceRevision: subject.Revision},
-				{Path: "links/abstract", TypeURL: s.ScopeURL() + "types/conformance", SourcePath: "beads/evaluation", TargetPath: "beads/constraint", ExpectedSourceRevision: claim.Source.(Record).Revision},
+				{Path: "links/direct", TypeURL: s.ScopeURL() + "satisfies", SourcePath: "beads/build", TargetPath: "beads/constraint", ExpectedSourceRevision: subject.Revision},
+				{Path: "links/abstract", TypeURL: s.ScopeURL() + "conformance", SourcePath: "beads/evaluation", TargetPath: "beads/constraint", ExpectedSourceRevision: claim.Source.(Record).Revision},
 			} {
 				witness := workflowState(t, ctx, s)
 				if _, err := s.AddInformationalLink(ctx, bad); !errors.Is(err, storage.ErrValidation) {
@@ -207,7 +207,7 @@ func TestEvaluationExactSubjectsAndClaimOwnership(t *testing.T) {
 					t.Fatal(err)
 				}
 				witness := workflowState(t, ctx, s)
-				if _, err := s.Create(ctx, CreateRequest{Path: "beads/bad-evaluation", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: raw}); err == nil {
+				if _, err := s.Create(ctx, CreateRequest{Path: "beads/bad-evaluation", TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: raw}); err == nil {
 					t.Fatal("invalid exact subjects admitted")
 				}
 				if !reflect.DeepEqual(witness, workflowState(t, ctx, s)) {
@@ -235,11 +235,11 @@ func TestNativeIssueSubjectToOwnershipKeepsNativePayload(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			rule, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"})
+			rule, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "constraint", Title: "Rule"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/applies", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/work", TargetPath: "beads/rule", ExpectedSourceRevision: issue.Revision})
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/applies", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/work", TargetPath: "beads/rule", ExpectedSourceRevision: issue.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -269,16 +269,16 @@ func TestSelectedLinkFamilyLimitsAtCommit(t *testing.T) {
 				}
 			})
 			for _, name := range []string{"a", "b", "c"} {
-				if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + name, TypeURL: s.ScopeURL() + "types/constraint", Title: name}); err != nil {
+				if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + name, TypeURL: s.ScopeURL() + "constraint", Title: name}); err != nil {
 					t.Fatal(err)
 				}
 			}
-			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/defines", TypeURL: s.ScopeURL() + "types/defines", SourcePath: "beads/a", TargetPath: "beads/c", UnconditionalSource: true}); err != nil {
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/defines", TypeURL: s.ScopeURL() + "defines", SourcePath: "beads/a", TargetPath: "beads/c", UnconditionalSource: true}); err != nil {
 				t.Fatal(err)
 			}
 			for _, bad := range []LinkCreateRequest{
-				{Path: "links/second-parent", TypeURL: s.ScopeURL() + "types/defines", SourcePath: "beads/b", TargetPath: "beads/c", UnconditionalSource: true},
-				{Path: "links/defines-cycle", TypeURL: s.ScopeURL() + "types/defines", SourcePath: "beads/c", TargetPath: "beads/a", UnconditionalSource: true},
+				{Path: "links/second-parent", TypeURL: s.ScopeURL() + "defines", SourcePath: "beads/b", TargetPath: "beads/c", UnconditionalSource: true},
+				{Path: "links/defines-cycle", TypeURL: s.ScopeURL() + "defines", SourcePath: "beads/c", TargetPath: "beads/a", UnconditionalSource: true},
 			} {
 				witness := workflowState(t, ctx, s)
 				if _, err := s.AddInformationalLink(ctx, bad); !errors.Is(err, storage.ErrValidation) {
@@ -290,15 +290,15 @@ func TestSelectedLinkFamilyLimitsAtCommit(t *testing.T) {
 			}
 			// A broader Requires-family cycle is legal; Defines restrictions do
 			// not leak upward into every Requires Link.
-			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/requires-back", TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/c", TargetPath: "beads/a", UnconditionalSource: true}); err != nil {
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/requires-back", TypeURL: s.ScopeURL() + "requires", SourcePath: "beads/c", TargetPath: "beads/a", UnconditionalSource: true}); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/replacement", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/a", TargetPath: "beads/b", UnconditionalSource: true}); err != nil {
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/replacement", TypeURL: s.ScopeURL() + "superseded-by", SourcePath: "beads/a", TargetPath: "beads/b", UnconditionalSource: true}); err != nil {
 				t.Fatal(err)
 			}
 			for _, bad := range []LinkCreateRequest{
-				{Path: "links/second-replacement", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/a", TargetPath: "beads/c", UnconditionalSource: true},
-				{Path: "links/replacement-cycle", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/b", TargetPath: "beads/a", UnconditionalSource: true},
+				{Path: "links/second-replacement", TypeURL: s.ScopeURL() + "superseded-by", SourcePath: "beads/a", TargetPath: "beads/c", UnconditionalSource: true},
+				{Path: "links/replacement-cycle", TypeURL: s.ScopeURL() + "superseded-by", SourcePath: "beads/b", TargetPath: "beads/a", UnconditionalSource: true},
 			} {
 				witness := workflowState(t, ctx, s)
 				if _, err := s.AddInformationalLink(ctx, bad); !errors.Is(err, storage.ErrValidation) {
@@ -340,11 +340,11 @@ func TestTypeValidationDoesNotAcquireNativeIssuePayloads(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			rule, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"})
+			rule, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "constraint", Title: "Rule"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/applies", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/large", TargetPath: "beads/rule", ExpectedSourceRevision: updated.Issue.Revision})
+			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/applies", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/large", TargetPath: "beads/rule", ExpectedSourceRevision: updated.Issue.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -359,7 +359,7 @@ func TestTypeValidationDoesNotAcquireNativeIssuePayloads(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			evaluation, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: subjects})
+			evaluation, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: subjects})
 			if err != nil {
 				t.Fatalf("exact native subject binding acquired its unrelated payload: %v", err)
 			}
@@ -459,7 +459,7 @@ func TestEvaluationRefusesRemovedNativeSubjectRevision(t *testing.T) {
 				t.Fatal(err)
 			}
 			witness := workflowState(t, ctx, s)
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: raw}); !errors.Is(err, ErrVersionUnknown) {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: raw}); !errors.Is(err, ErrVersionUnknown) {
 				t.Fatalf("removed exact subject revision admitted: %v", err)
 			}
 			if !reflect.DeepEqual(witness, workflowState(t, ctx, s)) {
@@ -498,19 +498,19 @@ func TestEvaluationSubjectsStayBoundAndDistinct(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			rule, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"})
+			rule, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "constraint", Title: "Rule"})
 			if err != nil {
 				t.Fatal(err)
 			}
 			aRef := map[string]string{"uri": a.ID, "revision": a.Revision}
 			bRef := map[string]string{"uri": b.ID, "revision": b.Revision}
-			evalType := s.ScopeURL() + "types/evaluation"
+			evalType := s.ScopeURL() + "evaluation"
 			evaluation, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: evalType,
 				PropertiesJSON: marshal(map[string]any{"title": "Evaluation", "body": "", "subjects": []any{aRef, bRef}})})
 			if err != nil {
 				t.Fatal(err)
 			}
-			claim, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/claim", TypeURL: s.ScopeURL() + "types/satisfies",
+			claim, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/claim", TypeURL: s.ScopeURL() + "satisfies",
 				SourcePath: "beads/evaluation", TargetPath: "beads/rule", ExpectedSourceRevision: evaluation.Revision})
 			if err != nil {
 				t.Fatal(err)
@@ -605,14 +605,14 @@ func TestEvaluationGroupSurvivesRetyping(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			evalType := s.ScopeURL() + "types/evaluation"
+			evalType := s.ScopeURL() + "evaluation"
 			first, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/assessment", TypeURL: evalType,
 				ExpectedRevision: memory.Revision, PropertiesJSON: properties(a)})
 			if err != nil {
 				t.Fatalf("first Evaluation must establish its own group: %v", err)
 			}
 			for cycle := 0; cycle < 2; cycle++ {
-				plain, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/assessment", TypeURL: s.ScopeURL() + "types/memory",
+				plain, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/assessment", TypeURL: s.ScopeURL() + "memory",
 					ExpectedRevision: first.Memory.Revision, PropertiesJSON: json.RawMessage(`{"title":"Between evaluations","body":""}`)})
 				if err != nil {
 					t.Fatal(err)

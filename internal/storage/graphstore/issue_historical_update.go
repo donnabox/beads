@@ -35,9 +35,15 @@ func historicalIssueField[T any](source T, edit publicops.Field[T]) publicops.Fi
 	return publicops.Field[T]{Set: true, Value: source}
 }
 
-func composeHistoricalIssuePatch(current, source IssueRecord, edit publicops.IssuePatch) (publicops.IssuePatch, error) {
-	if current.Properties == nil || source.Properties == nil || current.ID != source.ID || !sameNativeIssueTypeFamily(current.Type, source.Type) {
+func composeHistoricalIssuePatch(scope string, current, source IssueRecord, edit publicops.IssuePatch) (publicops.IssuePatch, error) {
+	if current.Properties == nil || source.Properties == nil || current.ID != source.ID {
 		return publicops.IssuePatch{}, fmt.Errorf("%w: historical Issue source requires the same native subject", ErrCapabilityUnavailable)
+	}
+	for _, record := range []IssueRecord{current, source} {
+		expected, err := NativeIssueTypeURL(scope, string(record.Properties.IssueType))
+		if err != nil || expected != record.Type {
+			return publicops.IssuePatch{}, fmt.Errorf("%w: historical Issue affiliation differs from native classification", ErrInvalidStore)
+		}
 	}
 	objects := make([]map[string]json.RawMessage, 2)
 	for i, issue := range []*publicops.Issue{current.Properties, source.Properties} {
@@ -113,7 +119,7 @@ func (s *Store) historicalIssuePatchInTx(ctx context.Context, tx *sql.Tx, path, 
 			return publicops.IssuePatch{}, err
 		}
 	}
-	return composeHistoricalIssuePatch(current, source, edit)
+	return composeHistoricalIssuePatch(s.ScopeURL(), current, source, edit)
 }
 
 func checkHistoricalIssueReadBytes(ctx context.Context, tx *sql.Tx, path, revision string) error {

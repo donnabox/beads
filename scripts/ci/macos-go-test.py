@@ -26,9 +26,9 @@ FLAGS = ["-tags", "gms_pure_go", "-v", "-race", "-short", "-timeout=30m", "-skip
 # test2json framing and let unterminated application output hide RUN/PASS.
 JSON_FLAGS = [flag for flag in FLAGS if flag != "-v"]
 GROUPS = 4  # Command groups and the default pure partition helper.
-# A native 81-root group exhausted 30m after 79 passing roots.
+# A native 57-root race batch exhausted 30m after 56 terminal roots.
 # Finer graphstore batches retain every alarm and the total scope deadline.
-GRAPHSTORE_GROUPS = 8
+GRAPHSTORE_GROUPS = 16
 GRAPHSTORE_SCOPES = ("graphstore-odd", "graphstore-even")
 CI_SCOPES = (*GRAPHSTORE_SCOPES, "remaining")
 DISCOVERY_SECONDS = 900

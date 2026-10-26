@@ -215,7 +215,7 @@ func TestVersionsMemoryAndLinkPlanes(t *testing.T) {
 			}
 			// SupersededBy is owned, so linking mints a Memory version
 			// as well as the Link's own first version.
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/superseded-by",
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "superseded-by",
 				SourcePath: "beads/plan", TargetPath: "beads/notes", ExpectedSourceRevision: revised.Memory.Revision,
 				Properties: map[string]any{"note": "before"}, Actor: "linker"})
 			if err != nil {
@@ -623,7 +623,7 @@ func TestVersionsOfDeletedSubjects(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/superseded-by",
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "superseded-by",
 				SourcePath: "beads/plan", TargetPath: "beads/notes", ExpectedSourceRevision: plan.Revision,
 				Properties: map[string]any{"note": "before"}, Actor: "linker"})
 			if err != nil {
@@ -697,8 +697,8 @@ func TestVersionsOfSelectedInformationalLinks(t *testing.T) {
 			// Both selected relations here are owned, so each Link write also
 			// mints a Memory version that the next write guards.
 			source := policy.Revision
-			for _, typ := range []string{s.ScopeURL() + "types/subject-to", s.ScopeURL() + "types/superseded-by"} {
-				name := strings.TrimPrefix(typ, s.ScopeURL()+"types/")
+			for _, typ := range []string{s.ScopeURL() + "subject-to", s.ScopeURL() + "superseded-by"} {
+				name := strings.TrimPrefix(typ, s.ScopeURL())
 				path := "links/" + name
 				added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: path, TypeURL: typ,
 					SourcePath: "beads/policy", TargetPath: "beads/rule", ExpectedSourceRevision: source,

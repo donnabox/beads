@@ -119,7 +119,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			memory := graphMixedResult[graphstore.Record](t, call("remember", "Original body", "--id", "beads/plan", "--title", "Plan"))
 			other := call("remember", "Independent body", "--id", "beads/context", "--title", "Context")
 			call("create", "Ship the release", "--id", "work", "--force", "--description", "Original Issue", "--priority", "1")
-			gate := call("create", "Prerequisite", "--id", "gate", "--force")
+			gate := call("create", "Prerequisite", "--id", "prerequisite", "--force")
 
 			selected := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/plan", "--title", "Selected title", "--if-revision", "="+memory.Revision))
 			if !selected.Changed || selected.Memory.Properties.Body != memory.Properties.Body || selected.Replaced != nil {
@@ -131,17 +131,17 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			}
 			before := call("show", scope+"beads/plan")
 			refuse("revision_conflict", "remember", "--update", "beads/plan", "--title", "Final plan", "--if-revision", "="+memory.Revision)
-			if call("show", scope+"beads/plan") != before || call("show", scope+"beads/context") != other || call("show", scope+"gate", "--format", "graph-json") != gate {
+			if call("show", scope+"beads/plan") != before || call("show", scope+"beads/context") != other || call("show", scope+"prerequisite", "--format", "graph-json") != gate {
 				t.Fatal("stale Memory update changed state")
 			}
 
-			call("create", "Context rule", "--type", "types/constraint", "--id", "beads/rule")
-			related := scope + "types/superseded-by"
+			call("create", "Context rule", "--type", "constraint", "--id", "beads/rule")
+			related := scope + "superseded-by"
 			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--type", related, "--id", "links/context", "--properties", `{"note":"first"}`, "--if-source-revision", replaced.Memory.Revision))
 			current := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
-			call("link", "beads/plan", "beads/rule", "--type", "types/subject-to", "--id", "links/work", "--if-source-revision", current.Revision)
+			call("link", "beads/plan", "beads/rule", "--type", "subject-to", "--id", "links/work", "--if-source-revision", current.Revision)
 			issueBefore := call("show", scope+"work")
-			call("link", scope+"work", "beads/context", "--type", "types/references", "--id", "links/unowned")
+			call("link", scope+"work", "beads/context", "--type", "references", "--id", "links/unowned")
 			if call("show", scope+"work") != issueBefore || call("show", scope+"beads/context") != other {
 				t.Fatal("unowned informational Link versioned an endpoint")
 			}
@@ -162,11 +162,11 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			}
 
 			// Native Dependency kinds are Issue-only. A Memory successor uses
-			// the informational superseded-by Type, not native supersedes.
+			// Link Type superseded-by for Memory succession, not native supersedes.
 			planBefore, workBefore := call("show", scope+"beads/plan"), call("show", scope+"work")
 			for _, kind := range []struct{ selected, hint string }{
 				{"blocks", "native blocks Dependency requires two live Issues; use an informational Link Type for Memory endpoints: "},
-				{"supersedes", "native supersedes Dependency requires two live Issues; use informational Link Type types/superseded-by for Memory succession: "},
+				{"supersedes", "native supersedes Dependency requires two live Issues; use Link Type superseded-by for Memory succession: "},
 			} {
 				for _, endpoints := range [][2]string{{scope + "beads/plan", scope + "work"}, {scope + "work", scope + "beads/plan"}} {
 					stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", kind.selected, "--json")
@@ -185,7 +185,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatal("refused blocking Link changed an endpoint")
 			}
 
-			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "work", "gate"))
+			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "work", "prerequisite"))
 			readyContains := func(id string) bool {
 				t.Helper()
 				for _, issue := range graphMixedResult[[]graphstore.IssueRecord](t, call("ready")) {
@@ -198,7 +198,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			if readyContains("work") {
 				t.Fatal("blocked Issue appeared ready")
 			}
-			call("close", "gate", "--reason", "Done")
+			call("close", "prerequisite", "--reason", "Done")
 			if !readyContains("work") {
 				t.Fatal("closing prerequisite did not unblock Issue")
 			}

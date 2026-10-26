@@ -163,8 +163,8 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 		t.Fatalf("persisted schema_version = %d, want 11", persisted)
 	}
 	// Availability changes discovery, not the immutable installed catalog.
-	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 52 {
-		t.Fatalf("fresh registered Types = %d; want all 52 definitions", registered)
+	if registered := graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`); registered != 50 {
+		t.Fatalf("fresh registered Types = %d; want all 50 definitions", registered)
 	}
 	var installed struct {
 		Result struct {
@@ -176,8 +176,8 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	if err := json.Unmarshal([]byte(out), &installed); err != nil {
 		t.Fatalf("read fresh Type inventory: %v\n%s", err, out)
 	}
-	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 22 || links != 25 {
-		t.Fatalf("fresh available Types = %d Bead, %d Link; want 22 and 25", beads, links)
+	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 20 || links != 25 {
+		t.Fatalf("fresh available Types = %d Bead, %d Link; want 20 and 25", beads, links)
 	}
 
 	refuse := func(marker, want string) {
@@ -191,10 +191,10 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("marker %q: refused read changed workspace", marker)
 		}
 	}
-	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n", "link-preview-v10\n", "link-preview-v11\n"} {
+	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n", "link-preview-v9\n", "link-preview-v10\n", "link-preview-v11\n", "link-preview-v12\n"} {
 		refuse(old, graphGenerationFirstGateRefusal)
 	}
-	refuse("link-preview-v13\n", "graph_mode workspace format link-preview-v13 is newer than this bd supports (link-preview-v12); upgrade bd; no database was opened")
+	refuse("link-preview-v14\n", "graph_mode workspace format link-preview-v14 is newer than this bd supports (link-preview-v13); upgrade bd; no database was opened")
 	refuse("link-preview-v9", graphGenerationFirstGateRefusal)
 	refuse("link-preview-v9x\n", graphGenerationFirstGateRefusal)
 
@@ -332,8 +332,8 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if shown.Type != typeURL || shown.Properties["dep_type"] != string(tc.kind) || shown.Source != source.ID || shown.Target != target.ID {
 						t.Fatalf("shown Link differs from native endpoints: %+v", shown)
 					}
-					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source.ID, "--type", "types/dependency", "--exact-type", typeURL))
-					counted := graphMixedResult[map[string]int](t, call("link", "count", "--from", source.ID, "--type", "types/dependency", "--exact-type", typeURL))
+					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source.ID, "--type", "dependency", "--exact-type", typeURL))
+					counted := graphMixedResult[map[string]int](t, call("link", "count", "--from", source.ID, "--type", "dependency", "--exact-type", typeURL))
 					if len(listed) != 1 || listed[0].ID != added.Link.ID || counted["count"] != 1 {
 						t.Fatalf("Dependency type list/count did not select %s: list=%+v count=%+v", tc.kind, listed, counted)
 					}

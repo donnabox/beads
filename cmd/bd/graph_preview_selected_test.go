@@ -22,7 +22,7 @@ func TestGraphPreviewSelectedInputEquivalence(t *testing.T) {
 		t.Fatal("omitted selector lost implicit-default evidence")
 	}
 	implicit.ImplicitDependency = false // population is equal; diagnostic intent differs
-	for _, flags := range [][]string{{"--link-type=Dependency"}, {"--link-type=dependency"}, {"--link-type=types/dependency"}, {"--link-type=Dependency", "--link-type=dependency"}} {
+	for _, flags := range [][]string{{"--link-type=dependency"}, {"--link-type=dependency"}, {"--link-type=dependency"}, {"--link-type=dependency", "--link-type=dependency"}} {
 		explicit, err := graphPreviewGenericInput(genericPreviewCommand(t, flags...), []string{"a"}, genericTestScope)
 		if err != nil || !reflect.DeepEqual(implicit, explicit) {
 			t.Fatalf("omitted selector differs from explicit: %+v %+v %v", implicit, explicit, err)
@@ -52,10 +52,10 @@ func TestGraphPreviewSelectedExactAndWildcardInput(t *testing.T) {
 		family, exact []string
 		all           bool
 	}{
-		{"exact", []string{"--exact-link-type=Requires"}, nil, []string{genericTestScope + "types/requires"}, false},
-		{"mixed-deduplicated", []string{"--link-type=requires", "--exact-link-type=Defines", "--exact-link-type=defines", "--link-type=References"}, []string{genericTestScope + "types/references", genericTestScope + "types/requires"}, []string{genericTestScope + "types/defines"}, false},
+		{"exact", []string{"--exact-link-type=requires"}, nil, []string{genericTestScope + "requires"}, false},
+		{"mixed-deduplicated", []string{"--link-type=requires", "--exact-link-type=defines", "--exact-link-type=defines", "--link-type=references"}, []string{genericTestScope + "references", genericTestScope + "requires"}, []string{genericTestScope + "defines"}, false},
 		{"wildcard", []string{"--link-type=any"}, nil, nil, true},
-		{"wildcard-union", []string{"--link-type=any", "--link-type=requires", "--exact-link-type=defines"}, []string{genericTestScope + "types/requires"}, []string{genericTestScope + "types/defines"}, true},
+		{"wildcard-union", []string{"--link-type=any", "--link-type=requires", "--exact-link-type=defines"}, []string{genericTestScope + "requires"}, []string{genericTestScope + "defines"}, true},
 		{"identity-escape", []string{"--exact-link-type=" + genericTestScope + "types/any"}, nil, []string{genericTestScope + "types/any"}, false},
 		{"family-identity-escape", []string{"--link-type=" + genericTestScope + "types/any"}, []string{genericTestScope + "types/any"}, nil, false},
 	} {
@@ -76,31 +76,31 @@ func TestGraphPreviewSelectedExactFamilyUnion(t *testing.T) {
 	snapshot.Types = selectedTypeTestDescriptors(t, genericTestScope)
 	for i, raw := range snapshot.Records {
 		if link, ok := raw.(graphstore.LinkRecord); ok {
-			link.Type = genericTestScope + "types/requires"
+			link.Type = genericTestScope + "requires"
 			if strings.HasSuffix(link.ID, "/bc") {
-				link.Type = genericTestScope + "types/defines"
+				link.Type = genericTestScope + "defines"
 			}
 			if strings.HasSuffix(link.ID, "/cd") {
-				link.Type = genericTestScope + "types/references"
+				link.Type = genericTestScope + "references"
 			}
 			link.SourceRevision, link.TargetRevision = "source-pin", "target-pin"
 			snapshot.Records[i] = link
 		}
 	}
 	in := genericTestInput("a", "out", 10)
-	in.ExactLinkTypes = []string{genericTestScope + "types/requires"}
+	in.ExactLinkTypes = []string{genericTestScope + "requires"}
 	got, err := projectGraphGeneric(snapshot, genericTestScope, in)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertGenericSelection(t, got, []string{"a", "b"}, []string{"ab"}, []string{})
-	in.ExactLinkTypes = append(in.ExactLinkTypes, genericTestScope+"types/defines")
+	in.ExactLinkTypes = append(in.ExactLinkTypes, genericTestScope+"defines")
 	got, err = projectGraphGeneric(snapshot, genericTestScope, in)
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertGenericSelection(t, got, []string{"a", "b", "c"}, []string{"ab", "bc"}, []string{})
-	in.LinkTypes = []string{genericTestScope + "types/references"}
+	in.LinkTypes = []string{genericTestScope + "references"}
 	got, err = projectGraphGeneric(snapshot, genericTestScope, in)
 	if err != nil {
 		t.Fatal(err)
@@ -120,7 +120,7 @@ func TestGraphPreviewSelectedOmittedIncidence(t *testing.T) {
 		if link, ok := raw.(graphstore.LinkRecord); ok {
 			link.Type = graphstore.DependencyTypeURL(genericTestScope)
 			if !strings.HasSuffix(link.ID, "/ab") {
-				link.Type = genericTestScope + "types/references"
+				link.Type = genericTestScope + "references"
 			}
 			snapshot.Records[i] = link
 		}
@@ -134,7 +134,7 @@ func TestGraphPreviewSelectedOmittedIncidence(t *testing.T) {
 	}
 	in.Depth = 1
 	got, err = projectGraphGeneric(snapshot, genericTestScope, in)
-	if err != nil || !reflect.DeepEqual(got.OmittedLinkTypes, []string{genericTestScope + "types/references"}) {
+	if err != nil || !reflect.DeepEqual(got.OmittedLinkTypes, []string{genericTestScope + "references"}) {
 		t.Fatalf("reached incidence missing: %+v %v", got, err)
 	}
 	assertGenericSelection(t, got, []string{"a", "b"}, []string{"ab"}, []string{})
@@ -172,7 +172,7 @@ func TestGraphPreviewSelectedOpenIssuePopulationRetainsOmittedEvidence(t *testin
 	snapshot.Records = append(snapshot.Records,
 		graphstore.Record{ID: genericTestScope + "beads/m", Type: graphstore.MemoryTypeURL(genericTestScope), Version: "v1"},
 		graphstore.LinkRecord{ID: genericTestScope + "links/dep", Type: blocksType, Revision: "v1", Version: "v1", Properties: map[string]any{"dep_type": "blocks"}, Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/closed"},
-		graphstore.LinkRecord{ID: genericTestScope + "links/ref", Type: genericTestScope + "types/references", Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/m"},
+		graphstore.LinkRecord{ID: genericTestScope + "links/ref", Type: genericTestScope + "references", Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/m"},
 	)
 	in := genericTestInput("", "both", 1000)
 	in.All, in.OpenIssuesOnly, in.ImplicitDependency = true, true, true
@@ -182,7 +182,7 @@ func TestGraphPreviewSelectedOpenIssuePopulationRetainsOmittedEvidence(t *testin
 		t.Fatal(err)
 	}
 	assertGenericSelection(t, got, []string{"open"}, []string{}, []string{})
-	if !reflect.DeepEqual(got.OmittedLinkTypes, []string{genericTestScope + "types/references"}) {
+	if !reflect.DeepEqual(got.OmittedLinkTypes, []string{genericTestScope + "references"}) {
 		t.Fatalf("open-Issue filtering erased authorized incidence: %+v", got)
 	}
 }
@@ -207,7 +207,7 @@ func TestGraphPreviewSelectedAllDependencyPopulationIsSelectorSpecific(t *testin
 	snapshot.Records = append(snapshot.Records,
 		graphstore.Record{ID: genericTestScope + "beads/m", Type: graphstore.MemoryTypeURL(genericTestScope), Version: "v1"},
 		graphstore.LinkRecord{ID: genericTestScope + "links/dep", Type: blocksType, Revision: "v1", Version: "v1", Properties: map[string]any{"dep_type": "blocks"}, Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/closed"},
-		graphstore.LinkRecord{ID: genericTestScope + "links/ref", Type: genericTestScope + "types/references", Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/m"},
+		graphstore.LinkRecord{ID: genericTestScope + "links/ref", Type: genericTestScope + "references", Version: "v1", Source: genericTestScope + "beads/open", Target: genericTestScope + "beads/m"},
 	)
 	family := genericTestInput("", "both", 1000)
 	family.All, family.OpenIssuesOnly = true, true
@@ -271,16 +271,16 @@ func TestGraphPreviewSelectedExportLabelsAndDepthBoundary(t *testing.T) {
 					t.Fatal(err)
 				}
 				text := out.String()
-				if !strings.Contains(text, "beads/a [types/memory]") {
+				if !strings.Contains(text, "beads/a [memory]") {
 					t.Fatalf("%s lost node identity/Type label: %s", format, text)
 				}
 				if format == "html" {
 					// HTML keeps exact Link Types in data; the tooltip explicitly
 					// brackets that Type rather than changing its wire identity.
-					if !strings.Contains(text, `"type":"`+genericTestScope+`types/references"`) || !strings.Contains(text, `"\n[" + d.typeLabel + "]\nsource revision: "`) {
+					if !strings.Contains(text, `"type":"`+genericTestScope+`references"`) || !strings.Contains(text, `"\n[" + d.typeLabel + "]\nsource revision: "`) {
 						t.Fatal("HTML lost typed Link data/tooltip", text)
 					}
-				} else if !strings.Contains(text, "[types/references]") {
+				} else if !strings.Contains(text, "[references]") {
 					t.Fatalf("%s lost Link Type label: %s", format, text)
 				}
 				boundary := "Depth limit 3 reached"
@@ -347,7 +347,7 @@ func TestGraphPreviewSelectedHumanTypeLabelsPreserveCanonicalTypes(t *testing.T)
 		graphstore.Record{ID: r.Nodes[2].ID, Type: foreignTask, Revision: "foreign-revision"},
 	}}
 	typesByID := map[string]string{}
-	labelsByID := map[string]string{r.Nodes[0].ID: "task", r.Nodes[1].ID: "types/task", r.Nodes[2].ID: foreignTask, r.Links[0].ID: "blocks", r.Links[1].ID: "types/references", r.Links[2].ID: foreignBlocks}
+	labelsByID := map[string]string{r.Nodes[0].ID: "task", r.Nodes[1].ID: "types/task", r.Nodes[2].ID: foreignTask, r.Links[0].ID: "blocks", r.Links[1].ID: "references", r.Links[2].ID: foreignBlocks}
 	for _, node := range r.Nodes {
 		typesByID[node.ID] = node.Type
 	}
@@ -406,7 +406,7 @@ func TestGraphPreviewSelectedHumanTypeLabelsPreserveCanonicalTypes(t *testing.T)
 					}
 				}
 			} else {
-				for _, label := range []string{"[blocks]", "[types/references]", "[" + foreignBlocks + "]"} {
+				for _, label := range []string{"[blocks]", "[references]", "[" + foreignBlocks + "]"} {
 					if !strings.Contains(text, label) {
 						t.Fatalf("%s lost Link Type label %q", format, label)
 					}
@@ -429,19 +429,19 @@ func TestGraphPreviewSelectedUnionInducedAndNoHiddenBridge(t *testing.T) {
 	snapshot.Types = selectedTypeTestDescriptors(t, genericTestScope)
 	for i, raw := range snapshot.Records {
 		if l, ok := raw.(graphstore.LinkRecord); ok {
-			l.Type = genericTestScope + "types/requires"
+			l.Type = genericTestScope + "requires"
 			if strings.HasSuffix(l.ID, "/bc2") {
-				l.Type = genericTestScope + "types/defines"
+				l.Type = genericTestScope + "defines"
 			}
 			if strings.HasSuffix(l.ID, "/cd") {
-				l.Type = genericTestScope + "types/references"
+				l.Type = genericTestScope + "references"
 			}
 			l.TargetRevision = "pinned-target"
 			snapshot.Records[i] = l
 		}
 	}
 	in := genericTestInput("a", "out", 1)
-	in.LinkTypes = []string{genericTestScope + "types/requires"}
+	in.LinkTypes = []string{genericTestScope + "requires"}
 	got, err := projectGraphGeneric(snapshot, genericTestScope, in)
 	if err != nil {
 		t.Fatal(err)
@@ -460,19 +460,19 @@ func TestGraphPreviewSelectedUnionInducedAndNoHiddenBridge(t *testing.T) {
 	if len(got.Nodes) != 3 {
 		t.Fatal("excluded References became hidden bridge")
 	}
-	in.LinkTypes = append(in.LinkTypes, genericTestScope+"types/references")
+	in.LinkTypes = append(in.LinkTypes, genericTestScope+"references")
 	got, err = projectGraphGeneric(snapshot, genericTestScope, in)
 	if err != nil || len(got.Nodes) != 4 || len(got.Links) != 6 {
 		t.Fatalf("union: %+v %v", got, err)
 	}
-	in.LinkTypes = []string{genericTestScope + "types/references"}
+	in.LinkTypes = []string{genericTestScope + "references"}
 	got, err = projectGraphGeneric(snapshot, genericTestScope, in)
 	if err != nil || len(got.Links) != 6 {
 		t.Fatalf("refinements not included: %+v %v", got, err)
 	}
 	in.All = true
 	in.Root = ""
-	in.LinkTypes = []string{genericTestScope + "types/requires"}
+	in.LinkTypes = []string{genericTestScope + "requires"}
 	got, err = projectGraphGeneric(snapshot, genericTestScope, in)
 	if err != nil || len(got.Nodes) != 3 {
 		t.Fatalf("nondependency all admitted unrelated isolated bead: %+v %v", got, err)

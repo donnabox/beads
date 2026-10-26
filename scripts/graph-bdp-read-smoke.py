@@ -273,12 +273,12 @@ def main():
         # Selected SubjectTo ownership needs a Constraint target. Keep the native
         # Issue pair intact and create its independent target through the CLI.
         records["beads/constraint"] = c0.envelope(capture.success("constraint-create", [
-            "create", "Context constraint", "--type", "types/constraint", "--id", "beads/constraint", "--json"]))
-        owned_type = scope + "types/subject-to"
+            "create", "Context constraint", "--type", "constraint", "--id", "beads/constraint", "--json"]))
+        owned_type = scope + "subject-to"
         capture.success("memory-constraint-link", ["link", "beads/plan", "beads/constraint", "--type", owned_type,
             "--id", "links/context", "--properties", '{"note":"before page"}', "--metadata", '{"origin":"manual"}',
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
-        capture.success("issue-memory-link", ["link", scope + "beads/work", scope + "beads/plan", "--type", "types/references",
+        capture.success("issue-memory-link", ["link", scope + "beads/work", scope + "beads/plan", "--type", "references",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
         dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", scope + "beads/work", scope + "beads/prereq", "--json"]))
         for path in [*records, "links/context", "links/back", dependency["link"]["id"]]:

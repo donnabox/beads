@@ -97,10 +97,10 @@ func (s *Store) resolveDependencyRemoveIssueInTx(ctx context.Context, tx *sql.Tx
 // validDeletedLinkAllocation separates reserved canonical identity from current
 // authority. Dependency row IDs are deterministic per pair; clearing the deleted
 // allocation's backing key permits a later pair assertion under a NEW Link ID.
-func (s *Store) validDeletedLinkAllocation(kind, typ, backing string, key sql.NullString, issueType string) bool {
+func (s *Store) validDeletedLinkAllocation(kind, typ, backing string, key sql.NullString, issueType string, facts ...graph.TypeDescriptor) bool {
 	return kind == "link" && !key.Valid &&
 		((backing == "informational" && IsInformationalTypeURL(s.ScopeURL(), typ)) ||
-			(backing == "dependency" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ)))
+			(backing == "dependency" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ, facts...)))
 }
 
 // unlinkDependencyInTx extends the existing guarded unlink transaction only for

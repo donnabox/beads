@@ -193,7 +193,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 					}
 				}
 			}
-			memory := graphMixedResult[graphstore.Record](t, call("create", "Original title", "--type", "types/constraint", "--id", "beads/plan", "--body", "Original body"))
+			memory := graphMixedResult[graphstore.Record](t, call("create", "Original title", "--type", "constraint", "--id", "beads/plan", "--body", "Original body"))
 			survivor := graphMixedResult[graphstore.Record](t, call("remember", "Untouched", "--id", "beads/context", "--title", "Context"))
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work"))
 			target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--graph-path", "beads/target"))
@@ -262,19 +262,19 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			retain(memory.ID, memory.Revision, memory)
 			add := func(id, dest string, properties string) graphstore.LinkRecord {
 				t.Helper()
-				result := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, dest, "--id", id, "--type", scope+"types/subject-to", "--properties", properties, "--if-source-revision", memory.Revision))
+				result := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, dest, "--id", id, "--type", scope+"subject-to", "--properties", properties, "--if-source-revision", memory.Revision))
 				memory = showMemory()
 				retain(memory.ID, memory.Revision, memory)
 				retain(result.Link.ID, result.Link.Revision, result.Link)
 				return result.Link
 			}
-			constraint := graphMixedResult[graphstore.Record](t, call("create", "Rule", "--type", "types/constraint", "--id", "beads/rule"))
+			constraint := graphMixedResult[graphstore.Record](t, call("create", "Rule", "--type", "constraint", "--id", "beads/rule"))
 			link := add("links/owned", constraint.ID, `{}`)
 			twin := add("links/twin", constraint.ID, `{"note":"untouched twin"}`)
-			graphPatchProcess(t, bd, work, home, nil, "invalid_properties", 90*time.Second, "link", memory.ID, memory.ID, "--id", "links/self", "--type", "types/subject-to", "--if-source-revision", memory.Revision, "--json")
+			graphPatchProcess(t, bd, work, home, nil, "invalid_properties", 90*time.Second, "link", memory.ID, memory.ID, "--id", "links/self", "--type", "subject-to", "--if-source-revision", memory.Revision, "--json")
 			graphPatchEqual(t, showMemory(), memory)
 			peer := add("links/peer", constraint.ID, `{"note":"untouched peer"}`)
-			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, constraint.ID, "--id", "links/unowned", "--type", scope+"types/references")).Link
+			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, constraint.ID, "--id", "links/unowned", "--type", scope+"references")).Link
 			retain(unowned.ID, unowned.Revision, unowned)
 			unchanged := func() {
 				t.Helper()

@@ -410,3 +410,18 @@ func TestJSONContract_SchemaVersionPresent(t *testing.T) {
 		})
 	}
 }
+
+// The graph catalog shares meaningful names with the native domain. Ordinary
+// configured classifications keep native admission, spelling and list filters.
+func TestJSONContract_OrdinaryCustomTypeAdmission(t *testing.T) {
+	w := newWorkspace(t)
+	w.run("config", "set", "types.custom", "memory,policy,issue,foo/feature,p%q")
+	for _, value := range []string{"memory", "policy", "issue", "foo/feature", "p%q"} {
+		id := w.create("Ordinary custom "+value, "--type", value)
+		assertField(t, w.showJSON(id), "issue_type", value)
+		rows := parseJSONOutput(t, w.run("list", "--type", value, "--json"))
+		if len(rows) != 1 || rows[0]["id"] != id || rows[0]["issue_type"] != value {
+			t.Fatalf("ordinary custom Type %q selection changed: %+v", value, rows)
+		}
+	}
+}

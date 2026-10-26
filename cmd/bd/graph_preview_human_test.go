@@ -20,8 +20,8 @@ func TestGraphHumanIdentityRowsAndDocuments(t *testing.T) {
 	if got := graphHumanRow(scope, issue); got != `beads/work [task] open P2 "Work"` {
 		t.Fatal(got)
 	}
-	link := graphstore.LinkRecord{ID: scope + "links/L", Type: scope + "types/references", Source: issue.ID, Target: "https://foreign.invalid/scope/beads/m", TargetRevision: "old-token", Revision: "link-token"}
-	want := "links/L [types/references] beads/work → https://foreign.invalid/scope/beads/m@=old-token"
+	link := graphstore.LinkRecord{ID: scope + "links/L", Type: scope + "references", Source: issue.ID, Target: "https://foreign.invalid/scope/beads/m", TargetRevision: "old-token", Revision: "link-token"}
+	want := "links/L [references] beads/work → https://foreign.invalid/scope/beads/m@=old-token"
 	if got := graphHumanRow(scope, link); got != want {
 		t.Fatal(got)
 	}
@@ -63,7 +63,7 @@ func TestGraphHumanRevisionLookupIsOptional(t *testing.T) {
 
 func TestGraphHumanPreservesDomainProperties(t *testing.T) {
 	const scope = "https://example.invalid/scope/"
-	r := graphstore.LinkRecord{ID: scope + "L", Type: scope + "types/references", Properties: map[string]any{"title": 17, "body": map[string]any{"nested": true}, "description": "domain description", "metadata": map[string]any{"nested": "content"}, "revision": "domain revision", "id": "domain id", "created_at": "domain date", "empty": ""}}
+	r := graphstore.LinkRecord{ID: scope + "L", Type: scope + "references", Properties: map[string]any{"title": 17, "body": map[string]any{"nested": true}, "description": "domain description", "metadata": map[string]any{"nested": "content"}, "revision": "domain revision", "id": "domain id", "created_at": "domain date", "empty": ""}}
 	for _, long := range []bool{false, true} {
 		got := graphHumanDocument(scope, r, "@1", false, long)
 		for _, text := range []string{`"title": 17`, `"body": {`, `"description": "domain description"`, `"metadata": {`, `"revision": "domain revision"`, `"id": "domain id"`, `"created_at": "domain date"`, `"empty": ""`} {
@@ -76,7 +76,7 @@ func TestGraphHumanPreservesDomainProperties(t *testing.T) {
 	if err := json.Unmarshal([]byte(`{"title":"M","body":"B","description":"extra","revision":"user rev","metadata":{"content":true}}`), &props); err != nil {
 		t.Fatal(err)
 	}
-	got := graphHumanDocument(scope, graphstore.Record{ID: scope + "M", Type: scope + "types/memory", Properties: props}, "@1", false, false)
+	got := graphHumanDocument(scope, graphstore.Record{ID: scope + "M", Type: scope + "memory", Properties: props}, "@1", false, false)
 	for _, text := range []string{`"description": "extra"`, `"revision": "user rev"`, `"metadata": {`} {
 		if !strings.Contains(got, text) {
 			t.Fatal(got)

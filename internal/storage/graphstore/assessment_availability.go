@@ -9,7 +9,7 @@ func AssessmentTypeAvailable(scope, id string, enabled bool) bool {
 		return true
 	}
 	for _, name := range []string{"evaluation", "conformance", "addresses", "satisfies", "violates"} {
-		if id == scope+"types/"+name {
+		if id == scope+name {
 			return false
 		}
 	}

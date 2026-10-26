@@ -8,7 +8,7 @@
     "id": "https://example.invalid/canonical-show/beads/plan",
     "metadata": {},
     "ownedLinks": {
-      "https://example.invalid/canonical-show/types/subject-to": [
+      "https://example.invalid/canonical-show/subject-to": [
         {
           "attribution": {
             "basis": "writer-supplied",
@@ -22,17 +22,17 @@
           "revision": "REVISION",
           "source": "https://example.invalid/canonical-show/beads/plan",
           "target": "https://example.invalid/canonical-show/beads/work",
-          "type": "https://example.invalid/canonical-show/types/subject-to"
+          "type": "https://example.invalid/canonical-show/subject-to"
         }
       ],
-      "https://example.invalid/canonical-show/types/superseded-by": []
+      "https://example.invalid/canonical-show/superseded-by": []
     },
     "properties": {
       "body": "Big body \u0026 \u003cliteral\u003e",
       "title": "Plan"
     },
     "revision": "REVISION",
-    "type": "https://example.invalid/canonical-show/types/memory"
+    "type": "https://example.invalid/canonical-show/memory"
   },
   "outcome": "success",
   "result_kind": "resource",

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	graph "github.com/steveyegge/beads/graphops"
 	"os"
 	"sort"
 	"strconv"
@@ -468,18 +469,11 @@ func graphPreviewNativeIssueTypeFlag(cmd *cobra.Command, scope string) (string, 
 		return "", nil
 	}
 	raw, _ := cmd.Flags().GetString("type")
-	if !graphPreviewNominalSelector(raw) {
-		id, err := graphstore.NativeIssueTypeURL(scope, string(types.IssueType(raw).Normalize()))
-		if err != nil {
-			return "", graphFailure("invalid_selector", err.Error(), 2)
-		}
-		return id, nil
-	}
-	id, err := graphPreviewTypeURL(scope, raw)
+	id, err := graphPreviewCollectionTypeURL(scope, raw, false)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
-	base, _, native := graphstore.NativeTypeClassification(scope, id)
+	base, _, native := graphstore.NativeTypeClassification(scope, id, graph.KindBead)
 	if !native || base != graphstore.IssueTypeURL(scope) {
 		return "", graphFailure("invalid_selector", "native Issue requires a concrete native Issue Type", 2)
 	}

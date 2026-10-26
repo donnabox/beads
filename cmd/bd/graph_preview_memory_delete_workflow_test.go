@@ -123,9 +123,9 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				t.Fatal("explicit Issue --dry-run changed state or lost the preview")
 			}
 			refuse("capability_unavailable", "forget", issueRecord.Properties.ID)
-			related := scope + "types/superseded-by"
+			related := scope + "superseded-by"
 			call("link", "beads/plan", "beads/other", "--id", "links/outgoing", "--type", related, "--if-source-revision", plan.Revision)
-			call("link", issueRecord.ID, scope+"beads/plan", "--id", "links/incoming", "--type", "types/references")
+			call("link", issueRecord.ID, scope+"beads/plan", "--id", "links/incoming", "--type", "references")
 			for _, path := range []string{"links/outgoing", "links/incoming"} {
 				before := call("show", scope+"beads/plan")
 				linkBefore := call("show", scope+path)

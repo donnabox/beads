@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	graph "github.com/steveyegge/beads/graphops"
 	"strings"
 
 	"github.com/steveyegge/beads/internal/storage"
@@ -129,7 +130,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
 			return err
 		} else if exists {
-			return ErrAlreadyExists
+			return publicResourceIDReservedErrorInTx(ctx, tx, created.Issue.ID)
 		}
 		if !sameIssueCreateFields(create.Issue, created.Issue, create.Actor) || issueops.IsWisp(created.Issue) ||
 			!strings.HasPrefix(created.Issue.ID, parent.Properties.ID+".") {
@@ -150,7 +151,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
-		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
+		if err := s.ensureNativeTypeInTx(ctx, tx, issueType, graph.KindBead); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog

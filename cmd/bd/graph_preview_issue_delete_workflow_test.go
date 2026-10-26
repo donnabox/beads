@@ -48,7 +48,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "forget", issue.Properties.ID)
 			call("remember", "Other", "--id", "beads/other")
 			linked := graphMixedResult[graphstore.IssueRecord](t, call("create", "Linked", "--id", "beads/linked", "--force"))
-			call("link", linked.ID, scope+"beads/other", "--type", "types/references", "--id", "links/relation")
+			call("link", linked.ID, scope+"beads/other", "--type", "references", "--id", "links/relation")
 			linkedPreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", linked.Properties.ID))
 			if !linkedPreview.Preview || linkedPreview.Deleted || !reflect.DeepEqual(linkedPreview.Issue, linked) || len(linkedPreview.IncidentLinkIDs) != 1 {
 				t.Fatal("informational Link preview did not disclose its cleanup")

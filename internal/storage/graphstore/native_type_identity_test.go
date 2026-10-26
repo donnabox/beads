@@ -9,58 +9,69 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
+// Generated identities must expose the selected name, rather than an adapter
+// implementation namespace. Literal caller-authored IDs are a separate path.
+func TestGeneratedTypeIdentitiesUseMeaningfulScopeLocalNames(t *testing.T) {
+	const scope = "https://example.test/work/"
+	for _, tc := range []struct {
+		name  string
+		build func(string, string) (string, error)
+	}{
+		{"task", NativeIssueTypeURL},
+		{"decision", NativeIssueTypeURL},
+		{"blocks", NativeDependencyTypeURL},
+		{"parent-child", NativeDependencyTypeURL},
+	} {
+		got, err := tc.build(scope, tc.name)
+		if err != nil || got != scope+tc.name {
+			t.Errorf("generated %s identity = %q, %v; want %q", tc.name, got, err, scope+tc.name)
+		}
+	}
+	if got := MemoryTypeURL(scope); got != scope+"memory" {
+		t.Errorf("Memory identity = %q; want %q", got, scope+"memory")
+	}
+}
+
 func TestNativeConcreteTypeIdentity(t *testing.T) {
 	const scope = "https://example.test/work/"
-	seen := map[string]string{}
-	values := []string{"decision", "custom/task", "a b", "é", "e\u0301", "UPPER", "upper", strings.Repeat("x", types.MaxDependencyTypeLen)}
-	for _, value := range types.AllIssueTypes {
-		values = append(values, string(value))
-	}
-	for _, value := range types.WellKnownDependencyTypes() {
-		values = append(values, string(value))
-	}
-	for _, value := range values {
-		for _, build := range []func(string, string) (string, error){NativeIssueTypeURL, NativeDependencyTypeURL} {
+	for _, role := range []graph.ResourceKind{graph.KindBead, graph.KindLink} {
+		values := []string{"custom/task", "a b", "é", "e\u0301", "UPPER", "upper", "percent%value"}
+		if role == graph.KindBead {
+			for _, v := range types.AllIssueTypes {
+				values = append(values, string(v))
+			}
+		} else {
+			for _, v := range types.WellKnownDependencyTypes() {
+				values = append(values, string(v))
+			}
+		}
+		for _, value := range values {
+			build := NativeIssueTypeURL
+			wantBase := IssueTypeURL(scope)
+			if role == graph.KindLink {
+				build = NativeDependencyTypeURL
+				wantBase = DependencyTypeURL(scope)
+			}
 			id, err := build(scope, value)
 			if err != nil {
 				t.Fatal(err)
 			}
-			base, got, ok := NativeTypeClassification(scope, id)
-			if !ok || got != value {
-				t.Fatalf("identity roundtrip %q: %q %t", value, got, ok)
+			base, got, ok := NativeTypeClassification(scope, id, role)
+			if !ok || got != value || base != wantBase {
+				t.Fatalf("exact role roundtrip %q: %q %q %t", value, base, got, ok)
 			}
-			key := base + "\x00" + value
-			if previous, ok := seen[id]; ok && previous != key {
-				t.Fatalf("identity collision: %q / %q", previous, key)
-			}
-			seen[id] = key
-			if id == scope+"types/decision" || id == IssueTypeURL(scope) || id == DependencyTypeURL(scope) {
-				t.Fatalf("child collides with existing identity: %s", id)
-			}
-			d, err := nativeConcreteDescriptor(scope, id)
+			d, err := nativeConcreteDescriptor(scope, id, role)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if d.ID() != id || len(d.ConformsTo()) != 1 || d.ConformsTo()[0] != base {
-				t.Fatalf("descriptor identity/refinement differs: %s", d.CanonicalJSON())
-			}
-			want := graph.KindBead
-			if base == DependencyTypeURL(scope) {
-				want = graph.KindLink
-			}
-			if d.Describes() != want {
-				t.Fatal("wrong resource kind")
+			if d.ID() != id || d.Name() != value || d.Describes() != role || len(d.ConformsTo()) != 1 || d.ConformsTo()[0] != wantBase {
+				t.Fatalf("native descriptor lost role/identity: %s", d.CanonicalJSON())
 			}
 			parsed, err := graph.ParseTypeDescriptor(d.CanonicalJSON())
 			if err != nil || parsed.Fingerprint() != d.Fingerprint() {
-				t.Fatalf("closed descriptor roundtrip: %v", err)
+				t.Fatalf("descriptor roundtrip: %v", err)
 			}
 		}
-	}
-	// The mapper cannot silently claim workspace authorization. An arbitrary
-	// custom Issue class still maps injectively; the native writer must admit it.
-	if _, err := NativeIssueTypeURL(scope, "not-configured"); err != nil {
-		t.Fatal(err)
 	}
 }
 
@@ -74,8 +85,8 @@ func TestNativeConcreteTypeIdentityRefusals(t *testing.T) {
 			t.Fatalf("mapped invalid kind %q", value)
 		}
 	}
-	for _, id := range []string{IssueTypeURL(scope), DependencyTypeURL(scope), scope + "types/decision", scope + "types/native-issue/", scope + "types/native-issue/6A", scope + "types/native-issue/ff", scope + "types/native-issue/6", scope + "types/native-issue/7461736b/00", "https://other.test/types/native-issue/7461736b"} {
-		if _, _, ok := NativeTypeClassification(scope, id); ok {
+	for _, id := range []string{IssueTypeURL(scope), DependencyTypeURL(scope), scope + "memory", scope + "bad//path", scope + "bad/%61", "https://other.test/task"} {
+		if _, _, ok := NativeTypeClassification(scope, id, graph.KindBead); ok {
 			t.Fatalf("decoded noncanonical/foreign identity %q", id)
 		}
 	}
@@ -120,5 +131,64 @@ func TestNativeIssuePropertyReplacementPreservesAffiliation(t *testing.T) {
 				t.Fatal("patch parsing changed source")
 			}
 		})
+	}
+}
+
+func TestNativeFamilyRequiresExactDescriptorFacts(t *testing.T) {
+	const scope = "https://example.test/work/"
+	for _, id := range []string{scope + "future-memory", scope + "neutral", scope + "types/refines", "https://foreign.test/task"} {
+		d, err := graph.NewTypeDescriptor(graph.TypeDescriptorSpec{ID: id, Name: "Neutral", Describes: graph.KindBead})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := nativeFamilyReference(scope, id, graph.KindBead, d); got != id || isConcreteNativeIssue(scope, id, d) {
+			t.Fatalf("unrelated descriptor promoted to native: %s", id)
+		}
+	}
+	id, err := NativeIssueTypeURL(scope, "custom/task")
+	if err != nil || id != scope+"custom/task" {
+		t.Fatalf("segmented name: %s %v", id, err)
+	}
+	d, err := nativeConcreteDescriptor(scope, id, graph.KindBead)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if nativeFamilyReference(scope, id, graph.KindBead) != id {
+		t.Fatal("uncaptured custom declaration inferred from spelling")
+	}
+	if nativeFamilyReference(scope, id, graph.KindBead, d) != IssueTypeURL(scope) {
+		t.Fatal("checked custom descriptor lost native ancestry")
+	}
+	if isConcreteNativeDependency(scope, id, d) {
+		t.Fatal("Issue descriptor became Dependency")
+	}
+}
+
+func TestNativeTypeCanonicalClassificationSpelling(t *testing.T) {
+	const scope = "https://example.test/work/"
+	for raw, want := range map[string]string{"a b": "a%20b", "percent%value": "percent%25value", "é": "%C3%A9", "e\u0301": "e%CC%81", "custom/task": "custom/task", "UPPER": "UPPER"} {
+		id, err := NativeIssueTypeURL(scope, raw)
+		if err != nil || id != scope+want {
+			t.Errorf("%q -> %q %v want %q", raw, id, err, scope+want)
+		}
+		_, got, ok := NativeTypeClassification(scope, id, graph.KindBead)
+		if !ok || got != raw {
+			t.Errorf("roundtrip %q -> %q %t", raw, got, ok)
+		}
+	}
+	for _, raw := range []string{".", "..", "a//b", "a/../b", "a/", string([]byte{0}), "a\\b"} {
+		if _, err := NativeIssueTypeURL(scope, raw); err == nil {
+			t.Errorf("unrepresentable native label admitted %q", raw)
+		}
+	}
+	for _, raw := range []string{"memory", "references", "blocks", "issue", "dependency"} {
+		if _, err := NativeIssueTypeURL(scope, raw); err == nil {
+			t.Errorf("selected Type collision admitted %q", raw)
+		}
+	}
+	for _, raw := range []string{"memory", "references", "task", "decision", "issue", "dependency"} {
+		if _, err := NativeDependencyTypeURL(scope, raw); err == nil {
+			t.Errorf("selected Type collision admitted %q", raw)
+		}
 	}
 }

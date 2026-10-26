@@ -6068,9 +6068,9 @@ if "-list" in args:
     if mode == "empty": sys.exit(0)
     print("TestEmbeddedOld")
     if mode == "excluded-only": sys.exit(0)
-    names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"]
+    names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"] + [f"TestFixture{index:03d}" for index in range(16)]
     if mode == "last-group":
-        names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds", "TestAardvark", "TestZZLast"]
+        names = ["ExampleValue", "FuzzSeeds"] + [f"TestRoot{index:03d}" for index in range(13)] + ["TestZZLast", "TestZulu"]
     if mode == "census-416": names = [f"TestStore{index:03d}" for index in range(416)]
     for name in names: print(name)
     print("BenchmarkIgnored")
@@ -6114,7 +6114,7 @@ class DispatchControls(unittest.TestCase):
             if case != "good": return
             plan = json.loads((output / "plan.json").read_text())
             self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
-            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"])
+            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"] + [f"TestFixture{index:03d}" for index in range(16)])
             self.assertEqual(sorted(sum(plan["groups"], [])), expected)
             self.assertEqual(len(sum(plan["groups"], [])), len(expected))
             self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"])), m.GRAPHSTORE_GROUPS))
@@ -6146,7 +6146,7 @@ class DispatchControls(unittest.TestCase):
                 census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
 
-    def test_eighth_graphstore_group_has_a_real_terminal(self):
+    def test_sixteenth_graphstore_group_has_a_real_terminal(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
             output = root / "evidence"
@@ -6154,13 +6154,13 @@ class DispatchControls(unittest.TestCase):
                 m.execute(root, output, str(fake), scope="graphstore", source_sha="a" * 40)
             summary = json.loads((output / "summary.json").read_text())
             self.assertTrue(summary["passed"])
-            self.assertEqual(len(summary["groups"]), 8)
+            self.assertEqual(len(summary["groups"]), 16)
             last = summary["groups"][-1]
-            self.assertEqual(last["label"], "graphstore-8")
+            self.assertEqual(last["label"], "graphstore-16")
             self.assertEqual(last["roots"], ["TestZZLast"])
             self.assertEqual(summary["groups"][0]["roots"], ["ExampleValue", "TestZulu"])
             self.assertEqual(last["skipped"], [])
-            self.assertEqual(json.loads((output / "graphstore-8-census.json").read_text())["roots"], last["roots"])
+            self.assertEqual(json.loads((output / "graphstore-16-census.json").read_text())["roots"], last["roots"])
 
     def test_macos_scope_policy_stays_distinct_from_pr_core(self):
         source = "a" * 40
@@ -6217,7 +6217,7 @@ class DispatchControls(unittest.TestCase):
         source = "a" * 40
         self.assertEqual(m.TOTAL_SECONDS, 6900)
         self.assertEqual(m.GROUP_SECONDS, 2100)
-        self.assertEqual(m.GRAPHSTORE_GROUPS, 8)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 16)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
             outputs = root / "scopes"; outputs.mkdir()
@@ -6225,11 +6225,11 @@ class DispatchControls(unittest.TestCase):
                 for scope in m.CI_SCOPES:
                     m.execute(root, outputs / scope, str(fake), scope=scope, source_sha=source)
             coverage = Counter()
-            for scope, expected in (("graphstore-odd", [1, 3, 5, 7]), ("graphstore-even", [2, 4, 6, 8])):
+            for scope, expected in (("graphstore-odd", list(range(1, 17, 2))), ("graphstore-even", list(range(2, 17, 2)))):
                 plan = json.loads((outputs / scope / "plan.json").read_text())
                 summary = json.loads((outputs / scope / "summary.json").read_text())
                 self.assertEqual(plan["selectedGroups"], expected)
-                self.assertEqual([len(g) for g in plan["groups"]], [52] * 8)
+                self.assertEqual([len(g) for g in plan["groups"]], [26] * 16)
                 self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
                 self.assertEqual([g["label"] for g in summary["groups"]], [f"graphstore-{n}" for n in expected])
                 self.assertEqual(sum(len(g["roots"]) for g in summary["groups"]), 208)
@@ -6240,7 +6240,7 @@ class DispatchControls(unittest.TestCase):
             self.assertTrue(m.verify_scopes(outputs, source)["passed"])
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             executions = [c for c in calls if c[0] == "test" and "-list" not in c]
-            self.assertEqual(sum(c[-1] == m.GRAPHSTORE for c in executions), 8)
+            self.assertEqual(sum(c[-1] == m.GRAPHSTORE for c in executions), 16)
             self.assertEqual(sum(c[-1] == m.COMMAND for c in executions), 4)
             self.assertEqual(sum(c[-1] not in (m.GRAPHSTORE, m.COMMAND) for c in executions), 1)
             for case in ("missing-half", "duplicate-half", "wrong-selection", "missing-group", "raw", "discovery", "excluded"):
@@ -6254,7 +6254,7 @@ class DispatchControls(unittest.TestCase):
                     else:
                         path = half / ("summary.json" if case == "missing-group" else "plan.json")
                         value = json.loads(path.read_text())
-                        if case == "wrong-selection": value["selectedGroups"] = [2, 4, 6, 8]
+                        if case == "wrong-selection": value["selectedGroups"] = list(range(2, 17, 2))
                         elif case == "missing-group": value["groups"].pop()
                         elif case == "excluded": value["excluded"] = []
                         path.write_text(json.dumps(value))
@@ -6292,7 +6292,7 @@ class DispatchControls(unittest.TestCase):
                 eq_spec = importlib.util.spec_from_file_location("equivalence", eq_path)
                 eq = importlib.util.module_from_spec(eq_spec); eq_spec.loader.exec_module(eq)
                 statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", m.COMMAND: "cmd/bd", "github.com/steveyegge/beads/scripts": "scripts"})
-                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"})
+                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"} | {f"TestFixture{index:03d}" for index in range(16)})
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestServer"], "skipped")
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestNew"], "passed")
                 self.assertEqual(statuses["cmd/bd"], statuses["internal/storage/graphstore"])
@@ -6360,7 +6360,7 @@ class DispatchControls(unittest.TestCase):
         # Cover more than one root per group, not just the group-count constant.
         names = ["TestRoot%03d" % index for index in range(335)] + ["TestEmbeddedOld"]
         groups = m.partition(names, m.GRAPHSTORE_GROUPS)
-        self.assertEqual(len(groups), 8)
+        self.assertEqual(len(groups), 16)
         self.assertEqual(sorted(sum(groups, [])), sorted(n for n in names if not n.startswith("TestEmbedded")))
         self.assertEqual(len(set(sum(groups, []))), 335)
         self.assertLessEqual(max(map(len, groups)) - min(map(len, groups)), 1)
@@ -6384,7 +6384,7 @@ class DispatchControls(unittest.TestCase):
             with self.subTest(count=count), self.assertRaises(RuntimeError):
                 m.partition(["TestOne"], count)
         self.assertEqual(len(m.partition(["TestOne"])), 4)
-        self.assertEqual(m.GRAPHSTORE_GROUPS, 8)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 16)
         self.assertEqual((m.GROUP_SECONDS, m.TOTAL_SECONDS), (2100, 6900))
         self.assertIn("-timeout=30m", m.FLAGS)
 

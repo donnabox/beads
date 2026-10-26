@@ -123,7 +123,11 @@ func (s *Store) newCurrentFamilyReader(ctx context.Context, tx *sql.Tx, req Curr
 	if err != nil {
 		return nil, err
 	}
-	r := &currentFamilyReader{store: s, tx: tx, catalog: catalog, request: req, allocations: map[string]currentFamilyAllocation{}, links: map[string]LinkRecord{}, feeds: map[string][]graph.Link{}}
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
+	r := &currentFamilyReader{facts: facts, store: s, tx: tx, catalog: catalog, request: req, allocations: map[string]currentFamilyAllocation{}, links: map[string]LinkRecord{}, feeds: map[string][]graph.Link{}}
 	// Share only the SQL-side byte/row charger, never the historical solver.
 	r.budget = &memoryQueryReader{tx: tx, request: MemoryRequiresRequest{MaxBytes: req.MaxBytes, Limits: req.Limits}}
 	return r, nil
@@ -153,7 +157,7 @@ func (r *currentFamilyReader) materialize(ctx context.Context, g memoryquery.Cur
 	out.OwnedLinkTypes = map[string][]string{}
 	for _, descriptor := range out.Types {
 		if descriptor.Describes() == graph.KindBead {
-			owned, err := r.store.SelectedOwnedLinkTypes(descriptor.ID())
+			owned, err := r.store.SelectedOwnedLinkTypesWithDescriptors(descriptor.ID(), out.Types)
 			if err != nil {
 				return CurrentFamilyRead{}, err
 			}
@@ -172,6 +176,7 @@ type currentFamilyAllocation struct {
 	privatePath  string
 }
 type currentFamilyReader struct {
+	facts       []graph.TypeDescriptor
 	store       *Store
 	tx          *sql.Tx
 	catalog     *selectedTypeCatalog
@@ -187,7 +192,7 @@ func (r *currentFamilyReader) matches(ctx context.Context, id string) (bool, err
 }
 func (r *currentFamilyReader) family(family typecatalog.Reference) func(context.Context, string) (bool, error) {
 	return func(_ context.Context, id string) (bool, error) {
-		d, ok := r.catalog.types.Definition(nativeFamilyReference(r.store.ScopeURL(), id))
+		d, ok := r.catalog.types.Definition(nativeFamilyReference(r.store.ScopeURL(), id, graph.KindLink, r.facts...))
 		if !ok || d.Kind != graph.KindLink {
 			return false, fmt.Errorf("%w: unknown current Link Type", ErrInvalidStore)
 		}
@@ -195,7 +200,7 @@ func (r *currentFamilyReader) family(family typecatalog.Reference) func(context.
 	}
 }
 func (r *currentFamilyReader) isConstraint(id string) bool {
-	d, ok := r.catalog.types.Definition(nativeFamilyReference(r.store.ScopeURL(), id))
+	d, ok := r.catalog.types.Definition(nativeFamilyReference(r.store.ScopeURL(), id, graph.KindBead, r.facts...))
 	return ok && d.Kind == graph.KindBead && r.catalog.types.Conforms(d.Identity, typecatalog.Reference{URI: r.catalog.projectionBinding(memorycatalog.Constraint)})
 }
 
@@ -244,7 +249,7 @@ func (r *currentFamilyReader) current(ctx context.Context, path string, selected
 		}
 		return memoryquery.CurrentNode{}, fmt.Errorf("%w: unsupported current allocation", ErrInvalidStore)
 	}
-	if !((backing == "generic" && !key.Valid && r.catalog.memoryType(typ)) || (backing == "issue" && key.Valid && key.String != "" && isConcreteNativeIssue(r.store.ScopeURL(), typ))) {
+	if !((backing == "generic" && !key.Valid && r.catalog.memoryType(typ)) || (backing == "issue" && key.Valid && key.String != "" && isConcreteNativeIssue(r.store.ScopeURL(), typ, r.facts...))) {
 		return memoryquery.CurrentNode{}, fmt.Errorf("%w: current read supports live Memory/native Issue", ErrCapabilityUnavailable)
 	}
 	n := memoryquery.CurrentNode{Path: path, TypeURL: typ, Version: version}

@@ -32,7 +32,7 @@ func TestHistoricalMemoryUpdateComposition(t *testing.T) {
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Target", Body: "target"}); err != nil {
 				t.Fatal(err)
 			}
-			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/subject", TargetPath: "beads/target", ExpectedSourceRevision: later.Memory.Revision})
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", TypeURL: s.ScopeURL() + "superseded-by", SourcePath: "beads/subject", TargetPath: "beads/target", ExpectedSourceRevision: later.Memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -157,7 +157,7 @@ func TestHistoricalMemoryUpdateCurrentTypeAndProtectedEvaluation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			current, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesMerge: subjects, Unconditional: true})
+			current, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "evaluation", PropertiesMerge: subjects, Unconditional: true})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -302,10 +302,10 @@ func TestHistoricalMemoryRecoveryProtectedBaselineAndEvaluationLifetime(t *testi
 					t.Fatal(err)
 				}
 				if previouslyEvaluation {
-					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: props(a), Unconditional: true}); err != nil {
+					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: props(a), Unconditional: true}); err != nil {
 						t.Fatal(err)
 					}
-					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "types/constraint", PropertiesJSON: json.RawMessage(`{"title":"Constraint","body":""}`), Unconditional: true}); err != nil {
+					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "constraint", PropertiesJSON: json.RawMessage(`{"title":"Constraint","body":""}`), Unconditional: true}); err != nil {
 						t.Fatal(err)
 					}
 				}
@@ -318,11 +318,11 @@ func TestHistoricalMemoryRecoveryProtectedBaselineAndEvaluationLifetime(t *testi
 				}
 				if previouslyEvaluation {
 					before := workflowState(t, ctx, s)
-					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: props(b), Unconditional: true}); err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: props(b), Unconditional: true}); err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 						t.Fatalf("recovery reset lifetime group: %v", err)
 					}
 				}
-				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: props(a), Unconditional: true}); err != nil {
+				if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: path, TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: props(a), Unconditional: true}); err != nil {
 					t.Fatalf("valid first/prior group blocked by D: %v", err)
 				}
 			}
@@ -338,7 +338,7 @@ func TestHistoricalMemoryRecoveryProtectedBaselineAndEvaluationLifetime(t *testi
 			fakeSubject := lost
 			fakeSubject.Revision = deleted.Terminal.Revision
 			before := workflowState(t, ctx, s)
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/terminal-assessment", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: props(fakeSubject)}); err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/terminal-assessment", TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: props(fakeSubject)}); err == nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("terminal admitted as live subject or wrote: %v", err)
 			}
 			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_versions WHERE path=? AND version=?`, "beads/lost-baseline", lost.Revision); err != nil {
@@ -363,7 +363,7 @@ func TestHistoricalMemoryRecoveryDoesNotResurrectOwnedLinks(t *testing.T) {
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Target"}); err != nil {
 				t.Fatal(err)
 			}
-			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/old", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/owner", TargetPath: "beads/target", ExpectedSourceRevision: owner.Revision})
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/old", TypeURL: s.ScopeURL() + "superseded-by", SourcePath: "beads/owner", TargetPath: "beads/target", ExpectedSourceRevision: owner.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}

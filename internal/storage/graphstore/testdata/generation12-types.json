@@ -1,0 +1,973 @@
+{
+  "source": "b27df1b0490bbffadadb399097a3b242d5e0677c",
+  "generation": 12,
+  "types": [
+    {
+      "name": "memory",
+      "descriptor": {
+        "conformsTo": [],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/memory",
+        "name": "memory"
+      },
+      "fingerprint": "d4cdf0bb49c50579ac47412a2a37657f68e7e28f4dd6cae923cc2f358b3ac1ae"
+    },
+    {
+      "name": "evaluation",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/memory"
+        ],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/evaluation",
+        "name": "evaluation"
+      },
+      "fingerprint": "8bb617c6a4697f81a9b53e9de72839d2fe89fcbc6eb200389c1cdb0e8b8d060d"
+    },
+    {
+      "name": "constraint",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/memory"
+        ],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/constraint",
+        "name": "constraint"
+      },
+      "fingerprint": "e04ff3bb8ab3619a8f477028aad54dc03257146543cde5eba8142393a511b884"
+    },
+    {
+      "name": "policy",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/constraint"
+        ],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/policy",
+        "name": "policy"
+      },
+      "fingerprint": "3d09e7fb5121ad6207a55f8d750ac36576f5bab5bea43eaa160b8caa2e068d3c"
+    },
+    {
+      "name": "decision",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/constraint"
+        ],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/decision",
+        "name": "decision"
+      },
+      "fingerprint": "035d241511a6d23bb64d741dd00222ac9d40ec03a76977f2b66f57ae811fa34a"
+    },
+    {
+      "name": "procedure",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/constraint"
+        ],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/procedure",
+        "name": "procedure"
+      },
+      "fingerprint": "0b40f6d202e5dd93d0ac51e1f7ce819099229c4286ea4e3f682fe6d464d6d2de"
+    },
+    {
+      "name": "requirement",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/constraint"
+        ],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/requirement",
+        "name": "requirement"
+      },
+      "fingerprint": "fa571b66beec36e8e08ec0b46a78a202da39b01f825165d598210a39f1a1bdfd"
+    },
+    {
+      "name": "scenario",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/constraint"
+        ],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/scenario",
+        "name": "scenario"
+      },
+      "fingerprint": "ad77c0971c30f7a4264bd36c60b0bd7c7b730538a82996d032d81b942b242b1e"
+    },
+    {
+      "name": "specification",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/constraint"
+        ],
+        "describes": "bead",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/specification",
+        "name": "specification"
+      },
+      "fingerprint": "c10af772dcd7156d4eee2e71c77967dcbeed71a0dab9a560fbd1e32adeba4e96"
+    },
+    {
+      "name": "references",
+      "descriptor": {
+        "conformsTo": [],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/references",
+        "name": "references",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "ddb869e853fe71b8e5c3c0d0b1d0038ef7579cfe9441485c75a3eb2102871597"
+    },
+    {
+      "name": "superseded-by",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/references"
+        ],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/superseded-by",
+        "name": "superseded-by",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "a5846a12b3195068b127dcfd0e057ea1874ff029bc4af70e5be9d11775595a5b"
+    },
+    {
+      "name": "requires",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/references"
+        ],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/requires",
+        "name": "requires",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "5946d4e1e4cc0fff0c143d549d75e7161cb909c83dcfcff3df875ae958d69a28"
+    },
+    {
+      "name": "defines",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/requires"
+        ],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/defines",
+        "name": "defines",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "9e3af16cb0f4e85c5608ef42efe6dd3a6426302dc3c4a581de8ec9f92f8ce701"
+    },
+    {
+      "name": "subject-to",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/references"
+        ],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/subject-to",
+        "name": "subject-to",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "f7eda88d8f56b6fa76f4e773a9a9703b67f36f7a7dcecb95fda8f580866ea808"
+    },
+    {
+      "name": "conformance",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/references"
+        ],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34. Abstract: cannot be used as a declared Type.",
+        "id": "https://example.test/c0/types/conformance",
+        "name": "conformance",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "f246a6d687f24487759bb94693cd065aa00dbe35f3ddba008d383190b92c2ad3"
+    },
+    {
+      "name": "addresses",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/conformance"
+        ],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/addresses",
+        "name": "addresses",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "b846da75d3802601cc7329d835569867da8d2c7f88a8ce7923b49ab06d5bdd9e"
+    },
+    {
+      "name": "satisfies",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/conformance"
+        ],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/satisfies",
+        "name": "satisfies",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "aedaafda01c2762046585ce964a738854fed58e7ccab71cad7b309373a52ac17"
+    },
+    {
+      "name": "violates",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/conformance"
+        ],
+        "describes": "link",
+        "description": "Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source gastownhall/bdp@afec9117914bd1c1fe0027c2067e4d89677e40a3:specs/types/memory/memory.md SHA256 1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34.",
+        "id": "https://example.test/c0/types/violates",
+        "name": "violates",
+        "source": {
+          "conformsTo": []
+        },
+        "target": {
+          "conformsTo": []
+        }
+      },
+      "fingerprint": "ffbbf3ee41b8cdcd05bceff4f301427135c7cc986b8089cd929cb0b9758753b4"
+    },
+    {
+      "name": "issue",
+      "descriptor": {
+        "conformsTo": [],
+        "describes": "bead",
+        "description": "Abstract native Issue family; cannot be declared directly. Concrete native classifications refine this family and inherit source-owned Dependency Links. Native Issue writers own lifecycle and retained History; these Link Types do not define a close reason or authorize an edge-plus-close operation.",
+        "id": "https://example.test/c0/types/issue",
+        "name": "Issue",
+        "ownsOutgoing": {
+          "https://example.test/c0/types/dependency": {
+            "max": 1000
+          }
+        }
+      },
+      "fingerprint": "61b479c8eed0931edbecdc6bab4c75e8341a28066f8f81c47182df139a7ee178"
+    },
+    {
+      "name": "dependency",
+      "descriptor": {
+        "conformsTo": [],
+        "describes": "link",
+        "description": "Abstract native Dependency family; cannot be declared directly. Concrete kinds refine this family and use live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; common metadata is editable; no other properties are supported. One ordered Issue pair has at most one Dependency.",
+        "id": "https://example.test/c0/types/dependency",
+        "name": "Dependency",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "b2648a83ae988bf5ed6905ce157a828dd3544f68f66ab60debd6e74eaa3125f8"
+    },
+    {
+      "name": "native-issue/627567",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/627567",
+        "name": "bug"
+      },
+      "fingerprint": "9ddd11a929a3b792a5378685663defd79d0d4eb8951077bfde2853b735fa7726"
+    },
+    {
+      "name": "native-issue/66656174757265",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/66656174757265",
+        "name": "feature"
+      },
+      "fingerprint": "92160c58fce5d5be88a5cb80aafad55e10988ea1e948bdb57b6244e4ad514387"
+    },
+    {
+      "name": "native-issue/7461736b",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/7461736b",
+        "name": "task"
+      },
+      "fingerprint": "4a99c462a86bd26661297941563aeea5503a136b047db5dab765ceb31d338be3"
+    },
+    {
+      "name": "native-issue/65706963",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/65706963",
+        "name": "epic"
+      },
+      "fingerprint": "2a5b325eb4aae20b7c0e11e4d744652135ef1f1aabecbef9e9ea5aa79f9f2a6d"
+    },
+    {
+      "name": "native-issue/63686f7265",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/63686f7265",
+        "name": "chore"
+      },
+      "fingerprint": "ae88f60f8312587881014ab38058176894243d06bbd7e62f26291f8932936ce5"
+    },
+    {
+      "name": "native-issue/6465636973696f6e",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/6465636973696f6e",
+        "name": "decision"
+      },
+      "fingerprint": "97516a0bbf81b375f45b8c55a3da6b793c125c95aaaab63dcf09480ccdd057b4"
+    },
+    {
+      "name": "native-issue/6d657373616765",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/6d657373616765",
+        "name": "message"
+      },
+      "fingerprint": "45d7804e642b9cf1db406f6ad110bff7c8c2acd75ac31001e109e99ff87a7e3f"
+    },
+    {
+      "name": "native-issue/6d6f6c6563756c65",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/6d6f6c6563756c65",
+        "name": "molecule"
+      },
+      "fingerprint": "52c0e5857993c79c84bfb9a8c5dfb3d7403b62458643f4926b1cecf6f0ea0de2"
+    },
+    {
+      "name": "native-issue/67617465",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/67617465",
+        "name": "gate"
+      },
+      "fingerprint": "9e27b62717c500dd489dd13965ea8bc6244f633de06369f778f21cd762332b3f"
+    },
+    {
+      "name": "native-issue/7370696b65",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/7370696b65",
+        "name": "spike"
+      },
+      "fingerprint": "367d6440dcdba587a952479c51aaac2653638e7d4fdf7f72e555fe080f0cec3a"
+    },
+    {
+      "name": "native-issue/73746f7279",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/73746f7279",
+        "name": "story"
+      },
+      "fingerprint": "870646ced70d2f2e2378a5c4dc3b16c5a90c7fac583bfdd36c55f32f22ccb3d4"
+    },
+    {
+      "name": "native-issue/6d696c6573746f6e65",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/6d696c6573746f6e65",
+        "name": "milestone"
+      },
+      "fingerprint": "651fbefd6ad3172f69f6da85b261a44e0435400dbdfbf94b153423d00b39ded4"
+    },
+    {
+      "name": "native-issue/6576656e74",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/issue"
+        ],
+        "describes": "bead",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-issue/6576656e74",
+        "name": "event"
+      },
+      "fingerprint": "c25b548302100a3deb77f33cd1bd2e95468f1e73b048d5ab88b095fe2c60e410"
+    },
+    {
+      "name": "native-dependency/626c6f636b73",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/626c6f636b73",
+        "name": "blocks",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "4846495bf79063f8b15d0af40f6336128cc2813147589da20d8712414ef6cdff"
+    },
+    {
+      "name": "native-dependency/706172656e742d6368696c64",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/706172656e742d6368696c64",
+        "name": "parent-child",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "e85c25857b345b1595e8a30e2b479e55259b61d1ccfc4576601fd99fa8b058ed"
+    },
+    {
+      "name": "native-dependency/636f6e646974696f6e616c2d626c6f636b73",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/636f6e646974696f6e616c2d626c6f636b73",
+        "name": "conditional-blocks",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "f3303004ae4dca5b5f897c95474992e798ffbf098c4d818c1fba911105f88413"
+    },
+    {
+      "name": "native-dependency/77616974732d666f72",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/77616974732d666f72",
+        "name": "waits-for",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "d139c79ecf31e50c4ec1543cd081d10913ba1985420549d2b04078a1c990c2f5"
+    },
+    {
+      "name": "native-dependency/72656c61746564",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/72656c61746564",
+        "name": "related",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "4f5e2aae1db6f39a7bad607d1c2e8f0966202f67f44582dc621e430e623b7a66"
+    },
+    {
+      "name": "native-dependency/646973636f76657265642d66726f6d",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/646973636f76657265642d66726f6d",
+        "name": "discovered-from",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "ddd2cf7fb7489a4510602a335d65552ad61bd79d1ac26d9a3e47590e890596ea"
+    },
+    {
+      "name": "native-dependency/7265706c6965732d746f",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/7265706c6965732d746f",
+        "name": "replies-to",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "2525eb8dbf409ce41c606fcb3680b8c2803a96a2628168c4d175a2d2041d4398"
+    },
+    {
+      "name": "native-dependency/72656c617465732d746f",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/72656c617465732d746f",
+        "name": "relates-to",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "62593a1679a81d93928f341d1b68bc8cba7521a96812142fff70951285b26a0b"
+    },
+    {
+      "name": "native-dependency/6475706c696361746573",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/6475706c696361746573",
+        "name": "duplicates",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "fa52af70a8981613bbdf7671f4fc8267c37b92756d63c42329b05b89200dac09"
+    },
+    {
+      "name": "native-dependency/73757065727365646573",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/73757065727365646573",
+        "name": "supersedes",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "f1ab4f4ce6cd6369bfee28cebd5aee0294cc88d3d2b646c733825dd9f89f5231"
+    },
+    {
+      "name": "native-dependency/617574686f7265642d6279",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/617574686f7265642d6279",
+        "name": "authored-by",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "c68d5efccc8deaa825fed7e615b3b2cb5a097b5dbb34469c8c56f58c5c56bec3"
+    },
+    {
+      "name": "native-dependency/61737369676e65642d746f",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/61737369676e65642d746f",
+        "name": "assigned-to",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "1d0991fbc46d25c8412edcec9c74cb6d8f3bed382a40e4921c2f3e23f1261795"
+    },
+    {
+      "name": "native-dependency/617070726f7665642d6279",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/617070726f7665642d6279",
+        "name": "approved-by",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "16c4da8173cc6f77b0be744a8de50e9468bfb460dd4339ff7e143072ce8a49d8"
+    },
+    {
+      "name": "native-dependency/61747465737473",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/61747465737473",
+        "name": "attests",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "03dc23e871f04ca8c24d4033e0f9bde0f8d007e4c7ed0a3ea31dfb2753eb0e13"
+    },
+    {
+      "name": "native-dependency/747261636b73",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/747261636b73",
+        "name": "tracks",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "c524b3f02ed1fa1bd2362e6550a91a9bf21fe99785c79c33bfaf072489dd225b"
+    },
+    {
+      "name": "native-dependency/756e74696c",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/756e74696c",
+        "name": "until",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "98eb9f592303b798c63e2946b9e27f5a4d12ff8c9f28e2c6d673cf4483c7121c"
+    },
+    {
+      "name": "native-dependency/6361757365642d6279",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/6361757365642d6279",
+        "name": "caused-by",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "4c4500e261af042767e865c52c4b3aa994eac31ce9c05bc2a2500fcebca01256"
+    },
+    {
+      "name": "native-dependency/76616c696461746573",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/76616c696461746573",
+        "name": "validates",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "79c5cbdde321e36371eadde5c9af643ec23656d0bdbb083d428c74aba1c7a4d2"
+    },
+    {
+      "name": "native-dependency/64656c6567617465642d66726f6d",
+      "descriptor": {
+        "conformsTo": [
+          "https://example.test/c0/types/dependency"
+        ],
+        "describes": "link",
+        "description": "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity.",
+        "id": "https://example.test/c0/types/native-dependency/64656c6567617465642d66726f6d",
+        "name": "delegated-from",
+        "source": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        },
+        "target": {
+          "conformsTo": [
+            "https://example.test/c0/types/issue"
+          ],
+          "external": "none"
+        }
+      },
+      "fingerprint": "ea38f88e50b8c28056da44674f3f5a7403bde6ed24acc1ec128aa3245b038193"
+    }
+  ]
+}

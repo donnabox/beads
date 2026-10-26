@@ -45,13 +45,13 @@ func memoryScopedRequires(t *testing.T, backend string) {
 		}
 	})
 	for _, path := range []string{"a", "b", "c", "d"} {
-		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + path, TypeURL: s.ScopeURL() + "types/constraint", Title: path}); err != nil {
+		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + path, TypeURL: s.ScopeURL() + "constraint", Title: path}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	add := func(path, typ, from, to string) {
 		t.Helper()
-		if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + path, TypeURL: s.ScopeURL() + "types/" + typ, SourcePath: "beads/" + from, TargetPath: "beads/" + to, UnconditionalSource: true, Properties: map[string]any{"body": "Witness"}, Metadata: json.RawMessage(`{"test":"keep"}`)}); err != nil {
+		if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + path, TypeURL: s.ScopeURL() + typ, SourcePath: "beads/" + from, TargetPath: "beads/" + to, UnconditionalSource: true, Properties: map[string]any{"body": "Witness"}, Metadata: json.RawMessage(`{"test":"keep"}`)}); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -127,16 +127,16 @@ func TestMemoryScopedRetainedOwner(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	old, err := s.Create(ctx, CreateRequest{Path: "beads/a", TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
+	old, err := s.Create(ctx, CreateRequest{Path: "beads/a", TypeURL: s.ScopeURL() + "constraint", Title: "a"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	target, err := s.Create(ctx, CreateRequest{Path: "beads/b", TypeURL: s.ScopeURL() + "types/policy", Title: "b", Body: "old policy"})
+	target, err := s.Create(ctx, CreateRequest{Path: "beads/b", TypeURL: s.ScopeURL() + "policy", Title: "b", Body: "old policy"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Link targets old b. Its source snapshot is retained with the actual pin.
-	linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/old", TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/a", TargetPath: "beads/b", TargetPin: EndpointPin{Revision: target.Revision}, UnconditionalSource: true})
+	linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/old", TypeURL: s.ScopeURL() + "requires", SourcePath: "beads/a", TargetPath: "beads/b", TargetPin: EndpointPin{Revision: target.Revision}, UnconditionalSource: true})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +145,7 @@ func TestMemoryScopedRetainedOwner(t *testing.T) {
 		t.Fatal(err)
 	}
 	// A newer Link must not be joined onto the historical a revision.
-	if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/new", TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/a", TargetPath: "beads/b", UnconditionalSource: true}); err != nil {
+	if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/new", TypeURL: s.ScopeURL() + "requires", SourcePath: "beads/a", TargetPath: "beads/b", UnconditionalSource: true}); err != nil {
 		t.Fatal(err)
 	}
 	r := memoryQueryRequest("beads/a")
@@ -181,7 +181,7 @@ func TestMemoryScopedCurrentIntegrityAndUnrelatedBytes(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	if _, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"}); err != nil {
+	if _, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "constraint", Title: "Rule"}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.Create(ctx, CreateRequest{Path: "beads/unrelated", Title: "Large unrelated memory", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2+1024)}); err != nil {
@@ -287,7 +287,7 @@ func TestMemoryScopedIgnoresUnrelatedIssuePopulation(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	if _, err := s.Create(setupCtx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"}); err != nil {
+	if _, err := s.Create(setupCtx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "constraint", Title: "Rule"}); err != nil {
 		t.Fatal(err)
 	}
 	items := make([]publicops.BatchCreateItem, PreviewSnapshotLimit)
@@ -344,12 +344,12 @@ func TestMemoryScopedAccumulatesSourceLocalLinks(t *testing.T) {
 		}
 	})
 	for _, p := range []string{"a", "b"} {
-		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + p, TypeURL: s.ScopeURL() + "types/constraint", Title: p}); err != nil {
+		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + p, TypeURL: s.ScopeURL() + "constraint", Title: p}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	for i, edge := range []struct{ typ, from, to string }{{"requires", "a", "b"}, {"references", "a", "b"}, {"references", "b", "a"}} {
-		if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: fmt.Sprintf("links/cost%d", i), TypeURL: s.ScopeURL() + "types/" + edge.typ, SourcePath: "beads/" + edge.from, TargetPath: "beads/" + edge.to, UnconditionalSource: true}); err != nil {
+		if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: fmt.Sprintf("links/cost%d", i), TypeURL: s.ScopeURL() + edge.typ, SourcePath: "beads/" + edge.from, TargetPath: "beads/" + edge.to, UnconditionalSource: true}); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -393,7 +393,7 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			t.Cleanup(cancel)
 			rootPath := "beads/" + field
 			targetPath := rootPath + "-target"
-			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
+			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "constraint", Title: "a"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -401,10 +401,10 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			request.MaxBytes = 32 * 1024
 			switch field {
 			case "endpoint_type", "endpoint_public_id":
-				if _, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "b"}); err != nil {
+				if _, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "constraint", Title: "b"}); err != nil {
 					t.Fatal(err)
 				}
-				if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + field, TypeURL: s.ScopeURL() + "types/requires", SourcePath: rootPath, TargetPath: targetPath, UnconditionalSource: true}); err != nil {
+				if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + field, TypeURL: s.ScopeURL() + "requires", SourcePath: rootPath, TargetPath: targetPath, UnconditionalSource: true}); err != nil {
 					t.Fatal(err)
 				}
 			case "retained_backing_key":
@@ -485,7 +485,7 @@ func TestMemoryScopedTypeBindings(t *testing.T) {
 			}
 		}
 	}
-	if !reflect.DeepEqual(family, []string{"https://memory.example/scope/types/defines", "https://memory.example/scope/types/requires"}) {
+	if !reflect.DeepEqual(family, []string{"https://memory.example/scope/defines", "https://memory.example/scope/requires"}) {
 		t.Fatal(family)
 	}
 	drifted := *catalog
@@ -518,7 +518,7 @@ func TestMemoryScopedRefusals(t *testing.T) {
 			rootPath := "beads/" + name + "-root"
 			targetPath := "beads/" + name + "-target"
 			linkPath := "links/" + name
-			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
+			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "constraint", Title: "a"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -539,11 +539,11 @@ func TestMemoryScopedRefusals(t *testing.T) {
 				}
 				expected = ErrGone
 			case "deleted-target", "unknown-target-pin":
-				target, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "b"})
+				target, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "constraint", Title: "b"})
 				if err != nil {
 					t.Fatal(err)
 				}
-				linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: linkPath, TypeURL: s.ScopeURL() + "types/requires", SourcePath: rootPath, TargetPath: targetPath, TargetPin: EndpointPin{Revision: target.Revision}, UnconditionalSource: true})
+				linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: linkPath, TypeURL: s.ScopeURL() + "requires", SourcePath: rootPath, TargetPath: targetPath, TargetPin: EndpointPin{Revision: target.Revision}, UnconditionalSource: true})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -594,12 +594,12 @@ func TestMemoryScopedAccumulatedByteBoundary(t *testing.T) {
 		}
 	})
 	for _, p := range []string{"a", "b", "c"} {
-		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + p, TypeURL: s.ScopeURL() + "types/constraint", Title: p, Body: strings.Repeat(p, 512)}); err != nil {
+		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + p, TypeURL: s.ScopeURL() + "constraint", Title: p, Body: strings.Repeat(p, 512)}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	for i, pair := range [][2]string{{"a", "b"}, {"b", "c"}} {
-		if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: fmt.Sprintf("links/chain%d", i), TypeURL: s.ScopeURL() + "types/requires", SourcePath: "beads/" + pair[0], TargetPath: "beads/" + pair[1], UnconditionalSource: true}); err != nil {
+		if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: fmt.Sprintf("links/chain%d", i), TypeURL: s.ScopeURL() + "requires", SourcePath: "beads/" + pair[0], TargetPath: "beads/" + pair[1], UnconditionalSource: true}); err != nil {
 			t.Fatal(err)
 		}
 	}

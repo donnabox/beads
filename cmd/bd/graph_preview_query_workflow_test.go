@@ -43,7 +43,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			list := func(extra ...string) graphstore.IssueListPage {
 				t.Helper()
-				args := append([]string{"list", "--format", "records-json", "--type", "types/issue"}, extra...)
+				args := append([]string{"list", "--format", "records-json", "--type", "issue"}, extra...)
 				return graphMixedResult[graphstore.IssueListPage](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
 			}
 			beads := func(extra ...string) ([]graphListedBead, bool) {
@@ -65,7 +65,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			createdWork := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work", "--priority", "1", "--labels", "release"))
 			createdGate := graphMixedResult[graphstore.IssueRecord](t, call("create", "Gate", "--graph-path", "beads/gate", "--priority", "2"))
 			nodeURLs := map[string]string{"plan": scope + "beads/plan", "context": scope + "beads/context", "work": createdWork.ID, "gate": createdGate.ID}
-			related := scope + "types/references"
+			related := scope + "references"
 			for _, edge := range [][3]string{{"plan", "context", "context"}, {"plan", "work", "work"}, {"context", "gate", "gate"}} {
 				call("link", nodeURLs[edge[0]], nodeURLs[edge[1]], "--id", "links/"+edge[2], "--type", related)
 			}
@@ -167,12 +167,12 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if !more || !reflect.DeepEqual(firstPage, allBeads[:2]) {
 				t.Fatalf("bounded mixed Bead inventory: %+v more=%t", firstPage, more)
 			}
-			memories, more := beads("--type", "types/memory", "--all")
+			memories, more := beads("--type", "memory", "--all")
 			if more || len(memories) != 2 || !graphListNewestFirst(t, memories) || !slices.Equal(sortedIDs(memories), []string{scope + "beads/context", scope + "beads/plan"}) {
 				t.Fatalf("Memory Type filter: %+v more=%t", memories, more)
 			}
 			humanList := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", "any", "--all")
-			for _, row := range []string{"beads/context [types/memory]", "beads/plan [types/memory]", strings.TrimPrefix(createdWork.ID, scope) + " [task]", strings.TrimPrefix(createdGate.ID, scope) + " [task]"} {
+			for _, row := range []string{"beads/context [memory]", "beads/plan [memory]", strings.TrimPrefix(createdWork.ID, scope) + " [task]", strings.TrimPrefix(createdGate.ID, scope) + " [task]"} {
 				if !strings.Contains(humanList, row) {
 					t.Fatalf("mixed human inventory omitted identity/Type %q: %s", row, humanList)
 				}
@@ -180,9 +180,9 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if strings.Contains(humanList, "private-memory-body") {
 				t.Fatalf("mixed human inventory leaked Memory body: %s", humanList)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/references", "--format", "records-json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/uninstalled", "--format", "records-json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/memory", "--status", "open", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "references", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "list", "--type", "types/uninstalled", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "memory", "--status", "open", "--format", "records-json")
 
 			page := list("--limit", "1", "--sort", "priority")
 			if len(page.Items) != 1 || page.Items[0].ID != createdWork.ID || !page.HasMore {

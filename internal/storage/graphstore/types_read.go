@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"sort"
-	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/workapi"
 )
 
 // ListInstalledTypes returns checked fixed/retained bindings and currently
@@ -39,13 +40,12 @@ func (s *Store) ListInstalledTypes(ctx context.Context) ([]graph.TypeDescriptor,
 // visibility does not authorize new native use. This accessor never registers
 // or edits a Type, and every record validates its concrete binding.
 func (s *Store) ReadType(ctx context.Context, path string) (graph.TypeDescriptor, error) {
-	if !strings.HasPrefix(path, "types/") {
-		return graph.TypeDescriptor{}, fmt.Errorf("%w: expected a local types/ path", graph.ErrValidation)
+	// Request acquisition budget, independent of the shared identity grammar.
+	if len(path) > 1024 {
+		return graph.TypeDescriptor{}, fmt.Errorf("%w: Type selector exceeds 1024-byte request budget", ErrLimitExceeded)
 	}
-	// These private installed paths share the canonical identifier-segment
-	// grammar of Bead paths; do not normalize or admit URL query selectors.
-	if err := validatePath("beads/" + strings.TrimPrefix(path, "types/")); err != nil {
-		return graph.TypeDescriptor{}, fmt.Errorf("%w: invalid Type path: %v", graph.ErrValidation, err)
+	if err := graph.ValidateCanonicalResourceID(path); err != nil {
+		return graph.TypeDescriptor{}, err
 	}
 	id := graph.CanonicalURL(s.options.Binding.ScopeURL, path)
 	var descriptor graph.TypeDescriptor
@@ -72,7 +72,7 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 	var name string
 	var expected graph.TypeDescriptor
 	for _, definition := range previewTypeDefinitions() {
-		if id != s.ScopeURL()+"types/"+definition.name {
+		if id != s.ScopeURL()+definition.name {
 			continue
 		}
 		candidate, err := definition.build(s.ScopeURL())
@@ -86,17 +86,14 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 		break
 	}
 	if name == "" {
-		if isConcreteNativeIssue(s.ScopeURL(), id) || isConcreteNativeDependency(s.ScopeURL(), id) {
-			descriptors, err := s.selectedDescriptorsInTx(ctx, tx)
-			if err != nil {
-				return graph.TypeDescriptor{}, err
+		descriptors, err := s.selectedDescriptorsInTx(ctx, tx)
+		if err != nil {
+			return graph.TypeDescriptor{}, err
+		}
+		for _, d := range descriptors {
+			if d.ID() == id {
+				return d, nil
 			}
-			for _, d := range descriptors {
-				if d.ID() == id {
-					return d, nil
-				}
-			}
-			return graph.TypeDescriptor{}, ErrNotFound
 		}
 		return graph.TypeDescriptor{}, ErrNotFound
 	}
@@ -118,3 +115,87 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 // ScopeURL returns the workspace-bound canonical identity, not a transport or
 // listener address. Every read verifies this binding against persisted state.
 func (s *Store) ScopeURL() string { return s.options.Binding.ScopeURL }
+
+// ResourceProjectionContext contains only the immutable declaration and effective
+// ownership slots captured with one authoritative Resource. It is adapter context,
+// not stored record content or a public wire field.
+type ResourceProjectionContext struct {
+	Descriptor     graph.TypeDescriptor
+	OwnedLinkTypes []string
+}
+
+// ReadForProjection captures one current Resource and its projection context in one transaction.
+func (s *Store) ReadForProjection(ctx context.Context, path string) (any, ResourceProjectionContext, error) {
+	var projection ResourceProjectionContext
+	record, err := s.readWithProjectionContext(ctx, path, &projection)
+	if err != nil {
+		return nil, ResourceProjectionContext{}, err
+	}
+	return record, projection, nil
+}
+
+// ReadSelectedForProjection resolves a public ID and captures the same snapshot context.
+func (s *Store) ReadSelectedForProjection(ctx context.Context, path, localID string) (string, any, ResourceProjectionContext, error) {
+	var projection ResourceProjectionContext
+	selected, record, _, err := s.readResourceSelected(ctx, path, localID, workapi.DetailOptions{}, false, &projection)
+	if err != nil {
+		return "", nil, ResourceProjectionContext{}, err
+	}
+	return selected, record, projection, nil
+}
+
+// ReadVersionForProjection captures exact retained content without current owned state.
+func (s *Store) ReadVersionForProjection(ctx context.Context, path, revision string) (any, ResourceProjectionContext, error) {
+	var projection ResourceProjectionContext
+	record, err := s.readVersionWithProjectionContext(ctx, path, revision, &projection)
+	if err != nil {
+		return nil, ResourceProjectionContext{}, err
+	}
+	return record, projection, nil
+}
+
+func (s *Store) captureResourceProjectionInTx(ctx context.Context, tx *sql.Tx, record any, out *ResourceProjectionContext) error {
+	if out == nil {
+		return nil
+	}
+	var typ string
+	var owned []json.RawMessage
+	switch value := record.(type) {
+	case Record:
+		typ, owned = value.Type, value.Owned
+	case IssueRecord:
+		typ, owned = value.Type, value.Owned
+	case LinkRecord:
+		return nil
+	default:
+		return fmt.Errorf("%w: unsupported Resource projection context", ErrInvalidStore)
+	}
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return err
+	}
+	var descriptor graph.TypeDescriptor
+	for _, fact := range facts {
+		if fact.ID() == typ {
+			descriptor = fact
+			break
+		}
+	}
+	if descriptor.ID() != typ || descriptor.Describes() != graph.KindBead {
+		return fmt.Errorf("%w: captured Bead Type absent from checked inventory", ErrInvalidStore)
+	}
+	observed := make([]string, 0, len(owned))
+	for _, raw := range owned {
+		var link LinkRecord
+		if err := json.Unmarshal(raw, &link); err != nil {
+			return fmt.Errorf("%w: malformed captured ownership", ErrInvalidStore)
+		}
+		observed = append(observed, link.Type)
+	}
+	slots, err := s.SelectedOwnedLinkTypesWithDescriptors(typ, facts, observed...)
+	if err != nil {
+		return err
+	}
+	*out = ResourceProjectionContext{Descriptor: descriptor, OwnedLinkTypes: slots}
+	return nil
+}

@@ -76,22 +76,21 @@ An explicit `--title` is used as supplied. It can also read a body from
 an unused ID creates and an existing Memory updates in place, matching
 ordinary `bd remember --key` behavior. `--create-only` with `--id` refuses
 any previously allocated ID, including one that has been deleted. With
-`--create-only`, `--type types/NAME` chooses an installed Memory Type or
+`--create-only`, `--type NAME` chooses an installed Memory Type or
 refinement; omission creates plain Memory. An existing Memory's Type is
-preserved by `remember`; use `bd update ID --type types/NAME` to retype it.
+preserved by `remember`; use `bd update ID --type NAME` to retype it.
 `--status TEXT` supplies a nonblank status property on creation.
 
 ```sh
-bd remember 'Code flow policy: changes land on integration.' --id policy \
+bd remember 'Code flow policy: changes land on integration.' --id policy-note \
   --metadata '{"team":"docs"}'
 bd remember 'Keep review branches until their changes land.' --title 'Review branch policy'
 ```
 
 `bd create` creates an Issue by default. `--type task` or `--type bug`
 selects an existing Issue classification. To select a nominal Bead Type,
-pass its printed `types/NAME` selector or full local Type URL to `--type`.
-This distinguishes a Memory Decision from an Issue classification named
-`decision`. `--properties JSON` supplies the selected Type's properties.
+pass its printed `NAME` selector or full local Type URL to `--type`.
+`--properties JSON` supplies the selected Type's properties.
 The [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory) gives
 property, retyping and refusal details for the Preview 3 candidate.
 
@@ -143,7 +142,7 @@ bd create 'Move the release branch' --id work --type task --status open
 bd create 'Run release checks' --deps blocked-by:work
 bd create 'Release gate' --id gate
 bd create 'Child release task' --parent work --deps blocked-by:gate
-bd create --type types/memory \
+bd create --type memory \
   --properties '{"title":"Code flow policy","body":"Keep the old policy as a versioned Memory."}'
 ```
 
@@ -167,8 +166,8 @@ bd create 'Move the release branch' --id work --silent
 ```
 
 Use `bd types` in the selected workspace to discover its installed
-`types/NAME` IDs. Use the printed `types/NAME` selector or full local Type URL with `--type`;
-bare names retain their existing Issue or Dependency classification meaning. Do not assume a
+`NAME` IDs. Use the printed `NAME` selector or full local Type URL with `--type`;
+selected Memory names and native classifications use the same exact Type identity in create and collection reads. Do not assume a
 Type shown in another workspace is installed in this one.
 
 ## Find and read Beads
@@ -179,18 +178,18 @@ Type shown in another workspace is installed in this one.
 | `bd recall ID` | Print **one** Memory's body followed by a newline, as ordinary `bd recall` does. It does not enumerate Memories. |
 | `bd show ID --json` | A current Issue uses the ordinary `bd show` JSON detail array, including labels, dependency/comment counts, Scope-relative Bead IDs that round-trip to graph commands, and the graph revision token. Memory and Link still use the preview complete-record envelope. |
 | `bd show ID --format graph-json` | Read the preview complete-record envelope explicitly, including for an Issue or an exact `--revision` read. This is a preview record, not a BDP Resource representation. |
-| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--type types/NAME` to narrow by exact declared nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
+| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--type NAME` to select that Type and its refinements, or `--exact-type NAME` for only that declaration. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
 | `bd statuses [--json]` | List built-in Issue statuses and any custom statuses resolved for this workspace, using the ordinary command's human and JSON shapes. This is Issue status discovery, not Bead Type discovery. |
 
 ```sh
 bd memories --all
 bd memories 'code flow' --details
-bd recall policy
+bd recall policy-note
 bd show work --json
 bd show work --format graph-json
 bd list --all
 bd list --json --all
-bd list --format records-json --type types/memory --all
+bd list --format records-json --type memory --all
 bd statuses --json
 ```
 
@@ -216,7 +215,7 @@ The Issue filters are `--status` (or `--state`), `--type`, `--id`, `--title`,
 `--pinned`, `--no-pinned`, `--parent`, `--no-parent`, `--ready`, `--due-before`, `--due-after`, `--overdue`,
 `--sort`, `--reverse`, and `--long`. Supplying an Issue filter or `--long` switches `bd list` to the existing Issue query,
 even when an empty value such as `--assignee=` adds no restriction.
-`--type types/NAME` or a full Type URL instead selects a nominal Type;
+`--type NAME` or a full Type URL instead selects a nominal Type;
 a bare `--type task` remains an Issue classification filter. A configured `directory.labels` entry that matches the current
 directory switches it too. That query lists Issues only, never Memories. It
 omits closed and pinned Issues unless `--all` or a filter selects them. A line
@@ -344,17 +343,17 @@ do not produce that default-filter notice. Direction and depth still apply
 when selecting all Types.
 
 ```sh
-bd graph work --link-type References --direction out --depth 3
-bd graph work --exact-link-type References --direction out --depth 3
+bd graph work --link-type references --direction out --depth 3
+bd graph work --exact-link-type references --direction out --depth 3
 bd graph work --link-type any
-bd graph policy --link-type Requires --dot > requirements.dot
-bd graph --all --link-type References --html > graph.html
+bd graph policy-note --link-type requires --dot > requirements.dot
+bd graph --all --link-type references --html > graph.html
 ```
 
 With `--all`, only the sole Dependency-family selector (implicit or explicit
-`--link-type Dependency`) retains open native Issues, including isolates.
+`--link-type dependency`) retains open native Issues, including isolates.
 Every other selection uses matching Link endpoint components and excludes
-unrelated isolates; this includes `--exact-link-type Dependency`, which can
+unrelated isolates; this includes `--exact-link-type dependency`, which can
 include closed Issues when they are matching endpoints.
 Explicit depth/direction with `--all` refuses. A named root
 remains without matching Links. Default text and `--compact` both render a
@@ -456,8 +455,8 @@ to either spelling to reject a stale edit. The nested `bd memory remember`
 spelling has the same behavior.
 
 ```sh
-bd remember 'Changes now land on the release branch.' --id policy
-bd remember --update policy --title 'Current code flow policy'
+bd remember 'Changes now land on the release branch.' --id policy-note
+bd remember --update policy-note --title 'Current code flow policy'
 ```
 
 `--properties JSON` initializes writable Type properties on `bd create` and
@@ -755,24 +754,26 @@ snapshots after an accepted change.
 ## Create, inspect, edit and remove Links
 
 Use `bd types` to find installed Link Types. Select a concrete nominal Type
-with `--type types/NAME` or its full local Type URL. `References` can connect
+with `--type NAME` or its full local Type URL. `References` can connect
 a Memory to a Memory or Issue; its optional common properties are `title`,
-`body` and `status`. An explicit `--id ID` is shorthand for `--id links/ID`;
-omit it to allocate an ID. Type and endpoint identities remain fixed during
+`body` and `status`. An explicit `--id ID` preserves the whole local ID;
+`--id links/ID` explicitly selects a different, segmented ID. Omit the flag to
+allocate an ID. Type and endpoint identities remain fixed during
 a properties edit.
 
 ```sh
-bd link policy work --type types/references \
-  --id policy-work --properties '{"body":"work follows this policy"}' \
+bd link policy-note work --type references \
+  --id links/policy-work --properties '{"body":"work follows this policy"}' \
   --metadata '{"origin":"manual"}'
-bd link list --incident-to policy
+bd link list --incident-to policy-note
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"body":"reviewed policy"}'
 bd link delete --force links/policy-work
 ```
 
-`bd link list --incident-to ID` lists current incident Links with Type first and in-Scope IDs
-relative to the Scope URL; JSON retains canonical URLs. `bd link SOURCE TARGET`
+`bd link list --incident-to ID` lists current incident Links with the Link ID
+first, followed by Type. In-Scope IDs are relative to the Scope URL; JSON
+retains canonical URLs. `bd link SOURCE TARGET`
 without `--type` is an Issue dependency shorthand. Direct References Links
 are unowned. Other selected families have source ownership: Memory owns
 Subject To and Superseded By, Constraint owns Requires, and Evaluation owns
@@ -798,7 +799,7 @@ local spellings. `bd link delete` selects a Link by its Link ID.
 On Link collection reads, `bd link list --type KIND` and
 `bd link count --type KIND` select that exact native kind, including custom
 kinds and the literal `depends-on` or `blocked-by` spellings. Use
-`--type types/NAME` for an installed nominal Link Type; canonical collection
+`--type NAME` for an installed nominal Link Type; canonical collection
 output uses the same family selector without rewriting native kind aliases.
 
 Link updates and removal accept the current Link by default; `--if-revision
@@ -874,10 +875,10 @@ unchanged.
 For everyday exact reads, use the stable store-local revision number:
 
 ```sh
-bd show policy@4
-bd show policy@current
-bd link create notes policy@4 --type types/references
-bd show policy@=84fbc901cc4c906468f97a65b6263b32
+bd show policy-note@4
+bd show policy-note@current
+bd link create notes policy-note@4 --type references
+bd show policy-note@=84fbc901cc4c906468f97a65b6263b32
 ```
 
 `ID@N` resolves a positive decimal local ordinal to the full retained token.
@@ -917,11 +918,11 @@ their chronological order.
 
 ```sh
 bd memories 'code flow' --details
-bd recall policy --revision =SAVED_TOKEN
-bd show policy --revision =SAVED_TOKEN --json
-bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --json
-bd versions policy
-bd history policy  # same listing in a graph workspace
+bd recall policy-note --revision =SAVED_TOKEN
+bd show policy-note --revision =SAVED_TOKEN --json
+bd compare policy-note --from FIRST_TOKEN --to SECOND_TOKEN --json
+bd versions policy-note
+bd history policy-note  # same listing in a graph workspace
 ```
 
 | Flag | Current use |
@@ -989,10 +990,10 @@ JSON; the command refuses the ambiguous contract choice.
 | `compare`, `link compare` | `default` (detail), `detail`, `json` |
 
 ```bash
-bd versions policy --output-format json
+bd versions policy-note --output-format json
 bd link versions links/related --output-format table
-bd versions policy --output-format json --include /change_at
-bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --output-format json
+bd versions policy-note --output-format json --include /change_at
+bd compare policy-note --from FIRST_TOKEN --to SECOND_TOKEN --output-format json
 bd link compare links/related --from FIRST_TOKEN --to SECOND_TOKEN \
   --output-format json --omit envelope
 ```
@@ -1025,12 +1026,12 @@ has started do not append a second document.
 ## Discover installed Types
 
 `bd types` lists the selected workspace's public Bead and Link Types.
-Use a printed `types/NAME` selector or full local Type URL with `--type`.
+Use a printed `NAME` selector or full local Type URL with `--type`.
 Bare Issue and Dependency classifications keep their existing meaning.
 
-The Preview 3 catalog includes nine Memory Bead Types: Memory, Constraint,
-Policy, Decision, Procedure, Requirement, Scenario, Specification and
-Evaluation. Its nine Link Types are References, Superseded By, Requires,
+The Preview 3 catalog includes seven Memory Bead Types: Memory, Constraint,
+Policy, Requirement, Scenario, Specification and Evaluation. Native Issue
+`decision` remains available; Memory Decision and Procedure are removed. Its nine Link Types are References, Superseded By, Requires,
 Defines, Subject To, Conformance, Addresses, Satisfies and Violates. Native
 Issue and Dependency remain available. Conformance is abstract: it appears
 in inventory and is a valid exact Type-filter selector, but direct creation
@@ -1050,12 +1051,11 @@ bd types --json
 
 All three formats use the same public visibility rules. `--details` may show
 a partial description; it does not promise a complete HTTP Type descriptor.
-In the default text, Bead Types and Link Types list their installed Type IDs
-(`types/issue`, `types/dependency`, and other `types/NAME` values). Separate
-Issue classifications (`task`, `bug`, and configured names) and Dependency
-kinds (`blocks`, `parent-child`, and others) remain visible under their own
-headings. Those classification names are properties of native Types, not
-additional Type IDs. `--details` and `--json` describe installed Types.
+In the default text, Bead Types and Link Types list their available Scope-local
+Type IDs, such as `memory`, `task`, `references` and `blocks`. Concrete native
+classifications appear under those same Resource-kind headings. Each has its
+own Type ID and retains its native classification property. Configured unused Issue Types are
+visible without installing a binding; native first use persists the checked binding. `--details` and `--json` describe installed Types.
 The Preview 3 `--json` shape has no Preview 3-to-Preview 4 compatibility
 guarantee. See the [Memory Type CLI facade](/reference/bdp/cli/types/memory/memory)
 for the exact typedef source and candidate qualification boundary. Ordinary

@@ -12,7 +12,6 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
-	"github.com/steveyegge/beads/internal/types"
 )
 
 var (
@@ -230,7 +229,7 @@ func (s *Store) validateLinkType(typ string, allowEmpty bool) error {
 	if (allowEmpty && typ == "") || IsInformationalTypeURL(s.ScopeURL(), typ) || typ == DependencyTypeURL(s.options.Binding.ScopeURL) {
 		return nil
 	}
-	if isNativeRelationshipDependencyType(s.ScopeURL(), typ) {
+	if nativeDependencyTypeCandidate(s.ScopeURL(), typ) {
 		return nil // The transaction also checks the installed Type.
 	}
 	return fmt.Errorf("%w: Link Type is not installed in this preview", storage.ErrValidation)
@@ -364,7 +363,11 @@ func (s *Store) unlinkInTx(ctx context.Context, tx *sql.Tx, request LinkDeleteRe
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	if isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) {
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	if isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type, facts...) {
 		return s.unlinkDependencyInTx(ctx, tx, path, link, request)
 	}
 	if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
@@ -386,7 +389,7 @@ func (s *Store) unlinkInTx(ctx context.Context, tx *sql.Tx, request LinkDeleteRe
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	owned, err := s.ownsLink(source, link.Type)
+	owned, err := s.ownsLink(ctx, tx, source, link.Type)
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
@@ -505,16 +508,37 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 	if invalidTypes != 0 {
 		return fmt.Errorf("%w: Link Type differs from its authority", ErrInvalidStore)
 	}
-	// The one Link Type cannot identify a native kind. Reject malformed native
-	// kinds here; currentLinkInTx also checks this before projecting dep_type.
-	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key
- WHERE c.backing='dependency' AND c.allocation_state='live' AND (d.type='' OR OCTET_LENGTH(d.type)>? OR c.type_url<>CONCAT(?,LOWER(HEX(d.type))))`,
-		types.MaxDependencyTypeLen, s.ScopeURL()+"types/native-dependency/").Scan(&invalidTypes); err != nil {
+	// Validate the authoritative native column through the same Go constructor
+	// used by writers. SQL does not duplicate canonical percent/Unicode encoding.
+	// Repeated edges share a checked immutable binding. Transfer distinct binary
+	// pairs only, bounded by that inventory, not by the global edge population.
+	rows, err := tx.QueryContext(ctx, `SELECT DISTINCT CAST(d.type AS BINARY),CAST(CASE WHEN OCTET_LENGTH(c.type_url)<=? THEN c.type_url ELSE NULL END AS BINARY) FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key WHERE c.backing='dependency' AND c.allocation_state='live' LIMIT ?`, len(s.ScopeURL())+512, len(dependencyTypes)+1)
+	if err != nil {
 		return err
 	}
-	if invalidTypes != 0 {
-		return fmt.Errorf("%w: invalid native Dependency kind", ErrInvalidStore)
+	var pairs, acquired int
+	for rows.Next() {
+		pairs++
+		if pairs > len(dependencyTypes) {
+			return errors.Join(fmt.Errorf("%w: native Type mapping exceeds checked binding inventory", ErrInvalidStore), rows.Close())
+		}
+		var native, stored string
+		if err := rows.Scan(&native, &stored); err != nil {
+			return errors.Join(fmt.Errorf("%w: native Dependency type acquisition: %v", ErrInvalidStore, err), rows.Close())
+		}
+		acquired += 256 + len(native) + len(stored)
+		if acquired > PreviewCurrentReadByteLimit {
+			return errors.Join(ErrLimitExceeded, rows.Close())
+		}
+		expected, err := NativeDependencyTypeURL(s.ScopeURL(), native)
+		if err != nil || expected != stored {
+			return errors.Join(fmt.Errorf("%w: invalid native Dependency kind", ErrInvalidStore), rows.Close())
+		}
 	}
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		return err
+	}
+
 	for _, query := range []string{
 		`SELECT COUNT(*) FROM graph_preview_catalog c LEFT JOIN graph_preview_links l ON l.path=c.path LEFT JOIN dependencies d ON d.id=c.backing_key
    WHERE c.resource_kind='link' AND c.allocation_state='live' AND

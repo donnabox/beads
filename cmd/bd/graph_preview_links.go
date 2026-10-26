@@ -115,38 +115,44 @@ func graphPreviewNominalTypeFlagChanged(cmd *cobra.Command) bool {
 		return false
 	}
 	selector, _ := cmd.Flags().GetString("type")
-	return graphPreviewNominalSelector(selector)
-}
-
-func graphPreviewNominalSelector(selector string) bool {
-	// Native Issue/Dependency classifications keep their bare names. Nominal
-	// Types use types/NAME or a full URI, including the reserved-name refusal.
+	// Ordinary workspace admission retains its explicit graph-operand boundary.
+	// Bare and other custom native classifications belong to the native domain
+	// validator, even if they coincide with a fresh graph catalog name. This
+	// check does not resolve or strip a complete Type identity.
 	return strings.HasPrefix(selector, "types/") || strings.Contains(selector, "://") ||
 		graphPreviewReservedTypeSelector(selector)
 }
 
-func graphPreviewTypeURL(scope, selector string) (string, error) {
-	if graphPreviewReservedTypeSelector(selector) {
-		return "", fmt.Errorf("intrinsic Type is not a public selector")
+func graphPreviewNominalSelector(selector string) bool {
+	// Syntax and selected names identify a nominal operand. Unknown bare native
+	// labels remain prospective classifications, authorized by the native writer.
+	if strings.Contains(selector, "://") {
+		return true
 	}
-	if selector != "" && !strings.Contains(selector, "/") {
-		selector = scope + "types/" + selector
-	} else if strings.HasPrefix(selector, "types/") {
-		selector = scope + selector
+	if strings.ContainsAny(selector, "/%") && graph.ValidateCanonicalResourceID(selector) == nil {
+		return true
 	}
-	prefix := scope + "types/"
-	if !strings.HasPrefix(selector, prefix) {
-		return "", fmt.Errorf("Type must be NAME, types/NAME, or a canonical Type URL in this Scope")
-	}
-	for _, segment := range strings.Split(strings.TrimPrefix(selector, prefix), "/") {
-		if err := graph.ValidateCanonicalSegment(segment); err != nil {
-			return "", fmt.Errorf("invalid local Type path: %w", err)
+	for _, name := range graphstore.FreshTypeNames() {
+		if selector == name {
+			return true
 		}
 	}
-	if err := graph.ValidateTypeURL(selector); err != nil {
-		return "", err
+	return graphPreviewReservedTypeSelector(selector)
+}
+
+func graphPreviewTypeURL(scope, selector string) (string, error) {
+	if strings.Contains(selector, "://") {
+		if err := graph.ValidateTypeURL(selector); err != nil {
+			return "", err
+		}
+		if strings.HasPrefix(selector, scope) {
+			if _, err := graph.ScopeLocalPublicResourceID(scope, selector); err != nil {
+				return "", err
+			}
+		}
+		return selector, nil
 	}
-	return selector, nil
+	return graph.CanonicalPublicResourceURL(scope, selector)
 }
 
 func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
@@ -163,7 +169,7 @@ func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
 			if !types.DependencyType(selector).IsValid() || !utf8.ValidString(selector) {
 				return "", graphFailure("invalid_selector", fmt.Sprintf("invalid dependency type %q: must be non-empty UTF-8 and at most %d bytes", selector, types.MaxDependencyTypeLen), 2)
 			}
-			typeURL, err := graphstore.NativeDependencyTypeURL(scope, selector)
+			typeURL, err := graphPreviewCollectionTypeURL(scope, selector, true)
 			if err != nil {
 				return "", graphFailure("invalid_selector", err.Error(), 2)
 			}
@@ -174,7 +180,7 @@ func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
 		}
 		return "", graphFailure("capability_unavailable", "Link type is not registered in this preview", 5)
 	}
-	typ, err := graphPreviewTypeURL(scope, selector)
+	typ, err := graphPreviewCollectionTypeURL(scope, selector, true)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}

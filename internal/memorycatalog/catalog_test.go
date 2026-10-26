@@ -13,7 +13,7 @@ import (
 )
 
 // Literal expectations come from the pinned publication, not production helpers.
-var beads = []m.Symbol{m.Memory, m.Evaluation, m.Constraint, m.Policy, m.Decision, m.Procedure, m.Requirement, m.Scenario, m.Specification}
+var beads = []m.Symbol{m.Memory, m.Evaluation, m.Constraint, m.Policy, m.Requirement, m.Scenario, m.Specification}
 var links = []m.Symbol{m.References, m.SupersededBy, m.Requires, m.Defines, m.SubjectTo, m.Conformance, m.Addresses, m.Satisfies, m.Violates}
 
 func inputs() m.Inputs {
@@ -58,7 +58,7 @@ func property(t *testing.T, d m.Definition, name string) m.Property {
 
 func TestSelectedSourceAndInventory(t *testing.T) {
 	p := project(t, inputs())
-	want := m.Source{Repository: "gastownhall/bdp", Commit: "afec9117914bd1c1fe0027c2067e4d89677e40a3", Path: "specs/types/memory/memory.md", SHA256: "1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34", Bytes: 106334}
+	want := m.Source{Repository: "gastownhall/bdp", Commit: "94f699b947382e3a52385b1895a941575fcc08cb", Path: "specs/types/memory/memory.md", SHA256: "60c319aac0e42ea9825d6b383a6d09b7d789023fded675e647fd657f37961cb0", Bytes: 103192}
 	if p.Source() != want || m.SelectedSource() != want {
 		t.Fatal("publication pin/digest changed")
 	}
@@ -76,10 +76,10 @@ func TestSelectedSourceAndInventory(t *testing.T) {
 	if !reflect.DeepEqual(gotBeads, beads) || !reflect.DeepEqual(gotLinks, links) {
 		t.Fatalf("inventory %v / %v", gotBeads, gotLinks)
 	}
-	if len(gotBeads) != 9 || len(gotLinks) != 9 || len(p.Definitions()) != 18 {
-		t.Fatal("selected source must bind exactly nine Bead and nine Link definitions")
+	if len(gotBeads) != 7 || len(gotLinks) != 9 || len(p.Definitions()) != 16 {
+		t.Fatal("selected source must bind exactly seven Bead and nine Link definitions")
 	}
-	for _, absent := range []m.Symbol{"type", "beadtype", "linktype", "conformsto", "refines", "implementation", "proposal", "work-product", "observation", "lesson"} {
+	for _, absent := range []m.Symbol{"type", "beadtype", "linktype", "conformsto", "refines", "decision", "procedure", "implementation", "proposal", "work-product", "observation", "lesson"} {
 		if _, ok := p.Definition(absent); ok {
 			t.Fatalf("unselected %s added", absent)
 		}
@@ -137,7 +137,7 @@ func TestBindingsRequireExplicitDistinctInputs(t *testing.T) {
 func TestSelectedParentsAndProperties(t *testing.T) {
 	i := inputs()
 	p := project(t, i)
-	parents := map[m.Symbol]m.Symbol{m.Evaluation: m.Memory, m.Constraint: m.Memory, m.Policy: m.Constraint, m.Decision: m.Constraint, m.Procedure: m.Constraint, m.Requirement: m.Constraint, m.Scenario: m.Constraint, m.Specification: m.Constraint, m.SupersededBy: m.References, m.Requires: m.References, m.Defines: m.Requires, m.SubjectTo: m.References, m.Conformance: m.References, m.Addresses: m.Conformance, m.Satisfies: m.Conformance, m.Violates: m.Conformance}
+	parents := map[m.Symbol]m.Symbol{m.Evaluation: m.Memory, m.Constraint: m.Memory, m.Policy: m.Constraint, m.Requirement: m.Constraint, m.Scenario: m.Constraint, m.Specification: m.Constraint, m.SupersededBy: m.References, m.Requires: m.References, m.Defines: m.Requires, m.SubjectTo: m.References, m.Conformance: m.References, m.Addresses: m.Conformance, m.Satisfies: m.Conformance, m.Violates: m.Conformance}
 	for _, d := range p.Definitions() {
 		ancestor, hasParent := parents[d.Symbol]
 		if !hasParent {
@@ -192,7 +192,7 @@ func TestSelectedParentsAndProperties(t *testing.T) {
 			t.Fatal("Link body boundary differs from selected optional nonblank contract")
 		}
 	}
-	for _, symbol := range []m.Symbol{m.Policy, m.Decision} {
+	for _, symbol := range []m.Symbol{m.Policy} {
 		authority := property(t, definition(t, p, symbol), "authority")
 		if authority.Shape != "reference" || authority.Required || len(authority.AdditionalChecks) == 0 {
 			t.Fatal("authority shape lacks shared-reference requirement")
@@ -436,7 +436,7 @@ func TestCorrelatedPairsAndAnyBeadProjection(t *testing.T) {
 		{"evaluation assessment", m.Satisfies, i.Bindings[m.Evaluation].Type, i.Bindings[m.Requirement].Type, true},
 		{"unrelated assessment refused", m.Satisfies, other, i.Bindings[m.Requirement].Type, false},
 		{"subject direct breach refused", m.Violates, i.Issue, i.Bindings[m.Policy].Type, false},
-		{"Requires constraint", m.Requires, i.Bindings[m.Policy].Type, i.Bindings[m.Procedure].Type, true},
+		{"Requires constraint", m.Requires, i.Bindings[m.Policy].Type, i.Bindings[m.Scenario].Type, true},
 		{"Requires plain Memory", m.Requires, i.Bindings[m.Memory].Type, i.Bindings[m.Policy].Type, false},
 		{"Defines unrelated", m.Defines, other, i.Bindings[m.Policy].Type, false},
 		{"replacement across subtypes", m.SupersededBy, i.Bindings[m.Policy].Type, i.Bindings[m.Memory].Type, true},

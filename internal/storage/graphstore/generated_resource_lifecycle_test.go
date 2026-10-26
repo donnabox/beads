@@ -31,7 +31,7 @@ func TestGeneratedResourceIDsAreCanonicalShortAndRooted(t *testing.T) {
 			if onePath != "beads/"+one.PublicID || twoPath != "beads/"+two.PublicID {
 				t.Fatalf("locator not derived from accepted ID: %q %q", onePath, twoPath)
 			}
-			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{IDRoot: "notes/refs", SourcePath: onePath, TargetPath: twoPath, TypeURL: s.ScopeURL() + "types/references", UnconditionalSource: true})
+			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{IDRoot: "notes/refs", SourcePath: onePath, TargetPath: twoPath, TypeURL: s.ScopeURL() + "references", UnconditionalSource: true})
 			if err != nil {
 				t.Fatal(err)
 			}

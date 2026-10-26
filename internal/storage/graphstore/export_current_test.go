@@ -30,7 +30,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if err := exportSetPrefix(ctx, s, "web-app-"); err != nil {
 				t.Fatal(err)
 			}
-			_, err = s.Create(ctx, CreateRequest{Path: "beads/plan", TypeURL: s.ScopeURL() + "types/constraint", Title: " Plan 記憶 ", Body: "\t🌱\n", Metadata: json.RawMessage(`{"source":"disposable"}`)})
+			_, err = s.Create(ctx, CreateRequest{Path: "beads/plan", TypeURL: s.ScopeURL() + "constraint", Title: " Plan 記憶 ", Body: "\t🌱\n", Metadata: json.RawMessage(`{"source":"disposable"}`)})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -45,7 +45,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if _, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "test-author"}); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/work", TargetPath: "beads/plan", UnconditionalSource: true}); err != nil {
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/work", TargetPath: "beads/plan", UnconditionalSource: true}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/issue-context", SourcePath: "beads/prereq", TargetPath: "beads/plan"}); err != nil {
@@ -378,19 +378,28 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				expectedNative[strings.TrimPrefix(id, s.ScopeURL()+"types/")] = true
+				expectedNative[strings.TrimPrefix(id, s.ScopeURL())] = true
 			}
 			for _, kind := range types.WellKnownDependencyTypes() {
 				id, err := NativeDependencyTypeURL(s.ScopeURL(), string(kind))
 				if err != nil {
 					t.Fatal(err)
 				}
-				expectedNative[strings.TrimPrefix(id, s.ScopeURL()+"types/")] = true
+				expectedNative[strings.TrimPrefix(id, s.ScopeURL())] = true
 			}
 			if len(expectedNative) != 32 {
 				t.Fatalf("fixed native catalog = %d, want32", len(expectedNative))
 			}
-			rows, err := s.db.QueryContext(ctx, `SELECT name,OCTET_LENGTH(descriptor),OCTET_LENGTH(fingerprint) FROM graph_preview_types WHERE name LIKE 'native-issue/%' OR name LIKE 'native-dependency/%' ORDER BY name LIMIT 33`)
+			var totalTypes int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&totalTypes); err != nil || totalTypes != len(previewTypeDefinitions()) {
+				t.Fatalf("baseline Type rows = %d, want %d: %v", totalTypes, len(previewTypeDefinitions()), err)
+			}
+			nativeNames := make([]string, 0, len(expectedNative))
+			for name := range expectedNative {
+				nativeNames = append(nativeNames, name)
+			}
+			placeholders, args := informationalTypeSQL(nativeNames)
+			rows, err := s.db.QueryContext(ctx, `SELECT name,OCTET_LENGTH(descriptor),OCTET_LENGTH(fingerprint) FROM graph_preview_types WHERE name IN (`+placeholders+`) ORDER BY name LIMIT 33`, args...)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -402,7 +411,7 @@ func TestExportCurrentSnapshotAcquisitionBounds(t *testing.T) {
 					t.Fatal(err)
 				}
 				if !expectedNative[name] {
-					t.Fatalf("unexpected/duplicate native catalog Type %q", name)
+					t.Fatalf("duplicate native catalog Type %q", name)
 				}
 				delete(expectedNative, name)
 				// The reader charges one fixed row overhead plus these persisted
@@ -536,7 +545,7 @@ func TestExportCurrentSnapshotConcurrentWriter(t *testing.T) {
 			base, options, reader := memoryDeleteStore(t, backend)
 			ctx, cancel := context.WithTimeout(base, time.Minute)
 			defer cancel()
-			_, err := reader.Create(ctx, CreateRequest{Path: "beads/source", TypeURL: reader.ScopeURL() + "types/constraint", Title: "Source", Body: "original"})
+			_, err := reader.Create(ctx, CreateRequest{Path: "beads/source", TypeURL: reader.ScopeURL() + "constraint", Title: "Source", Body: "original"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -615,7 +624,7 @@ func TestExportCurrentSnapshotConcurrentWriter(t *testing.T) {
 					writeDone <- err
 					return
 				}
-				if _, err := writer.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/new", TypeURL: writer.ScopeURL() + "types/subject-to", SourcePath: "beads/work", TargetPath: "beads/source", UnconditionalSource: true}); err != nil {
+				if _, err := writer.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/new", TypeURL: writer.ScopeURL() + "subject-to", SourcePath: "beads/work", TargetPath: "beads/source", UnconditionalSource: true}); err != nil {
 					writeDone <- err
 					return
 				}
@@ -731,11 +740,11 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			target, err := s.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: s.ScopeURL() + "types/constraint", Title: "Target", Body: "First"})
+			target, err := s.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: s.ScopeURL() + "constraint", Title: "Target", Body: "First"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			owned, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/source", TargetPath: "beads/target", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
+			owned, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/source", TargetPath: "beads/target", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}

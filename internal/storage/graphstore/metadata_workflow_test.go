@@ -35,7 +35,7 @@ func TestCommonMetadataStoredAndRetainedAcrossResourceKinds(t *testing.T) {
 				t.Fatalf("Issue create metadata = %s, properties=%+v, %v", issue.Metadata, issue.Properties, err)
 			}
 			createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
-			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "original"}, Metadata: json.RawMessage(`{"source":"manual"}`)})
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "original"}, Metadata: json.RawMessage(`{"source":"manual"}`)})
 			if err != nil || !bytes.Equal(link.Link.Metadata, []byte(`{"source":"manual"}`)) {
 				t.Fatalf("Link create metadata = %s, %v", link.Link.Metadata, err)
 			}

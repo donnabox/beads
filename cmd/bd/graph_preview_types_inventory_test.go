@@ -88,14 +88,14 @@ func TestGraphTypesInventoryUsesSelectedCatalog(t *testing.T) {
 
 func TestGraphTypesInventoryHidesIntrinsicMetatypes(t *testing.T) {
 	selected := []graph.TypeDescriptor{
-		inventoryDescriptor(t, typesInventoryScope+"types/conformance", "Conformance", graph.KindLink),
+		inventoryDescriptor(t, typesInventoryScope+"conformance", "Conformance", graph.KindLink),
 	}
 	for _, name := range []string{"Type", "BeadType", "LinkType", "ConformsTo", "Refines"} {
-		selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"types/"+name, name, graph.KindBead))
+		selected = append(selected, inventoryDescriptor(t, typesInventoryScope+name, name, graph.KindBead))
 	}
 	// Identity aliases cannot expose the reserved relationship by renaming it.
-	selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"types/conforms-to", "An alias", graph.KindLink))
-	selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"types/refines", "Another alias", graph.KindLink))
+	selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"conforms-to", "An alias", graph.KindLink))
+	selected = append(selected, inventoryDescriptor(t, typesInventoryScope+"refines", "Another alias", graph.KindLink))
 	for _, details := range []bool{false, true} {
 		inventory, text, err := graphPreviewTypesInventory(typesInventoryScope, selected, details, true)
 		if err != nil {
@@ -132,7 +132,7 @@ func TestGraphTypesInventoryUsesActualNativeDeclarations(t *testing.T) {
 	if len(inventory.BeadTypes) != 2 || len(inventory.LinkTypes) != 2 {
 		t.Fatalf("wrong inventory: %+v", inventory)
 	}
-	for _, want := range []string{"Issue (abstract)", "Dependency (abstract)", "types/native-issue/7461736b", "types/native-dependency/626c6f636b73", "task", "blocks"} {
+	for _, want := range []string{"Issue (abstract)", "Dependency (abstract)", "task", "blocks"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("missing %q: %s", want, text)
 		}
@@ -156,14 +156,14 @@ func TestGraphTypesInventoryEmptyCatalogIsEmpty(t *testing.T) {
 	}
 }
 
-// Nominal Type selectors keep their namespace so Memory Decision cannot be
-// confused with the existing native Issue decision classification.
+// Synthetic literal segmented Type IDs retain every segment. They do not
+// assert installation of the removed Memory Decision Type.
 func TestGraphTypesInventoryKeepsNominalSelectorsAndAbstractDefinitions(t *testing.T) {
 	issue := inventoryDescriptor(t, graphstore.IssueTypeURL(typesInventoryScope), "Issue", graph.KindBead)
 	decision := inventoryDescriptor(t, typesInventoryScope+"types/decision", "Decision", graph.KindBead)
 	endpoint := graph.EndpointConstraint{}
 	conformance, err := graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: typesInventoryScope + "types/conformance", Name: "Conformance", Describes: graph.KindLink,
+		ID: typesInventoryScope + "conformance", Name: "Conformance", Describes: graph.KindLink,
 		Description: "Abstract: cannot be used as a declared Type.", Source: &endpoint, Target: &endpoint,
 	})
 	if err != nil {
@@ -176,7 +176,7 @@ func TestGraphTypesInventoryKeepsNominalSelectorsAndAbstractDefinitions(t *testi
 		if err != nil {
 			t.Fatal(err)
 		}
-		for _, selector := range []string{"types/decision", "types/conformance"} {
+		for _, selector := range []string{"types/decision", "conformance"} {
 			if !strings.Contains(text, selector) {
 				t.Fatalf("missing disambiguated nominal selector %q: %s", selector, text)
 			}
@@ -207,9 +207,9 @@ func TestGraphTypesAssessmentAvailability(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			wantBeads, wantLinks := 22, 25
+			wantBeads, wantLinks := 20, 25
 			if enabled {
-				wantBeads, wantLinks = 23, 29
+				wantBeads, wantLinks = 21, 29
 			}
 			if len(inventory.BeadTypes) != wantBeads || len(inventory.LinkTypes) != wantLinks {
 				t.Fatal("wrong available Type census")
@@ -219,14 +219,14 @@ func TestGraphTypesAssessmentAvailability(t *testing.T) {
 				t.Fatal(err)
 			}
 			for _, name := range []string{"evaluation", "conformance", "addresses", "satisfies", "violates"} {
-				id := typesInventoryScope + "types/" + name
-				if strings.Contains(string(raw), id) != enabled || strings.Contains(text, "types/"+name) != enabled {
+				id := typesInventoryScope + name
+				if strings.Contains(string(raw), id) != enabled || strings.Contains(text, name) != enabled {
 					t.Fatalf("inconsistent text/JSON availability %s", name)
 				}
 			}
 		}
 	}
-	if len(selected) != 52 {
+	if len(selected) != 50 {
 		t.Fatal("public filtering mutated installed inventory")
 	}
 }

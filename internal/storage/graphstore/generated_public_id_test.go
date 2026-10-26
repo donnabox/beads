@@ -48,7 +48,7 @@ func TestGeneratedPublicIDSkipsLifetimeAndAuthorityCollisions(t *testing.T) {
 						return "bdp.json", nil
 					}
 					if calls == 10 {
-						return "types/memory", nil
+						return "memory", nil
 					}
 					return root + "/bbbbbbb", nil
 				})

@@ -14,8 +14,8 @@ import (
 
 const (
 	beadListScope     = "https://example.test/"
-	beadListMemoryTyp = beadListScope + "types/memory"
-	beadListIssueTyp  = beadListScope + "types/issue"
+	beadListMemoryTyp = beadListScope + "memory"
+	beadListIssueTyp  = beadListScope + "issue"
 	beadListRecorded  = "2026-09-26T12:00:00Z"
 )
 

@@ -1,7 +1,6 @@
 package graphstore
 
 import (
-	"encoding/hex"
 	"slices"
 	"testing"
 
@@ -19,7 +18,7 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if parsed.ID() != scope+"types/references" {
+	if parsed.ID() != scope+"references" {
 		t.Fatal("legacy Related spelling must resolve to References")
 	}
 	source, hasSource := parsed.Source()
@@ -52,20 +51,20 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 
 func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 	const scope = "https://example.test/relationships/"
-	if IssueTypeURL(scope) != scope+"types/issue" ||
-		MemoryTypeURL(scope) != scope+"types/memory" ||
-		RelatedTypeURL(scope) != scope+"types/references" ||
-		DependencyTypeURL(scope) != scope+"types/dependency" {
+	if IssueTypeURL(scope) != scope+"issue" ||
+		MemoryTypeURL(scope) != scope+"memory" ||
+		RelatedTypeURL(scope) != scope+"references" ||
+		DependencyTypeURL(scope) != scope+"dependency" {
 		t.Fatal("a built-in Type has a duplicate or versioned identity")
 	}
-	want := []string{"memory", "evaluation", "constraint", "policy", "decision", "procedure", "requirement", "scenario", "specification", "references", "superseded-by", "requires", "defines", "subject-to", "conformance", "addresses", "satisfies", "violates", "issue", "dependency"}
+	want := []string{"memory", "evaluation", "constraint", "policy", "requirement", "scenario", "specification", "references", "superseded-by", "requires", "defines", "subject-to", "conformance", "addresses", "satisfies", "violates", "issue", "dependency"}
 	// Fixed native children are distinct concrete Types, not aliases for the
 	// two abstract families. Keep this census independent of the installer.
 	for _, classification := range []string{"bug", "feature", "task", "epic", "chore", "decision", "message", "molecule", "gate", "spike", "story", "milestone", "event"} {
-		want = append(want, "native-issue/"+hex.EncodeToString([]byte(classification)))
+		want = append(want, classification)
 	}
 	for _, kind := range []string{"blocks", "parent-child", "conditional-blocks", "waits-for", "related", "discovered-from", "replies-to", "relates-to", "duplicates", "supersedes", "authored-by", "assigned-to", "approved-by", "attests", "tracks", "until", "caused-by", "validates", "delegated-from"} {
-		want = append(want, "native-dependency/"+hex.EncodeToString([]byte(kind)))
+		want = append(want, kind)
 	}
 	if got := FreshTypeNames(); !slices.Equal(got, want) {
 		t.Fatalf("fresh Type set = %v, want %v", got, want)
@@ -79,10 +78,10 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 	}
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "tracks"} {
 		id, ok := relationshipDependencyTypeURL(scope, native)
-		if !ok || id != scope+"types/native-dependency/"+hex.EncodeToString([]byte(native)) || id == DependencyTypeURL(scope) {
+		if !ok || id != scope+string(native) || id == DependencyTypeURL(scope) {
 			t.Fatalf("native %q must use its concrete Dependency Type: %q, %t", native, id, ok)
 		}
-		if base, kind, valid := NativeTypeClassification(scope, id); !valid || base != DependencyTypeURL(scope) || kind != string(native) {
+		if base, kind, valid := NativeTypeClassification(scope, id, graph.KindLink); !valid || base != DependencyTypeURL(scope) || kind != string(native) {
 			t.Fatalf("concrete Type lost native classification: %q %q %t", base, kind, valid)
 		}
 		link, err := relationshipDependencyDescriptor(scope, native)
@@ -112,7 +111,7 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 func TestInstalledIssueDependencyProjectionMapping(t *testing.T) {
 	const scope = "https://example.test/relationships/"
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "arbitrary"} {
-		if got, ok := nativeDependencyTypeURLForIssueType(scope, IssueTypeURL(scope), native); !ok || got != scope+"types/native-dependency/"+hex.EncodeToString([]byte(native)) {
+		if got, ok := nativeDependencyTypeURLForIssueType(scope, IssueTypeURL(scope), native); !ok || got != scope+string(native) {
 			t.Fatalf("native %q Type = %q, %t", native, got, ok)
 		}
 	}

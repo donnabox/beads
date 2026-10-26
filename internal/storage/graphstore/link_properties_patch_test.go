@@ -202,7 +202,7 @@ func TestLinkPropertiesPatchLifecycle(t *testing.T) {
 			}
 			// Parallel Links with equal endpoints retain independent identities and histories.
 			for _, tc := range []struct{ path, target string }{{"links/parallel", "beads/target"}, {"links/parallel-two", "beads/target"}} {
-				created, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", Path: tc.path, SourcePath: "beads/plan", TargetPath: tc.target, ExpectedSourceRevision: source.Revision})
+				created, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "subject-to", Path: tc.path, SourcePath: "beads/plan", TargetPath: tc.target, ExpectedSourceRevision: source.Revision})
 				if err != nil {
 					t.Fatal(err)
 				}

@@ -41,7 +41,7 @@ func TestReadVersionPairDeletedMemory(t *testing.T) {
 				t.Fatal(err)
 			}
 			constraint := createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
-			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: first.Revision, Properties: map[string]any{"note": "retained context"}})
+			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: first.Revision, Properties: map[string]any{"note": "retained context"}})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -209,7 +209,7 @@ func TestReadVersionPairLifecycle(t *testing.T) {
 				t.Fatal(err)
 			}
 			createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
-			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "before"}})
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "before"}})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -346,7 +346,7 @@ func TestReadVersionPairCorruptSecond(t *testing.T) {
 				t.Fatal(err)
 			}
 			createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
-			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Version})
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Version})
 			if err != nil {
 				t.Fatal(err)
 			}

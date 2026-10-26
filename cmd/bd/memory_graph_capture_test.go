@@ -41,7 +41,7 @@ func TestMemoryCaptureContext(t *testing.T) {
 			r.Graph.Nodes[0].Version = "different"
 		}},
 		{"record-summary-type", func(r *graphstore.CurrentFamilyRead, _ []memoryquery.CurrentRoot) {
-			r.Graph.Nodes[0].TypeURL = genericTestScope + "types/memory"
+			r.Graph.Nodes[0].TypeURL = genericTestScope + "memory"
 		}},
 		{"duplicate-record", func(r *graphstore.CurrentFamilyRead, _ []memoryquery.CurrentRoot) {
 			r.Records = append(r.Records, r.Records[0])
@@ -117,8 +117,8 @@ func containsMemoryProtected(values []string, want string) bool {
 func TestMemoryCaptureAndTreePreserveCommonIDs(t *testing.T) {
 	roots := []memoryquery.CurrentRoot{{Path: "rootless", Depth: 1}}
 	reader := memoryPresentationReader{nodes: map[string]memoryquery.CurrentNode{
-		"rootless":     {Path: "rootless", TypeURL: genericTestScope + "types/policy", Version: "current"},
-		"links/memory": {Path: "links/memory", TypeURL: genericTestScope + "types/policy", Version: "current"},
+		"rootless":     {Path: "rootless", TypeURL: genericTestScope + "policy", Version: "current"},
+		"links/memory": {Path: "links/memory", TypeURL: genericTestScope + "policy", Version: "current"},
 	}}
 	source, err := graph.NewInScopeRef("rootless", "current")
 	if err != nil {
@@ -132,7 +132,7 @@ func TestMemoryCaptureAndTreePreserveCommonIDs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	link, err := graph.NewLink(graph.LinkSpec{Path: "beads/edge", TypeURL: genericTestScope + "types/references", Revision: revision, Source: source, Target: target})
+	link, err := graph.NewLink(graph.LinkSpec{Path: "beads/edge", TypeURL: genericTestScope + "references", Revision: revision, Source: source, Target: target})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -153,7 +153,7 @@ func TestMemoryCaptureAndTreePreserveCommonIDs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, id := range []string{"rootless", "links/memory", "beads/edge", "types/policy", "types/references"} {
+	for _, id := range []string{"rootless", "links/memory", "beads/edge", "policy", "references"} {
 		if !strings.Contains(text, id) {
 			t.Fatalf("tree elided literal identity %q: %s", id, text)
 		}

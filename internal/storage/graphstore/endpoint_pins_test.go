@@ -130,11 +130,11 @@ func TestOwnedTargetRepinRetainsOwnerAndRollsBack(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			target, err := s.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: s.ScopeURL() + "types/constraint", Title: "Target", Body: "Constraint1"})
+			target, err := s.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: s.ScopeURL() + "constraint", Title: "Target", Body: "Constraint1"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			created, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/source", TargetPath: "beads/target", Path: "links/obligation", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
+			created, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/source", TargetPath: "beads/target", Path: "links/obligation", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -195,7 +195,7 @@ func TestOwnedTargetRepinRetainsOwnerAndRollsBack(t *testing.T) {
 				t.Fatalf("pin no-op minted owner: %+v %v", same, err)
 			}
 			before = workflowState(t, ctx, s)
-			_, err = s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/source", TargetPath: "beads/target", Path: "links/forbidden-pin", TargetPin: EndpointPin{Revision: target2.Memory.Revision}, ExpectedSourceRevision: newOwner.Revision})
+			_, err = s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "superseded-by", SourcePath: "beads/source", TargetPath: "beads/target", Path: "links/forbidden-pin", TargetPin: EndpointPin{Revision: target2.Memory.Revision}, ExpectedSourceRevision: newOwner.Revision})
 			if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("pin bypassed selected floating-only rule or rollback: %v", err)
 			}
@@ -263,18 +263,18 @@ func TestOwnedSourcePinsRefuseBeforeAndAfterRetyping(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "constraint", Title: "Rule"}); err != nil {
 				t.Fatal(err)
 			}
 			properties, err := json.Marshal(map[string]any{"title": "Assessment", "body": "", "subjects": []any{map[string]string{"uri": subject.ID, "revision": subject.Revision}}})
 			if err != nil {
 				t.Fatal(err)
 			}
-			evaluation, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "types/evaluation", PropertiesJSON: properties})
+			evaluation, err := s.Create(ctx, CreateRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "evaluation", PropertiesJSON: properties})
 			if err != nil {
 				t.Fatal(err)
 			}
-			request := LinkCreateRequest{Path: "links/claim", TypeURL: s.ScopeURL() + "types/satisfies", SourcePath: "beads/evaluation", TargetPath: "beads/rule", SourcePin: EndpointPin{Revision: evaluation.Revision}, ExpectedSourceRevision: evaluation.Revision}
+			request := LinkCreateRequest{Path: "links/claim", TypeURL: s.ScopeURL() + "satisfies", SourcePath: "beads/evaluation", TargetPath: "beads/rule", SourcePin: EndpointPin{Revision: evaluation.Revision}, ExpectedSourceRevision: evaluation.Revision}
 			assertRefusal := func() {
 				t.Helper()
 				before := workflowState(t, ctx, s)
@@ -286,7 +286,7 @@ func TestOwnedSourcePinsRefuseBeforeAndAfterRetyping(t *testing.T) {
 				}
 			}
 			assertRefusal()
-			plain, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "types/memory", ExpectedRevision: evaluation.Revision})
+			plain, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/evaluation", TypeURL: s.ScopeURL() + "memory", ExpectedRevision: evaluation.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -315,13 +315,13 @@ func TestEndpointPinsConcurrentOwnedRepin(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			target, err := first.Create(ctx, CreateRequest{Path: "beads/target", Title: "Rule", TypeURL: first.ScopeURL() + "types/constraint"})
+			target, err := first.Create(ctx, CreateRequest{Path: "beads/target", Title: "Rule", TypeURL: first.ScopeURL() + "constraint"})
 			if err != nil {
 				t.Fatal(err)
 			}
 			links := []LinkRecord{}
 			for _, path := range []string{"links/one", "links/two"} {
-				added, err := first.AddInformationalLink(ctx, LinkCreateRequest{Path: path, SourcePath: "beads/source", TargetPath: "beads/target", TypeURL: first.ScopeURL() + "types/subject-to", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
+				added, err := first.AddInformationalLink(ctx, LinkCreateRequest{Path: path, SourcePath: "beads/source", TargetPath: "beads/target", TypeURL: first.ScopeURL() + "subject-to", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
 				if err != nil {
 					t.Fatal(err)
 				}

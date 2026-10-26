@@ -187,5 +187,5 @@ func (s *Store) validateCanonicalIssueAllocationInTx(ctx context.Context, tx *sq
 	if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || state != "live" || validatePath(path) != nil {
 		return fmt.Errorf("%w: invalid Issue list parent allocation", ErrInvalidStore)
 	}
-	return nil
+	return s.requireNativeBindingInTx(ctx, tx, typ, graph.KindBead)
 }

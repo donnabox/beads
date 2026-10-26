@@ -30,7 +30,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			call := func(args ...string) string { return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
 			call("remember", "First body", "--id", "beads/first", "--json")
 			call("remember", "Second body", "--id", "beads/second", "--json")
-			call("link", "create", scope+"beads/first", scope+"beads/second", "--type", scope+"types/superseded-by", "--id", "links/related", "--json")
+			call("link", "create", scope+"beads/first", scope+"beads/second", "--type", scope+"superseded-by", "--id", "links/related", "--json")
 			// Allocation succeeds for this selector, but the selected resource is
 			// a Link rather than a Bead endpoint. Keep that refusal a selector
 			// error after the store-bound identity lookup.
@@ -60,7 +60,7 @@ func TestCanonicalCollectionInstalledWorkflow(t *testing.T) {
 			if beads.SchemaVersion != 2 || beads.BDPSpec != bdpwire.Pin || len(page.Items) != 2 || page.Next != nil {
 				t.Fatalf("wrong native collection: %s", raw)
 			}
-			owned := page.Items[0].OwnedLinks[scope+"types/superseded-by"]
+			owned := page.Items[0].OwnedLinks[scope+"superseded-by"]
 			if page.Items[0].ID != scope+"beads/first" || len(owned) != 1 || owned[0].ID != scope+"links/related" {
 				t.Fatalf("public current projection lost owned state: %s", raw)
 			}
@@ -151,7 +151,7 @@ func TestGraphLinkCollectionPositionalRevisionWorkflow(t *testing.T) {
 			call("remember", "B", "--id", "b", "--json")
 			create := func(id, from, to string) {
 				t.Helper()
-				call("link", "create", from, to, "--type", "types/references", "--id", id, "--json")
+				call("link", "create", from, to, "--type", "references", "--id", id, "--json")
 			}
 			create("floating", "a", "b")
 			create("old", "a@current", "b")
@@ -191,7 +191,7 @@ func TestGraphLinkCollectionPositionalRevisionWorkflow(t *testing.T) {
 				{"in pair", []string{"a", "b", "--direction", "in"}, 1},
 				{"both pair", []string{"a", "b", "--direction", "both"}, 4},
 				{"self pair empty", []string{"a", "a", "--direction", "both"}, 0},
-				{"filtered family and nominal", []string{"a", "--type", "references", "--exact-type", "types/references"}, 4},
+				{"filtered family and nominal", []string{"a", "--type", "references", "--exact-type", "references"}, 4},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
 					if got := list(tc.args...); len(got) != tc.want {

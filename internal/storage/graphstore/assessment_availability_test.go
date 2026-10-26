@@ -48,7 +48,7 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			constraint, err := enabled.Create(ctx, CreateRequest{Path: "beads/rule", Title: "Rule", TypeURL: enabled.ScopeURL() + "types/constraint"})
+			constraint, err := enabled.Create(ctx, CreateRequest{Path: "beads/rule", Title: "Rule", TypeURL: enabled.ScopeURL() + "constraint"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -56,14 +56,14 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			eval, err := enabled.Create(ctx, CreateRequest{Path: "beads/eval", TypeURL: enabled.ScopeURL() + "types/evaluation", PropertiesJSON: props})
+			eval, err := enabled.Create(ctx, CreateRequest{Path: "beads/eval", TypeURL: enabled.ScopeURL() + "evaluation", PropertiesJSON: props})
 			if err != nil {
 				t.Fatal(err)
 			}
 			initial := eval
 			var claims []LinkRecord
 			for _, name := range []string{"addresses", "satisfies", "violates"} {
-				got, err := enabled.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + name, SourcePath: "beads/eval", TargetPath: "beads/rule", TypeURL: enabled.ScopeURL() + "types/" + name, UnconditionalSource: true})
+				got, err := enabled.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + name, SourcePath: "beads/eval", TargetPath: "beads/rule", TypeURL: enabled.ScopeURL() + name, UnconditionalSource: true})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -76,7 +76,7 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 				if name == "superseded-by" {
 					target = "beads/subject"
 				}
-				got, err := enabled.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + name, SourcePath: "beads/eval", TargetPath: target, TypeURL: enabled.ScopeURL() + "types/" + name, UnconditionalSource: true})
+				got, err := enabled.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + name, SourcePath: "beads/eval", TargetPath: target, TypeURL: enabled.ScopeURL() + name, UnconditionalSource: true})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -105,14 +105,14 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 				}
 			})
 			gotTypes, err := off.ListInstalledTypes(ctx)
-			if err != nil || len(gotTypes) != 52 || !reflect.DeepEqual(installed, gotTypes) {
+			if err != nil || len(gotTypes) != 50 || !reflect.DeepEqual(installed, gotTypes) {
 				t.Fatalf("gate changed installed definitions: enabled=%d disabled=%d error=%v", len(installed), len(gotTypes), err)
 			}
 			if !enabled.AssessmentsEnabled() || off.AssessmentsEnabled() {
 				t.Fatal("Store did not capture the requested availability gate")
 			}
 			for _, name := range []string{"evaluation", "conformance", "addresses", "satisfies", "violates"} {
-				id := off.ScopeURL() + "types/" + name
+				id := off.ScopeURL() + name
 				present := false
 				for _, descriptor := range gotTypes {
 					present = present || descriptor.ID() == id
@@ -175,7 +175,7 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 					_, e := off.AddInformationalLink(ctx, LinkCreateRequest{SourcePath: "beads/eval", TargetPath: "beads/rule", TypeURL: claim.Type, UnconditionalSource: true})
 					return e
 				})
-				path := "links/" + claim.Type[len(off.ScopeURL()+"types/"):]
+				path := "links/" + claim.Type[len(off.ScopeURL()):]
 				refuse("claim no-op", func() error {
 					_, e := off.UpdateLink(ctx, LinkUpdateRequest{Path: path, Properties: claim.Properties, Unconditional: true, UnconditionalSource: true})
 					return e
@@ -191,7 +191,7 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 				})
 			}
 			for _, link := range availableOwned {
-				name := link.Type[len(off.ScopeURL()+"types/"):]
+				name := link.Type[len(off.ScopeURL()):]
 				path := "links/" + name
 				target := "beads/rule"
 				revision := constraint.Revision
@@ -217,14 +217,14 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := off.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/independent", SourcePath: "beads/eval", TargetPath: "beads/subject", TypeURL: off.ScopeURL() + "types/references"}); err != nil {
+			if _, err := off.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/independent", SourcePath: "beads/eval", TargetPath: "beads/subject", TypeURL: off.ScopeURL() + "references"}); err != nil {
 				t.Fatal(err)
 			}
 			if after, err := off.Show(ctx, "beads/eval"); err != nil || !reflect.DeepEqual(beforeReference, after) {
 				t.Fatalf("unowned Reference changed disabled source: %v", err)
 			}
 			refuse("abstract Conformance", func() error {
-				_, e := off.AddInformationalLink(ctx, LinkCreateRequest{SourcePath: "beads/eval", TargetPath: "beads/rule", TypeURL: off.ScopeURL() + "types/conformance", UnconditionalSource: true})
+				_, e := off.AddInformationalLink(ctx, LinkCreateRequest{SourcePath: "beads/eval", TargetPath: "beads/rule", TypeURL: off.ScopeURL() + "conformance", UnconditionalSource: true})
 				return e
 			})
 			deleted, err := off.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/recovery", ExpectedRevision: recoverable.Revision})
@@ -244,7 +244,7 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 				return e
 			})
 			for _, claim := range claims {
-				path := "links/" + claim.Type[len(off.ScopeURL()+"types/"):]
+				path := "links/" + claim.Type[len(off.ScopeURL()):]
 				if _, err := off.Unlink(ctx, LinkDeleteRequest{Path: path, Unconditional: true, UnconditionalSource: true}); err != nil {
 					t.Fatal(err)
 				}

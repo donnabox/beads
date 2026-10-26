@@ -51,10 +51,15 @@ func TestReadInstalledTypes(t *testing.T) {
 					t.Fatalf("%s did not return persisted descriptor", name)
 				}
 			}
-			if _, err := s.ReadType(ctx, "types/not-installed"); !errors.Is(err, ErrNotFound) {
-				t.Fatalf("missing Type: %v", err)
+			for _, missing := range []string{"types/not-installed", "beads/plan"} {
+				if _, err := s.ReadType(ctx, missing); !errors.Is(err, ErrNotFound) {
+					t.Fatalf("well-formed absent whole Type ID %q: %v", missing, err)
+				}
 			}
-			for _, path := range []string{"beads/plan", "types/" + strings.Repeat("x", 1024), "types/", "types/../preview-memory", "types//preview-memory", "types/preview-memory?version=old", o.Binding.ScopeURL + "types/preview-memory"} {
+			if _, err := s.ReadType(ctx, "types/"+strings.Repeat("x", 1024)); !errors.Is(err, ErrLimitExceeded) {
+				t.Fatalf("Type read request budget lost: %v", err)
+			}
+			for _, path := range []string{"types/", "types/../preview-memory", "types//preview-memory", "types/preview-memory?version=old", o.Binding.ScopeURL + "types/preview-memory"} {
 				if _, err := s.ReadType(ctx, path); !errors.Is(err, graph.ErrValidation) {
 					t.Fatalf("invalid selector %q: %v", path, err)
 				}

@@ -22,9 +22,6 @@ func graphHumanID(scope, id string) string {
 }
 
 func graphHumanType(scope, typ string) string {
-	if _, name, ok := graphstore.NativeTypeClassification(scope, typ); ok {
-		return graphMemoryDisplayText(name)
-	}
 	return graphHumanID(scope, typ)
 }
 

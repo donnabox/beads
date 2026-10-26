@@ -33,6 +33,10 @@ const PreviewVersionTokenLimit = 4096
 // Issue fields excluded from Jim's JSON snapshot (including the current row-lock
 // token and content hash) remain zero; they cannot be recovered from current state.
 func (s *Store) ReadVersion(ctx context.Context, path, version string) (any, error) {
+	return s.readVersionWithProjectionContext(ctx, path, version, nil)
+}
+
+func (s *Store) readVersionWithProjectionContext(ctx context.Context, path, version string, projection *ResourceProjectionContext) (any, error) {
 	if err := s.validateResourceReadAddress(path); err != nil {
 		return nil, err
 	}
@@ -50,7 +54,10 @@ func (s *Store) ReadVersion(ctx context.Context, path, version string) (any, err
 			return err
 		}
 		result, err = s.readVersionInTx(ctx, tx, path, version)
-		return err
+		if err != nil {
+			return err
+		}
+		return s.captureResourceProjectionInTx(ctx, tx, result, projection)
 	})
 	if err != nil {
 		return nil, err
@@ -68,6 +75,10 @@ func validateVersionToken(version string) error {
 // readVersionInTx uses the caller's authority-checked transaction and validated
 // path/token. It never joins current payloads into retained state.
 func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version string) (any, error) {
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
 	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
 	if err != nil {
 		return nil, err
@@ -128,17 +139,17 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 			if terminal != nil && version == head {
 				return nil, ErrGone
 			}
-		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key, issueType) {
+		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key, issueType, facts...) {
 			return nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
 		}
 	}
 	if backing == "issue" {
-		if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType) || !key.Valid || key.String == "" {
+		if kind != "bead" || (!nativeIssueTypeMatches(s.ScopeURL(), typ.String, issueType) || !isConcreteNativeIssue(s.ScopeURL(), typ.String, facts...)) || !key.Valid || key.String == "" {
 			return nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
 		return s.readNativeIssueRetainedInTx(ctx, tx, path, version, head, key.String)
 	}
-	dependencyType := isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String)
+	dependencyType := isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String, facts...)
 	if !((backing == "generic" && kind == "bead" && s.isMemoryType(typ.String)) ||
 		(backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String)) ||
 		(backing == "dependency" && kind == "link" && dependencyType)) {
@@ -284,6 +295,10 @@ func validVersionAttribution(value Attribution, actor string) bool {
 }
 
 func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRecord, raw []byte, actor string) error {
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return err
+	}
 	metadata, metadataErr := commonMetadata(link.Metadata)
 	if metadataErr != nil || !bytes.Equal(metadata, link.Metadata) {
 		return fmt.Errorf("%w: invalid retained Link metadata", ErrInvalidStore)
@@ -308,12 +323,12 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 	}
 	depType, hasKind := link.Properties["dep_type"].(string)
 	expectedType, typeErr := NativeDependencyTypeURL(s.ScopeURL(), depType)
-	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) ||
+	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type, facts...) ||
 		!hasKind || typeErr != nil || link.Type != expectedType || len(link.Properties) != 1 || !types.DependencyType(depType).IsValid() ||
 		!utf8.ValidString(depType) {
 		return fmt.Errorf("%w: invalid retained Dependency", ErrInvalidStore)
 	}
-	if err := s.requireNativeBindingInTx(ctx, tx, link.Type); err != nil {
+	if err := s.requireNativeBindingInTx(ctx, tx, link.Type, graph.KindLink); err != nil {
 		return err
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {
@@ -330,8 +345,12 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 	}
 	// Retained membership uses the owner's original declared Type, including
 	// positive family ownership. Native payload validation stays native.
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return err
+	}
 	memoryOwner := s.isMemoryType(ownerType)
-	if !memoryOwner && !isConcreteNativeIssue(s.ScopeURL(), ownerType) {
+	if !memoryOwner && !isConcreteNativeIssue(s.ScopeURL(), ownerType, facts...) {
 		return fmt.Errorf("%w: unsupported retained owner Type", ErrInvalidStore)
 	}
 	catalog, err := s.selectedTypes()
@@ -344,7 +363,7 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 		if json.Unmarshal(raw, &link) != nil {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
-		owned, err := catalog.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), ownerType)}, typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), link.Type)})
+		owned, err := catalog.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), ownerType, graph.KindBead, facts...)}, typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), link.Type, graph.KindLink, facts...)})
 		if err != nil || !owned || link.Source != source ||
 			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
@@ -428,7 +447,7 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: retained Issue classification: %v", ErrInvalidStore, err)
 	}
-	if err := s.requireNativeBindingInTx(ctx, tx, result.Type); err != nil {
+	if err := s.requireNativeBindingInTx(ctx, tx, result.Type, graph.KindBead); err != nil {
 		return IssueRecord{}, err
 	}
 	if err := s.validateVersionOwned(ctx, tx, result.ID, result.Type, result.Owned); err != nil {

@@ -229,7 +229,9 @@ go_test(
         "version_history_test.go",
         "workflow_test.go",
     ],
+    data = glob(["testdata/**"]),
     embed = [":graphstore"],
+    embedsrcs = ["testdata/generation12-types.json"],
     # The 327-root package exhausted the 19-minute package alarm at eight
     # shards. Thirty-two native partitions keep 10-11 roots per process;
     # the required equivalence/cleanup gates still cover the complete census.

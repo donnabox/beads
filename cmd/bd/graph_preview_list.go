@@ -62,7 +62,7 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	// the same authoritative classification column, never a parallel tag.
 	in.IssueType = ""
 	issueFamily := selectedType == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL)
-	if base, classification, native := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, selectedType); native && base == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+	if base, classification, native := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, selectedType, graph.KindBead); native && base == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		in.IssueType = classification
 		issueFamily = true
 	}

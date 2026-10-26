@@ -132,7 +132,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if err != nil {
 			return err
 		}
-		owned, err := s.ownsLink(source, request.TypeURL)
+		owned, err := s.ownsLink(ctx, tx, source, request.TypeURL)
 		if err != nil {
 			return err
 		}
@@ -186,7 +186,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
 			return err
 		} else if exists {
-			return ErrAlreadyExists
+			return publicResourceIDReservedErrorInTx(ctx, tx, publicID)
 		}
 		path, err = choosePrivateResourcePathInTx(ctx, tx, path, generatedPath, graph.KindLink)
 		if err != nil {
@@ -334,7 +334,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		owned, err := s.ownsLink(source, link.Type)
+		owned, err := s.ownsLink(ctx, tx, source, link.Type)
 		if err != nil {
 			return err
 		}
@@ -522,7 +522,7 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 	if err := s.afterStage("link-retained"); err != nil {
 		return LinkMutationResult{}, err
 	}
-	owned, err := s.ownsLink(source, link.Type)
+	owned, err := s.ownsLink(ctx, tx, source, link.Type)
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
@@ -618,6 +618,11 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		}
 		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && s.isMemoryType(typ)) || (backing == "issue" && nativeIssueTypeMatches(s.ScopeURL(), typ, issueType))) {
 			return LinkRecord{}, fmt.Errorf("%w: invalid informational endpoint", ErrInvalidStore)
+		}
+		if backing == "issue" {
+			if err := s.requireNativeBindingInTx(ctx, tx, typ, graph.KindBead); err != nil {
+				return LinkRecord{}, err
+			}
 		}
 		pin := []string{sourcePin, targetPin}[index]
 		if pin != "" {

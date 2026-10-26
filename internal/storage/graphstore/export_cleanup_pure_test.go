@@ -65,8 +65,8 @@ func TestExportCurrentSnapshotRollbackCleanup(t *testing.T) {
 					}
 				}
 				sort.Slice(want.Snapshot.Types, func(i, j int) bool { return want.Snapshot.Types[i].ID() < want.Snapshot.Types[j].ID() })
-				if err != nil || len(want.Snapshot.Types) != 52 || !reflect.DeepEqual(state, want) {
-					t.Fatalf("successful complete acquisition differs: got=%+v want=%+v error=%v", state, want, err)
+				if err != nil || len(want.Snapshot.Types) != 50 || !reflect.DeepEqual(state, want) {
+					t.Fatalf("successful complete acquisition differs: gotTypes=%d wantTypes=%d equal=%t error=%v", len(state.Snapshot.Types), len(want.Snapshot.Types), reflect.DeepEqual(state, want), err)
 				}
 			}
 			exportCleanupTransactionCount(t, s, d)
@@ -377,15 +377,20 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 			rows.values = append(rows.values, []driver.Value{name, raw, descriptor.Fingerprint()})
 		}
 		return rows, nil
-	case strings.HasPrefix(q, "select descriptor, fingerprint from graph_preview_types where name=?"):
-		if len(args) != 2 {
-			return nil, fmt.Errorf("cleanup descriptor lookup arguments: %v", args)
+	case q == strings.ToLower(fixedTypeDescriptorQuery(len(previewTypeDefinitions()))):
+		definitions := previewTypeDefinitions()
+		if len(args) != 2*len(definitions) {
+			return nil, fmt.Errorf("cleanup fixed descriptor lookup arguments: %v", args)
 		}
-		descriptor, ok := d.descriptors[fmt.Sprint(args[0].Value)]
-		if !ok || args[1].Value != int64(len(descriptor.CanonicalJSON())) {
-			return nil, errors.New("cleanup descriptor lookup did not match persisted Type")
+		rows := &exportCleanupRows{columns: []string{"name", "descriptor", "fingerprint"}}
+		for i, definition := range definitions {
+			descriptor, ok := d.descriptors[definition.name]
+			if !ok || args[2*i].Value != definition.name || args[2*i+1].Value != int64(len(descriptor.CanonicalJSON())) {
+				return nil, errors.New("cleanup fixed descriptor lookup did not match persisted Type")
+			}
+			rows.values = append(rows.values, []driver.Value{definition.name, descriptor.CanonicalJSON(), descriptor.Fingerprint()})
 		}
-		return row([]string{"descriptor", "fingerprint"}, descriptor.CanonicalJSON(), descriptor.Fingerprint()), nil
+		return rows, nil
 	case strings.HasPrefix(q, "select workspace, scope_url, authority_id, schema_version, writer_token from graph_preview_scope"):
 		b := d.options.Binding
 		return row([]string{"workspace", "scope", "authority", "schema", "token"}, b.WorkspaceID, b.ScopeURL, b.AuthorityID, int64(b.SchemaVersion), exportCleanupToken), nil
@@ -418,6 +423,8 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 		return &exportCleanupRows{columns: []string{"path", "backing", "kind"}}, nil
 	case strings.HasPrefix(q, "select path from graph_preview_catalog"):
 		return &exportCleanupRows{columns: []string{"path"}}, nil
+	case strings.HasPrefix(q, "select distinct cast(d.type as binary),cast(case when octet_length(c.type_url)"):
+		return &exportCleanupRows{columns: []string{"type", "type_url"}}, nil
 	case strings.HasPrefix(q, "select 1 from graph_preview_catalog"):
 		return &exportCleanupRows{columns: []string{"invalid"}}, nil
 	case strings.HasPrefix(q, "select count(*)"), strings.HasPrefix(q, "select exists("), strings.HasPrefix(q, "select cast(least("):

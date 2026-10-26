@@ -1,5 +1,12 @@
 # Graph CLI Specification (Draft)
 
+> Current Preview 3 Type selectors use `--type NAME` and `--exact-type NAME`.
+> `--bead-type` is unavailable. Generation13 uses meaningful Scope-local Type
+> IDs, with seven Memory Bead and nine Memory Link Types; Memory Decision and
+> Procedure are removed. See the [current guide](/reference/graph-cli#discover-installed-types).
+> The exact earlier ledger below retains its historical flags and evidence;
+> it does not describe current admission or upgrade support.
+
 For the October 2026 generic CLI selection, projection and output design, see
 [CLI selection, projection and output](/reference/bdp/cli/selection-and-output).
 That specification owns the intended common output contract for adopting generic

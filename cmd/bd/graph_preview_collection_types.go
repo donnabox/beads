@@ -80,9 +80,22 @@ func graphPreviewCollectionTypeURL(scope, raw string, links bool) (string, error
 		}
 		return raw, nil
 	}
-	if graphPreviewNominalSelector(raw) {
-		return graphPreviewTypeURL(scope, raw)
+	// Bare native Issue shorthand retains the shipping alias policy shared by
+	// create/update and collection/count. Full URLs and literal segmented IDs
+	// are handled as complete identities, never normalized.
+	if !links && !graphPreviewNominalSelector(raw) {
+		classification := types.IssueType(raw).Normalize()
+		if classification.IsBuiltIn() {
+			return graphstore.NativeIssueTypeURL(scope, string(classification))
+		}
 	}
+	// A canonical Scope-local ID is already a complete value, including its
+	// percent escapes and literal path segments. Only a raw noncanonical native
+	// label reaches encoding at this role-specific input boundary.
+	if id, err := graph.CanonicalPublicResourceURL(scope, raw); err == nil {
+		return id, nil
+	}
+
 	if !links {
 		if raw == "issue" {
 			return graphstore.IssueTypeURL(scope), nil

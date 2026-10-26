@@ -75,7 +75,7 @@ func (s *Store) currentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Snapshot, 
 		if descriptor.Describes() != graph.KindBead {
 			continue
 		}
-		owned, err := s.SelectedOwnedLinkTypesWithObserved(descriptor.ID(), linkTypes...)
+		owned, err := s.SelectedOwnedLinkTypesWithDescriptors(descriptor.ID(), result.Types, linkTypes...)
 		if err != nil {
 			return Snapshot{}, err
 		}
@@ -149,7 +149,7 @@ func (s *Store) currentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Snapshot, 
 				}
 				observed = append(observed, link.Type)
 			}
-			ownedTypes, err := s.SelectedOwnedLinkTypesWithObserved(typ, observed...)
+			ownedTypes, err := s.SelectedOwnedLinkTypesWithDescriptors(typ, result.Types, observed...)
 			if err != nil {
 				return Snapshot{}, err
 			}

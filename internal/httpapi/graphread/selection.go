@@ -154,10 +154,7 @@ func validateCollectionType(scope, id string) error {
 	}
 	if strings.HasPrefix(id, scope) {
 		path := strings.TrimPrefix(id, scope)
-		if !strings.HasPrefix(path, "types/") {
-			return &ParameterError{Name: "type"}
-		}
-		return graph.ValidateBeadPath("beads/" + strings.TrimPrefix(path, "types/"))
+		return graph.ValidateCanonicalResourceID(path)
 	}
 	return nil
 }

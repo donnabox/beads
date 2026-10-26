@@ -345,7 +345,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			if err != nil {
 				return err
 			}
-			if err := s.ensureNativeTypeInTx(ctx, tx, declared); err != nil {
+			if err := s.ensureNativeTypeInTx(ctx, tx, declared, graph.KindBead); err != nil {
 				return err
 			}
 			declaredTypes[key] = declared
@@ -356,7 +356,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			if exists, err := publicResourceIDExistsInTx(ctx, tx, id); err != nil {
 				return err
 			} else if exists {
-				return ErrAlreadyExists
+				return publicResourceIDReservedErrorInTx(ctx, tx, id)
 			}
 			path, err := generatedIssuePath(ctx, tx, id)
 			if err != nil {

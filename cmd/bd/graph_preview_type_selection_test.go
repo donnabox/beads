@@ -50,20 +50,25 @@ func TestGraphPreviewSelectedTypeKindAndRefinement(t *testing.T) {
 }
 
 func TestGraphPreviewSelectedTypeRefusesIntrinsicsAndKeepsConformance(t *testing.T) {
-	for _, name := range []string{"Type", "BeadType", "LinkType", "ConformsTo", "conforms-to", "Refines", "refines"} {
-		for _, selector := range []string{name, "types/" + name, typesInventoryScope + "types/" + name} {
-			if _, err := graphPreviewTypeURL(typesInventoryScope, selector); err == nil {
-				t.Fatalf("intrinsic selector admitted: %s", selector)
+	for _, name := range []string{"Type", "BeadType", "LinkType", "ConformsTo", "Refines", "refines", "conforms-to"} {
+		d := inventoryDescriptor(t, typesInventoryScope+name, name, graph.KindBead)
+		if err := graphPreviewValidateSelectedType(typesInventoryScope, []graph.TypeDescriptor{d}, d.ID(), graph.KindBead); err == nil {
+			t.Errorf("intrinsic identity admitted %s", d.ID())
+		}
+		for _, id := range []string{typesInventoryScope + "types/" + name, "https://foreign.test/" + name} {
+			unrelated := inventoryDescriptor(t, id, name, graph.KindBead)
+			if graphPreviewIntrinsicType(typesInventoryScope, unrelated) {
+				t.Errorf("unrelated whole identity classified by basename: %s", id)
 			}
 		}
 	}
-	conformance := inventoryDescriptor(t, typesInventoryScope+"types/conformance", "Conformance", graph.KindLink)
+	conformance := inventoryDescriptor(t, typesInventoryScope+"conformance", "Conformance", graph.KindLink)
 	if err := graphPreviewValidateSelectedType(typesInventoryScope, []graph.TypeDescriptor{conformance}, conformance.ID(), graph.KindLink); err != nil {
-		t.Fatal("abstract public Conformance cannot be inspected or filtered", err)
+		t.Fatal(err)
 	}
 	renamed := inventoryDescriptor(t, typesInventoryScope+"types/not-the-name", "BeadType", graph.KindBead)
-	if err := graphPreviewValidateSelectedType(typesInventoryScope, []graph.TypeDescriptor{renamed}, renamed.ID(), graph.KindBead); err == nil {
-		t.Fatal("renamed intrinsic descriptor became public")
+	if err := graphPreviewValidateSelectedType(typesInventoryScope, []graph.TypeDescriptor{renamed}, renamed.ID(), graph.KindBead); err != nil {
+		t.Fatal("unrelated whole-ID was hidden by name", err)
 	}
 }
 
@@ -85,7 +90,7 @@ func TestGraphPreviewSelectedTypeKeepsNativeDecisionClassification(t *testing.T)
 
 func TestGraphPreviewSelectedCreatePreservesCompleteProperties(t *testing.T) {
 	input := `{"title":"Exact subjects","body":"Original","subjects":[{"uri":"https://example.invalid/beads/a","revision":"one"}],"extra":{"null":null,"items":[1,true,"雪"]}}`
-	cmd := graphCreateTypeCommand(t, []string{"--type=types/evaluation", "--properties=" + input})
+	cmd := graphCreateTypeCommand(t, []string{"--type=evaluation", "--properties=" + input})
 	raw, err := graphPreviewCreateMemoryPropertiesJSON(cmd, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -111,7 +116,7 @@ func TestGraphPreviewSelectedCreatePreservesCompleteProperties(t *testing.T) {
 		}
 	}
 	for _, invalid := range []string{`{"title":"Good","body":null}`, `{"title":"Good","body":3}`, `{"title":"One","title":"Two"}`} {
-		cmd := graphCreateTypeCommand(t, []string{"--type=types/evaluation", "--properties=" + invalid})
+		cmd := graphCreateTypeCommand(t, []string{"--type=evaluation", "--properties=" + invalid})
 		if _, err := graphPreviewCreateMemoryPropertiesJSON(cmd, nil); err == nil {
 			t.Fatalf("invalid complete input admitted: %s", invalid)
 		}
@@ -124,11 +129,11 @@ func TestGraphPreviewSelectedTypeFlowsIntoOrderedPatch(t *testing.T) {
 	t.Cleanup(func() { graphPreviewConfig = previous })
 	cmd := memoryPropertiesPatchCommand(t)
 	cmd.Flags().String("type", "", "")
-	if err := cmd.ParseFlags([]string{"--type=types/policy", `--patch=[{"op":"add","path":"/extra","value":true}]`}); err != nil {
+	if err := cmd.ParseFlags([]string{"--type=policy", `--patch=[{"op":"add","path":"/extra","value":true}]`}); err != nil {
 		t.Fatal(err)
 	}
 	request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, "beads/a")
-	if err != nil || request.TypeURL != typesInventoryScope+"types/policy" || !strings.Contains(string(request.Patch), "extra") {
+	if err != nil || request.TypeURL != typesInventoryScope+"policy" || !strings.Contains(string(request.Patch), "extra") {
 		t.Fatalf("retype/patch request lost intent: %+v %v", request, err)
 	}
 }
@@ -146,7 +151,7 @@ func selectedTypeTestDescriptors(t *testing.T, scope string) []graph.TypeDescrip
 	// of the workspace's fresh installation and native adapter inventories.
 	for _, symbol := range []memorycatalog.Symbol{
 		memorycatalog.Memory, memorycatalog.Evaluation, memorycatalog.Constraint,
-		memorycatalog.Policy, memorycatalog.Decision, memorycatalog.Procedure,
+		memorycatalog.Policy,
 		memorycatalog.Requirement, memorycatalog.Scenario, memorycatalog.Specification,
 		memorycatalog.References, memorycatalog.SupersededBy, memorycatalog.Requires,
 		memorycatalog.Defines, memorycatalog.SubjectTo, memorycatalog.Conformance,
@@ -154,7 +159,7 @@ func selectedTypeTestDescriptors(t *testing.T, scope string) []graph.TypeDescrip
 	} {
 		name := string(symbol)
 		input.Bindings[symbol] = memorycatalog.Binding{
-			Type: typecatalog.Reference{URI: scope + "types/" + name}, SchemaBase: scope + "schemas/" + name,
+			Type: typecatalog.Reference{URI: scope + name}, SchemaBase: scope + "schemas/" + name,
 		}
 	}
 	projection, err := memorycatalog.New(input)
@@ -171,17 +176,16 @@ func selectedTypeTestDescriptors(t *testing.T, scope string) []graph.TypeDescrip
 	}
 	descriptors = append(descriptors, inventoryDescriptor(t, graphstore.IssueTypeURL(scope), "Issue", graph.KindBead), inventoryDescriptor(t, graphstore.DependencyTypeURL(scope), "Dependency", graph.KindLink))
 	for _, name := range graphstore.FreshTypeNames() {
-		id := scope + "types/" + name
-		base, classification, native := graphstore.NativeTypeClassification(scope, id)
-		if !native {
-			continue
+		id := scope + name
+		for _, role := range []graph.ResourceKind{graph.KindBead, graph.KindLink} {
+			base, classification, native := graphstore.NativeTypeClassification(scope, id, role)
+			if native {
+				descriptors = append(descriptors, inventoryDescriptor(t, id, classification, role, base))
+				break
+			}
 		}
-		kind := graph.KindBead
-		if base == graphstore.DependencyTypeURL(scope) {
-			kind = graph.KindLink
-		}
-		descriptors = append(descriptors, inventoryDescriptor(t, id, classification, kind, base))
 	}
+
 	return descriptors
 }
 
@@ -189,7 +193,7 @@ func TestGraphPreviewSelectedGenericProjectionUsesInstalledRefinements(t *testin
 	snapshot := genericTestSnapshot(t, genericTestEdge{"ab", "a", "b"})
 	snapshot.Types = selectedTypeTestDescriptors(t, genericTestScope)
 	record := snapshot.Records[0].(graphstore.Record)
-	record.Type = genericTestScope + "types/policy"
+	record.Type = genericTestScope + "policy"
 	snapshot.Records[0] = record
 	got, err := projectGraphGeneric(snapshot, genericTestScope, genericTestInput("a", "out", 1))
 	if err != nil || len(got.Nodes) != 2 || got.Nodes[0].Type != record.Type {

@@ -112,22 +112,33 @@ func TestGraphPreviewUniformRevisionFlagSyntax(t *testing.T) {
 
 func TestGraphPreviewLocalTypeSelectors(t *testing.T) {
 	const scope = "https://example.invalid/demo/"
-	for _, selector := range []string{"references", "types/references", scope + "types/references", "subject-to", "types/subject-to"} {
+	for _, selector := range []string{"references", "references", scope + "references", "subject-to", "subject-to", "beads/foo", "https://other.invalid/types/example-follows"} {
+		want := selector
+		if !strings.Contains(selector, "://") {
+			want = scope + selector
+		}
 		got, err := graphPreviewTypeURL(scope, selector)
-		want := scope + "types/" + strings.TrimPrefix(strings.TrimPrefix(selector, scope), "types/")
 		if err != nil || got != want {
-			t.Fatalf("%q: %q, %v", selector, got, err)
+			t.Errorf("%q = %q %v want %q", selector, got, err, want)
 		}
 	}
-	for _, selector := range []string{"preview-related-memory", "types/preview-related-memory", scope + "types/preview-related-memory"} {
-		got, err := graphPreviewTypeURL(scope, selector)
-		if err != nil || got != scope+"types/preview-related-memory" {
-			t.Fatalf("%q: %q, %v", selector, got, err)
-		}
-	}
-	for _, selector := range []string{"", "types/", "types/../x", "types/example%2Dfollows", "types/example?x=1", "types//x", "beads/foo", "https://other.invalid/types/example-follows", scope + "types/example-follows#x", "bad?type", "bad%2Ftype"} {
+	for _, selector := range []string{"", "types/", "types/../x", "types/example%2Dfollows", "types/example?x=1", "types//x", scope + "types/example-follows#x", "bad?type", "bad%2Ftype"} {
 		if _, err := graphPreviewTypeURL(scope, selector); err == nil {
-			t.Errorf("accepted %q", selector)
+			t.Errorf("accepted malformed canonical ID %q", selector)
+		}
+	}
+}
+
+func TestGraphPreviewTypeSelectionPreservesCompleteLocalIDs(t *testing.T) {
+	const scope = "https://example.invalid/demo/"
+	for _, selector := range []string{"memory", scope + "memory", "references", scope + "references", "types/literal", scope + "types/literal"} {
+		want := selector
+		if !strings.Contains(selector, "://") {
+			want = scope + selector
+		}
+		got, err := graphPreviewTypeURL(scope, selector)
+		if err != nil || got != want {
+			t.Errorf("selector %q = %q, %v; want complete identity %q", selector, got, err, want)
 		}
 	}
 }
@@ -137,10 +148,10 @@ func TestGraphPreviewLinkDisplayKeepsForeignURLs(t *testing.T) {
 	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/demo/"}
 	t.Cleanup(func() { graphPreviewConfig = old })
 	for input, want := range map[string]string{
-		"https://example.invalid/demo/types/references": "types/references",
-		"https://example.invalid/demo/links/edge":       "links/edge",
-		"https://example.invalid/demo/beads/work":       "beads/work",
-		"https://remote.invalid/beads/work":             "https://remote.invalid/beads/work",
+		"https://example.invalid/demo/references": "references",
+		"https://example.invalid/demo/links/edge": "links/edge",
+		"https://example.invalid/demo/beads/work": "beads/work",
+		"https://remote.invalid/beads/work":       "https://remote.invalid/beads/work",
 	} {
 		if got := graphPreviewDisplayLocalURL(input); got != want {
 			t.Errorf("%q displayed as %q, want %q", input, got, want)
@@ -158,10 +169,10 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		fail bool
 	}{
 		{nil, "", false},
-		{[]string{"--type", "types/references"}, "https://example.invalid/demo/types/references", false},
-		{[]string{"--type", "types/preview-related"}, "", true},
-		{[]string{"--type", "blocks"}, "https://example.invalid/demo/types/native-dependency/626c6f636b73", false},
-		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/types/native-dependency/706172656e742d6368696c64", false},
+		{[]string{"--type", "references"}, "https://example.invalid/demo/references", false},
+		{[]string{"--type", "types/preview-related"}, "https://example.invalid/demo/types/preview-related", false},
+		{[]string{"--type", "blocks"}, "https://example.invalid/demo/blocks", false},
+		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/parent-child", false},
 		{[]string{"--type", "random"}, "", true},
 		{[]string{"--type="}, "", true},
 	} {
@@ -176,6 +187,31 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		}
 		if cmd.Flags().Lookup("type") == nil || cmd.Flags().Lookup("link-type") != nil || cmd.Flags().Lookup("resource-type") != nil {
 			t.Fatal("only the unified type flag should be registered")
+		}
+	}
+}
+
+// Catalog identity selection must not turn ordinary native Issue shorthand
+// into a graph-only option at the workspace admission boundary.
+func TestOrdinaryNativeTypeShorthandAdmission(t *testing.T) {
+	for _, value := range []string{"feature", "task", "decision", "feat", "adr", "dec", "user-story", "ms", "memory", "policy", "issue", "foo/feature", "p%q"} {
+		cmd := &cobra.Command{}
+		cmd.Flags().String("type", "", "")
+		if err := cmd.Flags().Set("type", value); err != nil {
+			t.Fatal(err)
+		}
+		if graphPreviewNominalTypeFlagChanged(cmd) {
+			t.Fatalf("ordinary native shorthand %q requires graph workspace", value)
+		}
+	}
+	for _, value := range []string{"types/feature", "https://example.test/work/feature", "Type"} {
+		cmd := &cobra.Command{}
+		cmd.Flags().String("type", "", "")
+		if err := cmd.Flags().Set("type", value); err != nil {
+			t.Fatal(err)
+		}
+		if !graphPreviewNominalTypeFlagChanged(cmd) {
+			t.Fatalf("nominal graph operand %q escaped graph workspace admission", value)
 		}
 	}
 }

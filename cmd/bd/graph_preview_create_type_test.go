@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
@@ -64,20 +65,20 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 		flags      []string
 		code       int
 	}{
-		{name: "default-issue", want: scope + "types/native-issue/7461736b"},
-		{name: "classification-is-concrete-type", flags: []string{"--type=bug"}, want: scope + "types/native-issue/627567"},
-		{name: "prospective-native-classification", flags: []string{"--type=preview-task"}, want: scope + "types/native-issue/707265766965772d7461736b"},
-		{name: "prospective-example-classification", flags: []string{"--type=example-task"}, want: scope + "types/native-issue/6578616d706c652d7461736b"},
-		{name: "prospective-custom-issue", flags: []string{"--type=preview-issue"}, want: scope + "types/native-issue/707265766965772d6973737565"},
-		{name: "relative-issue", flags: []string{"--type=types/issue"}, code: 2},
+		{name: "default-issue", want: scope + "task"},
+		{name: "classification-is-concrete-type", flags: []string{"--type=bug"}, want: scope + "bug"},
+		{name: "prospective-native-classification", flags: []string{"--type=preview-task"}, want: scope + "preview-task"},
+		{name: "prospective-example-classification", flags: []string{"--type=example-task"}, want: scope + "example-task"},
+		{name: "prospective-custom-issue", flags: []string{"--type=preview-issue"}, want: scope + "preview-issue"},
+		{name: "relative-issue", flags: []string{"--type=types/issue"}, want: scope + "types/issue"},
 		{name: "canonical-issue", flags: []string{"--type=" + graphstore.IssueTypeURL(scope)}, code: 2},
-		{name: "prospective-custom-memory-label", flags: []string{"--type=preview-memory"}, want: scope + "types/native-issue/707265766965772d6d656d6f7279"},
-		{name: "prospective-custom-label", flags: []string{"--type=memory-preview"}, want: scope + "types/native-issue/6d656d6f72792d70726576696577"},
-		{name: "relative-memory", flags: []string{"--type=types/memory"}, want: graphstore.MemoryTypeURL(scope)},
+		{name: "prospective-custom-memory-label", flags: []string{"--type=preview-memory"}, want: scope + "preview-memory"},
+		{name: "prospective-custom-label", flags: []string{"--type=memory-preview"}, want: scope + "memory-preview"},
+		{name: "relative-memory", flags: []string{"--type=types/memory"}, want: scope + "types/memory"},
 		{name: "canonical-memory", flags: []string{"--type=" + graphstore.MemoryTypeURL(scope)}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "empty", flags: []string{"--type="}, code: 2},
-		{name: "foreign", flags: []string{"--type=https://foreign.invalid/types/preview-memory"}, code: 2},
-		{name: "uninstalled", flags: []string{"--type=types/custom"}, code: 5},
+		{name: "foreign", flags: []string{"--type=https://foreign.invalid/types/preview-memory"}, code: 5},
+		{name: "prospective-literal-custom", flags: []string{"--type=types/custom"}, want: scope + "types/custom"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, tc.flags), scope)
@@ -106,7 +107,7 @@ func TestGraphPreviewCreateBeadTypeUsesConcreteNativeTypes(t *testing.T) {
 			t.Fatalf("flags %v: Issue Type %q, err %v", flags, got, err)
 		}
 	}
-	for _, old := range []string{graphstore.IssueTypeURL(scope), "types/preview-issue-v3"} {
+	for _, old := range []string{graphstore.IssueTypeURL(scope), graphstore.DependencyTypeURL(scope)} {
 		if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, []string{"--type=" + old}), scope); got != "" || err == nil {
 			t.Fatalf("admitted abstract or obsolete Type: %q, %v", got, err)
 		}
@@ -115,7 +116,7 @@ func TestGraphPreviewCreateBeadTypeUsesConcreteNativeTypes(t *testing.T) {
 
 func TestGraphPreviewNativeDependencySelectionUsesConcreteTypes(t *testing.T) {
 	const scope = "https://example.invalid/project/"
-	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "my-own-kind"} {
+	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "my-own-kind", "é", "a b", "p%q", "unfamiliar/é"} {
 		url, admitted := graphPreviewDependencyTypeURL(scope, native)
 		want, _ := graphstore.NativeDependencyTypeURL(scope, string(native))
 		decoded, ok := graphPreviewNativeDependencyType(scope, url)
@@ -195,5 +196,27 @@ func TestGraphPreviewCreateMemoryInput(t *testing.T) {
 				t.Fatal("inline Memory create read stdin")
 			}
 		})
+	}
+}
+
+func TestGraphPreviewCreateAndCollectionSelectSameMemoryIdentity(t *testing.T) {
+	const scope = "https://example.invalid/type-agreement/"
+	for _, selector := range []string{"memory", scope + "memory", "scenario", scope + "scenario"} {
+		created, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, []string{"--type=" + selector}), scope)
+		if err != nil {
+			t.Errorf("create %q: %v", selector, err)
+			continue
+		}
+		selected, err := graphPreviewCollectionTypeURL(scope, selector, false)
+		if err != nil || created != selected {
+			t.Errorf("%q create=%q collection=%q err=%v", selector, created, selected, err)
+		}
+		want := selector
+		if !strings.Contains(selector, "://") {
+			want = scope + selector
+		}
+		if created != want {
+			t.Errorf("%q actual create selection=%q want=%q", selector, created, want)
+		}
 	}
 }

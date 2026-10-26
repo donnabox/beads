@@ -46,14 +46,14 @@ func TestMemoryCurrentGraphEmbeddedCapture(t *testing.T) {
 	if _, err := s.CreateIssue(ctx, "beads/work", publicops.CreateRequest{Actor: "bridge-author", ForceIDPrefix: true, Issue: &publicops.Issue{ID: "beads/work", Title: "Native work", Status: types.StatusOpen, IssueType: types.TypeTask, Priority: 2}}); err != nil {
 		t.Fatal(err)
 	}
-	policy, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/rail", TypeURL: genericTestScope + "types/policy", Title: "Memory rail", Actor: "bridge-author"})
+	policy, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/rail", TypeURL: genericTestScope + "policy", Title: "Memory rail", Actor: "bridge-author"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/rail", TypeURL: genericTestScope + "types/references", SourcePath: "beads/work", TargetPath: "beads/rail", TargetPin: graphstore.EndpointPin{Revision: policy.Revision}, UnconditionalSource: true, Actor: "bridge-author"}); err != nil {
+	if _, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/rail", TypeURL: genericTestScope + "references", SourcePath: "beads/work", TargetPath: "beads/rail", TargetPin: graphstore.EndpointPin{Revision: policy.Revision}, UnconditionalSource: true, Actor: "bridge-author"}); err != nil {
 		t.Fatal(err)
 	}
-	read, err := s.ReadCurrentFamily(ctx, graphstore.CurrentFamilyRequest{Roots: []memoryquery.CurrentRoot{{Path: "beads/work", Depth: 1}, {Path: "beads/rail", Depth: 0}}, Family: typecatalog.Reference{URI: genericTestScope + "types/references"}, Direction: graph.DirectionOut, Limits: memoryquery.Limits{MaxNodes: 10, MaxLinks: 10, MaxInspected: 1000}, MaxBytes: graphstore.PreviewCurrentReadByteLimit})
+	read, err := s.ReadCurrentFamily(ctx, graphstore.CurrentFamilyRequest{Roots: []memoryquery.CurrentRoot{{Path: "beads/work", Depth: 1}, {Path: "beads/rail", Depth: 0}}, Family: typecatalog.Reference{URI: genericTestScope + "references"}, Direction: graph.DirectionOut, Limits: memoryquery.Limits{MaxNodes: 10, MaxLinks: 10, MaxInspected: 1000}, MaxBytes: graphstore.PreviewCurrentReadByteLimit})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func TestMemoryCurrentGraphEmbeddedCapture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(text, `beads/work [task] (open) "Native work"`) || !strings.Contains(text, `beads/rail [types/policy] "Memory rail"`) || !strings.Contains(text, `target revision="`+policy.Revision+`"`) || strings.Count(text, "2 Beads, 1 Links across 2 views") != 1 {
+	if !strings.Contains(text, `beads/work [task] (open) "Native work"`) || !strings.Contains(text, `beads/rail [policy] "Memory rail"`) || !strings.Contains(text, `target revision="`+policy.Revision+`"`) || strings.Count(text, "2 Beads, 1 Links across 2 views") != 1 {
 		t.Fatal(text)
 	}
 	t.Logf("actual captured read after store close:\n%s", text)

@@ -1,5 +1,9 @@
 # Native concrete Types in Preview 3
 
+> Historical identity mapping: the generated path/hex spellings and generation
+> below are superseded by [meaningful Type identities](2026-10-25-meaningful-type-identities.md).
+> This record preserves the earlier decision and its evidence.
+
 Status: draft implementation preparation. Release integration and playground qualification compose this candidate with the importer and CLI owners' candidates. The existing product ledger is gastownhall/beads#7656; the BDP contract authority remains gastownhall/bdp#59 and #282.
 
 ## Declared affiliation

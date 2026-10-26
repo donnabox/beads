@@ -61,11 +61,11 @@ func TestGraphReadHTTPPreservesEndpointPins(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			constraint, err := store.Create(ctx, graphstore.CreateRequest{Path: "beads/rule", TypeURL: scope + "types/constraint", Title: "Rule"})
+			constraint, err := store.Create(ctx, graphstore.CreateRequest{Path: "beads/rule", TypeURL: scope + "constraint", Title: "Rule"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			owned, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/obligation", TypeURL: scope + "types/subject-to", SourcePath: "beads/source", TargetPath: "beads/rule", TargetPin: graphstore.EndpointPin{Current: true}, ExpectedSourceRevision: source.Revision})
+			owned, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/obligation", TypeURL: scope + "subject-to", SourcePath: "beads/source", TargetPath: "beads/rule", TargetPin: graphstore.EndpointPin{Current: true}, ExpectedSourceRevision: source.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -116,7 +116,7 @@ func TestGraphReadHTTPPreservesEndpointPins(t *testing.T) {
 			}
 			assertOwned := func(record bdpwire.BeadRecord) {
 				t.Helper()
-				links := record.OwnedLinks[scope+"types/subject-to"]
+				links := record.OwnedLinks[scope+"subject-to"]
 				if len(links) != 1 || links[0].ID != owned.Link.ID || links[0].Source.URI != source.ID || links[0].Source.Revision != "" || links[0].Target.URI != constraint.ID || links[0].Target.Revision != constraint.Revision {
 					t.Fatalf("effective ownership projection lost pinned owned target: %+v", record)
 				}

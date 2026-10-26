@@ -12,7 +12,7 @@ import (
 )
 
 func comparisonMemory(version, body string) Record {
-	return Record{ID: "https://example.test/beads/plan", Type: "https://example.test/types/memory", Version: version, Revision: version, Properties: Properties{Title: "Plan", Body: body}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}, Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
+	return Record{ID: "https://example.test/beads/plan", Type: "https://example.test/memory", Version: version, Revision: version, Properties: Properties{Title: "Plan", Body: body}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}, Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
 }
 func comparisonLink(version string) LinkRecord {
 	return LinkRecord{ID: "https://example.test/links/context", Type: "https://example.test/types/related", Version: version, Revision: version, Source: "https://example.test/beads/plan", Target: "https://example.test/beads/work", Properties: map[string]any{"note": "context"}, Metadata: json.RawMessage(`{}`), Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
@@ -147,7 +147,7 @@ func TestVersionComparisonJSONSemantics(t *testing.T) {
 }
 
 func TestVersionComparisonIssueAllSerializedFields(t *testing.T) {
-	before := IssueRecord{ID: "https://example.test/beads/work", Type: "https://example.test/types/issue", Version: "a", Revision: "a", Properties: &publicops.Issue{ID: "work", Title: "Work", Priority: 2}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}
+	before := IssueRecord{ID: "https://example.test/beads/work", Type: "https://example.test/issue", Version: "a", Revision: "a", Properties: &publicops.Issue{ID: "work", Title: "Work", Priority: 2}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}
 	after := before
 	after.Version = "b"
 	after.Revision = "b"

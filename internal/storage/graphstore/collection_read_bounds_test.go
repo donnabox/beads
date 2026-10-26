@@ -30,7 +30,7 @@ func TestCurrentReadAcquisitionBudget(t *testing.T) {
 							t.Error(err)
 						}
 					})
-					if _, err := s.Create(ctx, CreateRequest{Title: "Small", Path: "beads/small", TypeURL: s.ScopeURL() + "types/constraint", Body: "small"}); err != nil {
+					if _, err := s.Create(ctx, CreateRequest{Title: "Small", Path: "beads/small", TypeURL: s.ScopeURL() + "constraint", Body: "small"}); err != nil {
 						t.Fatal(err)
 					}
 					if snapshot, err := s.CurrentSnapshot(ctx); err != nil || len(snapshot.Records) != 1 {
@@ -64,7 +64,7 @@ func TestCurrentReadAcquisitionBudget(t *testing.T) {
 						}
 						// This note's two persisted Link copies plus the owner's retained copy
 						// would fit without accounting for repeated owned/top-level acquisition.
-						added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/large", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/source", TargetPath: "beads/small", ExpectedSourceRevision: source.Revision, Properties: map[string]any{"note": strings.Repeat("n", PreviewCurrentReadByteLimit/5+4096)}})
+						added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/large", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/source", TargetPath: "beads/small", ExpectedSourceRevision: source.Revision, Properties: map[string]any{"note": strings.Repeat("n", PreviewCurrentReadByteLimit/5+4096)}})
 						if err != nil {
 							t.Fatal(err)
 						}

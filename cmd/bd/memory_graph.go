@@ -114,7 +114,7 @@ func memoryCurrentRequest(cmd *cobra.Command, args []string, scope string, op me
 		MaxBytes: graphstore.PreviewCurrentReadByteLimit,
 	}
 	if op.name != "constraints" && op.name != "subjects" {
-		request.Family = typecatalog.Reference{URI: scope + "types/" + op.family}
+		request.Family = typecatalog.Reference{URI: scope + op.family}
 		request.Direction = op.direction
 	}
 	for _, arg := range args {

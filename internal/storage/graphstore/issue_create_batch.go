@@ -66,7 +66,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 				if exists, err := publicResourceIDExistsInTx(ctx, tx, item.Issue.ID); err != nil {
 					return issueops.CreateBatchItemError(index, err)
 				} else if exists {
-					return issueops.CreateBatchItemError(index, ErrAlreadyExists)
+					return issueops.CreateBatchItemError(index, publicResourceIDReservedErrorInTx(ctx, tx, item.Issue.ID))
 				}
 			}
 			dependencies := make([]IssueCreateDependency, 0, len(item.Dependencies))
@@ -185,7 +185,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			if err != nil {
 				return err
 			}
-			if err := s.ensureNativeTypeInTx(ctx, tx, declaredTypes[index]); err != nil {
+			if err := s.ensureNativeTypeInTx(ctx, tx, declaredTypes[index], graph.KindBead); err != nil {
 				return err
 			}
 		}
@@ -197,7 +197,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			if exists, err := publicResourceIDExistsInTx(ctx, tx, issue.ID); err != nil {
 				return issueops.CreateBatchItemError(index, err)
 			} else if exists {
-				return issueops.CreateBatchItemError(index, ErrAlreadyExists)
+				return issueops.CreateBatchItemError(index, publicResourceIDReservedErrorInTx(ctx, tx, issue.ID))
 			}
 			path, err := generatedIssuePath(ctx, tx, issue.ID)
 			if err != nil {

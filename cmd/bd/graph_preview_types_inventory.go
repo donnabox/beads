@@ -28,7 +28,7 @@ func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, d
 		*count = *count + 1
 	}
 	for _, descriptor := range descriptors {
-		if (!graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) && graphPreviewIntrinsicType(descriptor)) || !graphstore.AssessmentTypeAvailable(scope, descriptor.ID(), assessmentsEnabled) {
+		if (!graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) && graphPreviewIntrinsicType(scope, descriptor)) || !graphstore.AssessmentTypeAvailable(scope, descriptor.ID(), assessmentsEnabled) {
 			continue
 		}
 		var out *strings.Builder
@@ -73,15 +73,9 @@ func graphPreviewTypesInventory(scope string, selected []graph.TypeDescriptor, d
 // and their local identity spellings until the selected registry provides its
 // explicit public projection. Refines is the replacement for ConformsTo; the
 // ordinary Memory Link Type Conformance remains public.
-func graphPreviewIntrinsicType(descriptor graph.TypeDescriptor) bool {
-	reserved := func(value string) bool {
-		value = strings.ToLower(strings.NewReplacer("-", "", "_", "", " ", "").Replace(value))
-		switch value {
-		case "type", "beadtype", "linktype", "conformsto", "refines":
-			return true
-		}
+func graphPreviewIntrinsicType(scope string, descriptor graph.TypeDescriptor) bool {
+	if !strings.HasPrefix(descriptor.ID(), scope) {
 		return false
 	}
-	id := descriptor.ID()
-	return reserved(descriptor.Name()) || reserved(id[strings.LastIndex(id, "/")+1:])
+	return graphPreviewReservedTypeSelector(strings.TrimPrefix(descriptor.ID(), scope))
 }

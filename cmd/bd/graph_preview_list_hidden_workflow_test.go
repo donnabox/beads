@@ -441,14 +441,14 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			expect("default Issue family excludes Memories", defaultIDs, defaultMore, []string{"beads/open"}, false)
 			got, more := list()
 			expect("all-Type list hides the closed and the pinned Issue", got, more, []string{"beads/open", "beads/plan"}, false)
-			got, more = list("--type", "types/issue")
+			got, more = list("--type", "issue")
 			expect("Issue Type hides them too", got, more, []string{"beads/open"}, false)
-			got, more = list("--type", "types/memory")
+			got, more = list("--type", "memory")
 			expect("a Memory is never hidden", got, more, []string{"beads/plan"}, false)
 
 			got, more = list("--all")
 			expect("--all shows them and lifts the configured default limit", got, more, everything, false)
-			got, more = list("--all", "--type", "types/issue")
+			got, more = list("--all", "--type", "issue")
 			expect("--all with the Issue Type", got, more, issues, false)
 			got, more = list("--all", "--limit", "3")
 			if len(got) != 3 || !more {
@@ -462,7 +462,7 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			// The human rows carry an Issue's status and priority, and the hint
 			// offers --all only while it would still help.
 			rows := human("--all")
-			for _, want := range []string{"beads/done [task] closed P2 \"Finished work\"\n", "beads/open [task] open P1 \"Open work\"\n", "beads/pin [task] pinned P3 \"Pinned note\"\n", "beads/plan [types/memory] \"Plan\"\n"} {
+			for _, want := range []string{"beads/done [task] closed P2 \"Finished work\"\n", "beads/open [task] open P1 \"Open work\"\n", "beads/pin [task] pinned P3 \"Pinned note\"\n", "beads/plan [memory] \"Plan\"\n"} {
 				if !strings.Contains(rows, want) {
 					t.Fatalf("human rows lack %q: %s", want, rows)
 				}
@@ -473,7 +473,7 @@ func TestGraphPreviewListHiddenIssuesWorkflow(t *testing.T) {
 			if out := human("--limit", "1"); !strings.Contains(out, "More Beads exist; increase --limit or use --all within preview bounds.") {
 				t.Fatalf("hint without --all must offer it: %s", out)
 			}
-			if out := human(); !strings.HasPrefix(out, "Beads (2; more: false; graph preview)\n") || strings.Contains(out, "beads/done") || strings.Contains(out, "beads/pin") || !strings.Contains(out, "beads/plan [types/memory] \"Plan\"\n") {
+			if out := human(); !strings.HasPrefix(out, "Beads (2; more: false; graph preview)\n") || strings.Contains(out, "beads/done") || strings.Contains(out, "beads/pin") || !strings.Contains(out, "beads/plan [memory] \"Plan\"\n") {
 				t.Fatalf("default human list: %s", out)
 			}
 		})

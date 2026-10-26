@@ -346,7 +346,7 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	}
 	nativeClassification := ""
 	native := familyType == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL)
-	if base, classification, ok := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, selected); ok && base == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+	if base, classification, ok := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, selected, graph.KindBead); ok && base == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		native, nativeClassification = true, classification
 	}
 	if !native {

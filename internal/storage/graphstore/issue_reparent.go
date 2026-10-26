@@ -90,8 +90,8 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err != nil {
 			return err
 		}
-		childBase, _, childNative := NativeTypeClassification(s.ScopeURL(), child.Type)
-		parentBase, _, parentNative := NativeTypeClassification(s.ScopeURL(), parent.Type)
+		childBase, _, childNative := NativeTypeClassification(s.ScopeURL(), child.Type, graph.KindBead)
+		parentBase, _, parentNative := NativeTypeClassification(s.ScopeURL(), parent.Type, graph.KindBead)
 		if childPath == parentPath || !childNative || !parentNative || childBase != issueType || parentBase != issueType || child.Properties.ID == parent.Properties.ID {
 			return fmt.Errorf("%w: reparent requires two distinct Issues of the installed relationship Type", storage.ErrValidation)
 		}
@@ -279,7 +279,7 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
 			return err
 		} else if exists {
-			return ErrAlreadyExists
+			return publicResourceIDReservedErrorInTx(ctx, tx, publicID)
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
 			(path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id)

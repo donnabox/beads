@@ -19,7 +19,7 @@ import (
 // native Issue fixtures used by the same history and rollback tests.
 func createSelectedConstraintFixture(t *testing.T, ctx context.Context, s *Store, path string) Record {
 	t.Helper()
-	record, err := s.Create(ctx, CreateRequest{Path: path, TypeURL: s.ScopeURL() + "types/constraint", Title: "Constraint"})
+	record, err := s.Create(ctx, CreateRequest{Path: path, TypeURL: s.ScopeURL() + "constraint", Title: "Constraint"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,7 +43,7 @@ func TestRetypedMemoryExactHeadStillChecksAllocationType(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			wrongType := s.ScopeURL() + "types/specification"
+			wrongType := s.ScopeURL() + "specification"
 			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, wrongType, "beads/subject"); err != nil {
 				t.Fatal(err)
 			}
@@ -100,7 +100,7 @@ func TestReadVersionRetainedLifecycle(t *testing.T) {
 				t.Fatal(err)
 			}
 			createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "before"}, Actor: "author"})
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "before"}, Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -323,7 +323,7 @@ func TestReadVersionOwnedMembershipByOwnerKind(t *testing.T) {
 				t.Fatal(err)
 			}
 			createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Actor: "author"})
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}

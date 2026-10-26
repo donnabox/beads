@@ -87,7 +87,7 @@ func memoryLinkRequest(cmd *cobra.Command, args []string, scope string, op memor
 
 func memoryLinkRequestWithEndpoints(cmd *cobra.Command, scope string, op memoryLinkOperation, source, target string) (graphstore.LinkCreateRequest, error) {
 	zero := graphstore.LinkCreateRequest{}
-	result := graphstore.LinkCreateRequest{TypeURL: scope + "types/" + op.family}
+	result := graphstore.LinkCreateRequest{TypeURL: scope + op.family}
 	endpoints := []string{source, target}
 	paths := make([]string, 2)
 	pins := make([]graphstore.EndpointPin, 2)

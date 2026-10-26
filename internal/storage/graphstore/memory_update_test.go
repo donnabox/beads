@@ -46,10 +46,10 @@ func TestMemoryUpdateLifecycle(t *testing.T) {
 			if err != nil || !reflect.DeepEqual(reference.Source, original) {
 				t.Fatalf("unowned reference revised source: %+v %v", reference, err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", TypeURL: s.ScopeURL() + "types/constraint", Title: "Constraint"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", TypeURL: s.ScopeURL() + "constraint", Title: "Constraint"}); err != nil {
 				t.Fatal(err)
 			}
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/constraint", ExpectedSourceRevision: original.Revision, Properties: map[string]any{"note": "before"}})
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/constraint", ExpectedSourceRevision: original.Revision, Properties: map[string]any{"note": "before"}})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -153,7 +153,7 @@ func TestMemoryUpdateRefusalAndRollback(t *testing.T) {
 				t.Fatal(err)
 			}
 			createSelectedConstraintFixture(t, ctx, s, "beads/constraint")
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/constraint", ExpectedSourceRevision: memory.Revision})
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/constraint", ExpectedSourceRevision: memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -256,11 +256,11 @@ func TestMemoryUpdateConcurrentWriters(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				target, err := first.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: first.ScopeURL() + "types/constraint", Title: "Target constraint", Body: "target"})
+				target, err := first.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: first.ScopeURL() + "constraint", Title: "Target constraint", Body: "target"})
 				if err != nil {
 					t.Fatal(err)
 				}
-				link, err := first.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: first.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/target", ExpectedSourceRevision: memory.Revision})
+				link, err := first.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: first.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/target", ExpectedSourceRevision: memory.Revision})
 				if err != nil {
 					t.Fatal(err)
 				}

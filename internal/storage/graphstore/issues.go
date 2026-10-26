@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	graph "github.com/steveyegge/beads/graphops"
 	"reflect"
 	"time"
 	"unicode/utf8"
@@ -107,7 +108,7 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 			if exists, err := publicResourceIDExistsInTx(ctx, tx, request.Issue.ID); err != nil {
 				return err
 			} else if exists {
-				return ErrAlreadyExists
+				return publicResourceIDReservedErrorInTx(ctx, tx, request.Issue.ID)
 			}
 		}
 		if path != "" {
@@ -155,7 +156,7 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 		if err != nil {
 			return err
 		}
-		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
+		if err := s.ensureNativeTypeInTx(ctx, tx, issueType, graph.KindBead); err != nil {
 			return err
 		}
 		// Check after installing the prospective Type as well: this Resource
@@ -163,7 +164,7 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 		if exists, err := publicResourceIDExistsInTx(ctx, tx, created.Issue.ID); err != nil {
 			return err
 		} else if exists {
-			return ErrAlreadyExists
+			return publicResourceIDReservedErrorInTx(ctx, tx, created.Issue.ID)
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
             (path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
@@ -233,6 +234,10 @@ func generatedIssuePath(ctx context.Context, tx *sql.Tx, issueID string) (string
 // Read dispatches the immutable backing selection and reads its authoritative
 // state in one snapshot. Unsupported resource families remain explicit errors.
 func (s *Store) Read(ctx context.Context, path string) (any, error) {
+	return s.readWithProjectionContext(ctx, path, nil)
+}
+
+func (s *Store) readWithProjectionContext(ctx context.Context, path string, projection *ResourceProjectionContext) (any, error) {
 	if err := s.validateResourceReadAddress(path); err != nil {
 		return nil, err
 	}
@@ -250,7 +255,10 @@ func (s *Store) Read(ctx context.Context, path string) (any, error) {
 			return err
 		}
 		result, err = s.readCurrentVerifiedInTx(ctx, tx, path)
-		return err
+		if err != nil {
+			return err
+		}
+		return s.captureResourceProjectionInTx(ctx, tx, result, projection)
 	})
 	if err != nil {
 		return nil, err
@@ -358,7 +366,7 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 	}
-	if err := s.requireNativeBindingInTx(ctx, tx, typ); err != nil {
+	if err := s.requireNativeBindingInTx(ctx, tx, typ, graph.KindBead); err != nil {
 		return IssueRecord{}, err
 	}
 	// Comments are a separate native Issue feed, outside durable_state and its

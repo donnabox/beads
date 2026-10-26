@@ -476,14 +476,14 @@ func TestCanonicalCollectionRejectsIssueAllSelection(t *testing.T) {
 func TestCanonicalCollectionTypeGrammarDiagnostics(t *testing.T) {
 	for _, links := range []bool{false, true} {
 		for _, flag := range []string{"type", "exact-type", "conforms-to"} {
-			for _, value := range []string{canonicalCollectionScope + "beads/note", "https://"} {
+			for _, value := range []string{"https://"} {
 				cmd, _, _ := canonicalCollectionTestCommand(t, links, "--output-format=json", "--"+flag, value)
 				options, _, _ := canonicalOutputOptions(cmd)
 				if _, err := canonicalCollectionRequest(cmd, links, options); err == nil {
 					t.Fatalf("invalid Type %q admitted by %s", value, flag)
 				}
 			}
-			for _, value := range []string{canonicalCollectionScope + "types/note", "https://types.example.test/external-note"} {
+			for _, value := range []string{canonicalCollectionScope + "note", canonicalCollectionScope + "beads/note", canonicalCollectionScope + "types/note", "https://types.example.test/external-note"} {
 				cmd, _, _ := canonicalCollectionTestCommand(t, links, "--output-format=json", "--"+flag, value)
 				options, _, _ := canonicalOutputOptions(cmd)
 				if _, err := canonicalCollectionRequest(cmd, links, options); err != nil {

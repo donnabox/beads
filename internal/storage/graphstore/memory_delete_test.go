@@ -236,7 +236,7 @@ func TestMemoryDeleteIncidentLinks(t *testing.T) {
 					}
 					typeURL := RelatedTypeURL(s.ScopeURL())
 					if shape == "incoming-owned" || shape == "outgoing-memory" {
-						typeURL = s.ScopeURL() + "types/superseded-by"
+						typeURL = s.ScopeURL() + "superseded-by"
 					}
 					beforeLink := workflowState(t, ctx, s)
 					link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: linkPath, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, ExpectedSourceRevision: sourceRevision})
@@ -320,7 +320,7 @@ func TestMemoryDeleteCorruptAbsentState(t *testing.T) {
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/context", Title: "Context"}); err != nil {
 				t.Fatal(err)
 			}
-			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "types/superseded-by", SourcePath: "beads/plan", TargetPath: "beads/context", ExpectedSourceRevision: memory.Revision})
+			linked, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "superseded-by", SourcePath: "beads/plan", TargetPath: "beads/context", ExpectedSourceRevision: memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}

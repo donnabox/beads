@@ -86,15 +86,7 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 		if selector == "" {
 			return "", graphFailure("invalid_selector", "--"+flag+" requires a nonempty Type selector", 2)
 		}
-		if !strings.Contains(selector, "/") {
-			for _, name := range graphstore.FreshTypeNames() {
-				if strings.EqualFold(selector, name) {
-					selector = name
-					break
-				}
-			}
-		}
-		url, err := graphPreviewTypeURL(scope, selector)
+		url, err := graphPreviewCollectionTypeURL(scope, selector, true)
 		if err != nil {
 			return "", graphFailure("invalid_selector", err.Error(), 2)
 		}

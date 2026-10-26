@@ -199,11 +199,11 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			if got := issue(call("priority", custom.ID, "0")); got.Priority != 0 {
 				t.Fatalf("canonical identity did not select custom Issue: %+v", got)
 			}
-			baseAt := graphMixedResult[graphstore.IssueRecord](t, call("create", "Base at", "--id", "task", "--force"))
-			literalAt := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal at", "--id", "task@1", "--force"))
+			baseAt := graphMixedResult[graphstore.IssueRecord](t, call("create", "Base at", "--id", "work-base", "--force"))
+			literalAt := graphMixedResult[graphstore.IssueRecord](t, call("create", "Literal at", "--id", "work-base@1", "--force"))
 			baseBefore := call("show", baseAt.ID)
 			literalBefore := call("show", literalAt.ID)
-			for _, selector := range []string{"task@current", "task@1", "task@bogus", "task@"} {
+			for _, selector := range []string{"work-base@current", "work-base@1", "work-base@bogus", "work-base@"} {
 				refuse("invalid_selector", "update", selector, "--title", "Wrong target")
 			}
 			if call("show", baseAt.ID) != baseBefore || call("show", literalAt.ID) != literalBefore {

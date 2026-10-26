@@ -2,7 +2,6 @@ package graphstore
 
 import (
 	"bytes"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"strings"
@@ -31,13 +30,13 @@ func TestSelectedTypeInventoryMatchesCompleteCatalog(t *testing.T) {
 		if strings.HasPrefix(definition.name, "example-") || strings.HasPrefix(definition.name, "preview-") {
 			t.Fatalf("obsolete selected Type: %s", definition.name)
 		}
-		if definition.name == "related" {
+		if definition.name == "related" && descriptor.Describes() != graph.KindLink {
 			t.Fatal("legacy Related spelling installed a separate Type")
 		}
 		byID[descriptor.ID()] = descriptor
 	}
-	if TypeGeneration != 12 || len(byID) != 52 {
-		t.Fatalf("generation%d installed%d Types, want generation12 ordered catalog52", TypeGeneration, len(byID))
+	if TypeGeneration != 13 || len(byID) != 50 {
+		t.Fatalf("generation%d installed%d Types, want generation13 ordered catalog50", TypeGeneration, len(byID))
 	}
 	for _, family := range []struct {
 		path, base string
@@ -52,15 +51,22 @@ func TestSelectedTypeInventoryMatchesCompleteCatalog(t *testing.T) {
 			t.Fatalf("native family lost abstract kind: %+v", base)
 		}
 		for _, name := range family.names {
-			id := scope + "types/" + family.path + "/" + hex.EncodeToString([]byte(name))
+			id := scope + name
 			descriptor, present := byID[id]
-			expected, err := nativeConcreteDescriptor(scope, id)
+			expected, err := nativeConcreteDescriptor(scope, id, family.kind)
 			if !present || err != nil || descriptor.Name() != name || descriptor.Describes() != family.kind || !bytes.Equal(descriptor.CanonicalJSON(), expected.CanonicalJSON()) {
 				t.Fatalf("native descriptor mismatch for %q: %s %v", id, descriptor.CanonicalJSON(), err)
 			}
 			parents := descriptor.ConformsTo()
 			if len(parents) != 1 || parents[0] != family.base {
 				t.Fatalf("native %q lost exact family: %v", id, parents)
+			}
+		}
+	}
+	for _, descriptor := range byID {
+		for _, parent := range descriptor.ConformsTo() {
+			if _, ok := byID[parent]; !ok {
+				t.Fatalf("missing installed parent %s of %s", parent, descriptor.ID())
 			}
 		}
 	}
@@ -103,11 +109,16 @@ func TestSelectedTypeInventoryMatchesCompleteCatalog(t *testing.T) {
 		t.Fatal("abstract Conformance must remain visible in inventory")
 	}
 	for _, name := range []string{"type", "bead-type", "link-type", "conforms-to", "refines", "Type", "BeadType", "LinkType", "ConformsTo", "Refines", "example-follows", "example-cites", "preview-memory", "preview-issue", "preview-dependency", "preview-related"} {
-		if _, present := byID[scope+"types/"+name]; present {
+		if _, present := byID[scope+name]; present {
 			t.Fatalf("intrinsic/obsolete %s leaked into external catalog", name)
 		}
 	}
-	if RelatedTypeURL(scope) != scope+"types/references" || IsInformationalTypeURL(scope, DependencyTypeURL(scope)) {
+	for _, name := range []string{"types/example-follows", "types/example-cites", "types/preview-memory", "types/preview-issue", "types/preview-dependency", "types/preview-related"} {
+		if _, present := byID[scope+name]; present {
+			t.Fatalf("obsolete generated Type %s leaked into external catalog", name)
+		}
+	}
+	if RelatedTypeURL(scope) != scope+"references" || IsInformationalTypeURL(scope, DependencyTypeURL(scope)) {
 		t.Fatal("legacy Related alias or native Dependency separation differs")
 	}
 }
@@ -123,7 +134,7 @@ func TestSelectedReferencePropertiesUseSharedURISyntax(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if err := catalog.validateProperties(scope+"types/policy", raw, graph.KindBead); !errors.Is(err, storage.ErrValidation) {
+		if err := catalog.validateProperties(scope+"policy", raw, graph.KindBead); !errors.Is(err, storage.ErrValidation) {
 			t.Fatalf("invalid authority admitted: %v", err)
 		}
 	}

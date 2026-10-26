@@ -32,7 +32,7 @@ body summary, and searches all three.
 Without either identity flag, `remember` uses the existing content-derived key
 algorithm and overwrite behavior. Bare existing key-like content recalls rather
 than overwrites; use an explicit identity flag to write such content. Ordinary
-`create --type types/memory` remains create-only and uses the common allocator
+`create --type memory` remains create-only and uses the common allocator
 when no ID was supplied.
 
 IDs preserve case, spaces, Unicode and punctuation. They must be nonblank UTF-8.

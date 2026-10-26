@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"strings"
 
-	"encoding/hex"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/memorycatalog"
 	"github.com/steveyegge/beads/internal/types"
@@ -21,7 +20,7 @@ func ExampleCitesTypeURL(scope string) string   { return scope + "types/example-
 
 func IsInformationalTypeURL(scope, id string) bool {
 	for _, symbol := range selectedMemoryLinkNames {
-		if id == scope+"types/"+symbol {
+		if id == scope+symbol {
 			return true
 		}
 	}
@@ -29,7 +28,7 @@ func IsInformationalTypeURL(scope, id string) bool {
 }
 
 var selectedMemoryBeadNames = []string{
-	"memory", "evaluation", "constraint", "policy", "decision", "procedure",
+	"memory", "evaluation", "constraint", "policy",
 	"requirement", "scenario", "specification",
 }
 
@@ -54,15 +53,15 @@ func previewTypeDefinitions() []previewTypeDefinition {
 	}
 	definitions = append(definitions, previewTypeDefinition{"issue", issueDescriptor}, previewTypeDefinition{"dependency", dependencyDescriptor})
 	for _, classification := range append(append([]types.IssueType(nil), types.AllIssueTypes...), types.TypeEvent) {
-		name := "native-issue/" + hex.EncodeToString([]byte(classification))
+		name := string(classification)
 		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
-			return nativeConcreteDescriptor(scope, scope+"types/"+name)
+			return nativeConcreteDescriptor(scope, scope+name, graph.KindBead)
 		}})
 	}
 	for _, kind := range types.WellKnownDependencyTypes() {
-		name := "native-dependency/" + hex.EncodeToString([]byte(kind))
+		name := string(kind)
 		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
-			return nativeConcreteDescriptor(scope, scope+"types/"+name)
+			return nativeConcreteDescriptor(scope, scope+name, graph.KindLink)
 		}})
 	}
 	return definitions
@@ -144,19 +143,51 @@ func installedPreviewTypes(ctx context.Context, tx *sql.Tx, scope string) ([]gra
 		return nil, fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
 	}
 	result := make([]graph.TypeDescriptor, 0, count)
+	expectedByName := make(map[string]graph.TypeDescriptor, len(definitions))
+	args := make([]any, 0, 2*len(definitions))
 	for _, definition := range definitions {
 		expected, err := definition.build(scope)
 		if err != nil {
 			return nil, err
 		}
+		expectedByName[definition.name] = expected
+		args = append(args, definition.name, len(expected.CanonicalJSON()))
+	}
+	// Acquire the fixed set together, retaining each descriptor's exact SQL
+	// length guard. Repeated complete-record checks must not issue one query
+	// per declaration; all validation still belongs to this transaction.
+	rows, err := tx.QueryContext(ctx, fixedTypeDescriptorQuery(len(definitions)), args...)
+	if err != nil {
+		return nil, fmt.Errorf("%w: read fixed Type descriptors: %v", ErrInvalidStore, err)
+	}
+	checked := make(map[string]graph.TypeDescriptor, len(definitions))
+	for rows.Next() {
+		var name string
 		var raw []byte
 		var fingerprint string
-		if err := tx.QueryRowContext(ctx, `SELECT descriptor, fingerprint FROM graph_preview_types WHERE name=? AND OCTET_LENGTH(descriptor)=?`, definition.name, len(expected.CanonicalJSON())).Scan(&raw, &fingerprint); err != nil {
-			return nil, fmt.Errorf("%w: read %s descriptor: %v", ErrInvalidStore, definition.name, err)
+		if err := rows.Scan(&name, &raw, &fingerprint); err != nil {
+			return nil, errors.Join(fmt.Errorf("%w: read fixed Type descriptor: %v", ErrInvalidStore, err), rows.Close())
+		}
+		expected, present := expectedByName[name]
+		if !present {
+			return nil, errors.Join(fmt.Errorf("%w: unexpected fixed Type name", ErrInvalidStore), rows.Close())
+		}
+		if _, duplicate := checked[name]; duplicate {
+			return nil, errors.Join(fmt.Errorf("%w: duplicate fixed Type name", ErrInvalidStore), rows.Close())
 		}
 		parsed, err := graph.ParseTypeDescriptor(raw)
 		if err != nil || !bytes.Equal(raw, expected.CanonicalJSON()) || fingerprint != expected.Fingerprint() || fingerprint != parsed.Fingerprint() {
-			return nil, fmt.Errorf("%w: %s descriptor differs", ErrInvalidStore, definition.name)
+			return nil, errors.Join(fmt.Errorf("%w: %s descriptor differs", ErrInvalidStore, name), rows.Close())
+		}
+		checked[name] = parsed
+	}
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		return nil, fmt.Errorf("%w: read fixed Type descriptors: %v", ErrInvalidStore, err)
+	}
+	for _, definition := range definitions {
+		parsed, present := checked[definition.name]
+		if !present {
+			return nil, fmt.Errorf("%w: read %s descriptor: missing or incorrect byte length", ErrInvalidStore, definition.name)
 		}
 		result = append(result, parsed)
 	}
@@ -166,6 +197,12 @@ func installedPreviewTypes(ctx context.Context, tx *sql.Tx, scope string) ([]gra
 	}
 	result = append(result, extra...)
 	return result, nil
+}
+
+// Only the number of fixed placeholders varies. Names and exact byte lengths
+// remain bound arguments, and no caller text is part of the SQL statement.
+func fixedTypeDescriptorQuery(count int) string {
+	return `SELECT name,descriptor,fingerprint FROM graph_preview_types WHERE ` + strings.TrimSuffix(strings.Repeat("(name=? AND OCTET_LENGTH(descriptor)=?) OR ", count), " OR ")
 }
 
 func (s *Store) informationalTypeInTx(ctx context.Context, tx *sql.Tx, id string) error {

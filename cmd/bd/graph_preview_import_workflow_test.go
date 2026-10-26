@@ -193,7 +193,7 @@ func TestGraphPreviewLegacyImportMixedKindsInstalledWorkflow(t *testing.T) {
 			} {
 				link := graphMixedResult[graphstore.LinkRecord](t, call("", "link", "show", result.DependencyIDs[pair]))
 				ends := strings.Split(pair, " -> ")
-				base, classification, concrete := graphstore.NativeTypeClassification(scope, link.Type)
+				base, classification, concrete := graphstore.NativeTypeClassification(scope, link.Type, graph.KindLink)
 				if !concrete || base != graphstore.DependencyTypeURL(scope) || classification != kind || link.Properties["dep_type"] != kind || link.Source != result.IDs[ends[0]] || link.Target != result.IDs[ends[1]] {
 					t.Fatalf("dependency type/kind/endpoints changed for %s: %+v", pair, link)
 				}
@@ -462,7 +462,7 @@ func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
 					if err := json.Unmarshal(got.Owned[0], &link); err != nil {
 						t.Fatal(err)
 					}
-					base, classification, concrete := graphstore.NativeTypeClassification(scope, link.Type)
+					base, classification, concrete := graphstore.NativeTypeClassification(scope, link.Type, graph.KindLink)
 					if link.ID == "" || result.DependencyIDs["web-app-b2c -> web-app-a1b"] != link.ID || !concrete || base != graphstore.DependencyTypeURL(scope) || classification != "blocks" || link.Source != id || link.Target != result.IDs["web-app-a1b"] || link.Properties["dep_type"] != "blocks" {
 						t.Fatalf("Issue %s dependency lost type or endpoints: %+v", source.ID, link)
 					}

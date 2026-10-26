@@ -7,7 +7,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -36,7 +38,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			old := func(args ...string) string { t.Helper(); return call(append(args, "--json")...) }
 			snapshot := func(id string) string { t.Helper(); return old("show", scope+id) }
 			for _, id := range []string{"a", "b", "c", "d"} {
-				old("create", id, "--id", id, "--type", "types/constraint")
+				old("create", id, "--id", id, "--type", "constraint")
 			}
 			native := graphMixedResult[graphstore.IssueRecord](t, old("create", "native", "--graph-path", "beads/i", "--type", "task"))
 			decode := func(raw string) memoryAuthoredLink {
@@ -85,6 +87,42 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 					t.Fatalf("refusal not canonical %s %s %v", &out, &stderr, err)
 				}
 			}
+			// Configured-unused native declarations must not break Memory Link
+			// projection; retained custom bindings remain usable after config edits.
+			graphListConfig(t, work, "types.custom: \"review-class\"\n")
+			create("reference", "a", "b", "--id=configured-native-context")
+			custom := graphMixedResult[graphstore.IssueRecord](t, old("create", "Custom native", "--type", "review-class"))
+			configPath := filepath.Join(work, ".beads", "config.yaml")
+			configBytes, err := os.ReadFile(configPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			updatedConfig := bytes.Replace(configBytes, []byte("types.custom: \"review-class\""), []byte("types.custom: \"\""), 1)
+			if bytes.Equal(configBytes, updatedConfig) {
+				t.Fatal("custom configuration fixture was not replaced")
+			}
+			if err := os.WriteFile(configPath, updatedConfig, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			retained := create("reference", custom.ID, "b", "--id=retained-native-context")
+			if retained.Source.ID != custom.ID || retained.Source.Type != custom.Type {
+				t.Fatal("retained custom native Type lost in Memory authoring projection")
+			}
+			// An Issue postimage retains custom owned Dependency slots even when
+			// the newly authored Memory References link is unowned.
+			old("link", custom.ID, native.ID, "--type", "review-dependency", "--id", "custom-owned-dependency")
+			command := graphMemoryReadCommand(t.Context(), bd, work, home, "memory", "reference", custom.ID, "--to", "c", "--id=custom-owned-reference", "--json")
+			ownedOutput, ownedErr := command.CombinedOutput()
+			if ownedErr != nil {
+				t.Logf("failed authoring output: %s", ownedOutput)
+				t.Logf("post-failure persisted Link: %s", old("link", "show", "custom-owned-reference"))
+				t.Fatalf("custom owned Dependency authoring: %v", ownedErr)
+			}
+			ownedReference := decode(string(ownedOutput))
+			encodedSource, err := json.Marshal(ownedReference.Source)
+			if err != nil || !bytes.Contains(encodedSource, []byte(scope+"review-dependency")) {
+				t.Fatalf("custom owned Dependency disappeared from mutation postimage: %s %v", encodedSource, err)
+			}
 			beforeA, beforeB := snapshot("a"), snapshot("b")
 			beforeLinks := old("link", "list", "--incident-to", "a")
 			for _, op := range memoryLinkOperations {
@@ -101,7 +139,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("duplicate endpoint flags changed graph state")
 			}
 			first := create("reference", "a", "b", "--title=Context", "--body=Why", "--status=reviewed", "--properties", `{"counter":9007199254740994,"nested":{"x":[true,null]}}`, "--metadata", `{"private":{"tag":"retained"}}`, "--actor=memory-author")
-			if first.Link.Type != scope+"types/references" || first.Link.Source.URI != scope+"a" || first.Link.Target.URI != scope+"b" || string(first.Link.Properties["counter"]) != "9007199254740994" || string(first.Link.Properties["body"]) != `"Why"` || first.Link.Attribution == nil || first.Link.Attribution.Principal != "memory-author" || string(first.Link.Metadata["private"]) != `{"tag":"retained"}` {
+			if first.Link.Type != scope+"references" || first.Link.Source.URI != scope+"a" || first.Link.Target.URI != scope+"b" || string(first.Link.Properties["counter"]) != "9007199254740994" || string(first.Link.Properties["body"]) != `"Why"` || first.Link.Attribution == nil || first.Link.Attribution.Principal != "memory-author" || string(first.Link.Metadata["private"]) != `{"tag":"retained"}` {
 				t.Fatalf("authored fields lost: %+v", first)
 			}
 			parallel := create("reference", "a", "b")
@@ -109,7 +147,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("parallel references deduplicated")
 			}
 			retired := create("supersede", "a", "b", "--id=retirement")
-			if retired.Link.Source.URI != scope+"a" || retired.Link.Target.URI != scope+"b" || retired.Link.Type != scope+"types/superseded-by" {
+			if retired.Link.Source.URI != scope+"a" || retired.Link.Target.URI != scope+"b" || retired.Link.Type != scope+"superseded-by" {
 				t.Fatal(retired)
 			}
 			before := snapshot("a")
@@ -118,7 +156,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("repeated supersede revised source")
 			}
 			parent := create("defines", "b", "c", "--id=definition")
-			if parent.Link.Type != scope+"types/defines" || parent.Source.ID != scope+"b" || len(parent.ReplacedSource) == 0 {
+			if parent.Link.Type != scope+"defines" || parent.Source.ID != scope+"b" || len(parent.ReplacedSource) == 0 {
 				t.Fatal(parent)
 			}
 			beforeC := snapshot("c")
@@ -130,7 +168,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			}
 			// A cycle with a Requires edge is legal; only the Defines subgraph is a tree.
 			required := create("requires", "c", "b", "--id=mixed-requirement")
-			if required.Link.Type != scope+"types/requires" {
+			if required.Link.Type != scope+"requires" {
 				t.Fatal(required)
 			}
 			governed := create("subject-to", native.ID, "b", "--id=issue-rule")
@@ -138,7 +176,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if governed.Link.Type != scope+"types/subject-to" || governed.Source.Type != nativeTaskType || governed.Link.Source.URI != native.ID {
+			if governed.Link.Type != scope+"subject-to" || governed.Source.Type != nativeTaskType || governed.Link.Source.URI != native.ID {
 				t.Fatal(governed)
 			}
 			// The stale guard is enforced atomically by the same writer, before either
@@ -179,7 +217,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			// operation result, and quiet success never suppresses explicit JSON.
 			human := call("memory", "reference", "d", "--to=b", "--id=human-link")
 			t.Logf("ACTUAL_EXAMPLE provider=%s args=%q output=%s", engine, []string{"memory", "reference", "d", "--to=b", "--id=human-link"}, human)
-			if strings.TrimSpace(human) != "human-link [types/references] d → b" {
+			if strings.TrimSpace(human) != "human-link [references] d → b" {
 				t.Fatalf("human confirmation lost Link identity: %s", human)
 			}
 			var raw memoryAuthoredLink

@@ -16,7 +16,7 @@ const SchemaVersion = 11
 
 // TypeGeneration identifies the selected fresh graph contract, including its
 // Type installation and public identity semantics. It never migrates stores.
-const TypeGeneration = 12
+const TypeGeneration = 13
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.

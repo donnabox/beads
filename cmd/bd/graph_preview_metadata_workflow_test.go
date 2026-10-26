@@ -59,8 +59,8 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 			if !bytes.Equal(issue.Metadata, []byte(`{"team":"issues"}`)) || len(issue.Properties.Metadata) != 0 {
 				t.Fatalf("Issue metadata = %s, properties=%+v", issue.Metadata, issue.Properties)
 			}
-			constraint := graphMixedResult[graphstore.Record](t, call("create", "Metadata constraint", "--type", "types/constraint", "--id", "metadata-constraint"))
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, constraint.ID, "--id", "context", "--type", scope+"types/subject-to", "--metadata", `{"origin":"manual"}`, "--if-source-revision", memory.Revision))
+			constraint := graphMixedResult[graphstore.Record](t, call("create", "Metadata constraint", "--type", "constraint", "--id", "metadata-constraint"))
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, constraint.ID, "--id", "context", "--type", scope+"subject-to", "--metadata", `{"origin":"manual"}`, "--if-source-revision", memory.Revision))
 			if !bytes.Equal(link.Link.Metadata, []byte(`{"origin":"manual"}`)) {
 				t.Fatalf("Link metadata = %s", link.Link.Metadata)
 			}
