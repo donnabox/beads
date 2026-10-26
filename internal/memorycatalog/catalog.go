@@ -299,7 +299,7 @@ func localProperties(symbol Symbol) []Property {
 		return []Property{{Name: "subjects", DeclaredBy: symbol, Required: true, Shape: "exact-bead-references", ShapeFragment: json.RawMessage(`{"type":"array","minItems":1,"items":{"type":"object","properties":{"uri":{"type":"string","minLength":1},"revision":{"type":"string","minLength":1}},"required":["uri","revision"],"additionalProperties":false}}`), AdditionalChecks: []string{"shared-reference-uri-syntax-and-semantics", "exact-retained-bead-revision", "same-scope-subject-bindings", "collective-full-subject-group"}}}
 	case Constraint:
 		return []Property{{Name: "applicability", DeclaredBy: symbol, Shape: "reserved-undefined", ReservedReason: "concrete executable representation/evaluator deferred; no authored value admitted by this declaration"}}
-	case Policy, Decision:
+	case Policy:
 		return []Property{{Name: "authority", DeclaredBy: symbol, Shape: "reference", ShapeFragment: json.RawMessage(`{"anyOf":[{"type":"string"},{"type":"object","properties":{"uri":{"type":"string"},"revision":{"type":"string","minLength":1}},"required":["uri","revision"],"additionalProperties":false}]}`), AdditionalChecks: []string{"shared-reference-uri-syntax-and-semantics"}}}
 	case Specification:
 		return []Property{textProperty(symbol, "version", false, false, true, true)}

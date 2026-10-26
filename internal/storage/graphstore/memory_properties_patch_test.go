@@ -35,11 +35,11 @@ func memoryPropertiesPatchFixture(t *testing.T, backend string) (context.Context
 	if err != nil {
 		t.Fatal(err)
 	}
-	target, err := store.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: store.ScopeURL() + "types/constraint", Title: "Target", Body: "target", Actor: "target-author"})
+	target, err := store.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: store.ScopeURL() + "constraint", Title: "Target", Body: "target", Actor: "target-author"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	link, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", SourcePath: "beads/plan", TargetPath: "beads/target", TypeURL: store.ScopeURL() + "types/subject-to", ExpectedSourceRevision: memory.Revision})
+	link, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", SourcePath: "beads/plan", TargetPath: "beads/target", TypeURL: store.ScopeURL() + "subject-to", ExpectedSourceRevision: memory.Revision})
 	if err != nil {
 		t.Fatal(err)
 	}

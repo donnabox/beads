@@ -139,7 +139,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			selected(false, "--due-after=2000-01-01T00:00:00Z")
 			target := call("create", "Gate", "--id", "beads/gate", "--force")
 			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
-			info := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
+			info := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"references"))
 			current := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			before := current
 			edit := []string{"update", scope + "beads/work", "--estimate=45", "--external-ref=next", "--spec-id=next spec", "--due=2100-01-01T00:00:00Z", "--design=Revised", "--acceptance=Accepted", "--append-notes=Progress", "--if-revision", "=" + current.Revision, "--actor", "author"}

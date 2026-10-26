@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	graph "github.com/steveyegge/beads/graphops"
 	"reflect"
 	"sort"
 	"strings"
@@ -561,7 +562,7 @@ func TestLegacyImportNativeHierarchyAndKinds(t *testing.T) {
 					t.Fatal(err)
 				}
 				link, err := store.ShowLink(ctx, identity.PrivatePath)
-				base, classification, concrete := NativeTypeClassification(store.ScopeURL(), link.Type)
+				base, classification, concrete := NativeTypeClassification(store.ScopeURL(), link.Type, graph.KindLink)
 				if err != nil || !concrete || base != DependencyTypeURL(store.ScopeURL()) || classification != kind || link.Properties["dep_type"] != kind {
 					t.Fatalf("native kind %s not preserved: %+v, %v", pair, link, err)
 				}

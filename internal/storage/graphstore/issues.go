@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	graph "github.com/steveyegge/beads/graphops"
 	"reflect"
 	"time"
 	"unicode/utf8"
@@ -155,7 +156,7 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 		if err != nil {
 			return err
 		}
-		if err := s.ensureNativeTypeInTx(ctx, tx, issueType); err != nil {
+		if err := s.ensureNativeTypeInTx(ctx, tx, issueType, graph.KindBead); err != nil {
 			return err
 		}
 		// Check after installing the prospective Type as well: this Resource
@@ -358,7 +359,7 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if kind != "bead" || !nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 	}
-	if err := s.requireNativeBindingInTx(ctx, tx, typ); err != nil {
+	if err := s.requireNativeBindingInTx(ctx, tx, typ, graph.KindBead); err != nil {
 		return IssueRecord{}, err
 	}
 	// Comments are a separate native Issue feed, outside durable_state and its

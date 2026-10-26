@@ -34,7 +34,7 @@ func TestInformationalPairWritesSelectOpaquePublicBeadID(t *testing.T) {
 				t.Fatal(err)
 			}
 			for _, reverse := range []bool{false, true} {
-				request := LinkCreateRequest{TypeURL: store.ScopeURL() + "types/references", Path: "links/out", SourcePath: "beads/beads/exp-x", SourceLocalID: "beads/exp-x", TargetPath: "beads/" + memory.PublicID, TargetLocalID: memory.PublicID}
+				request := LinkCreateRequest{TypeURL: store.ScopeURL() + "references", Path: "links/out", SourcePath: "beads/beads/exp-x", SourceLocalID: "beads/exp-x", TargetPath: "beads/" + memory.PublicID, TargetLocalID: memory.PublicID}
 				if reverse {
 					request.Path = "links/in"
 					request.SourcePath, request.TargetPath = request.TargetPath, request.SourcePath
@@ -81,7 +81,7 @@ func TestInformationalPairWritesRefuseExactLinkIDAsBead(t *testing.T) {
 						t.Fatal(err)
 					}
 				}
-				typ := store.ScopeURL() + "types/references"
+				typ := store.ScopeURL() + "references"
 				original, err := store.AddInformationalLink(ctx, LinkCreateRequest{
 					Path: "links/x", TypeURL: typ, SourcePath: "beads/source", TargetPath: "beads/target",
 				})

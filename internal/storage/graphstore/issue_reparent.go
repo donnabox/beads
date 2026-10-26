@@ -90,8 +90,8 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err != nil {
 			return err
 		}
-		childBase, _, childNative := NativeTypeClassification(s.ScopeURL(), child.Type)
-		parentBase, _, parentNative := NativeTypeClassification(s.ScopeURL(), parent.Type)
+		childBase, _, childNative := NativeTypeClassification(s.ScopeURL(), child.Type, graph.KindBead)
+		parentBase, _, parentNative := NativeTypeClassification(s.ScopeURL(), parent.Type, graph.KindBead)
 		if childPath == parentPath || !childNative || !parentNative || childBase != issueType || parentBase != issueType || child.Properties.ID == parent.Properties.ID {
 			return fmt.Errorf("%w: reparent requires two distinct Issues of the installed relationship Type", storage.ErrValidation)
 		}

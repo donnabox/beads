@@ -62,7 +62,11 @@ func nativeDependencyProperties(raw []byte) (types.DependencyType, error) {
 }
 
 func (s *Store) writeNativeLinkPropertiesInTx(ctx context.Context, tx *sql.Tx, request LinkUpdateRequest, properties []byte, patch *graphpatch.Patch, current LinkRecord, terminal *LinkTombstone, head string) (LinkMutationResult, error) {
-	if !isConcreteNativeDependency(s.ScopeURL(), current.Type) {
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	if !isConcreteNativeDependency(s.ScopeURL(), current.Type, facts...) {
 		return LinkMutationResult{}, fmt.Errorf("%w: native Link Type cannot be edited", ErrCapabilityUnavailable)
 	}
 	for _, pin := range []*EndpointPin{request.SourcePin, request.TargetPin} {

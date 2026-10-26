@@ -48,7 +48,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if base, _, native := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, beadType); !native || base != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+	if base, _, native := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, beadType, graph.KindBead); !native || base != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
 		if cmd.Flags().Changed("graph-path") {
 			return graphFailure("invalid_selector", "--graph-path applies only to Issue creation", 2)
 		}
@@ -150,7 +150,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	classification, _ := cmd.Flags().GetString("type")
 	nominalIssue := cmd.Flags().Changed("type") && graphPreviewNominalSelector(classification)
 	if nominalIssue {
-		_, classification, _ = graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, beadType)
+		_, classification, _ = graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, beadType, graph.KindBead)
 	}
 	if value, ok := properties["issue_type"]; ok {
 		if cmd.Flags().Changed("type") && !nominalIssue {
@@ -459,18 +459,19 @@ func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error
 	}
 	if !graphPreviewNominalSelector(selector) {
 		classification := types.IssueType(selector).Normalize()
-		// Mapping selects the native writer; its transaction independently checks
-		// current custom-class authorization. A pre-read cannot authorize it.
-		return graphstore.NativeIssueTypeURL(scope, string(classification))
+		if classification.IsBuiltIn() {
+			return graphstore.NativeIssueTypeURL(scope, string(classification))
+		}
 	}
-	typeURL, err := graphPreviewTypeURL(scope, selector)
+
+	typeURL, err := graphPreviewCollectionTypeURL(scope, selector, false)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
 	if typeURL == graphstore.IssueTypeURL(scope) || typeURL == graphstore.DependencyTypeURL(scope) {
 		return "", graphFailure("invalid_selector", "abstract native Types cannot be instantiated", 2)
 	}
-	if base, classification, native := graphstore.NativeTypeClassification(scope, typeURL); native && base == graphstore.IssueTypeURL(scope) {
+	if base, classification, native := graphstore.NativeTypeClassification(scope, typeURL, graph.KindBead); native && base == graphstore.IssueTypeURL(scope) {
 		if types.IssueType(classification).Normalize() != types.IssueType(classification) {
 			return "", graphFailure("invalid_selector", "concrete Issue Type must use its normalized native classification", 2)
 		}

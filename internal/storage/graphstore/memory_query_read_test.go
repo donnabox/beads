@@ -45,7 +45,7 @@ func memoryScopedRequires(t *testing.T, backend string) {
 		}
 	})
 	for _, path := range []string{"a", "b", "c", "d"} {
-		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + path, TypeURL: s.ScopeURL() + "types/constraint", Title: path}); err != nil {
+		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + path, TypeURL: s.ScopeURL() + "constraint", Title: path}); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -127,11 +127,11 @@ func TestMemoryScopedRetainedOwner(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	old, err := s.Create(ctx, CreateRequest{Path: "beads/a", TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
+	old, err := s.Create(ctx, CreateRequest{Path: "beads/a", TypeURL: s.ScopeURL() + "constraint", Title: "a"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	target, err := s.Create(ctx, CreateRequest{Path: "beads/b", TypeURL: s.ScopeURL() + "types/policy", Title: "b", Body: "old policy"})
+	target, err := s.Create(ctx, CreateRequest{Path: "beads/b", TypeURL: s.ScopeURL() + "policy", Title: "b", Body: "old policy"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -181,7 +181,7 @@ func TestMemoryScopedCurrentIntegrityAndUnrelatedBytes(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	if _, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"}); err != nil {
+	if _, err := s.Create(ctx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "constraint", Title: "Rule"}); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.Create(ctx, CreateRequest{Path: "beads/unrelated", Title: "Large unrelated memory", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2+1024)}); err != nil {
@@ -287,7 +287,7 @@ func TestMemoryScopedIgnoresUnrelatedIssuePopulation(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	if _, err := s.Create(setupCtx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "types/constraint", Title: "Rule"}); err != nil {
+	if _, err := s.Create(setupCtx, CreateRequest{Path: "beads/rule", TypeURL: s.ScopeURL() + "constraint", Title: "Rule"}); err != nil {
 		t.Fatal(err)
 	}
 	items := make([]publicops.BatchCreateItem, PreviewSnapshotLimit)
@@ -344,7 +344,7 @@ func TestMemoryScopedAccumulatesSourceLocalLinks(t *testing.T) {
 		}
 	})
 	for _, p := range []string{"a", "b"} {
-		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + p, TypeURL: s.ScopeURL() + "types/constraint", Title: p}); err != nil {
+		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + p, TypeURL: s.ScopeURL() + "constraint", Title: p}); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -393,7 +393,7 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			t.Cleanup(cancel)
 			rootPath := "beads/" + field
 			targetPath := rootPath + "-target"
-			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
+			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "constraint", Title: "a"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -401,7 +401,7 @@ func TestMemoryScopedCatalogAcquisition(t *testing.T) {
 			request.MaxBytes = 32 * 1024
 			switch field {
 			case "endpoint_type", "endpoint_public_id":
-				if _, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "b"}); err != nil {
+				if _, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "constraint", Title: "b"}); err != nil {
 					t.Fatal(err)
 				}
 				if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/" + field, TypeURL: s.ScopeURL() + "types/requires", SourcePath: rootPath, TargetPath: targetPath, UnconditionalSource: true}); err != nil {
@@ -518,7 +518,7 @@ func TestMemoryScopedRefusals(t *testing.T) {
 			rootPath := "beads/" + name + "-root"
 			targetPath := "beads/" + name + "-target"
 			linkPath := "links/" + name
-			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "a"})
+			root, err := s.Create(ctx, CreateRequest{Path: rootPath, TypeURL: s.ScopeURL() + "constraint", Title: "a"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -539,7 +539,7 @@ func TestMemoryScopedRefusals(t *testing.T) {
 				}
 				expected = ErrGone
 			case "deleted-target", "unknown-target-pin":
-				target, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "types/constraint", Title: "b"})
+				target, err := s.Create(ctx, CreateRequest{Path: targetPath, TypeURL: s.ScopeURL() + "constraint", Title: "b"})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -594,7 +594,7 @@ func TestMemoryScopedAccumulatedByteBoundary(t *testing.T) {
 		}
 	})
 	for _, p := range []string{"a", "b", "c"} {
-		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + p, TypeURL: s.ScopeURL() + "types/constraint", Title: p, Body: strings.Repeat(p, 512)}); err != nil {
+		if _, err := s.Create(ctx, CreateRequest{Path: "beads/" + p, TypeURL: s.ScopeURL() + "constraint", Title: p, Body: strings.Repeat(p, 512)}); err != nil {
 			t.Fatal(err)
 		}
 	}

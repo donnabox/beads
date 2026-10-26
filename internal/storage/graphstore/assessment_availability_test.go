@@ -48,7 +48,7 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			constraint, err := enabled.Create(ctx, CreateRequest{Path: "beads/rule", Title: "Rule", TypeURL: enabled.ScopeURL() + "types/constraint"})
+			constraint, err := enabled.Create(ctx, CreateRequest{Path: "beads/rule", Title: "Rule", TypeURL: enabled.ScopeURL() + "constraint"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -56,7 +56,7 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			eval, err := enabled.Create(ctx, CreateRequest{Path: "beads/eval", TypeURL: enabled.ScopeURL() + "types/evaluation", PropertiesJSON: props})
+			eval, err := enabled.Create(ctx, CreateRequest{Path: "beads/eval", TypeURL: enabled.ScopeURL() + "evaluation", PropertiesJSON: props})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -217,14 +217,14 @@ func TestAssessmentAvailabilityDefaultOff(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := off.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/independent", SourcePath: "beads/eval", TargetPath: "beads/subject", TypeURL: off.ScopeURL() + "types/references"}); err != nil {
+			if _, err := off.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/independent", SourcePath: "beads/eval", TargetPath: "beads/subject", TypeURL: off.ScopeURL() + "references"}); err != nil {
 				t.Fatal(err)
 			}
 			if after, err := off.Show(ctx, "beads/eval"); err != nil || !reflect.DeepEqual(beforeReference, after) {
 				t.Fatalf("unowned Reference changed disabled source: %v", err)
 			}
 			refuse("abstract Conformance", func() error {
-				_, e := off.AddInformationalLink(ctx, LinkCreateRequest{SourcePath: "beads/eval", TargetPath: "beads/rule", TypeURL: off.ScopeURL() + "types/conformance", UnconditionalSource: true})
+				_, e := off.AddInformationalLink(ctx, LinkCreateRequest{SourcePath: "beads/eval", TargetPath: "beads/rule", TypeURL: off.ScopeURL() + "conformance", UnconditionalSource: true})
 				return e
 			})
 			deleted, err := off.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/recovery", ExpectedRevision: recoverable.Revision})

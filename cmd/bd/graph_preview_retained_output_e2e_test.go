@@ -31,7 +31,7 @@ func graphCanonicalRetainedOutputCLI(t *testing.T, engine string) {
 		return graphVersionsOK(t, bd, work, home, args...)
 	}
 	call("remember", "Source", "--id", "beads/source", "--json")
-	call("create", "Target", "--id", "beads/target", "--type", "types/constraint", "--json")
+	call("create", "Target", "--id", "beads/target", "--type", "constraint", "--json")
 	call("link", "create", "beads/source", "beads/target", "--id", "links/edge", "--type", graphstore.RelatedTypeURL(scope), "--json")
 	call("link", "update", "links/edge", "--properties", `{"note":"second"}`, "--json")
 

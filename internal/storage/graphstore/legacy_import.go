@@ -124,7 +124,7 @@ func (s *Store) ImportLegacyWithOptions(ctx context.Context, input legacyimport.
 		// Bind every prospective native Type before checking ANY incoming
 		// Resource ID: a later record's Type can collide with an earlier key.
 		for _, id := range nativeTypes.bindings {
-			if err := s.ensureNativeTypeInTx(ctx, tx, id); err != nil {
+			if err := s.ensureNativeTypeInTx(ctx, tx, id, nativeTypes.roles[id]); err != nil {
 				return err
 			}
 		}

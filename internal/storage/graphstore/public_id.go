@@ -10,6 +10,7 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 )
 
 // A public ID is reserved across Issues, Memories, and Links for the Scope's
@@ -18,6 +19,35 @@ import (
 // continue to publish their original path. The writer_token coordination fence
 // serializes check-and-insert reservations; no suffix alias is reserved.
 func publicResourceIDExistsInTx(ctx context.Context, tx *sql.Tx, id string) (bool, error) {
+	allocated, err := allocatedPublicIDExistsInTx(ctx, tx, id)
+	if err != nil || allocated {
+		return allocated, err
+	}
+	// Configured unused declarations reserve their exact IDs without installing
+	// bindings. Reads and failed Resource writes must not register a Type.
+	custom, err := issueops.ResolveCustomTypesInTx(ctx, tx)
+	if err != nil {
+		return false, err
+	}
+	var scope string
+	if err := tx.QueryRowContext(ctx, `SELECT scope_url FROM graph_preview_scope WHERE singleton=1`).Scan(&scope); err != nil {
+		return false, err
+	}
+	for _, value := range custom {
+		uri, err := NativeIssueTypeURL(scope, value)
+		if err != nil {
+			return false, err
+		}
+		if uri == scope+id {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// allocatedPublicIDExistsInTx excludes prospective declarations so a Type's
+// first native use can persist its own already-checked declaration.
+func allocatedPublicIDExistsInTx(ctx context.Context, tx *sql.Tx, id string) (bool, error) {
 	if err := validatePublicID(id); err != nil {
 		return false, err
 	}

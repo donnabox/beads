@@ -175,7 +175,7 @@ func canonicalCollectionRequestIn(cmd *cobra.Command, links bool, options cliout
 		if parameter.Name == "conformsTo" {
 			flag = "conforms-to"
 		}
-		return plan, fmt.Errorf("--%s requires a canonical absolute HTTP(S) Type URI (for a local Type, %stypes/NAME); use an installed Type or native classification shorthand", flag, graphPreviewConfig.GraphScopeURL)
+		return plan, fmt.Errorf("--%s requires a canonical absolute HTTP(S) Type URI (for a local Type, %sNAME); use an installed Type or native classification shorthand", flag, graphPreviewConfig.GraphScopeURL)
 	}
 	return plan, err
 }

@@ -36,11 +36,11 @@ func selectedMemoryPatchFixture(t *testing.T, backend string) (context.Context, 
 	if err != nil {
 		t.Fatal(err)
 	}
-	target, err := s.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: s.ScopeURL() + "types/constraint", Title: "Target constraint", Body: "target", Actor: "target-author"})
+	target, err := s.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: s.ScopeURL() + "constraint", Title: "Target constraint", Body: "target", Actor: "target-author"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/target", ExpectedSourceRevision: memory.Revision})
+	link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/target", ExpectedSourceRevision: memory.Revision})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -331,11 +331,11 @@ func TestMemoryPatchConcurrentWriters(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				target, err := first.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: first.ScopeURL() + "types/constraint", Title: "Target constraint", Body: "target"})
+				target, err := first.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: first.ScopeURL() + "constraint", Title: "Target constraint", Body: "target"})
 				if err != nil {
 					t.Fatal(err)
 				}
-				link, err := first.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: first.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/target", ExpectedSourceRevision: memory.Revision})
+				link, err := first.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/out", TypeURL: first.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/target", ExpectedSourceRevision: memory.Revision})
 				if err != nil {
 					t.Fatal(err)
 				}

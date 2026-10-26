@@ -55,17 +55,17 @@ var previewDDL = []string{
 }
 
 // MemoryTypeURL is the application-local identity of the selected Memory Type.
-func MemoryTypeURL(scope string) string { return scope + "types/memory" }
+func MemoryTypeURL(scope string) string { return scope + "memory" }
 
 func memoryDescriptor(scope string) (graph.TypeDescriptor, error) {
 	return selectedMemoryDescriptor(scope, "memory")
 }
 
 // IssueTypeURL identifies the abstract native Issue family.
-func IssueTypeURL(scope string) string { return scope + "types/issue" }
+func IssueTypeURL(scope string) string { return scope + "issue" }
 
 // DependencyTypeURL identifies the abstract native Dependency family.
-func DependencyTypeURL(scope string) string { return scope + "types/dependency" }
+func DependencyTypeURL(scope string) string { return scope + "dependency" }
 
 func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 	endpoint, err := graph.NewEndpointConstraint([]string{IssueTypeURL(scope)}, graph.ExternalNone)
@@ -107,7 +107,7 @@ type relationshipDependencyType struct {
 // Kept temporarily for the old installer seam while the fresh generation's
 // Type catalog is consolidated. Every valid kind uses one nominal Type.
 var relationshipDependencyTypes = [...]relationshipDependencyType{
-	{types.DepBlocks, "dependency", "types/dependency", "Dependency"},
+	{types.DepBlocks, "dependency", "dependency", "Dependency"},
 }
 
 func relationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
@@ -126,25 +126,28 @@ func RelationshipBlockingTypeURL(scope string) string {
 	id, _ := relationshipDependencyTypeURL(scope, types.DepBlocks)
 	return id
 }
-func isNativeRelationshipDependencyType(scope, id string) bool {
-	base, kind, ok := NativeTypeClassification(scope, id)
+func nativeDependencyTypeCandidate(scope, id string) bool {
+	base, kind, ok := NativeTypeClassification(scope, id, graph.KindLink)
 	return ok && base == DependencyTypeURL(scope) && types.DependencyType(kind).IsValid()
+}
+func isNativeRelationshipDependencyType(scope, id string) bool {
+	return isConcreteNativeDependency(scope, id)
 }
 func relationshipDependencyInstallName(scope, id string) (string, bool) {
 	ok := isNativeRelationshipDependencyType(scope, id)
-	return strings.TrimPrefix(id, scope+"types/"), ok
+	return strings.TrimPrefix(id, scope), ok
 }
 func relationshipDependencyDescriptor(scope string, native types.DependencyType) (graph.TypeDescriptor, error) {
 	id, ok := relationshipDependencyTypeURL(scope, native)
 	if !ok {
 		return graph.TypeDescriptor{}, fmt.Errorf("unsupported native relationship Dependency %q", native)
 	}
-	return nativeConcreteDescriptor(scope, id)
+	return nativeConcreteDescriptor(scope, id, graph.KindLink)
 }
 
 // RelatedTypeURL retains the legacy command spelling as an alias for References.
 // No separate Related Type is installed.
-func RelatedTypeURL(scope string) string { return scope + "types/references" }
+func RelatedTypeURL(scope string) string { return scope + "references" }
 
 func relatedDescriptor(scope string) (graph.TypeDescriptor, error) {
 	return selectedMemoryDescriptor(scope, "references")

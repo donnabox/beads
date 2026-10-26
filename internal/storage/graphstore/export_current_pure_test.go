@@ -70,7 +70,7 @@ func TestExportSnapshotClosure(t *testing.T) {
 		"missing-ownership-metadata": func(s *Snapshot) { delete(s.OwnedLinkTypes, MemoryTypeURL(scope)) },
 		"wrong-type-kind": func(s *Snapshot) {
 			memory := s.Records[0].(Record)
-			memory.Type = scope + "types/references"
+			memory.Type = scope + "references"
 			s.Records[0] = memory
 		},
 		"duplicate-type":     func(s *Snapshot) { s.Types = append(s.Types, s.Types[0]) },
@@ -143,13 +143,13 @@ func exportClosureFixture(t *testing.T, scope string) Snapshot {
 	}
 	// Current native instances declare concrete Types. Ownership metadata
 	// includes the concrete blocks Type, and Owned carries that exact envelope.
-	taskType := scope + "types/native-issue/7461736b"
-	blocksType := scope + "types/native-dependency/626c6f636b73"
+	taskType := scope + "task"
+	blocksType := scope + "blocks"
 	links := []LinkRecord{
 		{ID: scope + "links/block", Type: blocksType, Source: scope + "beads/work", Target: scope + "beads/prereq", Properties: map[string]any{"dep_type": "blocks"}},
-		{ID: scope + "links/context", Type: scope + "types/subject-to", Source: scope + "beads/memory", Target: scope + "beads/work", Properties: map[string]any{}},
-		{ID: scope + "links/follows", Type: scope + "types/subject-to", Source: scope + "beads/memory", Target: scope + "beads/prereq", Properties: map[string]any{}},
-		{ID: scope + "links/issue-context", Type: scope + "types/references", Source: scope + "beads/prereq", Target: scope + "beads/memory", Properties: map[string]any{}},
+		{ID: scope + "links/context", Type: scope + "subject-to", Source: scope + "beads/memory", Target: scope + "beads/work", Properties: map[string]any{}},
+		{ID: scope + "links/follows", Type: scope + "subject-to", Source: scope + "beads/memory", Target: scope + "beads/prereq", Properties: map[string]any{}},
+		{ID: scope + "links/issue-context", Type: scope + "references", Source: scope + "beads/prereq", Target: scope + "beads/memory", Properties: map[string]any{}},
 	}
 	raw := make([]json.RawMessage, len(links))
 	for i, link := range links {

@@ -64,16 +64,16 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 				t.Fatalf("path-only creation did not expose its distinct public identity: %+v", pathCreated)
 			}
 			for _, id := range []string{"m1", "m2", "isolated-memory"} {
-				call("create", id, "--id", id, "--type", "types/memory")
+				call("create", id, "--id", id, "--type", "memory")
 			}
 			for _, edge := range [][3]string{{"i1", "m1", "a"}, {"m1", "i2", "b"}, {"i2", "m2", "c"}, {"i1", "m1", "parallel"}, {"m1", "i1", "cycle"}} {
-				call("link", "create", edge[0], edge[1], "--id", edge[2], "--type", "types/references")
+				call("link", "create", edge[0], edge[1], "--id", edge[2], "--type", "references")
 			}
 			call("dep", "add", "i1", "i2")
 			call("dep", "add", "i2", pathCreated.ID)
 			graphSelectedWorkflowCapture(t, bd, work, home, "not_found", "graph", scope+"beads/isolated-issue", "--json")
 			pin := graphMixedResult[graphstore.Record](t, call("show", "m2"))
-			call("link", "create", "m1", "m2", "--id", "pin", "--type", "types/references", "--target-revision", pin.Revision)
+			call("link", "create", "m1", "m2", "--id", "pin", "--type", "references", "--target-revision", pin.Revision)
 			call("update", "m2", "--properties", `{"title":"New current title"}`)
 			implicit := call("graph", "i1")
 			explicit := call("graph", "i1", "--link-type", "Dependency")
@@ -91,7 +91,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 					for _, id := range historical {
 						// --id is literal data; its returned absolute URI selects
 						// that identity without parsing a local revision suffix.
-						literal := graphMixedResult[graphstore.Record](t, call("create", "Literal reference-shaped ID", "--id", id, "--type", "types/memory"))
+						literal := graphMixedResult[graphstore.Record](t, call("create", "Literal reference-shaped ID", "--id", id, "--type", "memory"))
 						selected := graphSelectedTestSummary(t, call("graph", literal.ID, "--link-type=any"))
 						if len(selected.Nodes) != 1 || selected.Nodes[0].ID != literal.ID || len(selected.Links) != 0 || !selected.Complete {
 							t.Fatalf("canonical literal identity became a revision selector: %s %+v", literal.ID, selected)
@@ -107,7 +107,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			}
 			implicitJSON, implicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--json")
 			explicitJSON, explicitNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--link-type=Dependency", "--json")
-			if implicitJSON != implicit || explicitJSON != implicitJSON || !strings.Contains(implicitNotice, scope+"types/references") || !strings.Contains(implicitNotice, "--link-type any") || strings.Contains(explicitNotice, "omitted Link Types") {
+			if implicitJSON != implicit || explicitJSON != implicitJSON || !strings.Contains(implicitNotice, scope+"references") || !strings.Contains(implicitNotice, "--link-type any") || strings.Contains(explicitNotice, "omitted Link Types") {
 				t.Fatalf("default disclosure changed stdout or explicit selection: implicit=%s explicit=%s implicit stderr=%s explicit stderr=%s", implicitJSON, explicitJSON, implicitNotice, explicitNotice)
 			}
 			quietJSON, quietNotice := graphSelectedWorkflowCapture(t, bd, work, home, "", "graph", "i1", "--quiet", "--json")
@@ -156,7 +156,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			}
 			exactIDs := []string{}
 			for _, link := range exact.Links {
-				if link.Type != scope+"types/references" {
+				if link.Type != scope+"references" {
 					t.Fatalf("exact References included another Type: %+v", link)
 				}
 				exactIDs = append(exactIDs, strings.TrimPrefix(link.ID, scope))
@@ -202,7 +202,7 @@ func TestGraphPreviewSelectedGraphWorkflow(t *testing.T) {
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "i1", "--link-type", "references", "--open", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "i1", "--link-type", "references", "--max-nodes=2", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "i1", "--link-type", "types/memory", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "i1", "--link-type", "memory", "--json")
 		})
 	}
 }

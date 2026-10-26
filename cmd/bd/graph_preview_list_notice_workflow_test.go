@@ -58,14 +58,14 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 			// Structured output carries no notice: it is byte-identical to the
 			// Issue Type route, which never prints one, and --quiet prints nothing.
 			typed := structured("--status", "open")
-			if narrowed := structured("--type", "types/issue", "--status", "open"); typed != narrowed || strings.Contains(typed, "not listed") {
+			if narrowed := structured("--type", "issue", "--status", "open"); typed != narrowed || strings.Contains(typed, "not listed") {
 				t.Fatalf("structured output changed:\n got=%s\nwant=%s", typed, narrowed)
 			}
 			if quiet := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--status", "open", "--quiet"); quiet != "" {
 				t.Fatalf("--quiet printed %q", quiet)
 			}
 			// Narrowing to the Issue Type already told the caller it is Issues only.
-			expect("Issue Type with a typed option", human("--type", "types/issue", "--status", "open"),
+			expect("Issue Type with a typed option", human("--type", "issue", "--status", "open"),
 				"Issues (2; more: false; graph preview)", workRow, otherRow)
 
 			// A configured directory label for this directory selects the Issue
@@ -73,9 +73,9 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 			// pattern is matched against the working directory.
 			graphListConfig(t, work, "directory:\n  labels:\n    \""+filepath.Base(work)+"\": frontend\n")
 			expect("configured label alone", human(), "Issues (1; more: false; graph preview)", workRow)
-			expect("configured label with the Issue Type", human("--type", "types/issue"), "Issues (1; more: false; graph preview)", workRow)
+			expect("configured label with the Issue Type", human("--type", "issue"), "Issues (1; more: false; graph preview)", workRow)
 			// A Memory has no labels, so the label is not applied to one and nothing is refused.
-			memoryRows := human("--type", "types/memory")
+			memoryRows := human("--type", "memory")
 			if len(memoryRows) != 3 || memoryRows[0] != "Beads (1; more: false; graph preview)" ||
 				memoryRows[1] != `directory.labels "frontend" is not applied to this Bead Type.` ||
 				memoryRows[2] != `beads/plan [types/memory] "Plan"` {
@@ -88,7 +88,7 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 				t.Fatalf("structured list with the configured label: %s", out)
 			}
 			// A typed Issue option with a Memory Type is still refused.
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/memory", "--status", "open", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "memory", "--status", "open", "--format", "records-json")
 		})
 	}
 }
@@ -102,7 +102,7 @@ func TestGraphPreviewListTypedOptionsSelectIssueQuery(t *testing.T) {
 		graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 	}
 	for _, tc := range []struct{ option, value string }{
-		{"status", ""}, {"state", "open"}, {"state", ""}, {"type", "types/issue"}, {"assignee", ""},
+		{"status", ""}, {"state", "open"}, {"state", ""}, {"type", "issue"}, {"assignee", ""},
 	} {
 		arg := "--" + tc.option + "=" + tc.value
 		out := graphPolicyCLI(t, bd, work, home, nil, "", "list", arg)
@@ -113,7 +113,7 @@ func TestGraphPreviewListTypedOptionsSelectIssueQuery(t *testing.T) {
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "list", "--type=", "--format", "records-json")
 	for _, option := range []string{"status", "state", "assignee"} {
-		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/memory", "--"+option+"=", "--format", "records-json")
+		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "memory", "--"+option+"=", "--format", "records-json")
 	}
 }
 
@@ -144,7 +144,7 @@ func TestGraphPreviewCustomIssueTypePrefixWorkflow(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				listed := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", "types/issue", "--exact-type", exactType, "--format", "records-json")
+				listed := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", "issue", "--exact-type", exactType, "--format", "records-json")
 				if !strings.Contains(listed, selected[tc.kind].ID) || strings.Contains(listed, selected[tc.otherKind].ID) {
 					t.Fatalf("registered Issue type %q did not select only its allocated ID: %s", tc.kind, listed)
 				}

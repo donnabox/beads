@@ -17,12 +17,12 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 			const scope = "https://example.invalid/human-output/"
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string { t.Helper(); return graphPolicyCLI(t, bd, work, home, nil, "", args...) }
-			create := call("create", "First", "--type", "types/memory", "--id", "beads/first", "--body", "Old body")
+			create := call("create", "First", "--type", "memory", "--id", "beads/first", "--body", "Old body")
 			if strings.TrimSpace(create) != `beads/first [types/memory] "First"` {
 				t.Fatal(create)
 			}
 			one := graphMixedResult[graphstore.Record](t, call("show", "beads/first", "--json"))
-			call("create", "Second", "--type", "types/memory", "--id", "second")
+			call("create", "Second", "--type", "memory", "--id", "second")
 			shown := call("show", "beads/first")
 			if !strings.Contains(shown, "Revision: @1 (current)") || !strings.Contains(shown, "Old body") || strings.Contains(shown, one.Revision) {
 				t.Fatal(shown)
@@ -35,7 +35,7 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 			if got := call("show", "beads/first@1", "--long"); !strings.Contains(got, one.Revision) {
 				t.Fatal(got)
 			}
-			createdLink := call("link", "create", "beads/first", "second@1", "--type", "types/references", "--id", "links/context")
+			createdLink := call("link", "create", "beads/first", "second@1", "--type", "references", "--id", "links/context")
 			second := graphMixedResult[graphstore.Record](t, call("show", "second", "--json"))
 			row := "links/context [types/references] beads/first → second@=" + second.Revision
 			if strings.TrimSpace(createdLink) != row {
@@ -91,8 +91,8 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 				src, dst := "beads/first", "second"
 				if i >= 2 {
 					src, dst = "c-source-"+op.name, "c-target-"+op.name
-					call("create", src, "--type", "types/constraint", "--id", src)
-					call("create", dst, "--type", "types/constraint", "--id", dst)
+					call("create", src, "--type", "constraint", "--id", src)
+					call("create", dst, "--type", "constraint", "--id", dst)
 				}
 				id := "edge-" + op.name
 				got := call("memory", op.name, src, dst, "--id", id)
@@ -104,7 +104,7 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 					t.Fatal(listed)
 				}
 			}
-			recoverable := graphMixedResult[graphstore.Record](t, call("create", "Recovery", "--type", "types/memory", "--id", "recovery", "--json"))
+			recoverable := graphMixedResult[graphstore.Record](t, call("create", "Recovery", "--type", "memory", "--id", "recovery", "--json"))
 			call("delete", "recovery", "--force")
 			call("update", "recovery", "--from-revision", "="+recoverable.Revision)
 			if long := call("versions", "recovery", "--long"); !strings.Contains(long, recoverable.Revision) {

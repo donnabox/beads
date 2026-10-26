@@ -80,9 +80,13 @@ func graphPreviewCollectionTypeURL(scope, raw string, links bool) (string, error
 		}
 		return raw, nil
 	}
-	if graphPreviewNominalSelector(raw) {
-		return graphPreviewTypeURL(scope, raw)
+	// A canonical Scope-local ID is already a complete value, including its
+	// percent escapes and literal path segments. Only a raw noncanonical native
+	// label reaches encoding at this role-specific input boundary.
+	if id, err := graph.CanonicalPublicResourceURL(scope, raw); err == nil {
+		return id, nil
 	}
+
 	if !links {
 		if raw == "issue" {
 			return graphstore.IssueTypeURL(scope), nil

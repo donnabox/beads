@@ -39,7 +39,7 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			}
 			list := func(want []string, extra ...string) {
 				t.Helper()
-				args := append([]string{"list", "--format", "records-json", "--type", "types/issue", "--all"}, extra...)
+				args := append([]string{"list", "--format", "records-json", "--type", "issue", "--all"}, extra...)
 				page := graphMixedResult[graphstore.IssueListPage](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
 				got := make([]string, 0, len(page.Items))
 				for _, item := range page.Items {
@@ -65,7 +65,7 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 			call("create", "Prioritize work", "--id", "beads/work", "--force", "--description", "Untouched description")
 			gate := call("create", "Prerequisite", "--id", "beads/gate", "--force")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
-			informational := call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references")
+			informational := call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"references")
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			edited := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--priority", "P0", "--assignee", "alice", "--title", "Assigned work", "--if-revision", "="+original.Revision))
 			current := edited.Issue

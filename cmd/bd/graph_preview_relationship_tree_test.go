@@ -19,10 +19,10 @@ func graphTreeTestResult(root, direction string, names []string, edges ...generi
 		r.All = true
 	}
 	for _, name := range names {
-		r.Nodes = append(r.Nodes, graphGenericNode{ID: genericTestScope + "beads/" + name, Type: genericTestScope + "types/memory", Title: strings.ToUpper(name)})
+		r.Nodes = append(r.Nodes, graphGenericNode{ID: genericTestScope + "beads/" + name, Type: genericTestScope + "memory", Title: strings.ToUpper(name)})
 	}
 	for _, edge := range edges {
-		r.Links = append(r.Links, graphGenericLink{ID: genericTestScope + "links/" + edge.id, Type: genericTestScope + "types/references", Source: genericTestScope + "beads/" + edge.source, Target: genericTestScope + "beads/" + edge.target})
+		r.Links = append(r.Links, graphGenericLink{ID: genericTestScope + "links/" + edge.id, Type: genericTestScope + "references", Source: genericTestScope + "beads/" + edge.source, Target: genericTestScope + "beads/" + edge.target})
 	}
 	return r
 }
@@ -103,7 +103,7 @@ func TestGraphRelationshipTreeLayoutAndDirections(t *testing.T) {
 	}
 	r = graphTreeTestResult("c", "in", []string{"a", "b", "c", "d"}, genericTestEdge{"bc", "b", "c"}, genericTestEdge{"ab", "a", "b"}, genericTestEdge{"db", "d", "b"})
 	for i := range r.Links {
-		r.Links[i].Type = genericTestScope + "types/superseded-by"
+		r.Links[i].Type = genericTestScope + "superseded-by"
 	}
 	text := graphTreeTestText(t, r)
 	for _, fragment := range []string{"beads/c [types/memory]", "[types/superseded-by] (links/bc) ← beads/b", "[types/superseded-by] (links/ab) ← beads/a", "[types/superseded-by] (links/db) ← beads/d", "4 Beads, 3 Links"} {
@@ -135,7 +135,7 @@ func TestGraphRelationshipTreePreservesLiteralSegmentsAndForeignURLs(t *testing.
 	r := graphTreeTestResult("a", "out", []string{"a", "b"}, genericTestEdge{"ab", "a", "b"})
 	foreign := "https://elsewhere.invalid/graph/beads/b"
 	r.Nodes[1].ID = foreign
-	r.Nodes[1].Type = "https://elsewhere.invalid/types/policy"
+	r.Nodes[1].Type = "https://elsewhere.invalid/policy"
 	r.Links[0].Target = foreign
 	text := graphTreeTestText(t, r)
 	for _, want := range []string{"beads/a [types/memory]", "[types/references] (links/ab)", foreign + " [https://elsewhere.invalid/types/policy]"} {
@@ -191,9 +191,9 @@ func TestGraphRelationshipTreeHumanTypeLabels(t *testing.T) {
 
 func TestGraphRelationshipTreeEscapesAndPreservesData(t *testing.T) {
 	r := graphTreeTestResult("a", "out", []string{"a", "b"}, genericTestEdge{"ab", "a", "b"})
-	r.Nodes[0].Type = genericTestScope + "types/issue"
+	r.Nodes[0].Type = genericTestScope + "issue"
 	r.Nodes[0].Status = "open"
-	r.Nodes[1].Type = genericTestScope + "types/requirement"
+	r.Nodes[1].Type = genericTestScope + "requirement"
 	r.Nodes[1].Title = "Line\nTab\tESC\x1b\" 雪\u2028end"
 	r.Links[0].Type = genericTestScope + "types/defines"
 	r.Links[0].SourceRevision, r.Links[0].TargetRevision = "pin\n\x1b", "v2"
@@ -264,7 +264,7 @@ func TestGraphRelationshipTreeLargeTitlesAndOutputBudget(t *testing.T) {
 	title := strings.Repeat("x", 1<<20)
 	r.Nodes[1].Title = title
 	for i := 0; i < 300; i++ {
-		r.Links = append(r.Links, graphGenericLink{ID: genericTestScope + fmt.Sprintf("links/parallel-%03d", i), Type: genericTestScope + "types/references", Source: r.Nodes[0].ID, Target: r.Nodes[1].ID})
+		r.Links = append(r.Links, graphGenericLink{ID: genericTestScope + fmt.Sprintf("links/parallel-%03d", i), Type: genericTestScope + "references", Source: r.Nodes[0].ID, Target: r.Nodes[1].ID})
 	}
 	text := graphTreeTestText(t, r)
 	if count := strings.Count(text, title); count != 1 {

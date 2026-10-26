@@ -24,7 +24,7 @@ func TestExplicitPublicLinkIDNeverExposesPrivateAlias(t *testing.T) {
 				t.Run(backing, func(t *testing.T) {
 					privatePath, publicID := "links/private-"+backing, "public-"+backing
 					if backing == "informational" {
-						if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: privatePath, PublicID: publicID, SourcePath: "beads/memory-source", TargetPath: "beads/memory-target", TypeURL: s.ScopeURL() + "types/references", UnconditionalSource: true}); err != nil {
+						if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: privatePath, PublicID: publicID, SourcePath: "beads/memory-source", TargetPath: "beads/memory-target", TypeURL: s.ScopeURL() + "references", UnconditionalSource: true}); err != nil {
 							t.Fatal(err)
 						}
 					} else {
@@ -51,7 +51,7 @@ func TestExplicitPublicLinkIDNeverExposesPrivateAlias(t *testing.T) {
 					}
 				})
 			}
-			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/legacy", SourcePath: "beads/memory-source", TargetPath: "beads/memory-target", TypeURL: s.ScopeURL() + "types/references", UnconditionalSource: true}); err != nil {
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/legacy", SourcePath: "beads/memory-source", TargetPath: "beads/memory-target", TypeURL: s.ScopeURL() + "references", UnconditionalSource: true}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.db.ExecContext(ctx, "UPDATE graph_preview_catalog SET public_id=NULL WHERE path=?", "links/legacy"); err != nil {

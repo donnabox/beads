@@ -33,7 +33,7 @@ func TestEndpointReferenceRejectsMalformedPinnedArm(t *testing.T) {
 }
 
 func TestLinkRecordJSONKeepsBothEndpointPins(t *testing.T) {
-	original := LinkRecord{ID: "https://example.test/links/l", Type: "https://example.test/types/references", Revision: "r1", Version: "r1", Source: "https://example.test/beads/source", Target: "https://example.test/beads/target", SourceRevision: "source-v1", TargetRevision: "target-v2", Properties: map[string]any{}, Metadata: json.RawMessage(`{}`)}
+	original := LinkRecord{ID: "https://example.test/links/l", Type: "https://example.test/references", Revision: "r1", Version: "r1", Source: "https://example.test/beads/source", Target: "https://example.test/beads/target", SourceRevision: "source-v1", TargetRevision: "target-v2", Properties: map[string]any{}, Metadata: json.RawMessage(`{}`)}
 	raw, err := json.Marshal(original)
 	if err != nil {
 		t.Fatal(err)

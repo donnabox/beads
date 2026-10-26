@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	graph "github.com/steveyegge/beads/graphops"
 	"reflect"
 	"strings"
 	"testing"
@@ -325,7 +326,7 @@ func TestNativeConcreteTypeBindingCorruptionRefusesWithoutWrites(t *testing.T) {
 				t.Fatal(err)
 			}
 			id, _ := NativeDependencyTypeURL(s.ScopeURL(), "custom-kind")
-			expected, err := nativeConcreteDescriptor(s.ScopeURL(), id)
+			expected, err := nativeConcreteDescriptor(s.ScopeURL(), id, graph.KindLink)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -468,6 +469,25 @@ func TestNativeConcreteTypesProspectiveIdentityReservations(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
+			// Configured but unused Types reserve identities across all Resource
+			// writers; checking them must not persist a native binding.
+			for _, resource := range []string{"memory", "link", "other-issue"} {
+				before := workflowState(t, ctx, s)
+				var err error
+				switch resource {
+				case "memory":
+					_, err = s.Create(ctx, CreateRequest{PublicID: "cross-left", Title: "Refused configured Type identity"})
+				case "link":
+					_, err = s.AddDependency(ctx, DependencyRequest{PublicID: "cross-left", SourcePath: "beads/reservation-a", TargetPath: "beads/reservation-b", Type: types.DepBlocks, Actor: "tester"})
+				case "other-issue":
+					req := plainIssue("Refused other Issue class")
+					req.Issue.ID, req.ForceIDPrefix = "cross-left", true
+					_, err = s.CreateIssue(ctx, "", req)
+				}
+				if !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("%s acquired configured-unused Type identity or changed state: %v", resource, err)
+				}
+			}
 			selfLinkType, _ := NativeDependencyTypeURL(s.ScopeURL(), "self-edge")
 			before = workflowState(t, ctx, s)
 			_, err := s.AddDependency(ctx, DependencyRequest{PublicID: strings.TrimPrefix(selfLinkType, s.ScopeURL()), SourcePath: "beads/reservation-a", TargetPath: "beads/reservation-b", Type: types.DependencyType("self-edge"), Actor: "tester"})
@@ -514,6 +534,105 @@ func TestNativeConcreteTypesProspectiveIdentityReservations(t *testing.T) {
 			before = workflowState(t, ctx, s)
 			if _, err := s.AddDependency(ctx, request); !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 				t.Fatalf("nominal URI silently replaced default native kind: %v", err)
+			}
+		})
+	}
+}
+
+func TestFlatNativeTypeCollisionsRefuseAtomically(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := s.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			for _, path := range []string{"beads/a", "beads/b"} {
+				if _, err := s.CreateIssue(ctx, path, plainIssue("Work")); err != nil {
+					t.Fatal(err)
+				}
+			}
+			setCustom := func(value string) {
+				t.Helper()
+				if _, err := s.db.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('types.custom',?) ON DUPLICATE KEY UPDATE value=VALUES(value)", value); err != nil {
+					t.Fatal(err)
+				}
+			}
+			setCustom("shared-class")
+			before := workflowState(t, ctx, s)
+			_, err = s.AddDependency(ctx, DependencyRequest{Path: "links/collision", SourcePath: "beads/a", TargetPath: "beads/b", Type: "shared-class", Actor: "author"})
+			if !errors.Is(err, ErrAlreadyExists) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("configured-unused Issue/Dependency collision mutated data: %v", err)
+			}
+			setCustom("")
+			_, err = s.AddDependency(ctx, DependencyRequest{Path: "links/retained", SourcePath: "beads/a", TargetPath: "beads/b", Type: "shared-class", Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			setCustom("shared-class")
+			before = workflowState(t, ctx, s)
+			if _, err := s.ListInstalledTypes(ctx); !errors.Is(err, ErrAlreadyExists) {
+				t.Fatalf("conflicting configured declaration silently merged: %v", err)
+			}
+			request := plainIssue("Conflicting Issue")
+			request.Issue.IssueType = "shared-class"
+			if _, err := s.CreateIssue(ctx, "beads/c", request); !errors.Is(err, ErrAlreadyExists) {
+				t.Fatalf("retained Dependency binding replaced by Issue: %v", err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("retained native binding or histories changed on conflict")
+			}
+		})
+	}
+}
+
+// Direct configuration edits are outside graph admission. Enumeration must
+// refuse a conflicting prospective declaration without rewriting allocations,
+// even when the Resource was deleted or the ID is the discovery document.
+func TestConfiguredUnusedTypeRefusesAllocatedIdentity(t *testing.T) {
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			ctx, _, s := memoryDeleteStore(t, engine)
+			for _, state := range []string{"live", "deleted", "discovery"} {
+				name := "configured-" + state
+				if state == "discovery" {
+					name = "bdp.json"
+				} else {
+					r, err := s.Create(ctx, CreateRequest{PublicID: name, Title: "Existing allocation"})
+					if err != nil {
+						t.Fatal(err)
+					}
+					if state == "deleted" {
+						path, err := s.ResolveExactAllocatedResourcePath(ctx, name)
+						if err != nil {
+							t.Fatal(err)
+						}
+						if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: path, ExpectedRevision: r.Revision}); err != nil {
+							t.Fatal(err)
+						}
+					}
+				}
+				if _, err := s.db.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('types.custom',?) ON DUPLICATE KEY UPDATE value=VALUES(value)", name); err != nil {
+					t.Fatal(err)
+				}
+				before := workflowState(t, ctx, s)
+				if _, err := s.ListInstalledTypes(ctx); !errors.Is(err, ErrAlreadyExists) {
+					t.Fatalf("%s inventory advertised conflicting Type: %v", state, err)
+				}
+				if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("%s inventory changed immutable allocations/bindings", state)
+				}
+				if _, err := s.db.ExecContext(ctx, "DELETE FROM config WHERE `key`='types.custom'"); err != nil {
+					t.Fatal(err)
+				}
+				if _, err := s.ListInstalledTypes(ctx); err != nil {
+					t.Fatalf("%s refused configuration removal recovery: %v", state, err)
+				}
 			}
 		})
 	}

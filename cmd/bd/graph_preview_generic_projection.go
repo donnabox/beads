@@ -103,7 +103,7 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 			known := false
 			for _, name := range graphstore.FreshTypeNames() {
-				known = known || descriptor.ID() == scope+"types/"+name
+				known = known || descriptor.ID() == scope+name
 			}
 			if !known && !graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) {
 				return invalid("unsupported extra Type installation")
@@ -111,7 +111,7 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			installed[descriptor.ID()] = true
 		}
 		for _, name := range graphstore.FreshTypeNames() {
-			if !installed[scope+"types/"+name] {
+			if !installed[scope+name] {
 				return invalid("incomplete Type installation")
 			}
 		}

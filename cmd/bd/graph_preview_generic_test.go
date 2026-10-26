@@ -244,7 +244,7 @@ func TestGraphPreviewGenericOmittedNoticeWriters(t *testing.T) {
 	quietFlag = false
 	t.Cleanup(func() { quietFlag = oldQuiet })
 	var out, diagnostics bytes.Buffer
-	omitted := []string{genericTestScope + "types/references"}
+	omitted := []string{genericTestScope + "references"}
 	if err := writeGraphGenericSelection(&out, &diagnostics, "graph\n", omitted); err != nil {
 		t.Fatal(err)
 	}

@@ -46,7 +46,7 @@ func installedNativeBindings(ctx context.Context, tx *sql.Tx, scope string, base
 		if err != nil {
 			return nil, errors.Join(fmt.Errorf("%w: malformed native Type binding: %v", ErrInvalidStore, err), rows.Close())
 		}
-		expected, err := nativeConcreteDescriptor(scope, parsed.ID())
+		expected, err := nativeConcreteDescriptor(scope, parsed.ID(), parsed.Describes())
 		if err != nil || seen[parsed.ID()] || !bytes.Equal(raw, expected.CanonicalJSON()) || fingerprint != expected.Fingerprint() {
 			return nil, errors.Join(fmt.Errorf("%w: native Type binding differs from its authoritative mapping", ErrInvalidStore), rows.Close())
 		}
@@ -59,14 +59,23 @@ func installedNativeBindings(ctx context.Context, tx *sql.Tx, scope string, base
 // ensureNativeTypeInTx runs only in the native writer's guarded transaction.
 // The opaque internal key is not a Type identity. Actual identities retain the
 // full injective encoding, and descriptors cannot be edited independently.
-func (s *Store) ensureNativeTypeInTx(ctx context.Context, tx *sql.Tx, id string) error {
-	expected, err := nativeConcreteDescriptor(s.ScopeURL(), id)
+func (s *Store) ensureNativeTypeInTx(ctx context.Context, tx *sql.Tx, id string, role graph.ResourceKind) error {
+	expected, err := nativeConcreteDescriptor(s.ScopeURL(), id, role)
+	if err != nil {
+		return fmt.Errorf("ensure native binding: %w", err)
+	}
+	for _, definition := range previewTypeDefinitions() {
+		if id == s.ScopeURL()+definition.name {
+			return nil
+		}
+	}
+	prospective, err := s.selectedDescriptorsInTx(ctx, tx)
 	if err != nil {
 		return err
 	}
-	for _, definition := range previewTypeDefinitions() {
-		if id == s.ScopeURL()+"types/"+definition.name {
-			return nil
+	for _, d := range prospective {
+		if d.ID() == id && !bytes.Equal(d.CanonicalJSON(), expected.CanonicalJSON()) {
+			return fmt.Errorf("%w: native Type identity conflicts with a configured declaration", ErrAlreadyExists)
 		}
 	}
 	installed, err := installedPreviewTypes(ctx, tx, s.ScopeURL())
@@ -75,12 +84,15 @@ func (s *Store) ensureNativeTypeInTx(ctx context.Context, tx *sql.Tx, id string)
 	}
 	for _, d := range installed {
 		if d.ID() == id {
+			if !bytes.Equal(d.CanonicalJSON(), expected.CanonicalJSON()) {
+				return fmt.Errorf("%w: native Type identity conflicts with an installed declaration", ErrAlreadyExists)
+			}
 			return nil
 		}
 	}
 	// A Type declaration and a Resource allocation cannot share an identity,
 	// including a deleted allocation. Do not acquire its payload or rewrite it.
-	allocated, err := publicResourceIDExistsInTx(ctx, tx, strings.TrimPrefix(id, s.ScopeURL()))
+	allocated, err := allocatedPublicIDExistsInTx(ctx, tx, strings.TrimPrefix(id, s.ScopeURL()))
 	if err != nil {
 		return err
 	}
@@ -101,13 +113,13 @@ func (s *Store) ensureNativeTypeInTx(ctx context.Context, tx *sql.Tx, id string)
 // requireNativeBindingInTx checks a current/retained affiliation without
 // acquiring unrelated native payloads or whole-workspace current records.
 // The caller has already checked the fixed baseline in this transaction.
-func (s *Store) requireNativeBindingInTx(ctx context.Context, tx *sql.Tx, id string) error {
-	expected, err := nativeConcreteDescriptor(s.ScopeURL(), id)
+func (s *Store) requireNativeBindingInTx(ctx context.Context, tx *sql.Tx, id string, role graph.ResourceKind) error {
+	expected, err := nativeConcreteDescriptor(s.ScopeURL(), id, role)
 	if err != nil {
 		return fmt.Errorf("%w: native affiliation has no concrete descriptor", ErrInvalidStore)
 	}
 	for _, definition := range previewTypeDefinitions() {
-		if id == s.ScopeURL()+"types/"+definition.name {
+		if id == s.ScopeURL()+definition.name {
 			return nil
 		}
 	}

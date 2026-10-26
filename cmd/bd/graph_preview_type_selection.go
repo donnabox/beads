@@ -13,30 +13,21 @@ import (
 // These names describe the Type system itself, not user-declared Resource Types.
 // Public Conformance is a different (abstract) Link Type and stays selectable.
 func graphPreviewReservedTypeSelector(selector string) bool {
-	name := selector[strings.LastIndex(selector, "/")+1:]
-	name = strings.ToLower(strings.NewReplacer("-", "", "_", "", " ", "").Replace(name))
-	switch name {
-	case "type", "beadtype", "linktype", "conformsto", "refines":
-		return true
-	}
-	return false
+	return graphstore.IsReservedTypeName(selector)
 }
 
 // Selection inspects only the checked installed descriptor inventory. It does
 // not treat a partial legacy schema or ownership projection as admission proof.
 func graphPreviewValidateSelectedType(scope string, installed []graph.TypeDescriptor, id string, kind graph.ResourceKind) error {
-	if graphPreviewReservedTypeSelector(id) {
+	if graphPreviewReservedTypeSelector(strings.TrimPrefix(id, scope)) {
 		return fmt.Errorf("%w: intrinsic Type is not a public selector", graphstore.ErrCapabilityUnavailable)
 	}
 	for _, descriptor := range installed {
 		if descriptor.ID() != id {
 			continue
 		}
-		if descriptor.Describes() != kind || (!graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) && graphPreviewIntrinsicType(descriptor)) {
+		if descriptor.Describes() != kind || (!graphstore.IsNativeConcreteTypeDescriptor(scope, descriptor) && graphPreviewIntrinsicType(scope, descriptor)) {
 			return fmt.Errorf("%w: installed Type does not describe the selected Resource kind", graphstore.ErrCapabilityUnavailable)
-		}
-		if !strings.HasPrefix(id, scope+"types/") {
-			break
 		}
 		return nil
 	}
@@ -102,7 +93,7 @@ func graphPreviewMemoryTypeFlag(cmd *cobra.Command) (string, error) {
 // checked persisted descriptor read before an operation or final validation.
 func graphPreviewSelectedTypeCandidate(scope, id string) bool {
 	for _, name := range graphstore.FreshTypeNames() {
-		if id == scope+"types/"+name {
+		if id == scope+name {
 			return true
 		}
 	}

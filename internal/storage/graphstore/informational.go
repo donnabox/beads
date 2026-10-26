@@ -132,7 +132,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if err != nil {
 			return err
 		}
-		owned, err := s.ownsLink(source, request.TypeURL)
+		owned, err := s.ownsLink(ctx, tx, source, request.TypeURL)
 		if err != nil {
 			return err
 		}
@@ -334,7 +334,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		owned, err := s.ownsLink(source, link.Type)
+		owned, err := s.ownsLink(ctx, tx, source, link.Type)
 		if err != nil {
 			return err
 		}
@@ -522,7 +522,7 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 	if err := s.afterStage("link-retained"); err != nil {
 		return LinkMutationResult{}, err
 	}
-	owned, err := s.ownsLink(source, link.Type)
+	owned, err := s.ownsLink(ctx, tx, source, link.Type)
 	if err != nil {
 		return LinkMutationResult{}, err
 	}

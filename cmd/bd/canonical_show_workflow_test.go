@@ -47,11 +47,11 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 			if err := json.Unmarshal(legacy("remember", "Big body & <literal>", "--id", "beads/plan", "--title", "Plan"), &initial); err != nil {
 				t.Fatal(err)
 			}
-			legacy("create", "Target", "--id", "beads/work", "--type", "types/constraint")
+			legacy("create", "Target", "--id", "beads/work", "--type", "constraint")
 			var receipt struct {
 				Link graphstore.LinkRecord `json:"link"`
 			}
-			if err := json.Unmarshal(legacy("link", "beads/plan", "beads/work", "--type", "types/subject-to", "--id", "links/note", "--properties", `{"note":"unchanged"}`), &receipt); err != nil {
+			if err := json.Unmarshal(legacy("link", "beads/plan", "beads/work", "--type", "subject-to", "--id", "links/note", "--properties", `{"note":"unchanged"}`), &receipt); err != nil {
 				t.Fatal(err)
 			}
 			var linked graphstore.Record

@@ -135,13 +135,13 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatal("stale Memory update changed state")
 			}
 
-			call("create", "Context rule", "--type", "types/constraint", "--id", "beads/rule")
-			related := scope + "types/superseded-by"
+			call("create", "Context rule", "--type", "constraint", "--id", "beads/rule")
+			related := scope + "superseded-by"
 			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--type", related, "--id", "links/context", "--properties", `{"note":"first"}`, "--if-source-revision", replaced.Memory.Revision))
 			current := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
-			call("link", "beads/plan", "beads/rule", "--type", "types/subject-to", "--id", "links/work", "--if-source-revision", current.Revision)
+			call("link", "beads/plan", "beads/rule", "--type", "subject-to", "--id", "links/work", "--if-source-revision", current.Revision)
 			issueBefore := call("show", scope+"work")
-			call("link", scope+"work", "beads/context", "--type", "types/references", "--id", "links/unowned")
+			call("link", scope+"work", "beads/context", "--type", "references", "--id", "links/unowned")
 			if call("show", scope+"work") != issueBefore || call("show", scope+"beads/context") != other {
 				t.Fatal("unowned informational Link versioned an endpoint")
 			}

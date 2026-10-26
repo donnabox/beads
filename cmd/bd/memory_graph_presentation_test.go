@@ -42,7 +42,7 @@ func memoryPresentationFixture(t *testing.T, roots []memoryquery.CurrentRoot, di
 	t.Helper()
 	r := memoryPresentationReader{nodes: map[string]memoryquery.CurrentNode{}}
 	for _, name := range []string{"a", "b", "c", "d", "e"} {
-		r.nodes["beads/"+name] = memoryquery.CurrentNode{Path: "beads/" + name, TypeURL: genericTestScope + "types/policy", Version: "current"}
+		r.nodes["beads/"+name] = memoryquery.CurrentNode{Path: "beads/" + name, TypeURL: genericTestScope + "policy", Version: "current"}
 	}
 	for _, e := range edges {
 		source, err := graph.NewInScopeRef("beads/"+e.source, "current")
@@ -57,7 +57,7 @@ func memoryPresentationFixture(t *testing.T, roots []memoryquery.CurrentRoot, di
 		if err != nil {
 			t.Fatal(err)
 		}
-		l, err := graph.NewLink(graph.LinkSpec{Path: "links/" + e.id, TypeURL: genericTestScope + "types/references", Revision: revision, Source: source, Target: target})
+		l, err := graph.NewLink(graph.LinkSpec{Path: "links/" + e.id, TypeURL: genericTestScope + "references", Revision: revision, Source: source, Target: target})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -278,8 +278,8 @@ func TestMemoryCurrentGraphCoverageAndArguments(t *testing.T) {
 		t.Fatalf("dropped non-tree Link escaped aggregate coverage: %q %v", s, err)
 	}
 	r = memoryPresentationFixture(t, []memoryquery.CurrentRoot{{Path: "beads/a", Depth: 0}}, graph.DirectionOut)
-	r.Graph.Nodes = append(r.Graph.Nodes, memoryquery.CurrentNode{Path: "beads/e", TypeURL: genericTestScope + "types/policy", Version: "current"})
-	r.Records = append(r.Records, graphstore.Record{ID: genericTestScope + "beads/e", Type: genericTestScope + "types/policy", Version: "current"})
+	r.Graph.Nodes = append(r.Graph.Nodes, memoryquery.CurrentNode{Path: "beads/e", TypeURL: genericTestScope + "policy", Version: "current"})
+	r.Records = append(r.Records, graphstore.Record{ID: genericTestScope + "beads/e", Type: genericTestScope + "policy", Version: "current"})
 	s, err = renderMemoryCurrentGraph(r, genericTestScope, graph.DirectionOut, 10000)
 	if s != "" || !errors.Is(err, graphstore.ErrInvalidStore) {
 		t.Fatalf("unrepresented union node escaped aggregate coverage: %q %v", s, err)

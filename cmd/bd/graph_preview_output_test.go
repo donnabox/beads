@@ -37,7 +37,7 @@ func TestGraphPreviewOutputFailures(t *testing.T) {
 
 func TestGraphPreviewCompleteRecordJSONUsesRevisionOnly(t *testing.T) {
 	record := map[string]any{
-		"id": "https://example.invalid/scope/work/bd_abc", "type": "https://example.invalid/scope/types/memory",
+		"id": "https://example.invalid/scope/work/bd_abc", "type": "https://example.invalid/scope/memory",
 		"revision": "opaque", "version": "opaque",
 		"properties": map[string]any{"version": "user value", "large": json.Number("9007199254740993")},
 		"owned": []any{map[string]any{

@@ -49,12 +49,12 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			memoryRevision := graphAssertCompleteRecordRevisionOnly(t, memory)
 			graphAssertCompleteRecordRevisionOnly(t, call("create", "Work", "--graph-path", "beads/work"))
 			graphAssertCompleteRecordRevisionOnly(t, call("create", "Generated work", "--id-root", "work"))
-			call("create", "Rule", "--type", "types/constraint", "--id", "beads/rule")
+			call("create", "Rule", "--type", "constraint", "--id", "beads/rule")
 			var receipt struct {
 				Link   json.RawMessage `json:"link"`
 				Source json.RawMessage `json:"source"`
 			}
-			if err := json.Unmarshal(call("link", "beads/plan", "beads/rule", "--type", "types/subject-to", "--properties", `{"note":"user value"}`), &receipt); err != nil {
+			if err := json.Unmarshal(call("link", "beads/plan", "beads/rule", "--type", "subject-to", "--properties", `{"note":"user value"}`), &receipt); err != nil {
 				t.Fatal(err)
 			}
 			graphAssertCompleteRecordRevisionOnly(t, receipt.Link)

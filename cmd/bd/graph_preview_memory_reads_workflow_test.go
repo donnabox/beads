@@ -351,12 +351,12 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				t.Fatal(err)
 			}
 			edited := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", string(rawProperties), "--if-revision", "="+original.Revision)).Memory
-			related := scope + "types/superseded-by"
+			related := scope + "superseded-by"
 			firstLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--id", "links/owned", "--type", related, "--properties", `{"note":"first"}`, "--if-source-revision", edited.Revision)).Link
 			linked := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
 			changedLink := graphMixedResult[graphstore.LinkMutationResult](t, call("update", "links/owned", "--properties", `{"note":"second"}`, "--if-revision", "="+firstLink.Revision, "--if-source-revision", linked.Revision)).Link
 			current := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
-			survivingLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, "beads/context", "--id", "links/survivor", "--type", "types/references")).Link
+			survivingLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, "beads/context", "--id", "links/survivor", "--type", "references")).Link
 			issueCurrent := call("show", issue.ID)
 			if current.Properties != properties || original.Properties.Body != body || empty.Properties.Body != "" {
 				t.Fatal("fixture did not preserve authored body bytes")

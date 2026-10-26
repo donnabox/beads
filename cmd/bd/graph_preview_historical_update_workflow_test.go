@@ -69,7 +69,7 @@ func TestGraphPreviewHistoricalLinkWorkflow(t *testing.T) {
 			}
 			call("remember", "Source", "--id", "source")
 			call("remember", "Target", "--id", "target")
-			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", "source", "--to", "target", "--type", "types/references", "--id", "historical", "--properties", `{"note":"first"}`, "--metadata", `{"old":true}`))
+			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--from", "source", "--to", "target", "--type", "references", "--id", "historical", "--properties", `{"note":"first"}`, "--metadata", `{"old":true}`))
 			last := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--properties", `{"note":"last"}`, "--replace-metadata", `{"last":true}`))
 			restored := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", "historical", "--from-revision", "="+first.Link.Revision, "--if-revision", "="+last.Link.Revision, "--set-metadata", "explicit=7"))
 			if !restored.Changed || restored.Link.Properties["note"] != "first" || string(restored.Link.Metadata) != `{"explicit":7,"old":true}` || restored.Link.Attribution.HistoricalUpdate == nil {

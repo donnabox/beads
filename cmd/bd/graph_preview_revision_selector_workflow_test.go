@@ -43,7 +43,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				{"source exact flag", "source", "target", []string{"--source-revision", "observed"}},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
-					args := []string{"link", "create", tc.source, tc.target, "--type", "types/references"}
+					args := []string{"link", "create", tc.source, tc.target, "--type", "references"}
 					args = append(args, tc.flags...)
 					refuse("revision_unknown", args...)
 					if got := call("show", scope+"source"); got != sourceBefore {
@@ -55,8 +55,8 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				})
 			}
 			for _, args := range [][]string{
-				{"link", "create", "source@current", "target", "--type", "types/references", "--source-revision", "unpinned"},
-				{"link", "create", "source", "target@=observed", "--type", "types/references", "--target-revision", "observed"},
+				{"link", "create", "source@current", "target", "--type", "references", "--source-revision", "unpinned"},
+				{"link", "create", "source", "target@=observed", "--type", "references", "--target-revision", "observed"},
 			} {
 				refuse("invalid_selector", args...)
 			}
@@ -64,8 +64,8 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				code string
 				args []string
 			}{
-				{"invalid_selector", []string{"link", "source", "[https://external.example/item]@=r7", "--type", "types/references"}},
-				{"revision_unknown", []string{"link", "source", "target@=observed", "--type", "types/references"}},
+				{"invalid_selector", []string{"link", "source", "[https://external.example/item]@=r7", "--type", "references"}},
+				{"revision_unknown", []string{"link", "source", "target@=observed", "--type", "references"}},
 				{"capability_unavailable", []string{"link", "source", "native-target@current", "--type", "blocks"}},
 				{"capability_unavailable", []string{"link", "source", "native-target", "--type", "blocks", "--target-revision", "observed"}},
 			} {
@@ -77,7 +77,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 					t.Fatal("refused shorthand Link creation changed Links")
 				}
 			}
-			refuse("invalid_selector", "link", "source", "https://external.example/item", "--type", "types/references")
+			refuse("invalid_selector", "link", "source", "https://external.example/item", "--type", "references")
 			for _, tc := range []struct {
 				name, source, target, id string
 				flags                    []string
@@ -87,7 +87,7 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				{"explicit flag floating", "source", "target", "links/flag-floating", []string{"--source-revision", "unpinned", "--target-revision", "unpinned"}},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
-					args := []string{"link", "create", tc.source, tc.target, "--type", "types/references", "--id", tc.id}
+					args := []string{"link", "create", tc.source, tc.target, "--type", "references", "--id", tc.id}
 					args = append(args, tc.flags...)
 					created := graphMixedResult[graphstore.LinkMutationResult](t, call(args...))
 					if created.Link.ID != scope+tc.id || created.Link.Source != scope+"source" || created.Link.Target != scope+"target" {
@@ -96,16 +96,16 @@ func TestGraphPreviewLinkEndpointRevisionAdmission(t *testing.T) {
 				})
 			}
 			for i, args := range [][]string{
-				{"link", "create", "source@current", "target@current", "--type", "types/references", "--id", "links/pinned-current"},
-				{"link", "create", "--from", "source", "--to", "target", "--source-revision", "current", "--target-revision", "current", "--type", "types/references", "--id", "links/pinned-flags"},
-				{"link", "source", "target", "--source-revision", "current", "--type", "types/references", "--id", "links/source-pin"},
+				{"link", "create", "source@current", "target@current", "--type", "references", "--id", "links/pinned-current"},
+				{"link", "create", "--from", "source", "--to", "target", "--source-revision", "current", "--target-revision", "current", "--type", "references", "--id", "links/pinned-flags"},
+				{"link", "source", "target", "--source-revision", "current", "--type", "references", "--id", "links/source-pin"},
 			} {
 				created := graphMixedResult[graphstore.LinkMutationResult](t, call(args...))
 				if created.Link.SourceRevision == "" || (i < 2 && created.Link.TargetRevision == "") || created.Link.Source != scope+"source" || created.Link.Target != scope+"target" {
 					t.Fatalf("lost current endpoint pins: %+v", created)
 				}
 			}
-			shorthand := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source", "target", "--type", "types/references", "--id", "links/shorthand-floating", "--target-revision", "unpinned"))
+			shorthand := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source", "target", "--type", "references", "--id", "links/shorthand-floating", "--target-revision", "unpinned"))
 			if shorthand.Link.ID != scope+"links/shorthand-floating" || shorthand.Link.Source != scope+"source" || shorthand.Link.Target != scope+"target" {
 				t.Fatalf("shorthand floating Link changed endpoint identity: %+v", shorthand.Link)
 			}
@@ -244,8 +244,8 @@ func TestGraphPreviewExactReadIDRevisionRoutesToRetainedState(t *testing.T) {
 			if got := call("show", "beads/plan"); got != current {
 				t.Fatal("refused historical write changed current Memory")
 			}
-			call("create", "Target", "--type", "types/constraint", "--id", "beads/target")
-			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "beads/plan", "beads/target", "--type", "types/subject-to", "--id", "links/context"))
+			call("create", "Target", "--type", "constraint", "--id", "beads/target")
+			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "beads/plan", "beads/target", "--type", "subject-to", "--id", "links/context"))
 			call("link", "update", "links/context", "--properties", `{"note":"changed"}`)
 			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "links/context@=no-such-token")
 			graphMemoryReadRaw(t, bd, work, home, "", "revision_unknown", "link", "show", "[https://example.invalid/reference-read/links/context]@=no-such-token")
@@ -282,8 +282,8 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			if got := call("show", "["+memoryURI+"]@="+created.Revision); got != call("show", memoryURI, "--revision", "="+created.Revision) {
 				t.Fatal("canonical raw@ exact read mismatch")
 			}
-			call("create", "Target", "--type", "types/constraint", "--id", "beads/target")
-			call("link", "create", memoryURI, "beads/target", "--type", "types/subject-to", "--id", "links/context@literal")
+			call("create", "Target", "--type", "constraint", "--id", "beads/target")
+			call("link", "create", memoryURI, "beads/target", "--type", "subject-to", "--id", "links/context@literal")
 			shown := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", linkURI))
 			if shown.ID != linkURI || shown.Source != memoryURI {
 				t.Fatalf("canonical raw@ Link identity lost: %+v", shown)
@@ -293,7 +293,7 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 				t.Fatal("canonical raw@ Link exact read mismatch")
 			}
 			call("link", "delete", linkURI, "--force")
-			call("link", memoryURI, "beads/target", "--type", "types/subject-to", "--id", "links/shorthand@literal")
+			call("link", memoryURI, "beads/target", "--type", "subject-to", "--id", "links/shorthand@literal")
 			call("link", "delete", scope+"links/shorthand@literal", "--force")
 			call("delete", memoryURI, "--force")
 			call("remember", "Forget raw at", "--id", "beads/forget@literal")
@@ -307,14 +307,14 @@ func TestGraphPreviewCanonicalURIAtIdentityWorkflow(t *testing.T) {
 			if !strings.Contains(human, "Current Memory revision: ["+after.ID+"]@="+after.Revision) || !strings.Contains(human, "Replaced Memory "+before.ID+" version "+before.Revision) {
 				t.Fatalf("ambiguous Memory update output: %q", human)
 			}
-			human = graphPolicyCLI(t, bd, work, home, nil, "", "link", "beads/disclosure", "beads/target", "--type", "types/subject-to", "--id", "links/disclosed")
+			human = graphPolicyCLI(t, bd, work, home, nil, "", "link", "beads/disclosure", "beads/target", "--type", "subject-to", "--id", "links/disclosed")
 			owner := graphMixedResult[graphstore.Record](t, call("show", "beads/disclosure"))
 			linked := graphMixedResult[graphstore.LinkRecord](t, call("show", scope+"links/disclosed"))
 			if strings.TrimSpace(human) != graphHumanRow(scope, linked) || strings.Contains(human, "Current source revision:") {
 				t.Fatalf("Link write did not use its collection row: %q", human)
 			}
-			call("link", "create", "beads/disclosure", "beads/target", "--type", "types/subject-to", "--id", "links/guarded", "--if-source-revision", owner.Revision)
-			graphPatchProcess(t, bd, work, home, nil, "revision_conflict", 90*time.Second, "link", "create", "beads/disclosure", "beads/target", "--type", "types/subject-to", "--id", "links/stale", "--if-source-revision", owner.Revision, "--json")
+			call("link", "create", "beads/disclosure", "beads/target", "--type", "subject-to", "--id", "links/guarded", "--if-source-revision", owner.Revision)
+			graphPatchProcess(t, bd, work, home, nil, "revision_conflict", 90*time.Second, "link", "create", "beads/disclosure", "beads/target", "--type", "subject-to", "--id", "links/stale", "--if-source-revision", owner.Revision, "--json")
 		})
 	}
 }
@@ -336,7 +336,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 				t.Helper()
 				graphPatchProcess(t, bd, work, home, nil, code, 90*time.Second, append(args, "--json")...)
 			}
-			call("create", "Target", "--type", "types/constraint", "--id", "beads/target")
+			call("create", "Target", "--type", "constraint", "--id", "beads/target")
 			for _, tc := range []struct{ name, id, unknown string }{
 				{"colon local", "plan:v1", "unknown-token"},
 				{"opaque looking local", "urn:x", "y"},
@@ -369,8 +369,8 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 							}
 							refuse(code, args...)
 						}
-						refuse("revision_unknown", "link", "create", selector, "beads/target", "--type", "types/subject-to")
-						refuse("revision_unknown", "link", "create", "beads/target", selector, "--type", "types/subject-to")
+						refuse("revision_unknown", "link", "create", selector, "beads/target", "--type", "subject-to")
+						refuse("revision_unknown", "link", "create", "beads/target", selector, "--type", "subject-to")
 					}
 					if call("show", subject) != beforeSubject || call("show", sibling) != beforeSibling || call("link", "list", "--from", subject) != beforeLinks {
 						t.Fatal("a refused colon selector changed subject, literal sibling or Links")
@@ -391,7 +391,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 				call("remember", "Literal unpinned sibling", "--id", "beads/plan:v1@unpinned")
 				beforeSibling := call("show", sibling)
 				beforeUnknownSibling := call("show", scope+"beads/plan:v1@unknown-token")
-				created := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "beads/plan:v1", "beads/target", "--source-revision", "unpinned", "--type", "types/subject-to", "--id", "links/colon-floating"))
+				created := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "beads/plan:v1", "beads/target", "--source-revision", "unpinned", "--type", "subject-to", "--id", "links/colon-floating"))
 				if created.Link.Source != scope+"beads/plan:v1" || created.Link.Target != scope+"beads/target" || created.Link.ID != scope+"links/colon-floating" {
 					t.Fatalf("floating colon endpoint selected the wrong identity: %+v", created.Link)
 				}
@@ -399,8 +399,8 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					t.Fatal("floating colon endpoint changed a literal-@ sibling")
 				}
 			})
-			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "beads/plan:v1", "beads/target", "--type", "types/subject-to", "--id", "links/context:v1"))
-			call("link", "create", "beads/plan:v1", "beads/target", "--type", "types/subject-to", "--id", "links/context:v1@unknown-token")
+			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "beads/plan:v1", "beads/target", "--type", "subject-to", "--id", "links/context:v1"))
+			call("link", "create", "beads/plan:v1", "beads/target", "--type", "subject-to", "--id", "links/context:v1@unknown-token")
 			const link = scope + "links/context:v1"
 			const literalLink = link + "@unknown-token"
 			beforeLink, beforeLiteralLink := call("link", "show", link), call("link", "show", literalLink)
@@ -436,7 +436,7 @@ func TestGraphPreviewColonReferencePrecedenceWorkflow(t *testing.T) {
 					refuse("invalid_selector", "show", tc.selector)
 					refuse("invalid_selector", "link", "show", tc.selector)
 					refuse("invalid_selector", "update", tc.selector, "--properties", `{"body":"Must not land"}`)
-					refuse("invalid_selector", "link", "create", "beads/plan:v1", tc.selector, "--type", "types/subject-to")
+					refuse("invalid_selector", "link", "create", "beads/plan:v1", tc.selector, "--type", "subject-to")
 				})
 			}
 			if call("show", "beads/plan:v1") != beforeSubject || call("link", "list", "--from", "beads/plan:v1") != beforeLinks {
@@ -461,8 +461,8 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 				graphPatchProcess(t, bd, work, home, nil, code, 90*time.Second, append(args, "--json")...)
 			}
 			source := graphMixedResult[graphstore.Record](t, call("remember", "Source", "--id", "source"))
-			target := graphMixedResult[graphstore.Record](t, call("create", "Rule one", "--id", "rule", "--type", "types/constraint"))
-			created := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "source@="+source.Revision, "rule@="+target.Revision, "--type", "types/references", "--id", "citation", "--properties", `{"note":"keep"}`, "--metadata", `{"origin":"manual"}`))
+			target := graphMixedResult[graphstore.Record](t, call("create", "Rule one", "--id", "rule", "--type", "constraint"))
+			created := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "source@="+source.Revision, "rule@="+target.Revision, "--type", "references", "--id", "citation", "--properties", `{"note":"keep"}`, "--metadata", `{"origin":"manual"}`))
 			if created.Link.SourceRevision != source.Revision || created.Link.TargetRevision != target.Revision {
 				t.Fatalf("creation lost exact pins: %+v", created)
 			}
@@ -503,7 +503,7 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 			if patched.Link.TargetRevision != "" || patched.Link.SourceRevision != "" || patched.Link.Properties["note"] != "second" || string(patched.Link.Metadata) != string(merged.Link.Metadata) {
 				t.Fatalf("combined ordered patch lost re-pin: %+v", patched)
 			}
-			owned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source", "rule@="+target.Revision, "--type", "types/subject-to", "--id", "obligation", "--if-source-revision", source.Revision))
+			owned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "source", "rule@="+target.Revision, "--type", "subject-to", "--id", "obligation", "--if-source-revision", source.Revision))
 			owner := graphMixedSourceRecord(t, owned.Source)
 			oldOwner := call("show", source.ID)
 			ownedNext := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", owned.Link.ID, "--target-revision", "current", "--if-revision", "="+owned.Link.Revision, "--if-source-revision", owner.Revision))
@@ -522,7 +522,7 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 				if err := json.Unmarshal([]byte(raw), &envelope); err != nil {
 					t.Fatal(err)
 				}
-				group := envelope.Data.OwnedLinks[scope+"types/subject-to"]
+				group := envelope.Data.OwnedLinks[scope+"subject-to"]
 				var wanted graphstore.LinkRecord
 				if err := json.Unmarshal(expected.Owned[0], &wanted); err != nil {
 					t.Fatal(err)
@@ -539,16 +539,16 @@ func TestGraphPreviewEndpointRepinWorkflow(t *testing.T) {
 			}
 			literal := graphMixedResult[graphstore.Record](t, call("remember", "Literal at", "--id", "plan:v1@draft"))
 			sibling := graphMixedResult[graphstore.Record](t, call("remember", "Sibling", "--id", "plan:v1"))
-			literalPin := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", literal.ID, "rule", "--source-revision", "current", "--type", "types/references", "--id", "literal-pin"))
+			literalPin := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", literal.ID, "rule", "--source-revision", "current", "--type", "references", "--id", "literal-pin"))
 			if literalPin.Link.Source != literal.ID || literalPin.Link.SourceRevision != literal.Revision {
 				t.Fatal("canonical URL literal at resolved wrong source")
 			}
-			literalBare := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", literal.ID, "rule", "--type", "types/references", "--id", "literal-bare"))
+			literalBare := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", literal.ID, "rule", "--type", "references", "--id", "literal-bare"))
 			if literalBare.Link.Source != literal.ID || literalBare.Link.SourceRevision != "" {
 				t.Fatal("canonical literal-@ URL did not remain a floating endpoint")
 			}
-			refuse("invalid_selector", "link", "create", "plan:v1@draft", "rule", "--type", "types/references")
-			refuse("revision_unknown", "link", "create", "plan:v1@=no-such-revision", "rule", "--type", "types/references")
+			refuse("invalid_selector", "link", "create", "plan:v1@draft", "rule", "--type", "references")
+			refuse("revision_unknown", "link", "create", "plan:v1@=no-such-revision", "rule", "--type", "references")
 			if got := graphMixedResult[graphstore.Record](t, call("show", sibling.ID)); !reflect.DeepEqual(got, sibling) {
 				t.Fatal("literal canonical fallback changed sibling")
 			}

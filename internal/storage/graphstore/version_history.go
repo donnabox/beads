@@ -138,6 +138,10 @@ func (s *Store) versionsWithin(ctx context.Context, path string, bounds versionB
 // snapshot, so a concurrent writer cannot interleave a new head between the
 // kind resolution and the list.
 func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bounds versionBounds) (ResourceKind, []VersionRow, error) {
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return "", nil, err
+	}
 	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
 	if err != nil {
 		return "", nil, err
@@ -205,7 +209,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 			if err := s.validDeletedIssueAllocationInTx(ctx, tx, path, kind, typ.String, head, state, backing, key); err != nil {
 				return "", nil, err
 			}
-		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key, issueType) {
+		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key, issueType, facts...) {
 			return "", nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
 		}
 	}
@@ -227,7 +231,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		rows, err := previewVersionsInTx(ctx, tx, path, head, "", true, bounds)
 		return KindMemory, rows, err
 	case backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String),
-		backing == "dependency" && kind == "link" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String):
+		backing == "dependency" && kind == "link" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String, facts...):
 		// Every informational Type the binary knows is accepted here, but only
 		// one this store has INSTALLED is valid. An allocation naming an absent
 		// Type is corrupt state. readVersionInTx makes the same check, so the list and the

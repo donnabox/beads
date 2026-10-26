@@ -208,7 +208,7 @@ func TestMixedCoreNativeRecorderExactlyOnce(t *testing.T) {
 				t.Fatal(err)
 			}
 			createSelectedConstraintFixture(t, ctx, s, "beads/rule")
-			owned, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/knows", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/memory", TargetPath: "beads/rule", ExpectedSourceRevision: memory.Revision, Actor: "author"})
+			owned, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/knows", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/memory", TargetPath: "beads/rule", ExpectedSourceRevision: memory.Revision, Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}

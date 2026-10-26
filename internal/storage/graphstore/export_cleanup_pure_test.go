@@ -65,8 +65,8 @@ func TestExportCurrentSnapshotRollbackCleanup(t *testing.T) {
 					}
 				}
 				sort.Slice(want.Snapshot.Types, func(i, j int) bool { return want.Snapshot.Types[i].ID() < want.Snapshot.Types[j].ID() })
-				if err != nil || len(want.Snapshot.Types) != 52 || !reflect.DeepEqual(state, want) {
-					t.Fatalf("successful complete acquisition differs: got=%+v want=%+v error=%v", state, want, err)
+				if err != nil || len(want.Snapshot.Types) != 50 || !reflect.DeepEqual(state, want) {
+					t.Fatalf("successful complete acquisition differs: gotTypes=%d wantTypes=%d equal=%t error=%v", len(state.Snapshot.Types), len(want.Snapshot.Types), reflect.DeepEqual(state, want), err)
 				}
 			}
 			exportCleanupTransactionCount(t, s, d)
@@ -418,6 +418,8 @@ func (c *exportCleanupConn) QueryContext(_ context.Context, query string, args [
 		return &exportCleanupRows{columns: []string{"path", "backing", "kind"}}, nil
 	case strings.HasPrefix(q, "select path from graph_preview_catalog"):
 		return &exportCleanupRows{columns: []string{"path"}}, nil
+	case strings.HasPrefix(q, "select d.type,case when octet_length(c.type_url)"):
+		return &exportCleanupRows{columns: []string{"type", "type_url"}}, nil
 	case strings.HasPrefix(q, "select 1 from graph_preview_catalog"):
 		return &exportCleanupRows{columns: []string{"invalid"}}, nil
 	case strings.HasPrefix(q, "select count(*)"), strings.HasPrefix(q, "select exists("), strings.HasPrefix(q, "select cast(least("):

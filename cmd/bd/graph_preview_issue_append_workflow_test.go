@@ -67,7 +67,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			call("create", "Record progress", "--id", "beads/work", "--force", "--labels", "demo,graph")
 			target := call("create", "Prerequisite", "--id", "beads/gate", "--force")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/references"))
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"references"))
 			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--claim", "--actor", "holder"))
 			if !claimed.Changed || claimed.Issue.Properties.Assignee != "holder" || claimed.Issue.Properties.LeaseExpiresAt == nil {

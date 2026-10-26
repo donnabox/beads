@@ -121,7 +121,7 @@ func TestNativeConcreteTypesWireAndRetainedProjection(t *testing.T) {
 			if err != nil || len(descriptor.ConformsTo) != 1 || descriptor.ConformsTo[0] != graphstore.IssueTypeURL(scope) {
 				t.Fatalf("concrete parent missing: %+v %v", descriptor, err)
 			}
-			base, err := r.Type(ctx, "types/issue")
+			base, err := r.Type(ctx, "issue")
 			if err != nil || !strings.Contains(strings.ToLower(base.Description), "abstract") {
 				t.Fatalf("abstract status hidden: %+v %v", base, err)
 			}

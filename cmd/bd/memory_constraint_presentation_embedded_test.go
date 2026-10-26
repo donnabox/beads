@@ -43,7 +43,7 @@ func TestMemoryConstraintsAndSubjectsEmbeddedCapture(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, id := range []string{"a", "b", "c", "d"} {
-		if _, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/" + id, TypeURL: genericTestScope + "types/policy", Title: strings.ToUpper(id), Actor: "presenter"}); err != nil {
+		if _, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/" + id, TypeURL: genericTestScope + "policy", Title: strings.ToUpper(id), Actor: "presenter"}); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -56,7 +56,7 @@ func TestMemoryConstraintsAndSubjectsEmbeddedCapture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/subject", TypeURL: genericTestScope + "types/subject-to", SourcePath: "beads/work", TargetPath: "beads/b", TargetPin: graphstore.EndpointPin{Revision: b.Revision}, UnconditionalSource: true, Actor: "presenter"}); err != nil {
+	if _, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/subject", TypeURL: genericTestScope + "subject-to", SourcePath: "beads/work", TargetPath: "beads/b", TargetPin: graphstore.EndpointPin{Revision: b.Revision}, UnconditionalSource: true, Actor: "presenter"}); err != nil {
 		t.Fatal(err)
 	}
 	limits := memoryquery.Limits{MaxNodes: 20, MaxLinks: 20, MaxInspected: 10000}

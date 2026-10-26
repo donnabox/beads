@@ -152,7 +152,11 @@ func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties 
 		}
 		observed = append(observed, link.Type)
 	}
-	ownedTypes, err := r.store.SelectedOwnedLinkTypesWithObserved(typ, observed...)
+	facts, err := r.store.ListInstalledTypes(ctx)
+	if err != nil {
+		return bdpwire.BeadRecord{}, err
+	}
+	ownedTypes, err := r.store.SelectedOwnedLinkTypesWithDescriptors(typ, facts, observed...)
 	if err != nil {
 		return bdpwire.BeadRecord{}, err
 	}

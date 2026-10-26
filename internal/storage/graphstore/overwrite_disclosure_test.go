@@ -28,11 +28,11 @@ func disclosureFixture(t *testing.T, backend string) (context.Context, Options, 
 	if err != nil {
 		t.Fatal(err)
 	}
-	target, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Fixture", TypeURL: o.Binding.ScopeURL + "types/constraint", Body: "target", Actor: "target-author"})
+	target, err := s.Create(ctx, CreateRequest{Path: "beads/target", Title: "Fixture", TypeURL: o.Binding.ScopeURL + "constraint", Body: "target", Actor: "target-author"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	link, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", Path: "links/out", SourcePath: "beads/plan", TargetPath: "beads/target", ExpectedSourceRevision: memory.Revision})
+	link, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "subject-to", Path: "links/out", SourcePath: "beads/plan", TargetPath: "beads/target", ExpectedSourceRevision: memory.Revision})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +71,7 @@ func TestOverwriteDisclosureLifecycle(t *testing.T) {
 			if err != nil || guarded.Replaced != nil {
 				t.Fatalf("guarded: %+v %v", guarded, err)
 			}
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", Path: "links/second", SourcePath: "beads/plan", TargetPath: "beads/target", UnconditionalSource: true, Actor: "link-author"})
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "subject-to", Path: "links/second", SourcePath: "beads/plan", TargetPath: "beads/target", UnconditionalSource: true, Actor: "link-author"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -119,7 +119,7 @@ func TestOverwriteDisclosureRollback(t *testing.T) {
 					return s.UpdateMemory(ctx, MemoryUpdateRequest{Path: "beads/plan", Properties: Properties{Title: "Fixture", Body: "new"}, Unconditional: true})
 				},
 				"create": func(ctx context.Context, s *Store) (any, error) {
-					return s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", Path: "links/new", SourcePath: "beads/plan", TargetPath: "beads/target", UnconditionalSource: true})
+					return s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "subject-to", Path: "links/new", SourcePath: "beads/plan", TargetPath: "beads/target", UnconditionalSource: true})
 				},
 				"update": func(ctx context.Context, s *Store) (any, error) {
 					return s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/out", Unconditional: true, UnconditionalSource: true, Properties: map[string]any{"note": "new"}})
@@ -310,7 +310,7 @@ func TestOverwriteDisclosureLostCommitResponse(t *testing.T) {
 			case "memory":
 				got, err = s.UpdateMemory(ctx, MemoryUpdateRequest{Path: "beads/plan", Properties: Properties{Title: "Fixture", Body: "uncertain"}, Unconditional: true})
 			case "create":
-				got, err = s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", Path: "links/new", SourcePath: "beads/plan", TargetPath: "beads/target", UnconditionalSource: true})
+				got, err = s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "subject-to", Path: "links/new", SourcePath: "beads/plan", TargetPath: "beads/target", UnconditionalSource: true})
 			case "update":
 				got, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/out", Properties: map[string]any{"note": "uncertain"}, Unconditional: true, UnconditionalSource: true})
 			case "unlink":

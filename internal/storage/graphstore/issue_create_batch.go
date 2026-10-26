@@ -185,7 +185,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			if err != nil {
 				return err
 			}
-			if err := s.ensureNativeTypeInTx(ctx, tx, declaredTypes[index]); err != nil {
+			if err := s.ensureNativeTypeInTx(ctx, tx, declaredTypes[index], graph.KindBead); err != nil {
 				return err
 			}
 		}

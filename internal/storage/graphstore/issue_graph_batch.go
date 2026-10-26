@@ -345,7 +345,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 			if err != nil {
 				return err
 			}
-			if err := s.ensureNativeTypeInTx(ctx, tx, declared); err != nil {
+			if err := s.ensureNativeTypeInTx(ctx, tx, declared, graph.KindBead); err != nil {
 				return err
 			}
 			declaredTypes[key] = declared

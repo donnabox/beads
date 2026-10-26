@@ -15,10 +15,10 @@ type Source struct {
 func SelectedSource() Source {
 	return Source{
 		Repository: "gastownhall/bdp",
-		Commit:     "afec9117914bd1c1fe0027c2067e4d89677e40a3",
+		Commit:     "94f699b947382e3a52385b1895a941575fcc08cb",
 		Path:       "specs/types/memory/memory.md",
-		SHA256:     "1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34",
-		Bytes:      106334,
+		SHA256:     "60c319aac0e42ea9825d6b383a6d09b7d789023fded675e647fd657f37961cb0",
+		Bytes:      103192,
 	}
 }
 
@@ -30,8 +30,6 @@ const (
 	Evaluation    Symbol = "evaluation"
 	Constraint    Symbol = "constraint"
 	Policy        Symbol = "policy"
-	Decision      Symbol = "decision"
-	Procedure     Symbol = "procedure"
 	Requirement   Symbol = "requirement"
 	Scenario      Symbol = "scenario"
 	Specification Symbol = "specification"
@@ -47,7 +45,7 @@ const (
 )
 
 func beadSymbols() []Symbol {
-	return []Symbol{Memory, Evaluation, Constraint, Policy, Decision, Procedure, Requirement, Scenario, Specification}
+	return []Symbol{Memory, Evaluation, Constraint, Policy, Requirement, Scenario, Specification}
 }
 
 func linkSymbols() []Symbol {
@@ -60,7 +58,7 @@ func parent(symbol Symbol) Symbol {
 	switch symbol {
 	case Evaluation, Constraint:
 		return Memory
-	case Policy, Decision, Procedure, Requirement, Scenario, Specification:
+	case Policy, Requirement, Scenario, Specification:
 		return Constraint
 	case Defines:
 		return Requires

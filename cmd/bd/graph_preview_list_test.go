@@ -226,7 +226,7 @@ func TestGraphPreviewBeadListOutput(t *testing.T) {
 	task, _ := graphstore.NativeIssueTypeURL(scope, "task")
 	page := graphstore.BeadListPage{Items: []any{
 		graphstore.IssueRecord{ID: scope + "beads/work", Type: task, Properties: &types.Issue{Title: "Ship the release", Status: types.StatusOpen, Priority: 1}},
-		graphstore.Record{ID: scope + "beads/plan", Type: scope + "types/memory", Properties: graphstore.Properties{Title: "Release plan"}},
+		graphstore.Record{ID: scope + "beads/plan", Type: scope + "memory", Properties: graphstore.Properties{Title: "Release plan"}},
 		graphstore.IssueRecord{ID: scope + "beads/odd", Type: task, Properties: &types.Issue{Title: "quote\"\n雪", Status: "on-ice", Priority: 4}},
 	}}
 
@@ -370,7 +370,7 @@ func TestGraphPreviewListNoticeRendering(t *testing.T) {
 	}
 
 	const labelNotice = "directory.labels \"frontend\" is not applied to this Bead Type."
-	beads := graphstore.BeadListPage{Items: []any{graphstore.Record{ID: scope + "beads/plan", Type: scope + "types/memory", Properties: graphstore.Properties{Title: "Plan"}}}}
+	beads := graphstore.BeadListPage{Items: []any{graphstore.Record{ID: scope + "beads/plan", Type: scope + "memory", Properties: graphstore.Properties{Title: "Plan"}}}}
 	human, err = renderGraphBeadList(beads, scope, false, labelNotice, false, false)
 	if want := "Beads (1; more: false; graph preview)\n" + labelNotice + "\nbeads/plan [types/memory] \"Plan\"\n"; err != nil || human != want {
 		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)

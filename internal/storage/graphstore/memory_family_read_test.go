@@ -574,7 +574,7 @@ func TestMemoryCurrentFamilyCommonPublicIdentity(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "beads/reference", TypeURL: s.ScopeURL() + "types/references", SourcePath: issue.ID, TargetPath: memory.ID, UnconditionalSource: true})
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "beads/reference", TypeURL: s.ScopeURL() + "references", SourcePath: issue.ID, TargetPath: memory.ID, UnconditionalSource: true})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -616,7 +616,7 @@ func TestMemoryCurrentFamilyRootKindTaxonomy(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			_, err = s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "ab", TypeURL: s.ScopeURL() + "types/references", SourcePath: a.ID, TargetPath: b.ID, UnconditionalSource: true})
+			_, err = s.AddInformationalLink(ctx, LinkCreateRequest{PublicID: "ab", TypeURL: s.ScopeURL() + "references", SourcePath: a.ID, TargetPath: b.ID, UnconditionalSource: true})
 			if err != nil {
 				t.Fatal(err)
 			}

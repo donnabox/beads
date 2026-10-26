@@ -1,6 +1,8 @@
 package graphstore
 
 import (
+	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -43,12 +45,16 @@ func recordType(record any) string {
 	return ""
 }
 
-func (s *Store) ownsLink(source any, linkType string) (bool, error) {
+func (s *Store) ownsLink(ctx context.Context, tx *sql.Tx, source any, linkType string) (bool, error) {
 	c, err := s.selectedTypes()
 	if err != nil {
 		return false, err
 	}
-	return c.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), recordType(source))}, typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), linkType)})
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return false, err
+	}
+	return c.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), recordType(source), graph.KindBead, facts...)}, typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), linkType, graph.KindLink, facts...)})
 }
 
 // SelectedOwnedLinkTypes supplies effective ownership for complete record
@@ -62,11 +68,17 @@ func (s *Store) SelectedOwnedLinkTypes(beadType string) ([]string, error) {
 // SelectedOwnedLinkTypesWithObserved adds native concrete ownership from an
 // already captured snapshot; it performs no storage reads.
 func (s *Store) SelectedOwnedLinkTypesWithObserved(beadType string, observedLinkTypes ...string) ([]string, error) {
+	return s.SelectedOwnedLinkTypesWithDescriptors(beadType, nil, observedLinkTypes...)
+}
+
+// SelectedOwnedLinkTypesWithDescriptors uses a caller-captured checked descriptor
+// inventory. Unknown same-kind IDs are not promoted to a native family.
+func (s *Store) SelectedOwnedLinkTypesWithDescriptors(beadType string, facts []graph.TypeDescriptor, observedLinkTypes ...string) ([]string, error) {
 	c, err := s.selectedTypes()
 	if err != nil {
 		return nil, err
 	}
-	family := nativeFamilyReference(s.ScopeURL(), beadType)
+	family := nativeFamilyReference(s.ScopeURL(), beadType, graph.KindBead, facts...)
 	definition, ok := c.types.Definition(family)
 	if !ok || definition.Kind != graph.KindBead {
 		return nil, fmt.Errorf("%w: unknown selected Bead ownership contract", ErrInvalidStore)
@@ -97,7 +109,7 @@ func (s *Store) SelectedOwnedLinkTypesWithObserved(beadType string, observedLink
 			}
 		}
 		for _, id := range observedLinkTypes {
-			if isConcreteNativeDependency(s.ScopeURL(), id) && !seen[id] {
+			if isConcreteNativeDependency(s.ScopeURL(), id, facts...) && !seen[id] {
 				result = append(result, id)
 				seen[id] = true
 			}
@@ -118,14 +130,14 @@ func newSelectedMemoryProjection(scope string) (*memorycatalog.Projection, error
 	// shared specification assigns global Type IDs or definition revisions.
 	for _, symbol := range []memorycatalog.Symbol{
 		memorycatalog.Memory, memorycatalog.Evaluation, memorycatalog.Constraint,
-		memorycatalog.Policy, memorycatalog.Decision, memorycatalog.Procedure,
+		memorycatalog.Policy,
 		memorycatalog.Requirement, memorycatalog.Scenario, memorycatalog.Specification,
 		memorycatalog.References, memorycatalog.SupersededBy, memorycatalog.Requires,
 		memorycatalog.Defines, memorycatalog.SubjectTo, memorycatalog.Conformance,
 		memorycatalog.Addresses, memorycatalog.Satisfies, memorycatalog.Violates,
 	} {
 		input.Bindings[symbol] = memorycatalog.Binding{
-			Type:       typecatalog.Reference{URI: scope + "types/" + string(symbol)},
+			Type:       typecatalog.Reference{URI: scope + string(symbol)},
 			SchemaBase: scope + "schemas/" + string(symbol),
 		}
 	}
@@ -302,4 +314,12 @@ func validateAuthoredReference(raw json.RawMessage, exact bool) error {
 		return fmt.Errorf("%w: Reference requires an absolute URI", storage.ErrValidation)
 	}
 	return nil
+}
+
+func (s *Store) selectedOwnedLinkTypesInTx(ctx context.Context, tx *sql.Tx, id string) ([]string, error) {
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return nil, err
+	}
+	return s.SelectedOwnedLinkTypesWithDescriptors(id, facts)
 }

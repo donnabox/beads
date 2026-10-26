@@ -39,14 +39,14 @@ func TestGraphPreviewNativeConcreteTypeWorkflow(t *testing.T) {
 				t.Fatalf("custom declaration lost: %+v", custom)
 			}
 			decision := graphMixedResult[graphstore.IssueRecord](t, call("create", "Native decision", "--graph-path", "beads/native-decision", "--type", "decision"))
-			memory := graphMixedResult[graphstore.Record](t, call("create", "Memory decision", "--id", "beads/memory-decision", "--type", "types/decision"))
-			if decision.Type == memory.Type || memory.Type != scope+"types/decision" {
+			memory := graphMixedResult[graphstore.Record](t, call("create", "Memory scenario", "--id", "beads/memory-scenario", "--type", "scenario"))
+			if decision.Type == memory.Type || memory.Type != scope+"scenario" {
 				t.Fatal("native/Memory names collided")
 			}
 			for _, tc := range []struct {
 				flags []string
 				want  int
-			}{{nil, 4}, {[]string{"--type", "issue"}, 4}, {[]string{"--type", "any"}, 5}, {[]string{"--exact-type", "task"}, 1}, {[]string{"--exact-type", taskType}, 1}, {[]string{"--type", "issue", "--exact-type", "task"}, 1}, {[]string{"--type", "bug", "--exact-type", "task"}, 0}, {[]string{"--exact-type", "types/issue"}, 0}, {[]string{"--type", "types/memory"}, 1}, {[]string{"--type", "decision"}, 1}, {[]string{"--type", "types/decision"}, 1}} {
+			}{{nil, 4}, {[]string{"--type", "issue"}, 4}, {[]string{"--type", "any"}, 5}, {[]string{"--exact-type", "task"}, 1}, {[]string{"--exact-type", taskType}, 1}, {[]string{"--type", "issue", "--exact-type", "task"}, 1}, {[]string{"--type", "bug", "--exact-type", "task"}, 0}, {[]string{"--exact-type", "issue"}, 0}, {[]string{"--type", "memory"}, 1}, {[]string{"--type", "decision"}, 1}, {[]string{"--type", "scenario"}, 1}} {
 				paths, more := graphListBeads(t, bd, work, home, scope, tc.flags...)
 				if more || len(paths) != tc.want {
 					t.Fatalf("list %v: count=%d more=%t want=%d", tc.flags, len(paths), more, tc.want)
@@ -80,7 +80,7 @@ func TestGraphPreviewNativeConcreteTypeWorkflow(t *testing.T) {
 			for _, tc := range []struct {
 				flags []string
 				want  int
-			}{{nil, 4}, {[]string{"--type", "any"}, 5}, {[]string{"--type", "types/memory"}, 1}, {[]string{"--exact-type", "task"}, 1}, {[]string{"--type", "issue", "--exact-type", "task"}, 1}, {[]string{"--type", "bug", "--exact-type", "task"}, 0}, {[]string{"--exact-type", "types/issue"}, 0}} {
+			}{{nil, 4}, {[]string{"--type", "any"}, 5}, {[]string{"--type", "memory"}, 1}, {[]string{"--exact-type", "task"}, 1}, {[]string{"--type", "issue", "--exact-type", "task"}, 1}, {[]string{"--type", "bug", "--exact-type", "task"}, 0}, {[]string{"--exact-type", "issue"}, 0}} {
 				var result struct {
 					Count int `json:"count"`
 				}
@@ -97,7 +97,7 @@ func TestGraphPreviewNativeConcreteTypeWorkflow(t *testing.T) {
 			for _, tc := range []struct {
 				flags []string
 				want  int
-			}{{[]string{"--type", "dependency"}, 1}, {[]string{"--exact-type", "parent-child"}, 1}, {[]string{"--type", "dependency", "--exact-type", "parent-child"}, 1}, {[]string{"--type", "blocks", "--exact-type", "parent-child"}, 0}, {[]string{"--exact-type", "types/dependency"}, 0}} {
+			}{{[]string{"--type", "dependency"}, 1}, {[]string{"--exact-type", "parent-child"}, 1}, {[]string{"--type", "dependency", "--exact-type", "parent-child"}, 1}, {[]string{"--type", "blocks", "--exact-type", "parent-child"}, 0}, {[]string{"--exact-type", "dependency"}, 0}} {
 				listed := graphMixedResult[[]graphstore.LinkRecord](t, call(append([]string{"link", "list"}, tc.flags...)...))
 				counted := graphMixedResult[map[string]int](t, call(append([]string{"link", "count"}, tc.flags...)...))
 				if len(listed) != tc.want || counted["count"] != tc.want {
@@ -139,7 +139,7 @@ func TestGraphPreviewNativeConcreteTypeWorkflow(t *testing.T) {
 				t.Fatalf("retained affiliation changed: %+v", retained)
 			}
 			before := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", first.ID, "--format", "graph-json"))
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "update", first.ID, "--type", "types/issue", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "update", first.ID, "--type", "issue", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "update", first.ID, "--type", bugType, "--properties", `{"issue_type":"feature"}`, "--json")
 			after := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", first.ID, "--format", "graph-json"))
 			if !reflect.DeepEqual(before, after) {

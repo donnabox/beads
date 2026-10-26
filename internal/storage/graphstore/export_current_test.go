@@ -30,7 +30,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if err := exportSetPrefix(ctx, s, "web-app-"); err != nil {
 				t.Fatal(err)
 			}
-			_, err = s.Create(ctx, CreateRequest{Path: "beads/plan", TypeURL: s.ScopeURL() + "types/constraint", Title: " Plan 記憶 ", Body: "\t🌱\n", Metadata: json.RawMessage(`{"source":"disposable"}`)})
+			_, err = s.Create(ctx, CreateRequest{Path: "beads/plan", TypeURL: s.ScopeURL() + "constraint", Title: " Plan 記憶 ", Body: "\t🌱\n", Metadata: json.RawMessage(`{"source":"disposable"}`)})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -45,7 +45,7 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			if _, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "test-author"}); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/work", TargetPath: "beads/plan", UnconditionalSource: true}); err != nil {
+			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/work", TargetPath: "beads/plan", UnconditionalSource: true}); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/issue-context", SourcePath: "beads/prereq", TargetPath: "beads/plan"}); err != nil {
@@ -536,7 +536,7 @@ func TestExportCurrentSnapshotConcurrentWriter(t *testing.T) {
 			base, options, reader := memoryDeleteStore(t, backend)
 			ctx, cancel := context.WithTimeout(base, time.Minute)
 			defer cancel()
-			_, err := reader.Create(ctx, CreateRequest{Path: "beads/source", TypeURL: reader.ScopeURL() + "types/constraint", Title: "Source", Body: "original"})
+			_, err := reader.Create(ctx, CreateRequest{Path: "beads/source", TypeURL: reader.ScopeURL() + "constraint", Title: "Source", Body: "original"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -615,7 +615,7 @@ func TestExportCurrentSnapshotConcurrentWriter(t *testing.T) {
 					writeDone <- err
 					return
 				}
-				if _, err := writer.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/new", TypeURL: writer.ScopeURL() + "types/subject-to", SourcePath: "beads/work", TargetPath: "beads/source", UnconditionalSource: true}); err != nil {
+				if _, err := writer.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/new", TypeURL: writer.ScopeURL() + "subject-to", SourcePath: "beads/work", TargetPath: "beads/source", UnconditionalSource: true}); err != nil {
 					writeDone <- err
 					return
 				}
@@ -731,11 +731,11 @@ func TestExportEndpointPinsCurrentAndRetained(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			target, err := s.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: s.ScopeURL() + "types/constraint", Title: "Target", Body: "First"})
+			target, err := s.Create(ctx, CreateRequest{Path: "beads/target", TypeURL: s.ScopeURL() + "constraint", Title: "Target", Body: "First"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			owned, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/source", TargetPath: "beads/target", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
+			owned, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/owned", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/source", TargetPath: "beads/target", TargetPin: EndpointPin{Revision: target.Revision}, ExpectedSourceRevision: source.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}

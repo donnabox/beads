@@ -2,8 +2,8 @@ package graphstore
 
 import (
 	"bytes"
-	"encoding/hex"
 	"fmt"
+	"net/url"
 	"strings"
 	"unicode/utf8"
 
@@ -20,65 +20,100 @@ func NativeIssueTypeURL(scope, classification string) (string, error) {
 	if utf8.RuneCountInString(classification) > 32 {
 		return "", fmt.Errorf("%w: native Issue classification exceeds 32 characters", graph.ErrValidation)
 	}
-	return nativeConcreteTypeURL(scope, "native-issue", classification)
+	return nativeConcreteTypeURL(scope, graph.KindBead, classification)
 }
 
 // NativeDependencyTypeURL preserves the exact validated native kind. Its
-// namespace is disjoint from Issue and Memory Types, including native kinds
-// whose spelling is already used by the Memory catalog.
+// identity is the meaningful selected name. Conflicting selected names refuse;
+// custom cross-role bindings are checked by the storage transaction.
 func NativeDependencyTypeURL(scope, kind string) (string, error) {
 	if !types.DependencyType(kind).IsValid() {
 		return "", fmt.Errorf("%w: native Dependency kind exceeds its native storage bound", graph.ErrValidation)
 	}
-	return nativeConcreteTypeURL(scope, "native-dependency", kind)
+	return nativeConcreteTypeURL(scope, graph.KindLink, kind)
 }
 
-func nativeConcreteTypeURL(scope, family, classification string) (string, error) {
-	if err := graph.ValidateScopeURL(scope); err != nil {
-		return "", err
-	}
+// nativeConcreteTypeURL is a representation operation, not installation or
+// native classification admission. The role comes from the native writer.
+func nativeConcreteTypeURL(scope string, role graph.ResourceKind, classification string) (string, error) {
 	if classification == "" || !utf8.ValidString(classification) {
 		return "", fmt.Errorf("%w: native classification must be nonempty UTF-8", graph.ErrValidation)
 	}
-	id := scope + "types/" + family + "/" + hex.EncodeToString([]byte(classification))
-	if err := graph.ValidateTypeURL(id); err != nil {
-		return "", err
+	if nativeNameConflicts(classification, role) {
+		return "", fmt.Errorf("%w: native classification %q conflicts with a selected Type", ErrAlreadyExists, classification)
 	}
-	return id, nil
+	segments := strings.Split(classification, "/")
+	for i, segment := range segments {
+		segments[i] = graph.CanonicalSegment(segment)
+	}
+	return graph.CanonicalPublicResourceURL(scope, strings.Join(segments, "/"))
 }
 
-// NativeTypeClassification decodes only the canonical application-local native
-// mapping. It is an identity operation, never installation or admission proof.
-// The returned base is the abstract Issue or Dependency family identity.
-func NativeTypeClassification(scope, id string) (base, classification string, ok bool) {
-	for _, family := range []struct{ name, base string }{
-		{"native-issue", IssueTypeURL(scope)}, {"native-dependency", DependencyTypeURL(scope)},
-	} {
-		prefix := scope + "types/" + family.name + "/"
-		if !strings.HasPrefix(id, prefix) {
-			continue
-		}
-		encoded := strings.TrimPrefix(id, prefix)
-		raw, err := hex.DecodeString(encoded)
-		if err != nil || len(raw) == 0 || !utf8.Valid(raw) || hex.EncodeToString(raw) != encoded {
-			return "", "", false
-		}
-		canonical, err := NativeIssueTypeURL(scope, string(raw))
-		if family.base == DependencyTypeURL(scope) {
-			canonical, err = NativeDependencyTypeURL(scope, string(raw))
-		}
-		if err != nil || canonical != id {
-			return "", "", false
-		}
-		return family.base, string(raw), true
+// NativeTypeClassification reverses a generated identity for an explicit native
+// role supplied by its caller. The full local path is preserved; no basename or
+// namespace infers a kind. This does not establish a checked native binding:
+// storage must still compare the exact descriptor/backing in its transaction.
+func NativeTypeClassification(scope, id string, role graph.ResourceKind) (base, classification string, ok bool) {
+	local, err := graph.ScopeLocalPublicResourceID(scope, id)
+	if err != nil {
+		return "", "", false
 	}
-	return "", "", false
+	parts := strings.Split(local, "/")
+	for i, part := range parts {
+		parts[i], err = url.PathUnescape(part)
+		if err != nil {
+			return "", "", false
+		}
+	}
+	classification = strings.Join(parts, "/")
+	var canonical string
+	if role == graph.KindBead {
+		base = IssueTypeURL(scope)
+		canonical, err = NativeIssueTypeURL(scope, classification)
+	} else if role == graph.KindLink {
+		base = DependencyTypeURL(scope)
+		canonical, err = NativeDependencyTypeURL(scope, classification)
+	} else {
+		return "", "", false
+	}
+	if err != nil || canonical != id {
+		return "", "", false
+	}
+	return base, classification, true
 }
 
-func nativeConcreteDescriptor(scope, id string) (graph.TypeDescriptor, error) {
-	base, classification, ok := NativeTypeClassification(scope, id)
+func nativeNameConflicts(name string, role graph.ResourceKind) bool {
+	for _, fixed := range append(append([]string(nil), selectedMemoryBeadNames...), selectedMemoryLinkNames...) {
+		if name == fixed {
+			return true
+		}
+	}
+	if name == "issue" || name == "dependency" || IsReservedTypeName(name) {
+		return true
+	}
+
+	if role == graph.KindBead {
+		for _, kind := range types.WellKnownDependencyTypes() {
+			if name == string(kind) {
+				return true
+			}
+		}
+	} else if role == graph.KindLink {
+		for _, kind := range append(append([]types.IssueType(nil), types.AllIssueTypes...), types.TypeEvent) {
+			if name == string(kind) {
+				return true
+			}
+		}
+	} else {
+		return true
+	}
+	return false
+}
+
+func nativeConcreteDescriptor(scope, id string, role graph.ResourceKind) (graph.TypeDescriptor, error) {
+	base, classification, ok := NativeTypeClassification(scope, id, role)
 	if !ok {
-		return graph.TypeDescriptor{}, fmt.Errorf("%w: invalid native concrete Type identity", graph.ErrValidation)
+		return graph.TypeDescriptor{}, fmt.Errorf("%w: invalid native concrete %s Type identity %q", graph.ErrValidation, role, id)
 	}
 	kind := graph.KindBead
 	spec := graph.TypeDescriptorSpec{ID: id, Name: classification, Describes: kind, ConformsTo: []string{base}, Description: "Concrete native adapter Type. The native classification column is authoritative; its domain validator controls admission. This Scope-local identity does not assign a global Type identity."}
@@ -93,23 +128,19 @@ func nativeConcreteDescriptor(scope, id string) (graph.TypeDescriptor, error) {
 	return graph.NewTypeDescriptor(spec)
 }
 
-func sameNativeIssueTypeFamily(left, right string) bool {
-	i := strings.LastIndex(left, "types/native-issue/")
-	if i < 0 {
-		return false
-	}
-	scope := left[:i]
-	a, _, ok := NativeTypeClassification(scope, left)
-	if !ok || a != IssueTypeURL(scope) {
-		return false
-	}
-	b, _, ok := NativeTypeClassification(scope, right)
-	return ok && b == a
-}
-
 // IsNativeConcreteTypeDescriptor recognizes only the exact authoritative native
 // adapter declaration. It does not authorize use of a custom classification.
 func IsNativeConcreteTypeDescriptor(scope string, descriptor graph.TypeDescriptor) bool {
-	expected, err := nativeConcreteDescriptor(scope, descriptor.ID())
+	expected, err := nativeConcreteDescriptor(scope, descriptor.ID(), descriptor.Describes())
 	return err == nil && bytes.Equal(expected.CanonicalJSON(), descriptor.CanonicalJSON())
+}
+
+// IsReservedTypeName names only the hidden intrinsic local identities. It does
+// not strip path components or classify foreign identities by their basename.
+func IsReservedTypeName(name string) bool {
+	switch name {
+	case "type", "bead-type", "link-type", "conforms-to", "refines", "Type", "BeadType", "LinkType", "ConformsTo", "Refines":
+		return true
+	}
+	return false
 }

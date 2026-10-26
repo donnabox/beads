@@ -16,7 +16,7 @@ func constraintPresentationFixture(t *testing.T, edges ...[4]string) memoryPrese
 	t.Helper()
 	r := memoryPresentationReader{nodes: map[string]memoryquery.CurrentNode{}}
 	for _, id := range []string{"a", "b", "c", "d", "e", "f"} {
-		r.nodes["beads/"+id] = memoryquery.CurrentNode{Path: "beads/" + id, TypeURL: genericTestScope + "types/constraint", Version: "current"}
+		r.nodes["beads/"+id] = memoryquery.CurrentNode{Path: "beads/" + id, TypeURL: genericTestScope + "constraint", Version: "current"}
 	}
 	for _, e := range edges {
 		src, err := graph.NewInScopeRef("beads/"+e[2], "current")
@@ -50,7 +50,7 @@ func constraintPresentationRecords(g memoryquery.CurrentGraph) graphstore.Curren
 	return r
 }
 func constraintPresentationFamily(_ context.Context, typ string) (bool, error) {
-	return typ == genericTestScope+"types/subject-to", nil
+	return typ == genericTestScope+"subject-to", nil
 }
 func constraintPresentationRequires(_ context.Context, typ string) (bool, error) {
 	return typ == genericTestScope+"types/requires" || typ == genericTestScope+"types/defines", nil
@@ -349,7 +349,7 @@ func TestMemoryConstraintCaptureRefusalAndRequestErrors(t *testing.T) {
 		}},
 		{"missing-view-root", func(r *graphstore.CurrentConstraintsRead) { r.Graph.Views[0].Nodes = r.Graph.Views[0].Nodes[1:] }},
 		{"unrepresented-union-node", func(r *graphstore.CurrentConstraintsRead) {
-			n := memoryquery.CurrentNode{Path: "beads/f", TypeURL: genericTestScope + "types/constraint", Version: "current"}
+			n := memoryquery.CurrentNode{Path: "beads/f", TypeURL: genericTestScope + "constraint", Version: "current"}
 			r.Graph.Nodes = append(r.Graph.Nodes, n)
 			r.Records = append(r.Records, graphstore.Record{ID: genericTestScope + n.Path, Type: n.TypeURL, Version: n.Version})
 		}},
@@ -413,7 +413,7 @@ func TestMemorySubjectsSelfDeclarationAndStrayNode(t *testing.T) {
 	if !strings.Contains(s, "[types/subject-to] (links/self) ← beads/a [types/constraint] (shown elsewhere) (cycle)") || strings.Count(s, "(links/self)") != 1 || strings.Contains(s, "complete:") || strings.Contains(s, "frontier:") {
 		t.Fatal(s)
 	}
-	n := memoryquery.CurrentNode{Path: "beads/e", TypeURL: genericTestScope + "types/constraint", Version: "current"}
+	n := memoryquery.CurrentNode{Path: "beads/e", TypeURL: genericTestScope + "constraint", Version: "current"}
 	g.Nodes = append(g.Nodes, n)
 	g.Views[0].Nodes = append(g.Views[0].Nodes, n.Path)
 	if got, err := renderMemorySubjectsGraph(constraintPresentationRecords(g), genericTestScope, 100000); got != "" || !errors.Is(err, graphstore.ErrInvalidStore) {

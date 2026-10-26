@@ -74,7 +74,7 @@ func TestSelectedInformationalTypeInstallationCorruptionIsReadOnly(t *testing.T)
 	if _, err := store.CurrentSnapshot(ctx); !errors.Is(err, ErrInvalidStore) {
 		t.Fatalf("inventory hid corrupt selected Type: %v", err)
 	}
-	if _, err := store.ReadType(ctx, "types/references"); !errors.Is(err, ErrInvalidStore) {
+	if _, err := store.ReadType(ctx, "references"); !errors.Is(err, ErrInvalidStore) {
 		t.Fatalf("Type read hid corruption: %v", err)
 	}
 	if !reflect.DeepEqual(before, workflowState(t, ctx, store)) {

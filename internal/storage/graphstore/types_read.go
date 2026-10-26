@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"fmt"
 	"sort"
-	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
 )
@@ -39,13 +38,8 @@ func (s *Store) ListInstalledTypes(ctx context.Context) ([]graph.TypeDescriptor,
 // visibility does not authorize new native use. This accessor never registers
 // or edits a Type, and every record validates its concrete binding.
 func (s *Store) ReadType(ctx context.Context, path string) (graph.TypeDescriptor, error) {
-	if !strings.HasPrefix(path, "types/") {
-		return graph.TypeDescriptor{}, fmt.Errorf("%w: expected a local types/ path", graph.ErrValidation)
-	}
-	// These private installed paths share the canonical identifier-segment
-	// grammar of Bead paths; do not normalize or admit URL query selectors.
-	if err := validatePath("beads/" + strings.TrimPrefix(path, "types/")); err != nil {
-		return graph.TypeDescriptor{}, fmt.Errorf("%w: invalid Type path: %v", graph.ErrValidation, err)
+	if err := graph.ValidateCanonicalResourceID(path); err != nil {
+		return graph.TypeDescriptor{}, err
 	}
 	id := graph.CanonicalURL(s.options.Binding.ScopeURL, path)
 	var descriptor graph.TypeDescriptor
@@ -72,7 +66,7 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 	var name string
 	var expected graph.TypeDescriptor
 	for _, definition := range previewTypeDefinitions() {
-		if id != s.ScopeURL()+"types/"+definition.name {
+		if id != s.ScopeURL()+definition.name {
 			continue
 		}
 		candidate, err := definition.build(s.ScopeURL())
@@ -86,17 +80,14 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 		break
 	}
 	if name == "" {
-		if isConcreteNativeIssue(s.ScopeURL(), id) || isConcreteNativeDependency(s.ScopeURL(), id) {
-			descriptors, err := s.selectedDescriptorsInTx(ctx, tx)
-			if err != nil {
-				return graph.TypeDescriptor{}, err
+		descriptors, err := s.selectedDescriptorsInTx(ctx, tx)
+		if err != nil {
+			return graph.TypeDescriptor{}, err
+		}
+		for _, d := range descriptors {
+			if d.ID() == id {
+				return d, nil
 			}
-			for _, d := range descriptors {
-				if d.ID() == id {
-					return d, nil
-				}
-			}
-			return graph.TypeDescriptor{}, ErrNotFound
 		}
 		return graph.TypeDescriptor{}, ErrNotFound
 	}

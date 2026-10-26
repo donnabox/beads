@@ -37,8 +37,8 @@ func TestGraphPreviewMemoryConvenienceWorkflow(t *testing.T) {
 				t.Helper()
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
-			created := graphMixedResult[graphstore.Record](t, call("memory", "remember", "--id", "policy", "--type", "types/policy", "--create-only", "--body", "First body", "--title", "Policy title", "--status", "reviewed"))
-			if created.ID != scope+"policy" || created.Type != scope+"types/policy" || created.Properties.Body != "First body" {
+			created := graphMixedResult[graphstore.Record](t, call("memory", "remember", "--id", "policy", "--type", "policy", "--create-only", "--body", "First body", "--title", "Policy title", "--status", "reviewed"))
+			if created.ID != scope+"policy" || created.Type != scope+"policy" || created.Properties.Body != "First body" {
 				t.Fatalf("nested typed creation lost identity, Type or body: %+v", created)
 			}
 			assertStatus := func(record graphstore.Record, want string) {
@@ -54,11 +54,11 @@ func TestGraphPreviewMemoryConvenienceWorkflow(t *testing.T) {
 			}
 			assertStatus(created, "reviewed")
 			plain := graphMixedResult[graphstore.Record](t, call("memory", "remember", "--id", "plain", "--create-only", "--body", "Plain body", "--status", "open"))
-			if plain.Type != scope+"types/memory" {
+			if plain.Type != scope+"memory" {
 				t.Fatalf("omitted Type did not create plain Memory: %+v", plain)
 			}
 			assertStatus(plain, "open")
-			fromProperties := graphMixedResult[graphstore.Record](t, call("remember", "--id", "policy-props", "--type", "types/policy", "--create-only", "--properties", `{"title":"Properties title","body":"Property body","status":"draft"}`))
+			fromProperties := graphMixedResult[graphstore.Record](t, call("remember", "--id", "policy-props", "--type", "policy", "--create-only", "--properties", `{"title":"Properties title","body":"Property body","status":"draft"}`))
 			if fromProperties.Type != created.Type || fromProperties.Properties.Title != "Properties title" || fromProperties.Properties.Body != "Property body" {
 				t.Fatalf("top-level typed properties creation diverged: %+v", fromProperties)
 			}
@@ -82,7 +82,7 @@ func TestGraphPreviewMemoryConvenienceWorkflow(t *testing.T) {
 			refuse("invalid_properties", "memory", "remember", "--id", "conflict", "--create-only", "--body", "One", "--properties", `{"body":"Two"}`)
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Issue target", "--id", "mem-work", "--type", "task"))
 			refuse("capability_unavailable", "memory", "forget", issue.Properties.ID)
-			call("link", "create", "--from", issue.ID, "--to", fromProperties.ID, "--id", "links/protect", "--type", "types/references")
+			call("link", "create", "--from", issue.ID, "--to", fromProperties.ID, "--id", "links/protect", "--type", "references")
 			refuse("constraint_violation", "memory", "forget", "policy-props")
 			graphPolicyCLI(t, bd, work, home, nil, "stderr:revision_unknown", "memory", "recall", "policy", "--revision", "=no-such-token")
 			if got := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "recall", "policy"); got != "First body\n" {
@@ -104,7 +104,7 @@ func TestGraphPreviewMemoryConvenienceWorkflow(t *testing.T) {
 				t.Fatalf("status no-op changed revision: %+v", unchanged)
 			}
 			refuse("revision_conflict", "memory", "remember", "--update", "policy", "--status", "stale", "--if-revision", "="+created.Revision)
-			refuse("invalid_selector", "memory", "remember", "--id", "other", "--type", "types/policy", "--body", "Other")
+			refuse("invalid_selector", "memory", "remember", "--id", "other", "--type", "policy", "--body", "Other")
 			refuse("invalid_properties", "memory", "remember", "--id", "wrong-kind", "--type", "types/task", "--create-only", "--body", "Wrong")
 			refuse("identity_reserved", "memory", "remember", "--id", "policy", "--create-only", "--body", "Duplicate")
 			if nested, top := graphPolicyCLI(t, bd, work, home, nil, "", "memory", "memories", "Policy", "--format", "records-json"), graphPolicyCLI(t, bd, work, home, nil, "", "memories", "Policy", "--format", "records-json"); nested != top {

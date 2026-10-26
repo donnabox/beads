@@ -29,14 +29,14 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		want []string
 	}{
 		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision =TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
-		{"create", createCmd, []string{"Graph preview workspaces:", "--type types/memory", "--id policy", "--id ID keeps the entire spelling", "--graph-path beads/PATH", "--force overrides that shipping", "--properties JSON", "types/NAME", "--parent ID creates a dotted child ID"}},
+		{"create", createCmd, []string{"Graph preview workspaces:", "--type memory", "--id policy", "--id ID keeps the entire spelling", "--graph-path beads/PATH", "--force overrides that shipping", "--properties JSON", "types/NAME", "--parent ID creates a dotted child ID"}},
 		{"q", quickCmd, []string{"Graph preview workspaces:", "bd q -- -follow-up", "--parent is unavailable here", "Ordinary Issue workspaces:", "bd q \"Subtask\" --parent"}},
 		{"dep", depCmd, []string{"Graph preview workspaces:", "bd dep BLOCKER --blocks BLOCKED", "--no-cycle-check"}},
 		{"dep-remove", depRemoveCmd, []string{"Graph preview workspaces:", "bd dep remove issue blocker", "status not_found", "dependency_removed", "bd link delete ID --force"}},
 		{"link", linkCmd, []string{
-			"Graph preview workspaces:", "bd link", "create/list/show/update/delete/versions/compare/count", "--type types/references", "Memory or Issue",
+			"Graph preview workspaces:", "bd link", "create/list/show/update/delete/versions/compare/count", "--type references", "Memory or Issue",
 			"accepts a built-in Dependency kind, types/NAME or a full local Type URL",
-			"The single Type types/dependency", "--if-source-revision TOKEN to reject a stale source.", "Owned-source pins remain unavailable.", "current resolves",
+			"The single Type dependency", "--if-source-revision TOKEN to reject a stale source.", "Owned-source pins remain unavailable.", "current resolves",
 		}},
 		{"show", showCmd, []string{"Graph preview workspaces:", "ordinary detail array", "--format graph-json"}},
 		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--replace-properties", "--replace-metadata", "--if-revision =TOKEN", "omission", "preserves the existing pin"}},

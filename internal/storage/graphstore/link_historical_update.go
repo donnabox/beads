@@ -51,6 +51,10 @@ func (s *Store) decodeLinkTerminal(ctx context.Context, tx *sql.Tx, path, typ, r
 // last-live protected baseline. It never substitutes the selected content source
 // for that baseline, and does not require deleted endpoints to be current.
 func (s *Store) deletedLinkStateInTx(ctx context.Context, tx *sql.Tx, path string) (LinkRecord, *LinkTombstone, error) {
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return LinkRecord{}, nil, err
+	}
 	var kind, typ, revision, state, backing string
 	var key sql.NullString
 	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &state, &backing, &key); err != nil {
@@ -63,7 +67,7 @@ func (s *Store) deletedLinkStateInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkRecord{}, nil, err
 	}
-	if state != "deleted" || !s.validDeletedLinkAllocation(kind, typ, backing, key, issueType) || !authorityID.MatchString(revision) {
+	if state != "deleted" || !s.validDeletedLinkAllocation(kind, typ, backing, key, issueType, facts...) || !authorityID.MatchString(revision) {
 		return LinkRecord{}, nil, fmt.Errorf("%w: invalid deleted Link allocation", ErrInvalidStore)
 	}
 	if _, err := historicalLinkReadBytes(ctx, tx, path, revision, "", true); err != nil {

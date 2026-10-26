@@ -25,13 +25,13 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 				t.Helper()
 				graphPatchProcess(t, bd, work, home, nil, code, 90*time.Second, append(args, "--json")...)
 			}
-			one := graphMixedResult[graphstore.Record](t, call("create", "One", "--type", "types/memory", "--id-root", "notes"))
-			two := graphMixedResult[graphstore.Record](t, call("create", "Two", "--type", "types/memory"))
+			one := graphMixedResult[graphstore.Record](t, call("create", "One", "--type", "memory", "--id-root", "notes"))
+			two := graphMixedResult[graphstore.Record](t, call("create", "Two", "--type", "memory"))
 			oneID, twoID := strings.TrimPrefix(one.ID, scope), strings.TrimPrefix(two.ID, scope)
 			if !strings.HasPrefix(oneID, "notes/") || len(strings.TrimPrefix(oneID, "notes/")) != 6 || len(twoID) != 6 {
 				t.Fatalf("canonical generated IDs: %q %q", oneID, twoID)
 			}
-			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", oneID, twoID+"@1", "--type", "types/references", "--id-root", "refs"))
+			linked := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", oneID, twoID+"@1", "--type", "references", "--id-root", "refs"))
 			if !strings.HasPrefix(linked.Link.ID, scope+"refs/") || len(strings.TrimPrefix(linked.Link.ID, scope+"refs/")) != 6 || linked.Link.TargetRevision != two.Revision {
 				t.Fatalf("generated Link/full pin: %+v", linked.Link)
 			}
@@ -53,7 +53,7 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 			}
 			refuse("revision_unknown", "show", twoID+"@999")
 			refuse("revision_unknown", "show", twoID, "--revision", "=3")
-			refuse("revision_unknown", "link", "create", oneID, twoID+"@999", "--type", "types/references")
+			refuse("revision_unknown", "link", "create", oneID, twoID+"@999", "--type", "references")
 			canonical := func(args ...string) json.RawMessage {
 				t.Helper()
 				out := graphPolicyCLI(t, bd, work, home, nil, "", append(append([]string{"show"}, args...), "--output-format", "json")...)
@@ -75,8 +75,8 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 			if call("show", issue.Properties.ID+"@1") != call("show", issue.ID, "--revision", "1") || call("show", issue.ID, "--revision", "1") != call("show", issue.ID, "--revision", "="+issue.Revision) {
 				t.Fatal("native ordinal did not resolve authoritative history")
 			}
-			refuse("invalid_selector", "create", "Bad", "--type", "types/memory", "--id", "explicit", "--id-root", "root")
-			refuse("invalid_selector", "link", "create", oneID, twoID, "--type", "types/references", "--id", "explicit", "--id-root", "root")
+			refuse("invalid_selector", "create", "Bad", "--type", "memory", "--id", "explicit", "--id-root", "root")
+			refuse("invalid_selector", "link", "create", oneID, twoID, "--type", "references", "--id", "explicit", "--id-root", "root")
 			refuse("invalid_selector", "show", twoID+"@unpinned")
 			base := graphMixedResult[graphstore.Record](t, call("remember", "Base", "--id", "shadow"))
 			before := call("show", "shadow@1")
@@ -90,7 +90,7 @@ func TestGraphPreviewLocalRevisionAndGeneratedRootWorkflow(t *testing.T) {
 					t.Fatal("explicit literal escape lost @ identity")
 				}
 			}
-			shadowPin := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", oneID, "shadow@1", "--type", "types/references"))
+			shadowPin := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", oneID, "shadow@1", "--type", "references"))
 			if shadowPin.Link.Target != base.ID || shadowPin.Link.TargetRevision != base.Revision {
 				t.Fatal("literal sibling shadowed endpoint reference")
 			}

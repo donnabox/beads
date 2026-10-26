@@ -66,7 +66,7 @@ func TestMemoryDeletionCurrentReadAndRetainedPages(t *testing.T) {
 			if _, err := store.CreateIssue(ctx, "beads/work", issueops.CreateRequest{Issue: &issueops.Issue{ID: "zz-work", Title: "Surviving Issue", Status: "open", IssueType: "task", Priority: 2}, ForceIDPrefix: true, Actor: "human:issue-author"}); err != nil {
 				t.Fatal(err)
 			}
-			owned, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", TypeURL: scope + "types/superseded-by", SourcePath: "beads/plan", TargetPath: "beads/alpha", UnconditionalSource: true, Actor: "human:link-author"})
+			owned, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", TypeURL: scope + "superseded-by", SourcePath: "beads/plan", TargetPath: "beads/alpha", UnconditionalSource: true, Actor: "human:link-author"})
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -90,7 +90,7 @@ updates in place, as ordinary bd remember --key does. Bare policy means
 canonical beads/policy. Graph Memories use canonical IDs, not legacy keys.
 
 To refuse any previously allocated ID, add --create-only with --id. With
---create-only, --type types/NAME selects an installed Memory refinement;
+--create-only, --type NAME selects an installed Memory refinement;
 otherwise creation uses plain Memory. Existing retyping uses bd update.
 To require an existing Memory, keep using --update instead of --id:
   bd remember 'Revised policy' --id policy
@@ -130,13 +130,13 @@ metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as
 Issue description or Memory body. It may accompany shorthand flags only when
 they supply different fields; duplicate fields refuse.
-Use --type types/memory to create a Memory instead:
-  bd create --type types/memory --id policy --body 'Code flow policy'
-Use bd types to see Bead Types installed in this workspace. Use types/NAME
+Use --type memory to create a Memory instead:
+  bd create --type memory --id policy-note --body 'Code flow policy'
+Use bd types to see Bead Types installed in this workspace. Use NAME
 or a full local Type URL for nominal Types. Bare names select Issue
-classifications (for example task or bug); the CLI selects types/issue for them. Memory creation
+classifications (for example task or bug); the CLI selects that concrete Type for them. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
-fields refuse. Fresh workspaces create types/issue Issues.`},
+fields refuse. Fresh workspaces create task Issues by default.`},
 		{showCmd, `Use bd show ID or bd show --id ID (equivalent to beads/ID) for a current Memory or
 Issue; use bd show links/ID for a Link. Multiple positional/--id operands
 show current Issues in the supplied order, with ordinary Issue JSON or human
@@ -252,9 +252,9 @@ kind through the canonical namespace, use
 Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.
 For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
-  bd link policy work --type types/references
+  bd link policy-note work --type references
 Use bd types to see Link Types installed in this workspace. --type
-accepts a built-in Dependency kind, types/NAME or a full local Type URL. An optional --id
+accepts a built-in Dependency kind, NAME or a full local Type URL. An optional --id
 selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. Endpoint @unpinned suffixes
@@ -264,7 +264,7 @@ an exact pin inside the writer transaction. Owned-source pins remain unavailable
 Native Dependency endpoints remain floating. Endpoint selectors are separate
 from --if-source-revision. --metadata JSON supplies
 an initial open metadata object for informational Links; native Dependencies
-do not accept it. The single Type types/dependency
+do not accept it. The abstract Dependency family
 requires Issue endpoints. Add --if-source-revision TOKEN to reject a stale source.`},
 		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason
 applies to all IDs; repeat it once per ID for positional reasons, or use
@@ -311,7 +311,7 @@ of all installed Bead Types and lists every Memory and every Issue the
 ordinary bd list would show, newest recorded change first. Closed and pinned
 Issues are hidden unless --all is given; --all also removes the row limit.
 Each human row shows the local ID and kind; an Issue row also shows its
-status and priority. Use --type types/NAME to narrow by Bead Type.
+status and priority. Use --type NAME to narrow by Bead Type.
 --limit returns a prefix with hasMore, not a continuation cursor. A positive
 BEADS_MAX_ROWS refuses a page of more Beads than that.
 Issue-specific filters (--status, --type, --id, --title, --title-contains,
@@ -390,11 +390,11 @@ blocking-dependency consistency report.`},
 		{statusCmd, `Use bd status for ordinary Issue statistics in this workspace.
 Use bd status --graph to inspect graph capabilities and limits.`},
 		{typesCmd, `Use bd types to list the Bead and Link Types actually installed
-in this workspace, grouped by category. The displayed types/NAME IDs are
+in this workspace, grouped by category. The displayed NAME IDs are
 accepted by --type on the matching command. Add --details to show each complete
 persisted Type descriptor. --json returns the full descriptors as structured
 data. Built-in Issue and Dependency values such as task and blocks also work
-with --type, but are not separate installed graph Types in this preview;
+with --type, and are separate installed concrete graph Types;
 --sections is unavailable in graph preview workspaces.`},
 	} {
 		entry.cmd.Long += "\n\nGraph preview workspaces:\n" + entry.text

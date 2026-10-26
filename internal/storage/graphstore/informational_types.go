@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"strings"
 
-	"encoding/hex"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/memorycatalog"
 	"github.com/steveyegge/beads/internal/types"
@@ -21,7 +20,7 @@ func ExampleCitesTypeURL(scope string) string   { return scope + "types/example-
 
 func IsInformationalTypeURL(scope, id string) bool {
 	for _, symbol := range selectedMemoryLinkNames {
-		if id == scope+"types/"+symbol {
+		if id == scope+symbol {
 			return true
 		}
 	}
@@ -29,7 +28,7 @@ func IsInformationalTypeURL(scope, id string) bool {
 }
 
 var selectedMemoryBeadNames = []string{
-	"memory", "evaluation", "constraint", "policy", "decision", "procedure",
+	"memory", "evaluation", "constraint", "policy",
 	"requirement", "scenario", "specification",
 }
 
@@ -54,15 +53,15 @@ func previewTypeDefinitions() []previewTypeDefinition {
 	}
 	definitions = append(definitions, previewTypeDefinition{"issue", issueDescriptor}, previewTypeDefinition{"dependency", dependencyDescriptor})
 	for _, classification := range append(append([]types.IssueType(nil), types.AllIssueTypes...), types.TypeEvent) {
-		name := "native-issue/" + hex.EncodeToString([]byte(classification))
+		name := string(classification)
 		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
-			return nativeConcreteDescriptor(scope, scope+"types/"+name)
+			return nativeConcreteDescriptor(scope, scope+name, graph.KindBead)
 		}})
 	}
 	for _, kind := range types.WellKnownDependencyTypes() {
-		name := "native-dependency/" + hex.EncodeToString([]byte(kind))
+		name := string(kind)
 		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
-			return nativeConcreteDescriptor(scope, scope+"types/"+name)
+			return nativeConcreteDescriptor(scope, scope+name, graph.KindLink)
 		}})
 	}
 	return definitions

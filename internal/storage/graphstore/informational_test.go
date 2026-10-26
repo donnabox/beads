@@ -33,7 +33,7 @@ func TestInformationalLinkLifecycle(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			target, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Fixture", TypeURL: s.ScopeURL() + "types/constraint", Body: "Notes"})
+			target, err := s.Create(ctx, CreateRequest{Path: "beads/notes", Title: "Fixture", TypeURL: s.ScopeURL() + "constraint", Body: "Notes"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -56,7 +56,7 @@ func TestInformationalLinkLifecycle(t *testing.T) {
 				t.Fatal("unowned source refusal changed state")
 			}
 			assertReadyIDs(t, ctx, s, issue.ID)
-			req := LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", SourcePath: "beads/plan", TargetPath: "beads/notes", Path: "links/evidence", Properties: map[string]any{"note": "first", "gunk": true}, ExpectedSourceRevision: source.Revision, Actor: "author"}
+			req := LinkCreateRequest{TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/notes", Path: "links/evidence", Properties: map[string]any{"note": "first", "gunk": true}, ExpectedSourceRevision: source.Revision, Actor: "author"}
 			before := workflowState(t, ctx, s)
 			missing := req
 			missing.ExpectedSourceRevision = ""
@@ -241,13 +241,13 @@ func TestInformationalOwnedConcurrentMutations(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if _, err := initial.Create(ctx, CreateRequest{Path: "beads/target", Title: "Fixture", TypeURL: initial.ScopeURL() + "types/constraint"}); err != nil {
+				if _, err := initial.Create(ctx, CreateRequest{Path: "beads/target", Title: "Fixture", TypeURL: initial.ScopeURL() + "constraint"}); err != nil {
 					t.Fatal(err)
 				}
 				links := map[string]LinkRecord{}
 				if mutation == "update" {
 					for _, path := range []string{"links/one", "links/two"} {
-						added, err := initial.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: o.Binding.ScopeURL + "types/subject-to", Path: path, SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
+						added, err := initial.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: o.Binding.ScopeURL + "subject-to", Path: path, SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
 						if err != nil {
 							t.Fatal(err)
 						}
@@ -281,7 +281,7 @@ func TestInformationalOwnedConcurrentMutations(t *testing.T) {
 							}
 						}
 						if mutation == "create" {
-							_, err = s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: o.Binding.ScopeURL + "types/subject-to", Path: path, SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
+							_, err = s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: o.Binding.ScopeURL + "subject-to", Path: path, SourcePath: "beads/source", TargetPath: "beads/target", ExpectedSourceRevision: source.Revision})
 						} else {
 							_, err = s.UpdateLink(ctx, LinkUpdateRequest{Path: path, Properties: map[string]any{"note": "changed"}, ExpectedRevision: links[path].Revision, ExpectedSourceRevision: source.Revision})
 						}
@@ -367,11 +367,11 @@ func TestInformationalMemorySelfLink(t *testing.T) {
 			if !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(refused).IsZero() || !reflect.DeepEqual(beforeSelf, workflowState(t, ctx, s)) {
 				t.Fatalf("self Reference must refuse atomically: %+v %v", refused, err)
 			}
-			target, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", Title: "Constraint", TypeURL: s.ScopeURL() + "types/constraint"})
+			target, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", Title: "Constraint", TypeURL: s.ScopeURL() + "constraint"})
 			if err != nil {
 				t.Fatal(err)
 			}
-			created, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "types/subject-to", Path: "links/self", SourcePath: "beads/self", TargetPath: "beads/constraint", ExpectedSourceRevision: memory.Revision})
+			created, err := s.AddInformationalLink(ctx, LinkCreateRequest{TypeURL: s.ScopeURL() + "subject-to", Path: "links/self", SourcePath: "beads/self", TargetPath: "beads/constraint", ExpectedSourceRevision: memory.Revision})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -496,7 +496,7 @@ func TestInformationalIssueMixedOwnedRetainedOrder(t *testing.T) {
 						t.Fatal(err)
 					}
 				}
-				if _, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", Title: "Constraint", TypeURL: s.ScopeURL() + "types/constraint"}); err != nil {
+				if _, err := s.Create(ctx, CreateRequest{Path: "beads/constraint", Title: "Constraint", TypeURL: s.ScopeURL() + "constraint"}); err != nil {
 					t.Fatal(err)
 				}
 				addDependency := func() {
@@ -507,7 +507,7 @@ func TestInformationalIssueMixedOwnedRetainedOrder(t *testing.T) {
 				}
 				addSubjectTo := func() {
 					t.Helper()
-					if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/a-selected", SourcePath: "beads/work", TargetPath: "beads/constraint", TypeURL: s.ScopeURL() + "types/subject-to", UnconditionalSource: true}); err != nil {
+					if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/a-selected", SourcePath: "beads/work", TargetPath: "beads/constraint", TypeURL: s.ScopeURL() + "subject-to", UnconditionalSource: true}); err != nil {
 						t.Fatal(err)
 					}
 				}

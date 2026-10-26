@@ -36,7 +36,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			old := func(args ...string) string { t.Helper(); return call(append(args, "--json")...) }
 			snapshot := func(id string) string { t.Helper(); return old("show", scope+id) }
 			for _, id := range []string{"a", "b", "c", "d"} {
-				old("create", id, "--id", id, "--type", "types/constraint")
+				old("create", id, "--id", id, "--type", "constraint")
 			}
 			native := graphMixedResult[graphstore.IssueRecord](t, old("create", "native", "--graph-path", "beads/i", "--type", "task"))
 			decode := func(raw string) memoryAuthoredLink {
@@ -101,7 +101,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("duplicate endpoint flags changed graph state")
 			}
 			first := create("reference", "a", "b", "--title=Context", "--body=Why", "--status=reviewed", "--properties", `{"counter":9007199254740994,"nested":{"x":[true,null]}}`, "--metadata", `{"private":{"tag":"retained"}}`, "--actor=memory-author")
-			if first.Link.Type != scope+"types/references" || first.Link.Source.URI != scope+"a" || first.Link.Target.URI != scope+"b" || string(first.Link.Properties["counter"]) != "9007199254740994" || string(first.Link.Properties["body"]) != `"Why"` || first.Link.Attribution == nil || first.Link.Attribution.Principal != "memory-author" || string(first.Link.Metadata["private"]) != `{"tag":"retained"}` {
+			if first.Link.Type != scope+"references" || first.Link.Source.URI != scope+"a" || first.Link.Target.URI != scope+"b" || string(first.Link.Properties["counter"]) != "9007199254740994" || string(first.Link.Properties["body"]) != `"Why"` || first.Link.Attribution == nil || first.Link.Attribution.Principal != "memory-author" || string(first.Link.Metadata["private"]) != `{"tag":"retained"}` {
 				t.Fatalf("authored fields lost: %+v", first)
 			}
 			parallel := create("reference", "a", "b")
@@ -109,7 +109,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 				t.Fatal("parallel references deduplicated")
 			}
 			retired := create("supersede", "a", "b", "--id=retirement")
-			if retired.Link.Source.URI != scope+"a" || retired.Link.Target.URI != scope+"b" || retired.Link.Type != scope+"types/superseded-by" {
+			if retired.Link.Source.URI != scope+"a" || retired.Link.Target.URI != scope+"b" || retired.Link.Type != scope+"superseded-by" {
 				t.Fatal(retired)
 			}
 			before := snapshot("a")
@@ -138,7 +138,7 @@ func TestMemoryLinkAuthoringInstalledWorkflow(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if governed.Link.Type != scope+"types/subject-to" || governed.Source.Type != nativeTaskType || governed.Link.Source.URI != native.ID {
+			if governed.Link.Type != scope+"subject-to" || governed.Source.Type != nativeTaskType || governed.Link.Source.URI != native.ID {
 				t.Fatal(governed)
 			}
 			// The stale guard is enforced atomically by the same writer, before either

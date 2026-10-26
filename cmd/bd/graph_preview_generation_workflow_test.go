@@ -332,8 +332,8 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 					if shown.Type != typeURL || shown.Properties["dep_type"] != string(tc.kind) || shown.Source != source.ID || shown.Target != target.ID {
 						t.Fatalf("shown Link differs from native endpoints: %+v", shown)
 					}
-					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source.ID, "--type", "types/dependency", "--exact-type", typeURL))
-					counted := graphMixedResult[map[string]int](t, call("link", "count", "--from", source.ID, "--type", "types/dependency", "--exact-type", typeURL))
+					listed := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--from", source.ID, "--type", "dependency", "--exact-type", typeURL))
+					counted := graphMixedResult[map[string]int](t, call("link", "count", "--from", source.ID, "--type", "dependency", "--exact-type", typeURL))
 					if len(listed) != 1 || listed[0].ID != added.Link.ID || counted["count"] != 1 {
 						t.Fatalf("Dependency type list/count did not select %s: list=%+v count=%+v", tc.kind, listed, counted)
 					}

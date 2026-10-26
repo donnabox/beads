@@ -1,15 +1,15 @@
 # Selected Memory catalog projection
 
-This pure package projects nine Bead and nine Link Type declarations from
-[`bdp@afec911`](https://github.com/gastownhall/bdp/blob/afec9117914bd1c1fe0027c2067e4d89677e40a3/specs/types/memory/memory.md).
-The independently fetched source is 106,334 bytes, SHA256
-`1f97f8a80f725b2a44a0c715b4ccf09918f02af2abb9885797c3395255dc9e34`.
-`SelectedSource` retains that exact publication identity. This successor records
+This pure package projects seven Bead and nine Link Type declarations from
+[`bdp@94f699b`](https://github.com/gastownhall/bdp/blob/94f699b947382e3a52385b1895a941575fcc08cb/specs/types/memory/memory.md).
+The independently fetched source is 103,192 bytes, SHA256
+`60c319aac0e42ea9825d6b383a6d09b7d789023fded675e647fd657f37961cb0`.
+`SelectedSource` retains that exact publication identity. This source removes the Memory Decision and Procedure subtypes; native Issue decision remains independent. This successor records
 Donna's selection of Evaluation refining Memory, owning Conformance-family
 claims, with exact subject revision references. Historical publications and
 schema fixtures do not qualify this source or the consuming implementation.
 
-`New` requires explicit application bindings for all eighteen symbols: canonical
+`New` requires explicit application bindings for all sixteen symbols: canonical
 Type URI, optional caller-selected exact revision, and schema retrieval base. It
 also requires the existing native Issue nominal reference. Construction chooses
 no store, authority, installed Type identity, CLI alias, latest revision, or
@@ -19,7 +19,7 @@ promotion. It reads no files, network, or storage and compiles no schema.
 | --- | --- |
 | Memory | none within this catalog |
 | Evaluation, Constraint | Memory |
-| Policy, Decision, Procedure, Requirement, Scenario, Specification | Constraint |
+| Policy, Requirement, Scenario, Specification | Constraint |
 
 | Link Type | Direct parent |
 | --- | --- |
@@ -43,7 +43,7 @@ URI, retained revision and other checks remain explicit `AdditionalChecks` for
 the runtime adapter; projection is not operation admission.
 
 Memory title is required and nonblank; body is required Markdown and may be
-empty. Link body is optional but nonblank when present. Policy and Decision
+empty. Link body is optional but nonblank when present. Policy
 permit an authority Reference; Specification permits an open version label.
 Conformance declares optional nonblank evidence inherited by its concrete peers.
 

@@ -107,8 +107,6 @@ func TestCollectionInvalidQueries(t *testing.T) {
 		{"beads", "limit="}, {"beads", "limit=0"}, {"beads", "limit=01"}, {"beads", "limit=-1"},
 		{"beads", "limit=1.0"}, {"beads", "limit=9007199254740992"}, {"beads", "cursor="},
 		{"beads", "type=types/a"}, {"beads", "conformsTo=urn:type:a"},
-		{"beads", "type=https://example.test/read/beads/a"},
-		{"beads", "type=https://example.test/read/types/%2561"},
 		{"links", "source=links//a"}, {"links", "target=alias//a"},
 		{"links", "endpoint=https://EXAMPLE.test/read/beads/a"},
 		{"links", "endpoint=https://example.test/read/beads/%2561"},

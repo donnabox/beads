@@ -119,8 +119,9 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	var sourceRevision string
 	var selectedType string
 	raw, _ := cmd.Flags().GetString("type")
-	if cmd.Flags().Changed("type") && graphPreviewNominalSelector(raw) {
-		typ, err := graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, raw)
+	nominal := cmd.Flags().Changed("type") && graphPreviewNominalSelector(raw)
+	if nominal {
+		typ, err := graphPreviewCollectionTypeURL(graphPreviewConfig.GraphScopeURL, raw, true)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -165,7 +166,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 			return graphFailure("capability_unavailable", "this workspace generation does not support that native Dependency kind", 5)
 		}
 	}
-	if familiarLink {
+	if cmd.Name() == "link" && !nominal {
 		// The shipping two-operand route admits a valid native kind even when
 		// it has no separately installed Type selector in this workspace.
 		selectedType = ""
@@ -184,7 +185,7 @@ func graphPreviewDependencyTypeURL(scope string, native types.DependencyType) (s
 }
 
 func graphPreviewNativeDependencyType(scope, typeURL string) (types.DependencyType, bool) {
-	base, classification, ok := graphstore.NativeTypeClassification(scope, typeURL)
+	base, classification, ok := graphstore.NativeTypeClassification(scope, typeURL, graph.KindLink)
 	return types.DependencyType(classification), ok && base == graphstore.DependencyTypeURL(scope)
 }
 
@@ -278,7 +279,7 @@ func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
 				hint := "use an informational Link Type for Memory endpoints"
 				if depType == types.DepSupersedes {
-					hint = "use informational Link Type types/superseded-by for Memory succession"
+					hint = "use informational Link Type superseded-by for Memory succession"
 				}
 				return nil, "", fmt.Errorf("native %s Dependency requires two live Issues; %s: %w", depType, hint, err)
 			}

@@ -45,8 +45,8 @@ func memoryAuthoringFixture(t *testing.T) (*memoryAuthoringStore, graphstore.Lin
 	const scope = "https://example.invalid/writer/"
 	descriptors := []graph.TypeDescriptor{}
 	for _, spec := range []graph.TypeDescriptorSpec{
-		{ID: scope + "types/memory", Name: "Memory", Describes: graph.KindBead},
-		{ID: scope + "types/references", Name: "References", Describes: graph.KindLink, Source: &graph.EndpointConstraint{}, Target: &graph.EndpointConstraint{}},
+		{ID: scope + "memory", Name: "Memory", Describes: graph.KindBead},
+		{ID: scope + "references", Name: "References", Describes: graph.KindLink, Source: &graph.EndpointConstraint{}, Target: &graph.EndpointConstraint{}},
 	} {
 		d, err := graph.NewTypeDescriptor(spec)
 		if err != nil {
@@ -55,12 +55,12 @@ func memoryAuthoringFixture(t *testing.T) (*memoryAuthoringStore, graphstore.Lin
 		descriptors = append(descriptors, d)
 	}
 	attribution := graphstore.Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-10-21T12:00:00Z"}
-	link := graphstore.LinkRecord{ID: scope + "links/created", Type: scope + "types/references", Revision: "link-r2", Version: "link-r2", Source: scope + "beads/a", Target: scope + "beads/b", Properties: map[string]any{"title": "Context", "n": json.Number("9007199254740994")}, Metadata: json.RawMessage(`{"arbitrary":{"keep":true}}`), Attribution: attribution}
+	link := graphstore.LinkRecord{ID: scope + "links/created", Type: scope + "references", Revision: "link-r2", Version: "link-r2", Source: scope + "beads/a", Target: scope + "beads/b", Properties: map[string]any{"title": "Context", "n": json.Number("9007199254740994")}, Metadata: json.RawMessage(`{"arbitrary":{"keep":true}}`), Attribution: attribution}
 	owned, err := json.Marshal(link)
 	if err != nil {
 		t.Fatal(err)
 	}
-	source := graphstore.Record{ID: link.Source, Type: scope + "types/memory", Revision: "source-r2", Version: "source-r2", Properties: graphstore.Properties{Title: "Memory", Body: "Primary content"}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{owned}, Attribution: attribution}
+	source := graphstore.Record{ID: link.Source, Type: scope + "memory", Revision: "source-r2", Version: "source-r2", Properties: graphstore.Properties{Title: "Memory", Body: "Primary content"}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{owned}, Attribution: attribution}
 	return &memoryAuthoringStore{types: descriptors, owned: []string{link.Type}, result: graphstore.LinkMutationResult{Link: link, Source: source, Changed: true}}, graphstore.LinkCreateRequest{SourcePath: "beads/a", TargetPath: "beads/b", UnconditionalSource: true, Actor: "author"}
 }
 func memoryAuthoringRenderer(t *testing.T, options clioutput.Options) *clioutput.MutationRenderer {

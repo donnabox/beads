@@ -50,20 +50,25 @@ func TestGraphPreviewSelectedTypeKindAndRefinement(t *testing.T) {
 }
 
 func TestGraphPreviewSelectedTypeRefusesIntrinsicsAndKeepsConformance(t *testing.T) {
-	for _, name := range []string{"Type", "BeadType", "LinkType", "ConformsTo", "conforms-to", "Refines", "refines"} {
-		for _, selector := range []string{name, "types/" + name, typesInventoryScope + "types/" + name} {
-			if _, err := graphPreviewTypeURL(typesInventoryScope, selector); err == nil {
-				t.Fatalf("intrinsic selector admitted: %s", selector)
+	for _, name := range []string{"Type", "BeadType", "LinkType", "ConformsTo", "Refines", "refines", "conforms-to"} {
+		d := inventoryDescriptor(t, typesInventoryScope+name, name, graph.KindBead)
+		if err := graphPreviewValidateSelectedType(typesInventoryScope, []graph.TypeDescriptor{d}, d.ID(), graph.KindBead); err == nil {
+			t.Errorf("intrinsic identity admitted %s", d.ID())
+		}
+		for _, id := range []string{typesInventoryScope + "types/" + name, "https://foreign.test/" + name} {
+			unrelated := inventoryDescriptor(t, id, name, graph.KindBead)
+			if graphPreviewIntrinsicType(typesInventoryScope, unrelated) {
+				t.Errorf("unrelated whole identity classified by basename: %s", id)
 			}
 		}
 	}
-	conformance := inventoryDescriptor(t, typesInventoryScope+"types/conformance", "Conformance", graph.KindLink)
+	conformance := inventoryDescriptor(t, typesInventoryScope+"conformance", "Conformance", graph.KindLink)
 	if err := graphPreviewValidateSelectedType(typesInventoryScope, []graph.TypeDescriptor{conformance}, conformance.ID(), graph.KindLink); err != nil {
-		t.Fatal("abstract public Conformance cannot be inspected or filtered", err)
+		t.Fatal(err)
 	}
 	renamed := inventoryDescriptor(t, typesInventoryScope+"types/not-the-name", "BeadType", graph.KindBead)
-	if err := graphPreviewValidateSelectedType(typesInventoryScope, []graph.TypeDescriptor{renamed}, renamed.ID(), graph.KindBead); err == nil {
-		t.Fatal("renamed intrinsic descriptor became public")
+	if err := graphPreviewValidateSelectedType(typesInventoryScope, []graph.TypeDescriptor{renamed}, renamed.ID(), graph.KindBead); err != nil {
+		t.Fatal("unrelated whole-ID was hidden by name", err)
 	}
 }
 
@@ -146,7 +151,7 @@ func selectedTypeTestDescriptors(t *testing.T, scope string) []graph.TypeDescrip
 	// of the workspace's fresh installation and native adapter inventories.
 	for _, symbol := range []memorycatalog.Symbol{
 		memorycatalog.Memory, memorycatalog.Evaluation, memorycatalog.Constraint,
-		memorycatalog.Policy, memorycatalog.Decision, memorycatalog.Procedure,
+		memorycatalog.Policy,
 		memorycatalog.Requirement, memorycatalog.Scenario, memorycatalog.Specification,
 		memorycatalog.References, memorycatalog.SupersededBy, memorycatalog.Requires,
 		memorycatalog.Defines, memorycatalog.SubjectTo, memorycatalog.Conformance,
@@ -154,7 +159,7 @@ func selectedTypeTestDescriptors(t *testing.T, scope string) []graph.TypeDescrip
 	} {
 		name := string(symbol)
 		input.Bindings[symbol] = memorycatalog.Binding{
-			Type: typecatalog.Reference{URI: scope + "types/" + name}, SchemaBase: scope + "schemas/" + name,
+			Type: typecatalog.Reference{URI: scope + name}, SchemaBase: scope + "schemas/" + name,
 		}
 	}
 	projection, err := memorycatalog.New(input)
@@ -171,17 +176,16 @@ func selectedTypeTestDescriptors(t *testing.T, scope string) []graph.TypeDescrip
 	}
 	descriptors = append(descriptors, inventoryDescriptor(t, graphstore.IssueTypeURL(scope), "Issue", graph.KindBead), inventoryDescriptor(t, graphstore.DependencyTypeURL(scope), "Dependency", graph.KindLink))
 	for _, name := range graphstore.FreshTypeNames() {
-		id := scope + "types/" + name
-		base, classification, native := graphstore.NativeTypeClassification(scope, id)
-		if !native {
-			continue
+		id := scope + name
+		for _, role := range []graph.ResourceKind{graph.KindBead, graph.KindLink} {
+			base, classification, native := graphstore.NativeTypeClassification(scope, id, role)
+			if native {
+				descriptors = append(descriptors, inventoryDescriptor(t, id, classification, role, base))
+				break
+			}
 		}
-		kind := graph.KindBead
-		if base == graphstore.DependencyTypeURL(scope) {
-			kind = graph.KindLink
-		}
-		descriptors = append(descriptors, inventoryDescriptor(t, id, classification, kind, base))
 	}
+
 	return descriptors
 }
 

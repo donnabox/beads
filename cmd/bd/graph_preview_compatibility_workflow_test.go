@@ -158,9 +158,9 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			}
 
 			// Subject To exercises owned-source guards; References below exercises unowned Links.
-			constraint := graphMixedResult[graphstore.Record](t, call("create", "First constraint", "--type", "types/constraint", "--id", "constraint-one"))
-			secondConstraint := graphMixedResult[graphstore.Record](t, call("create", "Second constraint", "--type", "types/constraint", "--id", "constraint-two"))
-			related := scope + "types/subject-to"
+			constraint := graphMixedResult[graphstore.Record](t, call("create", "First constraint", "--type", "constraint", "--id", "constraint-one"))
+			secondConstraint := graphMixedResult[graphstore.Record](t, call("create", "Second constraint", "--type", "constraint", "--id", "constraint-two"))
+			related := scope + "subject-to"
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, constraint.ID, "--type", related))
 			if link.ReplacedSource == nil {
 				t.Fatal("default Link creation lost source predecessor")
@@ -192,7 +192,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			call("link", "delete", "--force", mixed.Link.ID, "--if-revision", "="+mixed.Link.Revision)
 			call("link", "delete", "--force", link.Link.ID, "--if-revision", "="+patched.Link.Revision)
 			issueBefore := call("show", issue.ID)
-			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, memory.ID, "--type", "types/references"))
+			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, memory.ID, "--type", "references"))
 			if unowned.ReplacedSource != nil || call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational Link changed or disclosed its Issue source")
 			}
@@ -203,8 +203,8 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			call("link", "delete", "--force", unowned.Link.ID, "--if-revision", "="+unowned.Link.Revision)
 			localLinkID := "links/canonical"
 			canonicalID := scope + localLinkID
-			refuse("invalid_selector", "link", issue.ID, other.ID, "--type", "types/references", "--id", canonicalID)
-			canonical := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, other.ID, "--type", "types/references", "--id", localLinkID))
+			refuse("invalid_selector", "link", issue.ID, other.ID, "--type", "references", "--id", canonicalID)
+			canonical := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, other.ID, "--type", "references", "--id", localLinkID))
 			if canonical.Link.ID != canonicalID {
 				t.Fatal("informational Link did not preserve the literal local ID in its canonical URL")
 			}

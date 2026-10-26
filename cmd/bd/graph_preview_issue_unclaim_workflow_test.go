@@ -43,7 +43,7 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 				t.Fatalf("open assigned Issue did not follow native release: %+v", openRelease)
 			}
 			call("remember", "Context", "--id", "beads/context")
-			call("link", "work", "beads/context", "--type", "types/references", "--id", "links/context")
+			call("link", "work", "beads/context", "--type", "references", "--id", "links/context")
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "https://example.invalid/unclaim/work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--claim", "--actor", "rig.agent"))
 			if !claimed.Changed || claimed.Issue.Properties.Status != types.StatusInProgress {

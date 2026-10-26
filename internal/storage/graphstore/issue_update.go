@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	graph "github.com/steveyegge/beads/graphops"
 	"maps"
 	"time"
 	"unicode/utf8"
@@ -339,7 +340,7 @@ func (s *Store) prepareIssueUpdatePatch(request UpdateIssueRequest) (publicops.I
 		}
 	}
 	if request.TypeURL != "" {
-		base, classification, ok := NativeTypeClassification(s.ScopeURL(), request.TypeURL)
+		base, classification, ok := NativeTypeClassification(s.ScopeURL(), request.TypeURL, graph.KindBead)
 		if !ok || base != IssueTypeURL(s.ScopeURL()) {
 			return publicops.IssuePatch{}, 0, fmt.Errorf("%w: native reclassification requires a concrete Issue Type", storage.ErrValidation)
 		}
