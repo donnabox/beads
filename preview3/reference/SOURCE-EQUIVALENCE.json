@@ -1,0 +1,22 @@
+{
+  "recorded_utc": "2026-10-27T00:35:09.888501+00:00",
+  "source": "210f8dad21945af85746a0eac74e6187d54a3735",
+  "tree": "1ddbffd31bde101e44238d1ff249c047fdac5b1d",
+  "tested_synthetic": "047e578099cf32f61cbb581258de584176b0f893",
+  "tested_head": "0bd7b85664219f5c80fa2acd66ec7f0bb952f058",
+  "equivalent": true,
+  "evidence": "Actual clean Git objects: landed merge, tested head and actual tested synthetic have identical tree; diff from701 is exactly7 reviewed CI paths, no product/BUILD/dependencies. Binary build metadata differs; no byte-equivalence claim.",
+  "product_baseline": "701674ae050a67dd2ef054d4ddf14cdace4e1337",
+  "changed_paths": [
+    ".github/scripts/bazel-gate.sh",
+    ".github/workflows/bazel.yml",
+    "scripts/bazel_cache_mode_test.go",
+    "scripts/bazel_dolt_int_test.go",
+    "scripts/bazel_farm_workflow_test.go",
+    "scripts/ci_analytics_workflow_test.go",
+    "scripts/ci_workflow_test.go"
+  ],
+  "clean_checkout": true,
+  "landed_source": "210f8dad21945af85746a0eac74e6187d54a3735",
+  "landed_tree": "1ddbffd31bde101e44238d1ff249c047fdac5b1d"
+}
