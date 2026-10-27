@@ -2193,7 +2193,10 @@ const (
 // bazel.yml's jobs: the rbe job that decides the execution mode, the
 // --config=ci lane, one job per CI job a Bazel config mirrors, and the two
 // package gates (F3), sorted alphabetically to match TestBazelWorkflowJobsAndExecutionMode's sort.Strings.
-var bazelJobNames = []string{bazelCmdDoltJobName, bazelDoltIntJobName, bazelDoltRaceJobName, bazelDoltJobName, bazelEmbedJobName, bazelIntegJobName, bazelProxiedJobName, bazelPureJobName, bazelReleaseCrossJobName, bazelServerJobName, bazelJobName, bazelPackageMCPJobName, bazelPackageNPMJobName, bazelRBEJobName, bazelRBEPrewarmJobName, "rrc-seed", "rrc-verify"}
+const bazelDispatchCoverageJobName = "bazel-dispatch-coverage"
+const bazelDispatchCoverageIf = "${{ always() && github.event_name == 'workflow_dispatch' && inputs.cmd-dolt-required == true }}"
+
+var bazelJobNames = []string{bazelCmdDoltJobName, bazelDispatchCoverageJobName, bazelDoltIntJobName, bazelDoltRaceJobName, bazelDoltJobName, bazelEmbedJobName, bazelIntegJobName, bazelProxiedJobName, bazelPureJobName, bazelReleaseCrossJobName, bazelServerJobName, bazelJobName, bazelPackageMCPJobName, bazelPackageNPMJobName, bazelRBEJobName, bazelRBEPrewarmJobName, "rrc-seed", "rrc-verify"}
 
 // The lanes that only run remotely (skipped unless the rbe job chose remote);
 // bazel-integration runs remotely or with the read-only cache (bazelIntegIf);
@@ -2552,7 +2555,9 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 		t.Errorf("%s runs-on = %q, want %q", bazelRBEJobName, rbe.RunsOn, wantRBERunsOn)
 	}
 	for name, job := range workflow.Jobs {
-		if name == bazelRBEJobName {
+		if name == bazelRBEJobName || name == bazelDispatchCoverageJobName {
+			// The dispatch-only result gate has no Bazel setup; its dependencies
+			// and execution contract are pinned by TestBazelDispatchCoverageJob.
 			continue
 		}
 		if !reflect.DeepEqual([]string(job.Needs), []string{bazelRBEJobName}) {
@@ -3056,8 +3061,9 @@ func TestPRWindowsMakeShellSetupStepsHaveTimeouts(t *testing.T) {
 
 type bazelWorkflowCall struct {
 	Inputs map[string]struct {
-		Type    string `yaml:"type"`
-		Default string `yaml:"default"`
+		Type     string `yaml:"type"`
+		Default  string `yaml:"default"`
+		Required bool   `yaml:"required"`
 	} `yaml:"inputs"`
 	Secrets map[string]struct {
 		Required bool `yaml:"required"`
@@ -3099,7 +3105,7 @@ func TestBazelLaneIsGatedAlongsideLegacy(t *testing.T) {
 		"rbe-mode":    "${{ jobs." + bazelRBEJobName + ".outputs.mode }}",
 	}
 	for name, job := range workflow.Jobs {
-		if name == bazelRBEJobName {
+		if name == bazelRBEJobName || name == bazelDispatchCoverageJobName {
 			continue
 		}
 		if isBazelRRCJob(name) {
@@ -3435,6 +3441,8 @@ func TestBazelCallConcurrencyDiffersFromCallers(t *testing.T) {
 func bazelLaneRunModes(t *testing.T, lane, ifExpr string, with map[string]string) map[string]bool {
 	t.Helper()
 	switch ifExpr {
+	case bazelDispatchCoverageIf:
+		return map[string]bool{} // direct dispatch only, never a PR-call lane
 	case "${{ needs.rbe.outputs.mode != 'skip' }}":
 		return map[string]bool{"remote": true, "fork-ro": true, "fork-rw": true, "cache": true, "local": true}
 	case "${{ needs.rbe.outputs.enabled == 'true' }}":
@@ -3622,7 +3630,7 @@ func TestBazelGateSimulation(t *testing.T) {
 
 	lanes := map[string]map[string]bool{} // lane -> modes it runs in, in pr.yml's call
 	for name, job := range workflow.Jobs {
-		if name == bazelRBEJobName {
+		if name == bazelRBEJobName || name == bazelDispatchCoverageJobName {
 			continue
 		}
 		if isBazelRRCJob(name) {
@@ -5456,7 +5464,7 @@ func TestBazelWorkflowSecretsAndFailureSurface(t *testing.T) {
 				}
 			}
 		}
-		if name == bazelRBEJobName || name == bazelRBEPrewarmJobName {
+		if name == bazelRBEJobName || name == bazelRBEPrewarmJobName || name == bazelDispatchCoverageJobName {
 			continue // no setup-bazel; rbe-prewarm's secret reads are pinned below
 		}
 		n := 0
@@ -7250,14 +7258,14 @@ func TestBazelCmdDoltJob(t *testing.T) {
 
 // Exactly-once cmd/bd integration-build tests on PRs: bazel-integration runs
 // //... minus //cmd/bd:bd_test only where the caller says bazel-cmd-dolt is
-// required (inputs.cmd-dolt-required true, which only pr.yml passes and
-// only as its committed BAZEL_CMD_DOLT_REQUIRED flag), and there
+// required (pr.yml passes inputs.cmd-dolt-required as its committed
+// BAZEL_CMD_DOLT_REQUIRED flag; direct dispatch may also opt in), and there
 // bazel-cmd-dolt covers it: the same if (so it runs in every mode
 // bazel-integration does, Dependabot and forks included), bazel-gate.sh
 // accepts the two lanes' skips in exactly the same modes, pr.yml's gate then
 // requires its result, and its target wraps the integration build's bd_test
 // with no test selection (TestBazelCmdDoltJob). Everywhere else (bazel-farm,
-// nightly, push, dispatch: bazel-cmd-dolt advisory) bd_test stays in
+// nightly, push, default dispatch: bazel-cmd-dolt advisory) bd_test stays in
 // bazel-integration. Rollback is committing "false" in both pr.yml places.
 func TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers(t *testing.T) {
 	const input, excluded = "cmd-dolt-required", "-//cmd/bd:bd_test"
@@ -7266,7 +7274,8 @@ func TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers(t *testing.T) {
 	cmdDolt := workflow.job(t, bazelCmdDoltJobName)
 
 	// The input: a boolean defaulting to false, so a caller that does not
-	// pass it (and push/dispatch, where it is null) keeps bd_test.
+	// pass it (and push, where it is null) keeps bd_test. Direct dispatch
+	// defaults false and has its own required-coverage gate when opted in.
 	if in, ok := readBazelWorkflowCall(t).Inputs[input]; !ok || in.Type != "boolean" || in.Default != "false" {
 		t.Errorf("%s workflow_call input %s = %+v (present %v), want type boolean, default false", bazelWorkflowName, input, in, ok)
 	}
@@ -7298,7 +7307,7 @@ func TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers(t *testing.T) {
 				t.Errorf("%s step %q reads inputs.%s", name, step.Name, input)
 			}
 		}
-		if strings.Contains(job.If, "inputs."+input) {
+		if strings.Contains(job.If, "inputs."+input) && (name != bazelDispatchCoverageJobName || job.If != bazelDispatchCoverageIf) {
 			t.Errorf("%s if reads inputs.%s: the input must not change which lanes run", name, input)
 		}
 	}
@@ -7365,5 +7374,82 @@ func TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers(t *testing.T) {
 				t.Errorf("%s job %s passes %s to %s; only pr.yml may (its gate is the one that requires bazel-cmd-dolt)", e.Name(), name, input, bazelWorkflowName)
 			}
 		}
+	}
+}
+
+// The opt-in dispatch route may move bd_test only when both replacement
+// coverage and the remaining integration suite actually pass. Job-level
+// continue-on-error on the dedicated lane must not turn failure into success.
+func TestBazelDispatchCmdGate(t *testing.T) {
+	requireHostTool(t, "bash")
+	for _, mode := range []string{"remote", "fork-ro", "fork-rw", "cache", "local", "skip", "", "invalid"} {
+		for _, enabled := range []string{"true", "false", ""} {
+			for _, result := range []string{"success", "failure", "cancelled", "skipped", "", "unknown"} {
+				for _, integration := range []string{"success", "failure", "cancelled", "skipped", ""} {
+					t.Run(mode+"/"+enabled+"/"+result+"/"+integration, func(t *testing.T) {
+						// The inactive arm is absent on a successful real run;
+						// its success must never mask a failed/missing active arm.
+						inactive := "success"
+						if result == "success" {
+							inactive = ""
+						}
+						direct, combined := result, inactive
+						if mode == "remote" {
+							direct, combined = inactive, result
+						}
+						cmd := exec.Command("bash", bazelGateScript, "dispatch-cmd")
+						cmd.Dir = sourceRepoRoot(t)
+						cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "BAZEL_RBE_MODE=" + mode, "BAZEL_RBE_ENABLED=" + enabled,
+							"BAZEL_INTEGRATION=" + integration, "BAZEL_CMD_DOLT_DIRECT=" + direct, "BAZEL_CMD_DOLT_COMBINED=" + combined}
+						out, err := cmd.CombinedOutput()
+						validMode := (mode == "remote" || mode == "fork-ro" || mode == "fork-rw") && enabled == "true" || mode == "cache" && enabled == "false"
+						wantPass := validMode && result == "success" && integration == "success"
+						if (err == nil) != wantPass {
+							t.Errorf("gate pass=%v, want %v: %s (%v)", err == nil, wantPass, out, err)
+						}
+					})
+				}
+			}
+		}
+	}
+}
+
+func TestBazelDispatchCoverageJob(t *testing.T) {
+	workflow := readCIWorkflow(t, bazelWorkflowName)
+	job := workflow.job(t, bazelDispatchCoverageJobName)
+	if job.If != bazelDispatchCoverageIf || job.ContinueOnError || job.TimeoutMinutes != 5 || job.RunsOn != "ubuntu-latest" {
+		t.Errorf("dispatch-only fail-closed gate contract changed: %+v", job)
+	}
+	if !reflect.DeepEqual([]string(job.Needs), []string{"rbe", "bazel-integration", "bazel-cmd-dolt", "bazel-dolt-int"}) {
+		t.Errorf("dispatch gate needs = %v", job.Needs)
+	}
+	step := job.step(t, "Require integration and command coverage")
+	wantEnv := map[string]string{
+		"BAZEL_RBE_MODE":          "${{ needs.rbe.outputs.mode }}",
+		"BAZEL_RBE_ENABLED":       "${{ needs.rbe.outputs.enabled }}",
+		"BAZEL_INTEGRATION":       "${{ needs.bazel-integration.outputs.result }}",
+		"BAZEL_CMD_DOLT_DIRECT":   "${{ needs.bazel-cmd-dolt.outputs.result }}",
+		"BAZEL_CMD_DOLT_COMBINED": "${{ needs.bazel-dolt-int.outputs.cmd_dolt_result }}",
+	}
+	if step.Run != ".github/scripts/bazel-gate.sh dispatch-cmd" || !reflect.DeepEqual(step.Env, wantEnv) || step.If != "" || (step.ContinueOnError != nil && step.ContinueOnError != false) {
+		t.Errorf("dispatch gate must require actual recorded coverage: %+v", step)
+	}
+	if len(job.Steps) != 2 || !strings.HasPrefix(job.Steps[0].Uses, "actions/checkout@") || job.Steps[0].With["persist-credentials"] != "false" || job.Steps[0].With["ref"] != "${{ github.sha }}" {
+		t.Errorf("dispatch gate must only check out the event source and evaluate coverage")
+	}
+	data, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", bazelWorkflowName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var doc struct {
+		On struct {
+			Dispatch bazelWorkflowCall `yaml:"workflow_dispatch"`
+		} `yaml:"on"`
+	}
+	if err := yaml.Unmarshal(data, &doc); err != nil {
+		t.Fatal(err)
+	}
+	if in, ok := doc.On.Dispatch.Inputs["cmd-dolt-required"]; !ok || in.Type != "boolean" || in.Default != "false" || in.Required {
+		t.Errorf("dispatch cmd-dolt-required = %+v (present %v), want optional boolean default false", in, ok)
 	}
 }
