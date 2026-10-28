@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -63,7 +64,7 @@ func graphPreviewPropertiesJSON(input string, stdin io.Reader) (json.RawMessage,
 	return canonical, nil
 }
 
-func graphPreviewRevisionGuard(cmd *cobra.Command, source bool) (string, bool, error) {
+func graphPreviewRevisionGuard(cmd *cobra.Command, source bool, identity string, privatePath bool) (string, bool, error) {
 	revisionFlag := "if-revision"
 	if source {
 		revisionFlag = "if-source-revision"
@@ -77,19 +78,26 @@ func graphPreviewRevisionGuard(cmd *cobra.Command, source bool) (string, bool, e
 	if revision == "" {
 		return "", false, graphFailure("invalid_selector", "--"+revisionFlag+" requires a nonempty revision token", 2)
 	}
+	if !source {
+		var err error
+		revision, err = graphPreviewRevisionFlag(cmd, revisionFlag, identity, privatePath)
+		if err != nil {
+			return "", false, err
+		}
+	}
 	return revision, false, nil
 }
 
 // Ordinary edits use the current predecessor when no comparison was asked for.
 // The writer still checks a supplied token atomically and records the actual
 // replaced version. Destructive commands retain their separate explicit guard.
-func graphPreviewEditRevisionGuard(cmd *cobra.Command) (string, bool, error) {
+func graphPreviewEditRevisionGuard(cmd *cobra.Command, identity string, privatePath bool) (string, bool, error) {
 	if !cmd.Flags().Changed("if-revision") {
 		return "", true, nil
 	}
-	revision, _ := cmd.Flags().GetString("if-revision")
-	if revision == "" {
-		return "", false, graphFailure("invalid_selector", "--if-revision requires a nonempty revision token", 2)
+	revision, err := graphPreviewRevisionFlag(cmd, "if-revision", identity, privatePath)
+	if err != nil {
+		return "", false, err
 	}
 	return revision, false, nil
 }
@@ -107,43 +115,44 @@ func graphPreviewNominalTypeFlagChanged(cmd *cobra.Command) bool {
 		return false
 	}
 	selector, _ := cmd.Flags().GetString("type")
-	return graphPreviewNominalSelector(selector)
+	// Ordinary workspace admission retains its explicit graph-operand boundary.
+	// Bare and other custom native classifications belong to the native domain
+	// validator, even if they coincide with a fresh graph catalog name. This
+	// check does not resolve or strip a complete Type identity.
+	return strings.HasPrefix(selector, "types/") || strings.Contains(selector, "://") ||
+		graphPreviewReservedTypeSelector(selector)
 }
 
 func graphPreviewNominalSelector(selector string) bool {
-	if strings.HasPrefix(selector, "types/") || strings.Contains(selector, "://") {
+	// Syntax and selected names identify a nominal operand. Unknown bare native
+	// labels remain prospective classifications, authorized by the native writer.
+	if strings.Contains(selector, "://") {
 		return true
 	}
-	switch selector {
-	case "preview-issue", "preview-memory", "preview-dependency", "preview-related", "preview-related-memory", "example-cites", "example-follows":
+	if strings.ContainsAny(selector, "/%") && graph.ValidateCanonicalResourceID(selector) == nil {
 		return true
-	default:
-		return false
 	}
+	for _, name := range graphstore.FreshTypeNames() {
+		if selector == name {
+			return true
+		}
+	}
+	return graphPreviewReservedTypeSelector(selector)
 }
 
 func graphPreviewTypeURL(scope, selector string) (string, error) {
-	if selector != "" && !strings.Contains(selector, "/") {
-		selector = scope + "types/" + selector
-	} else if strings.HasPrefix(selector, "types/") {
-		selector = scope + selector
-	}
-	if selector == scope+"types/preview-related-memory" {
-		selector = graphstore.RelatedTypeURL(scope)
-	}
-	prefix := scope + "types/"
-	if !strings.HasPrefix(selector, prefix) {
-		return "", fmt.Errorf("Type must be NAME, types/NAME, or a canonical Type URL in this Scope")
-	}
-	for _, segment := range strings.Split(strings.TrimPrefix(selector, prefix), "/") {
-		if err := graph.ValidateCanonicalSegment(segment); err != nil {
-			return "", fmt.Errorf("invalid local Type path: %w", err)
+	if strings.Contains(selector, "://") {
+		if err := graph.ValidateTypeURL(selector); err != nil {
+			return "", err
 		}
+		if strings.HasPrefix(selector, scope) {
+			if _, err := graph.ScopeLocalPublicResourceID(scope, selector); err != nil {
+				return "", err
+			}
+		}
+		return selector, nil
 	}
-	if err := graph.ValidateTypeURL(selector); err != nil {
-		return "", err
-	}
-	return selector, nil
+	return graph.CanonicalPublicResourceURL(scope, selector)
 }
 
 func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
@@ -153,60 +162,99 @@ func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
 	selector, _ := cmd.Flags().GetString("type")
 	scope := graphPreviewConfig.GraphScopeURL
 	if !graphPreviewNominalSelector(selector) {
+		// The shipping two-operand bd link accepts any valid native kind and
+		// stores its spelling unchanged. Other graph Link commands require an
+		// installed Type or one of their admitted built-in Dependency kinds.
+		if cmd.Name() == "link" {
+			if !types.DependencyType(selector).IsValid() || !utf8.ValidString(selector) {
+				return "", graphFailure("invalid_selector", fmt.Sprintf("invalid dependency type %q: must be non-empty UTF-8 and at most %d bytes", selector, types.MaxDependencyTypeLen), 2)
+			}
+			typeURL, err := graphPreviewCollectionTypeURL(scope, selector, true)
+			if err != nil {
+				return "", graphFailure("invalid_selector", err.Error(), 2)
+			}
+			return typeURL, nil
+		}
 		if kind := canonicalDependencyType(types.DependencyType(selector)); kind.IsWellKnown() {
-			return graphstore.DependencyTypeURL(scope), nil
+			return graphstore.NativeDependencyTypeURL(scope, string(kind))
 		}
 		return "", graphFailure("capability_unavailable", "Link type is not registered in this preview", 5)
 	}
-	typ, err := graphPreviewTypeURL(scope, selector)
+	typ, err := graphPreviewCollectionTypeURL(scope, selector, true)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if typ != graphstore.DependencyTypeURL(scope) && !graphstore.IsInformationalTypeURL(scope, typ) {
-		return "", graphFailure("capability_unavailable", "Link Type is not installed in this preview", 5)
+	if _, native := graphPreviewNativeDependencyType(scope, typ); native {
+		return typ, nil
+	}
+	if typ == graphstore.DependencyTypeURL(scope) {
+		return "", graphFailure("invalid_selector", "abstract Dependency cannot be instantiated", 2)
+	}
+	if !graphPreviewSelectedTypeCandidate(scope, typ) {
+		return "", graphFailure("capability_unavailable", "Link Type is not installed in this workspace", 5)
 	}
 	return typ, nil
 }
 
 func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
+	idRoot, _, rootErr := graphPreviewGeneratedIDRoot(cmd)
+	if rootErr != nil {
+		return graphFailure("invalid_selector", rootErr.Error(), 2)
+	}
 	typ, err := graphPreviewLinkType(cmd)
 	if err != nil {
 		return err
 	}
+	if len(args) != 2 {
+		return graphFailure("invalid_selector", "graph Link creation requires two public Bead IDs or canonical Bead URLs", 2)
+	}
+	resolved := make([]string, 2)
+	pins := make([]graphstore.EndpointPin, 2)
+	for i, endpoint := range []struct{ name, value string }{{"source-revision", args[0]}, {"target-revision", args[1]}} {
+		flag, _ := cmd.Flags().GetString(endpoint.name)
+		identity, err := graphPreviewResolveMemoryArgument(endpoint.value)
+		if err != nil {
+			return err
+		}
+		ref, err := graphPreviewReferenceWithFlag(identity, flag, cmd.Flags().Changed(endpoint.name))
+		if err != nil {
+			return graphPreviewReferenceFailure(err)
+		}
+		pins[i] = graphPreviewEndpointPin(ref)
+		resolved[i] = ref.Identity
+	}
+	args = resolved
 	if _, native := graphPreviewNativeDependencyType(graphPreviewConfig.GraphScopeURL, typ); typ == "" || native {
+		if pins[0] != (graphstore.EndpointPin{}) || pins[1] != (graphstore.EndpointPin{}) {
+			return graphFailure("capability_unavailable", "native Dependency endpoints must remain floating", 5)
+		}
 		return runGraphPreviewAddDependency(cmd, args)
 	}
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "properties", "metadata", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "from", "to", "source-revision", "target-revision", "id", "id-root", "properties", "metadata", "if-source-revision"); err != nil {
 		return err
 	}
-	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {
-		return graphFailure("capability_unavailable", "Link Type is not supported by this preview", 5)
-	}
 	if len(args) != 2 {
-		return graphFailure("invalid_selector", "graph Link creation requires two Bead IDs or beads/PATH selectors", 2)
+		return graphFailure("invalid_selector", "graph Link creation requires two public Bead IDs or canonical Bead URLs", 2)
 	}
 	paths := make([]string, 2)
+	localIDs := make([]string, 2)
 	for i, selector := range args {
-		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+		path, localID, err := graphPreviewResourceReadSelector(selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if err := graph.ValidateBeadPath(path); err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		paths[i] = path
+		paths[i], localIDs[i] = path, localID
 	}
-	path, _ := cmd.Flags().GetString("id")
+	publicID, _ := cmd.Flags().GetString("id")
 	if cmd.Flags().Changed("id") {
-		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, path)
-		if err != nil {
+		if err := graph.ValidateCanonicalResourceID(publicID); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true, args[0], false)
 	if err != nil {
 		return err
 	}
@@ -223,11 +271,20 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		if err := graphPreviewRequireInstalledType(ctx, store, typ, graph.KindLink, false); err != nil {
+			return nil, "", err
+		}
 		result, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
-			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], Properties: properties, Metadata: metadata,
+			PublicID: publicID, IDRoot: idRoot, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], SourceLocalID: localIDs[0], TargetLocalID: localIDs[1], SourcePin: pins[0], TargetPin: pins[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
-		return graphPreviewReplacementResult(result, fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource, err)
+		if err != nil {
+			return result, "", err
+		}
+		if _, validationErr := graphPreviewReplacementSummary("", result.ReplacedSource); validationErr != nil {
+			return result, "", validationErr
+		}
+		return result, graphHumanRow(store.ScopeURL(), result.Link), nil
 	})
 }
 
@@ -235,34 +292,41 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "source-revision", "target-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph update requires one canonical links/PATH", 2)
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
 	if err := graph.ValidateLinkPath(path); err != nil {
-		return graphFailure("capability_unavailable", "this preview updates informational Link properties only", 5)
+		return graphFailure("capability_unavailable", "Link updates require a canonical links/PATH identity", 5)
 	}
-	if !cmd.Flags().Changed("properties") {
-		return graphFailure("invalid_properties", "Link update requires --properties to merge named top-level properties", 2)
-	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	sourcePin, targetPin, err := graphPreviewLinkPinIntents(cmd)
 	if err != nil {
 		return err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
+	if !cmd.Flags().Changed("properties") && sourcePin == nil && targetPin == nil {
+		return graphFailure("invalid_properties", "Link update requires --properties or an endpoint revision flag", 2)
+	}
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return err
 	}
-	input, _ := cmd.Flags().GetString("properties")
-	properties, err := graphPreviewProperties(input, cmd.InOrStdin())
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, path, true)
 	if err != nil {
-		return graphFailure("invalid_properties", err.Error(), 2)
+		return err
+	}
+	var properties map[string]any
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		properties, err = graphPreviewProperties(input, cmd.InOrStdin())
+		if err != nil {
+			return graphFailure("invalid_properties", err.Error(), 2)
+		}
 	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
@@ -270,7 +334,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateLink(ctx, graphstore.LinkUpdateRequest{
-			Path: path, Properties: properties, MergeProperties: true, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
+			Path: path, Properties: properties, MergeProperties: cmd.Flags().Changed("properties"), SourcePin: sourcePin, TargetPin: targetPin, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
 			Unconditional: unconditional, ExpectedSourceRevision: sourceRevision, UnconditionalSource: unconditionalSource,
 		})
 		verb := "Updated"
@@ -279,4 +343,34 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 		}
 		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Link.ID), result.ReplacedSource, err)
 	})
+}
+
+func graphPreviewEndpointPin(ref graphPreviewReference) graphstore.EndpointPin {
+	if !ref.Explicit || (!ref.LiteralRevision && ref.Revision == "unpinned") {
+		return graphstore.EndpointPin{}
+	}
+	if !ref.LiteralRevision && ref.Revision == "current" {
+		return graphstore.EndpointPin{Current: true}
+	}
+	return graphstore.EndpointPin{Revision: ref.Revision}
+}
+
+func graphPreviewLinkPinFlagsChanged(cmd *cobra.Command) bool {
+	return cmd.Flags().Changed("source-revision") || cmd.Flags().Changed("target-revision")
+}
+
+func graphPreviewLinkPinIntents(cmd *cobra.Command) (*graphstore.EndpointPin, *graphstore.EndpointPin, error) {
+	var pins [2]*graphstore.EndpointPin
+	for i, name := range []string{"source-revision", "target-revision"} {
+		if !cmd.Flags().Changed(name) {
+			continue
+		}
+		value, _ := cmd.Flags().GetString(name)
+		if err := graphPreviewReferenceRevision(value); err != nil {
+			return nil, nil, graphFailure("invalid_selector", err.Error(), 2)
+		}
+		pin := graphPreviewEndpointPin(graphPreviewReference{Revision: value, Explicit: true})
+		pins[i] = &pin
+	}
+	return pins[0], pins[1], nil
 }

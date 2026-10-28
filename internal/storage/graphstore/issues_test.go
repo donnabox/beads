@@ -72,6 +72,95 @@ func plainIssue(title string) publicops.CreateRequest {
 	}}
 }
 
+// Query fixtures deliberately use literal prefix-shaped public IDs. Their kind
+// still comes from the catalog; other identity tests separate public IDs from
+// private locators and exercise generated native IDs without these segments.
+func plainIssueAtPublicID(title, id string) publicops.CreateRequest {
+	request := plainIssue(title)
+	request.Issue.ID, request.ForceIDPrefix = id, true
+	return request
+}
+
+// fixtureResourcePath is for private SQL/writer APIs only. Test expectations
+// about public URLs must compare the original record ID instead.
+func fixtureResourcePath(t *testing.T, ctx context.Context, store *Store, uri string) string {
+	t.Helper()
+	identity, err := store.ResolveCanonicalPublicResourceIdentity(ctx, uri)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return identity.PrivatePath
+}
+
+func TestIssueCreateRetainsInitialDeferUntil(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			input := time.Date(2099, 1, 2, 3, 4, 5, 600_000_000, time.FixedZone("offset", -7*60*60))
+			want := input.UTC().Round(time.Second)
+			ordinary := plainIssue("Deferred ordinary Issue")
+			ordinary.Issue.Status = types.StatusDeferred
+			ordinary.Issue.DeferUntil = &input
+			created, err := s.CreateIssue(ctx, "", ordinary)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if ordinary.Issue.DeferUntil == nil || !ordinary.Issue.DeferUntil.Equal(input) ||
+				created.Properties.Status != types.StatusDeferred || created.Properties.DeferUntil == nil || !created.Properties.DeferUntil.Equal(want) {
+				t.Fatalf("ordinary create lost initial defer or mutated its caller: %+v", created.Properties)
+			}
+			planIssue := plainIssue("Deferred graph-plan Issue").Issue
+			planIssue.Status = types.StatusDeferred
+			planIssue.DeferUntil = &input
+			batch := publicops.ApplyBatchRequest{Actor: "test-author", Items: []publicops.ApplyItem{{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "deferred", Issue: planIssue}}}}
+			records, err := s.ApplyNewIssueGraph(ctx, batch)
+			if err != nil {
+				t.Fatal(err)
+			}
+			planned := records["deferred"]
+			if planned.Properties == nil || planned.Properties.Status != types.StatusDeferred || planned.Properties.DeferUntil == nil || !planned.Properties.DeferUntil.Equal(want) {
+				t.Fatalf("graph batch lost initial defer: %+v", planned)
+			}
+			batchIssue := plainIssue("Deferred Markdown-batch Issue").Issue
+			batchIssue.Status, batchIssue.DeferUntil = types.StatusDeferred, &input
+			batchRecords, err := s.CreateIssueBatch(ctx, publicops.CreateBatchRequest{Actor: "test-author", Items: []publicops.BatchCreateItem{{Issue: batchIssue}}})
+			if err != nil || len(batchRecords) != 1 || batchRecords[0].Properties.DeferUntil == nil || !batchRecords[0].Properties.DeferUntil.Equal(want) {
+				t.Fatalf("create batch lost initial defer: records=%+v err=%v", batchRecords, err)
+			}
+			parentIssue := plainIssue("Parent")
+			parentIssue.Issue.IssueType = types.TypeEpic
+			parent, err := s.CreateIssue(ctx, "beads/deferred-parent", parentIssue)
+			if err != nil {
+				t.Fatal(err)
+			}
+			childIssue := plainIssue("Deferred child")
+			childIssue.Issue.Status, childIssue.Issue.DeferUntil = types.StatusDeferred, &input
+			child, err := s.CreateChildIssue(ctx, IssueChildCreateRequest{ParentPath: "beads/deferred-parent", ExpectedParentRevision: parent.Revision, Create: childIssue})
+			if err != nil || child.Child.Properties == nil || child.Child.Properties.DeferUntil == nil || !child.Child.Properties.DeferUntil.Equal(want) {
+				t.Fatalf("child create lost initial defer: result=%+v err=%v", child, err)
+			}
+			for _, record := range []IssueRecord{created, planned, batchRecords[0]} {
+				var native, canonical int
+				if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM issue_versions WHERE issue_id=?`, record.Properties.ID).Scan(&native); err != nil {
+					t.Fatal(err)
+				}
+				if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?`, fixtureResourcePath(t, ctx, s, record.ID)).Scan(&canonical); err != nil {
+					t.Fatal(err)
+				}
+				if native != 1 || canonical != 1 {
+					t.Fatalf("deferred creation retained %d native/%d canonical versions, want 1/1", native, canonical)
+				}
+			}
+		})
+	}
+
+}
+
 func TestGeneratedIssuePathUsesNativePrefixAndReservedPaths(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
@@ -83,7 +172,7 @@ func TestGeneratedIssuePathUsesNativePrefixAndReservedPaths(t *testing.T) {
 			t.Cleanup(func() { _ = s.Close() })
 
 			hashed, err := s.CreateIssue(ctx, "", plainIssue("Hash allocated Issue"))
-			if err != nil || !strings.HasPrefix(hashed.Properties.ID, "exp-") || hashed.ID != o.Binding.ScopeURL+"beads/"+hashed.Properties.ID {
+			if err != nil || !strings.HasPrefix(hashed.Properties.ID, "exp-") || hashed.ID != o.Binding.ScopeURL+hashed.Properties.ID {
 				t.Fatalf("native hash ID did not become canonical path: %+v, %v", hashed, err)
 			}
 			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
@@ -104,18 +193,18 @@ func TestGeneratedIssuePathUsesNativePrefixAndReservedPaths(t *testing.T) {
 				t.Fatal(err)
 			}
 			first, err := s.CreateIssue(ctx, "", plainIssue("Counter allocated Issue"))
-			if err != nil || first.Properties.ID != "exp-1" || !strings.HasPrefix(first.ID, o.Binding.ScopeURL+"beads/exp-1-") || first.ID == reserved.ID {
+			if err != nil || first.Properties.ID != "exp-1" || first.ID != o.Binding.ScopeURL+first.Properties.ID || first.ID == reserved.ID {
 				t.Fatalf("reserved path was reused or native counter lost: %+v, %v", first, err)
 			}
 			if got, err := s.Show(ctx, "beads/exp-1"); err != nil || !reflect.DeepEqual(got, reserved) {
 				t.Fatalf("reserved Memory changed: %+v, %v", got, err)
 			}
 			second, err := s.CreateIssue(ctx, "", plainIssue("Next counter Issue"))
-			if err != nil || second.Properties.ID != "exp-2" || second.ID != o.Binding.ScopeURL+"beads/exp-2" {
+			if err != nil || second.Properties.ID != "exp-2" || second.ID != o.Binding.ScopeURL+second.Properties.ID {
 				t.Fatalf("next native counter was not canonical: %+v, %v", second, err)
 			}
 			explicit, err := s.CreateIssue(ctx, "beads/custom", plainIssue("Explicit graph path"))
-			if err != nil || explicit.ID != o.Binding.ScopeURL+"beads/custom" {
+			if err != nil || explicit.ID != o.Binding.ScopeURL+explicit.Properties.ID {
 				t.Fatalf("explicit graph path changed: %+v, %v", explicit, err)
 			}
 			if _, err := s.CreateIssue(ctx, "beads/custom", plainIssue("Duplicate graph path")); !errors.Is(err, ErrAlreadyExists) {
@@ -182,7 +271,11 @@ func TestIssueAdapterCreateReadReopen(t *testing.T) {
 			if req.Issue.ID != "" {
 				t.Fatal("adapter mutated caller's request")
 			}
-			if created.ID != o.Binding.ScopeURL+"beads/task" || created.Type != IssueTypeURL(o.Binding.ScopeURL) || !strings.HasPrefix(created.Properties.ID, "exp-") || created.Owned == nil {
+			wantType, err := NativeIssueTypeURL(o.Binding.ScopeURL, "task")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if created.ID != o.Binding.ScopeURL+created.Properties.ID || created.Type != wantType || !strings.HasPrefix(created.Properties.ID, "exp-") || created.Owned == nil {
 				t.Fatalf("wrong record: %+v", created)
 			}
 			if _, err := s.CreateIssue(ctx, "beads/task", plainIssue("duplicate path")); !errors.Is(err, ErrAlreadyExists) {

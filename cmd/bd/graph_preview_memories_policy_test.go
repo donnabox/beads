@@ -18,7 +18,7 @@ func TestGraphPreviewMemoryDiscoveryConfiguredJSONFormatPrecedence(t *testing.T)
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/discovery-format/"
-	const body = "PRIVATE_BODY_DO_NOT_PROJECT — 雪\n"
+	body := strings.Repeat("Public summary 雪 ", 30) + "PRIVATE_BODY_DO_NOT_PROJECT — 雪\n"
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--scope-url", scope, "--prefix", "dfmt", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 	created := graphPolicyCLI(t, bd, work, home, nil, "", "remember", body, "--id", "beads/plan", "--title", "Format plan", "--json")
 	var saved struct {
@@ -49,7 +49,7 @@ func TestGraphPreviewMemoryDiscoveryConfiguredJSONFormatPrecedence(t *testing.T)
 			t.Fatalf("wrong summary envelope: %s", out)
 		}
 		item := result.Items[0]
-		if item.ID != saved.Result.ID || item.Version != saved.Result.Revision || item.Title != saved.Result.Properties.Title || item.Attribution != saved.Result.Attribution || item.MatchedFields == nil || len(item.MatchedFields) != 0 || item.Excerpt != nil || strings.Contains(out, "PRIVATE_BODY_DO_NOT_PROJECT") {
+		if item.ID != "beads/plan" || item.Version != saved.Result.Revision || item.Title != saved.Result.Properties.Title || item.Attribution != saved.Result.Attribution || item.MatchedFields == nil || len(item.MatchedFields) != 0 || item.Excerpt == nil || !item.Excerpt.Truncated || strings.Contains(out, "PRIVATE_BODY_DO_NOT_PROJECT") {
 			t.Fatalf("wrong summary record: %s", out)
 		}
 	})

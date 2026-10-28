@@ -6,11 +6,13 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-// The Issue query says when it, and not the Bead list, answered, and a
-// configured directory label never refuses a Memory Type. The label comes from
-// a workspace config.yaml, which initialization does not write.
+// Typed Issue filters and configured labels select the right population without
+// preview bookkeeping in human output. A configured Issue label never refuses
+// a Memory Type. The label comes from a workspace config.yaml.
 func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
@@ -30,98 +32,88 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list", "--format", "records-json"}, extra...)...)
 			}
-			issueQuery := func(selectedBy string) string {
-				return "Memories are not listed (Issue query selected by: " + selectedBy + ")."
-			}
 			expect := func(what string, got []string, want ...string) {
 				t.Helper()
 				if strings.Join(got, "\n") != strings.Join(want, "\n") {
 					t.Fatalf("%s:\n got=%q\nwant=%q", what, got, want)
 				}
 			}
-			workRow := `"` + scope + `beads/work" "open" P1 "Frontend work"`
-			otherRow := `"` + scope + `beads/other" "open" P2 "Other work"`
-
 			call("remember", "plan body", "--id", "beads/plan", "--title", "Plan")
-			call("create", "Frontend work", "--id", "beads/work", "--priority", "1", "--labels", "frontend")
-			call("create", "Other work", "--id", "beads/other", "--priority", "2")
+			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Frontend work", "--graph-path", "beads/work", "--priority", "1", "--labels", "frontend"))
+			otherIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other work", "--graph-path", "beads/other", "--priority", "2"))
+			workRow := workIssue.Properties.ID + ` [task] open P1 "Frontend work"`
+			otherRow := otherIssue.Properties.ID + ` [task] open P2 "Other work"`
 
-			// A typed Issue option selects the Issue query and says so on the line
-			// under the header, naming the options in canonical order.
+			// A typed Issue option selects the Issue query without a preview-only
+			// bookkeeping notice in the default human output.
 			lines := human("--status", "open")
-			if len(lines) != 4 || lines[0] != "Issues (2; more: false; graph preview)" || lines[1] != issueQuery("--status") {
+			if len(lines) != 3 || lines[0] != "Issues (2; more: false; graph preview)" || lines[1] != workRow || lines[2] != otherRow {
 				t.Fatalf("--status open: %q", lines)
 			}
 			for _, args := range [][]string{{"--status", "open", "--sort", "priority"}, {"--sort", "priority", "--status", "open"}} {
-				if got := human(args...); len(got) < 2 || got[1] != issueQuery("--status, --sort") {
-					t.Fatalf("%v must name its options in canonical order: %q", args, got)
+				if got := human(args...); len(got) != 3 || got[0] != lines[0] || got[1] != workRow || got[2] != otherRow {
+					t.Fatalf("%v changed selected Issues: %q", args, got)
 				}
 			}
 			// Structured output carries no notice: it is byte-identical to the
 			// Issue Type route, which never prints one, and --quiet prints nothing.
 			typed := structured("--status", "open")
-			if narrowed := structured("--type", "types/preview-issue", "--status", "open"); typed != narrowed || strings.Contains(typed, "not listed") {
+			if narrowed := structured("--type", "issue", "--status", "open"); typed != narrowed || strings.Contains(typed, "not listed") {
 				t.Fatalf("structured output changed:\n got=%s\nwant=%s", typed, narrowed)
 			}
 			if quiet := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--status", "open", "--quiet"); quiet != "" {
 				t.Fatalf("--quiet printed %q", quiet)
 			}
 			// Narrowing to the Issue Type already told the caller it is Issues only.
-			expect("Issue Type with a typed option", human("--type", "types/preview-issue", "--status", "open"),
+			expect("Issue Type with a typed option", human("--type", "issue", "--status", "open"),
 				"Issues (2; more: false; graph preview)", workRow, otherRow)
 
 			// A configured directory label for this directory selects the Issue
 			// query too. config.yaml is read from the workspace, and the label
 			// pattern is matched against the working directory.
 			graphListConfig(t, work, "directory:\n  labels:\n    \""+filepath.Base(work)+"\": frontend\n")
-			label := `directory.labels "frontend"`
-			expect("configured label alone", human(), "Issues (1; more: false; graph preview)", issueQuery(label), workRow)
-			expect("configured label with the Issue Type", human("--type", "types/preview-issue"), "Issues (1; more: false; graph preview)", workRow)
+			expect("configured label alone", human(), "Issues (1; more: false; graph preview)", workRow)
+			expect("configured label with the Issue Type", human("--type", "issue"), "Issues (1; more: false; graph preview)", workRow)
 			// A Memory has no labels, so the label is not applied to one and nothing is refused.
-			expect("configured label with the Memory Type", human("--type", "types/preview-memory"),
-				"Beads (1; more: false; graph preview)", label+" is not applied to this Bead Type.", "  beads/plan  Memory  Plan")
-			// A typed label replaces the configured one, and a typed option is named next to it.
-			expect("typed label", human("--label", "frontend"), "Issues (1; more: false; graph preview)", issueQuery("--label"), workRow)
-			expect("typed option and configured label", human("--status", "open"), "Issues (1; more: false; graph preview)", issueQuery("--status, "+label), workRow)
-			if out := structured(); strings.Contains(out, "not listed") || strings.Contains(out, "not applied") || !strings.Contains(out, scope+"beads/work") || strings.Contains(out, scope+"beads/plan") {
+			memoryRows := human("--type", "memory")
+			if len(memoryRows) != 3 || memoryRows[0] != "Beads (1; more: false; graph preview)" ||
+				memoryRows[1] != `directory.labels "frontend" is not applied to this Bead Type.` ||
+				memoryRows[2] != `beads/plan [memory] "Plan"` {
+				t.Fatalf("configured Issue label changed Memory selection: %q", memoryRows)
+			}
+			// A typed label replaces the configured one.
+			expect("typed label", human("--label", "frontend"), "Issues (1; more: false; graph preview)", workRow)
+			expect("typed option and configured label", human("--status", "open"), "Issues (1; more: false; graph preview)", workRow)
+			if out := structured(); strings.Contains(out, "not listed") || strings.Contains(out, "not applied") || !strings.Contains(out, workIssue.ID) || strings.Contains(out, scope+"beads/plan") {
 				t.Fatalf("structured list with the configured label: %s", out)
 			}
 			// A typed Issue option with a Memory Type is still refused.
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-memory", "--status", "open", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "memory", "--status", "open", "--format", "records-json")
 		})
 	}
 }
 
-// A typed Issue option selects the Issue query whatever its value, and with a
-// Memory Type it is refused. The list command lowers the Changed state of its
-// --status, --state, --type and --assignee filters once it has read them, so
-// each must be seen before that, an empty value included.
+// A typed Issue option selects the Issue query without a preview-only notice,
+// and with a Memory Type it is refused. Empty --type is an invalid Type family.
 func TestGraphPreviewListTypedOptionsSelectIssueQuery(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := graphListWorkspace(t, bd, "embedded", "https://example.invalid/typed/")
-	for _, args := range [][]string{{"remember", "plan body", "--id", "beads/plan", "--title", "Plan"}, {"create", "Frontend work", "--id", "beads/work"}} {
+	for _, args := range [][]string{{"remember", "plan body", "--id", "beads/plan", "--title", "Plan"}, {"create", "Frontend work", "--graph-path", "beads/work"}} {
 		graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 	}
 	for _, tc := range []struct{ option, value string }{
-		{"status", ""}, {"state", "open"}, {"state", ""}, {"type", "task"}, {"type", ""}, {"assignee", ""},
+		{"status", ""}, {"state", "open"}, {"state", ""}, {"type", "issue"}, {"assignee", ""},
 	} {
 		arg := "--" + tc.option + "=" + tc.value
 		out := graphPolicyCLI(t, bd, work, home, nil, "", "list", arg)
 		lines := strings.Split(strings.TrimSuffix(out, "\n"), "\n")
-		if len(lines) < 2 || !strings.HasPrefix(lines[0], "Issues (") {
+		if len(lines) != 2 || !strings.HasPrefix(lines[0], "Issues (") || !strings.Contains(lines[1], "Frontend work") || strings.Contains(out, "Memories are not listed") {
 			t.Errorf("%s did not select the Issue query: %q", arg, lines)
-			continue
-		}
-		if tc.option == "type" && tc.value == "task" {
-			if strings.Contains(out, "Memories are not listed") {
-				t.Errorf("%s printed a redundant Memory notice: %q", arg, lines)
-			}
-		} else if lines[1] != "Memories are not listed (Issue query selected by: --"+tc.option+")." {
-			t.Errorf("%s lost the Issue query notice: %q", arg, lines)
 		}
 	}
-	for _, option := range []string{"status", "state", "type", "assignee"} {
-		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-memory", "--"+option+"=", "--format", "records-json")
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "list", "--type=", "--format", "records-json")
+	for _, option := range []string{"status", "state", "assignee"} {
+		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "memory", "--"+option+"=", "--format", "records-json")
 	}
 }
 
@@ -132,22 +124,38 @@ func TestGraphPreviewCustomIssueTypePrefixWorkflow(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/custom-prefix/")
 			graphListConfig(t, work, "types.custom: \"preview-task,example-task\"\n")
 			listedTypes := graphPolicyCLI(t, bd, work, home, nil, "", "types")
-			if !strings.Contains(listedTypes, "preview-task") || !strings.Contains(listedTypes, "example-task") || !strings.Contains(listedTypes, "Bead Types (16):") {
+			ids := map[string]bool{}
+			for _, line := range strings.Split(listedTypes, "\n") {
+				fields := strings.Fields(line)
+				if len(fields) >= 2 {
+					ids[fields[0]] = true
+				}
+			}
+			if !ids["preview-task"] || !ids["example-task"] || strings.Contains(listedTypes, "types/native-issue/") || strings.Contains(listedTypes, "native-dependency/") {
 				t.Fatalf("registered Issue types missing from human inventory: %s", listedTypes)
 			}
+			selected := make(map[string]graphstore.IssueRecord)
 			for _, tc := range []struct{ kind, id string }{
 				{"preview-task", "beads/preview"},
 				{"example-task", "beads/example"},
 			} {
-				graphPolicyCLI(t, bd, work, home, nil, "", "create", tc.kind, "--id", tc.id, "--type", tc.kind, "--json")
+				selected[tc.kind] = graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", tc.kind, "--graph-path", tc.id, "--type", tc.kind, "--json"))
 			}
-			for _, tc := range []struct{ kind, id, other string }{
-				{"preview-task", "beads/preview", "beads/example"},
-				{"example-task", "beads/example", "beads/preview"},
+			for _, tc := range []struct{ kind, otherKind string }{
+				{"preview-task", "example-task"},
+				{"example-task", "preview-task"},
 			} {
-				listed := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", tc.kind, "--format", "records-json")
-				if !strings.Contains(listed, tc.id) || strings.Contains(listed, tc.other) {
-					t.Fatalf("registered Issue type %q did not select only %q: %s", tc.kind, tc.id, listed)
+				exactType, err := graphstore.NativeIssueTypeURL("https://example.invalid/custom-prefix/", tc.kind)
+				if err != nil {
+					t.Fatal(err)
+				}
+				listed := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", "issue", "--exact-type", exactType, "--format", "records-json")
+				if !strings.Contains(listed, selected[tc.kind].ID) || strings.Contains(listed, selected[tc.otherKind].ID) {
+					t.Fatalf("registered Issue type %q did not select only its allocated ID: %s", tc.kind, listed)
+				}
+				shorthand := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", tc.kind, "--format", "records-json")
+				if !strings.Contains(shorthand, selected[tc.kind].ID) || strings.Contains(shorthand, selected[tc.otherKind].ID) {
+					t.Fatalf("registered Issue shorthand %q did not select only its allocated ID: %s", tc.kind, shorthand)
 				}
 			}
 		})

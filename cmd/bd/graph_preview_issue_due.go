@@ -13,12 +13,20 @@ import (
 // The 4096-byte bound is provisional private-preview admission, not a public
 // date-language or BDP limit.
 func graphPreviewIssueDueInput(cmd *cobra.Command) (*time.Time, error) {
-	value, err := cmd.Flags().GetString("due")
+	return graphPreviewIssueDateInput(cmd, "due")
+}
+
+func graphPreviewIssueDeferInput(cmd *cobra.Command) (*time.Time, error) {
+	return graphPreviewIssueDateInput(cmd, "defer")
+}
+
+func graphPreviewIssueDateInput(cmd *cobra.Command, name string) (*time.Time, error) {
+	value, err := cmd.Flags().GetString(name)
 	if err != nil {
 		return nil, graphFailure("invalid_properties", err.Error(), 2)
 	}
 	if !utf8.ValidString(value) || len(value) > 4096 {
-		return nil, graphFailure("invalid_properties", "--due must be UTF-8 and at most 4096 bytes", 2)
+		return nil, graphFailure("invalid_properties", "--"+name+" must be UTF-8 and at most 4096 bytes", 2)
 	}
 	if value == "" {
 		return nil, nil

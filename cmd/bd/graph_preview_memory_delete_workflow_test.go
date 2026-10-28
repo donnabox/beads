@@ -46,20 +46,24 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if !preview.Preview || preview.Deleted || !reflect.DeepEqual(preview.Memory, original) {
 				t.Fatal("default read-only preview differs from live Memory")
 			}
-			if got := graphMixedResult[graphstore.Record](t, call("show", "beads/empty")); !reflect.DeepEqual(got, original) {
+			if got := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/empty")); !reflect.DeepEqual(got, original) {
 				t.Fatal("preview changed current state")
 			}
-			updated := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/empty", "--title", "Final empty body", "--if-revision", original.Revision)).Memory
+			dryRun := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", original.ID, "--force", "--dry-run", "--readonly"))
+			if !dryRun.Preview || dryRun.Deleted || !reflect.DeepEqual(dryRun.Memory, original) {
+				t.Fatal("explicit Memory --dry-run changed state or lost the preview")
+			}
+			updated := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", "beads/empty", "--title", "Final empty body", "--if-revision", "="+original.Revision)).Memory
 			for _, args := range [][]string{
-				{"delete", "beads/empty", "--if-revision", original.Revision},
-				{"delete", "beads/empty", "--force", "--if-revision", original.Revision},
-				{"forget", "beads/empty", "--if-revision", original.Revision},
+				{"delete", "beads/empty", "--if-revision", "=" + original.Revision},
+				{"delete", "beads/empty", "--force", "--if-revision", "=" + original.Revision},
+				{"forget", "beads/empty", "--if-revision", "=" + original.Revision},
 			} {
 				refuse("revision_conflict", args...)
 			}
 			for _, args := range [][]string{
 				{"delete", "beads/empty", "--if-revision="},
-				{"delete", "beads/empty", "beads/other"}, {"delete", "links/context"},
+				{"delete", "links//context"},
 				{"delete", "https://foreign.invalid/beads/empty"},
 			} {
 				refuse("invalid_selector", args...)
@@ -70,9 +74,11 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			} {
 				refuse("permission_denied", args...)
 			}
-			for _, flag := range []string{"--cascade", "--cascade=false", "--from-file=/unread/deletions", "--dry-run"} {
-				refuse("capability_unavailable", "delete", "beads/empty", flag)
+			refuse("invalid_properties", "delete", "beads/empty", "beads/other")
+			for _, flag := range []string{"--cascade", "--cascade=false"} {
+				refuse("invalid_properties", "delete", "beads/empty", flag)
 			}
+			refuse("invalid_selector", "delete", "beads/empty", "--from-file=/unread/deletions")
 			refuse("not_found", "delete", "beads/missing")
 			// The graph adapter must honor bound read-only policy and migration
 			// freezes while leaving its default preview available as a read.
@@ -89,7 +95,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.Record](t, call("show", updated.ID)); !reflect.DeepEqual(got, updated) {
 				t.Fatal("refused deletion changed final live state")
 			}
-			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/empty", "--force", "--if-revision", updated.Revision))
+			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/empty", "--force", "--if-revision", "="+updated.Revision))
 			if deleted.Preview || !deleted.Deleted || !reflect.DeepEqual(deleted.Memory, updated) {
 				t.Fatal("delete did not disclose exact final live state")
 			}
@@ -102,44 +108,49 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if !applied.Deleted || applied.Preview || !reflect.DeepEqual(applied.Memory, unguarded) {
 				t.Fatal("unguarded --force did not delete the current Memory")
 			}
-			refuse("gone", "show", "beads/unguarded")
+			refuse("gone", "show", scope+"beads/unguarded")
 
 			plan := graphMixedResult[graphstore.Record](t, call("remember", "Plan", "--id", "beads/plan", "--title", "Plan"))
 			other := call("remember", "Context", "--id", "beads/other", "--title", "Context")
-			issue := call("create", "Keep Issue", "--id", "beads/work")
-			issuePreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "beads/work"))
-			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != scope+"beads/work" {
+			issue := call("create", "Keep Issue", "--graph-path", "beads/work")
+			issueRecord := graphMixedResult[graphstore.IssueRecord](t, issue)
+			issuePreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issueRecord.Properties.ID))
+			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != issueRecord.ID {
 				t.Fatal("Issue deletion preview did not preserve live Issue")
 			}
-			refuse("capability_unavailable", "forget", "beads/work")
-			related := scope + "types/preview-related"
+			issueDryRun := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", issueRecord.Properties.ID, "--force", "--dry-run", "--readonly"))
+			if !issueDryRun.Preview || issueDryRun.Deleted || issueDryRun.Issue.ID != issuePreview.Issue.ID {
+				t.Fatal("explicit Issue --dry-run changed state or lost the preview")
+			}
+			refuse("capability_unavailable", "forget", issueRecord.Properties.ID)
+			related := scope + "superseded-by"
 			call("link", "beads/plan", "beads/other", "--id", "links/outgoing", "--type", related, "--if-source-revision", plan.Revision)
-			call("link", "beads/work", "beads/plan", "--id", "links/incoming", "--type", related)
+			call("link", issueRecord.ID, scope+"beads/plan", "--id", "links/incoming", "--type", "references")
 			for _, path := range []string{"links/outgoing", "links/incoming"} {
-				before := call("show", "beads/plan")
-				linkBefore := call("show", path)
+				before := call("show", scope+"beads/plan")
+				linkBefore := call("show", scope+path)
 				current := graphMixedResult[graphstore.Record](t, before)
 				refuse("constraint_violation", "delete", "beads/plan")
-				refuse("constraint_violation", "delete", "beads/plan", "--force", "--if-revision", current.Revision)
+				refuse("constraint_violation", "delete", "beads/plan", "--force", "--if-revision", "="+current.Revision)
 				refuse("constraint_violation", "forget", "beads/plan")
-				if call("show", "beads/plan") != before || call("show", path) != linkBefore || call("show", "beads/other") != other || call("show", "beads/work", "--format", "graph-json") != issue {
+				if call("show", scope+"beads/plan") != before || call("show", scope+path) != linkBefore || call("show", scope+"beads/other") != other || call("show", issueRecord.ID, "--format", "graph-json") != issue {
 					t.Fatal("incident-Link refusal changed Memory, Link or another endpoint")
 				}
 				link := graphMixedResult[graphstore.LinkRecord](t, linkBefore)
-				args := []string{"link", "delete", "--force", path, "--if-revision", link.Revision}
+				args := []string{"link", "delete", "--force", path, "--if-revision", "=" + link.Revision}
 				if path == "links/outgoing" {
 					args = append(args, "--if-source-revision", current.Revision)
 				}
 				call(args...)
 			}
-			final := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
+			final := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))
 			forgotten := graphMixedResult[graphstore.MemoryDeleteResult](t, call("forget", final.ID))
 			if !forgotten.Deleted || forgotten.Preview || !reflect.DeepEqual(forgotten.Memory, final) || len(final.Owned) != 0 {
 				t.Fatal("forget after explicit unlink lost final predecessor or invented a live version")
 			}
-			refuse("gone", "show", "beads/plan")
+			refuse("gone", "show", scope+"beads/plan")
 			refuse("identity_reserved", "remember", "replacement", "--id", "beads/plan", "--title", "Cannot reuse")
-			if call("show", "beads/other") != other || call("show", "beads/work", "--format", "graph-json") != issue {
+			if call("show", scope+"beads/other") != other || call("show", issueRecord.ID, "--format", "graph-json") != issue {
 				t.Fatal("Memory deletion changed unrelated surviving records")
 			}
 		})

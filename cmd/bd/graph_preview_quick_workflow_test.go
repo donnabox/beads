@@ -3,7 +3,9 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -25,20 +27,43 @@ func TestGraphPreviewQuickCaptureWorkflow(t *testing.T) {
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", append(initArgs, "--json")...)
 			created := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "q", "Quick", "capture", "--priority", "P1", "--type", "bug", "--labels", "triage", "--json"))
-			if !strings.HasPrefix(created, "beads/quick-") || strings.Contains(created, "\n") {
+			if !strings.HasPrefix(created, "quick-") || strings.Contains(created, "\n") {
 				t.Fatalf("quick capture did not print exactly one canonical ID: %q", created)
 			}
-			record := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", created, "--format", "graph-json"))
+			record := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/quick-capture/"+created, "--format", "graph-json"))
 			if record.ID != "https://example.invalid/quick-capture/"+created || record.Properties.Title != "Quick capture" || record.Properties.Priority != 1 || record.Properties.IssueType != "bug" || len(record.Properties.Labels) != 1 || record.Properties.Labels[0] != "triage" {
 				t.Fatalf("quick capture lost Issue fields: ID=%q title=%q priority=%d type=%q labels=%v", record.ID, record.Properties.Title, record.Properties.Priority, record.Properties.IssueType, record.Properties.Labels)
 			}
 			// Like ordinary q, -- ends option parsing so a leading hyphen is title text.
 			hyphenID := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "q", "--", "-follow-up"))
-			hyphen := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", hyphenID, "--format", "graph-json"))
+			hyphen := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/quick-capture/"+hyphenID, "--format", "graph-json"))
 			if hyphen.Properties.Title != "-follow-up" {
 				t.Fatalf("quick capture changed a flag-looking title: %q", hyphen.Properties.Title)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "q", "Child", "--parent", created, "--json")
+			childID := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "q", "Child", "--parent", created, "--labels", "own", "--json"))
+			if strings.Contains(childID, "\n") || !strings.HasPrefix(childID, created+".") {
+				t.Fatalf("quick child did not print one dotted ID: %q", childID)
+			}
+			child := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", childID, "--format", "graph-json"))
+			if child.Properties.Title != "Child" || !reflect.DeepEqual(child.Properties.Labels, []string{"own", "triage"}) || len(child.Owned) != 1 {
+				t.Fatalf("quick child lost title, inherited labels, or owner Link: title=%q labels=%v owned=%d", child.Properties.Title, child.Properties.Labels, len(child.Owned))
+			}
+			var link graphstore.LinkRecord
+			if err := json.Unmarshal(child.Owned[0], &link); err != nil || link.Source != child.ID || link.Target != record.ID || link.Properties["dep_type"] != "parent-child" {
+				t.Fatalf("quick child has no canonical parent-child Link: %+v %v", link, err)
+			}
+			privateParent := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Path-selected parent", "--graph-path", "beads/private-parent", "--json"))
+			privateChildID := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "q", "Private-path child", "--parent", privateParent.Properties.ID, "--json"))
+			privateChild := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", privateChildID, "--format", "graph-json"))
+			if !strings.HasPrefix(privateChildID, privateParent.Properties.ID+".") || len(privateChild.Owned) != 1 {
+				t.Fatalf("quick child did not resolve opaque parent ID to private path: parent=%s child=%+v", privateParent.ID, privateChild)
+			}
+			var privateLink graphstore.LinkRecord
+			if err := json.Unmarshal(privateChild.Owned[0], &privateLink); err != nil || privateLink.Target != privateParent.ID {
+				t.Fatalf("quick child did not retain parent Link: %+v %v", privateLink, err)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "q", "Refused", "--parent=", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "q", "Refused", "--parent", "missing", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "q", "Forbidden", "--readonly", "--json")
 			// The helper decodes stderr as one JSON object; a second plain or JSON
 			// diagnostic would make this assertion fail.

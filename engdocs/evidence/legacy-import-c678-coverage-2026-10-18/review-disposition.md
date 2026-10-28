@@ -1,0 +1,27 @@
+# Repaired import009 council disposition — coverage follow-on
+
+Source009dcb234bcbd34a5ec065c84bcf499696f3e58a is frozen; actual report completed2026-10-18T08:35:07Z, exit0, empty stderr, source unchanged. Native first review had no actionable finding. Actual final report is preserved intact in coordination context; exit0 is not clearance. No tests/builds/engines/DB run. This ledger reconciles findings, not reviewer severity by vote.
+
+## Findings
+
+| Item | Source disposition and action |
+| --- | --- |
+| M1 route/raw mapper wiring coverage | Valid missing coverage. Existing mapper unit tests do not execute reader route. Add behavioral canceled/deadline reader-route tests using a valid disposable server configuration and an owned nonexistent socket; database/sql rejects already-finished context before connector acquisition. Assert capability_unavailable5, original context message and exactly one JSON. Add invalid-options raw-open seam control: mapper receives ErrInvalidStore once before diagnostics, neither operation nor output runs, exact mapper return preserved. No production injection/reflection/global test hook. These pin actual route choice and raw-open boundary; joined operation/Close ordering remains source-reviewed plus separately required lower/installed qualification, not claimed dynamically covered. |
+| M2 definite import delegation uncovered | Partly false as originally worded: existing installed prefix-mismatch/repeat refusals already exercise storage validation through the fallback, and existing cancellation/uncertainty/reported controls catch the suggested reordering trigger. Expand dedicated definite-refusal controls across ordinary and import mappers, with validation2, invalid_store5, ambiguity4/exact candidates and reported-pointer/no duplicate controls. Whole JSON parse rejects multiple diagnostic envelopes. |
+| L1 definite refusal joined with cancellation | No live trigger established by report or source audit. Failed rollback carries ErrOutcomeUnknown, which dominates; reported errors dominate too. Plain remaining context compositions deliberately use import bounded-operation category. Retain selected policy and retryable:false; no speculative precedence/contract change. Current invalid-store+context row explicitly records this behavior. |
+| L2 reported+unknown might duplicate earlier envelope | Synthetic defensive composition is covered. No production cause-preserving path found: graphFailure emits then returns exitError without original cause; CLI callbacks run outside private store transactions; Close does not mint ErrOutcomeUnknown. Existing shared priority is Janet's binding safety ruling. Do not suppress uncertainty or invent a reachable double print. A future path that combines a previously emitted diagnostic with uncertainty requires separate review. |
+| L3 non-import graph_not_initialized category inherited | Accepted editorial clarification: annotate test as preservation of inherited default pending separate CLI category/retry decision. No behavior change. |
+| L4 lower cancellation oracle low power | Correct no-limit assertion for this cancellation fixture; it is not advertised as an injected limit/cancel precedence experiment. Shared mapper joined-limit rows independently pin error category priority. Keep sentinel identity assertion; do not inject an artificial cause and mislabel it whole-store rollback proof. Full lower runtime remains Janet-owned. |
+
+## Missing-source questions
+
+1. graph-cli.md has no global cancellation/deadline promise; capability_unavailable occurrence describes missing example Types. Import docs correctly scope cancellation locally.
+2. policy/import workflow/freshness/transaction-policy tests do not assert removed non-import context mapping. Contexts in process harness bound execution; lower tests assert context/error identities independently.
+3. Named unchanged files have no further nonmatching current-read phrase oracle. Other current-read budget strings in broader tests are explanatory failure text, not matching that wrong phrase.
+4. Original four added names occur once in package; proposed two new names absent before this delta. Other graphFailureOutput writers found restore via deferred cleanup/admission defer. Defensively clear/restore this writer in the older cancellation table as the new tests already do. All global-sensitive tests remain sequential; no parallel test introduced.
+5. No current reported+uncertainty production composition found; see L2. Separate remember callback loses uncertainty before mapping and is Janet-owned, unchanged here.
+6. Only production alternate graphFailureOutput writer is the hook admission buffer. It rewords admission refusals; it does not parse a new non-import cancellation category. No docs/test/tool source in reviewed scope establishes a changed-code consumer contract. Unknown external tooling is not asserted absent; preserving old non-import category minimizes that risk.
+
+## Verification scope
+
+Tests are authored, UNRUN. No build, lint build, producer, bd, engine or DB execution; no live endpoint used. Formatting and patch checks alone are static. Fresh exact-source council follows source freeze; prior reviews do not qualify changed tests. Janet owns all runtime and installed admission. No source behavior, import/export contract, feature flag, default, release or integration change accompanies this test-only follow-on.

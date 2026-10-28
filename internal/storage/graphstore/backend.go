@@ -26,11 +26,14 @@ var authorityID = regexp.MustCompile(`^[a-f0-9]{32}$`)
 // operation uses one transaction. Callers must check Close before reporting
 // success; no physical server terminality is inferred from closing a socket.
 type Store struct {
-	db        *sql.DB
-	options   Options
-	cleanup   func() error
-	closeOnce sync.Once
-	closeErr  error
+	db          *sql.DB
+	options     Options
+	cleanup     func() error
+	closeOnce   sync.Once
+	closeErr    error
+	catalogOnce sync.Once
+	catalog     *selectedTypeCatalog
+	catalogErr  error
 	// afterWrite is an internal test seam for real-engine rollback controls.
 	// No CLI or production configuration can enable it.
 	afterWrite func(string) error
@@ -55,7 +58,7 @@ func validateOptions(o Options) error {
 	if o.Binding.SchemaVersion != SchemaVersion || !authorityID.MatchString(o.Binding.AuthorityID) {
 		return fmt.Errorf("%w: invalid preview version or authority ID", ErrInvalidStore)
 	}
-	if o.TypeGeneration != 0 && o.TypeGeneration != 9 {
+	if o.TypeGeneration != 0 && o.TypeGeneration != TypeGeneration {
 		return fmt.Errorf("%w: unsupported workspace Type generation", ErrInvalidStore)
 	}
 	if err := graph.ValidatePersistedScopeURL(o.Binding.ScopeURL); err != nil {
@@ -119,8 +122,8 @@ func Init(ctx context.Context, o Options) (err error) {
 	if err = validateOptions(o); err != nil {
 		return err
 	}
-	if o.TypeGeneration != 0 && o.TypeGeneration != 9 {
-		return fmt.Errorf("%w: fresh graph init writes only Type generation 9", ErrInvalidStore)
+	if o.TypeGeneration != 0 && o.TypeGeneration != TypeGeneration {
+		return fmt.Errorf("%w: fresh graph init writes only Type generation %d", ErrInvalidStore, TypeGeneration)
 	}
 	if o.Backend == "embedded" {
 		// Only the engine child directory is provisioned here; CLI owns the
@@ -180,7 +183,27 @@ func OpenExisting(ctx context.Context, o Options) (*Store, error) {
 // withTx never replays fn. All graph writes, including conflict coordination
 // and retained bytes, use this single transaction. Only an explicit decoded
 // serialization rollback is a known conflict; other commit errors are unknown.
-func (s *Store) withTx(ctx context.Context, write bool, fn func(*sql.Tx) error) (err error) {
+func (s *Store) withTx(ctx context.Context, write bool, fn func(*sql.Tx) error) error {
+	return s.withTxPolicy(ctx, txPolicy{mayWrite: write, commit: write}, fn)
+}
+
+// withTypeValidationTx validates the final selected graph before publishing a
+// mutation that can change its Types, properties, endpoints or liveness.
+// Native payload-only writers keep their existing validation through withTx.
+func (s *Store) withTypeValidationTx(ctx context.Context, fn func(*sql.Tx) error) error {
+	return s.withTxPolicy(ctx, txPolicy{mayWrite: true, commit: true, validateTypes: true}, fn)
+}
+
+// txPolicy separates staged writes from publication: an import dry-run writes
+// for validation, then rolls back. Selected graph mutations opt into validation;
+// native payload-only readers and writers retain withTx behavior.
+type txPolicy struct {
+	mayWrite      bool
+	commit        bool
+	validateTypes bool // mutations affecting the selected graph, including import dry-runs
+}
+
+func (s *Store) withTxPolicy(ctx context.Context, policy txPolicy, fn func(*sql.Tx) error) (err error) {
 	if ctx == nil {
 		return errors.New("graph operation requires a context")
 	}
@@ -216,21 +239,29 @@ func (s *Store) withTx(ctx context.Context, write bool, fn func(*sql.Tx) error) 
 	if err != nil {
 		return err
 	}
+	rollback := func() error {
+		rollbackErr := tx.Rollback()
+		if policy.mayWrite && rollbackErr != nil {
+			return errors.Join(ErrOutcomeUnknown, rollbackErr)
+		}
+		return rollbackErr
+	}
 	finished := false
 	defer func() {
 		if !finished {
-			rollbackErr := tx.Rollback()
-			if write && rollbackErr != nil {
-				rollbackErr = errors.Join(ErrOutcomeUnknown, rollbackErr)
-			}
-			err = errors.Join(err, rollbackErr)
+			err = errors.Join(err, rollback())
 		}
 	}()
 	if err = fn(tx); err != nil {
 		return err
 	}
-	if !write {
-		err = tx.Rollback()
+	if policy.validateTypes {
+		if err = s.validateTypeStateInTx(ctx, tx); err != nil {
+			return err
+		}
+	}
+	if !policy.commit {
+		err = rollback()
 		finished = true
 		return err
 	}

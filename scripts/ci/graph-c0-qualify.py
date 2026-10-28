@@ -10,6 +10,7 @@ All databases and process groups belong to this run; no existing server is used.
 import argparse
 import contextlib
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -26,6 +27,12 @@ SLOW_GROUP_SECONDS = GO_TEST_TIMEOUT * 6 // 10
 TAIL_LINES = 40
 SERVER_READY_TIMEOUT = 30
 SERVER_STOP_TIMEOUT = 15
+COHORT_PHASES = {
+    "storage": {"storage"},
+    "cli-http": {"graphpatch", "config", "query-config", "utc-issueops", "utc-db", "utc-types",
+                 "agent-template", "graph-claude-setup", "cli", "bdpwire", "graphread", "graph-http"},
+}
+BINDING_FIELDS = ("commit", "binarySHA256", "doltSHA256", "runnerSHA256")
 # Deadlines for the HTTP/BDP smoke, in seconds. Each outlasts the one before it: one
 # command < the smoke's whole run < the wrapper that kills it from outside, so a slow runner
 # ends in the smoke's own labelled failure and never in an unlabelled outer kill. The
@@ -45,11 +52,20 @@ def require(condition, message):
 
 def require_memory_creation(record, scope):
     require(record.get("id") == scope + "beads/plan"
-            and record.get("type") == scope + "types/preview-memory"
+            and record.get("type") == scope + "memory"
             and record.get("properties") == {"title": "Plan", "body": "Durable C0 body — 記憶"}
             and record.get("owned") == []
             and isinstance(record.get("revision"), str) and bool(record["revision"])
             and "version" not in record, "incomplete/non-Memory creation")
+
+
+# Share the same local-result boundary with the installed capture. Loading this
+# support module has no command, server or workspace side effects.
+_capture_spec = importlib.util.spec_from_file_location(
+    "graph_c0_deletion_support", Path(__file__).resolve().parents[1] / "graph-c0-smoke.py")
+_capture_support = importlib.util.module_from_spec(_capture_spec)
+_capture_spec.loader.exec_module(_capture_support)
+require_memory_deletion = _capture_support.require_memory_deletion
 
 
 def digest(path):
@@ -141,16 +157,16 @@ def verify_clean_receipt(receipt, listener=False):
 def verify_http_capture(root, binary_hash):
     summary = json.loads((root / "summary.json").read_text())
     require(summary.get("passed") is True and summary.get("failure") is None
-            and summary.get("active_children") == 0 and summary.get("cli_commands") == 16,
+            and summary.get("active_children") == 0 and summary.get("cli_commands") == 18,
             "incomplete installed HTTP capture")
-    require(summary.get("client_pin") == "de99030d13a57e77f4f2660b91ea3c39b82823cb"
+    require(summary.get("client_pin") == "bad780f19761e5714873aa3a85adeb75bc885928"
             and summary.get("installed_binary_sha256") == binary_hash, "HTTP source/binary provenance mismatch")
-    require(summary.get("python") == {"passed": True, "beads": 4, "limit": 1,
+    require(summary.get("python") == {"passed": True, "beads": 5, "limit": 1,
             "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"},
             "Python BDP consumer proof missing")
-    require(summary.get("python_pages") == 4, "Python continuation observations missing")
+    require(summary.get("python_pages") == 5, "Python continuation observations missing")
     processes = list(root.glob("*/receipt.json"))
-    require(len(processes) == 21, "missing seed/delete/serve/client/Python process receipt")
+    require(len(processes) == 23, "missing seed/delete/serve/client/Python process receipt")
     for path in processes:
         receipt = json.loads(path.read_text())
         verify_clean_receipt(receipt, listener=path.parent.name == "serve")
@@ -201,7 +217,7 @@ def verify_issue_append_capture(root, summary, binary_hash, network):
             and after["attribution"]["basis"] == "writer-supplied"
             and after["ownedLinks"] == claimed["ownedLinks"] == before["ownedLinks"], "append ownership/revision proof missing")
     require(notes["properties"] == after["properties"] and notes["inventory"]["next"] is None
-            and len(notes["inventory"]["items"]) == 4
+            and len(notes["inventory"]["items"]) == 5
             and [item for item in notes["inventory"]["items"] if item["id"] == work_id] == [after]
             and notes["incident"] == artifacts["issueEdit"]["incidentAfter"], "append BDP views disagree")
     require(notes["etagBefore"] and notes["etagAfter"] and notes["etagBefore"] != notes["etagAfter"],
@@ -209,8 +225,8 @@ def verify_issue_append_capture(root, summary, binary_hash, network):
     binary = data("02-memory-create/receipt.json")["argv"][0]
     commands = (
         ("client-cli-issue-claim", "claimMutation", ["update", work_id, "--claim", "--actor", actor, "--json"], True, claimed),
-        ("client-cli-issue-append-noop", "noopMutation", ["update", work_id, "--append-notes=", "--if-revision", claimed["revision"], "--actor", actor, "--json"], False, claimed),
-        ("client-cli-issue-append", "appendMutation", ["update", work_id, "--append-notes", text, "--if-revision", claimed["revision"], "--actor", actor, "--json"], True, after),
+        ("client-cli-issue-append-noop", "noopMutation", ["update", work_id, "--append-notes=", "--if-revision", "=" + claimed["revision"], "--actor", actor, "--json"], False, claimed),
+        ("client-cli-issue-append", "appendMutation", ["update", work_id, "--append-notes", text, "--if-revision", "=" + claimed["revision"], "--actor", actor, "--json"], True, after),
     )
     for name, key, args, changed, record in commands:
         receipt, mutation = data(name + ".json"), data(name + ".stdout.log")
@@ -275,7 +291,7 @@ def verify_issue_authoring_capture(root, summary, binary_hash, network):
                 and item["attribution"]["basis"] == "writer-supplied" for item in (edited, after)),
             "authoring attribution missing or has wrong basis")
     require(proof["properties"] == after["properties"] and proof["inventory"]["next"] is None
-            and len(proof["inventory"]["items"]) == 4
+            and len(proof["inventory"]["items"]) == 5
             and [item for item in proof["inventory"]["items"] if item["id"] == resource] == [after], "authoring BDP current/properties/inventory disagree")
     require([item for item in data("python-after-delete/stdout.log") if item["id"] == resource] == [after],
             "unchanged Python consumer lost final authored Issue")
@@ -289,7 +305,7 @@ def verify_issue_authoring_capture(root, summary, binary_hash, network):
     ):
         prefix = "client-cli-issue-authoring-" + name
         receipt, mutation = data(prefix + ".json"), data(prefix + ".stdout.log")
-        require(receipt["argv"] == [binary, "update", resource, *flags, "--if-revision", predecessor["revision"], "--actor", actor, "--json"]
+        require(receipt["argv"] == [binary, "update", resource, *flags, "--if-revision", "=" + predecessor["revision"], "--actor", actor, "--json"]
                 and receipt["binarySha256"] == binary_hash and receipt["exitCode"] == 0 and receipt["signal"] is None,
                 "authoring installed command provenance/guard/exit differs")
         for stream in ("stdout", "stderr"):
@@ -322,20 +338,20 @@ def verify_memory_deletion_capture(root, summary):
     alpha = data("02-memory-create/stdout.log")["result"]
     scope = summary["scope"]
     require(alpha["id"] == scope + "beads/alpha", "wrong deletion fixture identity")
-    deletion = data("16-memory-delete/stdout.log")
-    require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1
-            and deletion.get("result") == {"memory": alpha, "preview": False, "deleted": True},
-            "deletion did not retain/disclose exact final live state")
-    argv = data("16-memory-delete/receipt.json")["argv"]
-    require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", "beads/alpha", "--force",
-                     "--if-revision", alpha["revision"], "--json"], "deletion did not use original observed guard")
+    deletion = data("18-memory-delete/stdout.log")
+    require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1,
+            "deletion envelope changed")
+    require_memory_deletion(deletion.get("result"), alpha)
+    argv = data("18-memory-delete/receipt.json")["argv"]
+    require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", alpha["id"], "--force",
+                     "--if-revision", "=" + alpha["revision"], "--json"], "deletion did not use original observed guard")
     require(summary.get("memory_delete") == {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]},
             "Memory deletion summary missing")
-    require(summary.get("python_after_delete") == {"passed": True, "beads": 3, "limit": 1,
+    require(summary.get("python_after_delete") == {"passed": True, "beads": 4, "limit": 1,
             "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"}
-            and summary.get("python_after_delete_pages") == 3, "post-delete Python summary missing")
+            and summary.get("python_after_delete_pages") == 4, "post-delete Python summary missing")
     observations = data("python-after-delete-network.json")
-    require(len(observations) == 4 and observations[0]["url"] == scope + "bdp.json"
+    require(len(observations) == 5 and observations[0]["url"] == scope + "bdp.json"
             and observations[0]["document"]["scope"] == scope
             and observations[0]["document"]["profile"] == "read", "post-delete discovery missing")
     next_url, records = scope + "beads/?limit=1", []
@@ -349,8 +365,8 @@ def verify_memory_deletion_capture(root, summary):
                 "post-delete Python did not follow actual one-record next page")
         records.extend(page["items"])
         next_url = page["next"]
-    require(next_url is None and len(records) == 3 and {item["id"] for item in records} ==
-            {scope + "beads/" + name for name in ["plan", "work", "prereq"]}
+    require(next_url is None and len(records) == 4 and {item["id"] for item in records} ==
+            {scope + "beads/" + name for name in ["constraint", "plan", "work", "prereq"]}
             and data("python-after-delete/stdout.log") == records,
             "post-delete Python enumeration retained deleted state or omitted survivors")
 
@@ -409,9 +425,59 @@ def publish_phase_report(receipts, summary_path):
             print(f"::warning title=Phase table not written::{error}", flush=True)
 
 
+def combine_cohorts(directory, artifacts, output, commit, runner_sha256):
+    """Fail closed unless both independently completed jobs qualify the same build."""
+    manifest = dict(line.split("=", 1) for line in (artifacts / "build-manifest.txt").read_text().splitlines())
+    binary_sha256 = (artifacts / "SHA256SUMS").read_text().split()[0]
+    require(manifest["commit"] == commit and manifest["build_tags"] == "gms_pure_go",
+            "fan-in build source/tags mismatch")
+    require(digest(artifacts / "bd-linux-gms-pure") == binary_sha256, "fan-in binary hash mismatch")
+    require({p.parent.parent.name for p in directory.glob("*/graph-c0-evidence/summary.json")} == set(COHORT_PHASES),
+            "missing or unexpected cohort summaries")
+    summaries, passed, binding = {}, {}, None
+    for cohort, phases in COHORT_PHASES.items():
+        root = directory / cohort / "graph-c0-evidence"
+        source = json.loads((root / "source.json").read_text())
+        summary = json.loads((root / "summary.json").read_text())
+        require(source.get("cohort") == summary.get("cohort") == cohort, "cohort identity mismatch")
+        current = {field: source.get(field) for field in BINDING_FIELDS}
+        require(current["commit"] == commit and current["binarySHA256"] == binary_sha256
+                and current["runnerSHA256"] == runner_sha256
+                and all(isinstance(value, str) and re.fullmatch("[0-9a-f]{64}" if field != "commit" else "[0-9a-f]{40}", value)
+                        for field, value in current.items()), "cohort source/build binding mismatch")
+        require(all(summary.get(field) == value for field, value in current.items()), "summary/source binding mismatch")
+        require(binding is None or current == binding, "cohorts qualified different builds or runtimes")
+        binding = current
+        counts = summary.get("passed", {})
+        require(set(counts) == phases and all(type(n) is int and n > 0 for n in counts.values()),
+                "incomplete cohort phase census")
+        require(summary.get("engines") == ["embedded", "server"] and summary.get("childrenRemaining") == 0,
+                "cohort engines or child cleanup incomplete")
+        client = cohort == "cli-http"
+        require(summary.get("installedCLICommands") == (10 if client else 0)
+                and summary.get("bdpHTTP") is client and summary.get("pythonBDP") is client,
+                "cohort installed/client proof incomplete")
+        receipts = json.loads((root / "receipts.json").read_text())
+        require(isinstance(receipts, list) and receipts and all(
+            receipt.get("exit") == 0 and not receipt.get("failure") and not receipt.get("cleanupErrors")
+            for receipt in receipts), "cohort command or cleanup receipt failed")
+        shutdowns = [r for r in receipts if r.get("label", "").endswith("-server-shutdown")]
+        require(shutdowns and all(r.get("forced") is False and r.get("groupGone") is True
+                                 and r.get("portClosed") is True for r in shutdowns), "cohort server cleanup incomplete")
+        require(not set(passed) & set(counts), "duplicate cohort phase")
+        passed.update(counts)
+        summaries[cohort] = dict(summarySHA256=digest(root / "summary.json"),
+                                 sourceSHA256=digest(root / "source.json"), receiptsSHA256=digest(root / "receipts.json"))
+    result = dict(binding, cohorts=summaries, passed=passed, engines=["embedded", "server"],
+                  childrenRemaining=0, installedCLICommands=10, bdpHTTP=True, pythonBDP=True)
+    output.write_text(json.dumps(result, indent=2) + "\n")
+    return result
+
+
 class Qualification:
     def __init__(self, args):
         self.root = Path(__file__).resolve().parents[2]
+        self.cohort = getattr(args, "cohort", "all")
         self.output = Path(args.output).resolve()
         self.output.mkdir(parents=True, exist_ok=False)
         self.bd = Path(args.bd).resolve()
@@ -691,99 +757,121 @@ class Qualification:
         require(digest(self.bd) == expected_hash, "installed CLI hash differs from build artifact")
         version = self.run([self.dolt, "version"], "dolt-version").decode().splitlines()
         require(version and version[0].strip() == "dolt version 2.1.8", "C0 requires released Dolt2.1.8")
-        (self.output / "source.json").write_text(json.dumps(dict(commit=head, binarySHA256=digest(self.bd),
-            doltSHA256=digest(self.dolt), runnerSHA256=digest(Path(__file__))), indent=2) + "\n")
+        cohort = getattr(self, "cohort", "all")
+        require(cohort in (*COHORT_PHASES, "all"), "unknown qualification cohort")
+        binding = dict(commit=head, binarySHA256=digest(self.bd), doltSHA256=digest(self.dolt),
+                       runnerSHA256=digest(Path(__file__)))
+        (self.output / "source.json").write_text(json.dumps(dict(binding, cohort=cohort), indent=2) + "\n")
         with contextlib.ExitStack() as servers:
             # Sequential package runs/provisioning; concurrency inside same-store tests remains exercised.
-            self.tests("./internal/graphpatch", "^Test", (self.root / "internal/graphpatch").glob("*_test.go"), "graphpatch")
-            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage",
-                       tuple("TestLinkUnlinkDefaultSourceReadBudget/" + engine + "/" + case
-                             for engine in ("embedded", "server")
-                             for case in ("id-default", "pair-default", "id-explicit")), groups=4)
-            self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
-            self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
-                       (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
-            self.tests("./internal/storage/issueops", "^TestPrepareIssueForInsertNormalizesOptionalTimestampsToUTC$",
-                       (self.root / "internal/storage/issueops").glob("prepare_timestamps_utc_test.go"), "utc-issueops")
-            self.tests("./internal/storage/domain/db", "^TestNormalizeIssueTimestampsConvertsOptionalTimestampsToUTC$",
-                       (self.root / "internal/storage/domain/db").glob("normalize_timestamps_utc_test.go"), "utc-db")
-            self.tests("./internal/types", "^TestNormalizeOptionalTimestampsToUTCCoversEveryPointerTimestamp$",
-                       (self.root / "internal/types").glob("types_test.go"), "utc-types")
-            self.tests("./internal/templates/agents", "^TestGraphPreview",
-                       (self.root / "internal/templates/agents").glob("*_test.go"), "agent-template")
-            self.tests("./cmd/bd/setup", "^TestGraphPreview", (self.root / "cmd/bd/setup").glob("graph_claude_test.go"), "graph-claude-setup")
-            self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
-                       ("TestGraphPreviewAgentInstructionsWorkflow/embedded/fresh",
-                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/shared-file",
-                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/skip-agents",
-                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/full-profile-refusal",
-                        "TestGraphPreviewAgentInstructionsWorkflow/server/fresh",
-                        "TestGraphPreviewAgentInstructionsWorkflow/server/shared-file",
-                        "TestGraphPreviewAgentInstructionsWorkflow/server/skip-agents",
-                        "TestGraphPreviewAgentInstructionsWorkflow/server/full-profile-refusal",
-                        "TestGraphPreviewUsabilityWorkflow/embedded", "TestGraphPreviewUsabilityWorkflow/server",
-                        "TestGraphPreviewClaudeStopWorkflow/embedded", "TestGraphPreviewClaudeStopWorkflow/server",
-                        "TestGraphPreviewClaudeStopAutoInit/embedded", "TestGraphPreviewClaudeStopAutoInit/server",
-                        "TestGraphPreviewClaudeStopAutoInitPreflight",
-                        "TestGraphPreviewClaudeStopAutoInitRefusalMessages/global-plugin", "TestGraphPreviewClaudeStopAutoInitRefusalMessages/claude-symlink",
-                        "TestGraphPreviewClaudeStopInstallFailure/embedded", "TestGraphPreviewClaudeStopInstallFailure/server",
-                        "TestGraphPreviewClaudeStopSkipAgentsAlone/embedded", "TestGraphPreviewClaudeStopSkipAgentsAlone/server",
-                        "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/embedded", "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/server",
-                        "TestGraphPreviewClaudeStopProfileRefusal/embedded/missing", "TestGraphPreviewClaudeStopProfileRefusal/embedded/minimal", "TestGraphPreviewClaudeStopProfileRefusal/embedded/stale",
-                        "TestGraphPreviewClaudeStopProfileRefusal/server/missing", "TestGraphPreviewClaudeStopProfileRefusal/server/minimal", "TestGraphPreviewClaudeStopProfileRefusal/server/stale",
-                        "TestGraphPreviewCompatibilityDefaultsWorkflow/embedded", "TestGraphPreviewCompatibilityDefaultsWorkflow/server",
-                        "TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
-                        "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
-                        "TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",
-                        "TestGraphPreviewIssueAssignmentWorkflow/embedded", "TestGraphPreviewIssueAssignmentWorkflow/server",
-                        "TestGraphPreviewMixedCoreWorkflow/embedded", "TestGraphPreviewMixedCoreWorkflow/server",
-                        "TestGraphPreviewMemoryDeleteWorkflow/embedded", "TestGraphPreviewMemoryDeleteWorkflow/server",
-                        "TestGraphPreviewQueryWorkflow/embedded", "TestGraphPreviewQueryWorkflow/server",
-                        "TestGraphPreviewMemoryReadsWorkflow/embedded", "TestGraphPreviewMemoryReadsWorkflow/server",
-                        "TestGraphPreviewPropertiesPatchWorkflow/embedded", "TestGraphPreviewPropertiesPatchWorkflow/server"),
-                       groups=3)
-            self.env["BDP_SPEC_AT_PIN"] = str(self.client_checkout / "docs/specs/bdp.md")
-            self.tests("./internal/httpapi/bdpwire", "^Test", (self.root / "internal/httpapi/bdpwire").glob("*_test.go"), "bdpwire")
-            self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
-                       ("TestAuthoritativeRecordsProjectToPublicWire/embedded", "TestAuthoritativeRecordsProjectToPublicWire/server"))
-            self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("graph_read*test.go"), "graph-http",
-                       ("TestGraphReadHTTPAuthorityAndSecurity/issue-priority-assignment",
-                        "TestGraphReadHTTPAuthorityAndSecurity/issue-append-notes",))
-            self.run([sys.executable, "-m", "unittest", "discover", "-s", "examples/bdp-read", "-p", "test_*.py"], "python-example-tests")
-            python_roots = sum(len(re.findall(r"^    def test_\w+\(", path.read_text(), re.MULTILINE))
-                               for path in (self.root / "examples/bdp-read").glob("test_*.py"))
-            python_result = (self.output / "python-example-tests.stderr").read_text()
-            require(python_roots > 0 and re.search(rf"Ran {python_roots} tests? in", python_result)
-                    and "skipped=" not in python_result, "Python example tests missing or skipped")
-            port = servers.enter_context(self.server("capture"))
-            self.capture("embedded", port)
-            self.capture("server", port)
-            # Per command < smoke total < this wrapper (SMOKE_*): the wrapper outlasts the smoke,
-            # so a command that outruns its deadline surfaces as the smoke's labelled failure.
-            argv, timeout = self.smoke_command(port)
-            self.run(argv, "bdp-http-capture", timeout=timeout,
-                     owned_groups=self.output / "http-owned-groups.jsonl")
-            verify_http_capture(self.output / "http", digest(self.bd))
-            http_summary = json.loads((self.output / "http/summary.json").read_text())
-            for field, relative in [("harness_sha256", "scripts/graph-bdp-read-smoke.py"),
-                                    ("client_harness_sha256", "scripts/graph-bdp-read-client.mjs"),
-                                    ("python_example_sha256", "examples/bdp-read/read_beads.py")]:
-                require(http_summary[field] == digest(self.root / relative), "HTTP capture source changed")
+            if cohort in ("all", "cli-http"):
+                self.tests("./internal/graphpatch", "^Test", (self.root / "internal/graphpatch").glob("*_test.go"), "graphpatch")
+            if cohort in ("all", "storage"):
+                self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage",
+                           tuple("TestLinkUnlinkDefaultSourceReadBudget/" + engine + "/" + case
+                                 for engine in ("embedded", "server")
+                                 for case in ("id-default", "pair-default", "id-explicit")), groups=8)
+            if cohort in ("all", "cli-http"):
+                self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
+                self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
+                           (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
+                self.tests("./internal/storage/issueops", "^TestPrepareIssueForInsertNormalizesOptionalTimestampsToUTC$",
+                           (self.root / "internal/storage/issueops").glob("prepare_timestamps_utc_test.go"), "utc-issueops")
+                self.tests("./internal/storage/domain/db", "^TestNormalizeIssueTimestampsConvertsOptionalTimestampsToUTC$",
+                           (self.root / "internal/storage/domain/db").glob("normalize_timestamps_utc_test.go"), "utc-db")
+                self.tests("./internal/types", "^TestNormalizeOptionalTimestampsToUTCCoversEveryPointerTimestamp$",
+                           (self.root / "internal/types").glob("types_test.go"), "utc-types")
+                self.tests("./internal/templates/agents", "^TestGraphPreview",
+                           (self.root / "internal/templates/agents").glob("*_test.go"), "agent-template")
+                self.tests("./cmd/bd/setup", "^TestGraphPreview", (self.root / "cmd/bd/setup").glob("graph_claude_test.go"), "graph-claude-setup")
+                self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
+                           ("TestGraphPreviewAgentInstructionsWorkflow/embedded/fresh",
+                            "TestGraphPreviewAgentInstructionsWorkflow/embedded/shared-file",
+                            "TestGraphPreviewAgentInstructionsWorkflow/embedded/skip-agents",
+                            "TestGraphPreviewAgentInstructionsWorkflow/embedded/full-profile-refusal",
+                            "TestGraphPreviewAgentInstructionsWorkflow/server/fresh",
+                            "TestGraphPreviewAgentInstructionsWorkflow/server/shared-file",
+                            "TestGraphPreviewAgentInstructionsWorkflow/server/skip-agents",
+                            "TestGraphPreviewAgentInstructionsWorkflow/server/full-profile-refusal",
+                            "TestGraphPreviewUsabilityWorkflow/embedded", "TestGraphPreviewUsabilityWorkflow/server",
+                            "TestGraphPreviewClaudeStopWorkflow/embedded", "TestGraphPreviewClaudeStopWorkflow/server",
+                            "TestGraphPreviewClaudeStopAutoInit/embedded", "TestGraphPreviewClaudeStopAutoInit/server",
+                            "TestGraphPreviewClaudeStopAutoInitPreflight",
+                            "TestGraphPreviewClaudeStopAutoInitRefusalMessages/global-plugin", "TestGraphPreviewClaudeStopAutoInitRefusalMessages/claude-symlink",
+                            "TestGraphPreviewClaudeStopInstallFailure/embedded", "TestGraphPreviewClaudeStopInstallFailure/server",
+                            "TestGraphPreviewClaudeStopSkipAgentsAlone/embedded", "TestGraphPreviewClaudeStopSkipAgentsAlone/server",
+                            "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/embedded", "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/server",
+                            "TestGraphPreviewClaudeStopProfileRefusal/embedded/missing", "TestGraphPreviewClaudeStopProfileRefusal/embedded/minimal", "TestGraphPreviewClaudeStopProfileRefusal/embedded/stale",
+                            "TestGraphPreviewClaudeStopProfileRefusal/server/missing", "TestGraphPreviewClaudeStopProfileRefusal/server/minimal", "TestGraphPreviewClaudeStopProfileRefusal/server/stale",
+                            "TestGraphPreviewCompatibilityDefaultsWorkflow/embedded", "TestGraphPreviewCompatibilityDefaultsWorkflow/server",
+                            "TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
+                            "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
+                            "TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",
+                            "TestGraphPreviewIssueAssignmentWorkflow/embedded", "TestGraphPreviewIssueAssignmentWorkflow/server",
+                            "TestGraphPreviewMixedCoreWorkflow/embedded", "TestGraphPreviewMixedCoreWorkflow/server",
+                            "TestGraphPreviewMemoryDeleteWorkflow/embedded", "TestGraphPreviewMemoryDeleteWorkflow/server",
+                            "TestGraphPreviewQueryWorkflow/embedded", "TestGraphPreviewQueryWorkflow/server",
+                            "TestGraphPreviewMemoryReadsWorkflow/embedded", "TestGraphPreviewMemoryReadsWorkflow/server",
+                            "TestGraphPreviewPropertiesPatchWorkflow/embedded", "TestGraphPreviewPropertiesPatchWorkflow/server"),
+                           # Keep this full CLI census in small sequential processes: the
+                           # 257-root three-group layout exhausted its 15m package alarm.
+                           groups=20)
+                self.env["BDP_SPEC_AT_PIN"] = str(self.client_checkout / "docs/specs/bdp.md")
+                self.tests("./internal/httpapi/bdpwire", "^Test", (self.root / "internal/httpapi/bdpwire").glob("*_test.go"), "bdpwire")
+                self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
+                           ("TestAuthoritativeRecordsProjectToPublicWire/embedded", "TestAuthoritativeRecordsProjectToPublicWire/server"))
+                self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("*_test.go"), "graph-http",
+                           ("TestGraphReadHTTPAuthorityAndSecurity/issue-priority-assignment",
+                            "TestGraphReadHTTPAuthorityAndSecurity/issue-append-notes",))
+                self.run([sys.executable, "-m", "unittest", "discover", "-s", "examples/bdp-read", "-p", "test_*.py"], "python-example-tests")
+                python_roots = sum(len(re.findall(r"^    def test_\w+\(", path.read_text(), re.MULTILINE))
+                                   for path in (self.root / "examples/bdp-read").glob("test_*.py"))
+                python_result = (self.output / "python-example-tests.stderr").read_text()
+                require(python_roots > 0 and re.search(rf"Ran {python_roots} tests? in", python_result)
+                        and "skipped=" not in python_result, "Python example tests missing or skipped")
+                port = servers.enter_context(self.server("capture"))
+                self.capture("embedded", port)
+                self.capture("server", port)
+                # Per command < smoke total < this wrapper (SMOKE_*): the wrapper outlasts the smoke,
+                # so a command that outruns its deadline surfaces as the smoke's labelled failure.
+                argv, timeout = self.smoke_command(port)
+                self.run(argv, "bdp-http-capture", timeout=timeout,
+                         owned_groups=self.output / "http-owned-groups.jsonl")
+                verify_http_capture(self.output / "http", digest(self.bd))
+                http_summary = json.loads((self.output / "http/summary.json").read_text())
+                for field, relative in [("harness_sha256", "scripts/graph-bdp-read-smoke.py"),
+                                        ("client_harness_sha256", "scripts/graph-bdp-read-client.mjs"),
+                                        ("python_example_sha256", "examples/bdp-read/read_beads.py")]:
+                    require(http_summary[field] == digest(self.root / relative), "HTTP capture source changed")
         require(not self.children, "owned child process remains")
-        (self.output / "summary.json").write_text(json.dumps(dict(commit=head, passed=self.counts,
-            installedCLICommands=10, engines=["embedded", "server"], childrenRemaining=0, bdpHTTP=True, pythonBDP=True), indent=2) + "\n")
+        phases = set().union(*COHORT_PHASES.values()) if cohort == "all" else COHORT_PHASES[cohort]
+        require(set(self.counts) == phases and all(n > 0 for n in self.counts.values()), "cohort phase census incomplete")
+        client = cohort in ("all", "cli-http")
+        (self.output / "summary.json").write_text(json.dumps(dict(binding, cohort=cohort, passed=self.counts,
+            installedCLICommands=10 if client else 0, engines=["embedded", "server"], childrenRemaining=0,
+            bdpHTTP=client, pythonBDP=client), indent=2) + "\n")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cohort", choices=("all", *COHORT_PHASES), default="all")
+    parser.add_argument("--combine-cohorts", type=Path)
     for name in ("bd", "dolt", "artifacts", "output", "bdp-checkout", "client-manifest", "node"):
-        parser.add_argument("--" + name, required=True)
+        parser.add_argument("--" + name)
+    args = parser.parse_args()
+    if args.combine_cohorts:
+        require(args.artifacts and args.output, "fan-in requires --artifacts and --output")
+        commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+        combine_cohorts(args.combine_cohorts, Path(args.artifacts), Path(args.output), commit, digest(Path(__file__)))
+        return
+    require(all(getattr(args, name) for name in ("bd", "dolt", "artifacts", "output", "bdp_checkout", "client_manifest", "node")),
+            "qualification requires all binary, runtime, artifact and client paths")
     def interrupted(signum, _frame):
         raise RuntimeError(f"qualification interrupted by signal {signum}")
 
     signal.signal(signal.SIGTERM, interrupted)
     signal.signal(signal.SIGINT, interrupted)
-    qualification = Qualification(parser.parse_args())
+    qualification = Qualification(args)
     try:
         qualification.execute()
     finally:

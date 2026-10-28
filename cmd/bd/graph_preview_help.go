@@ -13,7 +13,7 @@ bd todo list --all includes completed task Issues. bd todo done ID... closes
 any Issue, as in ordinary workspaces, with reason Completed unless --reason
 is supplied. Each unguarded ID is attempted independently; failed targets
 are reported to stderr while successful closes are returned.
-For one Issue, --if-revision TOKEN refuses a stale completion. List and add
+For one Issue, --if-revision =TOKEN refuses a stale completion. List and add
 JSON keep the familiar Issue shape with canonical beads/PATH IDs.
 
 Ordinary Issue workspaces:
@@ -27,10 +27,11 @@ Use bd versions ID to list one Memory, Issue or Link's retained versions newest
 first. Bare ID means beads/ID; use links/PATH for a Link. Every new graph
 Resource has a creation version; do not enable ordinary versioned-history
 recording for this command. Cite the opaque version token with bd show ID
---version TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
+--revision =TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
 local_revision only orders versions within this store. --json names that field
 local_revision, matching ordinary bd versions. BDP HTTP History is unavailable.
-A removed Link lists only its prior citable versions; deletion adds no version.
+The human SEQ timeline includes terminal deletion events, which are not live
+snapshots. --long includes exact tokens; ID@N selects a live snapshot locally.
 
 Ordinary Issue workspaces:
 ` + versionsCmd.Long
@@ -49,7 +50,7 @@ Use bd defer ID... to defer one or more Issues. --until accepts ordinary bd
 date and relative-time forms; an undated defer stays deferred until restored.
 --reason appends to Issue notes. A later bd ready wakes due Issues, recording
 one native and graph version per changed Issue. A repeated dateless defer is a
-no-op when neither date nor notes change. Use --if-revision TOKEN for a
+no-op when neither date nor notes change. Use --if-revision =TOKEN for a
 single-Issue stale-write check. Without it, the current revision is accepted.
 
 Ordinary Issue workspaces:
@@ -57,7 +58,7 @@ Ordinary Issue workspaces:
 	undeferCmd.Long = `Graph preview workspaces:
 Use bd undefer ID... to restore one or more deferred Issues to open. It also
 clears a stale defer date on a non-deferred Issue. A repeated undefer is a
-no-op if nothing changes. Use --if-revision TOKEN for a single-Issue
+no-op if nothing changes. Use --if-revision =TOKEN for a single-Issue
 stale-write check. Without it, the current revision is accepted.
 
 Ordinary Issue workspaces:
@@ -78,58 +79,90 @@ Ordinary Issue workspaces:
 The Scope URL names local identities; it does not start a web server.
 --server --external selects an ordinary shared Dolt server; otherwise storage
 is embedded. Existing .beads directories are never adopted or overwritten.`},
-		{rememberCmd, `Store a Memory with bd remember 'Policy text' [--id policy]
+		{rememberCmd, `Store a Memory with bd remember 'Policy text' [--id policy-note]
 [--title 'Policy'] [--metadata '{"team":"docs"}']. Alternatively,
 --properties '{"title":"Policy"}' initializes the typed Memory property;
 do not supply the same field with both --properties and a shorthand flag.
-Metadata is a JSON object separate from Memory title/body properties. An omitted ID is generated; an omitted creation title
-summarizes the body. With --id, an unused ID creates and an existing Memory
-updates in place, as ordinary bd remember --key does. Bare policy means
-canonical beads/policy. Graph Memories use canonical IDs, not legacy keys.
+bd memory remember is the same operation with the same flags and output.
+Metadata is a JSON object separate from Memory title/body properties. An
+omitted ID is generated; an omitted creation title summarizes the body. With --id, an unused ID creates and an existing Memory
+updates in place, as ordinary bd remember --key does. With Scope
+https://example.test/work/, policy-note selects
+https://example.test/work/policy-note. Graph Memories use canonical IDs,
+not legacy keys.
 
-To refuse any previously allocated ID, add --create-only with --id.
+To refuse any previously allocated ID, add --create-only with --id. With
+--create-only, --type NAME selects an installed Memory refinement;
+otherwise creation uses plain Memory. Existing retyping uses bd update.
 To require an existing Memory, keep using --update instead of --id:
-  bd remember 'Revised policy' --id policy
-  bd remember 'Revised policy' --update policy
-  bd remember --update policy --title 'New title'
-Omitted fields remain unchanged on update. Use --body-file PATH or --stdin
+  bd remember 'Revised policy' --id policy-note
+  bd remember 'Revised policy' --update policy-note
+  bd remember --update policy-note --title 'New title'
+--update retains literal Memory-ID semantics, including raw @; it does not
+parse revision suffixes. The selected bd update targets refuse revision suffixes.
+Omitted fields remain unchanged on update. --body TEXT (including empty),
+--title TEXT, and --status TEXT update only the named Memory fields. Status
+must be nonblank. Use --body-file PATH or --stdin
 instead of positional body text. An existing-ID update accepts the current
-revision by default; add --if-revision TOKEN to reject a stale update. Read
-the token with bd show policy --json. --replace-properties JSON replaces all
+revision by default; add --if-revision =TOKEN to reject a stale update. Read
+the token with bd show policy-note --json. --replace-properties JSON replaces all
 Memory properties where the Type permits it, and --replace-metadata JSON
 replaces all metadata; {} clears the selected document.`},
 		{memoriesCmd, `Search Memory titles and bodies with bd memories [SEARCH].
 Use --all for a complete bounded result, --details for version/Link counts,
 or --format records-json for machine-readable summaries. --json is unavailable;
 use bd recall ID for the exact body.`},
-		{recallCmd, `Use bd recall ID for one exact Memory body. --version TOKEN
+		{recallCmd, `Use bd recall ID for one exact Memory body. --revision =TOKEN
 selects a retained body; use bd show ID --json for the record. Graph
 recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id ID.
 Without --id, the canonical beads/ path uses the Issue ID allocated by the
 ordinary writer, including this workspace's configured prefix and ID mode.
-An explicit --id keeps exactly the requested canonical path.
+An explicit --id ID keeps the entire spelling as the native Issue ID, even
+when it contains slashes, and maps it to beads/ID. It must match the
+workspace's configured Issue prefix unless --force overrides that shipping
+check. Use --graph-path beads/PATH to select only a graph path and generate
+the native Issue ID separately. --id and --graph-path cannot be combined.
 On a fresh graph workspace, --parent ID creates a dotted child ID
 and its parent-child Link in one transaction. The parent must be a local Issue;
 the child inherits its labels unless --no-inherit-labels is set. --parent and
---id cannot be combined.
+--id or --graph-path cannot be combined with --parent.
 --metadata accepts one JSON object on Issue or Memory creation; omitted
 metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as
 Issue description or Memory body. It may accompany shorthand flags only when
 they supply different fields; duplicate fields refuse.
-Use --type preview-memory to create a Memory instead:
-  bd create --type preview-memory --id policy --body 'Code flow policy'
-Use bd types to see Bead Types installed in this workspace. A short NAME,
-types/NAME, or a full local Type URL works. --type also accepts an Issue
-classification (for example task or bug); the CLI selects preview-issue for it. Memory creation
+Use --type memory to create a Memory instead:
+  bd create --type memory --id policy-note --body 'Code flow policy'
+Use bd types to see Bead Types installed in this workspace. Use NAME
+or a full local Type URL for nominal Types. Bare names select Issue
+classifications (for example task or bug); the CLI selects that concrete Type for them. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
-fields refuse. Fresh workspaces create types/preview-issue Issues.`},
-		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
-Issue; use bd show links/ID for a Link. --version TOKEN selects one exact
-retained record; this is not an ordered history listing. A current Issue's
+fields refuse. Fresh workspaces create task Issues by default.`},
+		{showCmd, `Use bd show ID or bd show --id ID (equivalent to beads/ID) for a current Memory or
+Issue; use bd show links/ID for a Link. Multiple positional/--id operands
+show current Issues in the supplied order, with ordinary Issue JSON or human
+details. Memory, Link, exact-version and graph-json reads remain single-ID.
+--refs shows incoming Issue references, grouped by relationship; --children
+shows only parent-child references. Both accept current Issue IDs and retain
+the familiar human view or Issue-ID-keyed JSON object.
+--watch follows one current Issue, redrawing its human detail view when that
+Issue changes; stop it with Ctrl+C.
+--current selects the actor's first in-progress Issue, then hooked Issue, then
+the last-touched Issue; it cannot combine with an explicit ID.
+ID@N selects the stable store-local revision number N. ID@=TOKEN or
+'[URL]@=TOKEN' selects one exact retained record; --revision N or
+--revision =TOKEN is an alternative (not both). @current reads current. Unwrapped URL forms containing :// are
+literal, including raw @; use the full canonical Scope URL to escape local
+@ shorthand. Colon-only forms such as plan:v1@=TOKEN use local syntax.
+Bracketed operands require canonical HTTP(S) Scope URLs, not opaque URIs.
+Suffixes are rejected on the selected update and deletion targets; use
+--if-revision for write comparison. The flag forms require a positive local
+ordinal N or =TOKEN; a bare token and current are not flag values.
+Endpoint pins remain unavailable. This is not an ordered history listing.
+A current Issue's
 --json uses the ordinary detail array with Scope-relative Bead IDs and its
-graph revision token. Memory, Link, and exact --version reads use the
+graph revision token. Memory, Link, and exact --revision reads use the
 experimental graph envelope; --format graph-json explicitly requests that
 envelope for a current Issue too. graph-json is not a BDP Resource format.
 Showing an Issue makes it the last-touched Issue for interactive update/close;
@@ -138,7 +171,7 @@ showing a Memory or Link does not.`},
 edits. --properties JSON shallowly merges named top-level properties on an
 Issue, Memory, or informational Link, preserving omitted keys. The same flag
 initializes properties on bd create and bd remember. For example:
-  bd update policy --properties '{"body":"Revised text"}' --if-revision TOKEN
+  bd update policy --properties '{"body":"Revised text"}' --if-revision =TOKEN
 An empty merge object is a no-op. --replace-properties JSON replaces all
 writable properties, and --replace-metadata JSON replaces all metadata; {}
 clears the selected document where the Type allows it. The replacement flags
@@ -153,15 +186,31 @@ metadata-only update uses the same Resource and owning-source guards.
 Generic updates accept the current state when --if-revision is omitted.
 Informational Links owned by a Memory may also use --if-source-revision TOKEN;
 without it, the current source is
-accepted. Native Dependency properties and metadata are not editable here. Issue scalar
+accepted. --source-revision TOKEN and --target-revision TOKEN re-pin an
+informational Link without changing its ID or endpoint identities. Use current
+to resolve an exact pin inside the transaction or unpinned to float it; omission
+preserves the existing pin. Pins can combine atomically with properties and
+metadata. Owned-source pins remain unavailable. Native Dependency properties and metadata are not editable here. Issue scalar
 edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
-unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},
-		{deleteCmd, `For an unreferenced Memory, bd delete ID previews the
-deletion without writing. Apply with --force; --if-revision TOKEN optionally
-rejects stale state. Referenced Memories refuse; graph deletion does not cascade.`},
+unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.
+Multiple Issue IDs accept the same scalar/property edit per ID in input order:
+successful edits remain committed after a sibling fails, and any failure exits
+nonzero. A single --if-revision cannot guard multiple IDs; update them
+separately. Multi-ID reparent, retype, claim and historical edits are unavailable.
+On a fresh graph workspace, bd update CHILD --parent PARENT replaces the
+native parent-child edge and its canonical Link in one checked write.
+Admitted scalar edits can accompany the move, and same-parent scalar edits
+preserve the Link identity. The parent must be a nonempty local Issue;
+detaching is unavailable.`},
+		{deleteCmd, `bd delete ID previews a Memory or Issue without writing.
+Multiple Issue IDs and --from-file select a checked Issue set; --cascade
+includes dependent Issues. Apply with --force, or keep any delete request
+read-only with --dry-run. --if-revision =TOKEN optionally rejects stale
+single-Issue state. Referenced Memories refuse and remain single-ID;
+dotted native Issue IDs refuse set deletion pending citation qualification.`},
 		{forgetCmd, `Use bd forget ID to delete one unreferenced Memory now.
-Add --if-revision TOKEN to reject stale state. Canonical IDs are retained and
+Add --if-revision =TOKEN to reject stale state. Canonical IDs are retained and
 incident Links prevent deletion; no cascade is performed.`},
 		{depCmd, `Use bd dep BLOCKER --blocks BLOCKED to create a blocking
 Dependency between two live Issues. Bare bd dep prints help; the ordinary
@@ -176,35 +225,48 @@ the second positional argument. For a single edge, --no-cycle-check only
 suppresses a post-add warning; the domain writer still validates cycles.
 bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
-in this preview.`},
+in this preview. Native dep operands retain literal Issue-ID semantics,
+including @; bd link parses the selected endpoint revision syntax, but exact
+pins and @current are supported for local informational Links. Native
+Dependency endpoints remain floating.`},
 		{depRemoveCmd, `Use bd dep remove issue blocker (or bd dep rm) to
 remove one local blocking Dependency by its Issue pair. An absent pair is a
 successful no-op and reports status not_found with --json. A real removal
 records one native dependency_removed event and one source Issue version;
 the target Issue is unchanged. Bare native Issue IDs are accepted when their
 graph path is unambiguous; use explicit beads/PATH if a different Bead claims
-that bare name. For Link-ID removal use bd link delete ID --force.`},
+that bare name. These native pair operands retain literal Issue-ID semantics,
+including @. For Link-ID removal use bd link delete ID --force.`},
 		{linkCmd, `The canonical graph Link namespace is bd link
 create/list/show/update/delete/versions/compare/count. Create requires
---type and SOURCE TARGET (or --source and --target); list and count query complete current
+--type and SOURCE TARGET (or SOURCE --to TARGET, or --from SOURCE --to TARGET); list and count query complete current
 Link collections within the preview's advertised bounds. Delete previews
 by default and --force applies the checked mutation.
 
 Without --type, bd link SOURCE TARGET creates the ordinary
-blocking Dependency between two live Issues. To create any native Dependency
+blocking Dependency between two live Issues. In graph workspaces this form
+also parses the selected revision syntax for informational Links; exact local
+pins and @current are supported, while native Dependency endpoints remain
+floating. bd dep add/remove keep literal Issue IDs, so the input
+syntaxes are not interchangeable. To create any native Dependency
 kind through the canonical namespace, use
-  bd link create --type blocks --source ISSUE --target ISSUE
+  bd link create --type blocks --from ISSUE --to ISSUE
 Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.
 For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
-  bd link policy work --type types/example-cites
+  bd link policy-note work --type references
 Use bd types to see Link Types installed in this workspace. --type
-accepts a built-in Dependency kind, types/NAME or a full local Type URL. An optional --id
+accepts a built-in Dependency kind, NAME or a full local Type URL. An optional --id
 selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
---if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
+--if-source-revision TOKEN to reject a stale source. Endpoint @unpinned suffixes
+or --source-revision unpinned/--target-revision unpinned keep endpoints floating.
+Exact endpoint revisions persist on local informational Links; current resolves
+an exact pin inside the writer transaction. Owned-source pins remain unavailable.
+Native Dependency endpoints remain floating. Endpoint selectors are separate
+from --if-source-revision. --metadata JSON supplies
 an initial open metadata object for informational Links; native Dependencies
-do not accept it. The single Type types/preview-dependency
+do not accept it. The abstract Dependency family
 requires Issue endpoints. Add --if-source-revision TOKEN to reject a stale source.`},
 		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason
 applies to all IDs; repeat it once per ID for positional reasons, or use
@@ -212,14 +274,15 @@ applies to all IDs; repeat it once per ID for positional reasons, or use
 positional reason. A batch reports successful Issues on stdout and per-Issue
 failures on stderr, then exits nonzero if any failed. --force bypasses pinned,
 holder, blocker and open-child policy; --session (or CLAUDE_SESSION_ID) records
-the closing session. On one Issue, --if-revision TOKEN from bd show --json
+the closing session. On one Issue, --if-revision =TOKEN from bd show --json
 rejects a stale close, including an already-closed retry. It cannot be used
 with multiple IDs, --suggest-next or --claim-next. Without it, close accepts
 the current revision. On one Issue, --suggest-next lists Issues that closing it
 newly unblocks, without claiming them. --claim-next atomically claims the
 highest-priority ready Issue when at least one close lands; an already-closed
-retry earns no new claim. A mixed batch keeps its successful closes and claim
-even when another ID refuses. Without an ID, interactive close uses the
+retry earns no new claim. A missing ID aborts a batch before any close or
+claim; other per-Issue policy refusals may keep successful closes and a claim.
+Without an ID, interactive close uses the
 last-touched Issue; scripts require an ID unless BD_LAST_TOUCHED_FALLBACK=1
 explicitly enables the fallback. Gate evaluation, --continue, molecule
 advancement and remote-routing forms remain unavailable.`},
@@ -250,19 +313,33 @@ of all installed Bead Types and lists every Memory and every Issue the
 ordinary bd list would show, newest recorded change first. Closed and pinned
 Issues are hidden unless --all is given; --all also removes the row limit.
 Each human row shows the local ID and kind; an Issue row also shows its
-status and priority. Use --type types/NAME to narrow by Bead Type.
+status and priority. Use --type NAME to narrow by Bead Type.
 --limit returns a prefix with hasMore, not a continuation cursor. A positive
 BEADS_MAX_ROWS refuses a page of more Beads than that.
-Issue-specific filters (--status, --type, --title, --title-contains,
+Issue-specific filters (--status, --type, --id, --title, --title-contains,
 --priority, --priority-min, --priority-max, --assignee, --no-assignee,
---label, --label-any, --exclude-label, --pinned, --no-pinned, --due-before,
---due-after, --overdue, --sort, --reverse) or a matching configured
+--label, --label-any, --exclude-label, --pinned, --no-pinned, --parent, --no-parent, --ready, --due-before,
+--due-after, --overdue, --sort, --reverse, --long) or a matching configured
 directory label switch to the existing Issue query: Issues only, closed and
 pinned Issues omitted unless --all or a filter selects them, quoted rows
 with status and priority, and a line under the header saying Memories are
-not listed. An Issue filter cannot be combined with a non-Issue --type;
+not listed. --id accepts native Issue IDs and exact beads/PATH IDs as a
+comma-separated or repeated set, before the result limit. --parent ID
+accepts direct parent-child edges and edge-less dotted children by graph ID;
+use it with --flat, --json, or --format records-json for direct children.
+Without an output switch, --parent renders the complete bounded recursive tree. An Issue
+filter cannot be combined with a non-Issue --type;
 a configured directory label alone does not refuse one, it is simply not
-applied to Memories. Tree output is unavailable. --json returns the ordinary
+applied to Memories. --no-parent selects Issues without a parent-child edge,
+including edge-less dotted IDs.
+--ready uses the blocker-aware Issue query, defaults to open Issues, and
+refuses filters that query cannot honor. With --parent it selects transitive
+Issue descendants and prints a flat ready list, as ordinary bd list does.
+--sort accepts priority, created, updated, closed,
+title, status, type, id and assignee; id orders canonical local Bead IDs
+before the result limit. --tree=false selects
+the same flat output as --flat. --long uses the ordinary detailed Issue
+presentation. --json and --format json return the ordinary
 Issue-only array; use --format records-json for generic Bead records.`},
 		{searchCmd, `Search current graph Issues by title or canonical local Bead ID.
 Results include closed Issues unless --status narrows them. --json returns the
@@ -291,18 +368,35 @@ OR and NOT parent forms follow native query refusals. mol_type and ephemeral
 predicates are unavailable in graph preview.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
-		{graphCmd, `Use bd graph ISSUE for the current blocking Dependency view,
-or bd graph check for a flat consistency report. --view generic traverses
-the current graph with --direction, --depth, --max-nodes and --max-links.
-Legacy visualization modes are unavailable.`},
+		{graphCmd, `Use bd graph BEAD or bd graph --all in a link workspace.
+The default Link selector is Dependency, including its refinements, exactly
+as --link-type Dependency. Use --exact-link-type NAME for only the declared
+Type, or --link-type any for all Link Types. Repeat either Type flag for an
+OR union. Excluded Link Types cannot bridge the traversal. When the default
+Dependency selection omits other Types encountered at reached Beads, a notice
+is written to stderr; it does not inspect unrelated components.
+One --direction in|out|both (default both) and --depth (default 1000) apply
+to a named-root selection. --all refuses explicit --depth/--direction. Depth counts Link hops to select Beads; every matching
+Link between selected Beads is displayed, including parallels and cycles.
+A depth-limit explanation identifies where traversal stopped. Node/Link bounds refuse on
+exhaustion. Acquisition remains a complete bounded current inventory (at most
+1000 Resources / 16 MiB; serialized output at most 16 MiB), not scalable or arbitrary historical traversal.
+Authored endpoint revision pins remain visible; adjacent Beads are current
+records and are not silently substituted for those pinned revisions.
+--all with only the Dependency-family selector retains open Issues, including
+isolates. Other selections, including --exact-link-type Dependency, show matching
+Link endpoints without unrelated isolates. A named root stays visible without matching Links. --open remains unavailable in link mode; dependency mode retains its existing view. --json carries complete canonical Beads/Links
+and separate traversal metadata; --dot, --html, --compact and --box also work.
+--view generic is optional/deprecated. bd graph check retains its existing
+blocking-dependency consistency report.`},
 		{statusCmd, `Use bd status for ordinary Issue statistics in this workspace.
 Use bd status --graph to inspect graph capabilities and limits.`},
 		{typesCmd, `Use bd types to list the Bead and Link Types actually installed
-in this workspace, grouped by category. The displayed types/NAME IDs are
+in this workspace, grouped by category. The displayed NAME IDs are
 accepted by --type on the matching command. Add --details to show each complete
 persisted Type descriptor. --json returns the full descriptors as structured
 data. Built-in Issue and Dependency values such as task and blocks also work
-with --type, but are not separate installed graph Types in this preview;
+with --type, and are separate installed concrete graph Types;
 --sections is unavailable in graph preview workspaces.`},
 	} {
 		entry.cmd.Long += "\n\nGraph preview workspaces:\n" + entry.text

@@ -1,0 +1,455 @@
+{
+  "base": "c67855b4f7c1e4fb24409eb22d142a52d19ab92f",
+  "baseTree": "c3e6ad67d31e92a30ee5f88691ffcfc895e21e4c",
+  "exportSource": "1304d1498638989ab50f1781c91747f81ec61b88",
+  "originalExportBase": "76fde9c9cb0865d430bf12d76fc473490f51128a",
+  "branch": "codex/iris-graph-export-c678",
+  "checkout": "/Users/dbox/repos/wt/iris/graph-export-c678",
+  "paths": [
+    {
+      "path": "engdocs/design/graph-export-milestone.md",
+      "sourceSHA256": "49bf5e834a741efde27a1d6bf832758f6454bd277616b659607e7c84ebc1f74d",
+      "adaptedSHA256": "49bf5e834a741efde27a1d6bf832758f6454bd277616b659607e7c84ebc1f74d",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-plan/README.md",
+      "sourceSHA256": "b4362c8643c1d79d3081b41e08e02cce30cec5c1463ea041089f48e7b79b4c26",
+      "adaptedSHA256": "b4362c8643c1d79d3081b41e08e02cce30cec5c1463ea041089f48e7b79b4c26",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-plan/claude.txt",
+      "sourceSHA256": "a05f8070961f8eab68d687ef0003c40555ef8f85abe7d2837f35a793b87f03ed",
+      "adaptedSHA256": "a05f8070961f8eab68d687ef0003c40555ef8f85abe7d2837f35a793b87f03ed",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-plan/native.txt",
+      "sourceSHA256": "7cec7b2c461a20ccacacc379fb8636d301948a8f4da5bd4b90a4a3cd30bd2ada",
+      "adaptedSHA256": "7cec7b2c461a20ccacacc379fb8636d301948a8f4da5bd4b90a4a3cd30bd2ada",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/README.md",
+      "sourceSHA256": "fb051a63545cde1b8a2b11f2cedf51afac22f340b8848899de12ea2fdd50aa89",
+      "adaptedSHA256": "fb051a63545cde1b8a2b11f2cedf51afac22f340b8848899de12ea2fdd50aa89",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/claude-final.txt",
+      "sourceSHA256": "e6ef20dd9e63bf50b329d8c09830e7a27efdeb77a74cec4be5ad4714a5fc2b43",
+      "adaptedSHA256": "e6ef20dd9e63bf50b329d8c09830e7a27efdeb77a74cec4be5ad4714a5fc2b43",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/claude-initial.txt",
+      "sourceSHA256": "3872dc4e6a511a8f948cf00b6787bd1f8951a8fddf641b4752f0be76a9823e94",
+      "adaptedSHA256": "3872dc4e6a511a8f948cf00b6787bd1f8951a8fddf641b4752f0be76a9823e94",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/dispositions.md",
+      "sourceSHA256": "dc3bb50f9284801bf75578a6b52d2df349a6ec125670a587e3c2f8b2f64da06e",
+      "adaptedSHA256": "dc3bb50f9284801bf75578a6b52d2df349a6ec125670a587e3c2f8b2f64da06e",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/docs.log",
+      "sourceSHA256": "81ad50d96eecd8cac33b6359aa995a806ba9f7bab497b3ef9884889aa2cf1f69",
+      "adaptedSHA256": "81ad50d96eecd8cac33b6359aa995a806ba9f7bab497b3ef9884889aa2cf1f69",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/final-comment-hashes.txt",
+      "sourceSHA256": "d33e4e6a82228771fd164049b5cc7720bf62f4a99340cc7eea744b45faf85bd5",
+      "adaptedSHA256": "d33e4e6a82228771fd164049b5cc7720bf62f4a99340cc7eea744b45faf85bd5",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/final-docs.log",
+      "sourceSHA256": "3801f11c3dd8a7c696ee9d29cc12fd7ef246e4026ffbfc44a27de39cded2b981",
+      "adaptedSHA256": "3801f11c3dd8a7c696ee9d29cc12fd7ef246e4026ffbfc44a27de39cded2b981",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/final-lint.log",
+      "sourceSHA256": "bf4bfc217eef0a065c02e7e2a8235af0173292d709b8326c0b6c918ceef8a0d8",
+      "adaptedSHA256": "bf4bfc217eef0a065c02e7e2a8235af0173292d709b8326c0b6c918ceef8a0d8",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/final-manifest.txt",
+      "sourceSHA256": "870eb202549fa72038cf91b32712c4059fb864478db73f170a797cbaece059b4",
+      "adaptedSHA256": "870eb202549fa72038cf91b32712c4059fb864478db73f170a797cbaece059b4",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/final-native.txt",
+      "sourceSHA256": "7b54cbe1422a82b4cadc9a37ade187c310427460d2f543201b83a3583a127651",
+      "adaptedSHA256": "7b54cbe1422a82b4cadc9a37ade187c310427460d2f543201b83a3583a127651",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/final-prompt.txt",
+      "sourceSHA256": "0b9e69e60e621b53d246e644bba71e8db1a54498fce0786d332c296604a381bd",
+      "adaptedSHA256": "0b9e69e60e621b53d246e644bba71e8db1a54498fce0786d332c296604a381bd",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/final-pure-umask077.log",
+      "sourceSHA256": "14e7e85086c7917b7f24bbaf28b58a23c3b4288c5b9bea124a010bd50093d8aa",
+      "adaptedSHA256": "14e7e85086c7917b7f24bbaf28b58a23c3b4288c5b9bea124a010bd50093d8aa",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/lint.log",
+      "sourceSHA256": "ace7b201f3fe4ec1e92f507af32f8352b2f1133e359fea411136c85c244c000f",
+      "adaptedSHA256": "ace7b201f3fe4ec1e92f507af32f8352b2f1133e359fea411136c85c244c000f",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/manifest.txt",
+      "sourceSHA256": "5afc0b89fe1de9e3b895eb813e134f461106396f112436a4d364934734a50b3c",
+      "adaptedSHA256": "5afc0b89fe1de9e3b895eb813e134f461106396f112436a4d364934734a50b3c",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/native.txt",
+      "sourceSHA256": "1db78774b53534c1bc6f894dbd89eab1e0d6337e814c3c010d9e9e45049b99c9",
+      "adaptedSHA256": "1db78774b53534c1bc6f894dbd89eab1e0d6337e814c3c010d9e9e45049b99c9",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/prompt.txt",
+      "sourceSHA256": "d8366b5d68bbad432067c8bef8980803afb94d5c546711cb8d628c896542aae7",
+      "adaptedSHA256": "d8366b5d68bbad432067c8bef8980803afb94d5c546711cb8d628c896542aae7",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/pure.log",
+      "sourceSHA256": "98f5188de172219e99a581a215f5758abcbab893131d75eca8dc6fb2758c122c",
+      "adaptedSHA256": "98f5188de172219e99a581a215f5758abcbab893131d75eca8dc6fb2758c122c",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/source-sync-2026-10-17/README.md",
+      "sourceSHA256": "1e28b632893ae9cce72876db12c633054a4471231b87dad1e62b680a9f33bed9",
+      "adaptedSHA256": "1e28b632893ae9cce72876db12c633054a4471231b87dad1e62b680a9f33bed9",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/source-sync-2026-10-17/manifest.json",
+      "sourceSHA256": "74eeff5b133ca843cc2cfe0c41e839401989b8103f684971e714ddd2bfb5522e",
+      "adaptedSHA256": "74eeff5b133ca843cc2cfe0c41e839401989b8103f684971e714ddd2bfb5522e",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/source-sync-2026-10-17/pure.log",
+      "sourceSHA256": "614dfd60f2010394758bc682798029011efa1d6c0f4296d5f2241e0a01e1dffa",
+      "adaptedSHA256": "614dfd60f2010394758bc682798029011efa1d6c0f4296d5f2241e0a01e1dffa",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/source-sync-2026-10-18/README.md",
+      "sourceSHA256": "d02a5ba42a5ee53fb458f9f88636a09bb76923bdca58c41db241f86874139b9a",
+      "adaptedSHA256": "d02a5ba42a5ee53fb458f9f88636a09bb76923bdca58c41db241f86874139b9a",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/source-sync-2026-10-18/manifest.json",
+      "sourceSHA256": "51e5e9776235430089d6102470185178dd294058c451c289c228bd9c03147ba7",
+      "adaptedSHA256": "51e5e9776235430089d6102470185178dd294058c451c289c228bd9c03147ba7",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-publication/source-sync-2026-10-18/pure-tests.jsonl",
+      "sourceSHA256": "2bc17b9cad3b81578c92739e6bdc66616d44713c9a7059526bf2aff5b4229665",
+      "adaptedSHA256": "2bc17b9cad3b81578c92739e6bdc66616d44713c9a7059526bf2aff5b4229665",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/README.md",
+      "sourceSHA256": "b6a72d20fc60b932c0bebc64a7d43f262f66e93613bc9afc290b473da9487012",
+      "adaptedSHA256": "b6a72d20fc60b932c0bebc64a7d43f262f66e93613bc9afc290b473da9487012",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/cleanup-child.log",
+      "sourceSHA256": "b605bcf984f8881f72f3e6f400672e177dd660b2b4e16a55e7ac8e1893ec4ec4",
+      "adaptedSHA256": "b605bcf984f8881f72f3e6f400672e177dd660b2b4e16a55e7ac8e1893ec4ec4",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/README.md",
+      "sourceSHA256": "74e9d21ed58df15f1ab1a47fabbf6e9d7f6ea16c8cf8665a374e4b7810cafef8",
+      "adaptedSHA256": "74e9d21ed58df15f1ab1a47fabbf6e9d7f6ea16c8cf8665a374e4b7810cafef8",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/delta-external-review.txt",
+      "sourceSHA256": "b0c69943896238a93bc9e3918ee8b3a0b81206caa1f34296b33eaad150b089ae",
+      "adaptedSHA256": "b0c69943896238a93bc9e3918ee8b3a0b81206caa1f34296b33eaad150b089ae",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/delta-review-completed.json",
+      "sourceSHA256": "20ce3399e11845bbb68a7488c50a7d08af4136a5ac8584c7610195959df2d818",
+      "adaptedSHA256": "20ce3399e11845bbb68a7488c50a7d08af4136a5ac8584c7610195959df2d818",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/delta-review-manifest.json",
+      "sourceSHA256": "3a47db1fbbb26a4e2f9d69e212402e34c76c69a59e50c29550f42775b74159b6",
+      "adaptedSHA256": "3a47db1fbbb26a4e2f9d69e212402e34c76c69a59e50c29550f42775b74159b6",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/delta-review-prompt.txt",
+      "sourceSHA256": "2d312c3239fd15a69d11e4cbb01bbff5cda3a7f115c4981ce0626492f3c4bd03",
+      "adaptedSHA256": "2d312c3239fd15a69d11e4cbb01bbff5cda3a7f115c4981ce0626492f3c4bd03",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/full-external-review.txt",
+      "sourceSHA256": "8b41d86c97d4df2ba19cda1a66a69061aa1d0151ea36f2a70f995961c1456524",
+      "adaptedSHA256": "8b41d86c97d4df2ba19cda1a66a69061aa1d0151ea36f2a70f995961c1456524",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/full-review-manifest.txt",
+      "sourceSHA256": "70f049093877643ea91efcd4bb61f40a79fd5d93f57804c72dd3e8bcb6c320ff",
+      "adaptedSHA256": "70f049093877643ea91efcd4bb61f40a79fd5d93f57804c72dd3e8bcb6c320ff",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/lint.log",
+      "sourceSHA256": "e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47",
+      "adaptedSHA256": "e92606b0bf483111dff0a120c315ea165821348f31365020e2468a0059095c47",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/manifest.json",
+      "sourceSHA256": "9f7311dd87a14f63b9794b949bb4ac7cd493468082fbda301299310e6c397b8a",
+      "adaptedSHA256": "9f7311dd87a14f63b9794b949bb4ac7cd493468082fbda301299310e6c397b8a",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/native-delta-review.txt",
+      "sourceSHA256": "917c4e3fdb7c1ce916c5ec160b28628c09d971cfd1fa3fbe353ad0652680e0a9",
+      "adaptedSHA256": "917c4e3fdb7c1ce916c5ec160b28628c09d971cfd1fa3fbe353ad0652680e0a9",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/pure-feed-tests.jsonl",
+      "sourceSHA256": "61361df51eb003ec5c9e0859be4cee4f6fe2fee9d4d086bbe2d6099da4e88369",
+      "adaptedSHA256": "61361df51eb003ec5c9e0859be4cee4f6fe2fee9d4d086bbe2d6099da4e88369",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/council-2026-10-18/pure-tests.jsonl",
+      "sourceSHA256": "37d8005be2450b4cbcdc96226b37411de18ab995bf9c75aaf6fc01d4293ccded",
+      "adaptedSHA256": "37d8005be2450b4cbcdc96226b37411de18ab995bf9c75aaf6fc01d4293ccded",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/docs.log",
+      "sourceSHA256": "c0f53246dae2d0e7d99163ce95ec4dc1ebd486161f249c322afffe6f9056cfcf",
+      "adaptedSHA256": "c0f53246dae2d0e7d99163ce95ec4dc1ebd486161f249c322afffe6f9056cfcf",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/final-docs.log",
+      "sourceSHA256": "ac619625a8342dea1d83c84c9ac4a0aefc4c741c7c323dd1d1902906bdb34dde",
+      "adaptedSHA256": "ac619625a8342dea1d83c84c9ac4a0aefc4c741c7c323dd1d1902906bdb34dde",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/final-lint.log",
+      "sourceSHA256": "aea52a279b7a7ced809264d8955a7a7b2e71898ea42782d59d5ae25b83f10401",
+      "adaptedSHA256": "aea52a279b7a7ced809264d8955a7a7b2e71898ea42782d59d5ae25b83f10401",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/final-manifest.txt",
+      "sourceSHA256": "70f049093877643ea91efcd4bb61f40a79fd5d93f57804c72dd3e8bcb6c320ff",
+      "adaptedSHA256": "70f049093877643ea91efcd4bb61f40a79fd5d93f57804c72dd3e8bcb6c320ff",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/final-native.txt",
+      "sourceSHA256": "8e665ceb93ac3aaf16a8560e9d4ac5aa9c97aed1a64640f918cf91434d3d35a2",
+      "adaptedSHA256": "8e665ceb93ac3aaf16a8560e9d4ac5aa9c97aed1a64640f918cf91434d3d35a2",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/final-prompt.txt",
+      "sourceSHA256": "eafcd3082272e04f5786623db07eadac78361808ed9cb684ad81c54560a3b5b1",
+      "adaptedSHA256": "eafcd3082272e04f5786623db07eadac78361808ed9cb684ad81c54560a3b5b1",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/final-pure.log",
+      "sourceSHA256": "b9ea5485aea7ee7ea5a4521b433d138385cb481249e40b6f60c0b87069cdce4f",
+      "adaptedSHA256": "b9ea5485aea7ee7ea5a4521b433d138385cb481249e40b6f60c0b87069cdce4f",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/final-review-interrupted.json",
+      "sourceSHA256": "33725ab4684d9e6084f4a2607a28519a561c66594934b6e7f980c3a77c27254e",
+      "adaptedSHA256": "33725ab4684d9e6084f4a2607a28519a561c66594934b6e7f980c3a77c27254e",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/implementation-claude.txt",
+      "sourceSHA256": "748e7fa9a499517ae6faf3a5ba751b77743cef15627281957daada311bb2c169",
+      "adaptedSHA256": "748e7fa9a499517ae6faf3a5ba751b77743cef15627281957daada311bb2c169",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/lint.log",
+      "sourceSHA256": "3a8acb1ed5468d15fa676faf61fc561e85b98c6797af9a44904caf9d4d439ff6",
+      "adaptedSHA256": "3a8acb1ed5468d15fa676faf61fc561e85b98c6797af9a44904caf9d4d439ff6",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/manifest.json",
+      "sourceSHA256": "3828dec22fe59ef4f95ff445102b9e8bf5b88f67ddb59558b2fe65487c08d36a",
+      "adaptedSHA256": "3828dec22fe59ef4f95ff445102b9e8bf5b88f67ddb59558b2fe65487c08d36a",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/native.txt",
+      "sourceSHA256": "a0c230c81da4636b7739ea5e59b7e4b39f88acfb3a76f6bfa96cc34e61fa54c2",
+      "adaptedSHA256": "a0c230c81da4636b7739ea5e59b7e4b39f88acfb3a76f6bfa96cc34e61fa54c2",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/prompt.txt",
+      "sourceSHA256": "768c7e9d07072b29e889e431a05dd5b242e3483ca0a1125b8e7d75e6dce933cf",
+      "adaptedSHA256": "768c7e9d07072b29e889e431a05dd5b242e3483ca0a1125b8e7d75e6dce933cf",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/pure.log",
+      "sourceSHA256": "e7876c455fd8c5e72d4b6b6f20d915c975c8a7e1ebc38e489f746e34bcb7086a",
+      "adaptedSHA256": "e7876c455fd8c5e72d4b6b6f20d915c975c8a7e1ebc38e489f746e34bcb7086a",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/repair-claude.txt",
+      "sourceSHA256": "3a270db03256ff380f0fd3a364d3f57b6544f57c68e5f2074f61e658171e2102",
+      "adaptedSHA256": "3a270db03256ff380f0fd3a364d3f57b6544f57c68e5f2074f61e658171e2102",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/repair-lint-retry.log",
+      "sourceSHA256": "1c5e6e0ec9ee5719aab3502b1de5a7cbdcde88056f0a4bae3dd22001e49fdfbe",
+      "adaptedSHA256": "1c5e6e0ec9ee5719aab3502b1de5a7cbdcde88056f0a4bae3dd22001e49fdfbe",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/repair-lint.log",
+      "sourceSHA256": "241c2c5456470ce35428a803d1509919d6dfbf943cc8e73502db59644fac247c",
+      "adaptedSHA256": "241c2c5456470ce35428a803d1509919d6dfbf943cc8e73502db59644fac247c",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/repair-manifest.json",
+      "sourceSHA256": "78a64754ea19b8d45a430759ba56231c909cdcd0920c38ccd0f9a3470e91a53f",
+      "adaptedSHA256": "78a64754ea19b8d45a430759ba56231c909cdcd0920c38ccd0f9a3470e91a53f",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/repair-native.txt",
+      "sourceSHA256": "b9f449ae387748bb8ec58d81dad0195a4bf66edfb4031a5e5f9eac635281fd2a",
+      "adaptedSHA256": "b9f449ae387748bb8ec58d81dad0195a4bf66edfb4031a5e5f9eac635281fd2a",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/repair-prompt.txt",
+      "sourceSHA256": "1ca4308a344c09298db64c068ce2c4bd8e13ce4b0a6632c172c4d50c67485432",
+      "adaptedSHA256": "1ca4308a344c09298db64c068ce2c4bd8e13ce4b0a6632c172c4d50c67485432",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "engdocs/evidence/graph-export-reader/repair-pure.log",
+      "sourceSHA256": "9ffa60021eed9b97c3bc847d1d02d01c94d41fb68d74876a4aeb8cbdf6abe220",
+      "adaptedSHA256": "9ffa60021eed9b97c3bc847d1d02d01c94d41fb68d74876a4aeb8cbdf6abe220",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "internal/graphoutput/BUILD.bazel",
+      "sourceSHA256": "b6bd229320c8233d5aa14727f5484b7f530a92677d6e192378fa5e3c612b7c39",
+      "adaptedSHA256": "b6bd229320c8233d5aa14727f5484b7f530a92677d6e192378fa5e3c612b7c39",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "internal/graphoutput/publish.go",
+      "sourceSHA256": "7fbfc663c2e831e4ef01e0c97c801a9bef590707d2051d3c66bdaf2cd947f047",
+      "adaptedSHA256": "7fbfc663c2e831e4ef01e0c97c801a9bef590707d2051d3c66bdaf2cd947f047",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "internal/graphoutput/publish_test.go",
+      "sourceSHA256": "5677d63a5de84cce9998688a9cf6d7cc6075fcaa2d8c5cff8929ef58cbd0f345",
+      "adaptedSHA256": "5677d63a5de84cce9998688a9cf6d7cc6075fcaa2d8c5cff8929ef58cbd0f345",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "internal/storage/graphstore/BUILD.bazel",
+      "sourceSHA256": "061b4bf0041d672a9e23c9ece51592ba0d2b96d4189f09ffe027901b2d959fdd",
+      "adaptedSHA256": "6617bd6374dae6ddc2b57cad100b37e2cb35a59b51bf519435b664d5767356d7",
+      "action": "additive4-source-entry BUILD integration; all target entries preserved"
+    },
+    {
+      "path": "internal/storage/graphstore/export_cleanup_pure_test.go",
+      "sourceSHA256": "8b96ad83c57e18b089b10c9019f170aa0919734d2e4c7648e05c2b593f6920d3",
+      "adaptedSHA256": "8b96ad83c57e18b089b10c9019f170aa0919734d2e4c7648e05c2b593f6920d3",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "internal/storage/graphstore/export_current.go",
+      "sourceSHA256": "ca1ac4bcbe0c423f483fb9dc0e52e6927639ca7b3cd52e3778854f590c5d1177",
+      "adaptedSHA256": "ca1ac4bcbe0c423f483fb9dc0e52e6927639ca7b3cd52e3778854f590c5d1177",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "internal/storage/graphstore/export_current_pure_test.go",
+      "sourceSHA256": "e909e67ef940c624520055a78595864ad914d9ea7c7c7b47a5603fc15a7f89ee",
+      "adaptedSHA256": "e909e67ef940c624520055a78595864ad914d9ea7c7c7b47a5603fc15a7f89ee",
+      "action": "byte-identical export transfer"
+    },
+    {
+      "path": "internal/storage/graphstore/export_current_test.go",
+      "sourceSHA256": "f6898ee1d931bbd6e9ea88534f2b89c6ab49c98972427b9116185d84c450c57c",
+      "adaptedSHA256": "f6898ee1d931bbd6e9ea88534f2b89c6ab49c98972427b9116185d84c450c57c",
+      "action": "byte-identical export transfer"
+    }
+  ],
+  "counts": {
+    "total": 70,
+    "nonHistoricalEvidence": 9,
+    "historicalEvidence": 61,
+    "byteIdenticalTransfers": 69,
+    "additiveBUILD": 1
+  },
+  "fullBaseAncestryCommitCount": 12234,
+  "absentImportHeads": [
+    "2b1eeaec358713da0d1e1a65b3e8d8cfc891f8de",
+    "009dcb234bcbd34a5ec065c84bcf499696f3e58a",
+    "51ad5be5d3130210d27039740654b66e48fe0b29",
+    "c6e94fd5037eff7e855d542b034745d1285463f1",
+    "c57725789230945a48ae111b75d70e14068c1fa5",
+    "ca4d72a9ea2590925e5876912df54a78559a580d"
+  ],
+  "shallow": false,
+  "runtime": "No builds/tests/lint/generator/engines/bd/DB; static gofmt/source whitespace only",
+  "codeCommit": "6c48ae40470a830467464c488b1b38d8f5d6d1d8",
+  "codeTree": "f61ee423aa534a89006364111089b6c319ebc532",
+  "sourceCommitsAccounted": 17,
+  "allOriginalExportAuthors": [
+    "Donna Box"
+  ],
+  "ancestryPolicy": "Flatten exact export-only delta onto sole parent qualified c678; original branches/PRs untouched and all source commits accounted. No import ancestry or ded16374 inclusion."
+}

@@ -38,11 +38,13 @@ func runGraphPreviewClaimIssue(cmd *cobra.Command, path string) error {
 	if err := graphPreviewIssueClaimInput(cmd, path, actor); err != nil {
 		return err
 	}
+	var touchedID string
 	err := withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.ClaimIssue(ctx, path, actor)
 		if err != nil {
 			return nil, "", err
 		}
+		touchedID = result.Issue.ID
 		verb := "Claimed"
 		if !result.Changed {
 			verb = "Unchanged"
@@ -50,7 +52,7 @@ func runGraphPreviewClaimIssue(cmd *cobra.Command, path string) error {
 		return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }

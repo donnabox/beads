@@ -61,10 +61,12 @@ func TestGraphReadMemoryDeletionHTTP(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if _, err := store.CreateIssue(ctx, "beads/work", issueops.CreateRequest{Issue: &issueops.Issue{Title: "Surviving Issue", Status: "open", IssueType: "task", Priority: 2}, Actor: "human:issue-author"}); err != nil {
+	// Keep the Issue after the two Memories in exact current/retained pages.
+	createdIssue, err := store.CreateIssue(ctx, "beads/work", issueops.CreateRequest{Issue: &issueops.Issue{ID: "zz-work", Title: "Surviving Issue", Status: "open", IssueType: "task", Priority: 2}, ForceIDPrefix: true, Actor: "human:issue-author"})
+	if err != nil {
 		t.Fatal(err)
 	}
-	contextLink, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/alpha", UnconditionalSource: true, Actor: "human:link-author"})
+	contextLink, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", TypeURL: scope + "superseded-by", SourcePath: "beads/plan", TargetPath: "beads/alpha", UnconditionalSource: true, Actor: "human:link-author"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -131,7 +133,7 @@ func TestGraphReadMemoryDeletionHTTP(t *testing.T) {
 	var alpha, plan, work bdpwire.BeadRecord
 	read(scope+"beads/alpha", &alpha)
 	read(scope+"beads/plan", &plan)
-	read(scope+"beads/work", &work)
+	read(createdIssue.ID, &work)
 	if string(plan.Properties["body"]) != `""` || plan.Attribution == nil || plan.Attribution.Principal != "human:link-author" || len(plan.OwnedLinks[contextLink.Link.Type]) != 1 {
 		t.Fatal("predelete record lost empty content, attribution or owned Link")
 	}
@@ -162,7 +164,7 @@ func TestGraphReadMemoryDeletionHTTP(t *testing.T) {
 	}
 	var final bdpwire.BeadRecord
 	finalResponse := read(scope+"beads/plan", &final)
-	if final.Revision == plan.Revision || len(final.OwnedLinks) != 0 || final.Attribution == nil || final.Attribution.Principal != "human:unlinker" || finalResponse.Header.Get("ETag") == "" {
+	if final.Revision == plan.Revision || len(final.OwnedLinks) != 2 || len(final.OwnedLinks[contextLink.Link.Type]) != 0 || len(final.OwnedLinks[scope+"subject-to"]) != 0 || final.Attribution == nil || final.Attribution.Principal != "human:unlinker" || finalResponse.Header.Get("ETag") == "" {
 		t.Fatal("explicit unlink did not expose final current Memory")
 	}
 	deleted, err := store.DeleteMemory(ctx, graphstore.MemoryDeleteRequest{Path: "beads/plan", ExpectedRevision: final.Revision, Actor: "human:deleter"})

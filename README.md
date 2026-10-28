@@ -348,6 +348,12 @@ The integration branch includes an experimental Memory/Issue graph preview.
 Start with the [graph CLI guide](docs/reference/graph-cli.md) for fresh-workspace
 setup and commands; use the [Graph CLI Specification (Draft)](docs/reference/graph-cli-specification-draft.md)
 for the exact current capability matrix and limits.
+In link workspaces, `bd graph ID` follows the Dependency family by default.
+Use `--link-type any` for all Link Types, `--link-type TYPE` for a Type and
+its refinements, or `--exact-link-type TYPE` for that declared Type only.
+Repeat the Type flags to combine selections. Graph and Memory relationship
+views show `[Type]` labels and explain actual depth limits. They preserve
+literal ID path segments; human output shortens only the current Scope URL.
 The [BDP Python example](examples/bdp-read/) reads and enumerates its records over HTTP.
 
 * [Documentation site](https://beads.gascity.com/) | [Installing](docs/getting-started/installation.md) | [Sync Concepts](docs/core-concepts/sync-concepts.md) | [Agent Setup](docs/getting-started/ide-setup.md) | [Copilot CLI Setup](docs/integrations/copilot-cli.md) | [Copilot VS Code MCP](docs/integrations/github-copilot.md) | [Articles](ARTICLES.md) | [Sync Branch Mode](docs/reference/protected-branches.md) | [Troubleshooting](docs/reference/troubleshooting.md) | [FAQ](docs/reference/faq.md)

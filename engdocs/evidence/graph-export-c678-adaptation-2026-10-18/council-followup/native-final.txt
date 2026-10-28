@@ -1,0 +1,20 @@
+BEGIN REVIEW
+
+Reviewed frozen head `f870c97f527f7a763d8d3352e3da28c2b7a87bd1`, tree `63c3dbac02f92498f4d35469e4e1b10ac48540f4`, against selected c678. The supplied prompt matches its stated 418536 bytes and SHA256. All 11 source/design/BUILD file hashes match both the manifest and committed tree.
+
+**Medium — Two refusal fixtures violate installed foreign keys before reaching export.**
+Location: [export_current_test.go:226](/Users/dbox/repos/wt/iris/graph-export-c678/internal/storage/graphstore/export_current_test.go:226), adjacent line 227, and setup at lines 232–236.
+
+The `wisp-comments` and `wisp-labels` cases insert rows with `issue_id='orphan'` without a corresponding `wisps` row or a session-scoped foreign-key bypass. Their actual test setup calls `Init` through `issueExperimentOptions` ([issues_test.go:62](/Users/dbox/repos/wt/iris/graph-export-c678/internal/storage/graphstore/issues_test.go:62)). `Init` runs `schema.MigrateUp` ([backend.go:152](/Users/dbox/repos/wt/iris/graph-export-c678/internal/storage/graphstore/backend.go:152)), including the ignored migration series ([schema.go:1018](/Users/dbox/repos/wt/iris/graph-export-c678/internal/storage/schema/schema.go:1018)). That series installs foreign keys from both auxiliary tables to `wisps(id)` ([0004_add_wisp_aux_fks.up.sql:11](/Users/dbox/repos/wt/iris/graph-export-c678/internal/storage/schema/migrations/ignored/0004_add_wisp_aux_fks.up.sql:11), line 35) and re-enables enforcement at line 51.
+
+With enforcement enabled, fixture insertion fails at line 233 and returns before `exportCurrentSnapshotInTx` runs. Both cases therefore fail setup instead of proving the corresponding refusal and rollback controls.
+
+**Fix:** Construct these deliberately orphaned fixtures on an owned pinned session with foreign-key checks temporarily disabled and guaranteed restoration, keeping the data mutations inside the rollback. Preserve the precise plane-name, zero-result and unchanged-source assertions. Simply inserting a parent wisp would make the earlier `wisps` probe win and would leave the auxiliary-plane probes untested.
+
+No other actionable finding identified in the reviewed reader, publisher, repaired cleanup/comment oracles, or manual BUILD registration. The cleanup fixture now supplies the complete current Type catalog. The lifecycle oracle correctly adjusts only copied expected comment ownership from graph facade identity to native Issue identity.
+
+Questions: none requiring clarification for this bounded review.
+
+This was static source review only. No commands, generators, builds, lint, tests, engines, databases or network actions ran. Managed BUILD consistency and both backend executions remain unverified; runtime qualification remains Janet-owned. Public serialization, CLI activation, six CRUD/query work and independently frozen import work were excluded.
+
+END REVIEW

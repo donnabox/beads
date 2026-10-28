@@ -63,7 +63,12 @@ func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
 		}
 		actor := getActorWithGit()
 		for _, status := range result.eligible {
-			path := status.Epic.ID
+			publicID := status.Epic.ID
+			path, err := store.ResolveExactAllocatedResourcePath(ctx, publicID)
+			if err != nil {
+				result.errors = append(result.errors, fmt.Errorf("%s: %w", publicID, err))
+				continue
+			}
 			current, err := store.ShowIssue(ctx, path)
 			if err == nil {
 				_, err = store.CloseEligibleEpic(ctx, graphstore.EpicCloseRequest{
@@ -71,10 +76,10 @@ func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
 				})
 			}
 			if err != nil {
-				result.errors = append(result.errors, fmt.Errorf("%s: %w", path, err))
+				result.errors = append(result.errors, fmt.Errorf("%s: %w", publicID, err))
 				continue
 			}
-			result.closed = append(result.closed, path)
+			result.closed = append(result.closed, publicID)
 		}
 		if len(result.closed) > 0 {
 			commandDidWrite.Store(true)
@@ -97,7 +102,7 @@ func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
 }
 
 func requireGraphPreviewRelationshipGeneration() error {
-	if graphPreviewTypeGeneration != 9 {
+	if graphPreviewTypeGeneration != graphstore.TypeGeneration {
 		return graphFailure("capability_unavailable", "graph epic requires the current graph Type installation", 5)
 	}
 	return nil

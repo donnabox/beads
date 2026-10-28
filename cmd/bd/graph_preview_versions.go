@@ -65,7 +65,7 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 //   - there is no such thing: nothing is allocated at that path.
 //
 // The third shape, "something prevented a complete answer", is NOT reachable as
-// a normal answer here. Every plane in a SchemaVersion-7 workspace can order,
+// a normal answer here. Every plane in a SchemaVersion-9 workspace can order,
 // so a store that cannot answer is a corrupt store, and corruption is a refusal
 // rather than an outcome. There is deliberately no "exists but empty" success
 // case either: a subject's creation IS version 1, written in the same
@@ -78,19 +78,27 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 // and printing the first when the second is true is a wrong answer rather than
 // an empty one.
 func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd); err != nil {
+	options, canonical, err := canonicalOutputOptions(cmd)
+	if err != nil {
+		return canonicalFailure(cmd, nil, "invalid_selector", err.Error(), 2)
+	}
+	if canonical {
+		return runCanonicalGraphVersions(cmd, args, options)
+	}
+	if err := graphPreviewFlags(cmd, "long"); err != nil {
 		return err
 	}
 	// Resolved with graphPreviewResourcePath rather than
 	// graphPreviewBeadSelector: Links have versions too, so this accepts
 	// links/PATH as well as beads/PATH. `compare` resolves the same way for
 	// the same reason.
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		kind, rows, err := store.Versions(ctx, path)
+		history, err := store.History(ctx, path)
+		kind, rows := history.Kind, history.Versions
 		switch {
 		case errors.Is(err, graphstore.ErrNotFound):
 			// graphStorageError already maps ErrNotFound to not_found, so this
@@ -110,39 +118,60 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 		// identity and historical state survive. It is not a Resource version:
 		// exact reads refuse its token. List only citable states and keep the
 		// removal notice outside the version rows.
-		citable := make([]graphstore.VersionRow, 0, len(rows))
-		removed := false
-		for _, row := range rows {
-			if row.Removed {
-				if kind != graphstore.KindLink || removed {
-					return nil, "", fmt.Errorf("%w: invalid deletion marker in version history", graphstore.ErrInvalidStore)
-				}
-				removed = true
-				continue
-			}
-			citable = append(citable, row)
-		}
-		if len(citable) == 0 {
-			return nil, "", fmt.Errorf("%w: allocated Resource has no citable versions", graphstore.ErrInvalidStore)
+		citable, terminalRows, removed, err := graphCitableVersionRows(kind, rows)
+		if err != nil {
+			return nil, "", err
 		}
 		result := map[string]any{
-			"resource": path,
+			"resource": history.PublicID,
 			"kind":     string(kind),
 			"versions": graphVersionRowsJSON(citable),
 		}
-		return result, renderGraphVersions(args[0], kind, citable, removed), nil
+		if history.CurrentState != nil {
+			result["currentState"] = history.CurrentState
+		}
+		if (kind == graphstore.KindMemory || kind == graphstore.KindIssue || kind == graphstore.KindLink) && len(terminalRows) != 0 {
+			result["terminal_versions"] = graphVersionRowsJSON(terminalRows)
+		}
+		long, _ := cmd.Flags().GetBool("long")
+		summary := renderGraphVersions(args[0], kind, rows, removed, history.CurrentState != nil, long)
+		if history.CurrentState != nil {
+			summary += "\nCurrent state: deleted\n"
+			if long {
+				summary += fmt.Sprintf("  deletion revision: %s\n", history.CurrentState.Revision)
+			}
+		}
+		return result, summary, nil
 	})
 }
 
-// renderGraphVersions prints the token on its own line under each row.
-//
-// That is not a layout accident. On this plane the opaque version token is the
-// ONLY citable address -- it is what `show --version` and `compare --from/--to`
-// accept -- so a listing that elides it cannot be used for the thing the
-// listing is for. The ordinal is 1-2 characters and the token is 32, which no
-// single terminal row holds alongside a timestamp and an actor, so the token
-// gets its own line rather than being truncated into uselessness.
-func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []graphstore.VersionRow, removed bool) string {
+// Both output contracts expose only citable retained states. Preserve provider
+// order, and never let a private Link deletion marker become an exact address.
+func graphCitableVersionRows(kind graphstore.ResourceKind, rows []graphstore.VersionRow) ([]graphstore.VersionRow, []graphstore.VersionRow, bool, error) {
+	terminalRows := make([]graphstore.VersionRow, 0)
+	citable := make([]graphstore.VersionRow, 0, len(rows))
+	removed := false
+	for _, row := range rows {
+		if row.Removed {
+			if kind != graphstore.KindLink && kind != graphstore.KindMemory && kind != graphstore.KindIssue {
+				return nil, nil, false, fmt.Errorf("%w: invalid deletion marker in version history", graphstore.ErrInvalidStore)
+			}
+			removed = true
+			terminalRows = append(terminalRows, row)
+			continue
+		}
+		citable = append(citable, row)
+	}
+	if len(citable) == 0 {
+		return nil, nil, false, fmt.Errorf("%w: allocated Resource has no citable versions", graphstore.ErrInvalidStore)
+	}
+	return citable, terminalRows, removed, nil
+}
+
+// Human timelines use stable store-local sequence numbers. Exact tokens are
+// available through --long and JSON; deletion events retain their actual
+// ordinals but never become readable live snapshots.
+func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []graphstore.VersionRow, removed, currentlyDeleted bool, long bool) string {
 	if len(rows) == 0 {
 		// Defensive, and deliberately NOT reassuring. An allocated subject
 		// always has at least version 1, because its creation version is
@@ -160,7 +189,7 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 
 	var b strings.Builder
 	fmt.Fprintf(&b, "Versions of %s (%d)\n\n", selector, len(rows))
-	fmt.Fprintf(&b, "  REV  WHEN                        WHO                  ATTRIB\n")
+	fmt.Fprintf(&b, "  SEQ  WHEN                        WHO                  ATTRIB\n")
 	for _, r := range rows {
 		attrib := r.Attribution
 		if attrib == "" {
@@ -169,7 +198,11 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 			// as missing data.
 			attrib = "-"
 		}
-		fmt.Fprintf(&b, "  %-4d %-27s %-20.20s %s\n",
+		event := ""
+		if r.Removed {
+			event = " (deleted; not a live snapshot)"
+		}
+		fmt.Fprintf(&b, "  %-4d %-27s %-20.20s %s%s\n",
 			r.Ordinal,
 			// Microseconds are shown because they are the reason migration
 			// 0069 widened change_at: two writes inside one second are
@@ -177,23 +210,33 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 			// simultaneous when they are not.
 			r.ChangeAt.UTC().Format("2006-01-02 15:04:05.000000"),
 			r.Actor,
-			attrib)
-		fmt.Fprintf(&b, "       %s\n", r.Version)
+			attrib, event)
+		if long {
+			fmt.Fprintf(&b, "       %s\n", r.Version)
+		}
 	}
 
-	b.WriteString("\nREV is local to this store and is NOT a citable address: two\n")
-	b.WriteString("clones can hold a different local revision for the same state. Cite the token\n")
-	b.WriteString("under each row instead:\n\n")
+	b.WriteString("\nSEQ is local to this store. Use ID@N for a live snapshot here; two\n")
+	b.WriteString("clones can hold a different local revision for the same state. Use --long\n")
+	b.WriteString("to see exact portable tokens (also retained in JSON):\n\n")
 	if kind == graphstore.KindLink {
-		fmt.Fprintf(&b, "  bd link show %s --version <token>\n", selector)
+		fmt.Fprintf(&b, "  bd link show %s --revision <token>\n", selector)
 		fmt.Fprintf(&b, "  bd link compare %s --from <token> --to <token>\n", selector)
 	} else {
-		fmt.Fprintf(&b, "  bd show %s --version <token>\n", selector)
+		fmt.Fprintf(&b, "  bd show %s --revision <token>\n", selector)
 		fmt.Fprintf(&b, "  bd compare %s --from <token> --to <token>\n", selector)
 	}
 	if removed {
-		b.WriteString("\nThis Link has been removed. Its prior versions remain citable; deletion\n")
-		b.WriteString("did not create a Link version.\n")
+		if kind == graphstore.KindLink && currentlyDeleted {
+			b.WriteString("\nThis Link has been removed. Its prior live versions remain citable.\n")
+		}
+		b.WriteString("\nTerminal deletion versions are retained separately from live snapshots.\n")
 	}
 	return b.String()
+}
+
+func init() {
+	for _, cmd := range []*cobra.Command{versionsCmd, historyCmd, linkVersionsCmd} {
+		cmd.Flags().Bool("long", false, "Include exact revision tokens in the human graph timeline")
+	}
 }

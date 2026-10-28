@@ -14,7 +14,7 @@ import (
 func TestGraphPreviewAttributionBasisPreservesStoredStatusAndUserProperties(t *testing.T) {
 	record := graphstore.Record{
 		ID:       "https://example.test/beads/one",
-		Type:     "https://example.test/types/memory",
+		Type:     "https://example.test/memory",
 		Version:  "v1",
 		Revision: "v1",
 		Properties: graphstore.Properties{

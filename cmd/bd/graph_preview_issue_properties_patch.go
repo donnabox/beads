@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"time"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -58,7 +57,7 @@ func graphPreviewPatchIssuePropertiesOnce(ctx context.Context, store *graphstore
 	if err != nil {
 		return nil, "", graphFailure("invalid_properties", err.Error(), 2)
 	}
-	patch, err := graphpatch.Parse(input.Patch)
+	patch, err := graphstore.ParseIssuePropertyPatch(issue.Properties.IssueType, input.Patch)
 	if err != nil {
 		return nil, "", graphFailure("invalid_properties", err.Error(), 2)
 	}
@@ -88,7 +87,7 @@ func graphPreviewPatchIssuePropertiesOnce(ctx context.Context, store *graphstore
 			continue
 		}
 		switch name {
-		case "title", "priority":
+		case "title", "priority", "issue_type":
 			return nil, "", graphFailure("invalid_properties", "Issue "+name+" cannot be removed", 2)
 		case "estimated_minutes", "external_ref", "due_at":
 			changes[name] = nil
@@ -96,7 +95,7 @@ func graphPreviewPatchIssuePropertiesOnce(ctx context.Context, store *graphstore
 			changes[name] = ""
 		}
 	}
-	request := graphstore.UpdateIssueRequest{Path: input.Path, Actor: input.Actor, ExpectedRevision: input.ExpectedRevision, Unconditional: input.Unconditional, Metadata: input.Metadata}
+	request := graphstore.UpdateIssueRequest{TypeURL: input.TypeURL, Path: input.Path, Actor: input.Actor, ExpectedRevision: input.ExpectedRevision, Unconditional: input.Unconditional, Metadata: input.Metadata}
 	if request.ExpectedRevision == "" {
 		// Omission means edit the current resource. Pin the pre-read snapshot so a
 		// concurrent writer cannot turn the computed patch into a lost update.
@@ -119,17 +118,5 @@ func graphPreviewPatchIssuePropertiesOnce(ctx context.Context, store *graphstore
 }
 
 func graphPreviewIssuePatchProjection(issue *types.Issue) map[string]any {
-	projection := map[string]any{
-		"title": issue.Title, "description": issue.Description, "design": issue.Design,
-		"acceptance_criteria": issue.AcceptanceCriteria, "notes": issue.Notes,
-		"spec_id": issue.SpecID, "assignee": issue.Assignee,
-		"priority": issue.Priority, "estimated_minutes": issue.EstimatedMinutes,
-		"external_ref": issue.ExternalRef,
-	}
-	if issue.DueAt == nil {
-		projection["due_at"] = nil
-	} else {
-		projection["due_at"] = issue.DueAt.Format(time.RFC3339Nano)
-	}
-	return projection
+	return graphstore.IssueEditableProperties(issue)
 }

@@ -9,15 +9,32 @@ import (
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/memorycatalog"
 	"github.com/steveyegge/beads/internal/types"
 )
 
-// These are real installed informational Types, not aliases for RelatedTypeURL.
+// Historical identity helpers remain for callers testing refusal. These Types
+// are never installed or admitted by the selected catalog.
 func ExampleFollowsTypeURL(scope string) string { return scope + "types/example-follows" }
 func ExampleCitesTypeURL(scope string) string   { return scope + "types/example-cites" }
 
 func IsInformationalTypeURL(scope, id string) bool {
-	return id == RelatedTypeURL(scope) || id == ExampleFollowsTypeURL(scope) || id == ExampleCitesTypeURL(scope)
+	for _, symbol := range selectedMemoryLinkNames {
+		if id == scope+symbol {
+			return true
+		}
+	}
+	return false
+}
+
+var selectedMemoryBeadNames = []string{
+	"memory", "evaluation", "constraint", "policy",
+	"requirement", "scenario", "specification",
+}
+
+var selectedMemoryLinkNames = []string{
+	"references", "superseded-by", "requires", "defines", "subject-to",
+	"conformance", "addresses", "satisfies", "violates",
 }
 
 type previewTypeDefinition struct {
@@ -25,23 +42,60 @@ type previewTypeDefinition struct {
 	build func(string) (graph.TypeDescriptor, error)
 }
 
-// Fresh preview workspaces install exactly one Type for each supported shape.
-// Earlier preview workspaces are intentionally not upgraded in place.
+// Fresh workspaces install the selected Memory catalog, abstract native family
+// bases and fixed concrete native children. Earlier generations are refused.
 func previewTypeDefinitions() []previewTypeDefinition {
-	definitions := []previewTypeDefinition{
-		{"memory", memoryDescriptor}, {"issue", issueDescriptor},
-		{"dependency", dependencyDescriptor}, {"related", relatedDescriptor},
-		{"example-follows", exampleFollowsDescriptor}, {"example-cites", exampleCitesDescriptor},
+	definitions := make([]previewTypeDefinition, 0, 20)
+	for _, name := range append(append([]string(nil), selectedMemoryBeadNames...), selectedMemoryLinkNames...) {
+		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
+			return selectedMemoryDescriptor(scope, name)
+		}})
 	}
-	for _, relation := range relationshipDependencyTypes {
-		if relation.native == types.DepBlocks {
-			continue // dependencyDescriptor is the sole installed blocks Type.
-		}
-		definitions = append(definitions, previewTypeDefinition{relation.installName, func(scope string) (graph.TypeDescriptor, error) {
-			return relationshipDependencyDescriptor(scope, relation.native)
+	definitions = append(definitions, previewTypeDefinition{"issue", issueDescriptor}, previewTypeDefinition{"dependency", dependencyDescriptor})
+	for _, classification := range append(append([]types.IssueType(nil), types.AllIssueTypes...), types.TypeEvent) {
+		name := string(classification)
+		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
+			return nativeConcreteDescriptor(scope, scope+name, graph.KindBead)
+		}})
+	}
+	for _, kind := range types.WellKnownDependencyTypes() {
+		name := string(kind)
+		definitions = append(definitions, previewTypeDefinition{name, func(scope string) (graph.TypeDescriptor, error) {
+			return nativeConcreteDescriptor(scope, scope+name, graph.KindLink)
 		}})
 	}
 	return definitions
+}
+
+// selectedMemoryDescriptor is a deliberately partial inventory projection. The
+// legacy descriptor cannot represent correlated endpoint alternatives or
+// positive family ownership without invented finite maxima. Admission uses the
+// selectedTypeCatalog sidecar, never these omitted/relaxed details.
+func selectedMemoryDescriptor(scope, name string) (graph.TypeDescriptor, error) {
+	projection, err := newSelectedMemoryProjection(scope)
+	if err != nil {
+		return graph.TypeDescriptor{}, err
+	}
+	declaration, ok := projection.Definition(memorycatalog.Symbol(name))
+	if !ok {
+		return graph.TypeDescriptor{}, fmt.Errorf("%w: unknown selected Memory Type", ErrNotFound)
+	}
+	spec := graph.TypeDescriptorSpec{
+		ID: declaration.Binding.Type.URI, Name: name, Describes: declaration.Kind,
+		Description: fmt.Sprintf("Selected Memory Type; partial inventory descriptor. Property, correlated endpoint, graph and ownership constraints are enforced by the selected catalog. Source %s@%s:%s SHA256 %s.", projection.Source().Repository, projection.Source().Commit, projection.Source().Path, projection.Source().SHA256),
+	}
+	if declaration.Abstract {
+		spec.Description += " Abstract: cannot be used as a declared Type."
+	}
+	for _, parent := range declaration.Parents {
+		spec.ConformsTo = append(spec.ConformsTo, parent.URI)
+	}
+	if declaration.Kind == graph.KindLink {
+		// No independent source/target approximation of correlated pairs.
+		endpoint := graph.EndpointConstraint{}
+		spec.Source, spec.Target = &endpoint, &endpoint
+	}
+	return graph.NewTypeDescriptor(spec)
 }
 
 // FreshTypeNames lists, in installation order, the Types a fresh init installs.
@@ -85,27 +139,70 @@ func installedPreviewTypes(ctx context.Context, tx *sql.Tx, scope string) ([]gra
 		return nil, err
 	}
 	definitions := previewTypeDefinitions()
-	if count != len(definitions) {
+	if count < len(definitions) || count > len(definitions)+PreviewSnapshotLimit {
 		return nil, fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
 	}
 	result := make([]graph.TypeDescriptor, 0, count)
+	expectedByName := make(map[string]graph.TypeDescriptor, len(definitions))
+	args := make([]any, 0, 2*len(definitions))
 	for _, definition := range definitions {
 		expected, err := definition.build(scope)
 		if err != nil {
 			return nil, err
 		}
+		expectedByName[definition.name] = expected
+		args = append(args, definition.name, len(expected.CanonicalJSON()))
+	}
+	// Acquire the fixed set together, retaining each descriptor's exact SQL
+	// length guard. Repeated complete-record checks must not issue one query
+	// per declaration; all validation still belongs to this transaction.
+	rows, err := tx.QueryContext(ctx, fixedTypeDescriptorQuery(len(definitions)), args...)
+	if err != nil {
+		return nil, fmt.Errorf("%w: read fixed Type descriptors: %v", ErrInvalidStore, err)
+	}
+	checked := make(map[string]graph.TypeDescriptor, len(definitions))
+	for rows.Next() {
+		var name string
 		var raw []byte
 		var fingerprint string
-		if err := tx.QueryRowContext(ctx, `SELECT descriptor, fingerprint FROM graph_preview_types WHERE name=? AND OCTET_LENGTH(descriptor)=?`, definition.name, len(expected.CanonicalJSON())).Scan(&raw, &fingerprint); err != nil {
-			return nil, fmt.Errorf("%w: read %s descriptor: %v", ErrInvalidStore, definition.name, err)
+		if err := rows.Scan(&name, &raw, &fingerprint); err != nil {
+			return nil, errors.Join(fmt.Errorf("%w: read fixed Type descriptor: %v", ErrInvalidStore, err), rows.Close())
+		}
+		expected, present := expectedByName[name]
+		if !present {
+			return nil, errors.Join(fmt.Errorf("%w: unexpected fixed Type name", ErrInvalidStore), rows.Close())
+		}
+		if _, duplicate := checked[name]; duplicate {
+			return nil, errors.Join(fmt.Errorf("%w: duplicate fixed Type name", ErrInvalidStore), rows.Close())
 		}
 		parsed, err := graph.ParseTypeDescriptor(raw)
 		if err != nil || !bytes.Equal(raw, expected.CanonicalJSON()) || fingerprint != expected.Fingerprint() || fingerprint != parsed.Fingerprint() {
-			return nil, fmt.Errorf("%w: %s descriptor differs", ErrInvalidStore, definition.name)
+			return nil, errors.Join(fmt.Errorf("%w: %s descriptor differs", ErrInvalidStore, name), rows.Close())
+		}
+		checked[name] = parsed
+	}
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		return nil, fmt.Errorf("%w: read fixed Type descriptors: %v", ErrInvalidStore, err)
+	}
+	for _, definition := range definitions {
+		parsed, present := checked[definition.name]
+		if !present {
+			return nil, fmt.Errorf("%w: read %s descriptor: missing or incorrect byte length", ErrInvalidStore, definition.name)
 		}
 		result = append(result, parsed)
 	}
+	extra, err := installedNativeBindings(ctx, tx, scope, result)
+	if err != nil {
+		return nil, err
+	}
+	result = append(result, extra...)
 	return result, nil
+}
+
+// Only the number of fixed placeholders varies. Names and exact byte lengths
+// remain bound arguments, and no caller text is part of the SQL statement.
+func fixedTypeDescriptorQuery(count int) string {
+	return `SELECT name,descriptor,fingerprint FROM graph_preview_types WHERE ` + strings.TrimSuffix(strings.Repeat("(name=? AND OCTET_LENGTH(descriptor)=?) OR ", count), " OR ")
 }
 
 func (s *Store) informationalTypeInTx(ctx context.Context, tx *sql.Tx, id string) error {
@@ -147,7 +244,7 @@ func informationalTypeSQL(ids []string) (string, []any) {
 func (s *Store) selectedLinkTypeInTx(ctx context.Context, tx *sql.Tx, id string) error {
 	if _, err := s.readTypeInTx(ctx, tx, id); err != nil {
 		if errors.Is(err, ErrNotFound) {
-			return fmt.Errorf("%w: example Link Types require a freshly initialized graph workspace", ErrCapabilityUnavailable)
+			return fmt.Errorf("%w: Link Type is not in the installed selected catalog", ErrCapabilityUnavailable)
 		}
 		return err
 	}

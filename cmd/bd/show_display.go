@@ -51,6 +51,9 @@ func singleIssueSnapshot(issue *types.Issue) string {
 type issueWatchSource struct {
 	render func(ctx context.Context) *types.Issue
 	fetch  func(ctx context.Context) (*types.Issue, error)
+	// snapshot overrides the ordinary Issue timestamp/status comparison when a
+	// provider exposes a stronger revision token for watch change detection.
+	snapshot func(*types.Issue) string
 }
 
 // showWatchPollInterval is how often a watched issue is re-read.
@@ -95,11 +98,15 @@ func runIssueWatch(ctx context.Context, src issueWatchSource) error {
 // returns when stop fires, or immediately, reporting false, when the initial
 // render found nothing to watch.
 func watchIssueLoop(ctx context.Context, src issueWatchSource, tick <-chan time.Time, stop <-chan os.Signal) bool {
+	snapshot := src.snapshot
+	if snapshot == nil {
+		snapshot = singleIssueSnapshot
+	}
 	issue := src.render(ctx)
 	if issue == nil {
 		return false
 	}
-	lastSnapshot := singleIssueSnapshot(issue)
+	lastSnapshot := snapshot(issue)
 
 	fmt.Fprintf(os.Stderr, "\nWatching for changes... (Press Ctrl+C to exit)\n")
 
@@ -113,7 +120,7 @@ func watchIssueLoop(ctx context.Context, src issueWatchSource, tick <-chan time.
 			if err != nil || issue == nil {
 				continue
 			}
-			snap := singleIssueSnapshot(issue)
+			snap := snapshot(issue)
 			if snap != lastSnapshot {
 				lastSnapshot = snap
 				src.render(ctx)

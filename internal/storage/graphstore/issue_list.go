@@ -11,9 +11,11 @@ import (
 	"time"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/workapi"
 	publicops "github.com/steveyegge/beads/issueops"
 )
@@ -40,14 +42,30 @@ type IssueListPage struct {
 // transaction as authority checks and complete canonical record validation.
 // No legacy store, advisory wakeup, mutation or cross-request cursor is opened.
 func (s *Store) ListIssues(ctx context.Context, request publicops.ListRequest) (IssueListPage, error) {
+	return s.listIssues(ctx, request, nil)
+}
+
+// ListIssuesSelected resolves a graph parent in the same checked snapshot as
+// the native Issue query. The request must not also name a native parent.
+func (s *Store) ListIssuesSelected(ctx context.Context, request publicops.ListRequest, parent IssueSelector) (IssueListPage, error) {
+	if err := validateIssueSelector(parent); err != nil {
+		return IssueListPage{}, err
+	}
+	return s.listIssues(ctx, request, &parent)
+}
+
+func (s *Store) listIssues(ctx context.Context, request publicops.ListRequest, parent *IssueSelector) (IssueListPage, error) {
 	request, err := prepareIssueListRequest(request)
 	if err != nil {
 		return IssueListPage{}, err
 	}
+	if request.ReadyFlag {
+		s.wakeExpiredDefersAdvisory(ctx)
+	}
 	var result IssueListPage
 	err = s.withTx(ctx, false, func(tx *sql.Tx) error {
 		var err error
-		result, err = s.listIssuesInTx(ctx, tx, request)
+		result, err = s.listIssuesWithParentInTx(ctx, tx, &request, parent)
 		return err
 	})
 	if err != nil {
@@ -57,20 +75,27 @@ func (s *Store) ListIssues(ctx context.Context, request publicops.ListRequest) (
 }
 
 func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, error) {
+	// Reject dropped ready filters before a graph selector can be normalized
+	// to an empty native ID set. Otherwise --ready --id missing would appear
+	// to succeed with an empty page without checking the unsupported pairing.
+	if err := publicops.ValidateReadyFlagScope(in); err != nil {
+		return publicops.ListRequest{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
+	}
 	allowed := publicops.ListRequest{
-		Status: in.Status, IssueType: in.IssueType, TitleSearch: in.TitleSearch, TitleContains: in.TitleContains,
+		Status: in.Status, IssueType: in.IssueType, IDFilter: in.IDFilter, TitleSearch: in.TitleSearch, TitleContains: in.TitleContains,
 		Assignee: in.Assignee, NoAssignee: in.NoAssignee,
 		DueBefore: in.DueBefore, DueAfter: in.DueAfter, OverdueFlag: in.OverdueFlag,
 		Labels: in.Labels, LabelsAny: in.LabelsAny, ExcludeLabels: in.ExcludeLabels,
 		Priority: in.Priority, PriorityMin: in.PriorityMin, PriorityMax: in.PriorityMax,
-		PinnedFlag: in.PinnedFlag, NoPinnedFlag: in.NoPinnedFlag, AllFlag: in.AllFlag,
-		SortBy: in.SortBy, Reverse: in.Reverse, Limit: in.Limit, MaxRows: in.MaxRows, MaxRowsSource: in.MaxRowsSource,
+		PinnedFlag: in.PinnedFlag, NoPinnedFlag: in.NoPinnedFlag, NoParent: in.NoParent, AllFlag: in.AllFlag,
+		ReadyFlag: in.ReadyFlag,
+		SortBy:    in.SortBy, Reverse: in.Reverse, Limit: in.Limit, MaxRows: in.MaxRows, MaxRowsSource: in.MaxRowsSource,
 	}
 	if !reflect.DeepEqual(in, allowed) {
 		return publicops.ListRequest{}, fmt.Errorf("%w: unsupported graph Issue list option", ErrCapabilityUnavailable)
 	}
 	switch in.SortBy {
-	case "", "priority", "created", "updated", "title", "status", "type":
+	case "", "priority", "created", "updated", "closed", "title", "status", "type", "id", "assignee":
 	default:
 		return publicops.ListRequest{}, fmt.Errorf("%w: unsupported graph Issue list sort", ErrCapabilityUnavailable)
 	}
@@ -86,7 +111,7 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 		}
 	}
 	requestBytes := 0
-	for _, value := range []string{in.Status, in.IssueType, in.TitleSearch, in.TitleContains, in.MaxRowsSource, in.Assignee} {
+	for _, value := range []string{in.Status, in.IssueType, in.IDFilter, in.TitleSearch, in.TitleContains, in.MaxRowsSource, in.Assignee} {
 		if len(value) > PreviewIssueListRequestByteLimit-requestBytes {
 			return publicops.ListRequest{}, fmt.Errorf("%w: Issue list request text exceeds %d bytes", storage.ErrValidation, PreviewIssueListRequestByteLimit)
 		}
@@ -137,6 +162,10 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 }
 
 func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicops.ListRequest) (IssueListPage, error) {
+	return s.listIssuesWithParentInTx(ctx, tx, &request, nil)
+}
+
+func (s *Store) listIssuesWithParentInTx(ctx context.Context, tx *sql.Tx, request *publicops.ListRequest, parent *IssueSelector) (IssueListPage, error) {
 	if err := checkCurrentReadBytes(ctx, tx); err != nil {
 		return IssueListPage{}, err
 	}
@@ -162,6 +191,30 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 	if err := s.checkIssueListCatalogInTx(ctx, tx); err != nil {
 		return IssueListPage{}, err
 	}
+	// Resolve visible graph paths and shipping native IDs against the same
+	// checked snapshot that runs the Issue query. A bare name that collides
+	// with another Bead's path remains ambiguous, as it is for show.
+	noMatchingIDs := false
+	if request.IDFilter != "" && len(utils.NormalizeLabels(strings.Split(request.IDFilter, ","))) > 0 {
+		ids, err := s.resolveIssueListIDsInTx(ctx, tx, request.IDFilter)
+		if err != nil {
+			return IssueListPage{}, err
+		}
+		noMatchingIDs = len(ids) == 0
+		if !noMatchingIDs {
+			request.IDFilter = strings.Join(ids, ",")
+		}
+	} else {
+		request.IDFilter = ""
+	}
+	var parentNativeID string
+	if parent != nil {
+		var err error
+		parentNativeID, err = s.resolveIssueListParentInTx(ctx, tx, *parent)
+		if err != nil {
+			return IssueListPage{}, err
+		}
+	}
 	cfg, err := issueListConfigInTx(ctx, tx)
 	if err != nil {
 		return IssueListPage{}, err
@@ -169,24 +222,41 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 	if request.IssueType != "" && cfg.IsInfra(request.IssueType) {
 		return IssueListPage{}, fmt.Errorf("%w: graph Issue list does not admit infrastructure or wisp scope", ErrCapabilityUnavailable)
 	}
-	filter, err := workapi.BuildListFilter(request, cfg)
+	filter, err := workapi.BuildListFilter(*request, cfg)
 	if err != nil {
 		return IssueListPage{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
 	if !filter.SkipWisps || (filter.Ephemeral != nil && *filter.Ephemeral) {
 		return IssueListPage{}, fmt.Errorf("%w: graph Issue list requires durable scope", ErrCapabilityUnavailable)
 	}
+	if noMatchingIDs {
+		return IssueListPage{Items: []IssueRecord{}}, nil
+	}
 	// Counts are not in this result's projection. Labels and complete Issue
 	// properties remain present; callers cannot request partial graph records.
 	filter.SkipCounts = true
+	if parent != nil && request.ReadyFlag && parentNativeID != "" {
+		// Shipping --ready --parent selects transitive parent-child descendants.
+		// The ready query computes that set before applying blocker/status filters,
+		// so a closed intermediary does not hide a ready grandchild. Keep the
+		// graph selector resolution and the native query in this transaction.
+		filter.ParentID = &parentNativeID
+	}
 	// Every admitted workspace has <=1000 live Resources. Bounding an enormous
 	// requested SQL limit here cannot discard an admitted row, and prevents the
 	// shared probe-row increment from overflowing an arbitrary caller's int.
-	if filter.Limit > PreviewSnapshotLimit {
+	if parent != nil || filter.Limit > PreviewSnapshotLimit {
 		filter.Limit = PreviewSnapshotLimit
 	}
-	filter = workapi.WithFetchOneExtra(workapi.WithRowsBeforeThePage(filter, request.Offset))
-	rows, err := issueops.SearchIssuesWithCountsInTx(ctx, tx, "", filter)
+	if parent == nil {
+		filter = workapi.WithFetchOneExtra(workapi.WithRowsBeforeThePage(filter, request.Offset))
+	} else {
+		// The parent membership check uses graph-visible IDs after the
+		// bounded native scan. Apply the caller's row cap to the selected page,
+		// not the larger candidate set.
+		filter.MaxRows = 0
+	}
+	rows, err := queryIssueListRowsInTx(ctx, tx, filter, request.ReadyFlag)
 	if err != nil {
 		var capError *issueops.ErrTooManyRows
 		if errors.As(err, &capError) {
@@ -195,6 +265,7 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 		return IssueListPage{}, err
 	}
 	records := make(map[string]IssueRecord, len(rows))
+	selectedRows := make([]*types.IssueWithCounts, 0, len(rows))
 	for _, row := range rows {
 		if row == nil || row.Issue == nil {
 			return IssueListPage{}, fmt.Errorf("%w: nil Issue query row", ErrInvalidStore)
@@ -214,15 +285,136 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 			return IssueListPage{}, err
 		}
 		records[row.ID] = record
+		if parent == nil || (request.ReadyFlag && parentNativeID != "") || (!request.ReadyFlag && issueListParentMatches(row, parentNativeID)) {
+			selectedRows = append(selectedRows, row)
+		}
 	}
+	rows = selectedRows
 	// Validate the over-fetched probe before trimming it: HasMore must never
 	// conceal a malformed queried record. Preserve the shared query/page order.
-	rows, more := workapi.FinishPageAt(rows, request.SortBy, request.Reverse, request.Offset, workapi.PageLimit(request), false)
+	sortBy, reverse := request.SortBy, request.Reverse
+	if sortBy == "id" {
+		// Native Issue IDs are backing keys, not the graph IDs users selected.
+		// Sort the complete checked set by canonical paths before page trimming.
+		slices.SortStableFunc(rows, func(a, b *types.IssueWithCounts) int {
+			left := strings.TrimPrefix(records[a.ID].ID, s.ScopeURL())
+			right := strings.TrimPrefix(records[b.ID].ID, s.ScopeURL())
+			order := utils.NaturalCompareIDs(left, right)
+			if reverse {
+				return -order
+			}
+			return order
+		})
+		sortBy, reverse = "", false
+	}
+	rows, more := workapi.FinishPageAt(rows, sortBy, reverse, request.Offset, workapi.PageLimit(*request), false)
 	result := IssueListPage{Items: make([]IssueRecord, 0, len(rows)), HasMore: more}
 	for _, row := range rows {
 		result.Items = append(result.Items, records[row.ID])
 	}
+	if parent != nil {
+		if err := issueops.EnforceMaxRowsCap(len(result.Items), request.MaxRows, request.MaxRowsSource); err != nil {
+			return IssueListPage{}, fmt.Errorf("%w: %w", ErrLimitExceeded, err)
+		}
+	}
 	return result, nil
+}
+
+// queryIssueListRowsInTx keeps the blocker-aware ready predicate in the same
+// checked snapshot as graph mapping and page validation. The ordinary list
+// path and its legacy counted projection use this same query choice.
+func queryIssueListRowsInTx(ctx context.Context, tx *sql.Tx, filter types.IssueFilter, ready bool) ([]*types.IssueWithCounts, error) {
+	if !ready {
+		return issueops.SearchIssuesWithCountsInTx(ctx, tx, "", filter)
+	}
+	work := workapi.ReadyFilterFromIssueFilter(filter)
+	if work.Limit == 0 {
+		// Natural ID sorting needs the complete candidate set before the
+		// visible graph IDs can be ordered. Bound acquisition by the graph
+		// snapshot limit plus one so overage is detected, not truncated.
+		work.Limit = PreviewSnapshotLimit + 1
+	}
+	rows, err := issueops.GetReadyWorkWithCountsInTx(ctx, tx, work)
+	if err != nil {
+		return nil, err
+	}
+	if len(rows) > PreviewSnapshotLimit {
+		return nil, fmt.Errorf("%w: graph Issue ready list exceeds %d rows", ErrLimitExceeded, PreviewSnapshotLimit)
+	}
+	return rows, nil
+}
+
+// resolveIssueListIDsInTx lowers the shipping --id set to native Issue keys.
+// Canonical Scope URLs and local spellings both name public identities, not
+// private catalog paths. URLs require an exact match; local IDs retain native
+// abbreviation resolution.
+func (s *Store) resolveIssueListIDsInTx(ctx context.Context, tx *sql.Tx, raw string) ([]string, error) {
+	selected := utils.NormalizeLabels(strings.Split(raw, ","))
+	ids := make([]string, 0, len(selected))
+	seen := make(map[string]bool, len(selected))
+	for _, value := range selected {
+		selector := IssueSelector{}
+		switch {
+		case strings.HasPrefix(value, s.ScopeURL()):
+			id, err := graph.ScopeLocalPublicResourceID(s.ScopeURL(), value)
+			if err != nil {
+				return nil, fmt.Errorf("%w: invalid Issue ID %q: %v", storage.ErrValidation, value, err)
+			}
+			selector.Path, selector.NativeID, selector.Exact = "beads/"+id, id, true
+		default:
+			selector.Path, selector.NativeID = "beads/"+value, value
+		}
+		if err := validateIssueSelector(selector); err != nil {
+			return nil, fmt.Errorf("%w: invalid Issue ID %q: %v", storage.ErrValidation, value, err)
+		}
+		_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+		switch {
+		case errors.Is(err, ErrNotFound), errors.Is(err, errNonIssueSelector):
+			continue
+		case err != nil:
+			return nil, err
+		}
+		if issue.Properties == nil || issue.Properties.ID == "" {
+			return nil, fmt.Errorf("%w: incomplete selected Issue mapping", ErrInvalidStore)
+		}
+		if !seen[issue.Properties.ID] {
+			seen[issue.Properties.ID] = true
+			ids = append(ids, issue.Properties.ID)
+		}
+	}
+	return ids, nil
+}
+
+func (s *Store) resolveIssueListParentInTx(ctx context.Context, tx *sql.Tx, parent IssueSelector) (string, error) {
+	_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, parent)
+	switch {
+	case err == nil:
+		if issue.Properties == nil || issue.Properties.ID == "" {
+			return "", fmt.Errorf("%w: incomplete parent Issue mapping", ErrInvalidStore)
+		}
+		return issue.Properties.ID, nil
+	case errors.Is(err, ErrNotFound):
+		// The ordinary filter also matches edge-less dotted descendants of a
+		// bare ID, even when that parent has no current Issue allocation.
+		if parent.NativeID != "" {
+			return parent.NativeID, nil
+		}
+		return "", nil
+	case errors.Is(err, errNonIssueSelector):
+		return "", nil
+	default:
+		return "", err
+	}
+}
+
+func issueListParentMatches(row *types.IssueWithCounts, parentNativeID string) bool {
+	if parentNativeID == "" {
+		return false
+	}
+	if row.Parent != nil {
+		return *row.Parent == parentNativeID
+	}
+	return strings.HasPrefix(row.ID, parentNativeID+".")
 }
 
 type issueListConfigSource struct{ config workapi.ListConfig }
@@ -303,8 +495,16 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 	if err != nil {
 		return err
 	}
+	facts, err := s.selectedDescriptorsInTx(ctx, tx)
+	if err != nil {
+		return err
+	}
 	dependencyTypes := map[string]bool{}
-	for _, id := range dependencyLinkTypesForIssueType(s.ScopeURL(), issueType) {
+	nativeTypes, err := s.nativeDependencyTypeIDsInTx(ctx, tx)
+	if err != nil {
+		return err
+	}
+	for _, id := range nativeTypes {
 		dependencyTypes[id] = true
 	}
 	ids, err := s.installedInformationalTypes(ctx, tx)
@@ -344,9 +544,9 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 		valid := validateResourcePath(path) == nil && authorityID.MatchString(revision)
 		switch backing {
 		case "generic":
-			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && typ == MemoryTypeURL(s.ScopeURL()) && !key.Valid && memoryExists
+			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && s.isMemoryType(typ) && !key.Valid && memoryExists
 		case "issue":
-			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && typ == issueType && key.Valid && key.String != "" && issueExists
+			valid = valid && kind == "bead" && strings.HasPrefix(path, "beads/") && (nativeIssueTypeMatches(s.ScopeURL(), typ, issueType) && isConcreteNativeIssue(s.ScopeURL(), typ, facts...)) && key.Valid && key.String != "" && issueExists
 		case "dependency":
 			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && dependencyTypes[typ] && key.Valid && key.String != "" && dependencyExists
 		case "informational":

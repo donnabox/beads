@@ -1,0 +1,136 @@
+{
+  "producerSource": "76fde9c9cb0865d430bf12d76fc473490f51128a",
+  "producerSourceTree": "80d2aeb1146a7b3075fbed7a75e31f253032207c",
+  "sourceState": "clean checkout; canonical make install-force build",
+  "binarySHA256": "a511c002d16f3ab5756f13af3d9d172868431d8d1064b12cb426af38df3af11f",
+  "producerVersion": "bd version 1.3.0 (76fde9c9c)\n",
+  "fixtureSHA256": "acf372f8bc024de2a618678361a575cc93af27ae2d92915f34243f7d396b47b5",
+  "data": "exclusively synthetic disposable workspace; no production inputs",
+  "receipts": [
+    {
+      "args": [
+        "init",
+        "--prefix",
+        "legacy",
+        "--skip-hooks",
+        "--skip-agents",
+        "--non-interactive"
+      ],
+      "code": 0,
+      "stdout": "  Repository ID: 26cca1d8\n  Clone ID: 0539f25a559560c3\n  ✓ Committed beads files to git\n\n✓ bd initialized successfully!\n\n  Backend: dolt\n  Mode: embedded\n  Database: legacy\n  Issue prefix: legacy\n  Issues will be named: legacy-<hash> (e.g., legacy-a3f2dd)\n\nRun bd quickstart to get started.\n\n",
+      "stderr": "\n⚠ No Dolt remote configured\n  Issues are stored in local Dolt. .beads/issues.jsonl is an export,\n  not cross-machine sync or the source of truth.\n  To enable durable sync, add a git origin and then run:\n    bd dolt push\n"
+    },
+    {
+      "args": [
+        "create",
+        "Prerequisite",
+        "--id",
+        "legacy-a",
+        "--priority",
+        "0",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"created_at\": \"2026-10-10T19:01:11.372421Z\",\n  \"created_by\": \"fixture-author\",\n  \"id\": \"legacy-a\",\n  \"issue_type\": \"task\",\n  \"owner\": \"fixture@example.invalid\",\n  \"priority\": 0,\n  \"schema_version\": 1,\n  \"status\": \"open\",\n  \"title\": \"Prerequisite\",\n  \"updated_at\": \"2026-10-10T19:01:11.372421Z\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "create",
+        "Dependent work — 記憶",
+        "--id",
+        "legacy-b",
+        "--description",
+        "Body\nSecond line",
+        "--design",
+        "A design",
+        "--acceptance",
+        "A check",
+        "--notes",
+        "A note",
+        "--labels",
+        "one,two",
+        "--metadata",
+        "{\"custom\":{\"flag\":true},\"list\":[1,\"value\"]}",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"acceptance_criteria\": \"A check\",\n  \"created_at\": \"2026-10-10T19:01:13.936813Z\",\n  \"created_by\": \"fixture-author\",\n  \"description\": \"Body\\nSecond line\",\n  \"design\": \"A design\",\n  \"id\": \"legacy-b\",\n  \"issue_type\": \"task\",\n  \"labels\": [\n    \"one\",\n    \"two\"\n  ],\n  \"metadata\": {\n    \"custom\": {\n      \"flag\": true\n    },\n    \"list\": [\n      1,\n      \"value\"\n    ]\n  },\n  \"notes\": \"A note\",\n  \"owner\": \"fixture@example.invalid\",\n  \"priority\": 2,\n  \"schema_version\": 1,\n  \"status\": \"open\",\n  \"title\": \"Dependent work — 記憶\",\n  \"updated_at\": \"2026-10-10T19:01:13.936813Z\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "dep",
+        "add",
+        "legacy-b",
+        "legacy-a",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"depends_on_id\": \"legacy-a\",\n  \"issue_id\": \"legacy-b\",\n  \"schema_version\": 1,\n  \"status\": \"added\",\n  \"type\": \"blocks\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "comments",
+        "add",
+        "legacy-b",
+        "A preserved comment\nSecond line",
+        "--author",
+        "fixture-commenter",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"author\": \"fixture-commenter\",\n  \"created_at\": \"2026-10-10T19:01:17Z\",\n  \"id\": \"1cf2372b-1199-5383-ab08-c342b00093b5\",\n  \"issue_id\": \"legacy-b\",\n  \"schema_version\": 1,\n  \"text\": \"A preserved comment\\nSecond line\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "close",
+        "legacy-a",
+        "--reason",
+        "Synthetic completion",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "[\n  {\n    \"id\": \"legacy-a\",\n    \"title\": \"Prerequisite\",\n    \"status\": \"closed\",\n    \"priority\": 0,\n    \"issue_type\": \"task\",\n    \"owner\": \"fixture@example.invalid\",\n    \"created_at\": \"2026-10-10T19:01:11Z\",\n    \"created_by\": \"fixture-author\",\n    \"updated_at\": \"2026-10-10T19:01:19Z\",\n    \"closed_at\": \"2026-10-10T19:01:19Z\",\n    \"close_reason\": \"Synthetic completion\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Remembered context",
+        "--key",
+        "fixture-key"
+      ],
+      "code": 0,
+      "stdout": "Remembered [fixture-key]: Remembered context\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "export",
+        "--include-memories"
+      ],
+      "code": 0,
+      "stdout": "{\"_type\":\"issue\",\"id\":\"legacy-a\",\"title\":\"Prerequisite\",\"status\":\"closed\",\"priority\":0,\"issue_type\":\"task\",\"owner\":\"fixture@example.invalid\",\"created_at\":\"2026-10-10T19:01:11Z\",\"created_by\":\"fixture-author\",\"updated_at\":\"2026-10-10T19:01:19Z\",\"closed_at\":\"2026-10-10T19:01:19Z\",\"close_reason\":\"Synthetic completion\",\"dependency_count\":0,\"dependent_count\":1,\"comment_count\":0}\n{\"_type\":\"issue\",\"id\":\"legacy-b\",\"title\":\"Dependent work — 記憶\",\"description\":\"Body\\nSecond line\",\"design\":\"A design\",\"acceptance_criteria\":\"A check\",\"notes\":\"A note\",\"status\":\"open\",\"priority\":2,\"issue_type\":\"task\",\"owner\":\"fixture@example.invalid\",\"created_at\":\"2026-10-10T19:01:14Z\",\"created_by\":\"fixture-author\",\"updated_at\":\"2026-10-10T19:01:14Z\",\"metadata\":{\"list\":[1,\"value\"],\"custom\":{\"flag\":true}},\"labels\":[\"one\",\"two\"],\"dependencies\":[{\"issue_id\":\"legacy-b\",\"depends_on_id\":\"legacy-a\",\"type\":\"blocks\",\"created_at\":\"2026-10-10T19:01:16Z\",\"created_by\":\"fixture-author\",\"metadata\":\"{}\"}],\"comments\":[{\"id\":\"1cf2372b-1199-5383-ab08-c342b00093b5\",\"issue_id\":\"legacy-b\",\"author\":\"fixture-commenter\",\"text\":\"A preserved comment\\nSecond line\",\"created_at\":\"2026-10-10T19:01:17Z\"}],\"dependency_count\":1,\"dependent_count\":0,\"comment_count\":1}\n{\"_type\":\"memory\",\"key\":\"fixture-key\",\"value\":\"Remembered context\"}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "version"
+      ],
+      "code": 0,
+      "stdout": "bd version 1.3.0 (76fde9c9c)\n",
+      "stderr": ""
+    }
+  ]
+}

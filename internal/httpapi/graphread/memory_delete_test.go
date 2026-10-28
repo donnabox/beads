@@ -63,16 +63,21 @@ func TestMemoryDeletionCurrentReadAndRetainedPages(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			if _, err := store.CreateIssue(ctx, "beads/work", issueops.CreateRequest{Issue: &issueops.Issue{Title: "Surviving Issue", Status: "open", IssueType: "task", Priority: 2}, Actor: "human:issue-author"}); err != nil {
+			if _, err := store.CreateIssue(ctx, "beads/work", issueops.CreateRequest{Issue: &issueops.Issue{ID: "zz-work", Title: "Surviving Issue", Status: "open", IssueType: "task", Priority: 2}, ForceIDPrefix: true, Actor: "human:issue-author"}); err != nil {
 				t.Fatal(err)
 			}
-			owned, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/alpha", UnconditionalSource: true, Actor: "human:link-author"})
+			owned, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", TypeURL: scope + "superseded-by", SourcePath: "beads/plan", TargetPath: "beads/alpha", UnconditionalSource: true, Actor: "human:link-author"})
 			if err != nil {
 				t.Fatal(err)
 			}
 			if _, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/survivor", SourcePath: "beads/work", TargetPath: "beads/alpha", Actor: "human:link-author"}); err != nil {
 				t.Fatal(err)
 			}
+			// Fixture installation does not consume the bounded read/deletion
+			// exercise budget on slower race-enabled hosts.
+			cancel()
+			ctx, cancel = context.WithTimeout(context.Background(), 3*time.Minute)
+			defer cancel()
 			reader := New(store)
 			before := checkInventory(t, ctx, reader, 3, 2)
 			if before.Beads[1].ID != scope+"beads/plan" || before.Links[0].ID != scope+"links/context" {

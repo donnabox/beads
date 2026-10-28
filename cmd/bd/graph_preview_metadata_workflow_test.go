@@ -54,31 +54,32 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 			if !unsetByRemember.Changed || !bytes.Equal(unsetByRemember.Memory.Metadata, []byte(`{}`)) {
 				t.Fatalf("remember unset-only metadata = %+v", unsetByRemember)
 			}
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "work", "--metadata", `{"team":"issues"}`))
-			refuse("invalid_properties", "update", issue.ID, "--metadata", `{"x":1,"x":2}`, "--if-revision", issue.Revision)
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--graph-path", "beads/work", "--metadata", `{"team":"issues"}`))
+			refuse("invalid_properties", "update", issue.ID, "--metadata", `{"x":1,"x":2}`, "--if-revision", "="+issue.Revision)
 			if !bytes.Equal(issue.Metadata, []byte(`{"team":"issues"}`)) || len(issue.Properties.Metadata) != 0 {
 				t.Fatalf("Issue metadata = %s, properties=%+v", issue.Metadata, issue.Properties)
 			}
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, issue.ID, "--id", "context", "--type", scope+"types/preview-related", "--metadata", `{"origin":"manual"}`, "--if-source-revision", memory.Revision))
+			constraint := graphMixedResult[graphstore.Record](t, call("create", "Metadata constraint", "--type", "constraint", "--id", "metadata-constraint"))
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, constraint.ID, "--id", "context", "--type", scope+"subject-to", "--metadata", `{"origin":"manual"}`, "--if-source-revision", memory.Revision))
 			if !bytes.Equal(link.Link.Metadata, []byte(`{"origin":"manual"}`)) {
 				t.Fatalf("Link metadata = %s", link.Link.Metadata)
 			}
 			owned := graphMixedResult[graphstore.Record](t, call("show", memory.ID))
-			refuse("revision_conflict", "update", memory.ID, "--metadata", `{"team":"release"}`, "--if-revision", memory.Revision)
-			changed := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--metadata", `{"team":"release"}`, "--if-revision", owned.Revision))
+			refuse("revision_conflict", "update", memory.ID, "--metadata", `{"team":"release"}`, "--if-revision", "="+memory.Revision)
+			changed := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--metadata", `{"team":"release"}`, "--if-revision", "="+owned.Revision))
 			if !changed.Changed || !bytes.Equal(changed.Memory.Metadata, []byte(`{"team":"release"}`)) || changed.Memory.Properties != owned.Properties {
 				t.Fatalf("metadata-only Memory update = %+v", changed)
 			}
-			memoryNoop := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--metadata", `{"team":"release"}`, "--if-revision", changed.Memory.Revision))
+			memoryNoop := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--metadata", `{"team":"release"}`, "--if-revision", "="+changed.Memory.Revision))
 			if memoryNoop.Changed || memoryNoop.Memory.Revision != changed.Memory.Revision {
 				t.Fatalf("metadata no-op changed Memory = %+v", memoryNoop)
 			}
-			linkChanged := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--set-metadata", "origin=reviewed", "--if-revision", link.Link.Revision, "--if-source-revision", changed.Memory.Revision))
+			linkChanged := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--set-metadata", "origin=reviewed", "--if-revision", "="+link.Link.Revision, "--if-source-revision", changed.Memory.Revision))
 			if !linkChanged.Changed || !bytes.Equal(linkChanged.Link.Metadata, []byte(`{"origin":"reviewed"}`)) {
 				t.Fatalf("metadata-only Link update = %+v", linkChanged)
 			}
-			refuse("revision_conflict", "update", link.Link.ID, "--unset-metadata", "origin", "--if-revision", linkChanged.Link.Revision, "--if-source-revision", changed.Memory.Revision)
-			issueChanged := graphMixedResult[graphstore.IssueMutationResult](t, call("update", issue.ID, "--metadata", `{"team":"release"}`, "--if-revision", issue.Revision))
+			refuse("revision_conflict", "update", link.Link.ID, "--unset-metadata", "origin", "--if-revision", "="+linkChanged.Link.Revision, "--if-source-revision", changed.Memory.Revision)
+			issueChanged := graphMixedResult[graphstore.IssueMutationResult](t, call("update", issue.ID, "--metadata", `{"team":"release"}`, "--if-revision", "="+issue.Revision))
 			if !issueChanged.Changed || !bytes.Equal(issueChanged.Issue.Metadata, []byte(`{"team":"release"}`)) {
 				t.Fatalf("metadata-only Issue update = %+v", issueChanged)
 			}
@@ -88,7 +89,7 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 			if !remembered.Changed || remembered.Memory.Properties != changed.Memory.Properties || !bytes.Equal(remembered.Memory.Metadata, []byte(`{"reviewed":true,"team":"release"}`)) {
 				t.Fatalf("remember metadata-only upsert = %+v", remembered)
 			}
-			cleared := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--unset-metadata", "reviewed", "--unset-metadata", "team", "--if-revision", remembered.Memory.Revision))
+			cleared := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", memory.ID, "--unset-metadata", "reviewed", "--unset-metadata", "team", "--if-revision", "="+remembered.Memory.Revision))
 			if !cleared.Changed || !bytes.Equal(cleared.Memory.Metadata, []byte(`{}`)) {
 				t.Fatalf("metadata clear = %+v", cleared)
 			}
@@ -100,7 +101,7 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 				{issue.ID, issue.Revision, issue.Metadata},
 				{link.Link.ID, link.Link.Revision, link.Link.Metadata},
 			} {
-				raw := graphMixedResult[map[string]any](t, call("show", saved.id, "--version", saved.version))
+				raw := graphMixedResult[map[string]any](t, call("show", saved.id, "--revision", "="+saved.version))
 				metadata, err := json.Marshal(raw["metadata"])
 				if err != nil || !bytes.Equal(metadata, saved.metadata) {
 					t.Fatalf("retained %s metadata = %s, want %s (%v)", saved.id, metadata, saved.metadata, err)

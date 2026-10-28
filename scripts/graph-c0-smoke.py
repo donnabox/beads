@@ -26,6 +26,26 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def require_memory_deletion(result, final_live):
+    """Keep the last live snapshot distinct from the new deletion revision."""
+    require(isinstance(result, dict) and set(result) == {"memory", "terminal", "preview", "deleted"}
+            and result["memory"] == final_live and result["preview"] is False
+            and result["deleted"] is True,
+            "deletion did not disclose the exact final live predecessor")
+    terminal = result["terminal"]
+    require(isinstance(terminal, dict)
+            and set(terminal) == {"id", "revision", "version", "previousVersion", "state", "attribution"}
+            and terminal.get("id") == final_live["id"]
+            and terminal.get("previousVersion") == final_live["revision"]
+            and isinstance(terminal.get("revision"), str) and bool(terminal["revision"])
+            and terminal["revision"] != final_live["revision"]
+            and terminal.get("version") == terminal["revision"]
+            and terminal.get("state") == "deleted"
+            and isinstance(terminal.get("attribution"), dict)
+            and terminal["attribution"].get("inception") == final_live["attribution"]["inception"],
+            "deletion terminal did not follow the exact final live predecessor")
+
+
 def write_json(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n")
 
@@ -44,7 +64,9 @@ class Capture:
         self.args = args
         self.output = args.output_dir
         self.output.mkdir(mode=0o700, parents=True, exist_ok=False)
-        base = Path("/private/tmp") if Path("/private/tmp").is_dir() else Path("/tmp")
+        # Honor the caller's private temporary root; never inherit a foreign
+        # workspace merely because the platform-wide /tmp directory exists.
+        base = Path(tempfile.gettempdir()).resolve()
         for ancestor in [base, *base.parents]:
             require(not (ancestor / ".beads").exists(), f"ancestor .beads: {ancestor}")
         self.root = Path(tempfile.mkdtemp(prefix="bd-c0-", dir=base)).resolve()

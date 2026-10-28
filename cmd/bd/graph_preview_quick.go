@@ -23,8 +23,19 @@ func runGraphPreviewQuick(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	parent, _ := cmd.Flags().GetString("parent")
+	if cmd.Flags().Changed("parent") && parent == "" {
+		return graphFailure("invalid_selector", "--parent requires an Issue ID", 2)
+	}
+	if parent != "" && graphPreviewTypeGeneration != graphstore.TypeGeneration {
+		return graphFailure("capability_unavailable", "q --parent requires a fresh graph workspace", 5)
+	}
+	var selectedParent graphstore.IssueSelector
 	if parent != "" {
-		return graphFailure("capability_unavailable", "graph quick capture does not yet support --parent; use bd create --parent PARENT in a fresh graph workspace", 5)
+		var err error
+		selectedParent, err = graphPreviewIssueSelector(parent)
+		if err != nil {
+			return err
+		}
 	}
 	// Ordinary q joins its positional arguments without create's flag-looking
 	// title check. Cobra's -- terminator permits titles beginning with '-'.
@@ -53,12 +64,34 @@ func runGraphPreviewQuick(cmd *cobra.Command, args []string) error {
 		Status: types.StatusOpen, Priority: priority, IssueType: issueType,
 		Labels: utils.NormalizeLabels(labels),
 	}}
-	path := ""
+	path, touchedURL := "", ""
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		record, err := store.CreateIssue(ctx, "", request)
-		if err != nil {
-			return nil, "", err
+		var record graphstore.IssueRecord
+		if parent != "" {
+			parentIssue, err := store.ShowIssueSelected(ctx, selectedParent)
+			if err != nil {
+				return nil, "", fmt.Errorf("parent Issue %s: %w", parent, err)
+			}
+			identity, err := store.ResolveCanonicalPublicResourceIdentity(ctx, parentIssue.ID)
+			if err != nil {
+				return nil, "", err
+			}
+			created, err := store.CreateChildIssue(ctx, graphstore.IssueChildCreateRequest{
+				ParentPath: identity.PrivatePath, ExpectedParentRevision: parentIssue.Revision,
+				InheritLabels: true, Create: request,
+			})
+			if err != nil {
+				return nil, "", err
+			}
+			record = created.Child
+		} else {
+			var err error
+			record, err = store.CreateIssue(ctx, "", request)
+			if err != nil {
+				return nil, "", err
+			}
 		}
+		touchedURL = record.ID
 		path = graphPreviewDisplayLocalURL(record.ID)
 		return record, path, nil
 	}, func(_ any, id string) error {
@@ -66,7 +99,7 @@ func runGraphPreviewQuick(cmd *cobra.Command, args []string) error {
 		return err
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touchedURL)
 	}
 	return err
 }

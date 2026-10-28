@@ -92,14 +92,14 @@ func TestGraphPreviewGenericLinkIdentityFrontier(t *testing.T) {
 		nodes, links, frontier []string
 	}{
 		{"parallel-self", "out", 1, []genericTestEdge{{"ab1", "a", "b"}, {"ab2", "a", "b"}, {"aa", "a", "a"}}, []string{"a", "b"}, []string{"aa", "ab1", "ab2"}, []string{}},
-		{"root-self-zero", "both", 0, []genericTestEdge{{"aa", "a", "a"}}, []string{"a"}, []string{}, []string{"a"}},
-		{"boundary-self", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"bb", "b", "b"}}, []string{"a", "b"}, []string{"ab"}, []string{"b"}},
+		{"root-self-zero", "both", 0, []genericTestEdge{{"aa", "a", "a"}}, []string{"a"}, []string{"aa"}, []string{}},
+		{"boundary-self", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"bb", "b", "b"}}, []string{"a", "b"}, []string{"ab", "bb"}, []string{}},
 		{"boundary-self-expanded", "out", 2, []genericTestEdge{{"ab", "a", "b"}, {"bb", "b", "b"}}, []string{"a", "b"}, []string{"ab", "bb"}, []string{}},
-		{"cycle-boundary", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"ba", "b", "a"}}, []string{"a", "b"}, []string{"ab"}, []string{"b"}},
+		{"cycle-boundary", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"ba", "b", "a"}}, []string{"a", "b"}, []string{"ab", "ba"}, []string{}},
 		{"cycle-closed", "out", 2, []genericTestEdge{{"ab", "a", "b"}, {"ba", "b", "a"}}, []string{"a", "b"}, []string{"ab", "ba"}, []string{}},
 		{"cycle-both", "both", 1, []genericTestEdge{{"ab", "a", "b"}, {"ba", "b", "a"}}, []string{"a", "b"}, []string{"ab", "ba"}, []string{}},
-		{"diamond-out", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac"}, []string{"b"}},
-		{"diamond-both", "both", 1, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac"}, []string{"b", "c"}},
+		{"diamond-out", "out", 1, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac", "bc"}, []string{}},
+		{"diamond-both", "both", 1, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac", "bc"}, []string{}},
 		{"diamond-complete", "out", 2, []genericTestEdge{{"ab", "a", "b"}, {"ac", "a", "c"}, {"bc", "b", "c"}}, []string{"a", "b", "c"}, []string{"ab", "ac", "bc"}, []string{}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -321,29 +321,19 @@ func TestGraphPreviewGenericCanonicalSpelling(t *testing.T) {
 
 func TestGraphPreviewGenericProjectsOneNativeDependencyType(t *testing.T) {
 	const scope = genericTestScope
-	endpoint, err := graph.NewEndpointConstraint(nil, graph.ExternalNone)
+	taskType, err := graphstore.NativeIssueTypeURL(scope, "task")
 	if err != nil {
 		t.Fatal(err)
 	}
-	ids := []string{
-		graphstore.MemoryTypeURL(scope), graphstore.IssueTypeURL(scope), graphstore.DependencyTypeURL(scope),
-		graphstore.RelatedTypeURL(scope), graphstore.ExampleFollowsTypeURL(scope), graphstore.ExampleCitesTypeURL(scope),
+	blocksType, err := graphstore.NativeDependencyTypeURL(scope, "blocks")
+	if err != nil {
+		t.Fatal(err)
 	}
-	snapshot := graphstore.Snapshot{Types: make([]graph.TypeDescriptor, 0, len(ids))}
-	for index, id := range ids {
-		spec := graph.TypeDescriptorSpec{ID: id, Name: "Test Type", Describes: graph.KindLink, Source: &endpoint, Target: &endpoint}
-		if index == 0 || index == 1 {
-			spec.Describes, spec.Source, spec.Target = graph.KindBead, nil, nil
-		}
-		descriptor, err := graph.NewTypeDescriptor(spec)
-		if err != nil {
-			t.Fatal(err)
-		}
-		snapshot.Types = append(snapshot.Types, descriptor)
-	}
-	source := graphstore.IssueRecord{ID: scope + "beads/work", Type: graphstore.IssueTypeURL(scope), Version: "one", Properties: &types.Issue{Title: "Work"}}
-	target := graphstore.IssueRecord{ID: scope + "beads/prereq", Type: source.Type, Version: "two", Properties: &types.Issue{Title: "Prerequisite"}}
-	blocking := graphstore.LinkRecord{ID: scope + "links/blocks", Type: graphstore.DependencyTypeURL(scope), Source: source.ID, Target: target.ID, Version: "three", Properties: map[string]any{"dep_type": "blocks"}}
+	snapshot := graphstore.Snapshot{Types: selectedTypeTestDescriptors(t, scope)}
+
+	source := graphstore.IssueRecord{ID: scope + "beads/work", Type: taskType, Revision: "one", Version: "one", Properties: &types.Issue{ID: "beads/work", IssueType: types.TypeTask, Title: "Work"}}
+	target := graphstore.IssueRecord{ID: scope + "beads/prereq", Type: source.Type, Revision: "two", Version: "two", Properties: &types.Issue{ID: "beads/prereq", IssueType: types.TypeTask, Title: "Prerequisite"}}
+	blocking := graphstore.LinkRecord{ID: scope + "links/blocks", Type: blocksType, Source: source.ID, Target: target.ID, Revision: "three", Version: "three", Properties: map[string]any{"dep_type": "blocks"}}
 	snapshot.Records = []any{source, target, blocking}
 	got, err := projectGraphGeneric(snapshot, scope, graphGenericInput{Root: source.ID, Direction: "out", Depth: 1, MaxNodes: 2, MaxLinks: 1})
 	if err != nil || len(got.Nodes) != 2 || len(got.Links) != 1 || got.Links[0].Type != blocking.Type {

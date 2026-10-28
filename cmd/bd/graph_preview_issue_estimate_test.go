@@ -21,7 +21,7 @@ func TestGraphPreviewIssueEstimatePresence(t *testing.T) {
 		{"storage-max", []string{"--estimate=2147483647"}, 2147483647},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := issueTextCommand(t, append(tc.args, "--if-revision=observed")...)
+			cmd := issueTextCommand(t, append(tc.args, "--if-revision==observed")...)
 			got, err := graphPreviewIssueEditRequest(cmd, "beads/work")
 			if err != nil || !graphPreviewIssueEditFlagsChanged(cmd) || got.EstimatedMinutes == nil || *got.EstimatedMinutes != tc.want || got.ExpectedRevision != "observed" {
 				t.Fatalf("estimate presence/route/guard lost: %+v %v", got, err)
@@ -45,7 +45,6 @@ func TestGraphPreviewIssueEstimateRefusals(t *testing.T) {
 		code int
 	}{
 		{"negative", []string{"-e", "-1"}, 2},
-		{"status", []string{"-e", "0", "--status=open"}, 5},
 		{"claim", []string{"-e", "0", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -95,7 +94,7 @@ func TestGraphPreviewIssueEstimateClaimDispatch(t *testing.T) {
 		code  int
 	}{{"true", 5}, {"false", 2}} {
 		t.Run(tc.claim, func(t *testing.T) {
-			err := runGraphPreviewUpdate(issueClaimCommand(t, "--claim="+tc.claim, "-e", "0"), []string{"beads/work"})
+			err := runGraphPreviewClaimIssue(issueClaimCommand(t, "--claim="+tc.claim, "-e", "0"), "beads/work")
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != tc.code {
 				t.Fatalf("mixed claim/estimate reached storage: %v", err)

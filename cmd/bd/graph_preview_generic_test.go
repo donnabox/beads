@@ -25,6 +25,8 @@ func genericPreviewCommand(t *testing.T, args ...string) *cobra.Command {
 		switch flag.Value.Type() {
 		case "string":
 			values.String(flag.Name, flag.DefValue, flag.Usage)
+		case "stringArray":
+			values.StringArray(flag.Name, nil, flag.Usage)
 		case "bool":
 			value, err := strconv.ParseBool(flag.DefValue)
 			if err != nil {
@@ -77,14 +79,15 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 		{name: "zero-depth", flags: []string{"--view=generic", "--depth=0", "--max-nodes=1", "--max-links=1"}, args: []string{"beads/a"}},
 		{name: "hard-max", flags: []string{"--view=generic", "--depth=1000", "--max-nodes=1000", "--max-links=1000"}, args: []string{"beads/a"}},
 		{name: "zero-env", flags: []string{"--view=generic"}, args: []string{"beads/a"}, env: "0"},
-		{name: "missing-view", args: []string{"beads/a"}, code: 5},
-		{name: "wrong-view", flags: []string{"--view=issue"}, args: []string{"beads/a"}, code: 5},
+		{name: "missing-view", args: []string{"beads/a"}},
+		{name: "wrong-view", flags: []string{"--view=issue"}, args: []string{"beads/a"}, code: 2},
 		{name: "missing-root", flags: []string{"--view=generic"}, code: 2},
-		{name: "link-root", flags: []string{"--view=generic"}, args: []string{"links/a"}, code: 2},
-		{name: "type-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "types/preview-memory"}, code: 2},
+		{name: "literal-link-looking-id", flags: []string{"--view=generic"}, args: []string{"links/a"}},
+		{name: "literal-type-looking-id", flags: []string{"--view=generic"}, args: []string{genericTestScope + "types/preview-memory"}},
 		{name: "foreign-root", flags: []string{"--view=generic"}, args: []string{"https://foreign.test/beads/a"}, code: 2},
 		{name: "version-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "beads/a?version=old"}, code: 2},
-		{name: "unsupported-root", flags: []string{"--view=generic"}, args: []string{"alias/a"}, code: 2},
+		{name: "literal-alias-looking-id", flags: []string{"--view=generic"}, args: []string{"alias/a"}},
+		{name: "malformed-root", flags: []string{"--view=generic"}, args: []string{"a//b"}, code: 2},
 		{name: "direction", flags: []string{"--view=generic", "--direction=sideways"}, args: []string{"beads/a"}, code: 2},
 		{name: "negative-depth", flags: []string{"--view=generic", "--depth=-1"}, args: []string{"beads/a"}, code: 2},
 		{name: "excess-depth", flags: []string{"--view=generic", "--depth=1001"}, args: []string{"beads/a"}, code: 2},
@@ -107,17 +110,20 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 				}
 				return
 			}
-			if err != nil || in.Root != genericTestScope+"beads/a" {
+			// Prefix-looking path segments are literal identity data; only the
+			// catalog can establish the selected Resource kind.
+			wantRoot := genericTestScope + strings.TrimPrefix(tc.args[0], genericTestScope)
+			if err != nil || in.Root != wantRoot {
 				t.Fatalf("root admission: %+v %v", in, err)
 			}
-			if tc.name == "defaults" && (in.Direction != "both" || in.Depth != 1 || in.MaxNodes != 100 || in.MaxLinks != 200) {
+			if tc.name == "defaults" && (in.Direction != "both" || in.Depth != 1000 || in.MaxNodes != 1000 || in.MaxLinks != 1000) {
 				t.Fatalf("wrong defaults: %+v", in)
 			}
 		})
 	}
 }
 
-func TestGraphPreviewGenericLegacyFlagConflicts(t *testing.T) {
+func TestGraphPreviewGenericExistingFormatFlags(t *testing.T) {
 	savedJSON, savedStructured := jsonOutput, graphPreviewStructuredErrors
 	jsonOutput, graphPreviewStructuredErrors = false, false
 	t.Cleanup(func() { jsonOutput, graphPreviewStructuredErrors = savedJSON, savedStructured })
@@ -130,9 +136,8 @@ func TestGraphPreviewGenericLegacyFlagConflicts(t *testing.T) {
 			}
 			cmd := genericPreviewCommand(t, "--view=generic", "--"+name+"="+value)
 			_, err := graphPreviewGenericInput(cmd, []string{"beads/a"}, genericTestScope)
-			var exit *exitError
-			if !errors.As(err, &exit) || exit.Code != 5 {
-				t.Fatalf("changed legacy option silently accepted: %v", err)
+			if err != nil {
+				t.Fatalf("existing format option refused: %v", err)
 			}
 		})
 	}
@@ -160,10 +165,13 @@ func TestGraphPreviewGenericLegacyAdmission(t *testing.T) {
 		jsonOutput, graphPreviewStructuredErrors = oldJSON, oldStructured
 	})
 	jsonOutput, graphPreviewStructuredErrors = false, false
-	for _, flag := range []string{"--view=generic", "--view=", "--direction=both", "--depth=0", "--max-nodes=100", "--max-links=200"} {
+	for _, flag := range []string{"--view=generic", "--view=", "--direction=both", "--depth=0", "--max-nodes=100", "--max-links=1000"} {
 		t.Run(flag, func(t *testing.T) {
 			graphCmd = oldCmd
 			cmd := genericPreviewCommand(t, flag)
+			cmd.Use = "graph"
+			parent := &cobra.Command{Use: "bd"}
+			parent.AddCommand(cmd)
 			graphCmd = cmd
 			handled, err := admitGraphPreview(cmd)
 			var exit *exitError
@@ -174,6 +182,9 @@ func TestGraphPreviewGenericLegacyAdmission(t *testing.T) {
 	}
 	graphCmd = oldCmd
 	cmd := genericPreviewCommand(t)
+	cmd.Use = "graph"
+	parent := &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	graphCmd = cmd
 	if handled, err := admitGraphPreview(cmd); handled || err != nil {
 		t.Fatalf("bare legacy graph was hijacked: %t %v", handled, err)
@@ -183,6 +194,9 @@ func TestGraphPreviewGenericLegacyAdmission(t *testing.T) {
 	}
 	graphCmd = oldCmd
 	cmd = genericPreviewCommand(t, "--view=generic")
+	cmd.Use = "graph"
+	parent = &cobra.Command{Use: "bd"}
+	parent.AddCommand(cmd)
 	graphCmd = cmd
 	var handled bool
 	var err error
@@ -205,10 +219,10 @@ func TestGraphPreviewGenericDispatchBeforeStore(t *testing.T) {
 	t.Cleanup(func() {
 		graphPreviewActive, graphPreviewConfig, jsonOutput, graphPreviewStructuredErrors = oldActive, oldConfig, oldJSON, oldStructured
 	})
-	cmd := genericPreviewCommand(t, "--view=generic", "--all=false")
+	cmd := genericPreviewCommand(t, "--view=generic", "--depth=-1")
 	err := cmd.RunE(cmd, []string{"beads/a"})
 	var exit *exitError
-	if !errors.As(err, &exit) || exit.Code != 5 {
+	if !errors.As(err, &exit) || exit.Code != 2 {
 		t.Fatalf("graph command bypassed early preview admission: %v", err)
 	}
 }
@@ -223,6 +237,40 @@ func (w genericFailWriter) Write(p []byte) (int, error) {
 		return len(p) - 1, nil
 	}
 	return 0, w.err
+}
+
+func TestGraphPreviewGenericOmittedNoticeWriters(t *testing.T) {
+	oldQuiet := quietFlag
+	quietFlag = false
+	t.Cleanup(func() { quietFlag = oldQuiet })
+	var out, diagnostics bytes.Buffer
+	omitted := []string{genericTestScope + "references"}
+	if err := writeGraphGenericSelection(&out, &diagnostics, "graph\n", omitted); err != nil {
+		t.Fatal(err)
+	}
+	if out.String() != "graph\n" || !strings.Contains(diagnostics.String(), "--link-type any") || !strings.Contains(diagnostics.String(), omitted[0]) {
+		t.Fatalf("notice/output channels mixed: stdout=%q stderr=%q", out.String(), diagnostics.String())
+	}
+	for _, caveat := range []string{"--all", "endpoints", "isolated"} {
+		if !strings.Contains(diagnostics.String(), caveat) {
+			t.Fatalf("notice omitted the wildcard population caveat %q: %s", caveat, diagnostics.String())
+		}
+	}
+	diagnostics.Reset()
+	if err := writeGraphGenericSelection(genericFailWriter{err: io.ErrClosedPipe}, &diagnostics, "graph\n", omitted); !errors.Is(err, io.ErrClosedPipe) || diagnostics.Len() != 0 {
+		t.Fatalf("output failure emitted success notice: stderr=%q err=%v", diagnostics.String(), err)
+	}
+	if err := writeGraphGenericOmittedNotice(genericFailWriter{short: true}, omitted); !errors.Is(err, io.ErrShortWrite) {
+		t.Fatalf("notice short-write lost: %v", err)
+	}
+	if err := writeGraphGenericOmittedNotice(&diagnostics, nil); err != nil || diagnostics.Len() != 0 {
+		t.Fatalf("empty evidence emitted: %q %v", diagnostics.String(), err)
+	}
+	quietFlag = true
+	out.Reset()
+	if err := writeGraphGenericSelection(&out, &diagnostics, "{\"graph\":true}\n", omitted); err != nil || diagnostics.Len() != 0 || out.String() != "{\"graph\":true}\n" {
+		t.Fatalf("quiet changed structured output or emitted notice: stdout=%q stderr=%q err=%v", out.String(), diagnostics.String(), err)
+	}
 }
 
 func TestGraphPreviewGenericOutput(t *testing.T) {

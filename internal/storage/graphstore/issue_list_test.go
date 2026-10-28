@@ -55,7 +55,7 @@ func assertIssueListRetained(t *testing.T, ctx context.Context, s *Store, path s
 func TestGraphIssueListRequestAdmission(t *testing.T) {
 	// Every nonzero unsupported request field must refuse before touching a DB.
 	admitted := map[string]bool{}
-	for _, name := range []string{"Status", "IssueType", "TitleSearch", "TitleContains", "Assignee", "NoAssignee", "DueBefore", "DueAfter", "OverdueFlag", "Labels", "LabelsAny", "ExcludeLabels", "Priority", "PriorityMin", "PriorityMax", "PinnedFlag", "NoPinnedFlag", "AllFlag", "SortBy", "Reverse", "Limit", "MaxRows", "MaxRowsSource"} {
+	for _, name := range []string{"Status", "IssueType", "IDFilter", "TitleSearch", "TitleContains", "Assignee", "NoAssignee", "DueBefore", "DueAfter", "OverdueFlag", "Labels", "LabelsAny", "ExcludeLabels", "Priority", "PriorityMin", "PriorityMax", "PinnedFlag", "NoPinnedFlag", "NoParent", "ReadyFlag", "AllFlag", "SortBy", "Reverse", "Limit", "MaxRows", "MaxRowsSource"} {
 		admitted[name] = true
 	}
 	typ := reflect.TypeFor[publicops.ListRequest]()
@@ -90,9 +90,7 @@ func TestGraphIssueListRequestAdmission(t *testing.T) {
 			}
 		})
 	}
-	for _, request := range []publicops.ListRequest{
-		{SortBy: "id"}, {SortBy: "assignee"}, {SortBy: "closed"}, {SortBy: "bad"},
-	} {
+	for _, request := range []publicops.ListRequest{{SortBy: "bad"}} {
 		got, err := store.ListIssues(context.Background(), request)
 		if !errors.Is(err, ErrCapabilityUnavailable) || !reflect.ValueOf(got).IsZero() {
 			t.Fatalf("sort: %+v %v", got, err)
@@ -103,6 +101,7 @@ func TestGraphIssueListRequestAdmission(t *testing.T) {
 		{Status: string([]byte{255})}, {Labels: []string{string([]byte{255})}},
 		{TitleSearch: strings.Repeat("x", PreviewIssueListRequestByteLimit+1)}, {Labels: make([]string, PreviewIssueListLabelLimit+1)},
 		{TitleSearch: strings.Repeat("x", PreviewIssueListRequestByteLimit), Labels: []string{"overflow"}},
+		{IDFilter: strings.Repeat("x", PreviewIssueListRequestByteLimit+1)},
 	} {
 		got, err := store.ListIssues(context.Background(), request)
 		if !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() {
@@ -129,20 +128,23 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 			if err != nil || empty.Items == nil || len(empty.Items) != 0 || empty.HasMore {
 				t.Fatalf("empty: %+v %v", empty, err)
 			}
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Issue context"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Plan", Path: "beads/plan", Body: "Issue context"})
 			if err != nil {
 				t.Fatal(err)
 			}
 			wanted := map[string]IssueRecord{}
 			for _, entry := range []struct {
-				path, title string
-				priority    int
-				labels      []string
+				path, title, assignee string
+				priority              int
+				labels                []string
 			}{
-				{"beads/work", "Alpha work", 1, []string{"shared", "work"}}, {"beads/prereq", "Beta prerequisite", 2, []string{"shared", "prerequisite"}}, {"beads/other", "Gamma other", 3, []string{"other"}},
+				{"beads/work", "Alpha work", "Zed", 1, []string{"shared", "work"}}, {"beads/prereq", "Beta prerequisite", "", 2, []string{"shared", "prerequisite"}}, {"beads/other", "Gamma other", "Mira", 3, []string{"other"}},
 			} {
 				request := plainIssue(entry.title)
+				request.Issue.ID = entry.path
+				request.ForceIDPrefix = true
 				request.Issue.Priority = entry.priority
+				request.Issue.Assignee = entry.assignee
 				request.Issue.Labels = entry.labels
 				got, err := s.CreateIssue(ctx, entry.path, request)
 				if err != nil {
@@ -178,6 +180,27 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 					t.Fatal("blocked source is ready")
 				}
 			}
+			readyPage, err := s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, Limit: issueListInt(0)})
+			if err != nil || len(readyPage.Items) != 2 || readyPage.HasMore || readyPage.Items[0].ID != wanted["beads/prereq"].ID || readyPage.Items[1].ID != wanted["beads/other"].ID {
+				t.Fatalf("blocker-aware ready list: %+v %v", readyPage, err)
+			}
+			readyPage, err = s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, SortBy: "id", Limit: issueListInt(1)})
+			if err != nil || len(readyPage.Items) != 1 || !readyPage.HasMore || readyPage.Items[0].ID != wanted["beads/other"].ID {
+				t.Fatalf("ready list sorts visible IDs before paging: %+v %v", readyPage, err)
+			}
+			readyLegacy, err := s.ListIssuesLegacy(ctx, publicops.ListRequest{ReadyFlag: true, Limit: issueListInt(0)})
+			if err != nil || len(readyLegacy.Items) != 2 || readyLegacy.HasMore || readyLegacy.Items[0].ID != "beads/prereq" || readyLegacy.Items[1].ID != "beads/other" {
+				t.Fatalf("blocker-aware legacy ready list: %+v %v", readyLegacy, err)
+			}
+			if got, err := s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, TitleContains: "work"}); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() {
+				t.Fatalf("unsupported ready filter must refuse: %+v %v", got, err)
+			}
+			if got, err := s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, NoParent: true}); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() {
+				t.Fatalf("dropped ready no-parent must refuse: %+v %v", got, err)
+			}
+			if got, err := s.ListIssues(ctx, publicops.ListRequest{ReadyFlag: true, IDFilter: "beads/missing"}); !errors.Is(err, storage.ErrValidation) || !reflect.ValueOf(got).IsZero() {
+				t.Fatalf("dropped ready ID filter must refuse before empty-page resolution: %+v %v", got, err)
+			}
 			if !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
 				t.Fatal("listing/readiness changed stored state")
 			}
@@ -193,12 +216,19 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 				{"huge-page", publicops.ListRequest{Limit: issueListInt(int(^uint(0) >> 1))}, []string{"beads/work", "beads/prereq", "beads/other"}, false},
 				{"title", publicops.ListRequest{TitleSearch: "Alpha"}, []string{"beads/work"}, false},
 				{"contains", publicops.ListRequest{TitleContains: "prereq"}, []string{"beads/prereq"}, false},
+				{"id-native", publicops.ListRequest{IDFilter: wanted["beads/work"].Properties.ID}, []string{"beads/work"}, false},
+				{"id-path", publicops.ListRequest{IDFilter: "beads/prereq"}, []string{"beads/prereq"}, false},
+				{"id-canonical", publicops.ListRequest{IDFilter: s.ScopeURL() + "beads/prereq"}, []string{"beads/prereq"}, false},
+				{"id-set-before-page", publicops.ListRequest{IDFilter: "beads/other,beads/work", Limit: issueListInt(1)}, []string{"beads/work"}, true},
+				{"id-missing", publicops.ListRequest{IDFilter: "beads/missing"}, []string{}, false},
 				{"labels", publicops.ListRequest{Labels: []string{"shared", "work"}}, []string{"beads/work"}, false},
 				{"labels-any", publicops.ListRequest{LabelsAny: []string{"work", "other"}}, []string{"beads/work", "beads/other"}, false},
 				{"exclude", publicops.ListRequest{ExcludeLabels: []string{"shared"}}, []string{"beads/other"}, false},
 				{"priority", publicops.ListRequest{Priority: issueListInt(2)}, []string{"beads/prereq"}, false},
 				{"range", publicops.ListRequest{PriorityMin: issueListInt(2), PriorityMax: issueListInt(3)}, []string{"beads/prereq", "beads/other"}, false},
 				{"reverse", publicops.ListRequest{SortBy: "title", Reverse: true}, []string{"beads/other", "beads/prereq", "beads/work"}, false},
+				{"sort-id", publicops.ListRequest{SortBy: "id", Limit: issueListInt(2)}, []string{"beads/other", "beads/prereq"}, true},
+				{"sort-assignee", publicops.ListRequest{SortBy: "assignee", Limit: issueListInt(2)}, []string{"beads/prereq", "beads/other"}, true},
 				{"empty", publicops.ListRequest{TitleContains: "absent"}, []string{}, false},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
@@ -212,6 +242,9 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 						}
 					}
 				})
+			}
+			if page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: "beads/plan"}); err != nil || len(page.Items) != 0 {
+				t.Fatalf("unallocated local Issue ID must select no rows: %+v %v", page, err)
 			}
 			if !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
 				t.Fatal("filters/pages changed stored state")
@@ -230,6 +263,10 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 			all, err := s.ListIssues(ctx, publicops.ListRequest{AllFlag: true, Limit: issueListInt(0)})
 			if err != nil || len(all.Items) != 3 || !reflect.DeepEqual(all.Items[1], closed.Issue) {
 				t.Fatalf("all closed: %+v %v", all, err)
+			}
+			byClosed, err := s.ListIssues(ctx, publicops.ListRequest{AllFlag: true, SortBy: "closed", Limit: issueListInt(1)})
+			if err != nil || len(byClosed.Items) != 1 || byClosed.Items[0].ID != closed.Issue.ID || !byClosed.HasMore {
+				t.Fatalf("closed sort must precede open rows before paging: %+v %v", byClosed, err)
 			}
 			reopened, err := s.ReopenIssue(ctx, "beads/prereq", "again", "reopener")
 			if err != nil {
@@ -255,6 +292,143 @@ func TestGraphIssueListLifecycle(t *testing.T) {
 			got, err := second.ListIssues(ctx, publicops.ListRequest{Status: "open", TitleContains: "prereq"})
 			if err != nil || !reflect.DeepEqual(got, page) {
 				t.Fatalf("reopened store: %+v %v", got, err)
+			}
+		})
+	}
+}
+
+func TestGraphIssueListIDCollision(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := issueListFixture(t, backend)
+			request := plainIssue("Other Issue")
+			created, err := s.CreateIssue(ctx, "beads/other", request)
+			if err != nil {
+				t.Fatal(err)
+			}
+			alias := created.Properties.ID
+			if _, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/" + alias, Body: "context"}); err != nil {
+				t.Fatal(err)
+			}
+			byID, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: alias})
+			if err != nil || len(byID.Items) != 1 || byID.Items[0].Properties.ID != alias {
+				t.Fatalf("opaque public ID must select Issue despite a colliding Memory path: %+v %v", byID, err)
+			}
+			for _, id := range []string{alias, s.ScopeURL() + alias} {
+				page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: id})
+				if err != nil || len(page.Items) != 1 || page.Items[0].Properties.ID != alias {
+					t.Fatalf("public Issue ID %q selected %+v %v", id, page, err)
+				}
+			}
+			segmented := "teams/alpha/visible"
+			if _, err := s.CreateIssue(ctx, "beads/segmented-private", plainIssueAtPublicID("Segmented", segmented)); err != nil {
+				t.Fatal(err)
+			}
+			page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: s.ScopeURL() + segmented})
+			if err != nil || len(page.Items) != 1 || page.Items[0].Properties.ID != segmented {
+				t.Fatalf("segmented canonical public ID selected %+v %v", page, err)
+			}
+			for _, privatePath := range []string{"beads/other", "beads/segmented-private"} {
+				page, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: s.ScopeURL() + privatePath})
+				if err != nil || len(page.Items) != 0 {
+					t.Fatalf("private path URL %q must not select an Issue: %+v %v", privatePath, page, err)
+				}
+			}
+			if _, err := s.ListIssues(ctx, publicops.ListRequest{IDFilter: "beads/missing", Status: "not-a-status"}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("missing IDs must not skip filter validation: %v", err)
+			}
+		})
+	}
+}
+
+func TestGraphIssueListParentUsesPublicDottedIDs(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := issueListFixture(t, backend)
+			for _, item := range []struct{ path, id string }{
+				{"beads/private-root", "root"},
+				{"beads/elsewhere-dotted", "root.1"},
+				{"beads/private-root.2", "unrelated"},
+				{"beads/elsewhere-linked", "root.3"},
+				{"beads/explicit-child", "child"},
+				{"beads/foreign", "foreign"},
+			} {
+				if _, err := s.CreateIssue(ctx, item.path, plainIssueAtPublicID(item.id, item.id)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			parentType, ok := RelationshipDependencyTypeURL(s.ScopeURL(), types.DepParentChild)
+			if !ok {
+				t.Fatal("parent-child Type unavailable")
+			}
+			for _, edge := range []struct{ path, child, parent string }{
+				{"links/explicit", "beads/explicit-child", "beads/private-root"},
+				{"links/elsewhere", "beads/elsewhere-linked", "beads/foreign"},
+			} {
+				if _, err := s.AddDependency(ctx, DependencyRequest{Path: edge.path, Type: types.DepParentChild, TypeURL: parentType, SourcePath: edge.child, TargetPath: edge.parent, Actor: "author"}); err != nil {
+					t.Fatal(err)
+				}
+			}
+			selector := IssueSelector{Path: "beads/root", NativeID: "root", Exact: true}
+			page, err := s.ListIssuesSelected(ctx, publicops.ListRequest{}, selector)
+			if err != nil {
+				t.Fatal(err)
+			}
+			ids := make(map[string]bool, len(page.Items))
+			for _, item := range page.Items {
+				ids[item.Properties.ID] = true
+			}
+			if len(ids) != 2 || !ids["root.1"] || !ids["child"] {
+				t.Fatalf("flat descendants must use public IDs and explicit edges: %+v", page)
+			}
+			legacy, err := s.ListIssuesLegacySelected(ctx, publicops.ListRequest{}, selector)
+			if err != nil {
+				t.Fatal(err)
+			}
+			legacyIDs := make(map[string]bool, len(legacy.Items))
+			for _, item := range legacy.Items {
+				legacyIDs[item.ID] = true
+			}
+			if len(legacyIDs) != 2 || !legacyIDs["root.1"] || !legacyIDs["child"] {
+				t.Fatalf("counted descendants must match the checked page: %+v", legacy)
+			}
+		})
+	}
+}
+
+func TestGraphIssueListCanonicalIDSort(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := issueListFixture(t, backend)
+			for _, path := range []string{"beads/item-10", "beads/item-2", "beads/item-1"} {
+				request := plainIssue(path)
+				request.Issue.ID = path
+				request.ForceIDPrefix = true
+				if _, err := s.CreateIssue(ctx, path, request); err != nil {
+					t.Fatal(err)
+				}
+			}
+			for _, tc := range []struct {
+				reverse bool
+				want    []string
+			}{
+				{false, []string{"beads/item-1", "beads/item-2"}},
+				{true, []string{"beads/item-10", "beads/item-2"}},
+			} {
+				request := publicops.ListRequest{SortBy: "id", Reverse: tc.reverse, Limit: issueListInt(2)}
+				page, err := s.ListIssues(ctx, request)
+				if err != nil || len(page.Items) != len(tc.want) || !page.HasMore {
+					t.Fatalf("canonical id page: %+v %v", page, err)
+				}
+				legacy, err := s.ListIssuesLegacy(ctx, request)
+				if err != nil || len(legacy.Items) != len(tc.want) || !legacy.HasMore {
+					t.Fatalf("legacy id page: %+v %v", legacy, err)
+				}
+				for i, path := range tc.want {
+					if page.Items[i].ID != s.ScopeURL()+path || legacy.Items[i].ID != path {
+						t.Fatalf("id sort reverse=%t row %d: canonical=%s legacy=%s, want %s", tc.reverse, i, page.Items[i].ID, legacy.Items[i].ID, path)
+					}
+				}
 			}
 		})
 	}
@@ -369,7 +543,7 @@ func TestGraphIssueListRefusals(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := issueListFixture(t, backend)
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/memory", Body: "not listed"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/memory", Body: "not listed"}); err != nil {
 				t.Fatal(err)
 			}
 			for _, path := range []string{"beads/a", "beads/b"} {
@@ -450,8 +624,16 @@ func TestGraphIssueListBounds(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := issueListFixture(t, backend)
-			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
+			work, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
 				t.Fatal(err)
+			}
+			assertUnchanged := func() {
+				t.Helper()
+				page, err := s.ListIssues(ctx, publicops.ListRequest{IssueType: "task"})
+				if err != nil || page.HasMore || len(page.Items) != 1 || page.Items[0].ID != work.ID || page.Items[0].Properties == nil || page.Items[0].Properties.ID != work.Properties.ID || page.Items[0].Properties.IssueType != "task" {
+					t.Fatalf("bound injection changed the valid native list: %+v %v", page, err)
+				}
 			}
 			assertBound := func(got IssueListPage, err error) error {
 				if !errors.Is(err, ErrLimitExceeded) || !reflect.ValueOf(got).IsZero() {
@@ -459,6 +641,7 @@ func TestGraphIssueListBounds(t *testing.T) {
 				}
 				return nil
 			}
+			assertUnchanged()
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				// Each value fits the existing TEXT column. Their aggregate,
 				// including key bytes, exceeds the adapter's 64KiB admission.
@@ -467,11 +650,21 @@ func TestGraphIssueListBounds(t *testing.T) {
 						return err
 					}
 				}
+				// Raw SQL acquisition still enforces its aggregate byte budget,
+				// independently of the earlier native classification validator.
+				config, err := issueListConfigInTx(ctx, tx)
+				if !errors.Is(err, ErrLimitExceeded) || !reflect.ValueOf(config).IsZero() {
+					return fmt.Errorf("raw config bound leaked config: %+v %w", config, err)
+				}
 				got, err := s.listIssuesInTx(ctx, tx, publicops.ListRequest{})
-				return assertBound(got, err)
+				if !errors.Is(err, storage.ErrValidation) || errors.Is(err, ErrLimitExceeded) || !strings.Contains(err.Error(), "native Issue classification exceeds 32 characters") || !reflect.ValueOf(got).IsZero() {
+					return fmt.Errorf("invalid native classification leaked page or lost cause: %+v %w", got, err)
+				}
+				return nil
 			}); err != nil {
 				t.Fatal(err)
 			}
+			assertUnchanged()
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				names := make([]string, PreviewIssueListConfigRowLimit+1)
 				for i := range names {
@@ -486,6 +679,7 @@ func TestGraphIssueListBounds(t *testing.T) {
 			}); err != nil {
 				t.Fatal(err)
 			}
+			assertUnchanged()
 			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 				// Synthetic catalog excess verifies the operational cap before hydration.
 				// This rolled-back bound injection is not application acceptance evidence.
@@ -499,9 +693,10 @@ func TestGraphIssueListBounds(t *testing.T) {
 			}); err != nil {
 				t.Fatal(err)
 			}
+			assertUnchanged()
 			// Unlike the synthetic count probe, this oversized unrelated Memory is
 			// authored through the actual writer and exercises the persisted byte cap.
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/large", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2)}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Large", Path: "beads/large", Body: strings.Repeat("x", PreviewCurrentReadByteLimit/2)}); err != nil {
 				t.Fatal(err)
 			}
 			got, err := s.ListIssues(ctx, publicops.ListRequest{Limit: issueListInt(1)})
@@ -643,7 +838,7 @@ func TestGraphIssueQueriesDeletedMemory(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s, source, target, _ := reopenFixture(t, backend)
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/removed", Body: "retained context"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Removed", Path: "beads/removed", Body: "retained context"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -705,7 +900,8 @@ func TestGraphIssueQueriesDeletedMemoryReadBudget(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, _, s := issueListFixture(t, backend)
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/deleted", Body: strings.Repeat("d", 3<<20)})
+			ctx = currentReadBudgetContext(t, ctx)
+			memory, err := s.Create(ctx, CreateRequest{Title: "Deleted", Path: "beads/deleted", Body: strings.Repeat("d", 3<<20)})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -720,7 +916,7 @@ func TestGraphIssueQueriesDeletedMemoryReadBudget(t *testing.T) {
 			}
 			// Two live copies fit alone; the separately retained deleted head causes
 			// the existing 16 MiB acquisition budget to refuse even these empty views.
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Body: strings.Repeat("f", 7<<20)}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Filler", Path: "beads/filler", Body: strings.Repeat("f", 7<<20)}); err != nil {
 				t.Fatal(err)
 			}
 			before := reopenState(t, ctx, s)

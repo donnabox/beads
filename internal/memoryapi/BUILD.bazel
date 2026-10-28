@@ -10,9 +10,15 @@ go_library(
 
 go_test(
     name = "memoryapi_test",
-    srcs = ["memoryapi_test.go"],
+    srcs = [
+        "memoryapi_test.go",
+        "uri_boundary_test.go",
+    ],
     embed = [":memoryapi"],
-    deps = ["//memoryops"],
+    deps = [
+        "//graphops",
+        "//memoryops",
+    ],
 )
 
 # --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---

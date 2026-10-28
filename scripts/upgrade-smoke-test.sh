@@ -253,6 +253,37 @@ embedded_db_exists() {
     [ -d "$WS/.beads/embeddeddolt" ] || [ -f "$WS/.beads/beads.db" ]
 }
 
+# Preserve a failing pre-consent boundary before cand_upgrade mutates the
+# workspace. Reporting is best effort and must not replace the failed assertion.
+report_consent_gate_failure() {
+    local diagnostic_dir="" temporary=false
+    printf '  Candidate pre-consent list exit: %s\n' "$GATE_RC" >&2 || true
+    printf '  Candidate pre-consent list combined stdout/stderr:\n%s\n' "$GATE_OUT" >&2 || true
+    if [ -n "${TEST_UNDECLARED_OUTPUTS_DIR:-}" ] && mkdir -p "$TEST_UNDECLARED_OUTPUTS_DIR"; then
+        diagnostic_dir=$(mktemp -d "$TEST_UNDECLARED_OUTPUTS_DIR/consent-gate-XXXXXX") || diagnostic_dir=""
+    fi
+    if [ -z "$diagnostic_dir" ]; then
+        diagnostic_dir=$(mktemp -d "${TMPDIR:-/tmp}/bd-upgrade-consent-failure-XXXXXX") || diagnostic_dir=""
+        temporary=true
+    fi
+    if [ -z "$diagnostic_dir" ]; then
+        printf '  Warning: consent gate diagnostic directory unavailable; fixture was not archived.\n' >&2 || true
+        return 0
+    fi
+    printf '%s\n' "$GATE_OUT" >"$diagnostic_dir/list.combined-output" || true
+    printf '%s\n' "$GATE_RC" >"$diagnostic_dir/list.exit-status" || true
+    if tar -czf "$diagnostic_dir/premigration-workspace.tar.gz" -C "$WS" .; then
+        printf '  Pre-consent workspace archive: %s\n' "$diagnostic_dir/premigration-workspace.tar.gz" >&2 || true
+    else
+        printf '  Warning: pre-consent workspace archive failed: %s\n' "$diagnostic_dir/premigration-workspace.tar.gz" >&2 || true
+    fi
+    if $temporary; then
+        printf '  Temporary consent gate diagnostics: %s (the test runner may reclaim them)\n' "$diagnostic_dir" >&2 || true
+    else
+        printf '  Consent gate diagnostics: %s\n' "$diagnostic_dir" >&2 || true
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Scenario 1: Embedded maintainer upgrade
 # ---------------------------------------------------------------------------
@@ -283,10 +314,13 @@ else
     GATE_OUT=$(cand list 2>&1) && GATE_RC=0 || GATE_RC=$?
     if [ "$GATE_RC" -eq 0 ]; then
         pass "Candidate operates database directly (schema already current)"
-    elif echo "$GATE_OUT" | grep -q "bd migrate schema"; then
+    # Match captured guidance without depending on an external tool or the
+    # status of an early-exiting pipeline.
+    elif [[ "$GATE_OUT" == *"bd migrate schema"* ]]; then
         pass "Candidate refuses un-migrated database with consent guidance"
     else
         fail "Candidate failed on old database without consent guidance"
+        report_consent_gate_failure || true
     fi
 fi
 
@@ -629,15 +663,39 @@ else
     fi
 
     # 3. Wisps must stay writable — this is the storage_class default path.
-    if cand update "$WISP_ID" --notes "smoke wisp mutation" >/dev/null 2>&1; then
-        SHOW_OUT=$(cand show "$WISP_ID" 2>/dev/null || echo "")
-        if echo "$SHOW_OUT" | grep -q "smoke wisp mutation"; then
+    # Capture the existing update -> human show pair, without extra bd reads.
+    WISP_OBSERVATION_DIR=""
+    WISP_UPDATE_STDOUT=/dev/null
+    WISP_UPDATE_STDERR=/dev/null
+    WISP_SHOW_STDERR=/dev/null
+    if WISP_OBSERVATION_DIR=$(mktemp -d -t bd-upgrade-wisp-observation-XXXXXX); then
+        WISP_UPDATE_STDOUT="$WISP_OBSERVATION_DIR/update.stdout"
+        WISP_UPDATE_STDERR="$WISP_OBSERVATION_DIR/update.stderr"
+        WISP_SHOW_STDERR="$WISP_OBSERVATION_DIR/show.stderr"
+    fi
+    WISP_PAIR_FAILED=false
+    WISP_UPDATE_STATUS=0
+    WISP_SHOW_STATUS="not run"
+    SHOW_OUT=""
+    if cand update "$WISP_ID" --notes "smoke wisp mutation" >"$WISP_UPDATE_STDOUT" 2>"$WISP_UPDATE_STDERR"; then
+        if SHOW_OUT=$(cand show "$WISP_ID" 2>"$WISP_SHOW_STDERR"); then
+            WISP_SHOW_STATUS=0
+        else
+            WISP_SHOW_STATUS=$?
+        fi
+        if [ "$WISP_SHOW_STATUS" -ne 0 ]; then
+            fail "bd show on a migrated wisp errors after update (exit $WISP_SHOW_STATUS)"
+            WISP_PAIR_FAILED=true
+        elif echo "$SHOW_OUT" | grep -q "smoke wisp mutation"; then
             pass "Wisp writable after upgrade (mutation persisted)"
         else
             fail "Wisp mutation did not persist after upgrade"
+            WISP_PAIR_FAILED=true
         fi
     else
-        fail "bd update on a migrated wisp errors after upgrade"
+        WISP_UPDATE_STATUS=$?
+        fail "bd update on a migrated wisp errors after upgrade (exit $WISP_UPDATE_STATUS)"
+        WISP_PAIR_FAILED=true
     fi
 
     if cand doctor quick >/dev/null 2>&1; then
@@ -646,7 +704,61 @@ else
         fail "bd doctor quick fails after the wisp upgrade"
     fi
 
-    rm -rf "$WS"
+    if $WISP_PAIR_FAILED; then
+        # Diagnostics and preservation are best effort: never replace the
+        # assertion's failure status with an archive/printing failure.
+        printf '  Wisp update exit: %s; show exit: %s\n' "$WISP_UPDATE_STATUS" "$WISP_SHOW_STATUS" >&2 || true
+        printf '  --- update stdout ---\n' >&2 || true
+        cat "$WISP_UPDATE_STDOUT" >&2 || true
+        printf '  --- update stderr ---\n' >&2 || true
+        cat "$WISP_UPDATE_STDERR" >&2 || true
+        printf '  --- show stdout ---\n%s\n' "$SHOW_OUT" >&2 || true
+        printf '  --- show stderr ---\n' >&2 || true
+        cat "$WISP_SHOW_STDERR" >&2 || true
+        if [ -n "$WISP_OBSERVATION_DIR" ]; then
+            printf '%s\n' "$SHOW_OUT" >"$WISP_OBSERVATION_DIR/show.stdout" || true
+            printf 'update=%s\nshow=%s\n' "$WISP_UPDATE_STATUS" "$WISP_SHOW_STATUS" >"$WISP_OBSERVATION_DIR/exit-status.txt" || true
+        else
+            printf '  Warning: capture directory unavailable; stdout/stderr files were not saved.\n' >&2 || true
+        fi
+
+        WISP_ARCHIVE_DIR="${TEST_UNDECLARED_OUTPUTS_DIR:-}"
+        WISP_ARCHIVE_IS_TEMPORARY=false
+        if [ -z "$WISP_ARCHIVE_DIR" ] || ! mkdir -p "$WISP_ARCHIVE_DIR"; then
+            WISP_ARCHIVE_DIR=$(mktemp -d -t bd-upgrade-wisp-failure-XXXXXX) || WISP_ARCHIVE_DIR=""
+            WISP_ARCHIVE_IS_TEMPORARY=true
+        fi
+        WISP_ARCHIVE_INPUTS=(-C "$(dirname "$WS")" "$(basename "$WS")")
+        if [ -n "$WISP_OBSERVATION_DIR" ]; then
+            WISP_ARCHIVE_INPUTS+=(-C "$(dirname "$WISP_OBSERVATION_DIR")" "$(basename "$WISP_OBSERVATION_DIR")")
+        fi
+        WISP_FIXTURE_ARCHIVED=false
+        if [ -n "$WISP_ARCHIVE_DIR" ]; then
+            WISP_ARCHIVE="$WISP_ARCHIVE_DIR/wisp-failure-${PREV_VERSION}-$(basename "$WS").tar.gz"
+            if tar -czf "$WISP_ARCHIVE" "${WISP_ARCHIVE_INPUTS[@]}"; then
+                if $WISP_ARCHIVE_IS_TEMPORARY; then
+                    printf '  Temporary failed Wisp fixture archive: %s (the test runner may reclaim it)\n' "$WISP_ARCHIVE" >&2 || true
+                else
+                    printf '  Failed Wisp fixture and available command captures: %s\n' "$WISP_ARCHIVE" >&2 || true
+                fi
+                WISP_FIXTURE_ARCHIVED=true
+            else
+                printf '  Warning: archive failed: %s\n' "$WISP_ARCHIVE" >&2 || true
+            fi
+        fi
+        if $WISP_FIXTURE_ARCHIVED && ! $WISP_ARCHIVE_IS_TEMPORARY; then
+            rm -rf "$WS" || true
+            if [ -n "$WISP_OBSERVATION_DIR" ]; then rm -rf "$WISP_OBSERVATION_DIR" || true; fi
+        else
+            printf '  Temporary failed Wisp fixture remains at: %s (the test runner may reclaim it)\n' "$WS" >&2 || true
+            if [ -n "$WISP_OBSERVATION_DIR" ]; then
+                printf '  Temporary command captures remain at: %s (the test runner may reclaim them)\n' "$WISP_OBSERVATION_DIR" >&2 || true
+            fi
+        fi
+    else
+        rm -rf "$WS"
+        if [ -n "$WISP_OBSERVATION_DIR" ]; then rm -rf "$WISP_OBSERVATION_DIR" || true; fi
+    fi
     finish_scenario
 fi
 

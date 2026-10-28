@@ -374,7 +374,7 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 		t.Error("PR Core must require actual exclude read-permission coverage")
 	}
 	upload := job.step(t, "Upload PR core grouped test evidence")
-	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "pr-core-go-test-${{ github.sha }}" || upload.With["path"] != "artifacts/pr-core-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
+	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "pr-core-go-test-${{ github.sha }}-${{ matrix.scope }}" || upload.With["path"] != "artifacts/pr-core-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
 		t.Error("PR Core grouped evidence must survive failure with a bounded commit-specific upload")
 	}
 	gate := workflow.job(t, "ci-gate")
@@ -385,6 +385,35 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 	if !contains(gate.Needs, "pr-core-wrapper") || evaluate.Env["PR_CORE_WRAPPER"] != "${{ needs.pr-core-wrapper.result }}" || !contains(strings.Fields(evaluate.Env["CI_GATE_REQUIRED"]), "PR_CORE_WRAPPER") {
 		t.Error("CI gate must require the PR Core result")
 	}
+	assertStepEnvValue(t, job, "Run PR core wrapper", "BEADS_PR_CORE_SCOPE", "${{ matrix.scope }}")
+	var raw struct {
+		Jobs map[string]struct {
+			Strategy struct {
+				FailFast bool           `yaml:"fail-fast"`
+				Matrix   map[string]any `yaml:"matrix"`
+			} `yaml:"strategy"`
+		} `yaml:"jobs"`
+	}
+	if err := yaml.Unmarshal([]byte(readPolicyFile(t, sourceRepoRoot(t), ".github/workflows/pr.yml")), &raw); err != nil {
+		t.Fatal(err)
+	}
+	strategy := raw.Jobs["pr-core-wrapper"].Strategy
+	if strategy.FailFast || !reflect.DeepEqual(strategy.Matrix, map[string]any{"scope": []any{"graphstore-odd", "graphstore-even", "remaining"}}) {
+		t.Error("PR Core must run all three disjoint scopes without fail-fast cancellation")
+	}
+	for _, scope := range []string{"graphstore-odd", "graphstore-even", "remaining"} {
+		download := gate.step(t, "Download PR core "+scope+" evidence")
+		if download.If != "needs.pr-core-wrapper.result == 'success'" || download.TimeoutMinutes != 3 || download.Uses != "actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c" || download.With["name"] != "pr-core-go-test-${{ github.sha }}-"+scope || download.With["path"] != "artifacts/pr-core-scope-results/"+scope || download.With["pattern"] != "" {
+			t.Error("required CI gate must retrieve only the exact named source scope artifacts")
+		}
+	}
+	verify := gate.step(t, "Verify complete PR core coverage and cleanup")
+	if verify.If != "needs.pr-core-wrapper.result == 'success'" || verify.TimeoutMinutes != 2 || verify.ContinueOnError != nil {
+		t.Error("required CI gate must propagate bounded complete-union proof failures")
+	}
+	assertStepRunsExactly(t, gate, "Verify complete PR core coverage and cleanup", `python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/pr-core-scope-results --source-sha "$(git rev-parse HEAD)" --package-parallel 4 --test-parallel 4`)
+	assertStepsBefore(t, gate, []string{"Download PR core graphstore-odd evidence", "Download PR core graphstore-even evidence", "Download PR core remaining evidence", "Verify complete PR core coverage and cleanup"}, []string{"Evaluate CI gate"})
+
 }
 
 func TestPRComplexityReportIsAdvisoryAndBestEffort(t *testing.T) {
@@ -2164,7 +2193,10 @@ const (
 // bazel.yml's jobs: the rbe job that decides the execution mode, the
 // --config=ci lane, one job per CI job a Bazel config mirrors, and the two
 // package gates (F3), sorted alphabetically to match TestBazelWorkflowJobsAndExecutionMode's sort.Strings.
-var bazelJobNames = []string{bazelCmdDoltJobName, bazelDoltIntJobName, bazelDoltRaceJobName, bazelDoltJobName, bazelEmbedJobName, bazelIntegJobName, bazelProxiedJobName, bazelPureJobName, bazelReleaseCrossJobName, bazelServerJobName, bazelJobName, bazelPackageMCPJobName, bazelPackageNPMJobName, bazelRBEJobName, bazelRBEPrewarmJobName, "rrc-seed", "rrc-verify"}
+const bazelDispatchCoverageJobName = "bazel-dispatch-coverage"
+const bazelDispatchCoverageIf = "${{ always() && github.event_name == 'workflow_dispatch' && inputs.cmd-dolt-required == true }}"
+
+var bazelJobNames = []string{bazelCmdDoltJobName, bazelDispatchCoverageJobName, bazelDoltIntJobName, bazelDoltRaceJobName, bazelDoltJobName, bazelEmbedJobName, bazelIntegJobName, bazelProxiedJobName, bazelPureJobName, bazelReleaseCrossJobName, bazelServerJobName, bazelJobName, bazelPackageMCPJobName, bazelPackageNPMJobName, bazelRBEJobName, bazelRBEPrewarmJobName, "rrc-seed", "rrc-verify"}
 
 // The lanes that only run remotely (skipped unless the rbe job chose remote);
 // bazel-integration runs remotely or with the read-only cache (bazelIntegIf);
@@ -2523,7 +2555,9 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 		t.Errorf("%s runs-on = %q, want %q", bazelRBEJobName, rbe.RunsOn, wantRBERunsOn)
 	}
 	for name, job := range workflow.Jobs {
-		if name == bazelRBEJobName {
+		if name == bazelRBEJobName || name == bazelDispatchCoverageJobName {
+			// The dispatch-only result gate has no Bazel setup; its dependencies
+			// and execution contract are pinned by TestBazelDispatchCoverageJob.
 			continue
 		}
 		if !reflect.DeepEqual([]string(job.Needs), []string{bazelRBEJobName}) {
@@ -3027,8 +3061,9 @@ func TestPRWindowsMakeShellSetupStepsHaveTimeouts(t *testing.T) {
 
 type bazelWorkflowCall struct {
 	Inputs map[string]struct {
-		Type    string `yaml:"type"`
-		Default string `yaml:"default"`
+		Type     string `yaml:"type"`
+		Default  string `yaml:"default"`
+		Required bool   `yaml:"required"`
 	} `yaml:"inputs"`
 	Secrets map[string]struct {
 		Required bool `yaml:"required"`
@@ -3070,7 +3105,7 @@ func TestBazelLaneIsGatedAlongsideLegacy(t *testing.T) {
 		"rbe-mode":    "${{ jobs." + bazelRBEJobName + ".outputs.mode }}",
 	}
 	for name, job := range workflow.Jobs {
-		if name == bazelRBEJobName {
+		if name == bazelRBEJobName || name == bazelDispatchCoverageJobName {
 			continue
 		}
 		if isBazelRRCJob(name) {
@@ -3406,6 +3441,8 @@ func TestBazelCallConcurrencyDiffersFromCallers(t *testing.T) {
 func bazelLaneRunModes(t *testing.T, lane, ifExpr string, with map[string]string) map[string]bool {
 	t.Helper()
 	switch ifExpr {
+	case bazelDispatchCoverageIf:
+		return map[string]bool{} // direct dispatch only, never a PR-call lane
 	case "${{ needs.rbe.outputs.mode != 'skip' }}":
 		return map[string]bool{"remote": true, "fork-ro": true, "fork-rw": true, "cache": true, "local": true}
 	case "${{ needs.rbe.outputs.enabled == 'true' }}":
@@ -3593,7 +3630,7 @@ func TestBazelGateSimulation(t *testing.T) {
 
 	lanes := map[string]map[string]bool{} // lane -> modes it runs in, in pr.yml's call
 	for name, job := range workflow.Jobs {
-		if name == bazelRBEJobName {
+		if name == bazelRBEJobName || name == bazelDispatchCoverageJobName {
 			continue
 		}
 		if isBazelRRCJob(name) {
@@ -3872,7 +3909,7 @@ func collectRunArtifactUploads(t *testing.T, file string, with map[string]string
 			Steps []ciWorkflowStep `yaml:"steps"`
 		} `yaml:"jobs"`
 	}
-	if err := yaml.Unmarshal(data, &doc); err != nil {
+	if err := decodeCIWorkflowYAMLForRBE(file, data, false, &doc); err != nil {
 		t.Fatalf("parse %s: %v", path, err)
 	}
 	inputs := map[string]string{}
@@ -4054,6 +4091,54 @@ func TestBazelWorkflowCacheTopology(t *testing.T) {
 	}
 }
 
+// Exercise the real subprocess boundary without starting Bazel or a storage engine.
+// A failing query must expose its diagnostics and still fail equivalence.
+func TestBazelEquivalenceQueryDiagnostics(t *testing.T) {
+	root := sourceRepoRoot(t)
+	python := requireHostTool(t, "python3")
+	const program = `
+import contextlib, importlib.util, io, os, subprocess, sys, tempfile
+from pathlib import Path
+sys.dont_write_bytecode = True
+spec = importlib.util.spec_from_file_location("equivalence", sys.argv[1])
+eq = importlib.util.module_from_spec(spec); spec.loader.exec_module(eq)
+with tempfile.TemporaryDirectory(prefix="query diagnostics ") as directory:
+    root = Path(directory).resolve()
+    bazel = root / "fake bazel"
+    for code, stdout, stderr in ((7, "partial query output", "actual query error\n"), (7, "", ""), (0, "//a:a_test\n//b:b_test\n", "success noise\n")):
+        bazel.write_text("#!" + sys.executable + "\nimport os, sys\n"
+                         + "assert sys.argv[1:] == " + repr(["query", 'kind("go_test rule", //...)', "--output=label"]) + "\n"
+                         + "assert os.getcwd() == " + repr(str(root)) + "\n"
+                         + "sys.stdout.write(" + repr(stdout) + "); sys.stderr.write(" + repr(stderr) + ")\n"
+                         + "sys.exit(" + str(code) + ")\n")
+        bazel.chmod(0o700)
+        captured = io.StringIO()
+        with contextlib.redirect_stderr(captured):
+            try:
+                result = eq.query_go_test_pkgs(str(root), str(bazel))
+            except subprocess.CalledProcessError as error:
+                assert code == 7, error
+                assert error.returncode == code, error
+                assert error.cmd == [str(bazel), "query", 'kind("go_test rule", //...)', "--output=label"], error.cmd
+                assert error.stdout == stdout and error.stderr == stderr, (error.stdout, error.stderr)
+            else:
+                assert code == 0, "failed query was accepted"
+                assert result == {"a", "b"}, result
+        output = captured.getvalue()
+        if code:
+            assert "Bazel query failed (exit 7)" in output, output
+            assert str(bazel) in output, output
+            if stdout: assert "stdout:" in output and stdout in output, output
+            if stderr: assert "stderr:" in output and stderr in output, output
+        else:
+            assert output == "", output
+`
+	cmd := exec.Command(python, "-c", program, filepath.Join(root, "tools", "bazel", "equivalence.py"))
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("equivalence query diagnostics: %v\n%s", err, out)
+	}
+}
+
 // The lane runs the committed ci config over //..., reports the critical path
 // and the go test equivalence even when tests fail, catches BUILD drift, and
 // hands secrets to nothing but setup-bazel.
@@ -4063,6 +4148,19 @@ func TestBazelWorkflowRunsCIConfigWithReports(t *testing.T) {
 		t.Errorf("%s has no timeout-minutes", bazelJobName)
 	}
 	testStep := job.step(t, "bazel test //... --config=ci")
+	// PR #276 job 120799042314 exhausted 95 minutes with 221/222 tests
+	// complete and the last bd_test shard still progressing. Retain the
+	// five-minute outer margin while adding cumulative cold-run headroom;
+	// individual action/test deadlines remain governed by .bazelrc.
+	const observedCutoffMinutes = 95
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; testStep.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cutoff plus %d minutes headroom)",
+			bazelJobName, testStep.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
+	}
+	if job.TimeoutMinutes < testStep.TimeoutMinutes+5 || job.TimeoutMinutes > testStep.TimeoutMinutes+15 {
+		t.Errorf("%s timeout-minutes = %d, want the test step's %d plus 5 to 15 minutes for setup/reports/cleanup", bazelJobName, job.TimeoutMinutes, testStep.TimeoutMinutes)
+	}
 	for _, required := range []string{"bazel test //... --config=ci", "--profile=", "--build_event_json_file=", "set -o pipefail"} {
 		if !strings.Contains(testStep.Run, required) {
 			t.Errorf("test step does not contain %q:\n%s", required, testStep.Run)
@@ -4090,6 +4188,101 @@ func TestBazelWorkflowRunsCIConfigWithReports(t *testing.T) {
 		if !strings.Contains(sync.Run, required) {
 			t.Errorf("sync step does not contain %q:\n%s", required, sync.Run)
 		}
+	}
+}
+
+// The rbe decision binds enabled=true only for remote execution. Keep the
+// local/cache budget that would have let the interrupted #326 BEP finish, while remote
+// and fork execution retain their previous limits.
+func TestBazelTestTimeoutsByExecutionMode(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", bazelWorkflowName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	rbe := readCIWorkflow(t, bazelWorkflowName).job(t, bazelRBEJobName)
+	if !strings.Contains(rbe.step(t, "Decide remote execution").Run, "case \"$mode\" in remote|fork-ro|fork-rw) enabled=true ;; esac") {
+		t.Fatal("rbe enabled decision must be restricted to remote and fork modes")
+	}
+	for _, tc := range []struct {
+		mode      string
+		enabled   bool
+		step, job int
+	}{
+		{"local", false, 125, 130},
+		{"cache", false, 125, 130},
+		{"remote", true, 110, 115},
+		{"fork-ro", true, 110, 115},
+		{"fork-rw", true, 110, 115},
+	} {
+		t.Run(tc.mode, func(t *testing.T) {
+			workflow, err := decodeCIWorkflowForRBE(bazelWorkflowName, data, tc.enabled)
+			if err != nil {
+				t.Fatal(err)
+			}
+			job := workflow.job(t, bazelJobName)
+			step := job.step(t, "bazel test //... --config=ci")
+			if job.TimeoutMinutes != tc.job || step.TimeoutMinutes != tc.step || job.TimeoutMinutes-step.TimeoutMinutes != 5 {
+				t.Errorf("job/step timeouts = %d/%d, want %d/%d with 5-minute difference", job.TimeoutMinutes, step.TimeoutMinutes, tc.job, tc.step)
+			}
+			if !contains(job.Needs, bazelRBEJobName) || job.If != "${{ needs.rbe.outputs.mode != 'skip' }}" {
+				t.Errorf("bazel-test must depend on rbe and skip only mode skip: needs=%v if=%q", job.Needs, job.If)
+			}
+		})
+	}
+}
+
+func TestBazelTimeoutDecoderRejectsUnapprovedExpressions(t *testing.T) {
+	data, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", bazelWorkflowName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	const jobExpr = "${{ needs.rbe.outputs.enabled == 'true' && 115 || 130 }}"
+	const stepExpr = "${{ needs.rbe.outputs.enabled == 'true' && 110 || 125 }}"
+	for _, tc := range []struct{ name, old, replacement string }{
+		{"changed job", jobExpr, "${{ needs.rbe.outputs.enabled && 115 || 130 }}"},
+		{"changed step", stepExpr, "${{ needs.rbe.outputs.enabled && 110 || 125 }}"},
+		{"missing job expression", jobExpr, "115"},
+		{"missing step expression", stepExpr, "110"},
+		{"wrong step location", "id: test", "id: moved"},
+		{"wrong step name", "name: bazel test //... --config=ci", "name: unexpected bazel test"},
+		{"extra timeout expression", "timeout-minutes: 15", "timeout-minutes: ${{ arbitrary }}"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if !strings.Contains(string(data), tc.old) {
+				t.Fatalf("fixture lacks %q", tc.old)
+			}
+			changed := []byte(strings.Replace(string(data), tc.old, tc.replacement, 1))
+			if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, changed, false); err == nil {
+				t.Fatal("unapproved timeout expression decoded")
+			}
+		})
+	}
+	t.Run("approved expression aliased at another timeout", func(t *testing.T) {
+		anchored := strings.Replace(string(data), "timeout-minutes: "+jobExpr, "timeout-minutes: &budget "+jobExpr, 1)
+		if anchored == string(data) {
+			t.Fatal("fixture lacks approved job timeout")
+		}
+		if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, []byte(anchored), false); err != nil {
+			t.Fatalf("approved anchored timeout must still decode: %v", err)
+		}
+		aliased := strings.Replace(anchored, "timeout-minutes: 15", "timeout-minutes: *budget", 1)
+		if aliased == anchored {
+			t.Fatal("fixture lacks later unrelated timeout")
+		}
+		var document yaml.Node
+		if err := yaml.Unmarshal([]byte(aliased), &document); err != nil {
+			t.Fatalf("alias control must be valid YAML: %v", err)
+		}
+		if _, err := decodeCIWorkflowForRBE(bazelWorkflowName, []byte(aliased), false); err == nil {
+			t.Fatal("approved expression alias at another timeout decoded")
+		}
+	})
+	pr, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", "pr.yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := decodeCIWorkflowForRBE("pr.yml", pr, false); err != nil {
+		t.Fatalf("existing integer workflow no longer parses: %v", err)
 	}
 }
 
@@ -4388,12 +4581,15 @@ func TestBazelIntegrationJob(t *testing.T) {
 	// (rbe-west's 1200s limit). The job adds setup and log upload. In mode
 	// cache it runs on a 4-CPU GitHub-hosted runner, and with the read-only
 	// cache closed (the farm's kill switch) the whole suite builds and runs
-	// there cold, about 30 minutes simulated: the step keeps twice that.
+	// there cold. PR276 job120799042322 exhausted 75 minutes while the
+	// last shard still progressed after 178/179 tests; reserve 15 minutes
+	// beyond that observed cumulative cutoff without raising action limits.
 	const coldCompileMinutes = 20
-	const cacheClosedMinutes = 30
-	if test.TimeoutMinutes < 2*cacheClosedMinutes {
-		t.Errorf("%s test step timeout-minutes = %d, want at least %d (mode cache with the cache closed: ~%d minutes cold on a GitHub-hosted runner)",
-			bazelIntegJobName, test.TimeoutMinutes, 2*cacheClosedMinutes, cacheClosedMinutes)
+	const observedCutoffMinutes = 75
+	const cumulativeHeadroomMinutes = 15
+	if want := observedCutoffMinutes + cumulativeHeadroomMinutes; test.TimeoutMinutes < want {
+		t.Errorf("%s test step timeout-minutes = %d, want at least %d (observed %d-minute cumulative cutoff plus %d minutes headroom)",
+			bazelIntegJobName, test.TimeoutMinutes, want, observedCutoffMinutes, cumulativeHeadroomMinutes)
 	}
 	actionCapMinutes := 0
 	for line := range bazelrcLines(t) {
@@ -5268,7 +5464,7 @@ func TestBazelWorkflowSecretsAndFailureSurface(t *testing.T) {
 				}
 			}
 		}
-		if name == bazelRBEJobName || name == bazelRBEPrewarmJobName {
+		if name == bazelRBEJobName || name == bazelRBEPrewarmJobName || name == bazelDispatchCoverageJobName {
 			continue // no setup-bazel; rbe-prewarm's secret reads are pinned below
 		}
 		n := 0
@@ -5858,17 +6054,20 @@ from unittest import mock
 sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location("macos_go", sys.argv.pop(1))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+real_go = sys.argv.pop(1)
 
 FAKE = r'''#!/usr/bin/env python3
 import json, os, sys
 from pathlib import Path
 mode = os.environ.get("DISPATCH_CASE", "good")
 graph = "github.com/steveyegge/beads/internal/storage/graphstore"
+command = "github.com/steveyegge/beads/cmd/bd"
 other = "github.com/steveyegge/beads/scripts"
 args = sys.argv[1:]
 with Path("calls.jsonl").open("a") as log: log.write(json.dumps(args) + "\n")
 if args[0] == "list":
     print(other)
+    if mode != "missing-command": print(command)
     if mode != "missing-package": print(graph)
     if mode == "duplicate-package": print(graph)
     sys.exit(0)
@@ -5877,19 +6076,23 @@ if "-list" in args:
     if mode == "empty": sys.exit(0)
     print("TestEmbeddedOld")
     if mode == "excluded-only": sys.exit(0)
-    for name in ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"]: print(name)
+    names = ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"] + [f"TestFixture{index:03d}" for index in range(16)]
+    if mode == "last-group":
+        names = ["ExampleValue", "FuzzSeeds"] + [f"TestRoot{index:03d}" for index in range(13)] + ["TestZZLast", "TestZulu"]
+    if mode == "census-416": names = [f"TestStore{index:03d}" for index in range(416)]
+    for name in names: print(name)
     print("BenchmarkIgnored")
     if mode == "duplicate-name": print("TestNew")
     print("ok  " + graph + " 0.01s")
     sys.exit(0)
 pkg = args[-1]
-if (mode == "test-failure" and pkg == graph) or (mode == "other-failure" and pkg == other): sys.exit(9)
+if (mode == "test-failure" and pkg == graph) or (mode == "other-failure" and pkg == other) or (mode == "command-failure" and pkg == command): sys.exit(9)
 def event(action, name=None):
     print(json.dumps(dict(Action=action, Package=pkg, **({"Test":name} if name else {}))))
 event("start")
 if mode == "json-fail": event("fail")
 if mode == "build-fail": event("build-fail")
-if pkg == graph:
+if pkg in (graph, command):
     names = args[args.index("-run")+1][2:-2].split("|")
     if mode == "missing-root": names = names[1:]
     if mode == "extra-root": names += ["TestUnexpected"]
@@ -5919,16 +6122,23 @@ class DispatchControls(unittest.TestCase):
             if case != "good": return
             plan = json.loads((output / "plan.json").read_text())
             self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
-            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"])
+            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"] + [f"TestFixture{index:03d}" for index in range(16)])
             self.assertEqual(sorted(sum(plan["groups"], [])), expected)
             self.assertEqual(len(sum(plan["groups"], [])), len(expected))
-            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"]))))
-            self.assertEqual(len(summary["groups"]), 4)
+            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"])), m.GRAPHSTORE_GROUPS))
+            self.assertEqual(len(summary["groups"]), m.GRAPHSTORE_GROUPS)
+            self.assertTrue(all(len(group) >= 2 for group in plan["groups"]))
             self.assertTrue(any(g["skipped"] for g in summary["groups"]))
             calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
             self.assertEqual(calls[0], ["list", "-race", "-tags", "gms_pure_go", "./..."])
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
-            self.assertEqual(len(executions), 5)
+            self.assertEqual(len(executions), m.GRAPHSTORE_GROUPS + m.GROUPS + 1)
+            self.assertEqual(plan["command"]["excluded"], ["TestEmbeddedOld"])
+            self.assertEqual(sorted(sum(plan["command"]["groups"], [])), expected)
+            self.assertEqual(len(sum(plan["command"]["groups"], [])), len(expected))
+            self.assertEqual(plan["command"]["groups"], m.partition(plan["command"]["discovered"], m.GROUPS))
+            self.assertEqual(len(summary["commandGroups"]), m.GROUPS)
+            self.assertTrue(any(g["skipped"] for g in summary["commandGroups"]))
             for call in executions:
                 for flag in ["-race", "-short", "-timeout=30m", "-json"]: self.assertIn(flag, call)
                 self.assertNotIn("-v", call)
@@ -5936,9 +6146,128 @@ class DispatchControls(unittest.TestCase):
                 self.assertEqual(call[call.index("-skip")+1], "^TestEmbedded")
             self.assertEqual(executions[-1][-1], "github.com/steveyegge/beads/scripts")
             self.assertNotIn(m.GRAPHSTORE, executions[-1])
+            self.assertNotIn(m.COMMAND, executions[-1])
             for index, group in enumerate(plan["groups"], 1):
                 census = json.loads((output / ("graphstore-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
+            for index, group in enumerate(plan["command"]["groups"], 1):
+                census = json.loads((output / ("cmd-bd-%d-census.json" % index)).read_text())
+                self.assertEqual(census["roots"], group)
+
+    def test_sixteenth_graphstore_group_has_a_real_terminal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            output = root / "evidence"
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "last-group"}):
+                m.execute(root, output, str(fake), scope="graphstore", source_sha="a" * 40)
+            summary = json.loads((output / "summary.json").read_text())
+            self.assertTrue(summary["passed"])
+            self.assertEqual(len(summary["groups"]), 16)
+            last = summary["groups"][-1]
+            self.assertEqual(last["label"], "graphstore-16")
+            self.assertEqual(last["roots"], ["TestZZLast"])
+            self.assertEqual(summary["groups"][0]["roots"], ["ExampleValue", "TestZulu"])
+            self.assertEqual(last["skipped"], [])
+            self.assertEqual(json.loads((output / "graphstore-16-census.json").read_text())["roots"], last["roots"])
+
+    def test_macos_scope_policy_stays_distinct_from_pr_core(self):
+        source = "a" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            output = root / "scopes"; output.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
+                for scope in m.CI_SCOPES:
+                    m.execute(root, output / scope, str(fake), scope=scope, source_sha=source)
+            self.assertTrue(m.verify_scopes(output, source)["passed"])
+            with self.assertRaises(RuntimeError): m.verify_scopes(output, source, 4, 4)
+
+    def test_disjoint_scope_union_and_refusals(self):
+        import shutil
+        source = "a" * 40
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            outputs = root / "scopes"; outputs.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "good"}):
+                for scope in m.CI_SCOPES:
+                    m.execute(root, outputs / scope / "run.fixture" / "evidence", str(fake), scope=scope, source_sha=source, package_parallel=4, test_parallel=4)
+            proof = m.verify_scopes(outputs, source, 4, 4)
+            self.assertTrue(proof["passed"])
+            self.assertEqual(proof["scopes"], sorted(m.CI_SCOPES))
+            calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+            executions = [call for call in calls if call[0] == "test" and "-list" not in call]
+            self.assertEqual(len(executions), m.GRAPHSTORE_GROUPS + m.GROUPS + 1)
+            self.assertEqual(sum(call[-1] == m.GRAPHSTORE for call in executions), m.GRAPHSTORE_GROUPS)
+            self.assertEqual(sum(call[-1] == m.COMMAND for call in executions), m.GROUPS)
+            for case in ("missing", "duplicate", "source", "flags", "packages", "raw", "failed", "cleanup", "receipt", "discovery"):
+                with self.subTest(case=case):
+                    changed = root / case; shutil.copytree(outputs, changed)
+                    scope = changed / "remaining" / "run.fixture" / "evidence"
+                    if case == "missing": shutil.rmtree(scope)
+                    elif case == "duplicate": shutil.copytree(scope, changed / "duplicate")
+                    elif case == "raw": (scope / "other-packages.stdout").write_text("")
+                    elif case == "discovery": (scope / "cmd-bd-discovery.stdout").write_text("TestIncomplete\n")
+                    else:
+                        name = "processes.json" if case in ("cleanup", "receipt") else "summary.json" if case == "failed" else "plan.json"
+                        path = scope / name; value = json.loads(path.read_text())
+                        if case == "source": value["source"] = "b" * 40
+                        elif case == "flags": value["flags"] = []
+                        elif case == "packages": value["scopedPackages"] = [m.COMMAND]
+                        elif case == "failed": value["passed"] = False
+                        elif case == "cleanup": value[0]["groupGone"] = False
+                        elif case == "receipt": value.pop()
+                        path.write_text(json.dumps(value))
+                    with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
+                        m.verify_scopes(changed, source, 4, 4)
+
+    def test_alternating_scopes_preserve_416_roots_and_refuse_partial_proof(self):
+        from collections import Counter
+        import shutil
+        source = "a" * 40
+        self.assertEqual(m.TOTAL_SECONDS, 6900)
+        self.assertEqual(m.GROUP_SECONDS, 2100)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 16)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            outputs = root / "scopes"; outputs.mkdir()
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE": "census-416"}):
+                for scope in m.CI_SCOPES:
+                    m.execute(root, outputs / scope, str(fake), scope=scope, source_sha=source)
+            coverage = Counter()
+            for scope, expected in (("graphstore-odd", list(range(1, 17, 2))), ("graphstore-even", list(range(2, 17, 2)))):
+                plan = json.loads((outputs / scope / "plan.json").read_text())
+                summary = json.loads((outputs / scope / "summary.json").read_text())
+                self.assertEqual(plan["selectedGroups"], expected)
+                self.assertEqual([len(g) for g in plan["groups"]], [26] * 16)
+                self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
+                self.assertEqual([g["label"] for g in summary["groups"]], [f"graphstore-{n}" for n in expected])
+                self.assertEqual(sum(len(g["roots"]) for g in summary["groups"]), 208)
+                self.assertEqual(summary["commandGroups"], [])
+                self.assertNotIn("other", summary)
+                coverage.update(name for g in summary["groups"] for name in g["roots"])
+            self.assertEqual(coverage, Counter({f"TestStore{index:03d}": 1 for index in range(416)}))
+            self.assertTrue(m.verify_scopes(outputs, source)["passed"])
+            calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+            executions = [c for c in calls if c[0] == "test" and "-list" not in c]
+            self.assertEqual(sum(c[-1] == m.GRAPHSTORE for c in executions), 16)
+            self.assertEqual(sum(c[-1] == m.COMMAND for c in executions), 4)
+            self.assertEqual(sum(c[-1] not in (m.GRAPHSTORE, m.COMMAND) for c in executions), 1)
+            for case in ("missing-half", "duplicate-half", "wrong-selection", "missing-group", "raw", "discovery", "excluded"):
+                with self.subTest(case=case):
+                    changed = root / case; shutil.copytree(outputs, changed)
+                    half = changed / "graphstore-odd"
+                    if case == "missing-half": shutil.rmtree(half)
+                    elif case == "duplicate-half": shutil.copytree(half, changed / "extra")
+                    elif case == "raw": (half / "graphstore-7.stdout").write_text("")
+                    elif case == "discovery": (half / "graphstore-discovery.stdout").write_text("TestIncomplete\n")
+                    else:
+                        path = half / ("summary.json" if case == "missing-group" else "plan.json")
+                        value = json.loads(path.read_text())
+                        if case == "wrong-selection": value["selectedGroups"] = list(range(2, 17, 2))
+                        elif case == "missing-group": value["groups"].pop()
+                        elif case == "excluded": value["excluded"] = []
+                        path.write_text(json.dumps(value))
+                    with self.assertRaises((RuntimeError, ValueError, FileNotFoundError)):
+                        m.verify_scopes(changed, source)
 
     def test_pr_core_options_and_raw_json_compatibility(self):
         for case in ("good", "json-fail", "other-failure"):
@@ -5970,10 +6299,11 @@ class DispatchControls(unittest.TestCase):
                 eq_path = Path(m.__file__).resolve().parents[2] / "tools/bazel/equivalence.py"
                 eq_spec = importlib.util.spec_from_file_location("equivalence", eq_path)
                 eq = importlib.util.module_from_spec(eq_spec); eq_spec.loader.exec_module(eq)
-                statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", "github.com/steveyegge/beads/scripts": "scripts"})
-                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"})
+                statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", m.COMMAND: "cmd/bd", "github.com/steveyegge/beads/scripts": "scripts"})
+                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "TestGamma", "TestOmega", "TestDelta", "TestEpsilon", "TestEta", "TestIota", "TestKappa", "TestLambda", "TestMu", "TestTheta", "ExampleValue", "FuzzSeeds"} | {f"TestFixture{index:03d}" for index in range(16)})
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestServer"], "skipped")
                 self.assertEqual(statuses["internal/storage/graphstore"]["TestNew"], "passed")
+                self.assertEqual(statuses["cmd/bd"], statuses["internal/storage/graphstore"])
                 self.assertTrue(all(r["groupGone"] for r in receipts))
 
     def test_pr_core_shell_forwards_environment_and_failure(self):
@@ -5981,7 +6311,7 @@ class DispatchControls(unittest.TestCase):
         # This proves shell quoting, defaults, opt-in JSON and failure propagation.
         import shutil
         repo = Path(m.__file__).resolve().parents[2]
-        for json_enabled, exit_code in ((False, 0), (True, 0), (True, 7)):
+        for json_enabled, exit_code, scope in ((False, 0, None), (True, 0, None), (True, 7, None), (False, 0, "remaining")):
             with self.subTest(json=json_enabled, exit=exit_code), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 for rel in (".buildflags", "scripts/ci/pr-core.sh", "scripts/ci/lib/timing.sh", "scripts/ci/lib/test-env.sh"):
@@ -5990,9 +6320,11 @@ class DispatchControls(unittest.TestCase):
                 python = binary / "python3"
                 python.write_text("#!" + sys.executable + "\nimport json,os,sys\nfrom pathlib import Path\nPath('invocation.json').write_text(json.dumps({'args':sys.argv[1:], 'tags':os.environ.get('GOFLAGS'), 'cgo':os.environ.get('CGO_ENABLED')}))\nsys.exit(int(os.environ['FAKE_EXIT']))\n")
                 python.chmod(0o700)
+                git = binary / "git"; git.write_text("#!/bin/sh\nprintf '%s\\n' " + "a" * 40 + "\n"); git.chmod(0o700)
                 env = dict(os.environ, PATH=str(binary) + os.pathsep + os.environ["PATH"], BEADS_TEST_ENV_DISABLE="1", FAKE_EXIT=str(exit_code))
-                for key in ("GO_TEST_PKG_PARALLEL", "GO_TEST_PARALLEL", "BEADS_PR_CORE_GO_TEST_JSON", "BEADS_CI_TEST_ENV_SH_LOADED", "BEADS_CI_TIMING_SH_LOADED", "GITHUB_STEP_SUMMARY"):
+                for key in ("GO_TEST_PKG_PARALLEL", "GO_TEST_PARALLEL", "BEADS_PR_CORE_GO_TEST_JSON", "BEADS_PR_CORE_SCOPE", "BEADS_CI_TEST_ENV_SH_LOADED", "BEADS_CI_TIMING_SH_LOADED", "GITHUB_STEP_SUMMARY"):
                     env.pop(key, None)
+                if scope: env["BEADS_PR_CORE_SCOPE"] = scope
                 if json_enabled:
                     env.update(GO_TEST_PKG_PARALLEL="3", GO_TEST_PARALLEL="2", BEADS_PR_CORE_GO_TEST_JSON=str(root / "combined events.json"))
                 process = m.subprocess.run(["bash", str(root / "scripts/ci/pr-core.sh")], cwd=root, env=env, capture_output=True, timeout=10)
@@ -6004,6 +6336,10 @@ class DispatchControls(unittest.TestCase):
                 self.assertIn("gms_pure_go", invocation["tags"])
                 evidence = Path(args[args.index("--output") + 1])
                 self.assertTrue(evidence.parent.is_dir()); self.assertFalse(evidence.exists())
+                if scope:
+                    self.assertEqual(args[args.index("--scope") + 1], scope)
+                    self.assertEqual(args[args.index("--source-sha") + 1], "a" * 40)
+                else: self.assertNotIn("--scope", args)
                 if json_enabled: self.assertEqual(args[args.index("--json-output") + 1], str(root / "combined events.json"))
                 else: self.assertNotIn("--json-output", args)
 
@@ -6017,20 +6353,49 @@ class DispatchControls(unittest.TestCase):
             runner = m.Runner(root, root)
             # A cold race-enabled Go toolchain can compile this tiny fixture
             # slowly when the Bazel worker is also running the full suite.
-            events = runner.run("framing", ["go", "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 120)
+            events = runner.run("framing", [real_go, "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 120)
             census = m.verify_events(events, ["example.invalid/dispatch-framing"], ["TestFragment"])
             self.assertEqual(census["tests"], 2)
             self.assertEqual(census["skipped"], [])
 
     def test_complete_partition_and_existing_skip(self): self.exercise("good")
     def test_negative_receipts(self):
-        for case in ["missing-package", "duplicate-package", "discovery-failure", "empty", "excluded-only",
+        for case in ["missing-package", "missing-command", "command-failure", "duplicate-package", "discovery-failure", "empty", "excluded-only",
                      "duplicate-name", "test-failure", "other-failure", "missing-root", "extra-root",
                      "unfinished-child", "duplicate-terminal", "bad-json", "json-fail", "build-fail", "missing-package-terminal", "other-missing-terminal"]:
             with self.subTest(case=case): self.exercise(case)
+    def test_large_partition_is_exhaustive_balanced_and_disjoint(self):
+        # Cover more than one root per group, not just the group-count constant.
+        names = ["TestRoot%03d" % index for index in range(335)] + ["TestEmbeddedOld"]
+        groups = m.partition(names, m.GRAPHSTORE_GROUPS)
+        self.assertEqual(len(groups), 16)
+        self.assertEqual(sorted(sum(groups, [])), sorted(n for n in names if not n.startswith("TestEmbedded")))
+        self.assertEqual(len(set(sum(groups, []))), 335)
+        self.assertLessEqual(max(map(len, groups)) - min(map(len, groups)), 1)
+        self.assertTrue(all(groups))
+        self.assertEqual(groups, m.partition(list(reversed(names)), m.GRAPHSTORE_GROUPS))
+        self.assertTrue(all(len(group) >= 2 for group in groups))
+
+    def test_dispatch_budgets_remain_unchanged(self):
+        self.assertIn("-timeout=30m", m.FLAGS)
+        self.assertEqual(m.GROUP_SECONDS, 2100)
+        self.assertGreater(m.GROUP_SECONDS, 1800)
+        self.assertEqual(m.TOTAL_SECONDS, 6900)
+        self.assertLess(m.TOTAL_SECONDS, 120 * 60)
+        self.assertEqual(m.GROUPS, 4)
+
     def test_partition_refuses_empty_or_duplicate(self):
         for names in [[], ["TestA", "TestA"], ["TestEmbeddedOnly"]]:
             with self.assertRaises(RuntimeError): m.partition(names)
+    def test_partition_counts_and_unchanged_limits(self):
+        for count in (0, -1, None, True, "8", 1.5):
+            with self.subTest(count=count), self.assertRaises(RuntimeError):
+                m.partition(["TestOne"], count)
+        self.assertEqual(len(m.partition(["TestOne"])), 4)
+        self.assertEqual(m.GRAPHSTORE_GROUPS, 16)
+        self.assertEqual((m.GROUP_SECONDS, m.TOTAL_SECONDS), (2100, 6900))
+        self.assertIn("-timeout=30m", m.FLAGS)
+
     def test_unexpected_package_refused(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "events"
@@ -6041,6 +6406,28 @@ class DispatchControls(unittest.TestCase):
             root = Path(directory); runner = m.Runner(root, root); runner.deadline = 0
             with self.assertRaises(RuntimeError): runner.run("expired", [sys.executable, "-c", "raise SystemExit(0)"], 1)
             self.assertEqual(runner.receipts, [])
+    def test_process_snapshot_filters_group_and_omits_arguments(self):
+        output = "101 1 100 Z /usr/bin/python3\n102 1 100 S /bin/sleep\n103 1 999 S /private/foreign\n"
+        with mock.patch.object(m.subprocess, "run", return_value=mock.Mock(stdout=output)) as run:
+            snapshot = m.group_snapshot(100)
+        self.assertEqual(snapshot, {"members": [
+            dict(pid=101, ppid=1, pgid=100, state="Z", executable="python3"),
+            dict(pid=102, ppid=1, pgid=100, state="S", executable="sleep")]})
+        self.assertEqual(run.call_args.args[0], ["ps", "-axo", "pid=,ppid=,pgid=,stat=,comm="])
+        self.assertEqual(run.call_args.kwargs["timeout"], 2)
+    def test_descendant_diagnostics_do_not_turn_failure_into_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); runner = m.Runner(root, root)
+            snapshot = {"members": [dict(pid=101, ppid=1, pgid=100, state="Z", executable="python3")]}
+            # The group disappears while diagnostics run. Its original failed
+            # cleanup verdict must still be reported, with the sampled identity.
+            with mock.patch.object(m, "group_alive", side_effect=[True, False, False]), mock.patch.object(m, "group_snapshot", return_value=snapshot):
+                with self.assertRaisesRegex(RuntimeError, "left descendants after exit"):
+                    runner.run("orphan", [sys.executable, "-c", "pass"], 5)
+            receipt = json.loads((root / "processes.json").read_text())[0]
+            self.assertEqual(receipt["remainingProcesses"], snapshot)
+            self.assertTrue(receipt["groupGone"])
+            self.assertEqual(receipt["exitCode"], 0)
     def test_interrupt_during_spawn_retains_ownership(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); runner = m.Runner(root, root)
@@ -6088,7 +6475,7 @@ func TestMacOSGoTestDispatcherControls(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, python, "-c", macOSDispatcherControls,
-		filepath.Join(sourceRepoRoot(t), "scripts", "ci", "macos-go-test.py"))
+		filepath.Join(sourceRepoRoot(t), "scripts", "ci", "macos-go-test.py"), testGo(t))
 	cmd.Env = append(os.Environ(), "PYTHONDONTWRITEBYTECODE=1")
 	if output, err := cmd.CombinedOutput(); err != nil {
 		t.Fatalf("offline macOS dispatch controls: %v\n%s", err, output)
@@ -6871,14 +7258,14 @@ func TestBazelCmdDoltJob(t *testing.T) {
 
 // Exactly-once cmd/bd integration-build tests on PRs: bazel-integration runs
 // //... minus //cmd/bd:bd_test only where the caller says bazel-cmd-dolt is
-// required (inputs.cmd-dolt-required true, which only pr.yml passes and
-// only as its committed BAZEL_CMD_DOLT_REQUIRED flag), and there
+// required (pr.yml passes inputs.cmd-dolt-required as its committed
+// BAZEL_CMD_DOLT_REQUIRED flag; direct dispatch may also opt in), and there
 // bazel-cmd-dolt covers it: the same if (so it runs in every mode
 // bazel-integration does, Dependabot and forks included), bazel-gate.sh
 // accepts the two lanes' skips in exactly the same modes, pr.yml's gate then
 // requires its result, and its target wraps the integration build's bd_test
 // with no test selection (TestBazelCmdDoltJob). Everywhere else (bazel-farm,
-// nightly, push, dispatch: bazel-cmd-dolt advisory) bd_test stays in
+// nightly, push, default dispatch: bazel-cmd-dolt advisory) bd_test stays in
 // bazel-integration. Rollback is committing "false" in both pr.yml places.
 func TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers(t *testing.T) {
 	const input, excluded = "cmd-dolt-required", "-//cmd/bd:bd_test"
@@ -6887,7 +7274,8 @@ func TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers(t *testing.T) {
 	cmdDolt := workflow.job(t, bazelCmdDoltJobName)
 
 	// The input: a boolean defaulting to false, so a caller that does not
-	// pass it (and push/dispatch, where it is null) keeps bd_test.
+	// pass it (and push, where it is null) keeps bd_test. Direct dispatch
+	// defaults false and has its own required-coverage gate when opted in.
 	if in, ok := readBazelWorkflowCall(t).Inputs[input]; !ok || in.Type != "boolean" || in.Default != "false" {
 		t.Errorf("%s workflow_call input %s = %+v (present %v), want type boolean, default false", bazelWorkflowName, input, in, ok)
 	}
@@ -6919,7 +7307,7 @@ func TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers(t *testing.T) {
 				t.Errorf("%s step %q reads inputs.%s", name, step.Name, input)
 			}
 		}
-		if strings.Contains(job.If, "inputs."+input) {
+		if strings.Contains(job.If, "inputs."+input) && (name != bazelDispatchCoverageJobName || job.If != bazelDispatchCoverageIf) {
 			t.Errorf("%s if reads inputs.%s: the input must not change which lanes run", name, input)
 		}
 	}
@@ -6986,5 +7374,82 @@ func TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers(t *testing.T) {
 				t.Errorf("%s job %s passes %s to %s; only pr.yml may (its gate is the one that requires bazel-cmd-dolt)", e.Name(), name, input, bazelWorkflowName)
 			}
 		}
+	}
+}
+
+// The opt-in dispatch route may move bd_test only when both replacement
+// coverage and the remaining integration suite actually pass. Job-level
+// continue-on-error on the dedicated lane must not turn failure into success.
+func TestBazelDispatchCmdGate(t *testing.T) {
+	requireHostTool(t, "bash")
+	for _, mode := range []string{"remote", "fork-ro", "fork-rw", "cache", "local", "skip", "", "invalid"} {
+		for _, enabled := range []string{"true", "false", ""} {
+			for _, result := range []string{"success", "failure", "cancelled", "skipped", "", "unknown"} {
+				for _, integration := range []string{"success", "failure", "cancelled", "skipped", ""} {
+					t.Run(mode+"/"+enabled+"/"+result+"/"+integration, func(t *testing.T) {
+						// The inactive arm is absent on a successful real run;
+						// its success must never mask a failed/missing active arm.
+						inactive := "success"
+						if result == "success" {
+							inactive = ""
+						}
+						direct, combined := result, inactive
+						if mode == "remote" {
+							direct, combined = inactive, result
+						}
+						cmd := exec.Command("bash", bazelGateScript, "dispatch-cmd")
+						cmd.Dir = sourceRepoRoot(t)
+						cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "BAZEL_RBE_MODE=" + mode, "BAZEL_RBE_ENABLED=" + enabled,
+							"BAZEL_INTEGRATION=" + integration, "BAZEL_CMD_DOLT_DIRECT=" + direct, "BAZEL_CMD_DOLT_COMBINED=" + combined}
+						out, err := cmd.CombinedOutput()
+						validMode := (mode == "remote" || mode == "fork-ro" || mode == "fork-rw") && enabled == "true" || mode == "cache" && enabled == "false"
+						wantPass := validMode && result == "success" && integration == "success"
+						if (err == nil) != wantPass {
+							t.Errorf("gate pass=%v, want %v: %s (%v)", err == nil, wantPass, out, err)
+						}
+					})
+				}
+			}
+		}
+	}
+}
+
+func TestBazelDispatchCoverageJob(t *testing.T) {
+	workflow := readCIWorkflow(t, bazelWorkflowName)
+	job := workflow.job(t, bazelDispatchCoverageJobName)
+	if job.If != bazelDispatchCoverageIf || job.ContinueOnError || job.TimeoutMinutes != 5 || job.RunsOn != "ubuntu-latest" {
+		t.Errorf("dispatch-only fail-closed gate contract changed: %+v", job)
+	}
+	if !reflect.DeepEqual([]string(job.Needs), []string{"rbe", "bazel-integration", "bazel-cmd-dolt", "bazel-dolt-int"}) {
+		t.Errorf("dispatch gate needs = %v", job.Needs)
+	}
+	step := job.step(t, "Require integration and command coverage")
+	wantEnv := map[string]string{
+		"BAZEL_RBE_MODE":          "${{ needs.rbe.outputs.mode }}",
+		"BAZEL_RBE_ENABLED":       "${{ needs.rbe.outputs.enabled }}",
+		"BAZEL_INTEGRATION":       "${{ needs.bazel-integration.outputs.result }}",
+		"BAZEL_CMD_DOLT_DIRECT":   "${{ needs.bazel-cmd-dolt.outputs.result }}",
+		"BAZEL_CMD_DOLT_COMBINED": "${{ needs.bazel-dolt-int.outputs.cmd_dolt_result }}",
+	}
+	if step.Run != ".github/scripts/bazel-gate.sh dispatch-cmd" || !reflect.DeepEqual(step.Env, wantEnv) || step.If != "" || (step.ContinueOnError != nil && step.ContinueOnError != false) {
+		t.Errorf("dispatch gate must require actual recorded coverage: %+v", step)
+	}
+	if len(job.Steps) != 2 || !strings.HasPrefix(job.Steps[0].Uses, "actions/checkout@") || job.Steps[0].With["persist-credentials"] != "false" || job.Steps[0].With["ref"] != "${{ github.sha }}" {
+		t.Errorf("dispatch gate must only check out the event source and evaluate coverage")
+	}
+	data, err := os.ReadFile(filepath.Join(sourceRepoRoot(t), ".github", "workflows", bazelWorkflowName))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var doc struct {
+		On struct {
+			Dispatch bazelWorkflowCall `yaml:"workflow_dispatch"`
+		} `yaml:"on"`
+	}
+	if err := yaml.Unmarshal(data, &doc); err != nil {
+		t.Fatal(err)
+	}
+	if in, ok := doc.On.Dispatch.Inputs["cmd-dolt-required"]; !ok || in.Type != "boolean" || in.Default != "false" || in.Required {
+		t.Errorf("dispatch cmd-dolt-required = %+v (present %v), want optional boolean default false", in, ok)
 	}
 }

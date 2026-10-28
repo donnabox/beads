@@ -127,6 +127,18 @@ func (g *GraphRead) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		graphReadFailure(w, r, err)
 		return
 	}
+	if route.kind == "identity" {
+		kind, err := g.reader.PublicRouteKind(r.Context(), route.path)
+		if err != nil {
+			graphReadFailure(w, r, err)
+			return
+		}
+		route, err = g.compileResourceRoute(route.path, route.parameters, kind)
+		if err != nil {
+			graphReadFailure(w, r, err)
+			return
+		}
+	}
 	switch route.kind {
 	case "scope":
 		graphReadResponse(w, r, http.StatusNoContent, nil, "", "", http.Header{"Link": []string{"<" + g.scope + "bdp.json>; rel=\"service-desc\"; type=\"application/json\""}})
@@ -156,7 +168,7 @@ func (g *GraphRead) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		graphReadJSON(w, r, record, "")
 	default:
-		record, err := g.reader.Resource(r.Context(), route.path)
+		record, err := g.reader.Resource(r.Context(), g.scope+route.path)
 		if err != nil {
 			graphReadFailure(w, r, err)
 			return

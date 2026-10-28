@@ -24,12 +24,28 @@ func colorizedHelpFunc(cmd *cobra.Command, args []string) {
 		output.WriteString("\n\n")
 	}
 
-	// Add the usage string which contains commands, flags, etc.
-	output.WriteString(cmd.UsageString())
+	// Keep subcommand help focused on its own flags. The inherited flags still
+	// work; root help and `bd help --all` remain the complete references.
+	usage := cmd.UsageString()
+	if cmd.Parent() != nil {
+		usage = compactSubcommandUsage(cmd, usage)
+	}
+	output.WriteString(usage)
 
 	// Apply semantic coloring
 	result := colorizeHelpOutput(output.String())
 	fmt.Print(result)
+}
+
+func compactSubcommandUsage(cmd *cobra.Command, usage string) string {
+	if !cmd.HasAvailableInheritedFlags() {
+		return usage
+	}
+	// Cobra renders this block from InheritedFlags().FlagUsages(). Remove only
+	// that exact block; changing the command's flags or template would also
+	// change generated docs and flag parsing.
+	block := "\n\nGlobal Flags:\n" + strings.TrimRight(cmd.InheritedFlags().FlagUsages(), " \t\r\n")
+	return strings.Replace(usage, block, "\n\nFor global flags, run `bd --help`.", 1)
 }
 
 // colorizeHelpOutput applies semantic colors to help text

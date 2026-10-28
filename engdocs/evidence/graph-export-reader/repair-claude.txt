@@ -1,0 +1,83 @@
+## Verification basis
+
+All five frozen copies in `/Users/dbox/.local/state/iris/export-reader-repair-review/` hash-match the worktree byte-for-byte (SHA-256s in `manifest.json` confirmed, including the new `export_cleanup_pure_test.go`). I read the full diff plus `export_cleanup_pure_test.go` in full, then traced the cleanup claims against the real seams: `backend.go` (`withTx`, `Store.Close`/`closeOnce`, `openBackend`), `schema.go:193` (`checkBinding`), `collection_read.go` (`currentSnapshotInTx`, `checkCollectionMappingsInTx`), `collection_read_bounds.go`, `informational_types.go` (`installedPreviewTypes`, `previewTypeDefinitions`), `link_lifecycle.go:306` (`checkLinkMappingsInTx`), `issueops/helpers.go:615` (`ReadConfigPrefix`), the `graph_preview_*`/`config` DDL, and Go 1.26's `database/sql` (`Tx.rollback`, `Rows.Next`/`close`/`lasterrOrErrLocked`, `Conn.grabConn`/`closemuRUnlockCondReleaseConn`/`close`, `DB.putConn`, `DB.Close`). I read the recorded `pure.log`/`lint-retry.log` from the frozen directory. **No files written or modified; nothing built, run, delegated, or sent anywhere.**
+
+## The three reviewed changes, validated
+
+**`checkBinding` first (`export_current.go:64-66`)** — correct, and it does not weaken the budget contract. The obvious objection (binding validation now decodes rows into Go *before* `checkExportReadBounds`) does not hold: `workspace`/`scope_url` are `LONGBLOB` but pinned by the `OCTET_LENGTH(...)=?` equality in the WHERE clause, `descriptor` is `LONGBLOB` but pinned by `OCTET_LENGTH(descriptor)=?`, `authority_id`/`writer_token` are `VARBINARY(32)`, and `config.value` is `TEXT` (≤64 KiB). Worst-case pre-budget Go allocation is ~64 KiB against a 16 MiB budget. `OpenExisting` (`backend.go:168`) already runs the same unbudgeted `checkBinding`, so this is consistent, not a new exposure. Refusal precedence for the three export preflights now matches the house pattern.
+
+**Removed by-value assertion (`export_current_pure_test.go`)** — correct removal. `validateExportComment(comment types.Comment)` takes a copy and Go strings are immutable, so the assertion was structurally unfailable. `reflect` is still used at lines 20, 26, 39, 55, 118, so the import stays live.
+
+**Same-Store re-read (`export_current_test.go:88-94`)** — the comment-map half is now genuinely exercised. See F1 for the half that isn't.
+
+**Driver seams** — all four cleanup mechanisms the fixture asserts are the real `database/sql` behaviour, and I confirmed each against the Go 1.26 source rather than the fixture's comments:
+
+- *Rollback fault* — `withTx`'s `write=false` branch returns `tx.Rollback()` directly; `tx.rollback(false)` passes the driver error to `tx.close(err)`, `errors.Is(err, driver.ErrBadConn)` is false, so the conn is returned healthy and the deferred `conn.Close()` adds nil. Chain and zero-state assertions hold.
+- *EOF `Rows.Close`* — `Rows.Next` sets `doClose` on `io.EOF` (the fixture's rows are not a `RowsNextResultSet`), auto-calls `rs.Close()` and **discards** its return, but `rs.close` ends with `rs.lasterr = rs.lasterrOrErrLocked(err)`, and since `rs.lasterr == io.EOF` the driver close error becomes `rs.lasterr`. So `rows.Err()` surfaces `rowsFault` and the explicit `rows.Close()` is a no-op — exactly the `commentCloses == 1` the test pins.
+- *Scan/close/rollback chain* — `types.Comment.CreatedAt` is `time.Time`, so the string driver value produces `sql: Scan error on column index 4, name "created_at": …`. Critically, a tx-owned `Rows` releases via `tx.closemuRUnlockRelease`, which **ignores** the error, so the rows-close failure does not poison the conn and `tx.Rollback()` still reaches the driver. That is why both faults appear in one chain, and why `rollbacks == 1` is deterministic.
+- *Bad connection* — `tx.rollback` → `tx.close(err)` → `Conn.closemuRUnlockCondReleaseConn`, which (via `errors.Is`, not `==`, confirmed for Go 1.26) calls `c.close(err)`; that sets `c.done` and discards the driver conn through `putConn`. The later `conn.Close()` in `withTx`'s defer therefore returns `sql.ErrConnDone`. The test's comment is accurate.
+- *Physical `Store.Close`* — `DB.Close` closes `freeConn` and returns the last non-nil error; `closeOnce` caches it, so the second call returns the same fault without a second driver close. Boundary is correctly separated.
+
+I also checked the `awaitDone` race: `tx.done.CompareAndSwap` precedes `tx.cancel()`, so the goroutine's `tx.rollback(true)` always returns `ErrTxDone` and cannot discard the connection behind the assertions. `Stats().InUse == 0` is deterministic, not timing-dependent.
+
+**BUILD registration** — `export_cleanup_pure_test.go` is inserted in sorted position in the single `go_test` target; its only non-stdlib import is `graphops`, already in `deps`. No build tag matches the existing `_pure_test.go` convention. `run.tests: false` in `.golangci.yml` means golangci-lint does not see it; the recorded `lint-retry.log` shows 0 issues across all three configs and gofmt clean.
+
+## Findings
+
+### F1 — Low (test-coverage) — `export_current_test.go:84-94` — the Snapshot half of "detached" is still not asserted
+
+The comment claims caller mutations "cannot affect **records** or the next acquisition," but the only mutations are to `CommentsByIssuePath` (lines 86-87). `current.Snapshot` is never touched, so `!reflect.DeepEqual(fresh.Snapshot, ordinary)` at line 89 only re-proves the equality already established at line 78. The same is true of the post-reopen check at line 108 — across the whole test, Snapshot detachment is never exercised.
+
+*Impact:* the aliasing shapes that actually exist in the result are untested: `IssueRecord.Properties` is a `*publicops.Issue` and `Record.Owned` is `[]json.RawMessage` (slices over shared backing arrays). If a future reader memoized `Snapshot` on the `Store`, a caller writing through `Properties` or an `Owned[j]` byte would corrupt the next acquisition and nothing here would notice.
+
+*Fix:* before line 88, mutate through one of those indirections — e.g. find the first `IssueRecord` in `current.Snapshot.Records` and set `issue.Properties.Title = "caller mutation"`, and flip a byte in some `Record.Owned[0]`. `ordinary` comes from an independent `CurrentSnapshot` call, so an aliased implementation fails the DeepEqual rather than passing with both copies corrupted.
+
+### F2 — Low (test-coverage) — `export_cleanup_pure_test.go:143-146, 120` — four of `exportCommentsInTx`'s five error exits have no *executed* cleanup coverage, though the fixture is one line from reaching them
+
+`exportCommentsInTx` has five refusal exits: Scan (`export_current.go:219`), UTF-8 (`:224`), unknown owner (`:228`), count overflow (`:232`), incomplete feed (`:240`). Only the Scan exit and the EOF path (`:236`) are covered by the passing pure tier. The UTF-8, owner and overflow exits each carry their own `errors.Join(err, rows.Close())`, and their only coverage is `export_current_test.go:209-221` — engine tests that are authored but unrun.
+
+*Impact:* right now, the `rows.Close()` call on three distinct refusal paths and the zero-state/`nil`-map guarantee on four of them are asserted by code reading only. A dropped or duplicated `rows.Close()` on any of those branches would ship green through the tier that actually runs. This matters more than usual given the engine slot is held.
+
+*Fix:* two small fixture additions, both already supported by the shape you built. (a) Add cases to `commentValues` driving the direct `exportCommentsInTx` call — `{"c-a", "web-app-a1b", "author", "orig\xffinal", time.Now()}` hits the UTF-8 exit, an unknown `issue_id` hits the owner exit, two rows with `count=1` hits the overflow exit, one row with `count=2` hits the incomplete-feed exit — asserting `commentCloses == 1` and a nil map each time. (b) Add `case q == "select count(*) from comments": return row(..., int64(len(d.faults.commentValues)))` ahead of the generic `select count(*)` arm, which makes the *end-to-end* `ExportCurrentSnapshot` comment acquisition (including the happy path with real rows, currently uncovered — the success control at line 49 has zero comments) reachable in the pure tier.
+
+### F3 — Low (test-coverage) — `export_cleanup_pure_test.go:290-297` — the fixture cannot produce a mid-iteration driver read failure
+
+`exportCleanupRows.Next` returns only `nil` or `io.EOF`. When `rowsi.Next` returns a non-EOF error, `database/sql` takes the *other* branch — `rs.lasterr` is set and the `Rows` is **not** auto-closed — so `errors.Join(rows.Err(), rows.Close())` at `export_current.go:236` exercises a different cleanup shape than the EOF path the test pins.
+
+*Impact:* the most common real failure (connection drops after N rows) is the one shape this cleanup-focused file cannot reach, so "Close called exactly once, error not lost" is proven for EOF-with-close-fault but not for read-fault-then-close.
+
+*Fix:* add a `commentNext error` fault returned by `Next` after `position` rows, and assert `errors.Is(err, nextFault)`, `errors.Is(err, rowsFault)` and `commentCloses == 1` together.
+
+### F4 — Low (maintainability + efficiency) — `export_current.go:64-66` — the deliberate duplicate binding check is undocumented and uncached
+
+`currentSnapshotInTx` (`collection_read.go:46`) calls `checkBinding` again inside the same transaction, where it cannot observe different state. Every other block in this file carries a justifying comment; these three lines carry none, and the comment at `:92-93` ("`currentSnapshotInTx` already checked configuration") now reads as if the top-level check weren't there. A reader's first instinct will be that one of the two is a mistake.
+
+*Impact:* (a) maintainability — the next person is likely to delete the "redundant" call and silently regress the refusal precedence this repair bought. (b) cost — `checkBinding` is ~15 in-transaction queries (scope row + `COUNT` + N descriptor selects + `ReadConfigPrefix` + 6 `LIMIT 0` probes) and rebuilds/reparses all N descriptors, each of which canonicalizes and SHA-hashes (`NewTypeDescriptor` → `hashHex`, `ParseTypeDescriptor` likewise). This takes `installedPreviewTypes` from 4 to 5 calls per export; for a 6-type workspace that is ~12 extra canonicalize+hash operations and ~15 extra round trips on every acquisition.
+
+*Fix:* add a one-line comment in this file's idiom stating that the check is intentionally repeated — the export preflights query `comments`, `graph_preview_catalog`, `wisps`/`wisp_*` and `config` before `currentSnapshotInTx` runs, so an out-of-band rebind must be refused as `ErrInvalidStore` rather than surfacing as `ErrLimitExceeded`. If the cost matters later, memoize `installedPreviewTypes` per transaction rather than dropping the call.
+
+### F5 — Nit — `export_cleanup_pure_test.go:97-112` — physical-close test skips the one-transaction invariant
+
+`TestExportCurrentSnapshotPhysicalCloseBoundary` is the only cleanup test that never calls `exportCleanupTransactionCount`, so for the successful-export-then-failing-`Store.Close` scenario nothing checks `begins/rollbacks/commits/InUse`. Call it after line 105, before the first `s.Close()`.
+
+### F6 — Nit — `export_current_test.go:88` — the read-only guard is not re-run after the added acquisitions
+
+`reflect.DeepEqual(before, exportSourceState(…))` at line 81 proves only the *first* export touched no source row. The new `fresh` acquisition (line 88) and the post-reopen `reopened` acquisition (line 107) are not followed by that check. One extra comparison after line 94 closes it.
+
+### F7 — Nit — `export_cleanup_pure_test.go:264-273` — `exportCleanupTx` uses receiver `t`
+
+In a `_test.go` file, `t` reads as `*testing.T`. `tx` or `x` would avoid the double-take.
+
+## Disposition of the three previous Low findings
+
+| # | Prior finding | Status |
+|---|---|---|
+| 1 | `export_current_pure_test.go:43` — unfailable by-value assertion | **Addressed, partially.** The dead assertion is gone and the import stays live. The suggested *replacement* — asserting `json.Marshal` of the invalid comment yields U+FFFD, which is what makes the UTF-8 refusal load-bearing — was not adopted, so the hazard named at `export_current.go:221-222` still has no test that touches `encoding/json`. Residual, Low, unchanged in severity. |
+| 2 | `export_current_test.go:84-103` — same-Store detachment unverified | **Addressed as recommended.** Lines 88-94 re-acquire from the live `s` and assert `wantComments` intact and `"beads/prereq"` present-and-empty, before `Close()`. Residual is F1: the `Snapshot`/records half of the same sentence is still unexercised. |
+| 3 | `export_current.go:63-73` — content refusals ahead of the binding check | **Addressed exactly as recommended**, and I re-derived that the fix is safe rather than taking it on faith: the pre-budget decode it introduces is ≤~64 KiB against 16 MiB, and none of the engine failure cases in `TestExportCurrentSnapshotFailures` change expected message or precedence under the new ordering (`checkBinding` reads nothing from `comments`, the catalog, `wisps`/`wisp_*`, or non-`issue_prefix` config). Residual is F4: undocumented and uncached. |
+
+The prior review's acknowledged gap at line 53 — "driver rollback/close fault injection is absent … the cleanup clause of the doc contract at `export_current.go:43` remains asserted by code reading rather than by test" — is now **closed for all four clauses it named**, by real `database/sql` paths rather than by a mocked `*Store`: transaction cleanup failure, logical connection cleanup failure, the rows/rollback chain, and the caller-owned physical `Store.Close` boundary. The `exportCleanupTx.Commit` arm that both counts and refuses is a good guard — it makes "rollback-only" a tested property, not a convention.
+
+## Scope note
+
+No readiness claim is made or implied. The pure tier passes per the recorded `pure.log` and lint is clean per `lint-retry.log`; the engine tests in `export_current_test.go` remain authored and unrun, so every finding above about "executed coverage" is relative to that state. The fixture answers by SQL prefix with a `default` error arm, which bounds drift to prefix-compatible query changes but will silently serve stale canned results if a matched query's *semantics* change — worth remembering when the interchange/serializer milestone starts editing these projections.

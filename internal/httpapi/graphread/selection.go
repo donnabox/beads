@@ -49,7 +49,7 @@ func CompileCollection(scope, collection string, parameters url.Values, limits S
 // supplied it must equal links. Unlike collections, incident views accept only
 // direction, limit and cursor controls, as well as view=links.
 func CompileIncident(scope, path string, parameters url.Values, limits SelectorLimits) (*Selection, error) {
-	if err := graph.ValidateBeadPath(path); err != nil {
+	if err := graph.ValidateCanonicalResourceID(path); err != nil {
 		return nil, &ParameterError{Name: "bead"}
 	}
 	return compileSelection(scope, "links", path, parameters, limits)
@@ -154,10 +154,7 @@ func validateCollectionType(scope, id string) error {
 	}
 	if strings.HasPrefix(id, scope) {
 		path := strings.TrimPrefix(id, scope)
-		if !strings.HasPrefix(path, "types/") {
-			return &ParameterError{Name: "type"}
-		}
-		return graph.ValidateBeadPath("beads/" + strings.TrimPrefix(path, "types/"))
+		return graph.ValidateCanonicalResourceID(path)
 	}
 	return nil
 }

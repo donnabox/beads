@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 	"testing"
@@ -11,10 +12,33 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
+func TestGraphPreviewRememberFallbackRequiresDefiniteError(t *testing.T) {
+	for _, kind := range []error{
+		graphstore.ErrAlreadyExists,
+		graphstore.ErrNotFound,
+		graphstore.ErrGone,
+		graphstore.ErrCapabilityUnavailable,
+	} {
+		t.Run(kind.Error(), func(t *testing.T) {
+			if !graphPreviewRememberDefiniteError(kind, kind) {
+				t.Fatal("definite storage error must allow its existing fallback")
+			}
+			ambiguous := errors.Join(kind, fmt.Errorf("rollback failed: %w", graphstore.ErrOutcomeUnknown))
+			if graphPreviewRememberDefiniteError(ambiguous, kind) {
+				t.Fatal("uncertain write must reach the shared mapper without fallback")
+			}
+		})
+	}
+	if graphPreviewRememberDefiniteError(nil, graphstore.ErrNotFound) ||
+		graphPreviewRememberDefiniteError(graphstore.ErrConflict, graphstore.ErrNotFound) {
+		t.Fatal("unrelated errors must not trigger a fallback")
+	}
+}
+
 func selectedRememberCommand(t *testing.T, flags []string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
-	for _, name := range []string{"id", "title", "update", "if-revision", "body-file", "key", "properties"} {
+	for _, name := range []string{"id", "title", "type", "status", "update", "if-revision", "body-file", "key", "properties"} {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("stdin", false, "")
@@ -78,7 +102,7 @@ func TestGraphPreviewRememberSelectedArgumentAdmission(t *testing.T) {
 		{"selected", []string{"--update=beads/plan"}, true},
 		{"create-only", []string{"--id=beads/plan", "--create-only"}, true},
 		{"empty-selected", []string{"--update="}, true},
-		{"guard-only", []string{"--if-revision=observed"}, true},
+		{"guard-only", []string{"--if-revision==observed"}, true},
 		{"empty-guard", []string{"--if-revision="}, true},
 		{"existing-file", []string{"--body-file=body.md"}, true},
 		{"properties", []string{`--properties={}`}, true},
@@ -125,22 +149,31 @@ func TestGraphPreviewRememberSelectedRefusesBeforeInput(t *testing.T) {
 		readonly bool
 		code     int
 	}{
+		{"explicit-empty-guard", []string{"--id=valid", "--if-revision="}, false, 2},
+		{"explicit-invalid-guard", []string{"--id=valid", "--if-revision=\xff"}, false, 2},
+		{"explicit-oversized-guard", []string{"--id=valid", "--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
+		{"derived-empty-guard", []string{"--if-revision="}, false, 2},
+		{"derived-invalid-guard", []string{"--if-revision=\xff"}, false, 2},
+		{"derived-oversized-guard", []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
 		{"empty-guard", []string{"--update=beads/plan", "--if-revision="}, false, 2},
 		{"invalid-guard", []string{"--update=beads/plan", "--if-revision=\xff"}, false, 2},
 		{"oversized-guard", []string{"--update=beads/plan", "--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
-		{"empty-selector", []string{"--update=", "--if-revision=observed"}, false, 2},
-		{"foreign-selector", []string{"--update=https://foreign.invalid/beads/plan", "--if-revision=observed"}, false, 2},
-		{"link-selector", []string{"--update=links/context", "--if-revision=observed"}, false, 2},
-		{"create-and-update", []string{"--id=beads/new", "--update=beads/plan", "--if-revision=observed"}, false, 2},
-		{"generated-with-guard", []string{"--title=New", "--if-revision=observed"}, false, 5},
+		{"empty-selector", []string{"--update=", "--if-revision==observed"}, false, 2},
+		{"foreign-selector", []string{"--update=https://foreign.invalid/beads/plan", "--if-revision==observed"}, false, 2},
+		{"malformed-selector", []string{"--update=a//b", "--if-revision==observed"}, false, 2},
+		{"create-and-update", []string{"--id=beads/new", "--update=beads/plan", "--if-revision==observed"}, false, 2},
+		{"malformed-explicit-id", []string{"--id=a//b", "--if-revision==observed"}, false, 2},
 		{"create-only-without-id", []string{"--create-only"}, false, 2},
 		{"create-only-false", []string{"--id=beads/new", "--create-only=false"}, false, 2},
-		{"create-only-with-guard", []string{"--id=beads/new", "--create-only", "--if-revision=observed"}, false, 2},
+		{"create-only-with-guard", []string{"--id=beads/new", "--create-only", "--if-revision==observed"}, false, 2},
 		{"create-only-with-update", []string{"--id=beads/new", "--create-only", "--update=beads/plan"}, false, 2},
-		{"guard-without-selection", []string{"--if-revision=observed"}, false, 5},
-		{"invalid-title", []string{"--update=beads/plan", "--if-revision=observed", "--title=\xff"}, false, 2},
-		{"legacy-key", []string{"--update=beads/plan", "--if-revision=observed", "--key=legacy"}, false, 5},
-		{"readonly", []string{"--update=beads/plan", "--if-revision=observed"}, true, 5},
+		{"create-only-empty-type", []string{"--id=beads/new", "--create-only", "--type="}, false, 2},
+		{"create-only-empty-status", []string{"--id=beads/new", "--create-only", "--status="}, false, 2},
+		{"create-only-empty-title", []string{"--id=beads/new", "--create-only", "--title="}, false, 2},
+		{"malformed-explicit-key", []string{"--key=..", "--if-revision==observed"}, false, 2},
+		{"invalid-title", []string{"--update=beads/plan", "--if-revision==observed", "--title=\xff"}, false, 2},
+		{"legacy-key", []string{"--update=beads/plan", "--if-revision==observed", "--key=legacy"}, false, 2},
+		{"readonly", []string{"--update=beads/plan", "--if-revision==observed"}, true, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			readonlyMode = tc.readonly

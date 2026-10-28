@@ -3,9 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"os"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -31,19 +34,62 @@ func init() {
 }
 
 func runGraphPreviewCompare(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "from", "to"); err != nil {
+	options, canonical, err := canonicalOutputOptions(cmd)
+	if err != nil {
+		return canonicalFailure(cmd, nil, "invalid_selector", err.Error(), 2)
+	}
+	var renderer *clioutput.Renderer
+	if canonical {
+		renderer, err = newGraphComparisonOutput(options)
+		if err != nil {
+			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
+		}
+		if len(args) != 1 {
+			return canonicalFailure(cmd, renderer, "invalid_selector", "canonical compare requires exactly one Resource identity", 2)
+		}
+		if err := canonicalScalarOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
+			return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
+		}
+		err = canonicalGraphFlags(cmd, renderer, "from", "to")
+	} else {
+		err = graphPreviewFlags(cmd, "from", "to")
+	}
+	if err != nil {
 		return err
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	invalidSelector := func(message string) error {
+		if canonical {
+			return canonicalFailure(cmd, renderer, "invalid_selector", message, 2)
+		}
+		return graphFailure("invalid_selector", message, 2)
+	}
+	path, err := graphPreviewResolvedHistoricalPath(args[0])
+	if canonical && cmd.Parent() != nil && cmd.Parent().Name() == "link" {
+		path, err = graphPreviewResolvedHistoricalPath(args[0])
+		if err == nil {
+			err = graph.ValidateLinkPath(path)
+		}
+	}
 	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return invalidSelector(err.Error())
 	}
 	from, _ := cmd.Flags().GetString("from")
 	to, _ := cmd.Flags().GetString("to")
 	for _, token := range []string{from, to} {
 		if token == "" || !utf8.ValidString(token) || len(token) > graphstore.PreviewVersionTokenLimit {
-			return graphFailure("invalid_selector", "--from and --to require nonempty UTF-8 tokens of at most 4096 bytes each", 2)
+			return invalidSelector("--from and --to require nonempty UTF-8 tokens of at most 4096 bytes each")
 		}
+	}
+	if canonical {
+		return canonicalReadWithGraphStore(cmd, renderer, func(ctx context.Context, store *graphstore.Store) (any, error) {
+			result, err := store.CompareVersions(ctx, path, from, to)
+			if err != nil {
+				return nil, err
+			}
+			return graphProjectCompleteRecords(result)
+		}, func(result any) error {
+			return renderCanonicalResult(cmd, renderer, result)
+		})
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.CompareVersions(ctx, path, from, to)

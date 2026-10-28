@@ -18,8 +18,8 @@ func TestGraphPreviewIssueDuePresence(t *testing.T) {
 		want       string
 	}{
 		{"omitted", []string{"--title=Keep"}, false, false, ""},
-		{"clear", []string{"--due=", "--if-revision=observed"}, true, true, ""},
-		{"offset", []string{"--due=2030-01-02T03:04:05-07:00", "--if-revision=observed"}, true, false, "2030-01-02T10:04:05Z"},
+		{"clear", []string{"--due=", "--if-revision==observed"}, true, true, ""},
+		{"offset", []string{"--due=2030-01-02T03:04:05-07:00", "--if-revision==observed"}, true, false, "2030-01-02T10:04:05Z"},
 		{"fraction-preserved-for-storage", []string{"--due=2030-01-02T03:04:05.6Z"}, true, false, "2030-01-02T03:04:05.6Z"},
 		{"mixed", []string{"--due=2030-01-02T03:04:05Z", "--title=New", "--priority=P0"}, true, false, "2030-01-02T03:04:05Z"},
 	} {
@@ -70,9 +70,8 @@ func TestGraphPreviewIssueDueRefusals(t *testing.T) {
 		{"syntax", []string{"--due=not-a-date"}, 2},
 		{"utf8", []string{"--due=\xff"}, 2},
 		{"oversize", []string{"--due=" + strings.Repeat("x", 4097)}, 2},
-		{"status", []string{"--due=", "--status=open"}, 5},
 		{"source-guard", []string{"--due=", "--if-source-revision=x"}, 5},
-		{"file", []string{"--due=", "--body-file=missing"}, 5},
+		{"file", []string{"--due=", "--body-file=missing"}, 1},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
@@ -108,7 +107,7 @@ func TestGraphPreviewIssueDuePolicyDispatch(t *testing.T) {
 		code  int
 	}{{"true", 5}, {"false", 2}} {
 		t.Run("claim-"+tc.claim, func(t *testing.T) {
-			err := runGraphPreviewUpdate(issueClaimCommand(t, "--claim="+tc.claim, "--due="), []string{"beads/work"})
+			err := runGraphPreviewClaimIssue(issueClaimCommand(t, "--claim="+tc.claim, "--due="), "beads/work")
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != tc.code {
 				t.Fatalf("claim mixed with due: %v", err)

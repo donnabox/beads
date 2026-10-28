@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -9,7 +10,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/config"
+	"github.com/steveyegge/beads/internal/memoryapi"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/utils"
@@ -18,11 +21,25 @@ import (
 )
 
 // This disposable adapter preserves the Issue writer and classification rules.
-// Its canonical path is distinct from the internal backing ID; no alias or
-// production nominal-Type contract is established by this preview.
+// --id always names the native Issue ID, including when it contains slashes.
+// --graph-path separately chooses a graph path with a generated native ID.
+// No production nominal-Type contract is established here.
 func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
+	}
+	if cmd.Flags().Changed("graph") {
+		return runGraphPreviewCreateGraph(cmd, args)
+	}
+	idRoot, idRootSet, rootErr := graphPreviewGeneratedIDRoot(cmd)
+	if rootErr != nil {
+		return graphFailure("invalid_selector", rootErr.Error(), 2)
+	}
+	if idRootSet && (cmd.Flags().Changed("parent") || cmd.Flags().Changed("graph-path") || cmd.Flags().Changed("file")) {
+		return graphFailure("invalid_selector", "--id-root cannot combine with --parent, --graph-path or --file", 2)
+	}
+	if cmd.Flags().Changed("graph-path") && cmd.Flags().Changed("file") {
+		return graphFailure("invalid_selector", "--graph-path cannot be combined with --file", 2)
 	}
 	if cmd.Flags().Changed("file") {
 		return runGraphPreviewCreateMarkdown(cmd, args)
@@ -31,30 +48,42 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if beadType == graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
+	if base, _, native := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, beadType, graph.KindBead); !native || base != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+		if cmd.Flags().Changed("graph-path") {
+			return graphFailure("invalid_selector", "--graph-path applies only to Issue creation", 2)
+		}
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "id-root", "graph-path", "parent", "no-inherit-labels", "force", "title", "description", "body", "message", "body-file", "description-file", "stdin", "allow-empty-description", "type", "status", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "defer", "metadata", "properties", "silent", "deps"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
 	if cmd.Flags().Changed("parent") && parentSelector == "" {
 		return graphFailure("invalid_selector", "--parent requires an Issue ID", 2)
 	}
-	if parentSelector != "" && graphPreviewTypeGeneration != 9 {
+	if parentSelector != "" && graphPreviewTypeGeneration != graphstore.TypeGeneration {
 		return graphFailure("capability_unavailable", "create --parent requires a fresh graph workspace", 5)
 	}
 	if parentSelector != "" && cmd.Flags().Changed("id") {
 		return graphFailure("invalid_selector", "cannot specify both --id and --parent", 2)
 	}
+	if cmd.Flags().Changed("graph-path") && (cmd.Flags().Changed("id") || parentSelector != "") {
+		return graphFailure("invalid_selector", "--graph-path cannot be combined with --id or --parent", 2)
+	}
 	if parentSelector == "" && cmd.Flags().Changed("no-inherit-labels") {
 		return graphFailure("invalid_selector", "--no-inherit-labels requires --parent", 2)
 	}
-	parentPath := ""
+	var selectedParent graphstore.IssueSelector
 	if parentSelector != "" {
-		parentPath, err = graphPreviewBeadSelector(parentSelector)
+		selectedParent, err = graphPreviewIssueSelector(parentSelector)
 		if err != nil {
 			return err
+		}
+	}
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		if input == "-" && graphPreviewDescriptionUsesStdin(cmd) {
+			return graphFailure("invalid_properties", "--properties - and a description source cannot both read stdin", 2)
 		}
 	}
 	properties, err := graphPreviewCreateProperties(cmd)
@@ -62,10 +91,10 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	path := ""
-	if cmd.Flags().Changed("id") {
-		path, err = graphPreviewCreateBeadPath(cmd)
-		if err != nil {
-			return err
+	if cmd.Flags().Changed("graph-path") {
+		path, _ = cmd.Flags().GetString("graph-path")
+		if err := graph.ValidateBeadPath(path); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
 	titleFlag, _ := cmd.Flags().GetString("title")
@@ -83,22 +112,17 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
-	// Ordinary create treats "-" as stdin; this bounded graph route accepts
-	// inline Issue text only and refuses before acquiring input or opening storage.
-	for _, name := range []string{"description", "body", "message"} {
-		value, _ := cmd.Flags().GetString(name)
-		if cmd.Flags().Changed(name) && value == "-" {
-			return graphFailure("capability_unavailable", "graph Issue create currently accepts inline description text only; stdin and file sources are unavailable", 5)
-		}
+	if _, ok := properties["description"]; ok && graphPreviewDescriptionFlagsChanged(cmd) {
+		return graphFailure("invalid_properties", "Issue description was supplied by both --properties and a shorthand flag", 2)
 	}
-	description, _, err := getDescriptionFlag(cmd)
+	description, descriptionChanged, err := getDescriptionFlag(cmd)
 	if err != nil {
 		return err
 	}
+	if err := validateDescriptionUpdate(cmd, description, descriptionChanged); err != nil {
+		return graphFailure("invalid_properties", err.Error(), 2)
+	}
 	if value, ok := properties["description"]; ok {
-		if cmd.Flags().Changed("description") || cmd.Flags().Changed("body") || cmd.Flags().Changed("message") {
-			return graphFailure("invalid_properties", "Issue description was supplied by both --properties and a shorthand flag", 2)
-		}
 		text, ok := value.(string)
 		if !ok {
 			return graphFailure("invalid_properties", "Issue description must be a JSON string", 2)
@@ -126,7 +150,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	classification, _ := cmd.Flags().GetString("type")
 	nominalIssue := cmd.Flags().Changed("type") && graphPreviewNominalSelector(classification)
 	if nominalIssue {
-		classification = "task"
+		_, classification, _ = graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, beadType, graph.KindBead)
 	}
 	if value, ok := properties["issue_type"]; ok {
 		if cmd.Flags().Changed("type") && !nominalIssue {
@@ -135,6 +159,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		text, ok := value.(string)
 		if !ok {
 			return graphFailure("invalid_properties", "Issue issue_type must be a JSON string", 2)
+		}
+		if nominalIssue && types.IssueType(text).Normalize() != types.IssueType(classification) {
+			return graphFailure("invalid_properties", "Issue issue_type conflicts with its declared concrete Type", 2)
 		}
 		classification = text
 	}
@@ -148,12 +175,31 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	}
 	labels, _ := cmd.Flags().GetStringSlice("labels")
 	aliasLabels, _ := cmd.Flags().GetStringSlice("label")
+	initialStatus, _ := cmd.Flags().GetString("status")
+	deferUntil, err := graphPreviewIssueDeferInput(cmd)
+	if err != nil {
+		return err
+	}
+	if initialStatus == "" {
+		initialStatus = string(types.StatusOpen)
+		if deferUntil != nil && deferUntil.After(time.Now()) {
+			initialStatus = string(types.StatusDeferred)
+		}
+	}
 	creator := getActorWithGit()
-	request := publicops.CreateRequest{Actor: creator, Issue: &types.Issue{
+	forceIDPrefix, _ := cmd.Flags().GetBool("force")
+	request := publicops.CreateRequest{Actor: creator, ForceIDPrefix: forceIDPrefix, Issue: &types.Issue{
 		CreatedBy: creator, Owner: getOwner(),
-		Title: title, Description: description, Status: types.StatusOpen,
+		Title: title, Description: description, Status: types.Status(initialStatus), DeferUntil: deferUntil,
 		Priority: priority, IssueType: issueType, Labels: utils.NormalizeLabels(append(labels, aliasLabels...)),
 	}}
+	if cmd.Flags().Changed("id") {
+		selector, _ := cmd.Flags().GetString("id")
+		if selector == "" {
+			return graphFailure("invalid_selector", "--id requires an Issue ID", 2)
+		}
+		request.Issue.ID = selector
+	}
 	request.Issue.Metadata, err = graphPreviewMetadataCreate(cmd)
 	if err != nil {
 		return err
@@ -164,17 +210,46 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewApplyIssueCreateProperties(cmd, request.Issue, properties); err != nil {
 		return err
 	}
-	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	deps, _ := cmd.Flags().GetStringSlice("deps")
+	for _, raw := range deps {
+		if strings.HasPrefix(strings.TrimSpace(raw), "external:") {
+			return graphFailure("capability_unavailable", "graph Issue create --deps requires local Issue targets; external: targets are unavailable", 5)
+		}
+	}
+	specs, err := parseDepSpecs(deps)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	createDependencies := make([]graphstore.IssueCreateDependency, 0, len(specs))
+	for _, spec := range specs {
+		if strings.HasPrefix(spec.TargetID, "external:") {
+			return graphFailure("capability_unavailable", "graph Issue create --deps requires local Issue targets; external: targets are unavailable", 5)
+		}
+		selector, err := graphPreviewIssueSelector(spec.TargetID)
+		if err != nil {
+			return graphFailure("invalid_selector", "--deps target "+spec.TargetID+": "+err.Error(), 2)
+		}
+		selector.Exact = true
+		createDependencies = append(createDependencies, graphstore.IssueCreateDependency{Target: selector, Type: spec.Type, Reverse: spec.SwapDirection})
+	}
+	silent, _ := cmd.Flags().GetBool("silent")
+	var touchedURL, createdID string
+	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		var record graphstore.IssueRecord
-		if parentPath != "" {
-			parent, err := store.ShowIssue(ctx, parentPath)
+		if parentSelector != "" {
+			parent, err := store.ShowIssueSelected(ctx, selectedParent)
 			if err != nil {
 				return nil, "", fmt.Errorf("parent Issue %s: %w", parentSelector, err)
 			}
+			identity, err := store.ResolveCanonicalPublicResourceIdentity(ctx, parent.ID)
+			if err != nil {
+				return nil, "", err
+			}
+			parentPath := identity.PrivatePath
 			noInherit, _ := cmd.Flags().GetBool("no-inherit-labels")
 			created, err := store.CreateChildIssue(ctx, graphstore.IssueChildCreateRequest{
 				ParentPath: parentPath, ExpectedParentRevision: parent.Revision,
-				InheritLabels: !noInherit, Create: request,
+				InheritLabels: !noInherit, Create: request, Dependencies: createDependencies,
 			})
 			if err != nil {
 				return nil, "", err
@@ -182,16 +257,29 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 			record = created.Child
 		} else {
 			var err error
-			record, err = store.CreateIssue(ctx, path, request)
+			if idRootSet {
+				record, err = store.CreateIssueWithIDRootAndDependencies(ctx, idRoot, request, createDependencies)
+			} else if len(createDependencies) != 0 {
+				record, err = store.CreateIssueWithDependencies(ctx, path, request, createDependencies)
+			} else {
+				record, err = store.CreateIssue(ctx, path, request)
+			}
 			if err != nil {
 				return nil, "", err
 			}
 		}
-		path = graphPreviewDisplayLocalURL(record.ID)
-		return record, fmt.Sprintf("Created %s\n", path), nil
+		touchedURL = record.ID
+		createdID = graphPreviewDisplayLocalURL(record.ID)
+		return record, graphHumanRow(store.ScopeURL(), record), nil
+	}, func(result any, human string) error {
+		if silent && !jsonOutput {
+			// Shipping create prints the ID even when --quiet is also set.
+			return graphPrint(result, createdID, false)
+		}
+		return graphPrint(result, human, quietFlag)
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touchedURL)
 	}
 	return err
 }
@@ -362,33 +450,29 @@ func graphPreviewApplyIssueCreateProperties(cmd *cobra.Command, issue *types.Iss
 }
 
 func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error) {
-	issueType := graphPreviewIssueTypeURL(scope)
 	if !cmd.Flags().Changed("type") {
-		return issueType, nil
+		return graphstore.NativeIssueTypeURL(scope, string(types.TypeTask))
 	}
 	selector, _ := cmd.Flags().GetString("type")
 	if selector == "" {
 		return "", graphFailure("invalid_selector", "--type requires a value", 2)
 	}
-	if !graphPreviewNominalSelector(selector) {
-		classification := types.IssueType(selector).Normalize()
-		if !classification.IsBuiltIn() {
-			customTypes, err := resolveWorkspaceCustomTypes(getRootContext())
-			if err != nil {
-				return "", graphStorageError(err)
-			}
-			if !classification.IsValidWithCustom(customTypes) {
-				return "", graphFailure("capability_unavailable", "Bead type is not registered in this workspace: "+selector, 5)
-			}
-		}
-		return issueType, nil
-	}
-	typeURL, err := graphPreviewTypeURL(scope, selector)
+	typeURL, err := graphPreviewCollectionTypeURL(scope, selector, false)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if typeURL != issueType && typeURL != graphstore.MemoryTypeURL(scope) {
-		return "", graphFailure("capability_unavailable", "graph create supports only the installed Issue and Memory bead types", 5)
+	if typeURL == graphstore.IssueTypeURL(scope) || typeURL == graphstore.DependencyTypeURL(scope) {
+		return "", graphFailure("invalid_selector", "abstract native Types cannot be instantiated", 2)
+	}
+	if base, classification, native := graphstore.NativeTypeClassification(scope, typeURL, graph.KindBead); native && base == graphstore.IssueTypeURL(scope) {
+		if types.IssueType(classification).Normalize() != types.IssueType(classification) {
+			return "", graphFailure("invalid_selector", "concrete Issue Type must use its normalized native classification", 2)
+		}
+		// The native writer authorizes custom classifications in its transaction.
+		return typeURL, nil
+	}
+	if !graphPreviewSelectedTypeCandidate(scope, typeURL) {
+		return "", graphFailure("capability_unavailable", "Type is not installed in this workspace", 5)
 	}
 	return typeURL, nil
 }
@@ -406,43 +490,60 @@ func graphPreviewCreateProperties(cmd *cobra.Command) (map[string]any, error) {
 }
 
 func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
-	title, body, err := graphPreviewCreateMemoryInput(cmd, args)
+	properties, err := graphPreviewCreateMemoryPropertiesJSON(cmd, args)
 	if err != nil {
 		return err
 	}
-	path, err := graphPreviewCreateBeadPath(cmd)
+	publicID := ""
+	idRoot, _, err := graphPreviewGeneratedIDRoot(cmd)
 	if err != nil {
-		return err
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if cmd.Flags().Changed("id") {
+		publicID, _ = cmd.Flags().GetString("id")
+		if _, err := memoryapi.ValidateKey(publicID); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
 	}
 	metadata, err := graphPreviewMetadataCreate(cmd)
 	if err != nil {
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		record, err := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: body, Actor: getActorWithGit(), Metadata: metadata})
+		typeURL, err := graphPreviewCreateBeadType(cmd, store.ScopeURL())
 		if err != nil {
 			return nil, "", err
 		}
-		return record, fmt.Sprintf("Created %s\n", path), nil
+		if err := graphPreviewRequireInstalledType(ctx, store, typeURL, graph.KindBead, true); err != nil {
+			return nil, "", err
+		}
+		record, err := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, IDRoot: idRoot, TypeURL: typeURL, PropertiesJSON: properties, Actor: getActorWithGit(), Metadata: metadata})
+		if err != nil {
+			return nil, "", err
+		}
+		return record, graphHumanRow(store.ScopeURL(), record), nil
 	})
 }
 
 // Inline text only: validate aliases and explicit presence before the ordinary
 // description helper can read stdin. Issue-only flags cannot be silently lost.
 func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, string, error) {
-	if err := graphPreviewFlags(cmd, "type", "id", "title", "description", "body", "message", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "id", "id-root", "title", "description", "body", "message", "metadata", "properties"); err != nil {
 		return "", "", err
 	}
 	properties, err := graphPreviewCreateProperties(cmd)
 	if err != nil {
 		return "", "", err
 	}
-	for name := range properties {
-		if name != "title" && name != "body" {
-			return "", "", graphFailure("invalid_properties", "Memory properties do not include "+name, 2)
-		}
-		if _, ok := properties[name].(string); !ok {
-			return "", "", graphFailure("invalid_properties", "Memory "+name+" must be a JSON string", 2)
+	return graphPreviewCreateMemoryInputValues(cmd, args, properties)
+}
+
+func graphPreviewCreateMemoryInputValues(cmd *cobra.Command, args []string, properties map[string]any) (string, string, error) {
+	for _, name := range []string{"title", "body"} {
+		if value, present := properties[name]; present {
+			if _, ok := value.(string); !ok {
+				return "", "", graphFailure("invalid_properties", "Memory "+name+" must be a JSON string", 2)
+			}
 		}
 	}
 	if len(args) > 1 {
@@ -500,4 +601,47 @@ func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, s
 		return "", "", graphFailure("invalid_properties", "Memory title and body must be valid UTF-8", 2)
 	}
 	return title, body, nil
+}
+
+// Keep arbitrary authored property values as JSON bytes. Only the existing
+// title/body shorthand fields are decoded; the selected writer validates the
+// complete object, including extras and exact subject References.
+func graphPreviewCreateMemoryPropertiesJSON(cmd *cobra.Command, args []string) (json.RawMessage, error) {
+	if err := graphPreviewFlags(cmd, "type", "id", "id-root", "title", "description", "body", "message", "metadata", "properties"); err != nil {
+		return nil, err
+	}
+	values := map[string]json.RawMessage{}
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		raw, err := graphPreviewPropertiesJSON(input, cmd.InOrStdin())
+		if err != nil {
+			return nil, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if err := json.Unmarshal(raw, &values); err != nil {
+			return nil, err
+		}
+	}
+	textValues := map[string]any{}
+	for _, name := range []string{"title", "body"} {
+		if raw, present := values[name]; present {
+			var text string
+			if string(raw) == "null" || json.Unmarshal(raw, &text) != nil {
+				return nil, graphFailure("invalid_properties", "Memory "+name+" must be a JSON string", 2)
+			}
+			textValues[name] = text
+		}
+	}
+	title, body, err := graphPreviewCreateMemoryInputValues(cmd, args, textValues)
+	if err != nil {
+		return nil, err
+	}
+	values["title"], err = json.Marshal(title)
+	if err != nil {
+		return nil, err
+	}
+	values["body"], err = json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(values)
 }

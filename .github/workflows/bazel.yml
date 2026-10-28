@@ -45,8 +45,11 @@
 # (rbe-fork closed) unlike the remote-only lanes: with the read-only cache
 # only what the PR changed is built and tested on the runner, and it is
 # their only PR-time integration run (no legacy job runs it on PRs). Mode
-# local (rbe=off) still skips it. Direct runs (push to main,
-# workflow_dispatch, nightly.yml's call) gate nothing. In mode remote the
+# local (rbe=off) still skips it. Push to main and nightly.yml's call
+# have no separate required-lane gate. A direct workflow_dispatch may opt into
+# cmd-dolt-required: its dispatch-only coverage gate then requires successful
+# integration and actual cmd tier results, rejecting local/skip execution.
+# In mode remote the
 # dolt-server and proxied-server tiers run as one union job, bazel-dolt-race
 # (`bazel test --config=dolt-race`), whose job.status is both the
 # bazel-doltserver and the bazel-proxied output; in every other mode
@@ -192,6 +195,11 @@ on:
     branches: [ main ]
   workflow_dispatch:
     inputs:
+      cmd-dolt-required:
+        description: "Require cmd/bd tier coverage and leave bd_test to that tier (PR selection parity)"
+        required: false
+        type: boolean
+        default: false
       rbe:
         description: "Remote execution: on (use secrets), cache (fork simulation: anonymous read-only cache) or off (local only)"
         required: true
@@ -234,10 +242,9 @@ on:
       # bazel-cmd-dolt, which runs the whole integration-tagged cmd/bd suite
       # (//cmd/bd:bd_dolt_server_test wraps the integration build's
       # bd_test), so bazel-integration leaves //cmd/bd:bd_test to it and
-      # each of those tests runs once. A boolean: on push and dispatch it is
-      # null, which is not == true, so bazel-farm.yml, nightly.yml, push and
-      # dispatch (bazel-cmd-dolt advisory there) keep bd_test in
-      # bazel-integration.
+      # each of those tests runs once. Push and callers that omit this input
+      # keep bd_test in bazel-integration. Direct dispatch defaults false too;
+      # opting in requires the dispatch-only fail-closed coverage gate below.
       cmd-dolt-required:
         description: >
           true (pr.yml only) drops //cmd/bd:bd_test from bazel-integration:
@@ -794,7 +801,12 @@ jobs:
     # worker pool shared with gascity). Skipped only in mode skip (same-repo
     # runs while RBE_WEST_WORKERS is unset).
     if: ${{ needs.rbe.outputs.mode != 'skip' }}
-    timeout-minutes: 100
+    # The interrupted local PR #326 run's later BEP completed in 111m36s,
+    # after GitHub's 110m step cutoff; that run did not qualify as green.
+    # Give local/cache execution a 125m step and 130m job; their five-minute
+    # difference leaves time for setup and reporting/cleanup, subject to the
+    # job cutoff. Remote stays 110m/115m.
+    timeout-minutes: ${{ needs.rbe.outputs.enabled == 'true' && 115 || 130 }}
     outputs:
       result: ${{ steps.result.outputs.result }}
     env:
@@ -890,9 +902,14 @@ jobs:
 
       # --profile and --build_event_json_file are command options, so they go
       # after `test` (a startup position fails).
+      # A cold local fork run executes every action on the runner. The
+      # assembled Preview 3 suite completed successfully in 90m39s, but
+      # PR #276's cache-unreachable run exhausted 95 minutes with 221/222
+      # tests complete and bd_test shards still progressing. Add 15 minutes
+      # beyond that cumulative cutoff; keep action limits and shards fixed.
       - name: bazel test //... --config=ci
         id: test
-        timeout-minutes: 90
+        timeout-minutes: ${{ needs.rbe.outputs.enabled == 'true' && 110 || 125 }}
         run: |
           set -o pipefail
           start=$(date +%s)
@@ -1606,10 +1623,9 @@ jobs:
     needs: rbe
     runs-on: ${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-24.04' }}
     if: ${{ (needs.rbe.outputs.enabled == 'true' || needs.rbe.outputs.mode == 'cache') && inputs.integration != 'off' }}
-    # F5 S2 Variant A added the "Nogo: integration library files" step after
-    # `test`; +5 over the previous 85 keeps it headroom without exceeding
-    # TestBazelIntegrationJob's test-step-timeout+15 ceiling (75+15=90).
-    timeout-minutes: 90
+    # Keep 15 minutes beyond the test step for setup, the post-test nogo
+    # check, reports and cleanup (TestBazelIntegrationJob guards the ceiling).
+    timeout-minutes: 105
     outputs:
       result: ${{ steps.result.outputs.result }}
     steps:
@@ -1654,7 +1670,11 @@ jobs:
       # 3-5 for a cmd/bd change, plus up to ~11 more when slow blob reads
       # make Bazel restart the build ("Lost inputs"), and ~30 with the cache
       # closed (the farm's kill switch: everything local, cold), which must
-      # still fit so closing the cache does not turn fork PRs red.
+      # still fit so closing the cache does not turn fork PRs red. PR276's
+      # 2026-10-24 cache-unreachable run exhausted 75 minutes with 178/179
+      # tests complete and the last shard still progressing. Give that
+      # cumulative cold-run cutoff 15 minutes of headroom; individual action
+      # deadlines, target selection and shard counts remain unchanged.
       # Where bazel-cmd-dolt is required, //cmd/bd:bd_test is excluded (see
       # above): on a PR that changes cmd/bd or what it imports, its race
       # link and 16 shards were this step's last ~2-3.5 minutes (runs of
@@ -1662,7 +1682,7 @@ jobs:
       # had finished).
       - name: bazel test //... --config=integration
         id: test
-        timeout-minutes: 75
+        timeout-minutes: 90
         env:
           EXCLUDE_TARGETS: ${{ inputs.cmd-dolt-required == true && '-//cmd/bd:bd_test' || '' }}
         run: |
@@ -3243,3 +3263,26 @@ jobs:
           else
             gh issue create -R "$GITHUB_REPOSITORY" --label rrc-verify --title "$title" --body "$body"
           fi
+
+  # Only direct dispatches opt into this gate; workflow_call keeps pr.yml's
+  # existing required-lane gate. The dedicated job stays advisory, so read its
+  # recorded job.status, not its continue-on-error-masked needs result.
+  bazel-dispatch-coverage:
+    name: dispatch command coverage
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.cmd-dolt-required == true }}
+    needs: [rbe, bazel-integration, bazel-cmd-dolt, bazel-dolt-int]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require integration and command coverage
+        env:
+          BAZEL_RBE_MODE: ${{ needs.rbe.outputs.mode }}
+          BAZEL_RBE_ENABLED: ${{ needs.rbe.outputs.enabled }}
+          BAZEL_INTEGRATION: ${{ needs.bazel-integration.outputs.result }}
+          BAZEL_CMD_DOLT_DIRECT: ${{ needs.bazel-cmd-dolt.outputs.result }}
+          BAZEL_CMD_DOLT_COMBINED: ${{ needs.bazel-dolt-int.outputs.cmd_dolt_result }}
+        run: .github/scripts/bazel-gate.sh dispatch-cmd

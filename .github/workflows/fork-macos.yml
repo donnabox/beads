@@ -6,8 +6,8 @@ name: Fork macOS
 # byte-identical upstream mirror, so that leg tests upstream's code and never
 # this fork's: without this file no lane in this repository would run macOS on
 # a fork change. The job below is the one pr.yml carried before that sync, moved
-# here unchanged: graphstore split into bounded groups by
-# scripts/ci/macos-go-test.py, every terminal recorded and uploaded.
+# here with disjoint graphstore and remaining-package scope jobs. Each keeps
+# bounded processes; the original check verifies their exhaustive output union.
 #
 # It runs beside pr.yml, not inside it. It is not in CI Gate's needs, so it can
 # neither delay nor fail that gate; read its result as the macOS signal it is.
@@ -15,7 +15,7 @@ name: Fork macOS
 
 on:
   pull_request:
-    branches: [ integration ]
+    branches: [ integration, 'codex/preview3-integration' ]
   workflow_dispatch:
 
 concurrency:
@@ -46,8 +46,12 @@ jobs:
   # Deliberately NOT continue-on-error: unlike the advisory legs elsewhere in
   # pr.yml that tolerate infrastructure flakiness, a red macOS test here is a
   # real regression.
-  test-macos:
-    name: Test (macos-latest)
+  test-macos-scope:
+    name: macOS race (${{ matrix.scope }})
+    strategy:
+      fail-fast: false
+      matrix:
+        scope: [graphstore-odd, graphstore-even, remaining]
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
@@ -103,17 +107,39 @@ jobs:
           BEADS_TEST_BD_BINARY: ${{ github.workspace }}/bd
           GOCACHE: ${{ runner.temp }}/go-cache/race
         timeout-minutes: 120
-        # Keep every existing test and the 30m per-process alarm. Only graphstore
-        # is split into exhaustive discovered groups; its serial race suite grew
-        # beyond one package deadline. The dispatcher records every terminal.
-        run: python3 scripts/ci/macos-go-test.py
+        # Keep every existing test and the 30m per-process alarm. Graphstore and
+        # cmd/bd use exhaustive discovered groups instead of one oversized
+        # package process. The dispatcher records every terminal.
+        run: python3 scripts/ci/macos-go-test.py --scope "${{ matrix.scope }}" --source-sha "$(git rev-parse HEAD)"
 
       - name: Upload macOS test evidence
         if: always()
         timeout-minutes: 5
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          name: macos-go-test-${{ github.sha }}
+          name: macos-go-test-${{ github.sha }}-${{ matrix.scope }}
           path: artifacts/macos-go-test
           if-no-files-found: warn
           retention-days: 7
+
+  test-macos:
+    name: Test (macos-latest)
+    if: always()
+    needs: [test-macos-scope]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+      - name: Download all macOS scope artifacts
+        timeout-minutes: 3
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: macos-go-test-${{ github.sha }}-*
+          path: artifacts/macos-scope-results
+      - name: Verify complete macOS coverage and cleanup
+        timeout-minutes: 2
+        env:
+          SCOPES_RESULT: ${{ needs.test-macos-scope.result }}
+        run: |
+          test "$SCOPES_RESULT" = success
+          python3 scripts/ci/macos-go-test.py --verify-scopes artifacts/macos-scope-results --source-sha "$(git rev-parse HEAD)"

@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"strings"
 	"unicode/utf8"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -20,16 +20,9 @@ import (
 // retained version, tombstone, or coordination write is produced. The generic
 // unlink command keeps its explicit canonical-Link-ID and guard contract.
 func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRequest) (DependencyRemoveResult, error) {
-	for _, path := range []string{request.SourcePath, request.TargetPath} {
-		if err := validatePath(path); err != nil {
+	for _, endpoint := range []struct{ path, id string }{{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID}} {
+		if err := s.validateBeadEndpointOperand(endpoint.path, endpoint.id); err != nil {
 			return DependencyRemoveResult{}, err
-		}
-	}
-	for _, selector := range []struct{ path, nativeID string }{
-		{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID},
-	} {
-		if selector.nativeID != "" && selector.path != "beads/"+selector.nativeID {
-			return DependencyRemoveResult{}, fmt.Errorf("%w: native Issue fallback requires its matching bare selector", storage.ErrValidation)
 		}
 	}
 	if request.Actor == "" || !utf8.ValidString(request.Actor) {
@@ -94,64 +87,20 @@ func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRe
 	return result, nil
 }
 
-// A bare native ID can differ from the Issue's canonical path. Resolve it in
-// the same transaction as pair selection and unlink. A colliding path remains
-// ambiguous even if it names a Memory or deleted Bead; spelling beads/PATH or
-// the full Scope URL makes that explicit identity authoritative instead.
+// Keep removal's Issue selection in its write transaction. A local spelling
+// is a public ID even when a different Bead occupies its candidate path;
+// only a canonical Scope URL selects that graph path directly.
 func (s *Store) resolveDependencyRemoveIssueInTx(ctx context.Context, tx *sql.Tx, candidatePath, nativeID string) (string, IssueRecord, error) {
-	if nativeID == "" {
-		issue, err := s.requireIssueInTx(ctx, tx, candidatePath)
-		return candidatePath, issue, err
-	}
-	var exists int
-	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, candidatePath).Scan(&exists)
-	pathExists := err == nil
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return "", IssueRecord{}, err
-	}
-	rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? LIMIT 2`, nativeID)
-	if err != nil {
-		return "", IssueRecord{}, err
-	}
-	var nativePaths []string
-	for rows.Next() {
-		var path string
-		if err := rows.Scan(&path); err != nil {
-			_ = rows.Close()
-			return "", IssueRecord{}, err
-		}
-		nativePaths = append(nativePaths, path)
-	}
-	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
-		return "", IssueRecord{}, err
-	}
-	if len(nativePaths) > 1 {
-		return "", IssueRecord{}, fmt.Errorf("%w: native Issue ID has multiple graph allocations", ErrInvalidStore)
-	}
-	if len(nativePaths) == 1 && pathExists && nativePaths[0] != candidatePath {
-		return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches both a graph path and a different native Issue; use an explicit beads/PATH", storage.ErrValidation, nativeID)
-	}
-	path := candidatePath
-	if !pathExists {
-		if len(nativePaths) == 0 {
-			return "", IssueRecord{}, ErrNotFound
-		}
-		path = nativePaths[0]
-		if err := validatePath(path); err != nil {
-			return "", IssueRecord{}, fmt.Errorf("%w: invalid native Issue graph allocation: %v", ErrInvalidStore, err)
-		}
-	}
-	issue, err := s.requireIssueInTx(ctx, tx, path)
-	return path, issue, err
+	return s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: candidatePath, NativeID: nativeID})
 }
 
 // validDeletedLinkAllocation separates reserved canonical identity from current
 // authority. Dependency row IDs are deterministic per pair; clearing the deleted
 // allocation's backing key permits a later pair assertion under a NEW Link ID.
-func (s *Store) validDeletedLinkAllocation(kind, typ, backing string, key sql.NullString, issueType string) bool {
+func (s *Store) validDeletedLinkAllocation(kind, typ, backing string, key sql.NullString, issueType string, facts ...graph.TypeDescriptor) bool {
 	return kind == "link" && !key.Valid &&
 		((backing == "informational" && IsInformationalTypeURL(s.ScopeURL(), typ)) ||
-			(backing == "dependency" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ)))
+			(backing == "dependency" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ, facts...)))
 }
 
 // unlinkDependencyInTx extends the existing guarded unlink transaction only for
@@ -161,8 +110,14 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
 		return LinkDeleteResult{}, err
 	}
-	sourcePath := strings.TrimPrefix(link.Source, s.ScopeURL())
-	targetPath := strings.TrimPrefix(link.Target, s.ScopeURL())
+	sourcePath, err := s.publicResourcePathInTx(ctx, tx, link.Source, graph.KindBead)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
+	targetPath, err := s.publicResourcePathInTx(ctx, tx, link.Target, graph.KindBead)
+	if err != nil {
+		return LinkDeleteResult{}, err
+	}
 	source, err := s.requireIssueInTx(ctx, tx, sourcePath)
 	if err != nil {
 		return LinkDeleteResult{}, err
@@ -207,7 +162,9 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: revision, Version: revision, State: "deleted", PreviousVersion: link.Version, Attribution: writeAttribution(request.Actor)}
+	attribution := writeAttribution(request.Actor)
+	attribution.Inception = link.Attribution.Inception
+	tombstone := LinkTombstone{ID: link.ID, Type: link.Type, Revision: revision, Version: revision, State: "deleted", PreviousVersion: link.Version, Attribution: attribution}
 	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=?,backing_key=NULL WHERE path=?`, revision, path); err != nil {
 		return LinkDeleteResult{}, err
 	}

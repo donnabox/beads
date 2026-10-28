@@ -66,6 +66,7 @@ func journalEmitEdges(f *journalscan.FuncInfo) []string {
 // without being accounted for.
 var mutationEntryPoints = []string{
 	// create
+	"RecoverRetainedIssueInTx", // same-ID graph recovery uses the native journal/version seams
 	"CreateIssueInTx",
 	"CreateIssueInTxWithResult",
 	"CreateIssuesInTx",

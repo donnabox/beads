@@ -309,6 +309,14 @@ func deleteNeighborsInTx(ctx context.Context, tx DBTX, ids []string) ([]*types.I
 	return issues, nil
 }
 
+// DeleteNeighborsInTx captures the surviving rows whose text may need a
+// deleted-ID rewrite. Graph-backed deletion must collect them before it
+// unlinks canonical Dependencies, using the same transaction and selection
+// rule as the native Deleter.
+func DeleteNeighborsInTx(ctx context.Context, tx DBTX, ids []string) ([]*types.Issue, error) {
+	return deleteNeighborsInTx(ctx, tx, ids)
+}
+
 // RewriteDeletedReferencesInTx replaces every word-boundary occurrence of a
 // deleted id with `[deleted:<id>]` in each neighbor's description, notes,
 // design and acceptance criteria, and reports how many ROWS it changed.

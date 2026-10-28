@@ -9,12 +9,6 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-type graphDependencyView struct {
-	Root         string                   `json:"root"`
-	Issues       []graphstore.IssueRecord `json:"issues"`
-	Dependencies []graphstore.LinkRecord  `json:"dependencies"`
-}
-
 func graphPreviewDependencySnapshot(ctx context.Context, store *graphstore.Store) (graphDependencyProjection, error) {
 	snapshot, err := store.CurrentSnapshot(ctx)
 	if err != nil {
@@ -25,7 +19,11 @@ func graphPreviewDependencySnapshot(ctx context.Context, store *graphstore.Store
 
 // The blocking view reads a complete snapshot before projecting a component
 // or tree. A positive row cap cannot bound that read, so refuse it up front.
-func graphPreviewRejectDependencyRowCap(cmd *cobra.Command) error {
+func graphPreviewRejectDependencyRowCap(cmd *cobra.Command, subject ...string) error {
+	label := "blocking dependency snapshot"
+	if len(subject) != 0 {
+		label = subject[0]
+	}
 	var maxRows int
 	var source string
 	if cmd.Flags().Changed(maxRowsFlagName) {
@@ -42,49 +40,9 @@ func graphPreviewRejectDependencyRowCap(cmd *cobra.Command) error {
 		maxRows, source = value, envSource
 	}
 	if maxRows > 0 {
-		return graphFailure("capability_unavailable", fmt.Sprintf("blocking dependency snapshot does not enforce %s=%d; unset the cap or use --max-rows=0", source, maxRows), 5)
+		return graphFailure("capability_unavailable", fmt.Sprintf("%s does not enforce %s=%d; unset the cap or use --max-rows=0", label, source, maxRows), 5)
 	}
 	return nil
-}
-
-func runGraphPreviewDependencyGraph(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "max-rows"); err != nil {
-		return err
-	}
-	if err := graphPreviewRejectDependencyRowCap(cmd); err != nil {
-		return err
-	}
-	if jsonOutput {
-		return graphFailure("capability_unavailable", "graph ISSUE --json cannot preserve the native layout and Issue record shape; use the human blocking view or --view generic for explicit graph JSON", 5)
-	}
-	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph requires one local Issue ID; --view generic retains generic Link traversal", 2)
-	}
-	path, err := graphPreviewBeadSelector(args[0])
-	if err != nil {
-		return err
-	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		g, err := graphPreviewDependencySnapshot(ctx, store)
-		if err != nil {
-			return nil, "", err
-		}
-		root := store.ScopeURL() + path
-		if !g.hasIssue(root) {
-			return nil, "", graphstore.ErrNotFound
-		}
-		issues, links := g.component(root)
-		result := graphDependencyView{Root: root, Issues: issues, Dependencies: links}
-		var human strings.Builder
-		fmt.Fprintf(&human, "Blocking dependency graph for %s (%d Issues, %d Dependencies; graph preview)\n", path, len(issues), len(links))
-		for _, issue := range issues {
-			fmt.Fprintf(&human, "%s  %s  %s\n", graphPreviewDisplayLocalURL(issue.ID), issue.Properties.Status, issue.Properties.Title)
-		}
-		for _, link := range links {
-			fmt.Fprintf(&human, "%s depends on %s\n", graphPreviewDisplayLocalURL(link.Source), graphPreviewDisplayLocalURL(link.Target))
-		}
-		return result, strings.TrimSuffix(human.String(), "\n"), nil
-	})
 }
 
 type graphDependencyCheck struct {
@@ -179,7 +137,11 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		root := store.ScopeURL() + path
+		identity, err := store.AllocatedResourceIdentityForPath(ctx, path)
+		if err != nil {
+			return nil, "", err
+		}
+		root := store.ScopeURL() + identity.PublicID
 		if !g.hasIssue(root) {
 			return nil, "", graphstore.ErrNotFound
 		}
@@ -195,33 +157,46 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 			nodes = g.tree(root, direction, maxDepth)
 		}
 		if len(nodes) == 1 {
+			hasDirect := len(g.down[root]) > 0
+			if direction == "up" {
+				hasDirect = len(g.up[root]) > 0
+			} else if direction == "both" {
+				hasDirect = hasDirect || len(g.up[root]) > 0
+			}
+			if hasDirect {
+				// A depth limit can leave only the root visible; that does not
+				// make the root isolated. Render the root without claiming that
+				// either direction has no edges.
+				issue := nodes[0].Issue
+				return nodes, fmt.Sprintf("Blocking dependency tree for %s (%s; graph preview)\n%s  %s", identity.PublicID, direction, graphPreviewDisplayLocalURL(issue.ID), issue.Properties.Title), nil
+			}
 			nodes = nil // An isolated Issue has no dependency tree.
 		}
 		if len(nodes) == 0 {
 			switch direction {
 			case "up":
-				return nodes, fmt.Sprintf("%s has no dependents", path), nil
+				return nodes, fmt.Sprintf("%s has no dependents", identity.PublicID), nil
 			case "both":
-				return nodes, fmt.Sprintf("%s has no dependencies or dependents", path), nil
+				return nodes, fmt.Sprintf("%s has no dependencies or dependents", identity.PublicID), nil
 			default:
-				return nodes, fmt.Sprintf("%s has no dependencies", path), nil
+				return nodes, fmt.Sprintf("%s has no dependencies", identity.PublicID), nil
 			}
 		}
 		var human strings.Builder
-		fmt.Fprintf(&human, "Blocking dependency tree for %s (%s; graph preview)\n", path, direction)
+		fmt.Fprintf(&human, "Blocking dependency tree for %s (%s; graph preview)\n", identity.PublicID, direction)
 		writeNode := func(node graphDependencyTreeNode) {
 			fmt.Fprintf(&human, "%s%s  %s\n", strings.Repeat("  ", node.Depth), graphPreviewDisplayLocalURL(node.Issue.ID), node.Issue.Properties.Title)
 		}
 		if direction == "both" {
 			writeNode(nodes[0])
-			fmt.Fprintf(&human, "Dependencies (what %s depends on):\n", path)
+			fmt.Fprintf(&human, "Dependencies (what %s depends on):\n", identity.PublicID)
 			if len(dependencies) == 1 {
 				human.WriteString("  (none)\n")
 			}
 			for _, node := range dependencies[1:] {
 				writeNode(node)
 			}
-			fmt.Fprintf(&human, "Dependents (what depends on %s):\n", path)
+			fmt.Fprintf(&human, "Dependents (what depends on %s):\n", identity.PublicID)
 			if len(dependents) == 1 {
 				human.WriteString("  (none)\n")
 			}

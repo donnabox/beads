@@ -62,17 +62,37 @@ class MemoryCreationProjection(unittest.TestCase):
         scope = "https://example.invalid/ci-c0/embedded/"
         record = {
             "id": scope + "beads/plan",
-            "type": scope + "types/preview-memory",
+            "type": scope + "memory",
             "properties": {"title": "Plan", "body": "Durable C0 body — 記憶"},
             "owned": [],
             "revision": "opaque-token",
         }
         module.require_memory_creation(record, scope)
         for change in ({"revision": ""}, {"revision": None}, {"version": "duplicate-token"},
-                       {"owned": ["unexpected"]}, {"type": scope + "types/preview-issue"},
+                       {"owned": ["unexpected"]}, {"type": scope + "types/preview-memory"},
+                       {"type": scope + "types/preview-issue"},
                        {"properties": {"title": "Plan"}}):
             with self.subTest(change=change), self.assertRaisesRegex(RuntimeError, "incomplete/non-Memory creation"):
                 module.require_memory_creation(dict(record, **change), scope)
+
+
+class MemoryDeletionProjection(unittest.TestCase):
+    def test_terminal_must_follow_exact_final_live_snapshot(self):
+        final_live = {"id": "https://example.invalid/beads/alpha", "revision": "live-token",
+                      "attribution": {"inception": "create"}}
+        terminal = {"id": final_live["id"], "previousVersion": "live-token",
+                    "revision": "deletion-token", "version": "deletion-token",
+                    "state": "deleted", "attribution": {"inception": "create"}}
+        result = {"memory": final_live, "terminal": terminal, "preview": False, "deleted": True}
+        module.require_memory_deletion(result, final_live)
+        for change in ({"previousVersion": "wrong-token"}, {"revision": "live-token"},
+                       {"version": "wrong-token"}, {"state": "live"},
+                       {"id": "https://example.invalid/beads/other"},
+                       {"attribution": {"inception": "revert"}}):
+            with self.subTest(change=change), self.assertRaisesRegex(RuntimeError, "deletion terminal"):
+                module.require_memory_deletion(dict(result, terminal=dict(terminal, **change)), final_live)
+        with self.assertRaisesRegex(RuntimeError, "exact final live predecessor"):
+            module.require_memory_deletion(dict(result, memory=dict(final_live, revision="stale")), final_live)
 
 
 def lane_function(name):
@@ -170,14 +190,24 @@ class RequiredEngineControls(unittest.TestCase):
 
 class RequiredGroupedExecution(unittest.TestCase):
     def exercise(self, mode):
+        call = next(c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[3]) == "storage")
+        groups = ast.literal_eval(next(k.value for k in call.keywords if k.arg == "groups"))
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            names = ["Test" + letter for letter in "ABCDEFGH"]
+            names = [f"TestStorageFixture{index:03d}" for index in range(420)]
             source = root / "storage_test.go"
             source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
             q = module.Qualification.__new__(module.Qualification)
             q.output, q.counts = root, {}
-            q.server = without_server
+            opened, closed = [], []
+            @contextlib.contextmanager
+            def server(label):
+                opened.append(label)
+                try:
+                    yield
+                finally:
+                    closed.append(label)
+            q.server = server
             calls = []
             def run(args, label, **kwargs):
                 calls.append((args, label, kwargs))
@@ -185,6 +215,7 @@ class RequiredGroupedExecution(unittest.TestCase):
                     listed = names + ([names[0]] if mode == "duplicate-discovery" else [])
                     return ("\n".join(listed) + "\n").encode()
                 selected = args[args.index("-run") + 1][2:-2].split("|")
+                self.assertLessEqual(len(selected), 53, "storage group recreates cumulative package-alarm exposure")
                 if mode == "missing": selected = selected[1:]
                 if mode == "duplicate": selected += selected[:1]
                 events = []
@@ -198,10 +229,11 @@ class RequiredGroupedExecution(unittest.TestCase):
                 return raw
             with mock.patch.object(q, "run", run):
                 if mode == "good":
-                    q.tests("./fixture", "^Test", [source], "storage", groups=4)
+                    q.tests("./fixture", "^Test", [source], "storage", groups=groups)
                 else:
                     with self.assertRaises((RuntimeError, subprocess.TimeoutExpired)):
-                        q.tests("./fixture", "^Test", [source], "storage", groups=4)
+                        q.tests("./fixture", "^Test", [source], "storage", groups=groups)
+            self.assertEqual(opened, closed)
             if mode == "duplicate-discovery":
                 self.assertEqual(len(calls), 1)
                 return
@@ -209,7 +241,8 @@ class RequiredGroupedExecution(unittest.TestCase):
             self.assertEqual(plan["complete"], mode == "good")
             self.assertEqual(plan["sourceRoots"], sorted(names))
             self.assertEqual(plan["compiledRoots"], sorted(names))
-            self.assertEqual(len(plan["groups"]), 4)
+            self.assertEqual(len(plan["groups"]), 8)
+            self.assertEqual(sorted(len(group["roots"]) for group in plan["groups"]), [52] * 4 + [53] * 4)
             parts = [root / (group["label"] + ".stdout") for group in plan["groups"]]
             self.assertEqual((root / "storage.stdout").read_bytes(), b"".join(path.read_bytes() for path in parts if path.exists()))
             for args, label, kwargs in calls[1:]:
@@ -219,10 +252,10 @@ class RequiredGroupedExecution(unittest.TestCase):
                 self.assertIn("-parallel=1", args)
                 self.assertEqual(kwargs["timeout"], 960)
             if mode == "good":
-                self.assertEqual(q.counts, {"storage": 8})
+                self.assertEqual(q.counts, {"storage": 420})
                 self.assertTrue(all(group["passed"] for group in plan["groups"]))
-                self.assertEqual(len(calls), 5)
-                self.assertEqual(module.verify_tests([json.loads(line) for line in (root / "storage.stdout").read_bytes().splitlines()], set(names)), 8)
+                self.assertEqual(len(calls), 9)
+                self.assertEqual(module.verify_tests([json.loads(line) for line in (root / "storage.stdout").read_bytes().splitlines()], set(names)), 420)
                 self.assertEqual(plan["stdoutSHA256"], module.digest(root / "storage.stdout"))
             else:
                 self.assertEqual(q.counts, {})
@@ -240,6 +273,75 @@ class RequiredGroupedExecution(unittest.TestCase):
                 module.partition_required_tests(names, groups)
         names = ["Test" + letter for letter in "ABCDEFGH"]
         self.assertEqual(module.partition_required_tests(names, 4), module.partition_required_tests(list(reversed(names)), 4))
+
+
+class CLIGroupedExecution(unittest.TestCase):
+    def exercise(self, mode):
+        call = next(c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[3]) == "cli")
+        groups = ast.literal_eval(next(k.value for k in call.keywords if k.arg == "groups"))
+        # Match the failing hosted census size. Exercise the real call-site
+        # partition, not a separate idealized selection algorithm.
+        names = [f"TestGraphPreviewFixture{index:03d}" for index in range(257)]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "graph_fixture_test.go"
+            source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
+            q = runner(directory)
+            q.counts = {}
+            opened, closed, calls = [], [], []
+
+            @contextlib.contextmanager
+            def server(label):
+                opened.append(label)
+                try:
+                    yield
+                finally:
+                    closed.append(label)
+
+            def run(args, label, **kwargs):
+                if "-list" in args:
+                    return ("\n".join(names) + "\n").encode()
+                selected = args[args.index("-run") + 1][2:-2].split("|")
+                calls.append((selected, args, kwargs))
+                self.assertLessEqual(len(selected), 13, "CLI group recreates cumulative package-alarm exposure")
+                if mode == "missing": selected = selected[1:]
+                if mode == "duplicate": selected += selected[:1]
+                raw = go_events(selected)
+                (root / (label + ".stdout")).write_bytes(raw)
+                (root / (label + ".stderr")).write_bytes(b"")
+                if mode == "timeout": raise subprocess.TimeoutExpired(args, 960)
+                return raw
+
+            q.server = server
+            with mock.patch.object(q, "run", run):
+                if mode == "good":
+                    q.tests(ast.literal_eval(call.args[0]), ast.literal_eval(call.args[1]), [source], "cli", groups=groups)
+                else:
+                    with self.assertRaises((RuntimeError, subprocess.TimeoutExpired)):
+                        q.tests(ast.literal_eval(call.args[0]), ast.literal_eval(call.args[1]), [source], "cli", groups=groups)
+            self.assertEqual(opened, closed)
+            plan = json.loads((root / "cli-groups.json").read_text())
+            self.assertEqual(plan["complete"], mode == "good")
+            self.assertEqual(plan["sourceRoots"], names)
+            self.assertEqual(plan["compiledRoots"], names)
+            self.assertEqual(q.counts, {"cli": 257} if mode == "good" else {})
+            for _, args, kwargs in calls:
+                self.assertIn("-timeout=15m", args)
+                self.assertEqual(kwargs["timeout"], 960)
+            if mode == "good":
+                union = [name for selected, _, _ in calls for name in selected]
+                self.assertEqual(sorted(union), names)
+                self.assertEqual(len(union), len(set(union)))
+                self.assertTrue(all(group["passed"] for group in plan["groups"]))
+            else:
+                self.assertEqual(len(calls), 1)
+                self.assertFalse(any(group["passed"] for group in plan["groups"]))
+
+    def test_cli_callsite_bounds_every_group_and_keeps_complete_census(self): self.exercise("good")
+
+    def test_cli_missing_duplicate_or_timed_out_group_refused_and_closed(self):
+        for mode in ("missing", "duplicate", "timeout"):
+            with self.subTest(mode=mode): self.exercise(mode)
 
 
 class RequiredDiscovery(unittest.TestCase):
@@ -326,6 +428,87 @@ class ProcessCleanup(unittest.TestCase):
                 child.kill()
             reaper.join(timeout=5)
         self.assertFalse(reaper.is_alive())
+
+
+class CaptureMemoryDeletion(unittest.TestCase):
+    def setUp(self):
+        source = Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py"
+        spec = importlib.util.spec_from_file_location("capture_deletion", source)
+        self.smoke = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.smoke)
+        self.live = {"id": "https://example.invalid/beads/alpha", "revision": "live-token",
+                     "type": "https://example.invalid/memory", "metadata": {}, "owned": [],
+                     "properties": {"title": "First memory", "body": "Deployment context — 雪"},
+                     "attribution": {"actor": "writer", "recordedAt": "before", "inception": "create"}}
+        self.terminal = {"id": self.live["id"], "revision": "deletion-token", "version": "deletion-token",
+                         "previousVersion": "live-token", "state": "deleted",
+                         "attribution": {"actor": "deleter", "recordedAt": "after", "inception": "create"}}
+        self.result = {"memory": self.live, "preview": False, "deleted": True, "terminal": self.terminal}
+
+    def test_exact_predecessor_and_distinct_terminal_are_required_by_capture(self):
+        self.smoke.c0.require_memory_deletion(self.result, self.live)
+        tree = ast.parse((Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py").read_text())
+        calls = [c for c in ast.walk(tree) if isinstance(c, ast.Call) and isinstance(c.func, ast.Attribute)
+                 and isinstance(c.func.value, ast.Name) and c.func.value.id == "c0"
+                 and c.func.attr == "require_memory_deletion"]
+        self.assertEqual(len(calls), 1)
+        self.assertEqual([arg.id for arg in calls[0].args], ["deleted", "alpha"])
+
+    def test_predecessor_flags_and_closed_result_remain_exact(self):
+        for field, value in (("properties", {}), ("metadata", {"changed": True}), ("attribution", {}),
+                             ("owned", ["resurrected"]), ("revision", "other")):
+            with self.subTest(field=field), self.assertRaises(RuntimeError):
+                self.smoke.c0.require_memory_deletion(dict(self.result, memory=dict(self.live, **{field: value})), self.live)
+        for changes in ({"preview": True}, {"deleted": False}, {"unknown": True}):
+            with self.subTest(changes=changes), self.assertRaises(RuntimeError):
+                self.smoke.c0.require_memory_deletion(dict(self.result, **changes), self.live)
+
+    def test_missing_or_invalid_terminal_refused(self):
+        for terminal in (None, {}, dict(self.terminal, revision="live-token", version="live-token"),
+                         dict(self.terminal, revision=""), dict(self.terminal, revision=123),
+                         dict(self.terminal, version="other"), dict(self.terminal, previousVersion="old-token"),
+                         dict(self.terminal, id="other"), dict(self.terminal, state="live"),
+                         dict(self.terminal, properties={"body": "private payload"})):
+            with self.subTest(terminal=terminal), self.assertRaises(RuntimeError):
+                self.smoke.c0.require_memory_deletion(dict(self.result, terminal=terminal), self.live)
+        with self.assertRaises(RuntimeError):
+            self.smoke.c0.require_memory_deletion({k: v for k, v in self.result.items() if k != "terminal"}, self.live)
+
+
+class CaptureIsolationControls(unittest.TestCase):
+    def capture_module(self):
+        source = Path(__file__).resolve().parents[1] / "graph-c0-smoke.py"
+        spec = importlib.util.spec_from_file_location("capture_isolation", source)
+        capture = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(capture)
+        return capture
+
+    def test_explicit_private_temporary_root_is_used(self):
+        capture = self.capture_module()
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            args = type("Args", (), dict(output_dir=base / "output", bd=Path(sys.executable),
+                server_port=0, server_root=None, total_timeout=10, command_timeout=5))()
+            with mock.patch.object(capture.tempfile, "gettempdir", return_value=str(base)):
+                result = capture.Capture(args)
+            self.assertEqual(result.root.parent, base)
+            self.assertEqual(Path(result.env["HOME"]).parent, result.root)
+            self.assertEqual(Path(result.env["TMPDIR"]).parent, result.root)
+            self.assertEqual(result.active, set())
+
+    def test_selected_temporary_root_keeps_ancestor_guard(self):
+        capture = self.capture_module()
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory).resolve()
+            (base / ".beads").mkdir()
+            private = base / "private"
+            private.mkdir()
+            args = type("Args", (), dict(output_dir=base / "output"))()
+            with mock.patch.object(capture.tempfile, "gettempdir", return_value=str(private)), \
+                 mock.patch.object(capture.tempfile, "mkdtemp") as create:
+                with self.assertRaisesRegex(RuntimeError, "ancestor .beads"):
+                    capture.Capture(args)
+                create.assert_not_called()
 
 
 class NestedOwnershipControls(unittest.TestCase):
@@ -476,11 +659,59 @@ finally:
 
 
 class LaneShape(unittest.TestCase):
-    def test_cmd_bd_graph_tests_run_as_three_groups(self):
+    def test_storage_runs_as_eight_bounded_groups(self):
+        [call] = [c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[0]) == "./internal/storage/graphstore"]
+        self.assertEqual(ast.literal_eval(call.args[1]), "^Test")
+        self.assertEqual(ast.literal_eval(call.args[3]), "storage")
+        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 8})
+
+    def test_cmd_bd_graph_tests_run_as_twenty_bounded_groups(self):
         [call] = [c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[0]) == "./cmd/bd"]
         self.assertEqual(ast.literal_eval(call.args[1]), "^Test(GraphModeCLI|GraphPreview)")
         self.assertEqual(ast.literal_eval(call.args[3]), "cli")
-        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 3})
+        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 20})
+
+
+class GraphHTTPDiscovery(unittest.TestCase):
+    def exercise(self, compiled=None, executed=None, excluded_source=False):
+        # Use the actual lane's source selection, so a filename-family
+        # omission fails here before it can exclude a newly added HTTP root.
+        [call] = [c for c in self_calls("execute", "tests")
+                  if ast.literal_eval(c.args[0]) == "./internal/httpapi"]
+        package, selector, label = [ast.literal_eval(call.args[i]) for i in (0, 1, 3)]
+        pattern = ast.literal_eval(call.args[2].args[0])
+        names = ["TestGraphReadHTTPFixture", "TestGraphReadHTTPPreservesEndpointPins"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "graph_read_test.go").write_text(f"func {names[0]}(t *testing.T) {{}}\n")
+            (root / "graph_endpoint_pins_test.go").write_text(f"func {names[1]}(t *testing.T) {{}}\n")
+            (root / "unrelated_test.go").write_text("func TestUnrelated(t *testing.T) {}\n")
+            if excluded_source:
+                (root / "graph_future_test.go").write_text(
+                    "//go:build never\n\nfunc TestGraphReadBuildExcluded(t *testing.T) {}\n")
+            q = runner(directory)
+            q.counts, q.server = {}, without_server
+            listing = "\n".join(names if compiled is None else compiled).encode()
+            execution = go_events(names if executed is None else executed)
+            with mock.patch.object(q, "run", side_effect=[listing, execution]):
+                q.tests(package, selector, root.glob(pattern), label)
+            return q.counts
+
+    def test_matching_root_outside_read_filename_is_required(self):
+        self.assertEqual(self.exercise(), {"graph-http": 2})
+
+    def test_build_excluded_source_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "source and compiled test discovery disagree"):
+            self.exercise(excluded_source=True)
+
+    def test_extra_compiled_root_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "source and compiled test discovery disagree"):
+            self.exercise(compiled=["TestGraphReadHTTPFixture", "TestGraphReadHTTPPreservesEndpointPins",
+                                    "TestGraphReadUnexpected"])
+
+    def test_missing_execution_root_is_refused(self):
+        with self.assertRaisesRegex(RuntimeError, "test discovery/execution mismatch"):
+            self.exercise(executed=["TestGraphReadHTTPFixture"])
 
 
 class ReceiptTiming(unittest.TestCase):
@@ -768,6 +999,158 @@ class ServerLifecycle(unittest.TestCase):
             self.assertIn("owned server exited before readiness", str(refused.exception.__context__))
             self.assertEqual(q.children, set())
             self.assertEqual(q.receipts[-1]["exit"], 3)
+
+class CohortDispatch(unittest.TestCase):
+    def test_actual_execute_routes_every_phase_exactly_once(self):
+        labels = {ast.literal_eval(c.args[3]) for c in self_calls("execute", "tests")}
+        self.assertEqual(set().union(*module.COHORT_PHASES.values()), labels)
+        self.assertFalse(module.COHORT_PHASES["storage"] & module.COHORT_PHASES["cli-http"])
+        for cohort in (*module.COHORT_PHASES, "all"):
+            with self.subTest(cohort=cohort), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                q = runner(directory)
+                q.root = Path(__file__).resolve().parents[2]
+                q.cohort, q.counts = cohort, {}
+                q.bd, q.dolt, q.artifacts = root / "bd", root / "dolt", root
+                for binary in (q.bd, q.dolt):
+                    binary.write_bytes(b"fixture executable")
+                    binary.chmod(0o755)
+                commit = "a" * 40
+                (root / "build-manifest.txt").write_text("commit=" + commit + "\nbuild_tags=gms_pure_go\n")
+                (root / "SHA256SUMS").write_text(module.digest(q.bd) + "  bd-linux-gms-pure\n")
+                q.client_checkout, q.client_manifest, q.node = root, root / "client.json", root / "node"
+                captures, commands = [], []
+                q.server = lambda label: contextlib.nullcontext(12345)
+                def tests(package, selector, files, label, required_subtests=(), groups=1):
+                    self.assertNotIn(label, q.counts)
+                    if label == "storage":
+                        self.assertEqual(groups, 8)
+                        self.assertEqual(len(required_subtests), 6)
+                    if label == "cli":
+                        self.assertEqual(groups, 20)
+                        self.assertTrue(any("/embedded" in n for n in required_subtests))
+                        self.assertTrue(any("/server" in n for n in required_subtests))
+                    q.counts[label] = 1
+                def run(argv, label, **kwargs):
+                    commands.append(label)
+                    if label == "head": return commit.encode()
+                    if label == "source-status": return b""
+                    if label == "dolt-version": return b"dolt version 2.1.8\n"
+                    if label == "python-example-tests":
+                        count = sum(len(re.findall(r"^    def test_\w+\(", p.read_text(), re.MULTILINE))
+                                    for p in (q.root / "examples/bdp-read").glob("test_*.py"))
+                        (root / (label + ".stderr")).write_text(f"Ran {count} tests in 0.01s\nOK\n")
+                    if label == "bdp-http-capture":
+                        (root / "http").mkdir()
+                        summary = {key: module.digest(q.root / path) for key, path in (
+                            ("harness_sha256", "scripts/graph-bdp-read-smoke.py"),
+                            ("client_harness_sha256", "scripts/graph-bdp-read-client.mjs"),
+                            ("python_example_sha256", "examples/bdp-read/read_beads.py"))}
+                        (root / "http/summary.json").write_text(json.dumps(summary))
+                    return b""
+                q.tests, q.run = tests, run
+                q.capture = lambda engine, port: captures.append(engine)
+                with mock.patch.object(module, "verify_http_capture") as http:
+                    q.execute()
+                client = cohort != "storage"
+                self.assertEqual(set(q.counts), labels if cohort == "all" else module.COHORT_PHASES[cohort])
+                self.assertEqual(captures, ["embedded", "server"] if client else [])
+                self.assertEqual(http.call_count, int(client))
+                self.assertEqual("python-example-tests" in commands, client)
+                self.assertEqual("bdp-http-capture" in commands, client)
+                summary = json.loads((root / "summary.json").read_text())
+                source = json.loads((root / "source.json").read_text())
+                self.assertEqual(source["cohort"], cohort)
+                self.assertEqual(summary["cohort"], cohort)
+                self.assertTrue(all(summary[k] == source[k] for k in module.BINDING_FIELDS))
+
+
+class CohortFanIn(unittest.TestCase):
+    def exercise(self, change=None):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            artifacts = root / "build"
+            artifacts.mkdir()
+            (artifacts / "bd-linux-gms-pure").write_bytes(b"exact binary")
+            commit, runner_hash = "a" * 40, "b" * 64
+            binding = dict(commit=commit, binarySHA256=module.digest(artifacts / "bd-linux-gms-pure"),
+                           doltSHA256="c" * 64, runnerSHA256=runner_hash)
+            (artifacts / "build-manifest.txt").write_text(f"commit={commit}\nbuild_tags=gms_pure_go\n")
+            (artifacts / "SHA256SUMS").write_text(binding["binarySHA256"] + "  bd-linux-gms-pure\n")
+            evidence = root / "cohorts"
+            for cohort, labels in module.COHORT_PHASES.items():
+                path = evidence / cohort / "graph-c0-evidence"
+                path.mkdir(parents=True)
+                (path / "source.json").write_text(json.dumps(dict(binding, cohort=cohort)))
+                client = cohort == "cli-http"
+                (path / "summary.json").write_text(json.dumps(dict(binding, cohort=cohort,
+                    passed={label: 1 for label in labels}, engines=["embedded", "server"], childrenRemaining=0,
+                    installedCLICommands=10 if client else 0, bdpHTTP=client, pythonBDP=client)))
+                (path / "receipts.json").write_text(json.dumps([
+                    dict(label="phase", exit=0), dict(label="phase-server-shutdown", exit=0,
+                        forced=False, groupGone=True, portClosed=True)]))
+            if change:
+                change(evidence, artifacts)
+                with self.assertRaises((RuntimeError, FileNotFoundError)):
+                    module.combine_cohorts(evidence, artifacts, root / "combined.json", commit, runner_hash)
+                self.assertFalse((root / "combined.json").exists())
+            else:
+                result = module.combine_cohorts(evidence, artifacts, root / "combined.json", commit, runner_hash)
+                self.assertEqual(set(result["cohorts"]), set(module.COHORT_PHASES))
+                self.assertEqual(set(result["passed"]), set().union(*module.COHORT_PHASES.values()))
+                self.assertEqual(result["commit"], commit)
+                self.assertEqual(result["binarySHA256"], binding["binarySHA256"])
+    def test_complete_matching_cohorts(self): self.exercise()
+
+    def test_missing_mismatched_partial_or_failed_cohort_refuses(self):
+        def edit(relative, mutate):
+            def change(evidence, artifacts):
+                path = evidence / Path(relative).parts[0] / "graph-c0-evidence" / Path(*Path(relative).parts[1:])
+                value = json.loads(path.read_text())
+                mutate(value)
+                path.write_text(json.dumps(value))
+            return change
+        cases = {
+            "missing": lambda e, a: (e / "storage/graph-c0-evidence/summary.json").unlink(),
+            "wrong-cohort": edit("storage/source.json", lambda v: v.update(cohort="cli-http")),
+            "wrong-source": edit("storage/source.json", lambda v: v.update(commit="d" * 40)),
+            "wrong-binary": edit("storage/source.json", lambda v: v.update(binarySHA256="d" * 64)),
+            "wrong-runner": edit("storage/source.json", lambda v: v.update(runnerSHA256="d" * 64)),
+            "different-dolt": edit("storage/source.json", lambda v: v.update(doltSHA256="d" * 64)),
+            "summary-source": edit("storage/summary.json", lambda v: v.update(commit="d" * 40)),
+            "missing-phase": edit("cli-http/summary.json", lambda v: v["passed"].pop("graph-http")),
+            "zero-roots": edit("storage/summary.json", lambda v: v["passed"].update(storage=0)),
+            "missing-engine": edit("storage/summary.json", lambda v: v.update(engines=["embedded"])),
+            "live-child": edit("storage/summary.json", lambda v: v.update(childrenRemaining=1)),
+            "no-http": edit("cli-http/summary.json", lambda v: v.update(bdpHTTP=False)),
+            "failed-command": edit("storage/receipts.json", lambda v: v[0].update(exit=1)),
+            "forced-cleanup": edit("storage/receipts.json", lambda v: v[1].update(forced=True)),
+            "open-port": edit("storage/receipts.json", lambda v: v[1].update(portClosed=False)),
+            "changed-artifact": lambda e, a: (a / "bd-linux-gms-pure").write_bytes(b"different binary"),
+        }
+        for name, change in cases.items():
+            with self.subTest(case=name): self.exercise(change)
+
+
+class CohortWorkflow(unittest.TestCase):
+    def test_required_gate_requires_both_independent_source_bound_jobs(self):
+        workflow = (Path(__file__).resolve().parents[2] / ".github/workflows/pr.yml").read_text()
+        cohort = workflow.split("  graph-c0-cohort:\n", 1)[1].split("  graph-c0:\n", 1)[0]
+        gate = workflow.split("  graph-c0:\n", 1)[1].split("\n  # The Bazel lane", 1)[0]
+        self.assertIn("cohort: [storage, cli-http]", cohort)
+        self.assertIn("fail-fast: false", cohort)
+        self.assertIn("timeout-minutes: 90", cohort)
+        self.assertIn('--cohort "${{ matrix.cohort }}"', cohort)
+        self.assertIn("name: graph-c0-${{ matrix.cohort }}-${{ github.sha }}", cohort)
+        self.assertIn("if: ${{ always() }}", gate)
+        self.assertIn("needs: [build-artifacts, graph-c0-cohort]", gate)
+        self.assertIn('run: test "$COHORT_RESULT" = success', gate)
+        for name in ("storage", "cli-http"):
+            self.assertIn(f"name: graph-c0-{name}-${{{{ github.sha }}}}", gate)
+        self.assertIn("--combine-cohorts", gate)
+        self.assertIn("name: Graph core / real engines, installed CLI and BDP", gate)
+
+
 class SmokeDeadlines(unittest.TestCase):
     # The HTTP/BDP smoke starts with a server-backed `bd init`. Hosted runners differ by
     # about 2x: that init took 34 s on a fast runner and 58 s and 65 s on slow ones, and the
@@ -780,7 +1163,7 @@ class SmokeDeadlines(unittest.TestCase):
     # The wrapper must outlast the smoke's whole run by the time the smoke needs to reap its
     # children and report its own labelled failure; the original margin was this much.
     WRAPPER_MARGIN_SECONDS = 60
-    JOB_NAME = "Graph core / real engines, installed CLI and BDP"
+    JOB_NAME = "Graph core / ${{ matrix.cohort }}"
     # Whole-job durations on hosted runners: 27 min on a fast one, 43 to 44 min on five slow
     # ones (each stopped at the smoke's first command), and one slow runner whose job was cut
     # off by the 50 min cap 11 s into the smoke. That last one is a floor for what a complete

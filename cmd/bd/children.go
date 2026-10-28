@@ -41,7 +41,7 @@ Examples:
 		parentID := args[0]
 		pretty, _ := cmd.Flags().GetBool("pretty")
 		if graphPreviewActive {
-			if graphPreviewTypeGeneration != 9 {
+			if graphPreviewTypeGeneration != graphstore.TypeGeneration {
 				return graphFailure("capability_unavailable", "graph children requires the current graph Type installation", 5)
 			}
 			if err := graphPreviewFlags(cmd); err != nil {
@@ -52,7 +52,7 @@ Examples:
 				return graphFailure("invalid_selector", err.Error(), 2)
 			}
 			return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-				children, err := s.ListChildrenLegacy(ctx, selected.Path)
+				children, err := s.ListChildrenLegacySelected(ctx, selected)
 				return children, "", err
 			}, func(value any, _ string) error {
 				children := value.([]*types.IssueWithCounts)
@@ -72,7 +72,11 @@ Examples:
 				}
 				var out strings.Builder
 				for _, child := range children {
-					formatIssueCompact(&out, child.Issue, child.Labels, nil, nil, selected.Path, nil)
+					parent := selected.NativeID
+					if child.Parent != nil {
+						parent = *child.Parent
+					}
+					formatIssueCompact(&out, child.Issue, child.Labels, nil, nil, parent, nil)
 				}
 				_, err := fmt.Fprint(cmd.OutOrStdout(), out.String())
 				return err

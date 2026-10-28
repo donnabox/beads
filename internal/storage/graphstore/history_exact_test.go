@@ -15,6 +15,57 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 )
 
+// createSelectedConstraintFixture supplies an owned-Link endpoint without changing
+// native Issue fixtures used by the same history and rollback tests.
+func createSelectedConstraintFixture(t *testing.T, ctx context.Context, s *Store, path string) Record {
+	t.Helper()
+	record, err := s.Create(ctx, CreateRequest{Path: path, TypeURL: s.ScopeURL() + "constraint", Title: "Constraint"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return record
+}
+
+func TestRetypedMemoryExactHeadStillChecksAllocationType(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := s.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			original, err := s.Create(ctx, CreateRequest{Path: "beads/subject", Title: "Subject"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			wrongType := s.ScopeURL() + "specification"
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, wrongType, "beads/subject"); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.ReadVersion(ctx, "beads/subject", original.Revision); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("live exact-head Type corruption admitted: %v", err)
+			}
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, original.Type, "beads/subject"); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/subject", ExpectedRevision: original.Revision}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, wrongType, "beads/subject"); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.ReadVersion(ctx, "beads/subject", original.Revision); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("deleted final-head Type corruption admitted: %v", err)
+			}
+		})
+	}
+}
+
 func TestReadVersionRetainedLifecycle(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
@@ -28,7 +79,7 @@ func TestReadVersionRetainedLifecycle(t *testing.T) {
 					t.Error(err)
 				}
 			}()
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Original — 雪", Actor: "author"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Plan", Path: "beads/plan", Body: "Original — 雪", Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -48,7 +99,8 @@ func TestReadVersionRetainedLifecycle(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/work", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "before"}, Actor: "author"})
+			createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "before"}, Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -142,7 +194,7 @@ func TestReadVersionRefusals(t *testing.T) {
 					t.Error(err)
 				}
 			}()
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Plan"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Plan", Path: "beads/plan", Body: "Plan"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -256,7 +308,7 @@ func TestReadVersionOwnedMembershipByOwnerKind(t *testing.T) {
 			ctx, o := issueExperimentOptions(t, backend)
 			s := openVersionsStore(t, ctx, o)
 			scope := s.ScopeURL()
-			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Plan", Actor: "author"})
+			memory, err := s.Create(ctx, CreateRequest{Title: "Plan", Path: "beads/plan", Body: "Plan", Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -270,7 +322,8 @@ func TestReadVersionOwnedMembershipByOwnerKind(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/work", ExpectedSourceRevision: memory.Revision, Actor: "author"})
+			createSelectedConstraintFixture(t, ctx, s, "beads/z-rule")
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", TypeURL: s.ScopeURL() + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/z-rule", ExpectedSourceRevision: memory.Revision, Actor: "author"})
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -79,6 +79,6 @@ func sameIssueCreateFields(want, got *types.Issue, actor string) bool {
 	gotMetadata, gotErr := commonMetadata(got.Metadata)
 	return wantErr == nil && gotErr == nil && bytes.Equal(wantMetadata, gotMetadata) && want.Design == got.Design && want.AcceptanceCriteria == got.AcceptanceCriteria &&
 		want.Assignee == got.Assignee && want.SpecID == got.SpecID &&
-		sameIssueDue(want.DueAt, got.DueAt) && want.Notes == got.Notes && want.Owner == got.Owner && createdBy == got.CreatedBy &&
+		sameIssueDue(want.DueAt, got.DueAt) && sameIssueDue(want.DeferUntil, got.DeferUntil) && want.Notes == got.Notes && want.Owner == got.Owner && createdBy == got.CreatedBy &&
 		reflect.DeepEqual(want.EstimatedMinutes, got.EstimatedMinutes) && reflect.DeepEqual(want.ExternalRef, got.ExternalRef)
 }

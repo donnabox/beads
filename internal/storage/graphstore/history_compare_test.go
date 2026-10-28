@@ -12,7 +12,7 @@ import (
 )
 
 func comparisonMemory(version, body string) Record {
-	return Record{ID: "https://example.test/beads/plan", Type: "https://example.test/types/memory", Version: version, Revision: version, Properties: Properties{Title: "Plan", Body: body}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}, Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
+	return Record{ID: "https://example.test/beads/plan", Type: "https://example.test/memory", Version: version, Revision: version, Properties: Properties{Title: "Plan", Body: body}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}, Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
 }
 func comparisonLink(version string) LinkRecord {
 	return LinkRecord{ID: "https://example.test/links/context", Type: "https://example.test/types/related", Version: version, Revision: version, Source: "https://example.test/beads/plan", Target: "https://example.test/beads/work", Properties: map[string]any{"note": "context"}, Metadata: json.RawMessage(`{}`), Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
@@ -141,13 +141,13 @@ func TestVersionComparisonJSONSemantics(t *testing.T) {
 	if got.Changes[0].Member != "gone" || !got.Changes[0].From.Present || string(got.Changes[0].From.Value) != "null" || got.Changes[0].To.Present || got.Changes[1].Member != "n" || string(got.Changes[1].From.Value) != "9007199254740993" || got.Changes[2].Member != "new" || got.Changes[2].From.Present || string(got.Changes[2].To.Value) != "null" {
 		t.Fatalf("absence/null/number: %+v", got.Changes)
 	}
-	if !reflect.DeepEqual(got.Compared, []string{"properties", "metadata"}) || len(got.Unsupported) != 0 {
+	if !reflect.DeepEqual(got.Compared, []string{"properties", "metadata", "endpoints"}) || len(got.Unsupported) != 0 {
 		t.Fatalf("Link scope: %+v", got)
 	}
 }
 
 func TestVersionComparisonIssueAllSerializedFields(t *testing.T) {
-	before := IssueRecord{ID: "https://example.test/beads/work", Type: "https://example.test/types/issue", Version: "a", Revision: "a", Properties: &publicops.Issue{ID: "work", Title: "Work", Priority: 2}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}
+	before := IssueRecord{ID: "https://example.test/beads/work", Type: "https://example.test/issue", Version: "a", Revision: "a", Properties: &publicops.Issue{ID: "work", Title: "Work", Priority: 2}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}
 	after := before
 	after.Version = "b"
 	after.Revision = "b"
@@ -227,5 +227,25 @@ func TestVersionComparisonOrderingAndIdentity(t *testing.T) {
 	}
 	if _, err := compareVersionRecords(a, comparisonMemory("a", "")); !errors.Is(err, ErrInvalidStore) {
 		t.Fatal(err)
+	}
+}
+
+func TestVersionComparisonEndpointRepinAndOwnedReferences(t *testing.T) {
+	a, b := comparisonLink("a"), comparisonLink("b")
+	a.TargetRevision, b.TargetRevision = "target-old", "target-new"
+	got, err := compareVersionRecords(a, b)
+	if err != nil || len(got.Changes) != 1 || got.Changes[0].Area != "endpoints" || got.Changes[0].Member != "target" || string(got.Changes[0].From.Value) != string(comparisonRaw(t, a.TargetReference())) || string(got.Changes[0].To.Value) != string(comparisonRaw(t, b.TargetReference())) {
+		t.Fatalf("endpoint pin comparison: %+v %v", got, err)
+	}
+	ownerA, ownerB := comparisonMemory("oa", "Owner"), comparisonMemory("ob", "Owner")
+	ownerA.Owned, ownerB.Owned = []json.RawMessage{comparisonRaw(t, a)}, []json.RawMessage{comparisonRaw(t, b)}
+	got, err = compareVersionRecords(ownerA, ownerB)
+	if err != nil || len(got.Changes) != 1 || got.Changes[0].Area != "owned" || got.Changes[0].ID != a.ID {
+		t.Fatalf("owned pin comparison: %+v %v", got, err)
+	}
+	b.Target = "https://example.test/beads/other"
+	ownerB.Owned = []json.RawMessage{comparisonRaw(t, b)}
+	if _, err := compareVersionRecords(ownerA, ownerB); !errors.Is(err, ErrInvalidStore) {
+		t.Fatalf("identity retarget was allowed: %v", err)
 	}
 }

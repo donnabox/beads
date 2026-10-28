@@ -26,12 +26,69 @@ const success = value => { assert.equal(isBdpClientProblem(value), false, JSON.s
 const id = path => scope + path;
 const planID = id('beads/plan');
 const contextID = id('links/context');
-const memoryType = id('types/preview-memory');
-const relatedType = id('types/preview-related');
-const exampleFollowsType = id('types/example-follows');
-const exampleCitesType = id('types/example-cites');
-const installedTypeIDs = [memoryType, id('types/preview-issue'),
-  relatedType, id('types/preview-dependency'), exampleFollowsType, exampleCitesType].sort();
+const constraintID = id('beads/constraint');
+const memoryType = id('memory');
+const ownedType = id('subject-to');
+const referencesType = id('references');
+const expectedBeadIDs = ['beads/alpha', 'beads/constraint', 'beads/plan', 'beads/prereq', 'beads/work'].map(id);
+// Generation 13 installs the 18 selected families plus 13 concrete native
+// Issue Types and 19 concrete native Dependency Types. Keep these expected
+// identities literal and independent of the inventory being checked.
+const installedTypeIDs = [
+  'memory',
+  'evaluation',
+  'constraint',
+  'policy',
+  'requirement',
+  'scenario',
+  'specification',
+  'issue',
+  'references',
+  'superseded-by',
+  'requires',
+  'defines',
+  'subject-to',
+  'conformance',
+  'addresses',
+  'satisfies',
+  'violates',
+  'dependency',
+  'bug', // bug
+  'feature', // feature
+  'task', // task
+  'epic', // epic
+  'chore', // chore
+  'decision', // decision
+  'message', // message
+  'molecule', // molecule
+  'gate', // gate
+  'spike', // spike
+  'story', // story
+  'milestone', // milestone
+  'event', // event
+  'blocks', // blocks
+  'parent-child', // parent-child
+  'conditional-blocks', // conditional-blocks
+  'waits-for', // waits-for
+  'related', // related
+  'discovered-from', // discovered-from
+  'replies-to', // replies-to
+  'relates-to', // relates-to
+  'duplicates', // duplicates
+  'supersedes', // supersedes
+  'authored-by', // authored-by
+  'assigned-to', // assigned-to
+  'approved-by', // approved-by
+  'attests', // attests
+  'tracks', // tracks
+  'until', // until
+  'caused-by', // caused-by
+  'validates', // validates
+  'delegated-from', // delegated-from
+].map(id).sort();
+// Every collection is requested one item per page; the full Type catalog
+// is the largest expected inventory. This remains a finite fixture bound.
+const collectionPageCap = 50;
 
 // Observational decoration only: delegates to native fetch without synthesizing
 // any status, body, routing, or discovery. It does not log credentials.
@@ -68,7 +125,7 @@ async function collect(collection, parameters = {}) {
   try {
     let page = await perform({ kind: 'collection', collection, limit: 1, ...parameters }, { continuationScope });
     for (;;) {
-      assert.ok(pages.length < 20, 'collection page cap');
+      assert.ok(pages.length < collectionPageCap, 'collection page cap');
       pages.push(page);
       if (page.next === null) break;
       page = await perform({ kind: 'collection', collection, continuation: page.next }, { continuationScope });
@@ -99,37 +156,41 @@ try {
   assert.equal(plan.type, memoryType);
   assert.equal(plan.properties.title, 'Plan — 雪');
   assert.deepEqual(plan.metadata, { team: 'docs' });
-  assert.equal(plan.ownedLinks[relatedType][0].properties.note, 'before page');
-  assert.deepEqual(plan.ownedLinks[relatedType][0].metadata, { origin: 'manual' });
+  assert.equal(plan.ownedLinks[ownedType][0].properties.note, 'before page');
+  assert.deepEqual(plan.ownedLinks[ownedType][0].metadata, { origin: 'manual' });
+  assert.equal(plan.ownedLinks[ownedType][0].target, constraintID);
+  const constraintBefore = await perform({ kind: 'resource', resource: 'bead', id: constraintID });
+  assert.equal(constraintBefore.type, id('constraint'));
   for (const [resource, resourceID] of [['type', plan.type], ['bead', id('beads/work')], ['link', contextID]]) {
     const value = await perform({ kind: 'resource', resource, id: resourceID });
     assert.equal(value.id, resourceID);
     artifacts[resource + ':' + resourceID] = value;
   }
   // Types are distinct installed descriptors, not aliases inferred from a
-  // Link label. Read each through the unchanged public client's Type operation.
-  artifacts.exampleTypes = {};
-  for (const [typeID, name] of [[exampleFollowsType, 'Example follows'], [exampleCitesType, 'Example cites']]) {
+  // Link label. Read their partial inventory projections through the unchanged
+  // public client; this does not claim complete Type-descriptor conformance.
+  artifacts.selectedLinkTypes = {};
+  for (const [typeID, name, parents] of [[referencesType, 'references', []], [ownedType, 'subject-to', [referencesType]]]) {
     const descriptor = await perform({ kind: 'resource', resource: 'type', id: typeID });
     assert.equal(descriptor.id, typeID);
     assert.equal(descriptor.name, name);
     assert.equal(descriptor.describes, 'link');
-    assert.deepEqual(descriptor.conformsTo, []);
-    assert.deepEqual(descriptor.source, { conformsTo: [], external: 'none' });
-    assert.deepEqual(descriptor.target, { conformsTo: [], external: 'none' });
+    assert.deepEqual(descriptor.conformsTo, parents);
+    assert.deepEqual(descriptor.source, { conformsTo: [] });
+    assert.deepEqual(descriptor.target, { conformsTo: [] });
     assert.equal(descriptor.ownsOutgoing, undefined);
-    artifacts.exampleTypes[typeID] = descriptor;
+    artifacts.selectedLinkTypes[typeID] = descriptor;
   }
-  // The existing Issue-to-Memory fixture uses the new cites Type; no extra
-  // writer process is needed, and all retained Memory-owned Link checks remain.
-  const exampleLink = await perform({ kind: 'resource', resource: 'link', id: id('links/back') });
-  assert.equal(exampleLink.id, id('links/back'));
-  assert.equal(exampleLink.type, exampleCitesType);
-  assert.equal(exampleLink.source, id('beads/work'));
-  assert.equal(exampleLink.target, planID);
-  assert.deepEqual(exampleLink.properties, { note: 'Issue context' });
-  assert.deepEqual(exampleLink.metadata, {});
-  artifacts.exampleLink = exampleLink;
+  // Direct References is unowned on the existing Issue-to-Memory control.
+  // The separate Memory-to-Constraint SubjectTo exercises selected ownership.
+  const referenceLink = await perform({ kind: 'resource', resource: 'link', id: id('links/back') });
+  assert.equal(referenceLink.id, id('links/back'));
+  assert.equal(referenceLink.type, referencesType);
+  assert.equal(referenceLink.source, id('beads/work'));
+  assert.equal(referenceLink.target, planID);
+  assert.deepEqual(referenceLink.properties, { note: 'Issue context' });
+  assert.deepEqual(referenceLink.metadata, {});
+  artifacts.referenceLink = referenceLink;
   const properties = await perform({ kind: 'properties', resource: 'bead', id: planID });
   assert.deepEqual(properties, plan.properties);
   pass('public client reads Memory, Issue, Link, installed Type and properties');
@@ -151,7 +212,7 @@ try {
   const incidentBefore = await perform({ kind: 'bead-links', bead: workID, direction: 'both', limit: 100 });
   assert.equal(incidentBefore.next, null);
   assert.deepEqual(incidentBefore.items.map(link => link.id).sort(),
-    [contextID, id('links/back'), dependencyID].sort());
+    [id('links/back'), dependencyID].sort());
   const workHTTPBefore = await http(workID);
   assert.equal(workHTTPBefore.response.status, 200);
   const workETagBefore = workHTTPBefore.response.headers.get('etag');
@@ -163,7 +224,7 @@ try {
     acceptance_criteria: 'The public BDP client sees all four edited fields.\n' };
   const issueArgs = ['update', workID, '--title', issueFields.title,
     '--description', issueFields.description, '--design', issueFields.design,
-    '--acceptance', issueFields.acceptance_criteria, '--if-revision', workBefore.revision, '--json'];
+    '--acceptance', issueFields.acceptance_criteria, '--if-revision', '=' + workBefore.revision, '--json'];
   const issueBinary = digest(await readFile(process.env.BDP_BD));
   let issueExecution;
   let issueExitCode = null;
@@ -205,7 +266,7 @@ try {
   assert.deepEqual(incidentAfter, incidentBefore);
   const issueInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
   assert.equal(issueInventory.next, null);
-  assert.equal(issueInventory.items.length, 4);
+  assert.equal(issueInventory.items.length, expectedBeadIDs.length);
   assert.deepEqual(issueInventory.items.find(bead => bead.id === workID), workAfter);
   const workHTTPAfter = await http(workID, { headers: { 'if-none-match': workETagBefore } });
   assert.equal(workHTTPAfter.response.status, 200);
@@ -275,7 +336,7 @@ try {
   const claimNetworkIndex = network.length - 1;
   await writeFile(join(output, "client-issue-notes-before.body"), claimedHTTP.bytes);
   const noopMutation = await notesCLI('client-cli-issue-append-noop',
-    ['update', workID, '--append-notes=', '--if-revision', claimed.revision, '--actor', notesActor, '--json']);
+    ['update', workID, '--append-notes=', '--if-revision', '=' + claimed.revision, '--actor', notesActor, '--json']);
   assert.equal(noopMutation.result.changed, false);
   assert.deepEqual(noopMutation.result.issue, claimMutation.result.issue);
   const noopRecord = await perform({ kind: 'resource', resource: 'bead', id: workID });
@@ -290,7 +351,7 @@ try {
 
   const appendText = '  Progress — 雪\r\nsecond line\t  ';
   const appendMutation = await notesCLI('client-cli-issue-append',
-    ['update', workID, '--append-notes', appendText, '--if-revision', claimed.revision, '--actor', notesActor, '--json']);
+    ['update', workID, '--append-notes', appendText, '--if-revision', '=' + claimed.revision, '--actor', notesActor, '--json']);
   assert.equal(appendMutation.result.changed, true);
   const appended = await perform({ kind: 'resource', resource: 'bead', id: workID });
   assert.equal(appended.revision, appendMutation.result.issue.revision);
@@ -302,7 +363,7 @@ try {
   assert.deepEqual(appendedProperties, appended.properties);
   const appendedInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
   assert.equal(appendedInventory.next, null);
-  assert.equal(appendedInventory.items.length, 4);
+  assert.equal(appendedInventory.items.length, expectedBeadIDs.length);
   assert.deepEqual(appendedInventory.items.find(bead => bead.id === workID), appended);
   assert.deepEqual(await perform({ kind: 'resource', resource: 'bead', id: targetID }), targetBefore);
   assert.deepEqual(await perform({ kind: 'resource', resource: 'link', id: dependencyID }), dependencyBefore);
@@ -325,18 +386,18 @@ try {
   for (const collection of ['beads', 'links', 'types']) {
     const result = await collect(collection);
     artifacts[collection] = result;
-    const expected = collection === 'beads' ? ['beads/alpha', 'beads/plan', 'beads/prereq', 'beads/work'].map(id)
+    const expected = collection === 'beads' ? expectedBeadIDs
       : collection === 'links' ? [id('links/back'), contextID, process.env.BDP_DEPENDENCY_ID] : installedTypeIDs;
     assert.deepEqual(result.items.map(item => item.id).sort(), [...expected].sort());
     if (collection === 'types') {
-      for (const descriptor of Object.values(artifacts.exampleTypes)) {
+      for (const descriptor of Object.values(artifacts.selectedLinkTypes)) {
         const summary = result.items.find(item => item.id === descriptor.id);
         assert.equal(summary.name, descriptor.name);
         assert.equal(summary.describes, descriptor.describes);
       }
     }
     if (collection === 'links') {
-      assert.deepEqual(result.items.find(item => item.id === exampleLink.id), exampleLink);
+      assert.deepEqual(result.items.find(item => item.id === referenceLink.id), referenceLink);
     }
   }
   pass('public client traverses complete Bead, Link and Type inventories without omissions or duplicates');
@@ -349,7 +410,7 @@ try {
     assert.equal(first.items[0].id, id('beads/alpha'));
     assert.ok(first.next);
     const args = ['update', 'links/context', '--properties', '{"note":"after page"}',
-      '--if-revision', plan.ownedLinks[relatedType][0].revision,
+      '--if-revision', '=' + plan.ownedLinks[ownedType][0].revision,
       '--if-source-revision', plan.revision, '--json'];
     const beforeBinary = digest(await readFile(process.env.BDP_BD));
     let mutation;
@@ -384,7 +445,8 @@ try {
     assert.deepEqual(replay, second);
     const fresh = await perform({ kind: 'resource', resource: 'bead', id: planID });
     assert.notEqual(fresh.revision, plan.revision);
-    assert.equal(fresh.ownedLinks[relatedType][0].properties.note, 'after page');
+    assert.equal(fresh.ownedLinks[ownedType][0].properties.note, 'after page');
+    assert.deepEqual(await perform({ kind: 'resource', resource: 'bead', id: constraintID }), constraintBefore);
     const newCollection = await collect('beads', { type: memoryType });
     assert.deepEqual(newCollection.items.find(item => item.id === planID), fresh);
     artifacts.retained = { first, second, replay, fresh };
@@ -393,7 +455,7 @@ try {
     client.forgetContinuations(owner);
   }
 
-  const selected = await collect('links', { source: planID, target: id('beads/work'), endpoint: planID,
+  const selected = await collect('links', { source: planID, target: constraintID, endpoint: planID,
     selector: '$[?@.properties.note == "after page"]' });
   assert.deepEqual(selected.items.map(item => item.id), [contextID]);
   const incidentOwner = client.createContinuationScope();
@@ -472,7 +534,7 @@ try {
 
   const memoryProperties = { title: 'Edited plan — 雪', body: 'Updated through the installed CLI.\n' };
   const memoryArgs = ['update', planID, '--properties', JSON.stringify(memoryProperties),
-    '--if-revision', record.revision, '--json'];
+    '--if-revision', '=' + record.revision, '--json'];
   const memoryBinary = digest(await readFile(process.env.BDP_BD));
   let memoryExecution;
   try {
@@ -498,7 +560,7 @@ try {
   assert.notEqual(edited.revision, record.revision);
   assert.deepEqual(edited.ownedLinks, record.ownedLinks);
   const unchangedLink = await perform({ kind: 'resource', resource: 'link', id: contextID });
-  assert.deepEqual(unchangedLink, record.ownedLinks[relatedType][0]);
+  assert.deepEqual(unchangedLink, record.ownedLinks[ownedType][0]);
   assert.deepEqual(await perform({ kind: 'properties', resource: 'bead', id: planID }), memoryProperties);
   artifacts.memoryEdit = { record: edited, mutation: memoryMutation, unchangedLink };
   pass('public client sees CLI Memory content edit with unchanged owned Link and consistent properties');
@@ -519,7 +581,7 @@ try {
     assert.equal(retainedFirst.items[0].id, id('beads/alpha'));
     assert.ok(retainedFirst.next);
 
-    const deletionArgs = ['link', 'delete', dependencyID, '--force', '--if-revision', deletionLinkBefore.revision,
+    const deletionArgs = ['link', 'delete', dependencyID, '--force', '--if-revision', '=' + deletionLinkBefore.revision,
       '--if-source-revision', deletionSourceBefore.revision, '--actor', 'bdp-read-dependency-remover', '--json'];
     const deletionBinary = digest(await readFile(process.env.BDP_BD));
     let deletionExecution;
@@ -556,8 +618,8 @@ try {
         continuation: retainedPages.at(-1).next }, { continuationScope: deletionOwner }));
     }
     const retainedItems = retainedPages.flatMap(page => page.items);
-    assert.equal(retainedItems.length, 4);
-    assert.equal(new Set(retainedItems.map(item => item.id)).size, 4);
+    assert.equal(retainedItems.length, expectedBeadIDs.length);
+    assert.equal(new Set(retainedItems.map(item => item.id)).size, expectedBeadIDs.length);
     const retainedSource = retainedItems.find(bead => bead.id === workID);
     assert.deepEqual(retainedSource, deletionSourceBefore);
     assert.deepEqual(Object.values(retainedSource.ownedLinks).flat(), [deletionLinkBefore]);
@@ -576,7 +638,9 @@ try {
     assert.deepEqual(deletionLinksAfter.items, survivingLinks);
     const deletionIncident = await perform({ kind: 'bead-links', bead: workID, direction: 'both', limit: 100 });
     assert.equal(deletionIncident.next, null);
-    assert.deepEqual(deletionIncident.items, survivingLinks);
+    // The owned control now targets a Constraint, so it is not incident on
+    // the native Issue pair. Its global record must still survive unchanged.
+    assert.deepEqual(deletionIncident.items, survivingLinks.filter(link => link.source === workID || link.target === workID));
     const deletionTargetAfter = await perform({ kind: 'resource', resource: 'bead', id: targetID });
     assert.deepEqual(deletionTargetAfter, targetBefore);
     const gone = await client.perform({ kind: 'resource', resource: 'link', id: dependencyID });
@@ -614,7 +678,7 @@ try {
   const authoredMutation = await notesCLI('client-cli-issue-authoring-edit',
     ['update', authoringID, '--estimate=45', '--external-ref=revised', '--spec-id=revised spec', '--due=2100-01-01T00:00:00Z',
       '--design=Revised', '--acceptance=Accepted', '--append-notes=Progress',
-      '--if-revision', authored.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + authored.revision, '--actor', authoringActor, '--json']);
   assert.equal(authoredMutation.result.changed, true);
   const editedAuthoring = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
   assert.equal(editedAuthoring.revision, authoredMutation.result.issue.revision);
@@ -632,7 +696,7 @@ try {
   await writeFile(join(output, 'client-issue-authoring-edited.body'), editedHTTP.bytes);
   const authoringNoop = await notesCLI('client-cli-issue-authoring-noop',
     ['update', authoringID, '--estimate=45', '--external-ref=revised', '--spec-id=revised spec', '--due=2100-01-01T00:00:00Z',
-      '--if-revision', editedAuthoring.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + editedAuthoring.revision, '--actor', authoringActor, '--json']);
   assert.equal(authoringNoop.result.changed, false);
   assert.deepEqual(authoringNoop.result.issue, authoredMutation.result.issue);
   const authoringNoopIndex = network.length;
@@ -643,7 +707,7 @@ try {
   await writeFile(join(output, 'client-issue-authoring-noop.body'), noopAuthoringHTTP.bytes);
   const clearAuthoring = await notesCLI('client-cli-issue-authoring-clear',
     ['update', authoringID, '--estimate=0', '--external-ref=', '--spec-id=', '--due=',
-      '--if-revision', editedAuthoring.revision, '--actor', authoringActor, '--json']);
+      '--if-revision', '=' + editedAuthoring.revision, '--actor', authoringActor, '--json']);
   assert.equal(clearAuthoring.result.changed, true);
   const clearedAuthoring = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
   assert.equal(clearedAuthoring.revision, clearAuthoring.result.issue.revision);
@@ -658,7 +722,7 @@ try {
   assert.deepEqual(authoringProperties, clearedAuthoring.properties);
   const authoringInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
   assert.equal(authoringInventory.next, null);
-  assert.equal(authoringInventory.items.length, 4);
+  assert.equal(authoringInventory.items.length, expectedBeadIDs.length);
   assert.deepEqual(authoringInventory.items.find(item => item.id === authoringID), clearedAuthoring);
   artifacts.issueAuthoring = { initialFields, before: authored, edit: authoredMutation, edited: editedAuthoring,
     noop: authoringNoop, clear: clearAuthoring, after: clearedAuthoring, properties: authoringProperties,

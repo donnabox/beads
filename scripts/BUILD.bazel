@@ -400,6 +400,12 @@ exports_files(
     ],
 )
 
+# Disposable fixture producer linked from the legacy import evidence.
+exports_files(
+    ["legacy-import-fixture.py"],
+    visibility = ["//:__pkg__"],
+)
+
 # --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
 
 filegroup(

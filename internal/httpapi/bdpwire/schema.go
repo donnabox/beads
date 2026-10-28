@@ -8,7 +8,7 @@ import (
 // Pin is the gastownhall/bdp commit every vendored file under schema/ was
 // taken from. pin_test.go asserts it equals the `commit:` line of
 // schema/PROVENANCE, so the two cannot drift apart silently.
-const Pin = "de99030d13a57e77f4f2660b91ea3c39b82823cb"
+const Pin = "bad780f19761e5714873aa3a85adeb75bc885928"
 
 // SchemaID is the bundle's canonical `$id`. It is a protocol identity —
 // compared exactly, never dereferenced — and the base the pinned matrix's

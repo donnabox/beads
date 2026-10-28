@@ -12,6 +12,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 func issueEditString(value string) *string { return &value }
@@ -75,6 +76,156 @@ func TestIssuePropertyEmptyMergeAndEstimateClear(t *testing.T) {
 				t.Fatalf("repeat clear: %+v %v", noop, err)
 			}
 			assertIssueEditCounts(t, ctx, store, original.Properties.ID, 3)
+		})
+	}
+}
+
+func TestIssueUpdateTypeInCheckedTransaction(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.Close()
+			original, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			bug := types.TypeBug
+			bugType, err := NativeIssueTypeURL(s.ScopeURL(), string(bug))
+			if err != nil {
+				t.Fatal(err)
+			}
+			changed, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: original.Revision, IssueType: &bug})
+			if err != nil || !changed.Changed || changed.Issue.Properties.IssueType != bug || changed.Issue.Type != bugType {
+				t.Fatalf("type edit: %+v %v", changed, err)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/work", original)
+			repeated, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: changed.Issue.Revision, IssueType: &bug})
+			if err != nil || repeated.Changed || repeated.Issue.Revision != changed.Issue.Revision {
+				t.Fatalf("type no-op: %+v %v", repeated, err)
+			}
+			invalid := types.IssueType("not-configured")
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: changed.Issue.Revision, IssueType: &invalid}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("unknown type should refuse: %v", err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 2)
+		})
+	}
+}
+
+func TestIssueUpdateLabelsInCheckedTransaction(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.Close()
+			original, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			add := UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: original.Revision, Labels: publicops.LabelPatch{Add: []string{"one", "two", "one"}}}
+			added, err := s.UpdateIssue(ctx, add)
+			if err != nil || !added.Changed || !reflect.DeepEqual(added.Issue.Properties.Labels, []string{"demo", "graph", "one", "two"}) {
+				t.Fatalf("add labels: labels=%q result=%+v err=%v", added.Issue.Properties.Labels, added, err)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/work", original)
+			if _, err := s.UpdateIssue(ctx, add); !errors.Is(err, ErrConflict) {
+				t.Fatalf("stale add: %v", err)
+			}
+			add.ExpectedRevision = added.Issue.Revision
+			noop, err := s.UpdateIssue(ctx, add)
+			if err != nil || noop.Changed || noop.Issue.Revision != added.Issue.Revision {
+				t.Fatalf("repeat add: %+v %v", noop, err)
+			}
+			edit := UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: added.Issue.Revision, Labels: publicops.LabelPatch{
+				Replace: publicops.Field[[]string]{Set: true, Value: []string{"two", "three"}}, Add: []string{"four"}, Remove: []string{"two"},
+			}}
+			replaced, err := s.UpdateIssue(ctx, edit)
+			if err != nil || !replaced.Changed || !reflect.DeepEqual(replaced.Issue.Properties.Labels, []string{"four", "three"}) {
+				t.Fatalf("replace/add/remove labels: labels=%q result=%+v err=%v", replaced.Issue.Properties.Labels, replaced, err)
+			}
+			cleared, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: replaced.Issue.Revision, Labels: publicops.LabelPatch{Replace: publicops.Field[[]string]{Set: true}}})
+			if err != nil || !cleared.Changed || len(cleared.Issue.Properties.Labels) != 0 {
+				t.Fatalf("clear labels: %+v %v", cleared, err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 4)
+		})
+	}
+}
+
+func TestIssueUpdateStatusInCheckedTransaction(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.Close()
+			original, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/gate", plainIssue("Gate")); err != nil {
+				t.Fatal(err)
+			}
+			blocked, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/gate", Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			closed := types.StatusClosed
+			session := "review"
+			request := UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: blocked.Source.Revision, Status: &closed, ClosedBySession: &session}
+			if _, err := s.UpdateIssue(ctx, request); !errors.Is(err, storage.ErrCloseBlocked) {
+				t.Fatalf("unforced close across blocker: %v", err)
+			}
+			unknown := types.Status("not-configured")
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: blocked.Source.Revision, Status: &unknown}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("unknown status: %v", err)
+			}
+			request.ForceClosePolicy = true
+			got, err := s.UpdateIssue(ctx, request)
+			if err != nil || !got.Changed || got.Issue.Properties.Status != closed || got.Issue.Properties.ClosedAt == nil || got.Issue.Properties.ClosedBySession != session {
+				t.Fatalf("forced close: %+v %v", got, err)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/work", original)
+			if _, err := s.UpdateIssue(ctx, request); !errors.Is(err, ErrConflict) {
+				t.Fatalf("stale status: %v", err)
+			}
+			open := types.StatusOpen
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: got.Issue.Revision, ExpectedStatus: &open, Status: &closed}); !errors.Is(err, storage.ErrStatusMismatch) {
+				t.Fatalf("stale status guard on a no-op: %v", err)
+			}
+			invalid := types.Status("not-configured")
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: got.Issue.Revision, ExpectedStatus: &invalid, Status: &open}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("invalid status guard: %v", err)
+			}
+			reopened, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: got.Issue.Revision, ExpectedStatus: &closed, Status: &open})
+			if err != nil || !reopened.Changed || reopened.Issue.Properties.Status != open || reopened.Issue.Properties.ClosedAt != nil {
+				t.Fatalf("reopen: %+v %v", reopened, err)
+			}
+			noop, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: reopened.Issue.Revision, Status: &open})
+			if err != nil || noop.Changed || noop.Issue.Revision != reopened.Issue.Revision {
+				t.Fatalf("same-status no-op: %+v %v", noop, err)
+			}
+			expectedHolder := "holder"
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: reopened.Issue.Revision, ExpectedAssignee: &expectedHolder, Status: &open}); !errors.Is(err, storage.ErrAssigneeMismatch) {
+				t.Fatalf("stale assignee guard on a no-op: %v", err)
+			}
+			unassigned := ""
+			assigned, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: reopened.Issue.Revision, ExpectedAssignee: &unassigned, Assignee: &expectedHolder})
+			if err != nil || !assigned.Changed || assigned.Issue.Properties.Assignee != expectedHolder {
+				t.Fatalf("expected-unassigned guard: %+v %v", assigned, err)
+			}
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: assigned.Issue.Revision, ExpectedAssignee: &unassigned, Assignee: &expectedHolder}); !errors.Is(err, storage.ErrAssigneeMismatch) {
+				t.Fatalf("stale unassigned guard on a no-op: %v", err)
+			}
 		})
 	}
 }
@@ -212,7 +363,7 @@ func TestIssueUpdateRefusalAndRollback(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := s.Create(ctx, CreateRequest{Path: "beads/memory", Body: "body"}); err != nil {
+			if _, err := s.Create(ctx, CreateRequest{Title: "Memory", Path: "beads/memory", Body: "body"}); err != nil {
 				t.Fatal(err)
 			}
 			req := UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: issue.Revision, Title: issueEditString("After")}

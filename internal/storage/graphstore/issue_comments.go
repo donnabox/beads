@@ -31,9 +31,6 @@ func (s *Store) IssueComments(ctx context.Context, path string) ([]*types.Commen
 		if err != nil {
 			return err
 		}
-		for _, comment := range comments {
-			comment.IssueID = path // the native backing ID may name a different Bead
-		}
 		return nil
 	})
 	return comments, err
@@ -75,7 +72,6 @@ func (s *Store) AddIssueCommentWithIssue(ctx context.Context, path, actor, text 
 			return err
 		}
 		comment = result.Comment
-		comment.IssueID = path
 		current, err = s.showIssueInTx(ctx, tx, path)
 		return err
 	})

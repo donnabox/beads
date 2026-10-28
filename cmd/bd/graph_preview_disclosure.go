@@ -12,7 +12,7 @@ func graphPreviewReplacementResult(result any, summary string, replaced *graphst
 	if err != nil {
 		return result, "", err
 	}
-	human, err := graphPreviewReplacementSummary(summary, replaced)
+	human, err := graphPreviewReplacementSummary(graphPreviewMutationSummary(summary, result), replaced)
 	return result, human, err
 }
 
@@ -33,4 +33,38 @@ func graphPreviewReplacementSummary(summary string, replaced *graphstore.Replace
 	return fmt.Sprintf("%s\nReplaced Memory %s version %s; recorded attribution: actor=%q basis=%q recordedAt=%q",
 		summary, replaced.ID, replaced.Version, replaced.Attribution.Actor,
 		basis, replaced.Attribution.RecordedAt), nil
+}
+
+// Current references come from the writer's result, never from its replaced
+// predecessor. Brackets keep canonical URLs unambiguous CLI reference inputs.
+func graphPreviewMutationSummary(summary string, result any) string {
+	current := func(kind, id, revision string) {
+		if id != "" && revision != "" {
+			summary += fmt.Sprintf("\nCurrent %s revision: [%s]@=%s", kind, id, revision)
+		}
+	}
+	source := func(value any) {
+		switch record := value.(type) {
+		case graphstore.Record:
+			current("source", record.ID, record.Revision)
+		case graphstore.IssueRecord:
+			current("source", record.ID, record.Revision)
+		}
+	}
+	switch value := result.(type) {
+	case graphstore.MemoryMutationResult:
+		current("Memory", value.Memory.ID, value.Memory.Revision)
+	case graphstore.IssueMutationResult:
+		current("Issue", value.Issue.ID, value.Issue.Revision)
+	case graphstore.LinkMutationResult:
+		current("Link", value.Link.ID, value.Link.Revision)
+		source(value.Source)
+	case graphstore.DependencyResult:
+		current("Link", value.Link.ID, value.Link.Revision)
+		source(value.Source)
+	case graphstore.LinkDeleteResult:
+		// Removed Links have no new current state; only their owner may do so.
+		source(value.Source)
+	}
+	return summary
 }

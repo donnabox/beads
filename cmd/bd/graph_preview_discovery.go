@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/query"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -329,7 +330,29 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	if len(args) != 0 {
 		return graphFailure("invalid_selector", "count does not accept positional arguments", 2)
 	}
-	if err := graphDiscoveryFlags(cmd, "status", "priority", "assignee", "type", "label", "label-any", "title", "id", "parent", "no-parent", "exclude-type", "exclude-status", "title-contains", "desc-contains", "notes-contains", "created-after", "created-before", "updated-after", "updated-before", "closed-after", "closed-before", "empty-description", "no-assignee", "no-labels", "priority-min", "priority-max", "by-status", "by-priority", "by-type", "by-assignee", "by-label"); err != nil {
+	exactType, familyType, err := graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, false)
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	// Native Issue counting can select one classification but cannot intersect
+	// it with an independently selected family. The checked Bead collection
+	// applies both predicates and rejects Issue-only count flags.
+	if exactType != "" && familyType != "" {
+		return runGraphPreviewBeadCount(cmd, exactType, familyType)
+	}
+	selected := familyType
+	if exactType != "" {
+		selected = exactType
+	}
+	nativeClassification := ""
+	native := familyType == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL)
+	if base, classification, ok := graphstore.NativeTypeClassification(graphPreviewConfig.GraphScopeURL, selected, graph.KindBead); ok && base == graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+		native, nativeClassification = true, classification
+	}
+	if !native {
+		return runGraphPreviewBeadCount(cmd, exactType, familyType)
+	}
+	if err := graphDiscoveryFlags(cmd, "status", "priority", "assignee", "type", "exact-type", "label", "label-any", "title", "id", "parent", "no-parent", "exclude-type", "exclude-status", "title-contains", "desc-contains", "notes-contains", "created-after", "created-before", "updated-after", "updated-before", "closed-after", "closed-before", "empty-description", "no-assignee", "no-labels", "priority-min", "priority-max", "by-status", "by-priority", "by-type", "by-assignee", "by-label"); err != nil {
 		return err
 	}
 	selectedGroups := 0
@@ -360,6 +383,7 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err // ordinary parser already emitted this diagnostic
 	}
+	request.IssueType = nativeClassification
 	for _, value := range []string{request.Status, request.IssueType, request.Assignee, request.TitleSearch, request.TitleContains, request.DescContains, request.NotesContains} {
 		if err := graphDiscoveryText(value, "count filter"); err != nil {
 			return err
@@ -471,11 +495,17 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 
 // Explicit scope keeps selector parsing independent of command admission state.
 func graphDiscoveryIssuePath(scopeURL, selector string) (string, error) {
-	path, err := graphPreviewResourcePath(scopeURL, selector)
-	if err != nil || !strings.HasPrefix(path, "beads/") {
-		return "", graphFailure("invalid_selector", fmt.Sprintf("invalid graph Issue selector %q", selector), 2)
+	if strings.HasPrefix(selector, scopeURL) {
+		id, err := graph.ScopeLocalPublicResourceID(scopeURL, selector)
+		if err != nil {
+			return "", graphFailure("invalid_selector", err.Error(), 2)
+		}
+		return id, nil
 	}
-	return path, nil
+	if err := graph.ValidateCanonicalResourceID(selector); err != nil {
+		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	return selector, nil
 }
 
 // The edge wins over dotted-ID inference, just as native ParentID does.
@@ -614,4 +644,25 @@ func graphQueryPredicate(node query.Node, now time.Time, scopeURL string) (func(
 		return nil, err
 	}
 	return func(row *types.IssueWithCounts) bool { return native(row.Issue) }, nil
+}
+
+// Generic Type-only counting uses the same complete transactional Bead family
+// selection as list. Native-domain grouping/filtering keeps its existing route.
+func runGraphPreviewBeadCount(cmd *cobra.Command, exact, family string) error {
+	if err := graphDiscoveryFlags(cmd, "type", "exact-type"); err != nil {
+		return err
+	}
+	return withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		page, err := store.ListBeads(ctx, graphstore.BeadListRequest{TypeURL: exact, ConformsTo: family, All: true, MaxRows: graphstore.PreviewSnapshotLimit})
+		return int64(len(page.Items)), "", err
+	}, func(value any, _ string) error {
+		count := value.(int64)
+		if graphDiscoveryWantsJSON(cmd) {
+			return graphDiscoveryJSON(cmd.OutOrStdout(), struct {
+				Count int64 `json:"count"`
+			}{count})
+		}
+		_, err := fmt.Fprintln(cmd.OutOrStdout(), count)
+		return err
+	})
 }

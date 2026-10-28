@@ -31,6 +31,7 @@ type graphMemoryDiscoveryResult struct {
 }
 
 type graphMemoryDiscoveryItem struct {
+	HasPublicID   bool                         `json:"-"`
 	ID            string                       `json:"id"`
 	Type          string                       `json:"type"`
 	Title         string                       `json:"title"`
@@ -63,12 +64,19 @@ func graphMemoryDiscovery(scope string, snapshot graphstore.Snapshot, search str
 	foldedSearch := cases.Fold().String(search)
 	for _, value := range snapshot.Records {
 		memory, ok := value.(graphstore.Record)
-		if !ok || memory.Type != graphstore.MemoryTypeURL(scope) {
+		if !ok || (memory.Type != graphstore.MemoryTypeURL(scope) && !graphPreviewTypeRefines(snapshot.Types, memory.Type, graphstore.MemoryTypeURL(scope))) {
 			continue
+		}
+		publicID := memory.PublicID
+		if publicID == "" {
+			publicID = memory.ID
 		}
 		fields := []string{}
 		bodyMatch := -1
 		if search != "" {
+			if strings.Contains(cases.Fold().String(publicID), foldedSearch) {
+				fields = append(fields, "id")
+			}
 			if strings.Contains(cases.Fold().String(memory.Properties.Title), foldedSearch) {
 				fields = append(fields, "title")
 			}
@@ -83,10 +91,8 @@ func graphMemoryDiscovery(scope string, snapshot graphstore.Snapshot, search str
 		if !all && len(result.Items) == graphMemoryDiscoveryDefaultLimit {
 			return graphMemoryDiscoveryResult{}, fmt.Errorf("%w: more than %d Memories match; narrow SEARCH or use --all for a complete bounded result", graphstore.ErrLimitExceeded, graphMemoryDiscoveryDefaultLimit)
 		}
-		item := graphMemoryDiscoveryItem{ID: memory.ID, Type: memory.Type, Title: memory.Properties.Title, Version: memory.Version, Attribution: memory.Attribution, MatchedFields: fields}
-		if bodyMatch >= 0 {
-			item.Excerpt = graphMemoryBodyExcerpt(memory.Properties.Body, bodyMatch)
-		}
+		item := graphMemoryDiscoveryItem{HasPublicID: memory.PublicID != "", ID: publicID, Type: memory.Type, Title: memory.Properties.Title, Version: memory.Version, Attribution: memory.Attribution, MatchedFields: fields}
+		item.Excerpt = graphMemoryBodyExcerpt(memory.Properties.Body, max(bodyMatch, 0))
 		if details {
 			item.Details = &graphMemoryDiscoveryDetails{OwnedLinkCount: len(memory.Owned)}
 		}

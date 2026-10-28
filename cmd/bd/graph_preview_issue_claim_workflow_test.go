@@ -39,7 +39,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Revision))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--revision", "="+record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
@@ -69,12 +69,12 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			}
 			call(args...)
 			memory := call("remember", "Claim context", "--id", "beads/context", "--title", "Context")
-			call("create", "Claim work", "--id", "beads/work", "--labels", "demo,graph", "--actor", "creator")
-			target := call("create", "Prerequisite", "--id", "beads/gate")
-			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--type", scope+"types/preview-related"))
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
-			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim", "--actor", "rig.agent"))
+			call("create", "Claim work", "--id", "beads/work", "--force", "--labels", "demo,graph", "--actor", "creator")
+			target := call("create", "Prerequisite", "--id", "beads/gate", "--force")
+			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", scope+"beads/work", scope+"beads/gate"))
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", scope+"beads/work", "beads/context", "--id", "links/context", "--type", scope+"references"))
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", scope+"beads/work"))
+			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--claim", "--actor", "rig.agent"))
 			if !claimed.Changed {
 				t.Fatal("initial claim did not change Issue")
 			}
@@ -82,32 +82,32 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			assertClaim(before, current, "rig.agent")
 			state := graphMemoryReadSnapshot(t, work)
 			for _, actor := range []string{"rig.agent", "rig_agent"} {
-				noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim=true", "--actor", actor))
+				noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", scope+"beads/work", "--claim=true", "--actor", actor))
 				if noop.Changed || !reflect.DeepEqual(noop.Issue, current) {
 					t.Fatalf("same-holder claim renewed/changed state: %+v", noop)
 				}
 			}
-			refuse("constraint_violation", "update", "beads/work", "--claim", "--actor", "foreign")
-			refuse("invalid_properties", "update", "beads/work", "--claim=false", "--actor", "rig.agent")
-			refuse("invalid_properties", "update", "beads/work", "--claim=false", "--priority=0")
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--priority=0")
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--assignee=other")
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--if-revision", current.Revision)
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--patch=[]")
-			refuse("permission_denied", "update", "beads/work", "--claim", "--readonly")
+			refuse("constraint_violation", "update", scope+"beads/work", "--claim", "--actor", "foreign")
+			refuse("invalid_properties", "update", scope+"beads/work", "--claim=false", "--actor", "rig.agent")
+			refuse("invalid_properties", "update", scope+"beads/work", "--claim=false", "--priority=0")
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--priority=0")
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--assignee=other")
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--if-revision", "="+current.Revision)
+			refuse("capability_unavailable", "update", scope+"beads/work", "--claim", "--patch=[]")
+			refuse("permission_denied", "update", scope+"beads/work", "--claim", "--readonly")
 			refuse("invalid_properties", "update", "beads/context", "--claim")
 			refuse("invalid_selector", "update", "links/context", "--claim")
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))
 			freeze := filepath.Join(work, "MIGRATION-FREEZE")
 			writeFile(t, freeze, []byte("claim-test\t2026-09-28T00:00:00Z\tfreeze\n"))
-			refuse("permission_denied", "update", "beads/work", "--claim")
+			refuse("permission_denied", "update", scope+"beads/work", "--claim")
 			if err := os.Remove(freeze); err != nil {
 				t.Fatal(err)
 			}
 			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("no-op/refusal changed current graph, including lease timestamps")
 			}
-			if call("show", "beads/context") != memory || call("show", "beads/gate", "--format", "graph-json") != target {
+			if call("show", scope+"beads/context") != memory || call("show", scope+"beads/gate", "--format", "graph-json") != target {
 				t.Fatal("claim changed unrelated Beads")
 			}
 			if got := graphMixedResult[graphstore.LinkRecord](t, call("show", dependency.Link.ID)); !reflect.DeepEqual(got, dependency.Link) {
@@ -121,10 +121,10 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			// The existing storage test forces overlap. Independent installed server
 			// processes also prove one complete winner and only typed domain refusals.
 			if engine == "server" {
-				raceBefore := graphMixedResult[graphstore.IssueRecord](t, call("create", "Race for claim", "--id", "beads/race"))
+				raceBefore := graphMixedResult[graphstore.IssueRecord](t, call("create", "Race for claim", "--id", "beads/race", "--force"))
 				outcomes := graphMutationRacePair(t, bd, work, home, [2][]string{
-					{"update", "beads/race", "--claim", "--actor=first", "--json"},
-					{"update", "beads/race", "--claim", "--actor=second", "--json"},
+					{"update", scope + "beads/race", "--claim", "--actor=first", "--json"},
+					{"update", scope + "beads/race", "--claim", "--actor=second", "--json"},
 				}, map[string]int{"revision_conflict": 4, "constraint_violation": 4})
 				winner := -1
 				for i, outcome := range outcomes {

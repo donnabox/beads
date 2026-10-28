@@ -27,10 +27,11 @@ import (
 func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			// 180s, not 90s: in the -race CI lane (-p 4 -parallel 4) this subtest
-			// measured 82s on a passing run and hit a 90s deadline on two
-			// consecutive runs, while it takes about 40s on a fast local machine.
-			// The deadline exists to catch hangs, not to measure speed.
+			// Bound each stateful phase, not the cumulative five complete catalog
+			// rereads. The -race CI workflow exhausted a shared 180s context in
+			// its final 52-Type comparison after earlier phases had progressed.
+			// Keep the same hang bound per phase and the outer Go test timeout.
+			phaseStarted := time.Now()
 			ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
 			defer cancel()
 			workspace, err := filepath.EvalSymlinks(t.TempDir())
@@ -38,6 +39,8 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal(err)
 			}
 			o := graphstore.Options{Backend: backend, Database: fmt.Sprintf("graph_read_%d", time.Now().UnixNano()), DataDir: filepath.Join(workspace, "dolt"), Branch: "main", Binding: graphstore.Binding{WorkspaceID: workspace, ScopeURL: "https://example.test/read/", AuthorityID: "0123456789abcdef0123456789abcdef", SchemaVersion: graphstore.SchemaVersion}}
+			// This wire-projection cohort intentionally exercises retained assessment semantics.
+			o.AssessmentsEnabled = true
 			if backend == "server" {
 				if os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT") == "" {
 					t.Skip("ordinary shared-server Dolt port not configured")
@@ -62,19 +65,19 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			})
 			r := New(s)
 			empty, err := r.Inventory(ctx)
-			if err != nil || len(empty.Beads) != 0 || len(empty.Links) != 0 || len(empty.Types) != 6 || empty.WriterToken == "" {
+			if err != nil || len(empty.Beads) != 0 || len(empty.Links) != 0 || len(empty.Types) != len(graphstore.FreshTypeNames()) || empty.WriterToken == "" {
 				t.Fatalf("empty installed inventory: %+v, %v", empty, err)
 			}
 			memory, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/plan", Title: "Memory — 記憶", Body: "", Actor: "human:Donna <unchanged>", Metadata: json.RawMessage(`{"reviewed":true}`)})
 			if err != nil {
 				t.Fatal(err)
 			}
-			other, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/other", Title: "Target"})
+			other, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/other", TypeURL: o.Binding.ScopeURL + "constraint", Title: "Target"})
 			if err != nil {
 				t.Fatal(err)
 			}
 			createIssue := func(path string) graphstore.IssueRecord {
-				v, err := s.CreateIssue(ctx, path, issueops.CreateRequest{Issue: &issueops.Issue{Title: path, Status: "open", IssueType: "task", Priority: 2, Metadata: json.RawMessage(`{"team":"triage"}`)}, Actor: "agent:test"})
+				v, err := s.CreateIssue(ctx, path, issueops.CreateRequest{Issue: &issueops.Issue{ID: "00-" + strings.TrimPrefix(path, "beads/"), Title: path, Status: "open", IssueType: "task", Priority: 2, Metadata: json.RawMessage(`{"team":"triage"}`)}, ForceIDPrefix: true, Actor: "agent:test"})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -95,7 +98,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				return bead
 			}
 			first := readBead("beads/plan")
-			if first.ID != memory.ID || first.Revision != memory.Revision || first.OwnedLinks == nil || len(first.OwnedLinks) != 0 || string(first.Properties["body"]) != `""` || first.Attribution.Principal != memory.Attribution.Actor {
+			if first.ID != memory.ID || first.Revision != memory.Revision || first.OwnedLinks == nil || len(first.OwnedLinks) != 2 || len(first.OwnedLinks[o.Binding.ScopeURL+"subject-to"]) != 0 || len(first.OwnedLinks[o.Binding.ScopeURL+"superseded-by"]) != 0 || string(first.Properties["body"]) != `""` || first.Attribution.Principal != memory.Attribution.Actor {
 				t.Fatalf("Memory projection changed identity/content: %+v", first)
 			}
 			if string(first.Metadata["reviewed"]) != "true" || len(readBead("beads/other").Metadata) != 0 {
@@ -125,7 +128,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			}
 			var created graphstore.LinkRecord
 			for _, path := range []string{"links/z", "links/a"} {
-				v, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: path, SourcePath: "beads/plan", TargetPath: "beads/other", Actor: "human:Donna", UnconditionalSource: true, Properties: map[string]any{"note": path}, Metadata: json.RawMessage(`{"origin":"manual"}`)})
+				v, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: path, TypeURL: o.Binding.ScopeURL + "subject-to", SourcePath: "beads/plan", TargetPath: "beads/other", Actor: "human:Donna", UnconditionalSource: true, Properties: map[string]any{"note": path}, Metadata: json.RawMessage(`{"origin":"manual"}`)})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -157,7 +160,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if len(withBlock.OwnedLinks[blockingType]) != 1 || withBlock.Revision == firstIssue.Revision {
 				t.Fatal("Issue owned state did not advance")
 			}
-			for _, typ := range []string{memory.Type, issue.Type, created.Type, blockingType, graphstore.ExampleFollowsTypeURL(o.Binding.ScopeURL), graphstore.ExampleCitesTypeURL(o.Binding.ScopeURL)} {
+			for _, typ := range []string{memory.Type, issue.Type, created.Type, blockingType, other.Type, graphstore.RelatedTypeURL(o.Binding.ScopeURL)} {
 				d, err := r.Type(ctx, strings.TrimPrefix(typ, o.Binding.ScopeURL))
 				if err != nil {
 					t.Fatal(err)
@@ -169,6 +172,19 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			}
 			if _, err := s.UpdateLink(ctx, graphstore.LinkUpdateRequest{Path: "links/a", Actor: "human:Donna", Unconditional: true, UnconditionalSource: true, Properties: map[string]any{"note": "revised"}}); err != nil {
 				t.Fatal(err)
+			}
+			for _, historical := range []struct {
+				path, revision string
+				want           any
+			}{
+				{"beads/plan", first.Revision, first},
+				{"beads/plan", linked.Revision, linked},
+				{"links/a", group[0].Revision, group[0]},
+			} {
+				got, err := r.ResourceVersion(ctx, historical.path, historical.revision)
+				if err != nil || !reflect.DeepEqual(got, historical.want) {
+					t.Fatalf("historical BDP projection %s: got %#v want %#v (%v)", historical.path, got, historical.want, err)
+				}
 			}
 			updated := readBead("beads/plan")
 			updatedInventory := checkInventory(t, ctx, r, 4, 3)
@@ -198,6 +214,11 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if err := s.Close(); err != nil {
 				t.Fatal(err)
 			}
+			t.Logf("current/history/unlink phase completed in %s", time.Since(phaseStarted))
+			cancel()
+			ctx, cancel = context.WithTimeout(context.Background(), 180*time.Second)
+			defer cancel()
+			phaseStarted = time.Now()
 			s, err = graphstore.OpenExisting(ctx, o)
 			if err != nil {
 				t.Fatal(err)
@@ -210,6 +231,42 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal("inventory changed after reopen without a write")
 			}
 			checkStoredSelectionAndPages(t, ctx, r)
+
+			// Conformance-family ownership is inherited by Evaluation. The
+			// partial public descriptor must not erase its effective claim group.
+			subjectBefore := readBead("beads/plan")
+			properties, err := json.Marshal(map[string]any{
+				"title": "Assessment", "body": "",
+				"subjects": []map[string]string{{"uri": subjectBefore.ID, "revision": subjectBefore.Revision}},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			evaluation, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/assessment", TypeURL: o.Binding.ScopeURL + "evaluation", PropertiesJSON: properties})
+			if err != nil {
+				t.Fatal(err)
+			}
+			claim, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
+				Path: "links/claim", TypeURL: o.Binding.ScopeURL + "satisfies",
+				SourcePath: "beads/assessment", TargetPath: "beads/other", ExpectedSourceRevision: evaluation.Revision,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			assessment := readBead("beads/assessment")
+			if group := assessment.OwnedLinks[claim.Link.Type]; len(group) != 1 || group[0].ID != claim.Link.ID || group[0].Source.URI != evaluation.ID {
+				t.Fatalf("Evaluation claim group missing: %+v", assessment)
+			}
+			for _, name := range []string{"addresses", "violates"} {
+				if group, exists := assessment.OwnedLinks[o.Binding.ScopeURL+name]; !exists || len(group) != 0 {
+					t.Fatalf("empty inherited owned group %s missing", name)
+				}
+			}
+			if !reflect.DeepEqual(subjectBefore, readBead("beads/plan")) {
+				t.Fatal("Evaluation claim changed its assessed subject")
+			}
+			checkInventory(t, ctx, r, 5, 3)
+			t.Logf("reopen/selection/assessment phase completed in %s", time.Since(phaseStarted))
 		})
 	}
 }
@@ -220,12 +277,12 @@ func checkInventory(t *testing.T, ctx context.Context, reader *Reader, beads, li
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(value.Beads) != beads || len(value.Links) != links || len(value.Types) != 6 {
+	if len(value.Beads) != beads || len(value.Links) != links || len(value.Types) != len(graphstore.FreshTypeNames()) {
 		t.Fatalf("incomplete inventory: %d Beads, %d Links, %d Types", len(value.Beads), len(value.Links), len(value.Types))
 	}
 	verify := func(id string, record any) {
 		t.Helper()
-		one, err := reader.Resource(ctx, strings.TrimPrefix(id, reader.store.ScopeURL()))
+		one, err := reader.Resource(ctx, id)
 		if err != nil || !reflect.DeepEqual(one, record) {
 			t.Fatalf("inventory differs from exact read of %s: %v", id, err)
 		}

@@ -127,8 +127,8 @@ func TestGraphPreviewCorruptMetadataRefusesBeforeLegacyOpening(t *testing.T) {
 			}
 			for _, args := range [][]string{
 				{"show", "beads/plan", "--json"},
-				{"show", "beads/plan", "--version=observed", "--json"},
-				{"recall", "beads/plan", "--version=observed", "--json"},
+				{"show", "beads/plan", "--revision==observed", "--json"},
+				{"recall", "beads/plan", "--revision==observed", "--json"},
 				{"compare", "beads/plan", "--from=observed", "--to=observed", "--json"},
 				{"memories", "--format=records-json"},
 			} {
@@ -167,7 +167,7 @@ func TestGraphPreviewInitQuiet(t *testing.T) {
 				t.Fatalf("--quiet emitted human output: %q", out)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Persisted after quiet init", "--id", "beads/quiet", "--title", "Quiet", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/quiet", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/quiet/beads/quiet", "--json")
 		})
 	}
 }
@@ -270,7 +270,7 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 	return out.String()
 }
 
-// The original C0 admission guarantee also covers deferred mixed-core flags.
+// The original C0 admission guarantee still covers unsupported mixed-core forms.
 func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
@@ -279,13 +279,13 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	// Generic typed creation is now admitted and must stay on the graph writer.
 	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Title", "--properties", `{"description":"Graph only"}`)
 	for _, args := range [][]string{
-		{"create", "Must refuse", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--json"},
+		{"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--json"},
 		// Native upstream label operations must not enter the graph writer.
 		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
 		{"update", "beads/plan", "-l", "new", "--json"},
 		{"memories", "--json"}, {"recall", "beads/plan", "--json"},
-		{"ready", "--explain", "--json"}, {"close", "beads/plan", "--force", "--json"},
-		{"link", "beads/plan", "beads/other", "--type=related", "--json"}, {"serve", "--json"},
+		{"ready", "--explain", "--json"}, {"close", "https://example.invalid/c0/beads/plan", "--force", "--json"},
+		{"link", "https://example.invalid/c0/beads/plan", "https://example.invalid/c0/beads/other", "--type=related", "--json"}, {"serve", "--json"},
 		{"db-proxy-child", "--root", filepath.Join(work, ".beads"), "--port", "1", "--backend", "external", "--json"},
 	} {
 		before := legacyUpgradeTreeDigest(t, work)
@@ -306,8 +306,8 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 			t.Fatalf("refused %v changed workspace", args)
 		}
 	}
-	first := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/plan", "--json")
-	second := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/plan", "--json")
+	first := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/c0/beads/plan", "--json")
+	second := graphPolicyCLI(t, bd, work, home, nil, "", "show", "https://example.invalid/c0/beads/plan", "--json")
 	if first != created || second != created {
 		t.Fatal("new-process current reads differ from creation")
 	}
@@ -325,7 +325,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		"memoryCreate", "memoryRead", "memoryBodyFileInput", "memoryBodyStdinInput", "memoryPropertiesUpdate",
 		"memorySelectedUpdate", "memorySelectedUpdateCurrentByDefault", "memoryOverwriteDisclosure", "memoryUnreferencedDelete", "issueUnreferencedDelete", "issueCreate", "issueCreateAuthorship",
 		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueNotesReplace", "issueNotesClear", "issueEstimateUpdate", "issueReferenceUpdate", "issuePropertiesUpdate", "issuePropertiesPatch",
-		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "blockingDependencyShorthand", "blockingDependencyExplicitID", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
+		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "blockingDependencyShorthand", "blockingDependencyExplicitID", "linkPropertiesUpdate", "linkEndpointPins", "linkEndpointRepin", "linkUnlink", "blockingDependencyUnlink", "blockingDependencyPairUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueDatelessDeferral", "issueDatedDeferral", "issueReady", "genericRead",
 		"issueList", "issueListLegacyJSON", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
@@ -334,13 +334,16 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		// read ONE token, this one enumerates them in order. It is distinct
 		// from historyExact, which stays false and describes the HTTP profile.
 		"versionList",
-		"memoryPropertiesPatch", "linkPropertiesPatch",
+		"memoryPropertiesPatch", "linkPropertiesPatch", "legacyImport",
 		"issueTodo", "issueHeartbeat", "issueReclaim", "issueStateRead", "issueStatus", "issueMergeSlot",
 	} {
 		wantEnabled[capability] = true
 		if !result.Result.Capabilities[capability] {
 			t.Fatalf("implemented capability missing: %s", capability)
 		}
+	}
+	if enabled, present := result.Result.Capabilities["ownedSourceEndpointPins"]; !present || enabled {
+		t.Fatal("owned source endpoint pins must remain explicitly deferred")
 	}
 	for capability, enabled := range result.Result.Capabilities {
 		if enabled && !wantEnabled[capability] {
@@ -352,6 +355,13 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, args := range [][]string{
+		{"graph", "demo-one", "--graph-mode", "dependency", "--link-type", "references"},
+		{"graph", "demo-one", "--graph-mode", "dependency", "--link-type", "any"},
+		{"graph", "demo-one", "--graph-mode", "dependency", "--exact-link-type", "references"},
+		{"import", "--source-prefix", "web-app"},
+		{"import", "--source-prefix="},
+		{"import", "--id-root", "restored/team"},
+		{"import", "--id-root="},
 		{"remember", "--update", "beads/plan", "--title", "Refused"},
 		{"link", "demo-one", "demo-two", "--properties", `{}`},
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
@@ -367,8 +377,8 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		// New graph-only source guards still refuse before legacy opening.
 		{"update", "demo-one", "--if-source-revision", "observed"},
 		{"forget", "beads/plan", "--if-revision="},
-		{"show", "beads/plan", "--version=observed"},
-		{"recall", "beads/plan", "--version="},
+		{"show", "beads/plan", "--revision==observed"},
+		{"recall", "beads/plan", "--revision="},
 		{"compare", "beads/plan", "--from=observed", "--to=observed"},
 		{"memories", "--all=false"},
 		{"memories", "--details=false"},
@@ -380,6 +390,25 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", append(args, "--json")...)
 		if after := legacyUpgradeTreeDigest(t, work); after != before {
 			t.Fatalf("generic flags changed a legacy workspace: %v", args)
+		}
+	}
+}
+
+func TestGraphPreviewImportRootRefusesDamagedLegacyOpening(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, root := range []string{"restored/team", ""} {
+		work, home := t.TempDir(), t.TempDir()
+		dir := filepath.Join(work, ".beads")
+		if err := os.MkdirAll(dir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "metadata.json"), []byte(`{"broken":`), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		before := legacyUpgradeTreeDigest(t, work)
+		graphPolicyCLI(t, bd, work, home, nil, "graph_not_initialized", "import", "--id-root="+root, "--json")
+		if after := legacyUpgradeTreeDigest(t, work); after != before {
+			t.Fatal("import root opened or changed damaged legacy metadata")
 		}
 	}
 }

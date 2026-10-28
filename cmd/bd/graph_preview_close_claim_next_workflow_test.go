@@ -5,9 +5,9 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -18,8 +18,8 @@ import (
 )
 
 // An installed graph workspace must close and claim in one durable act. A
-// refused sibling does not discard either landing, while retrying a no-op
-// close never claims a second Issue or creates another retained version.
+// missing sibling preflight leaves every Issue unchanged, while retrying a
+// no-op close never claims a second Issue or creates another retained version.
 func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
@@ -38,19 +38,20 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
+			uri := func(id string) string { return scope + "beads/" + id }
 			call(initArgs...)
-			call("create", "Blocking prerequisite", "--id", "blocker", "--priority", "3")
-			call("create", "Next work", "--id", "dependent", "--priority", "0")
-			call("create", "Spare work", "--id", "spare", "--priority", "1")
-			call("dep", "add", "dependent", "blocker")
-			dependentBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "dependent"))
-			spareBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "spare"))
-			blockerBefore := call("versions", "blocker")
+			call("create", "Blocking prerequisite", "--id", "beads/blocker", "--force", "--priority", "3")
+			call("create", "Next work", "--id", "beads/dependent", "--force", "--priority", "0")
+			call("create", "Spare work", "--id", "beads/spare", "--force", "--priority", "1")
+			call("dep", "add", uri("dependent"), uri("blocker"))
+			dependentBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("dependent")))
+			spareBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("spare")))
+			blockerBefore := call("versions", "beads/blocker")
 			type claimResult struct {
 				Closed  []graphstore.IssueRecord `json:"closed"`
 				Claimed graphstore.IssueRecord   `json:"claimed"`
 			}
-			first := graphMixedResult[claimResult](t, call("close", "blocker", "--claim-next", "--session", "claim-session", "--reason", "Done"))
+			first := graphMixedResult[claimResult](t, call("close", uri("blocker"), "--claim-next", "--session", "claim-session", "--reason", "Done"))
 			if len(first.Closed) != 1 || first.Closed[0].Properties.Status != types.StatusClosed ||
 				first.Closed[0].Properties.ClosedBySession != "claim-session" || first.Claimed.ID != scope+"beads/dependent" ||
 				first.Claimed.Properties.Status != types.StatusInProgress || first.Claimed.Properties.Assignee == "" ||
@@ -59,62 +60,47 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				first.Claimed.Revision == dependentBefore.Revision {
 				t.Fatalf("close did not atomically claim newly ready Issue: %+v", first)
 			}
-			if call("versions", "blocker") == blockerBefore {
+			if call("versions", "beads/blocker") == blockerBefore {
 				t.Fatal("close did not retain the native Issue successor")
 			}
-			closedVersions, dependentVersions := call("versions", "blocker"), call("versions", "dependent")
-			if retry := graphMixedResult[[]graphstore.IssueRecord](t, call("close", "blocker", "--claim-next", "--reason", "Ignored")); len(retry) != 1 || !reflect.DeepEqual(retry[0], first.Closed[0]) {
+			closedVersions, dependentVersions := call("versions", "beads/blocker"), call("versions", "beads/dependent")
+			if retry := graphMixedResult[[]graphstore.IssueRecord](t, call("close", uri("blocker"), "--claim-next", "--reason", "Ignored")); len(retry) != 1 || !reflect.DeepEqual(retry[0], first.Closed[0]) {
 				t.Fatalf("already-closed retry changed Issue or claimed work: %+v", retry)
 			}
-			if call("versions", "blocker") != closedVersions || call("versions", "dependent") != dependentVersions ||
-				!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "spare")), spareBefore) {
+			if call("versions", "beads/blocker") != closedVersions || call("versions", "beads/dependent") != dependentVersions ||
+				!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("spare"))), spareBefore) {
 				t.Fatal("no-op retry minted a version or claimed spare work")
 			}
-			call("create", "Higher priority spare", "--id", "next", "--priority", "0")
-			nextBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "next"))
-			partial := func(wantClaim string, args ...string) string {
+			call("create", "Higher priority spare", "--id", "beads/next", "--force", "--priority", "0")
+			nextBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("next")))
+			spareVersions, nextVersions := call("versions", "beads/spare"), call("versions", "beads/next")
+			missingClose := func() {
 				t.Helper()
-				ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+				ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
 				defer cancel()
-				cmd := exec.CommandContext(ctx, bd, append(args, "--json")...)
-				cmd.Dir = work
-				cmd.Env = []string{
-					"PATH=" + os.Getenv("PATH"), "HOME=" + home,
-					"TMPDIR=" + os.TempDir(), "TMP=" + os.TempDir(), "TEMP=" + os.TempDir(),
-					"XDG_CONFIG_HOME=" + filepath.Join(home, ".config"), "XDG_CACHE_HOME=" + filepath.Join(home, ".cache"),
-					"GIT_CONFIG_GLOBAL=" + filepath.Join(home, "missing-gitconfig"), "GIT_CONFIG_NOSYSTEM=1",
-					"BD_DISABLE_METRICS=1", "BD_DISABLE_EVENT_FLUSH=1", "BD_NON_INTERACTIVE=1",
-					"BEADS_DOLT_AUTO_START=0", "DOLT_METRICS_DISABLED=1", "NO_COLOR=1",
-				}
+				cmd := graphMemoryReadCommand(ctx, bd, work, home, "close", uri("spare"), "missing", "--claim-next", "--reason", "Done", "--json")
 				var stdout, stderr bytes.Buffer
 				cmd.Stdout, cmd.Stderr = &stdout, &stderr
 				err := cmd.Run()
-				if ctx.Err() != nil {
-					t.Fatalf("partial close timed out: %v", ctx.Err())
+				var exit *exec.ExitError
+				if ctx.Err() != nil || !errors.As(err, &exit) || exit.ExitCode() != 3 || stdout.Len() != 0 || !strings.Contains(stderr.String(), `"code":"not_found"`) {
+					t.Fatalf("missing close must refuse without output: err=%v stdout=%s stderr=%s", err, stdout.String(), stderr.String())
 				}
-				if exit, ok := err.(*exec.ExitError); !ok || exit.ExitCode() != 1 || !strings.Contains(stderr.String(), `"code":"not_found"`) {
-					t.Fatalf("partial close did not report refused sibling: %v stdout=%s stderr=%s", err, stdout.String(), stderr.String())
+			}
+			for i := 0; i < 2; i++ {
+				missingClose()
+				if call("versions", "beads/spare") != spareVersions || call("versions", "beads/next") != nextVersions ||
+					!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("spare"))), spareBefore) ||
+					!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", uri("next"))), nextBefore) {
+					t.Fatal("missing close selector changed an Issue or claimed the next one")
 				}
-				if wantClaim != "" && (!strings.Contains(stderr.String(), `"code":"partial_close_claim_retained"`) || !strings.Contains(stderr.String(), wantClaim)) {
-					t.Fatalf("partial failure did not name its retained claim: %s", stderr.String())
-				}
-				return stdout.String()
 			}
-			mixed := graphMixedResult[claimResult](t, partial(scope+"beads/next", "close", "spare", "missing", "--claim-next", "--reason", "Done"))
-			if len(mixed.Closed) != 1 || mixed.Closed[0].ID != scope+"beads/spare" || mixed.Closed[0].Properties.Status != types.StatusClosed ||
-				mixed.Claimed.ID != scope+"beads/next" || mixed.Claimed.Revision == nextBefore.Revision || mixed.Claimed.Properties.Status != types.StatusInProgress {
-				t.Fatalf("partial close lost the committed close or claim: %+v", mixed)
+			landed := graphMixedResult[claimResult](t, call("close", uri("spare"), "--claim-next", "--reason", "Done"))
+			if len(landed.Closed) != 1 || landed.Closed[0].ID != uri("spare") || landed.Claimed.ID != uri("next") || landed.Claimed.Revision == nextBefore.Revision {
+				t.Fatalf("valid close did not claim next work after refused batch: %+v", landed)
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "next")); !reflect.DeepEqual(got, mixed.Claimed) {
-				t.Fatal("partial failure hid or rolled back its retained claim")
-			}
-			spareVersions, nextVersions := call("versions", "spare"), call("versions", "next")
-			repeated := graphMixedResult[[]graphstore.IssueRecord](t, partial("", "close", "spare", "missing", "--claim-next"))
-			if len(repeated) != 1 || call("versions", "spare") != spareVersions || call("versions", "next") != nextVersions {
-				t.Fatalf("partial retry claimed again or wrote a version: %+v", repeated)
-			}
-			call("create", "Last unassigned work", "--id", "terminal")
-			nothingReady := graphMixedResult[[]graphstore.IssueRecord](t, call("close", "terminal", "--claim-next"))
+			call("create", "Last unassigned work", "--id", "beads/terminal", "--force")
+			nothingReady := graphMixedResult[[]graphstore.IssueRecord](t, call("close", uri("terminal"), "--claim-next"))
 			if len(nothingReady) != 1 || nothingReady[0].Properties.Status != types.StatusClosed {
 				t.Fatalf("no-ready close did not commit without a claim: %+v", nothingReady)
 			}

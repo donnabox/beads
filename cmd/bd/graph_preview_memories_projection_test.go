@@ -9,23 +9,45 @@ import (
 	"testing"
 	"unicode/utf8"
 
+	"github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 const discoveryScope = "http://localhost:9999/example/"
 
+func TestGraphMemoryDiscoveryIncludesSelectedSubtypes(t *testing.T) {
+	base := inventoryDescriptor(t, graphstore.MemoryTypeURL(discoveryScope), "Memory", graphops.KindBead)
+	parent := inventoryDescriptor(t, discoveryScope+"types/future-parent", "Future parent", graphops.KindBead, base.ID())
+	child := inventoryDescriptor(t, discoveryScope+"types/future-child", "Future child", graphops.KindBead, parent.ID())
+	memory := discoveryMemory("base", "Base", "needle")
+	specialized := discoveryMemory("child", "Specialized", "needle")
+	specialized.Type = child.ID()
+	unrelated := discoveryMemory("unrelated", "Unrelated", "needle")
+	unrelated.Type = discoveryScope + "types/unrelated"
+	result, err := graphMemoryDiscovery(discoveryScope, graphstore.Snapshot{
+		Types:   []graphops.TypeDescriptor{base, parent, child},
+		Records: []any{unrelated, specialized, memory},
+	}, "needle", false, false)
+	if err != nil || len(result.Items) != 2 || result.Items[0].ID != memory.ID || result.Items[1].ID != specialized.ID || result.Items[1].Type != child.ID() || result.Items[1].Version != specialized.Version {
+		t.Fatalf("selected subtype discovery lost identity, Type or exact version: %+v %v", result, err)
+	}
+}
+
 func discoveryMemory(path, title, body string) graphstore.Record {
 	return graphstore.Record{ID: discoveryScope + "beads/" + path, Type: graphstore.MemoryTypeURL(discoveryScope), Version: "saved-" + path, Properties: graphstore.Properties{Title: title, Body: body}, Attribution: graphstore.Attribution{Status: "unknown", RecordedAt: "2026-09-27T00:00:00Z"}, Owned: []json.RawMessage{json.RawMessage(`{"properties":{"secret":"do-not-project-owned"}}`)}}
 }
 
 func TestGraphPreviewMemoryDiscoveryProjection(t *testing.T) {
-	title := discoveryMemory("title", "Needle in title", "do-not-project-body")
+	title := discoveryMemory("title", "Needle in title", strings.Repeat("Public summary ", 30)+"do-not-project-body")
 	body := discoveryMemory("body", "Body hit", "A NEEDLE in body")
 	both := discoveryMemory("both", "needle", "needle\nnext line\tcontrol\x00")
 	empty := discoveryMemory("empty", "Empty", "")
 	other := discoveryMemory("other", "needle", "needle")
 	other.Type = graphstore.IssueTypeURL(discoveryScope)
+	for _, memory := range []*graphstore.Record{&title, &body, &both, &empty, &other} {
+		memory.PublicID = strings.TrimPrefix(memory.ID, discoveryScope)
+	}
 	snapshot := graphstore.Snapshot{Records: []any{title, body, both, empty, other, graphstore.IssueRecord{ID: "issue"}, graphstore.LinkRecord{ID: "link"}}}
 	before, _ := json.Marshal(snapshot)
 	got, err := graphMemoryDiscovery(discoveryScope, snapshot, "needle", false, true)
@@ -37,14 +59,14 @@ func TestGraphPreviewMemoryDiscoveryProjection(t *testing.T) {
 	}
 	for i, want := range []graphstore.Record{body, both, title} {
 		item := got.Items[i]
-		if item.ID != want.ID || item.Type != want.Type || item.Title != want.Properties.Title || item.Version != want.Version || item.Attribution != want.Attribution || item.Details == nil || item.Details.OwnedLinkCount != 1 {
+		if item.ID != want.PublicID || item.Type != want.Type || item.Title != want.Properties.Title || item.Version != want.Version || item.Attribution != want.Attribution || item.Details == nil || item.Details.OwnedLinkCount != 1 {
 			t.Fatalf("wrong summary: %+v", item)
 		}
 	}
 	if !reflect.DeepEqual(got.Items[0].MatchedFields, []string{"body"}) || !reflect.DeepEqual(got.Items[1].MatchedFields, []string{"title", "body"}) || !reflect.DeepEqual(got.Items[2].MatchedFields, []string{"title"}) {
 		t.Fatalf("field provenance: %+v", got.Items)
 	}
-	if got.Items[2].Excerpt != nil || got.Items[1].Excerpt.Text != both.Properties.Body || got.Items[1].Excerpt.Truncated {
+	if got.Items[2].Excerpt == nil || !got.Items[2].Excerpt.Truncated || utf8.RuneCountInString(got.Items[2].Excerpt.Text) > 160 || got.Items[1].Excerpt.Text != both.Properties.Body || got.Items[1].Excerpt.Truncated {
 		t.Fatalf("excerpt: %+v", got.Items)
 	}
 	raw, _ := json.Marshal(got)
@@ -60,7 +82,7 @@ func TestGraphPreviewMemoryDiscoveryProjection(t *testing.T) {
 		t.Fatalf("queryless: %+v %v", listed, err)
 	}
 	for _, item := range listed.Items {
-		if item.Excerpt != nil || item.Details != nil || len(item.MatchedFields) != 0 {
+		if item.Excerpt == nil || item.Excerpt.Field != "body" || !utf8.ValidString(item.Excerpt.Text) || utf8.RuneCountInString(item.Excerpt.Text) > 160 || item.Details != nil || len(item.MatchedFields) != 0 {
 			t.Fatalf("queryless extra exposure: %+v", item)
 		}
 	}

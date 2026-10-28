@@ -18,26 +18,35 @@ import (
 // The update dispatcher checks write policy and canonical Scope selection first.
 // Read the selected Type before dispatch. Issue patches pin and retry a
 // checked predecessor; Memory patches evaluate inside their write transaction.
-func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error {
-	request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, path)
+func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string, preparedPatch []byte) error {
+	request, err := graphPreviewMemoryPropertiesPatchRequestWithRaw(cmd, path, preparedPatch)
 	if err != nil {
 		return err
 	}
-	issueUpdated := false
+	touchedID := ""
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		current, err := store.Read(ctx, path)
 		if err != nil {
 			return nil, "", err
 		}
 		if issue, ok := current.(graphstore.IssueRecord); ok {
+			request.TypeURL, err = graphPreviewNativeIssueTypeFlag(cmd, store.ScopeURL())
+			if err != nil {
+				return nil, "", err
+			}
 			result, summary, err := graphPreviewPatchIssueProperties(ctx, store, cmd, request, issue)
 			if err == nil {
-				issueUpdated = true
+				touchedID = issue.ID
 			}
 			return result, summary, err
 		}
 		if cmd.Flags().Changed("force") {
 			return nil, "", graphFailure("invalid_properties", "--force applies only to an Issue notes patch", 2)
+		}
+		if request.TypeURL != "" {
+			if err := graphPreviewRequireInstalledType(ctx, store, request.TypeURL, graph.KindBead, true); err != nil {
+				return nil, "", err
+			}
 		}
 		result, err := store.PatchMemoryProperties(ctx, request)
 		if err != nil {
@@ -49,15 +58,19 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error
 		}
 		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Memory.ID), result.Replaced, nil)
 	})
-	if err == nil && issueUpdated {
-		SetLastTouchedID(path)
+	if err == nil && touchedID != "" {
+		SetLastTouchedID(touchedID)
 	}
 	return err
 }
 
 func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.MemoryPropertiesPatchRequest, error) {
+	return graphPreviewMemoryPropertiesPatchRequestWithRaw(cmd, path, nil)
+}
+
+func graphPreviewMemoryPropertiesPatchRequestWithRaw(cmd *cobra.Command, path string, raw []byte) (graphstore.MemoryPropertiesPatchRequest, error) {
 	var request graphstore.MemoryPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
@@ -66,22 +79,28 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 	if !cmd.Flags().Changed("patch") && !cmd.Flags().Changed("replace-properties") {
 		return request, graphFailure("invalid_properties", "property update requires --patch or --replace-properties", 2)
 	}
-	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd, path, true)
 	if err != nil {
 		return request, err
 	}
 	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
 		return request, graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
 	}
-	raw, err := graphPreviewPropertyOperations(cmd)
-	if err != nil {
-		return request, graphFailure("invalid_properties", err.Error(), 2)
+	if raw == nil {
+		raw, err = graphPreviewPropertyOperations(cmd)
+		if err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
 	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return request, err
 	}
-	return graphstore.MemoryPropertiesPatchRequest{Path: path, Patch: raw, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}, nil
+	typeURL, err := graphPreviewMemoryTypeFlag(cmd)
+	if err != nil {
+		return request, err
+	}
+	return graphstore.MemoryPropertiesPatchRequest{Path: path, TypeURL: typeURL, Patch: raw, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}, nil
 }
 
 // A full replacement is a single root operation evaluated against the checked

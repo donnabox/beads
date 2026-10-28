@@ -162,10 +162,18 @@ def label_pkg(label):
 
 
 def query_go_test_pkgs(root, bazel):
-    out = subprocess.run(
-        [bazel, "query", 'kind("go_test rule", //...)', "--output=label"],
-        cwd=root, check=True, capture_output=True, text=True,
-    ).stdout
+    try:
+        out = subprocess.run(
+            [bazel, "query", 'kind("go_test rule", //...)', "--output=label"],
+            cwd=root, check=True, capture_output=True, text=True,
+        ).stdout
+    except subprocess.CalledProcessError as error:
+        print(f"Bazel query failed (exit {error.returncode}): {error.cmd!r}", file=sys.stderr)
+        for name, output in (("stdout", error.stdout), ("stderr", error.stderr)):
+            if output:
+                print(f"Bazel query {name}:", file=sys.stderr)
+                print(output, file=sys.stderr, end="" if output.endswith("\n") else "\n")
+        raise
     return {label_pkg(l) for l in out.split()}
 
 

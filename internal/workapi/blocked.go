@@ -7,8 +7,8 @@ import (
 )
 
 // BuildGraphBlockedFilter projects the blocked request's label clauses into
-// the legacy graph-preview store query. Graph preview rejects --parent before
-// calling this builder; ordinary blocked listings use issueops.BlockedLister.
+// the graph-preview store query. The CLI resolves --parent against the graph
+// catalog in the blocked read transaction; ordinary listings use BlockedLister.
 func BuildGraphBlockedFilter(in issueops.BlockedRequest) types.WorkFilter {
 	return types.WorkFilter{
 		Labels:        utils.NormalizeLabels(in.Labels),

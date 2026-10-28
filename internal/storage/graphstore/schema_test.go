@@ -18,8 +18,8 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if parsed.ID() != scope+"types/preview-related" {
-		t.Fatal("corrected descriptor must have a fresh experimental identity")
+	if parsed.ID() != scope+"references" {
+		t.Fatal("legacy Related spelling must resolve to References")
 	}
 	source, hasSource := parsed.Source()
 	target, hasTarget := parsed.Target()
@@ -30,8 +30,8 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 		if required := endpoint.ConformsTo(); len(required) != 0 {
 			t.Fatalf("conformsTo requires ALL listed Types, so a list of alternatives rejects mixed endpoints: %v", required)
 		}
-		if external, present := endpoint.External(); !present || external != graph.ExternalNone {
-			t.Fatal("preview must refuse external endpoints")
+		if external := endpoint.EffectiveExternal(); external != graph.ExternalOpaque {
+			t.Fatal("partial inventory must not pretend to encode correlated endpoint rules")
 		}
 	}
 	// The blocking adapter remains specifically constrained to Issue endpoints.
@@ -51,13 +51,21 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 
 func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 	const scope = "https://example.test/relationships/"
-	if IssueTypeURL(scope) != scope+"types/preview-issue" ||
-		MemoryTypeURL(scope) != scope+"types/preview-memory" ||
-		RelatedTypeURL(scope) != scope+"types/preview-related" ||
-		DependencyTypeURL(scope) != scope+"types/preview-dependency" {
+	if IssueTypeURL(scope) != scope+"issue" ||
+		MemoryTypeURL(scope) != scope+"memory" ||
+		RelatedTypeURL(scope) != scope+"references" ||
+		DependencyTypeURL(scope) != scope+"dependency" {
 		t.Fatal("a built-in Type has a duplicate or versioned identity")
 	}
-	want := []string{"memory", "issue", "dependency", "related", "example-follows", "example-cites"}
+	want := []string{"memory", "evaluation", "constraint", "policy", "requirement", "scenario", "specification", "references", "superseded-by", "requires", "defines", "subject-to", "conformance", "addresses", "satisfies", "violates", "issue", "dependency"}
+	// Fixed native children are distinct concrete Types, not aliases for the
+	// two abstract families. Keep this census independent of the installer.
+	for _, classification := range []string{"bug", "feature", "task", "epic", "chore", "decision", "message", "molecule", "gate", "spike", "story", "milestone", "event"} {
+		want = append(want, classification)
+	}
+	for _, kind := range []string{"blocks", "parent-child", "conditional-blocks", "waits-for", "related", "discovered-from", "replies-to", "relates-to", "duplicates", "supersedes", "authored-by", "assigned-to", "approved-by", "attests", "tracks", "until", "caused-by", "validates", "delegated-from"} {
+		want = append(want, kind)
+	}
 	if got := FreshTypeNames(); !slices.Equal(got, want) {
 		t.Fatalf("fresh Type set = %v, want %v", got, want)
 	}
@@ -66,19 +74,22 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, ok := issue.Owns(DependencyTypeURL(scope)); !ok {
-		t.Fatal("Issue must own the one native Dependency Link Type")
+		t.Fatal("Issue must own the abstract native Dependency family")
 	}
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "tracks"} {
 		id, ok := relationshipDependencyTypeURL(scope, native)
-		if !ok || id != DependencyTypeURL(scope) {
-			t.Fatalf("native %q must use the one Dependency Type: %q, %t", native, id, ok)
+		if !ok || id != scope+string(native) || id == DependencyTypeURL(scope) {
+			t.Fatalf("native %q must use its concrete Dependency Type: %q, %t", native, id, ok)
+		}
+		if base, kind, valid := NativeTypeClassification(scope, id, graph.KindLink); !valid || base != DependencyTypeURL(scope) || kind != string(native) {
+			t.Fatalf("concrete Type lost native classification: %q %q %t", base, kind, valid)
 		}
 		link, err := relationshipDependencyDescriptor(scope, native)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if link.ID() != id {
-			t.Fatalf("descriptor ID %q, want %q", link.ID(), id)
+		if link.ID() != id || link.Describes() != graph.KindLink || !slices.Equal(link.ConformsTo(), []string{DependencyTypeURL(scope)}) {
+			t.Fatalf("concrete descriptor lost identity, kind or family: %s", link.CanonicalJSON())
 		}
 		for _, endpoint := range []func() (graph.EndpointConstraint, bool){link.Source, link.Target} {
 			constraint, present := endpoint()
@@ -92,7 +103,7 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 			t.Fatalf("invalid kind %q acquired native Type", invalid)
 		}
 	}
-	if _, ok := nativeRelationshipDependencyType(scope, scope+"types/preview-related-v2"); ok {
+	if isNativeRelationshipDependencyType(scope, scope+"types/preview-related-v2") {
 		t.Fatal("informational Link mapped to a native Dependency")
 	}
 }
@@ -100,8 +111,18 @@ func TestDependencyDescriptorUsesOneNativeType(t *testing.T) {
 func TestInstalledIssueDependencyProjectionMapping(t *testing.T) {
 	const scope = "https://example.test/relationships/"
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "arbitrary"} {
-		if got, ok := nativeDependencyTypeURLForIssueType(scope, IssueTypeURL(scope), native); !ok || got != DependencyTypeURL(scope) {
+		if got, ok := nativeDependencyTypeURLForIssueType(scope, IssueTypeURL(scope), native); !ok || got != scope+string(native) {
 			t.Fatalf("native %q Type = %q, %t", native, got, ok)
+		}
+	}
+	concreteIssue, err := NativeIssueTypeURL(scope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, issueType := range []string{IssueTypeURL(scope), concreteIssue} {
+		blocks, ok := nativeDependencyTypeURLForIssueType(scope, issueType, types.DepBlocks)
+		if !ok || !isNativeDependencyLinkType(scope, issueType, blocks) || isNativeDependencyLinkType(scope, issueType, DependencyTypeURL(scope)) {
+			t.Fatalf("native concrete/family mapping differs for %q: %q %t", issueType, blocks, ok)
 		}
 	}
 	if _, ok := nativeDependencyTypeURLForIssueType(scope, scope+"types/uninstalled", types.DepBlocks); ok {

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Required-lane gates for pr.yml and opt-in direct dispatches.
 # pr.yml's ci-gate view of its bazel.yml call (the `bazel` job). bazel.yml's
 # rbe job decides the execution mode once and exports it as the call's
 # rbe-mode / rbe-enabled outputs; this script reads those outputs and never
@@ -23,6 +24,16 @@
 #
 # Any other skip, a failure, a cancellation, or a lane that should run but
 # reported nothing (pr.yml maps an empty output to skipped) fails the gate.
+#
+#   bazel-gate.sh dispatch-cmd  require successful integration and cmd/bd
+#                              coverage for an opted-in direct dispatch.
+#                              Remote uses the combined tier output; fork
+#                              and cache modes use the dedicated tier.
+#                              Neither local nor skip qualifies.
+#
+# dispatch-cmd also reads BAZEL_INTEGRATION, BAZEL_CMD_DOLT_DIRECT and
+# BAZEL_CMD_DOLT_COMBINED: actual recorded results, never the advisory
+# dedicated job's continue-on-error-masked conclusion.
 #
 # Inputs (environment): BAZEL_RBE_MODE, BAZEL_RBE_ENABLED (the call's
 # rbe-mode / rbe-enabled outputs), BAZEL_CALL (needs.bazel.result).
@@ -55,8 +66,24 @@ case "${1:-}" in
             echo "${BAZEL_CALL:-}"
         fi
         ;;
+    dispatch-cmd)
+        case "$mode/$enabled" in
+            remote/true) cmd_result="${BAZEL_CMD_DOLT_COMBINED:-}" ;;
+            fork-ro/true | fork-rw/true | cache/false) cmd_result="${BAZEL_CMD_DOLT_DIRECT:-}" ;;
+            *)
+                echo "dispatch command coverage requires remote, fork or cache execution" >&2
+                exit 1
+                ;;
+        esac
+        if [[ "${BAZEL_INTEGRATION:-}" != success || "$cmd_result" != success ]]; then
+            printf 'dispatch coverage failed: integration=%s cmd-dolt=%s mode=%s\n' \
+                "${BAZEL_INTEGRATION:-missing}" "${cmd_result:-missing}" "$mode" >&2
+            exit 1
+        fi
+        echo "dispatch integration and cmd/bd coverage passed ($mode)"
+        ;;
     *)
-        echo "usage: $0 skips|aggregate" >&2
+        echo "usage: $0 skips|aggregate|dispatch-cmd" >&2
         exit 2
         ;;
 esac

@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
@@ -15,27 +14,102 @@ import (
 )
 
 // Reader leaves storage lifetime with its caller. Each Resource read includes
-// its complete owned state in the store's one read transaction. A subsequent
-// Type read is safe because the admitted preview descriptors are immutable and
-// every store operation checks their persisted bytes and fingerprints.
+// its complete owned state, checked Type and ownership context in one store
+// transaction. Projection does not reopen mutable configuration or Link rows.
 type Reader struct{ store *graphstore.Store }
 
 func New(store *graphstore.Store) *Reader { return &Reader{store: store} }
 
-// Resource reads a canonical local beads/... or links/... path. Storage absence,
+// PublicRouteKind acquires kind from immutable installed descriptors or the
+// allocation catalog, never from the spelling of a public identifier. Deleted
+// allocations remain reserved; a subsequent current read reports their state.
+func (r *Reader) PublicRouteKind(ctx context.Context, id string) (string, error) {
+	uri, err := graph.CanonicalPublicResourceURL(r.ScopeURL(), id)
+	if err != nil {
+		return "", err
+	}
+	types, err := r.store.ListInstalledTypes(ctx)
+	if err != nil {
+		return "", err
+	}
+	for _, typ := range types {
+		if typ.ID() == uri {
+			return "type", nil
+		}
+	}
+	allocation, err := r.store.ResolveAllocatedResourceIdentity(ctx, id)
+	if err != nil {
+		return "", err
+	}
+	return string(allocation.Kind), nil
+}
+
+// Resource reads a canonical public Scope URL or an internal locator. Storage absence,
 // deletion and corruption errors remain distinct for the future HTTP adapter.
 // The result is either bdpwire.BeadRecord or bdpwire.LinkRecord, never a private
 // preview envelope. This method does not select historical versions.
 func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
-	record, err := r.store.Read(ctx, path)
+	record, projection, err := r.store.ReadForProjection(ctx, path)
 	if err != nil {
 		return nil, err
 	}
+	return r.projectResource(record, projection)
+}
+
+// ResourceSelected resolves a local opaque public ID in storage's checked
+// snapshot with its checked projection context before projecting its Resource.
+func (r *Reader) ResourceSelected(ctx context.Context, path, localID string) (string, any, error) {
+	selected, record, projection, err := r.store.ReadSelectedForProjection(ctx, path, localID)
+	if err != nil {
+		return "", nil, err
+	}
+	projected, err := r.projectResource(record, projection)
+	return selected, projected, err
+}
+
+// ResourceVersion projects one exact retained snapshot through the same BDP
+// representation as Resource. It never fills missing state from a current read
+// or advertises HTTP History support. Installed preview Type definitions are
+// immutable; owned Links come from the retained snapshot.
+func (r *Reader) ResourceVersion(ctx context.Context, path, revision string) (any, error) {
+	record, projection, err := r.store.ReadVersionForProjection(ctx, path, revision)
+	if err != nil {
+		return nil, err
+	}
+	projected, err := r.projectResource(record, projection)
+	if err != nil {
+		return nil, err
+	}
+	// A retained record predating metadata must remain distinguishable from
+	// an explicit empty metadata object on a current record.
+	var metadata json.RawMessage
 	switch v := record.(type) {
 	case graphstore.Record:
-		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)
+		metadata = v.Metadata
 	case graphstore.IssueRecord:
-		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)
+		metadata = v.Metadata
+	case graphstore.LinkRecord:
+		metadata = v.Metadata
+	}
+	if len(metadata) == 0 {
+		switch v := projected.(type) {
+		case bdpwire.BeadRecord:
+			v.Metadata = nil
+			projected = v
+		case bdpwire.LinkRecord:
+			v.Metadata = nil
+			projected = v
+		}
+	}
+	return projected, nil
+}
+
+func (r *Reader) projectResource(record any, projection graphstore.ResourceProjectionContext) (any, error) {
+	switch v := record.(type) {
+	case graphstore.Record:
+		return bead(projection.Descriptor, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution, projection.OwnedLinkTypes)
+	case graphstore.IssueRecord:
+		return bead(projection.Descriptor, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution, projection.OwnedLinkTypes)
 	case graphstore.LinkRecord:
 		return link(v)
 	default:
@@ -57,21 +131,13 @@ func (r *Reader) Type(ctx context.Context, path string) (bdpwire.TypeDescriptor,
 	return result, nil
 }
 
-func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
-	if !strings.HasPrefix(typ, r.store.ScopeURL()) {
-		return bdpwire.BeadRecord{}, fmt.Errorf("%w: Resource Type is outside installed Scope", graphstore.ErrInvalidStore)
-	}
-	descriptor, err := r.store.ReadType(ctx, strings.TrimPrefix(typ, r.store.ScopeURL()))
-	if err != nil {
-		return bdpwire.BeadRecord{}, err
-	}
-	return bead(descriptor, id, typ, revision, properties, metadata, owned, attribution)
-}
-
-func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
+func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution, ownedTypes []string) (bdpwire.BeadRecord, error) {
 	result := bdpwire.BeadRecord{ID: id, Type: typ, Revision: revision}
 	if descriptor.ID() != typ || descriptor.Describes() != graph.KindBead {
 		return result, fmt.Errorf("%w: Bead descriptor does not match its Type", graphstore.ErrInvalidStore)
+	}
+	if ownedTypes == nil {
+		return result, fmt.Errorf("%w: missing effective ownership contract", graphstore.ErrInvalidStore)
 	}
 	var err error
 	result.Properties, err = projectProperties(properties)
@@ -86,21 +152,23 @@ func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties 
 	if err != nil {
 		return result, err
 	}
-	result.OwnedLinks, err = ownedLinks(id, descriptor, owned)
+	result.OwnedLinks, err = ownedLinks(id, ownedTypes, owned)
 	return result, err
 }
 
-func ownedLinks(source string, descriptor graph.TypeDescriptor, records []json.RawMessage) (bdpwire.OwnedLinks, error) {
+// The validated store supplies effective selected ownership separately from
+// its deliberately partial inventory descriptors. Semantic family constraints
+// remain the writer's responsibility; this projection preserves exact groups.
+func ownedLinks(source string, types []string, records []json.RawMessage) (bdpwire.OwnedLinks, error) {
 	var result bdpwire.OwnedLinks
-	if len(descriptor.OwnsOutgoing()) > 0 {
+	if len(types) > 0 {
 		result = bdpwire.OwnedLinks{}
 	}
-	for _, declaration := range descriptor.OwnsOutgoing() {
-		if !declaration.Wildcard() {
-			result[declaration.TypeURL()] = bdpwire.LinkRecords{}
-		} else if len(records) > declaration.Max() {
-			return nil, fmt.Errorf("%w: wildcard owned set exceeds descriptor", graphstore.ErrInvalidStore)
-		}
+	for _, typ := range types {
+		result[typ] = bdpwire.LinkRecords{}
+	}
+	if len(records) > graphstore.PreviewOwnedLinkLimit {
+		return nil, fmt.Errorf("%w: owned projection exceeds store read budget", graphstore.ErrInvalidStore)
 	}
 	seen := map[string]bool{}
 	for _, raw := range records {
@@ -108,7 +176,7 @@ func ownedLinks(source string, descriptor graph.TypeDescriptor, records []json.R
 		if err := json.Unmarshal(raw, &stored); err != nil {
 			return nil, fmt.Errorf("%w: malformed owned Link: %v", graphstore.ErrInvalidStore, err)
 		}
-		declaration, owns := descriptor.Owns(stored.Type)
+		_, owns := result[stored.Type]
 		if !owns || stored.Source != source || seen[stored.ID] {
 			return nil, fmt.Errorf("%w: inconsistent owned Link membership", graphstore.ErrInvalidStore)
 		}
@@ -118,9 +186,6 @@ func ownedLinks(source string, descriptor graph.TypeDescriptor, records []json.R
 			return nil, err
 		}
 		result[stored.Type] = append(result[stored.Type], projected)
-		if len(result[stored.Type]) > declaration.Max() {
-			return nil, fmt.Errorf("%w: owned group exceeds descriptor", graphstore.ErrInvalidStore)
-		}
 	}
 	for _, group := range result {
 		sort.Slice(group, func(i, j int) bool { return graph.CompareCodeUnits(group[i].ID, group[j].ID) < 0 })
@@ -130,7 +195,7 @@ func ownedLinks(source string, descriptor graph.TypeDescriptor, records []json.R
 
 func link(v graphstore.LinkRecord) (bdpwire.LinkRecord, error) {
 	result := bdpwire.LinkRecord{ID: v.ID, Type: v.Type, Revision: v.Revision,
-		Source: bdpwire.Reference{URI: v.Source}, Target: bdpwire.Reference{URI: v.Target}}
+		Source: bdpwire.Reference{URI: v.Source, Revision: v.SourceRevision}, Target: bdpwire.Reference{URI: v.Target, Revision: v.TargetRevision}}
 	var err error
 	result.Properties, err = projectProperties(v.Properties)
 	if err != nil {

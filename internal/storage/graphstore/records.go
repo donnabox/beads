@@ -27,6 +27,24 @@ func validatePath(path string) error {
 // payload and records the complete accepted snapshot. There is no keyed upsert
 // or optional History switch. Commit uncertainty returns no success record.
 func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
+	var err error
+	if err := graph.ValidateGeneratedResourceIDRoot(req.IDRoot); err != nil {
+		return Record{}, err
+	}
+	if req.IDRoot != "" && (req.PublicID != "" || req.Path != "") {
+		return Record{}, fmt.Errorf("%w: ID root cannot accompany an explicit ID", graph.ErrValidation)
+	}
+	if req.PublicID == "" && req.Path == "" {
+		req.generatePublicID = true
+		req.PublicID, err = graph.GeneratedResourceIDCandidate(req.IDRoot, graph.GeneratedResourceIDInitialLength)
+		if err != nil {
+			return Record{}, err
+		}
+	}
+	req, err = PrepareMemoryIdentity(req)
+	if err != nil {
+		return Record{}, err
+	}
 	if err := validatePath(req.Path); err != nil {
 		return Record{}, err
 	}
@@ -41,10 +59,32 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if err != nil {
 		return Record{}, err
 	}
-	r := Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, req.Path),
+	publicID := req.PublicID
+	if publicID == "" {
+		publicID = req.Path
+	}
+	publicURL, err := graph.CanonicalPublicResourceURL(s.ScopeURL(), publicID)
+	if err != nil {
+		return Record{}, err
+	}
+	r := Record{PublicID: publicID, ID: publicURL,
 		Type: MemoryTypeURL(s.options.Binding.ScopeURL), Revision: revision, Version: revision,
 		Properties: Properties{Title: req.Title, Body: req.Body}, Metadata: metadata, Owned: []json.RawMessage{}}
-	r.Attribution = Attribution{Actor: req.Actor, Status: "unknown", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}
+	if req.TypeURL != "" {
+		r.Type = req.TypeURL
+	}
+	if err := s.requireAssessmentAuthoring(r.Type); err != nil {
+		return Record{}, err
+	}
+	if len(req.PropertiesJSON) != 0 {
+		if req.Title != "" || req.Body != "" {
+			return Record{}, fmt.Errorf("%w: use either complete properties or title/body fields", graph.ErrValidation)
+		}
+		if err := json.Unmarshal(req.PropertiesJSON, &r.Properties); err != nil {
+			return Record{}, err
+		}
+	}
+	r.Attribution = Attribution{Inception: "create", Actor: req.Actor, Status: "unknown", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}
 	if req.Actor != "" {
 		r.Attribution.Status = "claimed"
 	}
@@ -52,15 +92,25 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if err != nil {
 		return Record{}, err
 	}
-	snapshot, err := canonicalJSON(r)
+	catalog, err := s.selectedTypes()
 	if err != nil {
 		return Record{}, err
 	}
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	if !catalog.memoryType(r.Type) {
+		return Record{}, fmt.Errorf("%w: generic creation requires an installed Memory-family Type", graph.ErrValidation)
+	}
+	if err := catalog.validateProperties(r.Type, properties, graph.KindBead); err != nil {
+		return Record{}, err
+	}
+	err = s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		return s.createInTx(ctx, tx, req, r, properties, snapshot)
+		accepted, err := s.createPreparedMemoryInTx(ctx, tx, req, r, properties)
+		if err == nil {
+			r = accepted
+		}
+		return err
 	})
 	if err != nil {
 		return Record{}, err
@@ -68,37 +118,93 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	return r, nil
 }
 
+// createInTx preserves the existing path-based importer seam. New public-ID
+// imports use createPreparedMemoryInTx and its accepted record. Resolve any
+// needed private locator from the transaction catalog after allocation.
 func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties, snapshot []byte) error {
-	if err := s.touchCoordination(ctx, tx); err != nil {
+	if err := s.requireAssessmentAuthoring(r.Type); err != nil {
 		return err
 	}
-	var exists int
-	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path = ?`, req.Path).Scan(&exists)
-	if err == nil {
-		return ErrAlreadyExists
+	if req.PublicID != "" {
+		return fmt.Errorf("%w: public-ID import requires returned allocation", ErrCapabilityUnavailable)
 	}
-	if !errors.Is(err, sql.ErrNoRows) {
-		return err
-	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
-        (path, resource_kind, type_url, revision, allocation_state, backing)
-        VALUES (?, 'bead', ?, ?, 'live', 'generic')`, req.Path, r.Type, r.Revision); err != nil {
-		return err
-	}
-	if err := s.afterStage("allocation"); err != nil {
-		return err
-	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_payloads (path, properties, metadata) VALUES (?, ?, ?)`, req.Path, properties, r.Metadata); err != nil {
-		return err
-	}
-	if err := s.afterStage("payload"); err != nil {
-		return err
-	}
-	err = insertPreviewVersionInTx(ctx, tx, req.Path, r.Version, snapshot, req.Actor)
+	canonical, err := canonicalJSON(r)
 	if err != nil {
 		return err
 	}
-	return s.afterStage("retained")
+	if !bytes.Equal(snapshot, canonical) {
+		return fmt.Errorf("%w: legacy create snapshot differs from prepared record", ErrInvalidStore)
+	}
+	_, err = s.createPreparedMemoryInTx(ctx, tx, req, r, properties)
+	return err
+}
+
+func (s *Store) createPreparedMemoryInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties []byte) (Record, error) {
+	if err := s.requireAssessmentAuthoring(r.Type); err != nil {
+		return Record{}, err
+	}
+	if err := s.touchCoordination(ctx, tx); err != nil {
+		return Record{}, err
+	}
+	publicID := req.PublicID
+	if req.generatePublicID {
+		var err error
+		publicID, err = selectGeneratedPublicIDInTx(ctx, tx, req.IDRoot)
+		if err != nil {
+			return Record{}, err
+		}
+		req.Path, err = preferredPrivateResourcePath(graph.KindBead, publicID)
+		if err != nil {
+			return Record{}, err
+		}
+	}
+	if publicID == "" {
+		publicID = req.Path
+	}
+	if exists, err := publicResourceIDExistsInTx(ctx, tx, publicID); err != nil {
+		return Record{}, err
+	} else if exists {
+		return Record{}, publicResourceIDReservedErrorInTx(ctx, tx, publicID)
+	}
+	privatePath, err := choosePrivateResourcePathInTx(ctx, tx, req.Path, req.privatePathGenerated, graph.KindBead)
+	if err != nil {
+		return Record{}, err
+	}
+	req.Path = privatePath
+	publicURL, err := graph.CanonicalPublicResourceURL(s.ScopeURL(), publicID)
+	if err != nil {
+		return Record{}, err
+	}
+	r.ID = publicURL
+	r.PublicID = publicID
+	snapshot, err := canonicalJSON(r)
+	if err != nil {
+		return Record{}, err
+	}
+	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
+        (path, resource_kind, type_url, revision, allocation_state, backing, public_id)
+        VALUES (?, 'bead', ?, ?, 'live', 'generic', ?)`, req.Path, r.Type, r.Revision, publicID); err != nil {
+		return Record{}, err
+	}
+	if err := s.afterStage("allocation"); err != nil {
+		return Record{}, err
+	}
+	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_payloads (path, properties, metadata) VALUES (?, ?, ?)`, req.Path, properties, r.Metadata); err != nil {
+		return Record{}, err
+	}
+	if err := s.afterStage("payload"); err != nil {
+		return Record{}, err
+	}
+	err = insertPreviewVersionInTx(ctx, tx, req.Path, r.Version, snapshot, req.Actor)
+	if err != nil {
+		return Record{}, err
+	}
+	if err := s.afterStage("retained"); err != nil {
+		return Record{}, err
+	}
+	// Writes retain their existing request and Type budgets. Complete readers
+	// enforce the complete-current acquisition ceiling independently.
+	return r, nil
 }
 
 func (s *Store) touchCoordination(ctx context.Context, tx *sql.Tx) error {
@@ -170,7 +276,7 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 		}
 		return Record{}, ErrGone
 	}
-	if kind != "bead" || typ != MemoryTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "generic" {
+	if kind != "bead" || !s.isMemoryType(typ) || !authorityID.MatchString(revision) || state != "live" || backing != "generic" {
 		return Record{}, fmt.Errorf("%w: unsupported or corrupt allocation", ErrInvalidStore)
 	}
 	var payload, metadata, snapshot []byte
@@ -181,7 +287,11 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if err := tx.QueryRowContext(ctx, `SELECT snapshot, actor FROM graph_preview_versions WHERE path = ? AND version = ?`, path, revision).Scan(&snapshot, &actor); err != nil {
 		return Record{}, fmt.Errorf("%w: missing retained state: %v", ErrInvalidStore, err)
 	}
-	record = Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ,
+	publicURL, err := s.publicResourceURLInTx(ctx, tx, path)
+	if err != nil {
+		return Record{}, err
+	}
+	record = Record{ID: publicURL, Type: typ,
 		Revision: revision, Version: revision, Owned: []json.RawMessage{}}
 	var retained Record
 	if err := json.Unmarshal(snapshot, &retained); err != nil {
@@ -196,10 +306,7 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 		return Record{}, err
 	}
 	record.Attribution = retained.Attribution
-	at, err := time.Parse(time.RFC3339Nano, record.Attribution.RecordedAt)
-	if err != nil || at.UTC().Format(time.RFC3339Nano) != record.Attribution.RecordedAt || actor != record.Attribution.Actor ||
-		(record.Attribution.Actor == "" && record.Attribution.Status != "unknown") ||
-		(record.Attribution.Actor != "" && record.Attribution.Status != "claimed") {
+	if !validVersionAttribution(record.Attribution, actor) {
 		return Record{}, fmt.Errorf("%w: invalid retained attribution", ErrInvalidStore)
 	}
 	if err := json.Unmarshal(payload, &record.Properties); err != nil {
@@ -209,12 +316,26 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if err != nil {
 		return Record{}, err
 	}
+	catalog, err := s.selectedTypes()
+	if err != nil {
+		return Record{}, err
+	}
+	if err := catalog.validateProperties(typ, canonicalPayload, graph.KindBead); err != nil {
+		return Record{}, fmt.Errorf("%w: current payload violates its Type: %v", ErrInvalidStore, err)
+	}
 	canonicalSnapshot, err := canonicalJSON(record)
 	if err != nil {
 		return Record{}, err
 	}
 	if !bytes.Equal(payload, canonicalPayload) || !bytes.Equal(snapshot, canonicalSnapshot) {
 		return Record{}, fmt.Errorf("%w: current and retained state differ", ErrInvalidStore)
+	}
+	record.PublicID, err = memoryPublicIDInTx(ctx, tx, path)
+	if err != nil {
+		return Record{}, err
+	}
+	if record.PublicID == "" {
+		record.PublicID = path
 	}
 	return record, nil
 }
@@ -225,10 +346,10 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 // the same rows.
 func insertPreviewVersionInTx(ctx context.Context, tx *sql.Tx, path, version string, snapshot []byte, actor string) error {
 	// MAX+1 is safe here because of a FENCE, not because of luck, and naming the
-	// mechanism matters more than naming the effect. Every one of the six
-	// callers has already called touchCoordination in this same transaction
-	// (records.go:68, dependencies.go:89, dependency_unlink.go:56,
-	// informational.go:120 and :220, link_lifecycle.go:167, memory_update.go:126),
+	// mechanism matters more than naming the effect. All callers have already
+	// called touchCoordination in this same transaction (Memory create/update,
+	// Dependency add/unlink, informational Link create/update, Link lifecycle,
+	// and legacy import),
 	// which UPDATEs graph_preview_scope.writer_token WHERE singleton=1. That is
 	// a STORE-WIDE cell, not a per-path one, so two concurrent version writers
 	// in one store always contend on it and the loser fails at COMMIT with
@@ -285,4 +406,11 @@ func insertPreviewVersionInTx(ctx context.Context, tx *sql.Tx, path, version str
 	changeAt := time.Now().UTC()
 	_, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path, version, snapshot, actor, ordinal, change_at) VALUES (?, ?, ?, ?, ?, ?)`, path, version, snapshot, actor, ordinal, changeAt)
 	return err
+}
+
+func nullableMemoryPublicID(id string) any {
+	if id == "" {
+		return nil
+	}
+	return id
 }
