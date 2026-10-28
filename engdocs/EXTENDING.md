@@ -4,6 +4,11 @@ This file documents contracts that callers of the storage API must honor.
 It is not user-facing; it is for code that embeds bd or talks to the
 storage layer directly.
 
+For complete current Bead/Link reads, see the optional
+[checked Resource Get role](design/current-resource-get.md). It preserves its
+explicit native contract and source binding; it does not turn Issue detail reads
+into a generic Resource or imply every backend implements the role.
+
 ## Lite SELECT shape — `IssueFilter.Lite`
 
 `store.SearchIssues(ctx, query, filter)` accepts an `IssueFilter` value.

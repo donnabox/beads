@@ -3,6 +3,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "graphread",
     srcs = [
+        "current_get.go",
         "http_support.go",
         "inventory.go",
         "pagination.go",
@@ -19,6 +20,7 @@ go_library(
         "//graphops",
         "//internal/httpapi/bdpwire",
         "//internal/storage/graphstore",
+        "//resourceget",
     ],
 )
 
@@ -26,6 +28,7 @@ go_test(
     name = "graphread_test",
     srcs = [
         "attribution_basis_test.go",
+        "current_get_test.go",
         "inventory_test.go",
         "memory_delete_test.go",
         "metadata_projection_test.go",
@@ -42,6 +45,7 @@ go_test(
         "//internal/httpapi/bdpwire",
         "//internal/storage/graphstore",
         "//issueops",
+        "//resourceget",
     ],
 )
 

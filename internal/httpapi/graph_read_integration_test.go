@@ -23,6 +23,7 @@ import (
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/issueops"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 // This exercises the actual listener, security gates and graph store. The CLI
@@ -151,6 +152,22 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 	var directLink bdpwire.LinkRecord
 	if response.StatusCode != 200 || bdpwire.Unmarshal(body, &directLink) != nil || string(directLink.Metadata["origin"]) != `"manual"` {
 		t.Fatalf("HTTP current Link omitted common metadata: %d %s", response.StatusCode, body)
+	}
+	// Compare both native kinds with the public role through the actual HTTP
+	// listener and its authentication gate. The shared source remains open.
+	for _, uri := range []string{bead.ID, directLink.ID} {
+		current, err := graphread.New(store).Get(ctx, resourceget.Request{ID: uri})
+		if err != nil {
+			t.Fatal(err)
+		}
+		response, raw := request("GET", strings.TrimPrefix(uri, "https://authority.example"), "first-token", "transport.example", nil)
+		var want, got any
+		if response.StatusCode != http.StatusOK || json.Unmarshal(current.NativeJSON(), &want) != nil || json.Unmarshal(raw, &got) != nil || !reflect.DeepEqual(want, got) {
+			t.Fatalf("public Get and HTTP differ for %q: %d %s", uri, response.StatusCode, raw)
+		}
+		if current.Contract().SpecCommit != bdpwire.Pin || response.Header.Get("ETag") != `"`+current.Revision()+`"` {
+			t.Fatalf("HTTP changed contract or revision for %q", uri)
+		}
 	}
 	response, body = request("GET", "/read/beads/plan", "first-token", "transport.example", nil)
 	getLength := len(body)

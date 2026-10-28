@@ -18,6 +18,7 @@ import (
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 var updateCanonicalShowCorpus = flag.Bool("canonical-show-update", false, "regenerate canonical show corpus from real CLI output")
@@ -120,6 +121,14 @@ func TestCanonicalShowWorkflow(t *testing.T) {
 					t.Fatal(err)
 				}
 				equalJSON(v.got, raw)
+				current, err := reader.Get(ctx, resourceget.Request{ID: v.path})
+				if err != nil {
+					t.Fatal(err)
+				}
+				if current.Contract().SpecCommit != bdpwire.Pin || current.ID() != v.path {
+					t.Fatalf("public Get changed binding or identity: %+v %q", current.Contract(), current.ID())
+				}
+				equalJSON(v.got, current.NativeJSON())
 			}
 			if err := store.Close(); err != nil {
 				t.Fatal(err)
