@@ -11,6 +11,7 @@ import (
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 func init() {
@@ -22,8 +23,26 @@ func canonicalLinkProtection() *clioutput.Protection {
 	return &clioutput.Protection{Required: []string{"id", "type", "revision", "source", "target"}}
 }
 
-func canonicalShowDescriptor(_ string, record any) clioutput.Descriptor {
+func canonicalShowDescriptor(_ string, record any) (clioutput.Descriptor, error) {
 	descriptor := canonicalResourceDescriptor()
+	// The public document owns its immutable native bytes. Decode only for the
+	// existing renderer's endpoint/owned-Link protection, never to read again.
+	if doc, ok := record.(resourceget.NativeDocument); ok {
+		if doc.Kind() == resourceget.Link {
+			descriptor.Protection = canonicalLinkProtection()
+			return descriptor, nil
+		}
+		var bead bdpwire.CurrentBeadRecord
+		if err := bdpwire.Unmarshal(doc.NativeJSON(), &bead); err != nil {
+			return descriptor, err
+		}
+		groups := make(map[string]*clioutput.Protection, len(bead.OwnedLinks))
+		for typ := range bead.OwnedLinks {
+			groups[typ] = &clioutput.Protection{Items: canonicalLinkProtection()}
+		}
+		descriptor.Protection.Members = map[string]*clioutput.Protection{"ownedLinks": {Members: groups}}
+		return descriptor, nil
+	}
 	if _, isLink := record.(bdpwire.LinkRecord); isLink {
 		descriptor.Protection = canonicalLinkProtection()
 	}
@@ -34,7 +53,7 @@ func canonicalShowDescriptor(_ string, record any) clioutput.Descriptor {
 		}
 		descriptor.Protection.Members = map[string]*clioutput.Protection{"ownedLinks": {Members: groups}}
 	}
-	return descriptor
+	return descriptor, nil
 }
 
 func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
@@ -124,18 +143,20 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if versioned && localID != "" {
 		return canonicalFailure(cmd, renderer, "capability_unavailable", "retained versions require an exact canonical Scope URL", 5)
 	}
-	renderer, err = clioutput.New(canonicalShowDescriptor(path, nil), opts)
+	renderer, err = clioutput.New(canonicalResourceDescriptor(), opts)
 	if err != nil {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
 	return canonicalReadWithGraphStore(cmd, renderer, func(ctx context.Context, store *graphstore.Store) (any, error) {
 		reader := graphread.New(store)
-		var result any
-		if versioned {
-			result, err = reader.ResourceVersion(ctx, path, version)
-		} else {
-			path, result, err = reader.ResourceSelected(ctx, path, localID)
+		if !versioned {
+			kind := resourceget.Any
+			if linkOnly {
+				kind = resourceget.Link
+			}
+			return reader.Get(ctx, resourceget.Request{ID: ref.Identity, AssertKind: kind})
 		}
+		result, err := reader.ResourceVersion(ctx, path, version)
 		if err != nil {
 			return nil, err
 		}
@@ -146,7 +167,10 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 		}
 		return result, nil
 	}, func(result any) error {
-		descriptor := canonicalShowDescriptor(path, result)
+		descriptor, err := canonicalShowDescriptor(path, result)
+		if err != nil {
+			return canonicalReadError(cmd, renderer, err, "route_unavailable")
+		}
 		renderer, err := clioutput.New(descriptor, opts)
 		if err != nil {
 			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)

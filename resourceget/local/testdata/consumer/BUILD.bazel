@@ -1,0 +1,15 @@
+load("@rules_go//go:def.bzl", "go_binary")
+
+# The import path deliberately belongs to an external consumer. Its source
+# imports only public packages and is also buildable as its own Go module.
+go_binary(
+    name = "consumer",
+    testonly = True,
+    srcs = ["main.go"],
+    importpath = "example.invalid/resourcegetconsumer",
+    visibility = ["//resourceget/local:__pkg__"],
+    deps = [
+        "//resourceget",
+        "//resourceget/local",
+    ],
+)

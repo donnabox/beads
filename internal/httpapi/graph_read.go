@@ -23,6 +23,7 @@ import (
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 const (
@@ -167,6 +168,18 @@ func (g *GraphRead) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		graphReadJSON(w, r, record, "")
+	case "resource":
+		record, err := g.reader.Get(r.Context(), resourceget.Request{ID: g.scope + route.path})
+		if err != nil {
+			graphReadFailure(w, r, err)
+			return
+		}
+		tag, err := graphReadETag(record.Revision())
+		if err != nil {
+			graphReadFailure(w, r, err)
+			return
+		}
+		graphReadJSON(w, r, record, tag)
 	default:
 		record, err := g.reader.Resource(r.Context(), g.scope+route.path)
 		if err != nil {
