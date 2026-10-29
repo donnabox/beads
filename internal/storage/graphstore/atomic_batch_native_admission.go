@@ -106,9 +106,6 @@ func (run *atomicBatchRun) admitNativeMutation(_ int, member canonicalbatch.Memb
 }
 
 func canonicalNativeAuthoredValue(path string, value json.RawMessage) error {
-	if value == nil {
-		return nil // Removal is the explicit spelling for an optional clear.
-	}
 	refuse := func() error {
 		return fmt.Errorf("%w: native property presence/value cannot be retained; use removal for an optional clear", ErrCapabilityUnavailable)
 	}
@@ -124,6 +121,9 @@ func canonicalNativeAuthoredValue(path string, value json.RawMessage) error {
 			return refuse()
 		}
 	case "/due_at":
+		if value == nil {
+			break
+		} // Removal clears the optional date.
 		var date time.Time
 		if err := json.Unmarshal(value, &date); err != nil {
 			return refuse()
@@ -133,7 +133,64 @@ func canonicalNativeAuthoredValue(path string, value json.RawMessage) error {
 			return refuse()
 		}
 	}
-	return nil
+	var content issueops.CanonicalIssueContent
+	if err := setCanonicalNativeContentField(&content, path[1:], value); err != nil {
+		return err
+	}
+	return issueops.ValidateCanonicalIssueContent(content)
+}
+
+// Decode one native setter for both authored admission and final row lowering.
+// This validates scalar input, without replaying patches or inventing state.
+func setCanonicalNativeContentField(content *issueops.CanonicalIssueContent, key string, value json.RawMessage) error {
+	decode := func(target any) error {
+		if value == nil {
+			return nil
+		}
+		if err := json.Unmarshal(value, target); err != nil {
+			return fmt.Errorf("%w: native %s value: %v", storage.ErrValidation, key, err)
+		}
+		return nil
+	}
+	var text *publicops.Field[string]
+	switch key {
+	case "title":
+		text = &content.Title
+	case "description":
+		text = &content.Description
+	case "design":
+		text = &content.Design
+	case "acceptance_criteria":
+		text = &content.AcceptanceCriteria
+	case "spec_id":
+		text = &content.SpecID
+	}
+	if text != nil {
+		if value == nil && key == "title" || value != nil && (len(value) == 0 || value[0] != '"') {
+			return fmt.Errorf("%w: native %s requires a string", storage.ErrValidation, key)
+		}
+		text.Set = true
+		return decode(&text.Value)
+	}
+	switch key {
+	case "priority":
+		if value == nil || bytes.Equal(value, []byte("null")) {
+			return fmt.Errorf("%w: native priority cannot be removed", storage.ErrValidation)
+		}
+		content.Priority.Set = true
+		return decode(&content.Priority.Value)
+	case "estimated_minutes":
+		content.EstimatedMinutes.Set = true
+		return decode(&content.EstimatedMinutes.Value)
+	case "external_ref":
+		content.ExternalRef.Set = true
+		return decode(&content.ExternalRef.Value)
+	case "due_at":
+		content.DueAt.Set = true
+		return decode(&content.DueAt.Value)
+	default:
+		return fmt.Errorf("%w: unavailable native property %s", ErrCapabilityUnavailable, key)
+	}
 }
 
 func canonicalNativeContentPath(path string) bool {
@@ -186,56 +243,11 @@ func canonicalNativeIssueContent(before IssueRecord, after canonicalbatchstate.R
 			return result, fmt.Errorf("%w: native unmapped property changed", ErrCapabilityUnavailable)
 		}
 	}
-	for _, setter := range []struct {
-		key   string
-		field *publicops.Field[string]
-	}{{"title", &result.Title}, {"description", &result.Description}, {"design", &result.Design}, {"acceptance_criteria", &result.AcceptanceCriteria}, {"spec_id", &result.SpecID}} {
-		if !changed(setter.key) {
-			continue
-		}
-		value := fields[setter.key]
-		if value == nil && setter.key == "title" || value != nil && (len(value) == 0 || value[0] != '"') {
-			return result, fmt.Errorf("%w: native %s requires a string", graph.ErrValidation, setter.key)
-		}
-		setter.field.Set = true
-		if value != nil {
-			if err := json.Unmarshal(value, &setter.field.Value); err != nil {
+	for _, key := range []string{"title", "description", "design", "acceptance_criteria", "spec_id", "priority", "estimated_minutes", "external_ref", "due_at"} {
+		if changed(key) {
+			if err := setCanonicalNativeContentField(&result, key, fields[key]); err != nil {
 				return result, err
 			}
-		}
-	}
-	if changed("priority") {
-		result.Priority.Set = true
-		if value := fields["priority"]; value == nil || bytes.Equal(value, []byte("null")) {
-			return result, fmt.Errorf("%w: native priority cannot be removed", graph.ErrValidation)
-		} else if err := json.Unmarshal(value, &result.Priority.Value); err != nil {
-			return result, err
-		}
-	}
-	if changed("estimated_minutes") {
-		result.EstimatedMinutes.Set = true
-		if value := fields["estimated_minutes"]; value != nil {
-			if err := json.Unmarshal(value, &result.EstimatedMinutes.Value); err != nil {
-				return result, err
-			}
-		}
-	}
-	if changed("external_ref") {
-		result.ExternalRef.Set = true
-		if value := fields["external_ref"]; value != nil {
-			if err := json.Unmarshal(value, &result.ExternalRef.Value); err != nil {
-				return result, err
-			}
-		}
-	}
-	if changed("due_at") {
-		result.DueAt.Set = true
-		if value := fields["due_at"]; value != nil && !bytes.Equal(value, []byte("null")) {
-			var date time.Time
-			if err := json.Unmarshal(value, &date); err != nil {
-				return result, err
-			}
-			result.DueAt.Value = &date
 		}
 	}
 	result.Metadata = publicops.Field[json.RawMessage]{Set: !bytes.Equal(before.Metadata, after.Metadata), Value: bytes.Clone(after.Metadata)}
