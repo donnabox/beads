@@ -49,13 +49,17 @@ func (s *Store) Close() error {
 }
 
 func validateOptions(o Options) error {
+	return validateOptionsAtVersion(o, SchemaVersion)
+}
+
+func validateOptionsAtVersion(o Options, expected int) error {
 	if o.Backend != "embedded" && o.Backend != "server" {
 		return fmt.Errorf("%w: backend must be embedded or server", ErrInvalidStore)
 	}
 	if !databaseName.MatchString(o.Database) || (o.Branch != "" && o.Branch != "main") {
 		return fmt.Errorf("%w: invalid database or unsupported branch", ErrInvalidStore)
 	}
-	if o.Binding.SchemaVersion != SchemaVersion || !authorityID.MatchString(o.Binding.AuthorityID) {
+	if o.Binding.SchemaVersion != expected || !authorityID.MatchString(o.Binding.AuthorityID) {
 		return fmt.Errorf("%w: invalid preview version or authority ID", ErrInvalidStore)
 	}
 	if o.TypeGeneration != 0 && o.TypeGeneration != TypeGeneration {
@@ -119,7 +123,11 @@ func openBackend(ctx context.Context, o Options, database string) (*Store, error
 // CLI admission owns exclusive .beads creation and pending/ready publication.
 // Partial DDL failure leaves that workspace pending for explicit disposal.
 func Init(ctx context.Context, o Options) (err error) {
-	if err = validateOptions(o); err != nil {
+	return initAtVersion(ctx, o, SchemaVersion, nil)
+}
+
+func initAtVersion(ctx context.Context, o Options, expected int, additionalDDL []string) (err error) {
+	if err = validateOptionsAtVersion(o, expected); err != nil {
 		return err
 	}
 	if o.TypeGeneration != 0 && o.TypeGeneration != TypeGeneration {
@@ -155,13 +163,17 @@ func Init(ctx context.Context, o Options) (err error) {
 	if _, err = schema.MigrateUp(ctx, conn); err != nil {
 		return fmt.Errorf("initialize standard schema: %w", err)
 	}
-	return installPreview(ctx, conn, o)
+	return installPreviewWithDDL(ctx, conn, o, additionalDDL)
 }
 
 // OpenExisting performs no DDL or migration. Persisted graph binding and its
 // installed descriptor must match exactly before the Store is returned.
 func OpenExisting(ctx context.Context, o Options) (*Store, error) {
-	if err := validateOptions(o); err != nil {
+	return openAtVersion(ctx, o, SchemaVersion)
+}
+
+func openAtVersion(ctx context.Context, o Options, expected int) (*Store, error) {
+	if err := validateOptionsAtVersion(o, expected); err != nil {
 		return nil, err
 	}
 	if o.Backend == "embedded" {

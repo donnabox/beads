@@ -110,7 +110,21 @@ func allocatedResourceIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (s
 			(backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)
 		) LIMIT 1`, id, id).Scan(&exists)
 	if errors.Is(err, sql.ErrNoRows) {
-		return "", nil
+		var version int
+		if err := tx.QueryRowContext(ctx, `SELECT schema_version FROM graph_preview_scope WHERE singleton=1`).Scan(&version); err != nil {
+			return "", err
+		}
+		if version != AtomicBatchSchemaVersion {
+			return "", nil
+		}
+		err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_batch_allocations WHERE public_id=?`, id).Scan(&exists)
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil
+		}
+		if err != nil {
+			return "", err
+		}
+		return "a committed batch identity allocation", nil
 	}
 	if err != nil {
 		return "", err
