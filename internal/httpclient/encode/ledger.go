@@ -722,6 +722,14 @@ func writeSideRows() []Row {
 			PinnedBy: patchMemberPin,
 		},
 		{
+			ID: "W-MetadataPatch.Operations", Kind: KindRefuse,
+			Type: reflect.TypeOf(issueops.MetadataPatch{}), Field: "Operations",
+			What:     "a strict metadata operation list refuses on updateIssue and issues:batchApply",
+			Why:      "ApplyMetadataPatch publishes replace, merge, set and unset but no strict operations member. Operations.Set refuses before any transport access, including an explicitly empty list or nil payload, rather than dropping the edit or sending an unknown wire member. The four legacy modes remain supported",
+			SpecRow:  "D8 refuse-not-drop",
+			PinnedBy: "TestMetadataOperationsRefuseBeforeWire",
+		},
+		{
 			ID: "W-IssuePatch.AwaitID", Kind: KindRetired,
 			What: "an await-id edit used to refuse",
 			Why: "RETIRED. IssuePatchBody and ApplyPatchBody publish await_id and waiters behind issues.update.gates, and both patch encoders now send them: await_id by presence (the empty string CLEARS it, as on assignee), waiters as a WHOLE-VALUE replacement whose empty or nil value travels as [] (neither member is nullable). " +

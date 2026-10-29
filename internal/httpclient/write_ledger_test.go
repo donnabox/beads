@@ -348,15 +348,12 @@ func writeShapes() []writeShape {
 		{
 			// The nested metadata document, and the reason it is a shape of its
 			// own rather than a line in its parent: `metadata` is ONE member up
-			// there, and the four arms of the algebra under it are four fields
-			// of a role type that can grow. Classifying them here is what makes
-			// a fifth arm added to MetadataPatch fail closed instead of being
-			// dropped by an encoder that never learned about it.
+			// there, and each arm under it is a field of a role type that can
+			// grow. Classifying them here catches an added arm instead of
+			// letting an encoder silently drop it.
 			//
-			// It is TOTAL in both directions. What diverges is not a member: it
-			// is the replace-plus-incremental contradiction, which both sides
-			// refuse as a validation failure writing nothing, so there is no
-			// row to carry.
+			// The four legacy modes are carried. Strict Operations has its own
+			// refusal row because the wire has no corresponding member.
 			name:   "updateIssue/patch/metadata",
 			source: reflect.TypeOf(issueops.MetadataPatch{}),
 			body:   reflect.TypeOf(apigen.ApplyMetadataPatch{}),
@@ -1014,7 +1011,7 @@ func shapeNamed(t *testing.T, name string) writeShape {
 
 // setPatchField sets one issueops.Field member so the encoder sees it as
 // present. Two members are not Fields at all: Labels is a LabelPatch, whose
-// three arms are all served, and Metadata is a MetadataPatch, whose four arms
+// three arms are all served, and Metadata is a MetadataPatch, whose arms
 // are classified as a shape of their own.
 func setPatchField(t *testing.T, v reflect.Value) {
 	t.Helper()
