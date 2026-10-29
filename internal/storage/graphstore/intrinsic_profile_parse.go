@@ -112,7 +112,7 @@ func parseIntrinsicSyntax(ctx context.Context, text, name, kind string) (intrins
 		ddl.ColumnTypeSpec != nil || ddl.IfExists || ddl.ConstraintIfExists || ddl.ColumnAction != "" || (ddl.ConstraintAction != "" && !(kind == "BASE TABLE" && ddl.ConstraintAction == sqlparser.AddStr && ddl.TableSpec != nil && len(ddl.TableSpec.Constraints) > 0)) {
 		return intrinsicSyntax{}, fmt.Errorf("%w: %s %s unsupported DDL shape", ErrInvalidStore, name, kind)
 	}
-	out := intrinsicSyntax{name: name, kind: kind, tokens: tokens}
+	out := intrinsicSyntax{kind: kind, tokens: tokens}
 	switch kind {
 	case "BASE TABLE":
 		if !intrinsicUnqualifiedSQLName(ddl.Table, name) || ddl.ViewSpec != nil || ddl.OrReplace ||
@@ -120,6 +120,7 @@ func parseIntrinsicSyntax(ctx context.Context, text, name, kind string) (intrins
 			len(ddl.TableSpec.Columns) > 128 || len(ddl.TableSpec.Indexes) > 256 || len(ddl.TableSpec.Constraints) > 256 {
 			return intrinsicSyntax{}, fmt.Errorf("%w: table DDL shape", ErrInvalidStore)
 		}
+		out.name = ddl.Table.Name.String()
 		seen := make(map[string]bool)
 		for _, col := range ddl.TableSpec.Columns {
 			if col == nil || col.Name.IsEmpty() || seen[col.Name.String()] || col.Type.GeneratedExpr != nil || col.Type.SRID != nil || col.Type.ResolvedType != nil {
@@ -152,11 +153,12 @@ func parseIntrinsicSyntax(ctx context.Context, text, name, kind string) (intrins
 		if v == nil || ddl.TableSpec != nil || !intrinsicUnqualifiedSQLName(v.ViewName, name) || v.ViewExpr == nil || len(v.Columns) != 0 || v.Definer != "" || v.Algorithm != "" || v.Security != "" || v.CheckOption != sqlparser.ViewCheckOptionUnspecified {
 			return intrinsicSyntax{}, fmt.Errorf("%w: view DDL shape", ErrInvalidStore)
 		}
+		out.name = v.ViewName.Name.String()
 	default:
 		return intrinsicSyntax{}, fmt.Errorf("%w: DDL kind", ErrInvalidStore)
 	}
-	// No general AST equivalence/formatter normalization is inferred here. Full
-	// native descriptor correspondence remains unqualified in the fixed manifest.
+	// The exact validated AST identity feeds the caller's pinned lookup. Syntax
+	// acquisition does not imply AST equivalence or native projection authority.
 	return out, nil
 }
 

@@ -190,10 +190,7 @@ func OpenExisting(ctx context.Context, o Options) (*Store, error) {
 // and retained bytes, use this single transaction. Only an explicit decoded
 // serialization rollback is a known conflict; other commit errors are unknown.
 func (s *Store) withDefinitionReadTx(ctx context.Context, purpose txPurpose, fn func(*sql.Tx, *intrinsicMetadataBudget) error) error {
-	budget, err := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-	if err != nil {
-		return err
-	}
+	budget := newIntrinsicMetadataBudget()
 	return s.withTxPolicy(ctx, txPolicy{purpose: purpose, allowance: budget}, func(tx *sql.Tx) error { return fn(tx, budget) })
 }
 
@@ -281,10 +278,7 @@ func (s *Store) withTxPolicy(ctx context.Context, policy txPolicy, fn func(*sql.
 	}()
 	if s.options.Binding.SchemaVersion == TypesFreshSchemaVersion {
 		if policy.allowance == nil {
-			policy.allowance, err = newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-			if err != nil {
-				return err
-			}
+			policy.allowance = newIntrinsicMetadataBudget()
 		}
 		if err = checkBindingWithIntrinsicBudget(ctx, tx, s.options, policy.allowance); err != nil {
 			return err

@@ -150,10 +150,7 @@ func TestIntrinsicProfileNeverEmitsUnqualifiedFact(t *testing.T) {
 	o := intrinsicProfileOptions()
 	expectIntrinsicBinding(mock, o, o.Binding.WorkspaceID)
 	expectIntrinsicMetadataCandidate(t, mock, o)
-	budget, err := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-	if err != nil {
-		t.Fatal(err)
-	}
+	budget := newIntrinsicMetadataBudget()
 	fact, err := checkTypesFreshProfileInTx(context.Background(), tx, o, budget)
 	m, loadErr := loadIntrinsicExpected()
 	if loadErr != nil {
@@ -178,10 +175,7 @@ func TestIntrinsicProfileWrongBindingStopsBeforeMetadata(t *testing.T) {
 	tx, mock := intrinsicProfileTransaction(t)
 	o := intrinsicProfileOptions()
 	expectIntrinsicBinding(mock, o, "/different")
-	budget, err := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-	if err != nil {
-		t.Fatal(err)
-	}
+	budget := newIntrinsicMetadataBudget()
 	fact, err := checkTypesFreshProfileInTx(context.Background(), tx, o, budget)
 	if !errors.Is(err, ErrInvalidStore) || !strings.Contains(err.Error(), "actual persisted intrinsic binding") || fact != (checkedStoreProfile{}) {
 		t.Fatalf("wrong diagnosis: %+v %v", fact, err)
@@ -222,10 +216,7 @@ func TestIntrinsicMetadataRowsErrorsAndBounds(t *testing.T) {
 			if mode == "budget" {
 				limit = 1
 			}
-			budget, err := newIntrinsicMetadataBudget(limit)
-			if err != nil {
-				t.Fatal(err)
-			}
+			budget := &intrinsicMetadataBudget{remaining: limit}
 			got, err := readIntrinsicMetadataRows(context.Background(), tx, budget, "SELECT fixed_metadata", 1, 1)
 			if mode == "success" {
 				if err != nil || !reflect.DeepEqual(got, [][]any{{"ok"}}) {
@@ -249,11 +240,8 @@ func TestIntrinsicOperationBudgetStopsBeforeBodyAcquisition(t *testing.T) {
 	for _, which := range []string{"record", "context"} {
 		t.Run(which, func(t *testing.T) {
 			tx, _ := intrinsicProfileTransaction(t)
-			budget, err := newIntrinsicMetadataBudget(64)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err = budget.charge(64); err != nil {
+			budget := &intrinsicMetadataBudget{remaining: 64}
+			if err := budget.charge(64); err != nil {
 				t.Fatal(err)
 			}
 			o := intrinsicProfileOptions()

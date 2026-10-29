@@ -77,21 +77,48 @@ func TestIntrinsicExpectationFixedNonreadySource(t *testing.T) {
 }
 
 func TestIntrinsicMetadataBudgetAndScalars(t *testing.T) {
-	b, err := newIntrinsicMetadataBudget(300)
-	if err != nil {
+	b := &intrinsicMetadataBudget{remaining: 300}
+	if err := b.charge(256); err != nil {
 		t.Fatal(err)
 	}
-	if err = b.charge(256); err != nil {
-		t.Fatal(err)
-	}
-	if err = b.charge(45); !errors.Is(err, ErrLimitExceeded) || b.remaining != 44 {
+	if err := b.charge(45); !errors.Is(err, ErrLimitExceeded) || b.remaining != 44 {
 		t.Fatalf("shared budget: %+v %v", b, err)
 	}
-	if _, err = newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit + 1); !errors.Is(err, ErrLimitExceeded) {
+	if fixed := newIntrinsicMetadataBudget(); fixed.remaining != PreviewCurrentReadByteLimit || fixed.metadata != 0 {
+		t.Fatalf("production allowance changed: %+v", fixed)
+	}
+	// Invalid-state refusal belongs at the actual debit boundary now that the
+	// production factory has no variable input. Both planes must refuse before
+	// acquisition, without changing the corrupted private test state.
+	for _, remaining := range []int{-1, PreviewCurrentReadByteLimit + 1} {
+		for _, plane := range []string{"metadata", "body"} {
+			invalid := &intrinsicMetadataBudget{remaining: remaining}
+			before := *invalid
+			var err error
+			if plane == "metadata" {
+				err = invalid.charge(0)
+			} else {
+				err = invalid.chargeBody(0)
+			}
+			if !errors.Is(err, ErrLimitExceeded) || *invalid != before {
+				t.Fatalf("invalid %s allowance changed/admitted: %+v %v", plane, invalid, err)
+			}
+		}
+	}
+	metadata := newIntrinsicMetadataBudget()
+	if err := metadata.charge(4 << 20); err != nil {
 		t.Fatal(err)
 	}
+	if err := metadata.charge(1); !errors.Is(err, ErrLimitExceeded) || metadata.remaining != PreviewCurrentReadByteLimit-(4<<20) {
+		t.Fatalf("metadata sublimit escaped: %+v %v", metadata, err)
+	}
+	for _, value := range []any{nil, 1, false} {
+		if _, err := intrinsicCellString(value); !errors.Is(err, ErrInvalidStore) {
+			t.Fatalf("non-text/nil metadata accepted: %#v %v", value, err)
+		}
+	}
 	for _, value := range []any{nil, -1, int8(-1), int16(-1), int32(-1), int64(-1), float64(1), "+1", " 1", "1.0", "18446744073709551616"} {
-		if _, err = intrinsicUnsigned(value); !errors.Is(err, ErrInvalidStore) {
+		if _, err := intrinsicUnsigned(value); !errors.Is(err, ErrInvalidStore) {
 			t.Fatalf("scalar accepted: %#v", value)
 		}
 	}
@@ -133,5 +160,30 @@ func TestIntrinsicNativeIgnoreBooleanScalars(t *testing.T) {
 		if _, err := intrinsicIgnoreBoolean(v); !errors.Is(err, ErrInvalidStore) {
 			t.Fatalf("invalid %T(%v): %v", v, v, err)
 		}
+	}
+}
+
+func TestIntrinsicCheckedProfileBinding(t *testing.T) {
+	for _, tc := range []struct {
+		name          string
+		fact, binding int
+		valid         bool
+	}{
+		{"selected", TypesFreshSchemaVersion, TypesFreshSchemaVersion, true},
+		{"zero-fact", 0, TypesFreshSchemaVersion, false},
+		{"wrong-fact", SchemaVersion, TypesFreshSchemaVersion, false},
+		{"wrong-binding", TypesFreshSchemaVersion, SchemaVersion, false},
+		{"matching-legacy-is-not-checked14", SchemaVersion, SchemaVersion, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			err := (checkedStoreProfile{schemaVersion: tc.fact}).requireBinding(Binding{SchemaVersion: tc.binding})
+			if tc.valid {
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else if !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("unqualified/mismatched profile fact admitted: %v", err)
+			}
+		})
 	}
 }

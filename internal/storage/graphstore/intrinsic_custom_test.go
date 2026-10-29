@@ -364,11 +364,7 @@ func TestIntrinsicMaterializationFinalCensusRollback(t *testing.T) {
 	}
 	// Exactly its initial source/copy reservation: all six INSERTs are staged,
 	// then the independent final integrity-census acquisition must refuse.
-	budget, err := newIntrinsicMetadataBudget(4*intrinsictypecatalog.SelectedSource().Bytes + 2*intrinsicmaterialization.MaxContextBytes)
-	if err != nil {
-		_ = tx.Rollback()
-		t.Fatal(err)
-	}
+	budget := &intrinsicMetadataBudget{remaining: 4*intrinsictypecatalog.SelectedSource().Bytes + 2*intrinsicmaterialization.MaxContextBytes}
 	err = installIntrinsicMembers(ctx, tx, o, budget)
 	if !errors.Is(err, ErrInvalidStore) || !strings.Contains(err.Error(), ErrLimitExceeded.Error()) {
 		_ = tx.Rollback()

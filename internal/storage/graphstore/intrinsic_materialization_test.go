@@ -102,10 +102,7 @@ func TestIntrinsicBeadTypeProductionInitReopen(t *testing.T) {
 		if _, e = tx.ExecContext(ctx, `DELETE FROM graph_preview_intrinsic_members WHERE path=? AND revision=?`, "beads/type-for-bead-type", again.Revision); e != nil {
 			t.Fatal(e)
 		}
-		budget, e := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-		if e != nil {
-			t.Fatal(e)
-		}
+		budget := newIntrinsicMetadataBudget()
 		var doc IntrinsicDocument
 		if e = s.readIntrinsicDocumentInTx(ctx, tx, "beads/type-for-bead-type", "", &doc, budget); !errors.Is(e, ErrInvalidStore) {
 			t.Fatalf("missing current: %v", e)
