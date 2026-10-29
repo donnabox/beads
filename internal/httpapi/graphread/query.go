@@ -37,19 +37,29 @@ func (r *Reader) ExecuteResourceQuery(ctx context.Context, raw []byte) (resource
 	if err := resourcequery.Admit(request, limits); err != nil {
 		return resourcequery.Response{}, err
 	}
+	_, data, err := r.queryInventory(ctx)
+	if err != nil {
+		return resourcequery.Response{}, err
+	}
+	return resourcequery.Execute(ctx, raw, data, limits)
+}
+
+// queryInventory captures public Resources and their Type authority together.
+// Query and candidate-local List evaluate only this detached context.
+func (r *Reader) queryInventory(ctx context.Context) (Inventory, resourcequery.Dataset, error) {
 	if ctx == nil || r == nil || r.store == nil {
-		return resourcequery.Response{}, errors.New("Query requires a reader and context")
+		return Inventory{}, resourcequery.Dataset{}, errors.New("Query requires a reader and context")
 	}
 	if err := ctx.Err(); err != nil {
-		return resourcequery.Response{}, err
+		return Inventory{}, resourcequery.Dataset{}, err
 	}
 	snapshot, err := r.store.ReadQuerySnapshot(ctx)
 	if err != nil {
-		return resourcequery.Response{}, err
+		return Inventory{}, resourcequery.Dataset{}, err
 	}
 	inventory, err := projectInventory(snapshot.Snapshot)
 	if err != nil {
-		return resourcequery.Response{}, err
+		return Inventory{}, resourcequery.Dataset{}, err
 	}
 	data := resourcequery.Dataset{TypeFamilies: snapshot.TypeFamilies, TypeKinds: snapshot.TypeKinds,
 		Resources: make([]resourcequery.Resource, 0, len(inventory.Beads)+len(inventory.Links))}
@@ -64,13 +74,13 @@ func (r *Reader) ExecuteResourceQuery(ctx context.Context, raw []byte) (resource
 	}
 	for _, bead := range inventory.Beads {
 		if err := appendResource(graph.KindBead, bead); err != nil {
-			return resourcequery.Response{}, err
+			return Inventory{}, resourcequery.Dataset{}, err
 		}
 	}
 	for _, link := range inventory.Links {
 		if err := appendResource(graph.KindLink, link); err != nil {
-			return resourcequery.Response{}, err
+			return Inventory{}, resourcequery.Dataset{}, err
 		}
 	}
-	return resourcequery.Execute(ctx, raw, data, limits)
+	return inventory, data, nil
 }
