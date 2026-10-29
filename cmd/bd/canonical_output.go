@@ -240,7 +240,7 @@ func renderCanonicalResult(cmd *cobra.Command, renderer *clioutput.Renderer, res
 func canonicalReadError(cmd *cobra.Command, renderer canonicalFailureRenderer, err error, fallback string) error {
 	code, status := fallback, 5
 	switch {
-	case cmd == queryCmd && cmd.Flags().Changed("ast") && (errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled)):
+	case cmd.Name() == "query" && cmd.Flags().Changed("ast") && (errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled)):
 		code = "capability_unavailable"
 	case errors.Is(err, resourcequery.ErrInvalid):
 		code, status = "invalid_selector", 2
