@@ -170,6 +170,7 @@ func freshToken() (string, error) {
 }
 
 func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) {
+	var intrinsicBudget *intrinsicMetadataBudget
 	prefix := o.IssuePrefix
 	if prefix == "" {
 		prefix = "bd"
@@ -182,6 +183,14 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 			return err
 		}
 	}
+	if o.Binding.SchemaVersion == TypesFreshSchemaVersion {
+		for _, ddl := range intrinsicDDL {
+			if _, err = conn.ExecContext(ctx, ddl); err != nil {
+				return err
+			}
+		}
+	}
+
 	token, err := freshToken()
 	if err != nil {
 		return err
@@ -202,6 +211,15 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
         VALUES (1, ?, ?, ?, ?, ?)`, b.WorkspaceID, b.ScopeURL, b.AuthorityID, b.SchemaVersion, token); err != nil {
 		return err
 	}
+	if o.Binding.SchemaVersion == TypesFreshSchemaVersion {
+		intrinsicBudget, err = newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
+		if err != nil {
+			return err
+		}
+		if _, err = checkTypesFreshProfileInTx(ctx, tx, o, intrinsicBudget); err != nil {
+			return err
+		}
+	}
 	for _, definition := range previewTypeDefinitions() {
 		descriptor, buildErr := definition.build(b.ScopeURL)
 		if buildErr != nil {
@@ -217,7 +235,12 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 	if _, err = issueops.ReadConfigPrefix(ctx, tx); err != nil {
 		return err
 	}
-	if err = checkBinding(ctx, tx, o); err != nil {
+	if o.Binding.SchemaVersion == TypesFreshSchemaVersion {
+		if err = installIntrinsicMembers(ctx, tx, o, intrinsicBudget); err != nil {
+			return err
+		}
+	}
+	if err = checkBindingWithIntrinsicBudget(ctx, tx, o, intrinsicBudget); err != nil {
 		return err
 	}
 	err = tx.Commit()
@@ -229,6 +252,10 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 }
 
 func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
+	return checkBindingWithIntrinsicBudget(ctx, tx, o, nil)
+}
+
+func checkBindingWithIntrinsicBudget(ctx context.Context, tx *sql.Tx, o Options, budget *intrinsicMetadataBudget) error {
 	var b Binding
 	var token string
 	err := tx.QueryRowContext(ctx, `SELECT workspace, scope_url, authority_id,
@@ -240,6 +267,16 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	}
 	if b != o.Binding || !authorityID.MatchString(token) {
 		return fmt.Errorf("%w: persisted binding differs from workspace", ErrInvalidStore)
+	}
+	if o.Binding.SchemaVersion == TypesFreshSchemaVersion {
+		if budget == nil {
+			budget, err = newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
+			if err != nil {
+				return err
+			}
+		}
+		_, err = checkTypesFreshProfileInTx(ctx, tx, o, budget)
+		return err
 	}
 	installed, err := installedPreviewTypes(ctx, tx, b.ScopeURL)
 	if err != nil {

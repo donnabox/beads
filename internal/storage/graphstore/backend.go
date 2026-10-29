@@ -55,7 +55,7 @@ func validateOptions(o Options) error {
 	if !databaseName.MatchString(o.Database) || (o.Branch != "" && o.Branch != "main") {
 		return fmt.Errorf("%w: invalid database or unsupported branch", ErrInvalidStore)
 	}
-	if o.Binding.SchemaVersion != SchemaVersion || !authorityID.MatchString(o.Binding.AuthorityID) {
+	if (o.Binding.SchemaVersion != SchemaVersion && o.Binding.SchemaVersion != TypesFreshSchemaVersion) || !authorityID.MatchString(o.Binding.AuthorityID) {
 		return fmt.Errorf("%w: invalid preview version or authority ID", ErrInvalidStore)
 	}
 	if o.TypeGeneration != 0 && o.TypeGeneration != TypeGeneration {
@@ -174,8 +174,14 @@ func OpenExisting(ctx context.Context, o Options) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = s.withTx(ctx, false, func(tx *sql.Tx) error { return checkBinding(ctx, tx, o) }); err != nil {
-		return nil, errors.Join(err, s.Close())
+	var checkErr error
+	if o.Binding.SchemaVersion == TypesFreshSchemaVersion {
+		checkErr = s.withDefinitionReadTx(ctx, txDefinitionOpen, func(*sql.Tx, *intrinsicMetadataBudget) error { return nil })
+	} else {
+		checkErr = s.withTx(ctx, false, func(tx *sql.Tx) error { return checkBinding(ctx, tx, o) })
+	}
+	if checkErr != nil {
+		return nil, errors.Join(checkErr, s.Close())
 	}
 	return s, nil
 }
@@ -183,6 +189,14 @@ func OpenExisting(ctx context.Context, o Options) (*Store, error) {
 // withTx never replays fn. All graph writes, including conflict coordination
 // and retained bytes, use this single transaction. Only an explicit decoded
 // serialization rollback is a known conflict; other commit errors are unknown.
+func (s *Store) withDefinitionReadTx(ctx context.Context, purpose txPurpose, fn func(*sql.Tx, *intrinsicMetadataBudget) error) error {
+	budget, err := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
+	if err != nil {
+		return err
+	}
+	return s.withTxPolicy(ctx, txPolicy{purpose: purpose, allowance: budget}, func(tx *sql.Tx) error { return fn(tx, budget) })
+}
+
 func (s *Store) withTx(ctx context.Context, write bool, fn func(*sql.Tx) error) error {
 	return s.withTxPolicy(ctx, txPolicy{mayWrite: write, commit: write}, fn)
 }
@@ -197,7 +211,20 @@ func (s *Store) withTypeValidationTx(ctx context.Context, fn func(*sql.Tx) error
 // txPolicy separates staged writes from publication: an import dry-run writes
 // for validation, then rolls back. Selected graph mutations opt into validation;
 // native payload-only readers and writers retain withTx behavior.
+type txPurpose uint8
+
+const (
+	txOrdinary txPurpose = iota
+	txDefinitionOpen
+	txDefinitionRead
+	txDefinitionList
+	txDefinitionCreate
+)
+
 type txPolicy struct {
+	purpose   txPurpose
+	allowance *intrinsicMetadataBudget
+
 	mayWrite      bool
 	commit        bool
 	validateTypes bool // mutations affecting the selected graph, including import dry-runs
@@ -252,6 +279,22 @@ func (s *Store) withTxPolicy(ctx context.Context, policy txPolicy, fn func(*sql.
 			err = errors.Join(err, rollback())
 		}
 	}()
+	if s.options.Binding.SchemaVersion == TypesFreshSchemaVersion {
+		if policy.allowance == nil {
+			policy.allowance, err = newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
+			if err != nil {
+				return err
+			}
+		}
+		if err = checkBindingWithIntrinsicBudget(ctx, tx, s.options, policy.allowance); err != nil {
+			return err
+		}
+		readPurpose := policy.purpose == txDefinitionOpen || policy.purpose == txDefinitionRead || policy.purpose == txDefinitionList
+		createPurpose := policy.purpose == txDefinitionCreate && policy.mayWrite && policy.commit && !policy.validateTypes
+		if !createPurpose && (!readPurpose || policy.mayWrite || policy.commit || policy.validateTypes) {
+			return fmt.Errorf("%w: unsupported Types-only native operation", ErrCapabilityUnavailable)
+		}
+	}
 	if err = fn(tx); err != nil {
 		return err
 	}
@@ -268,7 +311,7 @@ func (s *Store) withTxPolicy(ctx context.Context, policy txPolicy, fn func(*sql.
 	err = tx.Commit()
 	finished = true
 	if err != nil {
-		return classifyCommitError(err)
+		return classifyCommitErrorForBackend(err, s.options.Backend)
 	}
 	committed = true
 	return nil
@@ -286,4 +329,19 @@ func classifyCommitError(err error) error {
 		return errors.Join(ErrConflict, err)
 	}
 	return errors.Join(ErrOutcomeUnknown, err)
+}
+
+// Only the actual Commit-error branch uses this backend-specific exception.
+// Pinned driver/v2 v2.2.0 translateError preserves the decoded MySQL number but
+// omits SQLState; pinned GMS ErrLockDeadlock/1213 guarantees rollback. Callback
+// failures and failed rollback acknowledgments never pass through this helper.
+// Server/default classification still requires the complete 1213/40001 pair.
+func classifyCommitErrorForBackend(err error, backend string) error {
+	if backend == "embedded" {
+		var embeddedErr *mysql.MySQLError
+		if errors.As(err, &embeddedErr) && embeddedErr.Number == 1213 && embeddedErr.SQLState == ([5]byte{}) {
+			return errors.Join(ErrConflict, err)
+		}
+	}
+	return classifyCommitError(err)
 }
