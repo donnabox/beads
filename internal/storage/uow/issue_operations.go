@@ -304,6 +304,9 @@ func authorizeAssigneeTransfer(ctx context.Context, uw UnitOfWork, before *types
 func updateSpec(request publicops.UpdateRequest) (domain.UpdateSpec, error) {
 	fields := make(map[string]any)
 	patch := request.Patch
+	if patch.Metadata.Operations.Set {
+		return domain.UpdateSpec{}, validationError(fmt.Errorf("ordered metadata operations are unsupported by this unit-of-work adapter"))
+	}
 	if err := validateMetadataPatch(patch.Metadata); err != nil {
 		return domain.UpdateSpec{}, validationError(err)
 	}

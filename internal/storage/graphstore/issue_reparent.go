@@ -216,8 +216,7 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 			if err := s.recordIssueMappingInTx(ctx, tx, childPath, child.Properties.ID); err != nil {
 				return err
 			}
-			if patch.Notes.Set || patch.AppendNotes.Set || patch.Metadata.Replace.Set || patch.Metadata.Merge.Set ||
-				len(patch.Metadata.Set) > 0 || len(patch.Metadata.Unset) > 0 {
+			if patch.Notes.Set || patch.AppendNotes.Set || hasCommonMetadataPatch(patch.Metadata) {
 				if err := checkCurrentReadBytes(ctx, tx); err != nil {
 					return err
 				}
@@ -309,8 +308,7 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err := s.recordIssueMappingInTx(ctx, tx, childPath, child.Properties.ID); err != nil {
 			return err
 		}
-		if patch.Notes.Set || patch.AppendNotes.Set || patch.Metadata.Replace.Set || patch.Metadata.Merge.Set ||
-			len(patch.Metadata.Set) > 0 || len(patch.Metadata.Unset) > 0 {
+		if patch.Notes.Set || patch.AppendNotes.Set || hasCommonMetadataPatch(patch.Metadata) {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}

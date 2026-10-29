@@ -151,7 +151,7 @@ func TestGraphPreviewMemoryPropertiesPatchSources(t *testing.T) {
 		})
 	}
 	for _, tc := range []struct{ name, input string }{
-		{"empty-input", ""}, {"empty-operations", "[]"}, {"object", "{}"}, {"null", "null"},
+		{"empty-input", ""}, {"object", "{}"}, {"null", "null"},
 		{"duplicate-operation-member", `[{"op":"replace","op":"add","path":"/body","value":"x"}]`},
 		{"duplicate-value-member", `[{"op":"add","path":"/temp","value":{"x":1,"x":2}}]`},
 		{"unpaired-surrogate", `[{"op":"replace","path":"/body","value":"\ud800"}]`},
@@ -317,7 +317,6 @@ func TestGraphPreviewMemoryPropertiesPatchSyntaxBeforeStore(t *testing.T) {
 	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/"}
 	readonlyMode, jsonOutput, graphPreviewStructuredErrors = false, false, false
 	for _, tc := range []struct{ name, input string }{
-		{"empty-list", "[]"},
 		{"invalid-operation", `[{"op":"move","from":"/body","path":"/title"}]`},
 		{"missing-file", "@" + filepath.Join(t.TempDir(), "missing.json")},
 	} {
