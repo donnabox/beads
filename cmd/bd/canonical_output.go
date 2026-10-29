@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
+	"github.com/steveyegge/beads/internal/resourcequery"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -81,12 +82,19 @@ func canonicalOutputDefault(cmd *cobra.Command) bool {
 }
 
 func canonicalOutputSelected(cmd *cobra.Command) bool {
+	if cmd == queryCmd && cmd.Flags().Changed("ast") {
+		return true
+	}
 	return canonicalOutputDefault(cmd) || cmd.Flags().Changed("output-format")
 }
 
 // Legacy switches remain legacy even when their spelling mentions JSON. The
 // explicit opt-in is also required for projection on a legacy command path.
 func canonicalOutputOptions(cmd *cobra.Command) (clioutput.Options, bool, error) {
+	if cmd == queryCmd && cmd.Flags().Changed("ast") {
+		options, err := queryASTOutputOptions(cmd)
+		return options, true, err
+	}
 	var opts clioutput.Options
 	if cmd.Flags().Lookup("output-format") == nil {
 		return opts, false, nil
@@ -155,6 +163,15 @@ func canonicalResourceDescriptor() clioutput.Descriptor {
 // This validation runs before workspace admission and before any provider read.
 // Result-specific masks/capabilities are checked again by the actual adapter.
 func validateCanonicalOutputInvocation(cmd *cobra.Command) error {
+	if cmd == queryCmd && !cmd.Flags().Changed("ast") && (cmd.Flags().Changed("output-format") || cmd.Flags().Changed("include") || cmd.Flags().Changed("omit")) {
+		return canonicalFailure(cmd, nil, "invalid_selector", "--output-format, --include and --omit require --ast for query", 2)
+	}
+	if cmd == queryCmd && cmd.Flags().Changed("ast") {
+		if _, err := queryASTRenderer(cmd, "resources"); err != nil {
+			return canonicalFailure(cmd, nil, "invalid_selector", err.Error(), 2)
+		}
+		return nil
+	}
 	_, _, err := canonicalOutputOptions(cmd)
 	if err != nil {
 		return canonicalFailure(cmd, nil, "invalid_selector", err.Error(), 2)
@@ -223,6 +240,8 @@ func renderCanonicalResult(cmd *cobra.Command, renderer *clioutput.Renderer, res
 func canonicalReadError(cmd *cobra.Command, renderer canonicalFailureRenderer, err error, fallback string) error {
 	code, status := fallback, 5
 	switch {
+	case errors.Is(err, resourcequery.ErrInvalid):
+		code, status = "invalid_selector", 2
 	case errors.Is(err, graphstore.ErrVersionUnknown):
 		code, status = "revision_unknown", 3
 	case errors.Is(err, graphstore.ErrGone):

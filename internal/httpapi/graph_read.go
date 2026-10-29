@@ -37,6 +37,7 @@ const (
 // All accepted tokens share the workspace view under the existing serve policy.
 // History, aliases, mutation, hot restore and embedded serving are not admitted.
 type GraphRead struct {
+	queryAST                      *QueryAST
 	reader                        *graphread.Reader
 	scope, path, generation, view string
 	pager                         *graphread.Pagination
@@ -105,6 +106,10 @@ func (g *GraphRead) Close() {
 func (g *GraphRead) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := g.validate(); err != nil {
 		graphReadProblem(w, r, bdpwire.CodeTemporarilyUnavailable)
+		return
+	}
+	if g.queryAST != nil && g.queryAST.matches(g, r) {
+		g.queryAST.serve(g, w, r)
 		return
 	}
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {
