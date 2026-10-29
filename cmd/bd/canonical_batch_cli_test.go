@@ -8,9 +8,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"testing"
 
 	"github.com/spf13/cobra"
-	"testing"
 )
 
 // These are actual command front doors, deliberately run without any workspace.
@@ -77,6 +77,11 @@ func TestCanonicalMemberEmissionWorkflow(t *testing.T) {
 	} {
 		graphPolicyCLI(t, bd, work, home, nil, "stderr:invalid_selector:", args...)
 	}
+	// Real root admission must reject conflicting execution actors before
+	// workspace/provider discovery, and reject ignored emission/retry inputs.
+	graphPolicyCLI(t, bd, work, home, nil, "stderr:conflicting --actor values", "batch", "--file", file, "--scope", scope, "--actor", "first", "--actor", "second")
+	graphPolicyCLI(t, bd, work, home, nil, "stderr:--actor is not supported in canonical authoring", "batch", "--file", file, "--scope", scope, "--dry-run-mode", "batch", "--actor", "ignored")
+	graphPolicyCLI(t, bd, work, home, nil, "stderr:--actor is not supported in canonical authoring", "batch", "--retry-file", filepath.Join(work, "must-not-read.json"), "--actor", "override")
 	if _, err := os.Stat(filepath.Join(work, ".beads")); !os.IsNotExist(err) {
 		t.Fatal("offline authoring initialized a workspace")
 	}
@@ -112,9 +117,6 @@ func TestCanonicalBatchActorFlagAdmission(t *testing.T) {
 		status, ok := err.(*exitError)
 		if !ok || status.Code != 2 || !strings.Contains(diagnostics.String(), tc.want) {
 			t.Fatalf("mode %q: wanted %q and status2, got %v: %s", tc.mode, tc.want, err, diagnostics.String())
-		}
-		if err := canonicalScalarOccurrences(cmd, []string{"--actor", "first", "--actor", "second"}, "actor"); err == nil {
-			t.Fatal("duplicate actor lost invocation intent")
 		}
 	}
 }

@@ -202,7 +202,7 @@ func TestCanonicalFinalDependencyDefersPublication(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows([]string{"type", "metadata", "thread_id"}).AddRow("related", `{"note":"old"}`, "original-thread"))
 	mock.ExpectExec(`UPDATE dependencies SET metadata = \?, thread_id = \? WHERE issue_id = \? AND `).
 		WithArgs(`{"note":"final"}`, "original-thread", "a", "b").WillReturnResult(sqlmock.NewResult(0, 1))
-	mock.ExpectQuery(`SELECT metadata FROM dependencies WHERE issue_id=\? AND depends_on_issue_id=\?`).WithArgs("a", "b").
+	mock.ExpectQuery(`SELECT metadata FROM dependencies WHERE issue_id=\? AND depends_on_issue_id=\? AND depends_on_wisp_id IS NULL AND depends_on_external IS NULL`).WithArgs("a", "b").
 		WillReturnRows(sqlmock.NewRows([]string{"metadata"}).AddRow(`{"note":"final"}`))
 	facts, err := ApplyCanonicalDependencyMetadataInTx(context.Background(), tx, CanonicalDependencyMetadata{IssueID: "a", DependsOnID: "b", Type: types.DepRelated, Metadata: json.RawMessage(`{"note":"final"}`)}, "actor")
 	if err != nil {
