@@ -306,6 +306,13 @@ func (r *Request) parse(v any, at string, depth int) (*node, error) {
 	if op == "refs" {
 		a, ok := m["references"].([]any)
 		if !ok {
+			batch, err := object(m["references"], at+"/references", []string{"binding"}, nil)
+			if err != nil {
+				return nil, err
+			}
+			if _, err := stringMember(batch, "binding", at+"/references"); err != nil {
+				return nil, err
+			}
 			return nil, fail("transaction-input-unsupported", at, "standalone reads require a Reference array", ErrUnsupported)
 		}
 		seen := map[string]bool{}

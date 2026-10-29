@@ -1,5 +1,10 @@
 load("@rules_go//go:def.bzl", "go_library", "go_test")
 
+exports_files(
+    ["query.schema.json"],
+    visibility = ["//:__pkg__"],
+)
+
 go_library(
     name = "resourcequery",
     srcs = [
