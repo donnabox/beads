@@ -110,7 +110,7 @@ func runMemoryLinkCommand(cmd *cobra.Command, args []string, op memoryLinkOperat
 	request.Actor = getActorWithGit()
 	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
 	defer cancel()
-	store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+	store, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
 		return graphStorageErrorWithFallback(err, "graph_not_initialized")
 	}

@@ -28,7 +28,7 @@ func graphPreviewResolveParsedReference(ref graphPreviewReference) (result graph
 	}()
 	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
 	defer cancel()
-	store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+	store, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
 		return ref, err
 	}

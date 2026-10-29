@@ -16,7 +16,7 @@ func runGraphPreviewHistoricalUpdate(cmd *cobra.Command, path string) error {
 	if strings.HasPrefix(path, "links/") {
 		return runGraphPreviewHistoricalLinkUpdate(cmd, path)
 	}
-	if err := graphPreviewFlags(cmd, "type", "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "patch-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return err
 	}
 	if !strings.HasPrefix(path, "beads/") {
