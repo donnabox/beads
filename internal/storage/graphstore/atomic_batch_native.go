@@ -1,7 +1,6 @@
 package graphstore
 
 import (
-	"bytes"
 	"fmt"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -13,6 +12,9 @@ func (run *atomicBatchRun) admitNativeOutcome(o canonicalbatchstate.Outcome) (bo
 	backing := run.backings[o.ID]
 	if backing != "issue" && backing != "dependency" {
 		return false, nil
+	}
+	if backing == "dependency" {
+		return run.admitNativeDependencyOutcome(o)
 	}
 	if o.Before == nil || o.After == nil || o.Before.Type != o.After.Type {
 		return true, fmt.Errorf("%w: native creation, deletion and retype require their final publisher", ErrCapabilityUnavailable)
@@ -35,13 +37,7 @@ func (run *atomicBatchRun) admitNativeOutcome(o canonicalbatchstate.Outcome) (bo
 		run.ownerCandidates[o.ID] = true
 		return true, nil
 	}
-	before, ok := run.initial[o.ID].(LinkRecord)
-	if !ok || o.Kind != graph.KindLink || o.Before.Source != o.After.Source || o.Before.Target != o.After.Target || !bytes.Equal(o.Before.Properties, o.After.Properties) {
-		return true, fmt.Errorf("%w: native Dependency final edit is metadata-only", ErrCapabilityUnavailable)
-	}
-	run.ownerIDs[o.ID] = []string{before.Source}
-	run.ownerCandidates[before.Source] = true
-	return true, nil
+	return true, ErrInvalidStore
 }
 
 func (run *atomicBatchRun) writeNativeIssue(o canonicalbatchstate.Outcome) error {
@@ -60,70 +56,6 @@ func (run *atomicBatchRun) writeNativeIssue(o canonicalbatchstate.Outcome) error
 	run.nativeFacts = append(run.nativeFacts, facts)
 	run.nativeChanged[o.ID] = run.nativeChanged[o.ID] || facts.Changed()
 	return run.store.afterStage("batch-native-issue-row")
-}
-
-func (run *atomicBatchRun) writeNativeLink(o canonicalbatchstate.Outcome) error {
-	before, ok := run.initial[o.ID].(LinkRecord)
-	if !ok || o.After == nil {
-		return ErrInvalidStore
-	}
-	source, sourceOK := run.initial[before.Source].(IssueRecord)
-	target, targetOK := run.initial[before.Target].(IssueRecord)
-	if !sourceOK || !targetOK || source.Properties == nil || target.Properties == nil {
-		return ErrInvalidStore
-	}
-	kind, err := nativeDependencyProperties(o.After.Properties)
-	if err != nil {
-		return err
-	}
-	facts, err := issueops.ApplyCanonicalDependencyMetadataInTx(run.ctx, run.tx, issueops.CanonicalDependencyMetadata{IssueID: source.Properties.ID, DependsOnID: target.Properties.ID, Type: kind, Metadata: o.After.Metadata}, run.actor)
-	if err != nil {
-		return err
-	}
-	run.nativeFacts = append(run.nativeFacts, facts)
-	if !facts.Changed() {
-		return nil
-	}
-	var stored []byte
-	if err := run.tx.QueryRowContext(run.ctx, `SELECT d.metadata FROM dependencies d JOIN graph_preview_catalog c ON c.backing='dependency' AND c.backing_key=d.id WHERE c.path=?`, run.paths[o.ID]).Scan(&stored); err != nil {
-		return err
-	}
-	metadata, err := commonMetadata(stored)
-	if err != nil {
-		return err
-	}
-	if !bytes.Equal(metadata, o.After.Metadata) {
-		return fmt.Errorf("%w: native Dependency did not retain exact metadata intent", ErrInvalidStore)
-	}
-	link := before
-	link.Metadata = metadata
-	link.Revision, err = freshToken()
-	if err != nil {
-		return err
-	}
-	link.Version = link.Revision
-	link.Attribution = writeAttribution(run.actor)
-	link.Attribution.Inception = before.Attribution.Inception
-	path := run.paths[o.ID]
-	if _, err := run.tx.ExecContext(run.ctx, `UPDATE graph_preview_catalog SET revision=? WHERE path=?`, link.Revision, path); err != nil {
-		return err
-	}
-	snapshot, err := canonicalJSON(link)
-	if err != nil {
-		return err
-	}
-	if err := insertPreviewVersionInTx(run.ctx, run.tx, path, link.Revision, snapshot, run.actor); err != nil {
-		return err
-	}
-	attribution, err := canonicalJSON(link.Attribution)
-	if err != nil {
-		return err
-	}
-	if _, err := run.tx.ExecContext(run.ctx, `UPDATE graph_preview_versions SET native_attribution=? WHERE path=? AND version=?`, attribution, path, link.Revision); err != nil {
-		return err
-	}
-	run.final[o.ID], run.nativeChanged[before.Source] = link, true
-	return run.store.afterStage("batch-native-link-retained")
 }
 
 func (run *atomicBatchRun) finishNativeIssue(id string) error {
@@ -169,6 +101,11 @@ func (run *atomicBatchRun) finishNativeIssue(id string) error {
 }
 
 func (run *atomicBatchRun) emitNativeFacts() error {
+	if run.nativeDependencyFinal != nil {
+		if err := issueops.EmitCanonicalDependencyFinalFactsInTx(run.ctx, run.tx, run.nativeDependencyFinal); err != nil {
+			return err
+		}
+	}
 	for _, facts := range run.nativeFacts {
 		if err := issueops.EmitCanonicalFinalFactsInTx(run.ctx, run.tx, facts); err != nil {
 			return err

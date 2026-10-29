@@ -48,11 +48,16 @@ identity without inventing a Resource or revision for it.
 Existing durable native Issues also support scalar content and metadata updates.
 The supported property fields are `title`, `description`, `design`,
 `acceptance_criteria`, `spec_id`, `priority`, `estimated_minutes`, `external_ref`
-and `due_at`. An existing native Dependency whose recognized classification does
-not affect readiness supports metadata updates. These paths keep the authoritative
-native rows, preserve classification and creation facts, publish one final native
-Issue version and owner capture after final Links, and then emit native audit and
-journal records in the same transaction. Their native storage API requires a nonempty
+and `due_at`. Native Dependencies support creation, deletion and metadata updates
+for recognized native relationship kinds, including kinds that affect readiness.
+Their endpoints must be existing durable local Issues. The concrete Link Type
+must agree with its `dep_type` property, for example Type `blocks` with
+`{"dep_type":"blocks"}`. These paths keep authoritative native rows and publish
+one final native Issue version and owner capture after all final Links. Native
+scheduling cycles and hierarchy checks apply to the final graph; readiness settles
+once over the complete native population, before final audit and journal emission.
+A neighbor whose only change is derived readiness gains no Resource revision.
+The native storage API requires a nonempty
 actor under the ordinary native write policy, even for a canceled or unchanged
 mutation. Fresh CLI invocations use the ordinary graph-write actor resolver
 (flag, environment, Git identity and existing fallback), then save that choice;
@@ -64,9 +69,22 @@ Dates must have canonical UTC whole-second spelling. This admission happens
 before a later selection can observe an unrepresentable staged value. Each
 authored scalar also passes the ordinary native field validator, including
 values or required-field removals later canceled within one change array. Native
-status, assignment, leases, notes, labels, full property replacement, creation,
-deletion and reclassification remain outside this slice. Dependency edits that
-could affect readiness require a separate final graph and readiness publisher.
+Issue status, assignment, leases, notes, labels, full property replacement,
+creation, deletion and reclassification remain outside this slice. Native
+Dependency endpoint, classification and property edits also remain unavailable.
+Metadata updates preserve the existing native assertion's identity and creation
+facts. Deleting an old public Link and creating a distinct new Link on the same
+pair is an explicit reassertion with fresh creation facts; this first slice
+requires the same native classification. A canceled new Link consumes its public
+identity without writing a native row or inventing a Resource revision.
+
+This candidate requires a complete, bounded controlled-writer workspace: every
+native Issue and Dependency has a checked canonical mapping, every native Issue
+participates in retained history, and native readiness is already consistent.
+Wisp/external authority, malformed pairs and nonempty native conversation threads
+refuse the decision. This complete-closure gate also applies to native metadata
+updates. It does not claim atomicity against arbitrary legacy SQL writers or
+cross-replica commits. Exact pins are never discarded to make a native endpoint fit.
 
 The supported List fragment uses the shared Query predicate kernel over a closed
 revisionless view: identity, Type, properties and optional metadata. Sources may
@@ -103,8 +121,8 @@ Scope snapshots and intermediate Resource revisions are not introduced.
 
 ## Remaining coverage
 
-Native execution refuses the native mutations outside the finite content and
-metadata slice above, exact Type pins and supplied revision provenance before
+Native execution refuses native mutations outside the finite content and
+Dependency slice above, exact Type pins and supplied revision provenance before
 effects. The supported staged List fragment
 does not imply full Query/Graph evaluation. Ordinary CRUD content copy through
 `--from-revision` uses the existing checked writers and composes with the new
@@ -152,3 +170,14 @@ without retaining any decision or effects. The actual CLI workflow composes nati
 batch content updates and the separate ordinary historical-copy adapter with the
 same property and metadata flags. Native Show explicitly requests `--format
 graph-json`; the legacy native detail output remains a distinct presentation.
+
+Dependency CRUD regressions additionally cover final scheduling/readiness and
+ordinary Link readback, a derived-only neighbor without a Resource version,
+distinct-ID same-pair reassertion and detached deleted backings, transient identity
+consumption, final cycle refusal, a valid final graph that reverses an old edge,
+legacy history-participation refusal, and rollback after final facts/decision.
+A waits-for metadata change uses the existing readiness kernel without emitting
+a new-assertion human audit. The actual CLI workflow emits native Link creation,
+metadata update and deletion into JSONL, applies them through the separate batch
+route and compares creation with ordinary Show. These targeted passes do not
+replace the required whole-repository CI or establish a public Write profile.

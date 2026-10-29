@@ -71,6 +71,9 @@ func (run *atomicBatchRun) publish() error {
 			}
 		}
 	}
+	if err := run.applyNativeDependencies(); err != nil {
+		return err
+	}
 	// Remove Links before Beads, without publishing an intermediate owner.
 	for _, o := range run.plan.Outcomes {
 		if o.Outcome == "deleted" && o.Kind == graph.KindLink {
@@ -88,6 +91,9 @@ func (run *atomicBatchRun) publish() error {
 			delete(run.final, o.ID)
 		}
 	}
+	if err := run.retainNativeDependencies(); err != nil {
+		return err
+	}
 	// Persist all final Link rows before retaining them. Correcting one source
 	// never versions an intermediate source or re-pins a literal endpoint.
 	for _, o := range run.plan.Outcomes {
@@ -95,10 +101,9 @@ func (run *atomicBatchRun) publish() error {
 			continue
 		}
 		if run.backings[o.ID] == "dependency" {
-			if err := run.writeNativeLink(o); err != nil {
-				return err
-			}
-		} else if err := run.writeLink(o); err != nil {
+			continue
+		}
+		if err := run.writeLink(o); err != nil {
 			return err
 		}
 	}
@@ -302,6 +307,11 @@ func (run *atomicBatchRun) deleteLink(o canonicalbatchstate.Outcome) error {
 	path := run.paths[o.ID]
 	if _, err := run.tx.ExecContext(run.ctx, `UPDATE graph_preview_catalog SET allocation_state='deleted',revision=? WHERE path=?`, revision, path); err != nil {
 		return err
+	}
+	if run.backings[o.ID] == "dependency" {
+		if _, err := run.tx.ExecContext(run.ctx, `UPDATE graph_preview_catalog SET backing_key=NULL WHERE path=?`, path); err != nil {
+			return err
+		}
 	}
 	if _, err := run.tx.ExecContext(run.ctx, `DELETE FROM graph_preview_links WHERE path=?`, path); err != nil {
 		return err

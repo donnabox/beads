@@ -118,21 +118,25 @@ type BatchResult struct {
 }
 
 type atomicBatchRun struct {
-	store           *Store
-	tx              *sql.Tx
-	ctx             context.Context
-	actor           string
-	plan            canonicalbatchstate.Plan
-	members         []canonicalbatch.Member
-	nativeContents  map[string]issueops.CanonicalIssueContent
-	nativeChanged   map[string]bool
-	nativeFacts     []*issueops.CanonicalFinalFacts
-	initial         map[string]any
-	paths           map[string]string
-	backings        map[string]string
-	final           map[string]any
-	ownerIDs        map[string][]string
-	ownerCandidates map[string]bool
+	store                    *Store
+	tx                       *sql.Tx
+	ctx                      context.Context
+	actor                    string
+	plan                     canonicalbatchstate.Plan
+	members                  []canonicalbatch.Member
+	nativeContents           map[string]issueops.CanonicalIssueContent
+	nativeChanged            map[string]bool
+	nativeFacts              []*issueops.CanonicalFinalFacts
+	nativeDescriptors        []graph.TypeDescriptor
+	nativeDependencyAuthored bool
+	nativeDependencyPlan     *atomicNativeDependencyPlan
+	nativeDependencyFinal    *issueops.CanonicalDependencyFinalization
+	initial                  map[string]any
+	paths                    map[string]string
+	backings                 map[string]string
+	final                    map[string]any
+	ownerIDs                 map[string][]string
+	ownerCandidates          map[string]bool
 }
 
 // ApplyCanonicalBatch commits one bounded supported decision and its complete
@@ -192,7 +196,7 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 				}
 				// A later deletion/cancellation does not grant this generic
 				// publisher authority to stage a native domain creation/retype.
-				if (m.Operation == "createBead" && !catalog.memoryType(m.Type.URI)) || (m.Operation == "createLink" && !IsInformationalTypeURL(s.ScopeURL(), m.Type.URI)) {
+				if (m.Operation == "createBead" && !catalog.memoryType(m.Type.URI)) || (m.Operation == "createLink" && !IsInformationalTypeURL(s.ScopeURL(), m.Type.URI) && !isConcreteNativeDependency(s.ScopeURL(), m.Type.URI)) {
 					return &canonicalbatchstate.MemberError{OperationIndex: i, Err: fmt.Errorf("%w: authored Type requires its native domain publisher", ErrCapabilityUnavailable)}
 				}
 			}
@@ -205,7 +209,7 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 		if err != nil {
 			return err
 		}
-		run := atomicBatchRun{nativeContents: map[string]issueops.CanonicalIssueContent{}, nativeChanged: map[string]bool{}, members: members, store: s, tx: tx, ctx: ctx, actor: actor, initial: map[string]any{}, paths: map[string]string{}, backings: map[string]string{}, final: map[string]any{}, ownerIDs: map[string][]string{}, ownerCandidates: map[string]bool{}}
+		run := atomicBatchRun{nativeDescriptors: snapshot.Types, nativeContents: map[string]issueops.CanonicalIssueContent{}, nativeChanged: map[string]bool{}, members: members, store: s, tx: tx, ctx: ctx, actor: actor, initial: map[string]any{}, paths: map[string]string{}, backings: map[string]string{}, final: map[string]any{}, ownerIDs: map[string][]string{}, ownerCandidates: map[string]bool{}}
 		current := map[string]canonicalbatchstate.Resource{}
 		for _, record := range snapshot.Records {
 			r, err := atomicBatchStateRecord(record)
@@ -264,7 +268,7 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 			_, err = s.endpointPinInTx(ctx, tx, path, EndpointPin{Revision: ref.Revision}, &pinBytes)
 			return err
 		}
-		plan, err := canonicalbatchstate.Stage(canonicalbatchstate.Input{AdmitMutation: run.admitNativeMutation, Context: ctx, TypeKinds: typeKinds, TypeFamilies: typeFamilies, Scope: s.ScopeURL(), Current: current, ReservedIDs: reserved, Members: members, Allocate: allocate, CheckPin: checkPin})
+		plan, err := canonicalbatchstate.Stage(canonicalbatchstate.Input{AdmitMutation: run.admitNativeMutation, AdmitResolvedMutation: run.admitResolvedNativeMutation, Context: ctx, TypeKinds: typeKinds, TypeFamilies: typeFamilies, Scope: s.ScopeURL(), Current: current, ReservedIDs: reserved, Members: members, Allocate: allocate, CheckPin: checkPin})
 		if err != nil {
 			return err
 		}
@@ -276,6 +280,9 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 		}
 		run.plan = plan
 		if err := run.admit(); err != nil {
+			return err
+		}
+		if err := run.prepareNativeDependencies(); err != nil {
 			return err
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
