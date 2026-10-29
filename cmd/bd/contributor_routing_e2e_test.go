@@ -99,8 +99,18 @@ func TestContributorRoutingTracer(t *testing.T) {
 		projectDBPath := filepath.Join(projectBeadsDir, "beads.db")
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
+		// Isolated diagnostic tree only: this value is read only by tagged logging.
+		diagnosticStarted := time.Now()
+		t.Setenv("IRIS_ROUTE_DIAG01_START", diagnosticStarted.Format(time.RFC3339Nano))
+		defer func() { _ = os.Unsetenv("IRIS_ROUTE_DIAG01_START") }() // Stop diagnostic logging before store cleanup.
+		diagnosticPhase := func(phase string) {
+			deadline, _ := ctx.Deadline()
+			t.Logf("[IRIS-ROUTE-DIAG01] phase=%s elapsedMono=%s remaining=%s deadline=%s ctxErr=%v", phase, time.Since(diagnosticStarted), time.Until(deadline), deadline.Format(time.RFC3339Nano), ctx.Err())
+		}
+		diagnosticPhase("caller-context-created")
 
 		projectStore := newTestStoreIsolatedDB(t, projectDBPath, "test")
+		diagnosticPhase("after-project-setup")
 
 		// Set routing config in project store (canonical keys)
 		if err := projectStore.SetConfig(ctx, "routing.mode", "auto"); err != nil {
@@ -126,6 +136,7 @@ func TestContributorRoutingTracer(t *testing.T) {
 		if contributorPath != planningDir {
 			t.Errorf("routing.contributor = %q, want %q", contributorPath, planningDir)
 		}
+		diagnosticPhase("after-routing-config")
 
 		// Build routing config from stored values
 		routingConfig := &routing.RoutingConfig{
@@ -148,6 +159,7 @@ func TestContributorRoutingTracer(t *testing.T) {
 		// Initialize planning database and verify we can create issues there
 		planningDBPath := filepath.Join(planningBeadsDir, "beads.db")
 		planningStore := newTestStoreIsolatedDB(t, planningDBPath, "plan-")
+		diagnosticPhase("after-planning-setup")
 
 		// Create a test issue in planning store (simulating what Phase 2 will do)
 		issue := &types.Issue{
@@ -157,6 +169,7 @@ func TestContributorRoutingTracer(t *testing.T) {
 			Priority:  2,
 		}
 
+		diagnosticPhase("before-create-issue")
 		if err := planningStore.CreateIssue(ctx, issue, "test"); err != nil {
 			t.Fatalf("failed to create issue in planning store: %v", err)
 		}

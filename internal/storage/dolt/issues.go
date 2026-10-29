@@ -35,6 +35,7 @@ func (s *DoltStore) createIssue(ctx context.Context, issue *types.Issue, actor s
 	// A wisp_type is a claim of ephemerality: minted without the flag it lands
 	// in the issues plane where no TTL, GC, or purge tier owns it.
 	useWispsTable := issue.Ephemeral || issue.NoHistory || issue.WispType != "" || s.IsInfraTypeCtx(ctx, issue.IssueType)
+	s.irisRouteDiag01(ctx, "after-infra-type-classification")
 	if useWispsTable && !issue.NoHistory {
 		issue.Ephemeral = true // infra and wisp types get marked ephemeral (legacy behavior)
 	}

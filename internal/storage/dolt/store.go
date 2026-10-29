@@ -1307,14 +1307,36 @@ func (s *DoltStore) commitWriteTx(ctx context.Context, fn func(tx *sql.Tx) error
 	return s.commitWriteTxOn(ctx, s.db, fn)
 }
 
+// Isolated diagnostic tree only. This observes context and pool state without
+// changing deadlines, issuing SQL, or participating in the operation result.
+func (s *DoltStore) irisRouteDiag01(ctx context.Context, phase string) {
+	marker := os.Getenv("IRIS_ROUTE_DIAG01_START")
+	if marker == "" {
+		return
+	}
+	started, err := time.Parse(time.RFC3339Nano, marker)
+	if err != nil {
+		return
+	}
+	deadline, hasDeadline := ctx.Deadline()
+	deadlineText, remainingText := "none", "n/a"
+	if hasDeadline {
+		deadlineText, remainingText = deadline.Format(time.RFC3339Nano), time.Until(deadline).String()
+	}
+	stats := s.db.Stats()
+	fmt.Fprintf(os.Stderr, "[IRIS-ROUTE-DIAG01] phase=%s db=%q elapsedWall=%s hasDeadline=%t remaining=%s deadline=%s ctxErr=%v maxOpen=%d open=%d inUse=%d idle=%d waitCount=%d waitDuration=%s\n", phase, s.database, time.Since(started), hasDeadline, remainingText, deadlineText, ctx.Err(), stats.MaxOpenConnections, stats.OpenConnections, stats.InUse, stats.Idle, stats.WaitCount, stats.WaitDuration)
+}
+
 // commitWriteTxOn is commitWriteTx against a caller-chosen txBeginner — see
 // withRetryTxOn.
 func (s *DoltStore) commitWriteTxOn(ctx context.Context, beginner txBeginner, fn func(tx *sql.Tx) error) (issueops.BlockedRecheck, error) {
 	if s.closed.Load() {
 		return issueops.BlockedRecheck{}, ErrStoreClosed
 	}
+	s.irisRouteDiag01(ctx, "before-begin-write-tx")
 	tx, err := beginner.BeginTx(ctx, nil)
 	if err != nil {
+		s.irisRouteDiag01(ctx, "begin-write-tx-error")
 		return issueops.BlockedRecheck{}, fmt.Errorf("begin write tx: %w", err)
 	}
 	clearJournalScope := s.scopeEventsJournalTransaction(tx)

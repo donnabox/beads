@@ -437,6 +437,8 @@ jobs:
   # night and opens a ci/infra issue.
   rbe:
     name: execution mode
+    # Diagnostic namespace only; ordinary refs/events retain every stock gate.
+    if: ${{ !(github.workflow == 'Bazel' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/iris-routing-deadline-diag-20261029') }}
     # Same-repo PRs (and merge_group/push/dispatch/schedule runs, which are
     # never forks) get the org's Blacksmith pool; a pull_request_target farm
     # run and any fork or Dependabot PR stay on GitHub-hosted runners. This
@@ -3269,7 +3271,7 @@ jobs:
   # recorded job.status, not its continue-on-error-masked needs result.
   bazel-dispatch-coverage:
     name: dispatch command coverage
-    if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.cmd-dolt-required == true }}
+    if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.cmd-dolt-required == true && !(github.workflow == 'Bazel' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/iris-routing-deadline-diag-20261029') }}
     needs: [rbe, bazel-integration, bazel-cmd-dolt, bazel-dolt-int]
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -3286,3 +3288,66 @@ jobs:
           BAZEL_CMD_DOLT_DIRECT: ${{ needs.bazel-cmd-dolt.outputs.result }}
           BAZEL_CMD_DOLT_COMBINED: ${{ needs.bazel-dolt-int.outputs.cmd_dolt_result }}
         run: .github/scripts/bazel-gate.sh dispatch-cmd
+
+
+  iris-routing-diagnostic:
+    name: IRIS ONE ROUTING ROOT — DIAGNOSTIC ONLY
+    if: ${{ github.workflow == 'Bazel' && github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/codex/iris-routing-deadline-diag-20261029' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - name: Exact diagnostic dispatch only
+        timeout-minutes: 1
+        env:
+          REQUESTED_RBE: ${{ inputs.rbe }}
+          REQUESTED_CMD: ${{ inputs.cmd-dolt-required }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_WORKFLOW" = Bazel
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/codex/iris-routing-deadline-diag-20261029
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          test "$REQUESTED_RBE" = cache
+          test "$REQUESTED_CMD" = false
+          test "$(uname -s)/$(uname -m)" = Linux/x86_64
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        timeout-minutes: 3
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Existing pinned credential-free cache setup
+        id: setup
+        timeout-minutes: 15
+        uses: ./.github/actions/setup-bazel
+        env:
+          BAZEL_FORK_CACHE: 'true'
+          BAZEL_RRC_READ: 'true'
+      - name: Refuse remote execution or absent read-only cache mode
+        timeout-minutes: 1
+        env:
+          ACTUAL_REMOTE: ${{ steps.setup.outputs.remote }}
+          ACTUAL_CACHE: ${{ steps.setup.outputs.cache }}
+        run: |
+          test "$ACTUAL_REMOTE" = false
+          test "$ACTUAL_CACHE" = true
+      - name: ONE original routing root — never a product gate
+        timeout-minutes: 60
+        run: python3 .github/scripts/iris-routing-diagnostic/run.py
+      - name: Retain actual raw evidence on success or failure
+        if: ${{ always() }}
+        timeout-minutes: 5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: iris-routing-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          # Only raw evidence types in this dedicated directory. Never upload
+          # the sibling Bazel output/private HOME/TMP or operational trees.
+          path: |
+            ${{ runner.temp }}/iris-routing-diagnostic/evidence/*.json
+            ${{ runner.temp }}/iris-routing-diagnostic/evidence/*.log
+            ${{ runner.temp }}/iris-routing-diagnostic/evidence/*.zst
+            ${{ runner.temp }}/iris-routing-diagnostic/evidence/raw-testlogs/**/test.log
+            ${{ runner.temp }}/iris-routing-diagnostic/evidence/raw-testlogs/**/test.xml
+          if-no-files-found: error
+          retention-days: 7
