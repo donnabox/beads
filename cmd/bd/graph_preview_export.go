@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -45,74 +46,111 @@ func runGraphPreviewExport(cmd *cobra.Command, args []string) error {
 	}
 	path, _ := cmd.Flags().GetString("output")
 	if path != "" {
-		if err := graphCurrentDumpDestination(path, graphPreviewDir); err != nil {
+		var err error
+		path, err = graphCurrentDumpDestination(path, graphPreviewDir)
+		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
-	defer cancel()
-	store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
-	if err != nil {
-		return graphStorageError(err)
-	}
-	source := graphCurrentDumpSource{Reader: graphread.New(store), store: store}
-	data, err := captureGraphCurrentDump(ctx, source, store.ScopeURL())
+	err := exportGraphCurrentDump(getRootContext(), func(ctx context.Context) (graphCurrentDumpReader, string, error) {
+		store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+		if err != nil {
+			return nil, "", graphStorageError(err)
+		}
+		return graphCurrentDumpSource{Reader: graphread.New(store), store: store}, store.ScopeURL(), nil
+	}, func(ctx context.Context, data []byte) error {
+		var err error
+		if path != "" {
+			err = graphoutput.PublishFile(ctx, path, data, 0o600)
+		} else {
+			err = graphoutput.WriteStream(ctx, cmd.OutOrStdout(), data)
+		}
+		if err != nil {
+			return graphFailure("output_error", err.Error(), 1)
+		}
+		return nil
+	})
 	if err != nil {
 		return graphStorageErrorWithFallback(err, "route_unavailable")
-	}
-	publishCtx, publishCancel := context.WithTimeout(getRootContext(), 30*time.Second)
-	defer publishCancel()
-	if path != "" {
-		err = graphoutput.PublishFile(publishCtx, path, data, 0o600)
-	} else {
-		err = graphoutput.WriteStream(publishCtx, cmd.OutOrStdout(), data)
-	}
-	if err != nil {
-		return graphFailure("output_error", err.Error(), 1)
 	}
 	return nil
 }
 
-// Resolve the parent, not the target: the publisher replaces a target symlink
-// rather than following it. A dump must never replace workspace storage files.
-func graphCurrentDumpDestination(path, workspace string) error {
-	absolute, err := filepath.Abs(path)
+func exportGraphCurrentDump(ctx context.Context, open func(context.Context) (graphCurrentDumpReader, string, error), publish func(context.Context, []byte) error) error {
+	captureCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	source, scope, err := open(captureCtx)
 	if err != nil {
 		return err
+	}
+	data, err := captureGraphCurrentDump(captureCtx, source, scope)
+	cancel()
+	if err != nil {
+		return err
+	}
+	publishCtx, publishCancel := context.WithTimeout(ctx, 30*time.Second)
+	defer publishCancel()
+	return publish(publishCtx, data)
+}
+
+// Resolve the parent, not the target: the publisher replaces a target symlink
+// rather than following it. A dump must never replace workspace storage files.
+func graphCurrentDumpDestination(path, workspace string) (string, error) {
+	absolute, err := filepath.Abs(path)
+	if err != nil {
+		return "", err
+	}
+	absWorkspace, err := filepath.Abs(workspace)
+	if err != nil {
+		return "", err
+	}
+	// Do not resolve away a storage component whose symlink exits the workspace.
+	if relative, err := filepath.Rel(absWorkspace, absolute); err == nil && relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		return "", errors.New("current-state output must be outside the .beads storage directory")
 	}
 	parent, err := filepath.EvalSymlinks(filepath.Dir(absolute))
 	if err != nil {
-		return fmt.Errorf("current-state output directory: %w", err)
+		return "", fmt.Errorf("current-state output directory: %w", err)
 	}
 	root, err := os.Stat(workspace)
 	if err != nil {
-		return err
+		return "", err
 	}
-	// A destination equal to the storage root may have different spelling on
-	// a case-insensitive volume, or itself be a symlink used for discovery.
-	// Refuse that root identity; ordinary output symlinks to storage files
-	// remain safe because publication replaces them, not their referents.
+	roots := []os.FileInfo{root}
+	// graphOptions selects this data directory, which may itself be a symlink.
+	if dataRoot, err := os.Stat(filepath.Join(absWorkspace, "embeddeddolt")); err == nil {
+		roots = append(roots, dataRoot)
+	} else if !os.IsNotExist(err) {
+		return "", err
+	}
 	target := filepath.Join(parent, filepath.Base(absolute))
-	if info, err := os.Stat(target); err == nil && os.SameFile(root, info) {
-		return errors.New("current-state output must be outside the .beads storage directory")
-	} else if err != nil && !os.IsNotExist(err) {
-		return err
+	if info, err := os.Stat(target); err == nil {
+		for _, root := range roots {
+			if os.SameFile(root, info) {
+				return "", errors.New("current-state output must be outside the .beads storage directory")
+			}
+		}
+	} else if !os.IsNotExist(err) {
+		return "", err
 	}
-	// Compare filesystem identities rather than path spelling. EvalSymlinks
-	// alone does not canonicalize case aliases on macOS filesystems.
+	// Identity checks also cover case aliases on case-insensitive filesystems.
 	for current := parent; ; current = filepath.Dir(current) {
 		info, err := os.Stat(current)
 		if err != nil {
-			return err
+			return "", err
 		}
-		if os.SameFile(root, info) {
-			return errors.New("current-state output must be outside the .beads storage directory")
+		for _, root := range roots {
+			if os.SameFile(root, info) {
+				return "", errors.New("current-state output must be outside the .beads storage directory")
+			}
 		}
 		if filepath.Dir(current) == current {
 			break
 		}
 	}
-	return nil
+	// Publish this spelling, not an alias or raw /../ path re-resolved later.
+	// A final output symlink is still replaced rather than followed.
+	return target, nil
 }
 
 type graphCurrentDumpReader interface {

@@ -23,6 +23,7 @@ type currentDumpTestSource struct {
 	inventory graphread.Inventory
 	readErr   error
 	closeErr  error
+	onClose   func()
 	events    []string
 }
 
@@ -33,6 +34,9 @@ func (s *currentDumpTestSource) Inventory(context.Context) (graphread.Inventory,
 
 func (s *currentDumpTestSource) Close() error {
 	s.events = append(s.events, "close")
+	if s.onClose != nil {
+		s.onClose()
+	}
 	return s.closeErr
 }
 
@@ -186,11 +190,11 @@ func TestGraphCurrentDumpStorageDestinationRefusal(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, path := range []string{workspace, filepath.Join(workspace, "metadata.json"), filepath.Join(workspace, "..", ".beads", "data")} {
-		if err := graphCurrentDumpDestination(path, workspace); err == nil {
+		if _, err := graphCurrentDumpDestination(path, workspace); err == nil {
 			t.Fatalf("admitted storage destination: %s", path)
 		}
 	}
-	if err := graphCurrentDumpDestination(filepath.Join(root, "dump.json"), workspace); err != nil {
+	if _, err := graphCurrentDumpDestination(filepath.Join(root, "dump.json"), workspace); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -265,7 +269,7 @@ func TestGraphCurrentDumpFilesystemAliases(t *testing.T) {
 	aliased, aliasErr := os.Stat(alias)
 	if aliasErr == nil && os.SameFile(original, aliased) {
 		for _, path := range []string{alias, filepath.Join(alias, "metadata.json"), filepath.Join(alias, "nested", "dump.json")} {
-			if err := graphCurrentDumpDestination(path, workspace); err == nil {
+			if _, err := graphCurrentDumpDestination(path, workspace); err == nil {
 				t.Fatalf("case alias admitted: %s", path)
 			}
 		}
@@ -278,11 +282,11 @@ func TestGraphCurrentDumpFilesystemAliases(t *testing.T) {
 			t.Fatal(err)
 		}
 		for _, selectedWorkspace := range []string{workspace, shortcut} {
-			if err := graphCurrentDumpDestination(shortcut, selectedWorkspace); err == nil {
+			if _, err := graphCurrentDumpDestination(shortcut, selectedWorkspace); err == nil {
 				t.Fatal("destination replaces a workspace-root symlink")
 			}
 		}
-		if err := graphCurrentDumpDestination(filepath.Join(shortcut, "nested", "dump.json"), workspace); err == nil {
+		if _, err := graphCurrentDumpDestination(filepath.Join(shortcut, "nested", "dump.json"), workspace); err == nil {
 			t.Fatal("symlink parent inside storage admitted")
 		}
 		// The publisher replaces a target symlink, so its stored referent remains
@@ -291,7 +295,7 @@ func TestGraphCurrentDumpFilesystemAliases(t *testing.T) {
 		if err := os.Symlink(metadata, output); err != nil {
 			t.Fatal(err)
 		}
-		if err := graphCurrentDumpDestination(output, workspace); err != nil {
+		if _, err := graphCurrentDumpDestination(output, workspace); err != nil {
 			t.Fatal(err)
 		}
 		if err := graphoutput.PublishFile(context.Background(), output, []byte("outside output"), 0600); err != nil {
@@ -305,5 +309,205 @@ func TestGraphCurrentDumpFilesystemAliases(t *testing.T) {
 	got, err := os.ReadFile(metadata)
 	if err != nil || string(got) != "original metadata" {
 		t.Fatalf("storage metadata modified: %q %v", got, err)
+	}
+}
+
+func TestGraphCurrentDumpPreparedDestination(t *testing.T) {
+	root := t.TempDir()
+	workspace := filepath.Join(root, ".beads")
+	safe := filepath.Join(root, ".beads-extra")
+	for _, path := range []string{workspace, safe} {
+		if err := os.Mkdir(path, 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	// No embedded directory is normal for a server workspace. Similar lexical
+	// prefixes must remain valid output destinations.
+	prepared, err := graphCurrentDumpDestination(filepath.Join(safe, "dump.json"), workspace)
+	if err != nil || !filepath.IsAbs(prepared) {
+		t.Fatalf("server destination: %q %v", prepared, err)
+	}
+	if runtime.GOOS == "windows" {
+		t.Log("Unix symlink cases are exercised on Unix hosts")
+		return
+	}
+	metadata := filepath.Join(workspace, "metadata.json")
+	if err := os.WriteFile(metadata, []byte("original metadata"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(filepath.Join(workspace, "nested"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	link := filepath.Join(safe, "link")
+	if err := os.Symlink(filepath.Join(workspace, "nested"), link); err != nil {
+		t.Fatal(err)
+	}
+	// Do not use Join here: it would erase the raw /../ before preparation.
+	raw := link + string(filepath.Separator) + ".." + string(filepath.Separator) + "metadata.json"
+	prepared, err = graphCurrentDumpDestination(raw, workspace)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := graphoutput.PublishFile(context.Background(), prepared, []byte("outside dump"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	got, err := os.ReadFile(filepath.Join(safe, "metadata.json"))
+	if err != nil || string(got) != "outside dump" {
+		t.Fatalf("normalized destination: %q %v", got, err)
+	}
+
+	alias := filepath.Join(root, "output-alias")
+	if err := os.Symlink(safe, alias); err != nil {
+		t.Fatal(err)
+	}
+	prepared, err = graphCurrentDumpDestination(filepath.Join(alias, "metadata.json"), workspace)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(alias); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(workspace, alias); err != nil {
+		t.Fatal(err)
+	}
+	if err := graphoutput.PublishFile(context.Background(), prepared, []byte("original safe destination"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	got, err = os.ReadFile(metadata)
+	if err != nil || string(got) != "original metadata" {
+		t.Fatalf("prepared destination redirected to storage: %q %v", got, err)
+	}
+	got, err = os.ReadFile(filepath.Join(safe, "metadata.json"))
+	if err != nil || string(got) != "original safe destination" {
+		t.Fatalf("checked parent was not retained: %q %v", got, err)
+	}
+}
+
+func TestGraphCurrentDumpStorageSymlinkEscape(t *testing.T) {
+	root := t.TempDir()
+	workspace, physical := filepath.Join(root, ".beads"), filepath.Join(root, "physical-data")
+	for _, path := range []string{workspace, physical} {
+		if err := os.Mkdir(path, 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if runtime.GOOS == "windows" {
+		t.Log("Unix storage-symlink cases are exercised on Unix hosts")
+		return
+	}
+	for _, alias := range []string{filepath.Join(workspace, "embeddeddolt"), filepath.Join(workspace, "out"), filepath.Join(root, "data-alias")} {
+		if err := os.Symlink(physical, alias); err != nil {
+			t.Fatal(err)
+		}
+	}
+	file := filepath.Join(physical, "manifest")
+	if err := os.WriteFile(file, []byte("original database bytes"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, path := range []string{
+		filepath.Join(workspace, "embeddeddolt", "manifest"),
+		filepath.Join(workspace, "out", "dump.json"),
+		file, filepath.Join(physical, "new.json"), physical,
+		filepath.Join(root, "data-alias", "manifest"),
+	} {
+		if prepared, err := graphCurrentDumpDestination(path, workspace); err == nil || prepared != "" {
+			t.Fatalf("storage alias admitted: %q => %q, %v", path, prepared, err)
+		}
+	}
+	got, err := os.ReadFile(file)
+	if err != nil || string(got) != "original database bytes" {
+		t.Fatalf("storage guard changed source: %q %v", got, err)
+	}
+}
+
+func TestGraphCurrentDumpPipeline(t *testing.T) {
+	readErr, closeErr, openErr, outputErr := errors.New("read"), errors.New("close"), errors.New("open"), errors.New("output")
+	for _, test := range []struct {
+		name          string
+		source        currentDumpTestSource
+		openErr       error
+		cancelOnClose bool
+		outputErr     error
+		want          error
+		wantEvents    []string
+	}{
+		{name: "success", wantEvents: []string{"open", "read", "close", "publish"}},
+		{name: "open", openErr: openErr, want: openErr, wantEvents: []string{"open"}},
+		{name: "read", source: currentDumpTestSource{readErr: readErr}, want: readErr, wantEvents: []string{"open", "read", "close"}},
+		{name: "close", source: currentDumpTestSource{closeErr: closeErr}, want: closeErr, wantEvents: []string{"open", "read", "close"}},
+		{name: "encoding", source: currentDumpTestSource{inventory: graphread.Inventory{Beads: []bdpwire.BeadRecord{{Properties: bdpwire.Properties{"bad": json.RawMessage(`{`)}}}}}, want: graphstore.ErrInvalidStore, wantEvents: []string{"open", "read", "close"}},
+		{name: "root cancelled on close", cancelOnClose: true, want: context.Canceled, wantEvents: []string{"open", "read", "close"}},
+		{name: "publication", outputErr: outputErr, want: outputErr, wantEvents: []string{"open", "read", "close", "publish"}},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			if test.cancelOnClose {
+				test.source.onClose = cancel
+			}
+			var acquisition context.Context
+			err := exportGraphCurrentDump(ctx, func(ctx context.Context) (graphCurrentDumpReader, string, error) {
+				test.source.events = append(test.source.events, "open")
+				acquisition = ctx
+				return &test.source, "https://example.test/work/", test.openErr
+			}, func(ctx context.Context, data []byte) error {
+				test.source.events = append(test.source.events, "publish")
+				if !errors.Is(acquisition.Err(), context.Canceled) || ctx.Err() != nil {
+					t.Fatalf("publication inherited acquisition budget: capture=%v publication=%v", acquisition.Err(), ctx.Err())
+				}
+				var dump graphCurrentDump
+				if err := json.Unmarshal(data, &dump); err != nil || dump.Scope != "https://example.test/work/" {
+					t.Fatalf("detached scope lost: %+v %v", dump, err)
+				}
+				cancel()
+				if !errors.Is(ctx.Err(), context.Canceled) {
+					t.Fatal("publication is detached from caller cancellation")
+				}
+				return test.outputErr
+			})
+			if !errors.Is(err, test.want) || !reflect.DeepEqual(test.source.events, test.wantEvents) {
+				t.Fatalf("pipeline: error=%v want=%v events=%v want=%v", err, test.want, test.source.events, test.wantEvents)
+			}
+		})
+	}
+}
+
+func TestGraphCurrentDumpErrorClassification(t *testing.T) {
+	oldOutput, oldStructured := graphFailureOutput, graphPreviewStructuredErrors
+	t.Cleanup(func() { graphFailureOutput, graphPreviewStructuredErrors = oldOutput, oldStructured })
+	graphPreviewStructuredErrors = true
+	for _, test := range []struct {
+		stage, code string
+		exit        int
+	}{
+		{"open", "graph_not_initialized", 5},
+		{"capture", "route_unavailable", 5},
+		{"publish", "output_error", 1},
+	} {
+		t.Run(test.stage, func(t *testing.T) {
+			var diagnostic bytes.Buffer
+			graphFailureOutput = &diagnostic
+			cause := errors.New("test failure")
+			source := &currentDumpTestSource{}
+			if test.stage == "capture" {
+				source.readErr = cause
+			}
+			err := exportGraphCurrentDump(context.Background(), func(context.Context) (graphCurrentDumpReader, string, error) {
+				if test.stage == "open" {
+					return nil, "", graphStorageError(cause)
+				}
+				return source, "https://example.test/work/", nil
+			}, func(context.Context, []byte) error {
+				return graphFailure("output_error", cause.Error(), 1)
+			})
+			err = graphStorageErrorWithFallback(err, "route_unavailable")
+			var failure *exitError
+			var report struct {
+				Code string `json:"code"`
+			}
+			if !errors.As(err, &failure) || failure.Code != test.exit || json.Unmarshal(diagnostic.Bytes(), &report) != nil || report.Code != test.code {
+				t.Fatalf("classification changed: err=%v diagnostic=%q", err, diagnostic.String())
+			}
+		})
 	}
 }

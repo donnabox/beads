@@ -85,7 +85,10 @@ writes one checked current capture of public Beads (including Issues and
 Memories), Links and installed Type descriptors. Beads retain their public
 properties, metadata and owned Links. The JSON file names its scope and
 omissions and sets `restorable` to `false`. Output must be outside `.beads`;
-files use mode `0600` and are replaced atomically after capture and cleanup.
+the selected embedded storage directory is also protected when reached through
+symlinks. Capture and cleanup finish before publication. On Unix, files use mode
+`0600` and replacement is atomic; other platforms use their native file permissions
+and replacement semantics.
 Omit `-o` to write JSON to stdout; a failed pipe can retain partial output.
 
 This interim dump omits History, deleted Resources, historical endpoint bodies,

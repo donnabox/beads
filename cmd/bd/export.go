@@ -22,7 +22,7 @@ import (
 
 var exportCmd = &cobra.Command{
 	Use:   "export",
-	Short: "Export issues to JSONL format",
+	Short: "Export issues or current public graph state",
 	Long: `Export all issues to JSONL (newline-delimited JSON) format.
 
 Each line is a complete JSON object representing one issue, including its
@@ -40,7 +40,8 @@ It includes current owned Links but omits History, deleted records, all durable
 Issue comments (including bd comment/comments add), configuration and
 other non-graph data. Pinned References are retained; their historical payloads
 are omitted and their availability is not certified. This dump is not a backup
-or an import package. No field selection is supported.
+or an import package. Current Memories are included. No field selection or
+legacy export filters are supported by this option.
 
 By default, exports only regular issues (excluding infrastructure beads
 like agents, roles, and messages). Use --all to include everything.
@@ -54,7 +55,8 @@ EXAMPLES:
   bd export -o issues.jsonl              # Export issues to file
   bd export --include-memories           # Export issues + memories
   bd export --all -o full.jsonl          # Include infra + templates + gates + memories
-  bd export --scrub -o clean.jsonl       # Exclude test/pollution records`,
+  bd export --scrub -o clean.jsonl       # Exclude test/pollution records
+  bd export --current-state -o dump.json # Current public graph state (not restorable)`,
 	GroupID:       "sync",
 	SilenceUsage:  true,
 	SilenceErrors: true,
