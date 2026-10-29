@@ -70,7 +70,7 @@ func canonicalBatchSelected(cmd *cobra.Command) bool {
 func admitCanonicalAuthoring(cmd *cobra.Command) (bool, error) {
 	canonicalBatchRetry = nil
 	if cmd == batchCmd {
-		if err := canonicalScalarOccurrences(cmd, os.Args[1:], "scope", "input-format", "batch-version", "file", "dry-run-mode", "idempotency-key", "retry-file"); err != nil {
+		if err := canonicalScalarOccurrences(cmd, os.Args[1:], "scope", "input-format", "batch-version", "file", "dry-run-mode", "idempotency-key", "retry-file", "actor"); err != nil {
 			return true, graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
@@ -396,7 +396,7 @@ func runCanonicalBatch(cmd *cobra.Command) error {
 		}
 		return executeCanonicalBatch(cmd, batch)
 	}
-	if err := canonicalAuthoringFlags(cmd, "file", "input-format", "batch-version", "batch-arg", "scope", "dry-run-mode", "idempotency-key", "output-format", "include", "omit", "json"); err != nil {
+	if err := canonicalAuthoringFlags(cmd, "file", "input-format", "batch-version", "batch-arg", "scope", "dry-run-mode", "idempotency-key", "actor", "output-format", "include", "omit", "json"); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	mode, _ := cmd.Flags().GetString("dry-run-mode")

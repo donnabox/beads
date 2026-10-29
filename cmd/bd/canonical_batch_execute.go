@@ -186,7 +186,9 @@ func executeCanonicalBatch(cmd *cobra.Command, batch *canonicalbatch.Batch) erro
 		if key == "" {
 			key = rand.Text()
 		}
-		invocation = canonicalBatchInvocation{Format: "canonical-batch-invocation-1", Workspace: cfg.GraphWorkspace, Scope: cfg.GraphScopeURL, Authority: cfg.GraphAuthorityID, Database: cfg.DoltDatabase, Schema: cfg.GraphSchemaVersion, Key: key, Actor: getActor(), Request: batch.NativeJSON()}
+		// Graph admission returns before the legacy CommandContext sync. Use
+		// the same resolver as ordinary graph writes, then freeze its answer.
+		invocation = canonicalBatchInvocation{Format: "canonical-batch-invocation-1", Workspace: cfg.GraphWorkspace, Scope: cfg.GraphScopeURL, Authority: cfg.GraphAuthorityID, Database: cfg.DoltDatabase, Schema: cfg.GraphSchemaVersion, Key: key, Actor: getActorWithGit(), Request: batch.NativeJSON()}
 	}
 	journal, err := saveCanonicalBatchInvocation(invocation)
 	if err != nil {

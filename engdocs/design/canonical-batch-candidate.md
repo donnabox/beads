@@ -45,6 +45,27 @@ public revisions only to final published states. It preserves no-op revisions,
 captures final owned Links once, and permanently consumes a create-then-delete
 identity without inventing a Resource or revision for it.
 
+Existing durable native Issues also support scalar content and metadata updates.
+The supported property fields are `title`, `description`, `design`,
+`acceptance_criteria`, `spec_id`, `priority`, `estimated_minutes`, `external_ref`
+and `due_at`. An existing native Dependency whose recognized classification does
+not affect readiness supports metadata updates. These paths keep the authoritative
+native rows, preserve classification and creation facts, publish one final native
+Issue version and owner capture after final Links, and then emit native audit and
+journal records in the same transaction. Their native storage API requires a nonempty
+actor under the ordinary native write policy, even for a canceled or unchanged
+mutation. Fresh CLI invocations use the ordinary graph-write actor resolver
+(flag, environment, Git identity and existing fallback), then save that choice;
+retry uses the saved actor. Read-only selections and generic records retain their existing policy.
+
+Native optional properties use removal for clearing: explicit null or empty
+optional strings are refused because the native DTO would omit that presence.
+Dates must have canonical UTC whole-second spelling. This admission happens
+before a later selection can observe an unrepresentable staged value. Native
+status, assignment, leases, notes, labels, full property replacement, creation,
+deletion and reclassification remain outside this slice. Dependency edits that
+could affect readiness require a separate final graph and readiness publisher.
+
 The supported List fragment uses the shared Query predicate kernel over a closed
 revisionless view: identity, Type, properties and optional metadata. Sources may
 scan one local collection or use explicit current References/prior captures;
@@ -80,15 +101,17 @@ Scope snapshots and intermediate Resource revisions are not introduced.
 
 ## Remaining coverage
 
-Native execution refuses native Issue/Dependency mutation, exact Type pins and
-supplied revision provenance before effects. The supported staged List fragment
+Native execution refuses the native mutations outside the finite content and
+metadata slice above, exact Type pins and supplied revision provenance before
+effects. The supported staged List fragment
 does not imply full Query/Graph evaluation. Ordinary CRUD content copy through
 `--from-revision` uses the existing checked writers and composes with the new
-canonical object edits; batch members do not yet accept a copy source. Types
+canonical object edits. It is a separate historical-content adapter; ordinary
+canonical batch update members have no generic copy field. Types
 materialization and current-read Query have separate owners.
 
 The complete target still needs singleton durable delivery, failed-outcome
-retention, Events correlation, native domain publishers, complete output/transport
+retention, Events correlation, the remaining native domain publishers, complete output/transport
 parity and required normal CI before full capability or release claims. Existing
 layout11 writers retain their admission boundaries. A layout15 store is never an
 automatic fallback for an old workspace.
@@ -118,3 +141,12 @@ also cover selection/set/empty replay and historical copy combined with keyed
 properties and strict metadata patches. Pure tests check shared predicate parity
 and strict scalar/array retained-carrier admission. Runtime proof of those paths
 does not establish a passing full repository gate or a public Write profile.
+
+Native domain cases additionally cover multiple staged Issue edits plus native
+Dependency metadata, one final version per owner, exact final owned-Link capture,
+ordinary read equivalence, retained replay, canceled native edits and failure after
+final publication facts. Actorless unchanged/canceled native requests must refuse
+without retaining any decision or effects. The actual CLI workflow composes native
+batch content updates and the separate ordinary historical-copy adapter with the
+same property and metadata flags. Native Show explicitly requests `--format
+graph-json`; the legacy native detail output remains a distinct presentation.
