@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -15,6 +16,51 @@ import (
 )
 
 const queryASTCountFixture = `{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"scan","collection":"beads"},"result":{"form":"count"}}`
+
+func TestQueryASTContextFailureClassification(t *testing.T) {
+	stdioMutex.Lock()
+	t.Cleanup(stdioMutex.Unlock)
+	flag := queryCmd.Flags().Lookup("ast")
+	changed := flag.Changed
+	oldErr := queryCmd.ErrOrStderr()
+	t.Cleanup(func() { flag.Changed = changed; queryCmd.SetErr(oldErr) })
+	for _, cause := range []error{context.Canceled, context.DeadlineExceeded} {
+		for _, ast := range []bool{false, true} {
+			flag.Changed = ast
+			var diagnostic bytes.Buffer
+			queryCmd.SetErr(&diagnostic)
+			err := canonicalReadError(queryCmd, nil, errors.Join(errors.New("read failed"), cause), "route_unavailable")
+			want := "route_unavailable"
+			if ast {
+				want = "temporarily_unavailable"
+			}
+			var exit *exitError
+			if !errors.As(err, &exit) || exit.Code != 5 || !strings.HasPrefix(diagnostic.String(), want+": ") {
+				t.Fatalf("ast=%t cause=%v: wrong context failure %v / %s", ast, cause, err, diagnostic.String())
+			}
+		}
+	}
+}
+
+func TestQueryASTCommonDetailFormats(t *testing.T) {
+	for _, format := range []string{"detail", "default"} {
+		cmd := queryASTTestCommand()
+		if err := cmd.Flags().Set("output-format", format); err != nil {
+			t.Fatal(err)
+		}
+		renderer, err := queryASTRenderer(cmd, "count")
+		if err != nil {
+			t.Fatal(err)
+		}
+		var out bytes.Buffer
+		cmd.SetOut(&out)
+		response := resourcequery.Response{Result: resourcequery.CountResult{Form: "count", ResourceKind: "bead", Count: 2},
+			Evaluation: resourcequery.Evaluation{Scope: "response", Complete: true, Traversals: []resourcequery.Traversal{}}}
+		if err := renderCanonicalResult(cmd, renderer, response); err != nil || !strings.Contains(out.String(), "result") || !strings.Contains(out.String(), "evaluation") || json.Valid(out.Bytes()) {
+			t.Fatalf("common %s format lost the Query result or framing: %v %s", format, err, out.String())
+		}
+	}
+}
 
 func queryASTTestCommand() *cobra.Command {
 	cmd := &cobra.Command{Use: "query"}
@@ -280,6 +326,8 @@ func TestQueryASTOutputGateValidatesFormats(t *testing.T) {
 		{name: "detail raw", formats: []string{"detail"}, raw: true, invalid: true},
 		{name: "default JSON"},
 		{name: "explicit JSON", formats: []string{"json"}},
+		{name: "common detail", formats: []string{"detail"}},
+		{name: "common default", formats: []string{"default"}},
 		{name: "raw JSON", formats: []string{"json"}, raw: true},
 		{name: "default raw JSON", raw: true},
 		{name: "legacy query unchanged", legacy: true},

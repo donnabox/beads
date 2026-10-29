@@ -26,8 +26,10 @@ import (
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/graphpatch"
+	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/memoryapi"
 	"github.com/steveyegge/beads/internal/migration"
+	"github.com/steveyegge/beads/internal/resourcequery"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
@@ -921,8 +923,12 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 		return runGraphPreviewIssueStatus()
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
+		queryLimits := resourcequery.DefaultLimits()
 		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true,
 				"limits": map[string]int{"issueListOutputBytes": graphIssueListOutputLimit, "beadListOutputBytes": graphIssueListOutputLimit,
+					"queryAllocatedResources": graphstore.QueryMaxResources, "queryDatasetBytes": graphread.QueryResourceByteLimit,
+					"queryRequestBytes": queryLimits.RequestBytes, "queryASTNodes": queryLimits.Nodes, "queryASTDepth": queryLimits.Nesting,
+					"queryWork": queryLimits.MaxWork, "queryResults": queryLimits.MaxResults,
 					"beadListInventoryResources": graphstore.PreviewSnapshotLimit,
 					"issueBlockedOutputBytes":    graphIssueBlockedOutputLimit, "issueBlockedInventoryResources": graphstore.PreviewSnapshotLimit,
 					"genericTraversalOutputBytes": graphGenericOutputLimit, "genericTraversalDepth": graphGenericBound,
@@ -948,6 +954,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"memoryDiscoveryDefaultMatches": graphMemoryDiscoveryDefaultLimit, "memoryDiscoveryOutputBytes": graphMemoryDiscoveryOutputLimit,
 					"memoryDiscoveryQueryBytes": graphMemoryDiscoveryQueryLimit, "memoryDiscoveryExcerptCodePoints": graphMemoryDiscoveryExcerptLimit},
 				"capabilities": map[string]bool{
+					"queryAST":     true,
 					"legacyImport": true, "graphImport": false, "graphExport": false,
 					"memoryCreate": true, "memoryRead": true, "memoryBodyRecall": true, "memoryJSONRecall": false,
 					"memoryDiscovery": true, "memoryDiscoveryPagination": false, "memoryBodyFileInput": true, "memoryBodyStdinInput": true,

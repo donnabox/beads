@@ -9,7 +9,9 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strings"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/resourcequery"
@@ -43,6 +45,7 @@ func queryASTTestAdapter(executeErr error) (*GraphRead, *QueryAST, *int, *int) {
 	validated, executed := new(int), new(int)
 	g := &GraphRead{scope: "https://example.test/read/", path: "/read/"}
 	q := &QueryAST{
+		executions:        make(chan struct{}, QueryASTMaxConcurrentExecutions),
 		validateAuthority: func(context.Context) error { *validated++; return nil },
 		execute: func(context.Context, []byte) (resourcequery.Response, error) {
 			*executed++
@@ -50,6 +53,64 @@ func queryASTTestAdapter(executeErr error) (*GraphRead, *QueryAST, *int, *int) {
 		},
 	}
 	return g, q, validated, executed
+}
+
+func TestQueryASTConcurrentExecutionBound(t *testing.T) {
+	g, q, _, _ := queryASTTestAdapter(nil)
+	q.validateAuthority = func(context.Context) error { return nil }
+	var calls atomic.Int32
+	entered, release, done := make(chan struct{}), make(chan struct{}), make(chan struct{})
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+	q.execute = func(ctx context.Context, _ []byte) (resourcequery.Response, error) {
+		if calls.Add(1) == 1 {
+			close(entered)
+			select {
+			case <-release:
+			case <-ctx.Done():
+				return resourcequery.Response{}, ctx.Err()
+			}
+		}
+		return resourcequery.Response{Result: resourcequery.ResourcesResult{Form: "resources", ResourceKind: "bead", Items: []json.RawMessage{}},
+			Evaluation: resourcequery.Evaluation{Scope: "response", Complete: true, Traversals: []resourcequery.Traversal{}}}, nil
+	}
+	first := httptest.NewRecorder()
+	go func() {
+		defer close(done)
+		q.serve(g, first, queryASTTestRequest("POST", "/read/?readVersion=1&operation=list", queryASTListFixture).WithContext(ctx))
+	}()
+	t.Cleanup(func() {
+		cancel()
+		select {
+		case <-done:
+		case <-time.After(5 * time.Second):
+			t.Error("Query test executor did not stop after cancellation")
+		}
+	})
+	select {
+	case <-entered:
+	case <-ctx.Done():
+		t.Fatal("first Query did not enter executor")
+	}
+	second := httptest.NewRecorder()
+	q.serve(g, second, queryASTTestRequest("POST", "/read/?readVersion=1&operation=list", queryASTListFixture).WithContext(ctx))
+	if second.Code != http.StatusServiceUnavailable || calls.Load() != 1 || !strings.Contains(second.Body.String(), `"code":"temporarily-unavailable"`) {
+		t.Fatalf("concurrent Query bypassed execution bound: status=%d calls=%d body=%s", second.Code, calls.Load(), second.Body.String())
+	}
+	close(release)
+	select {
+	case <-done:
+	case <-ctx.Done():
+		t.Fatal("first Query did not finish")
+	}
+	if first.Code != http.StatusOK || len(q.executions) != 0 {
+		t.Fatalf("Query slot not released: status=%d active=%d", first.Code, len(q.executions))
+	}
+	third := httptest.NewRecorder()
+	q.serve(g, third, queryASTTestRequest("POST", "/read/?readVersion=1&operation=list", queryASTListFixture).WithContext(ctx))
+	if third.Code != http.StatusOK || calls.Load() != 2 || len(q.executions) != 0 {
+		t.Fatalf("Query execution slot not reusable: status=%d calls=%d active=%d", third.Code, calls.Load(), len(q.executions))
+	}
 }
 
 func queryASTTestRequest(method, target, body string) *http.Request {
@@ -125,7 +186,8 @@ func TestQueryASTRouteIsolation(t *testing.T) {
 		matches        bool
 	}{
 		{"GET", "/read/", false}, {"HEAD", "/read/", false}, {"POST", "/read/", true},
-		{"GET", "/read/?operation=list", true}, {"DELETE", "/read/?readVersion=1&operation=list", true},
+		{"GET", "/read/?operation=list", false}, {"DELETE", "/read/?readVersion=1&operation=list", false},
+		{"GET", "/read/?readVersion=1", false}, {"HEAD", "/read/?cursor=x", false},
 		{"POST", "/read/operations/read?readVersion=1&operation=query", false},
 		{"POST", "/read/beads/a?readVersion=1&operation=query", false},
 	} {

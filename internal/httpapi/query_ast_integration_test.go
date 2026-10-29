@@ -286,6 +286,17 @@ func TestQueryASTEngineRoundTrip(t *testing.T) {
 		if response.Code != 200 || bdpwire.Unmarshal(response.Body.Bytes(), &discovery) != nil || discovery.BDPVersion != bdpwire.BDPVersion || discovery.Scope != scope {
 			t.Fatalf("legacy discovery changed: %s", response.Body.String())
 		}
+		for _, method := range []string{"GET", "HEAD"} {
+			if response := send(t, "old-root-"+method, method, "/read/", nil, ctx); response.Code != 204 {
+				t.Fatalf("legacy root %s changed: status=%d", method, response.Code)
+			}
+			for _, parameter := range []string{"readVersion=1", "operation=list", "cursor=x"} {
+				response := send(t, "old-root-"+method+"-"+strings.Split(parameter, "=")[0], method, "/read/?"+parameter, nil, ctx)
+				if response.Code != 400 || response.Header().Get("Allow") != "" {
+					t.Fatalf("legacy root parameter refusal changed: %s %s status=%d headers=%v", method, parameter, response.Code, response.Header())
+				}
+			}
+		}
 	})
 	t.Run("refusals-cancellation-and-reopen", func(t *testing.T) {
 		pin := map[string]any{"op": "refs", "collection": "beads", "references": []any{map[string]any{"uri": issueA.ID, "revision": issueA.Revision}}}

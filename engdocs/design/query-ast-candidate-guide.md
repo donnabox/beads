@@ -56,6 +56,10 @@ JSON through the common CLI envelope is the default. To receive the native
 bd query --ast @query.json --omit envelope
 ```
 
+The common `--output-format detail` and explicit `--output-format default`
+select the existing human detail renderer. Omitting `--output-format` selects
+JSON for this command. Raw envelope omission requires JSON.
+
 `result.form` distinguishes `resources`, `count` and `graph`. `evaluation`
 records completeness and traversal boundaries. A work limit is a refusal; it
 never becomes a successful partial count, shortened graph or empty selection.
@@ -78,6 +82,13 @@ dependency-backed Links. Exact revision acquisition and retained incidence are
 unsupported. Stored pins remain queryable data and constrain current incidence;
 the evaluator does not silently replace a pinned edition with current content.
 Type-family tests require complete authoritative Type interpretation.
+
+`bd status --graph --json` reports the local Query capability and its request,
+AST, evaluation, allocation and mapped-input budgets. Mapped evaluator input is
+limited to16MiB before defensive validation retains further copies. The CLI read
+has a30second deadline. The configured HTTP handler admits one complete Query
+execution at a time; excess concurrent requests receive503 temporarily-unavailable.
+These are operational limits, independent of traversal depth.
 
 The configured BDP operation accepts `{"query": AST}` at its Scope root using
 `POST S?readVersion=1&operation=list` or `operation=query`, with

@@ -26,11 +26,16 @@ const queryASTMedia = "application/vnd.bdp.v0.1+json"
 const queryASTCapability = "https://github.com/gastownhall/bdp/capabilities/resource-selection"
 const queryASTRequestLimit = 262144
 
+// QueryASTMaxConcurrentExecutions limits complete inventory materialization per
+// configured handler, independently of the server's ordinary request admission.
+const QueryASTMaxConcurrentExecutions = 1
+
 // QueryAST is an opt-in read-only adapter, never a listener or store owner.
 // Both callbacks are bound to the same caller-owned checked Reader at creation.
 type QueryAST struct {
 	validateAuthority func(context.Context) error
 	execute           func(context.Context, []byte) (resourcequery.Response, error)
+	executions        chan struct{}
 }
 
 // NewGraphReadWithQuery retains ordinary Read routing and adds the explicitly
@@ -41,7 +46,8 @@ func NewGraphReadWithQuery(reader *graphread.Reader, scope string) (*GraphRead, 
 	if err != nil {
 		return nil, err
 	}
-	g.queryAST = &QueryAST{validateAuthority: reader.ValidateAuthority, execute: reader.ExecuteResourceQuery}
+	g.queryAST = &QueryAST{validateAuthority: reader.ValidateAuthority, execute: reader.ExecuteResourceQuery,
+		executions: make(chan struct{}, QueryASTMaxConcurrentExecutions)}
 	return g, nil
 }
 
@@ -49,19 +55,7 @@ func NewGraphReadWithQuery(reader *graphread.Reader, scope string) (*GraphRead, 
 // local ID resembles an operation name retains its ordinary Read interpretation.
 // POST root requests with missing selectors belong here so they fail closed.
 func (q *QueryAST) matches(g *GraphRead, r *http.Request) bool {
-	if r.URL == nil || r.URL.EscapedPath() != g.path {
-		return false
-	}
-	if r.Method == http.MethodPost {
-		return true
-	}
-	values, _ := url.ParseQuery(r.URL.RawQuery)
-	for _, key := range []string{"readVersion", "operation", "cursor"} {
-		if _, exists := values[key]; exists {
-			return true
-		}
-	}
-	return false
+	return r.Method == http.MethodPost && r.URL != nil && r.URL.EscapedPath() == g.path
 }
 
 func (q *QueryAST) serve(g *GraphRead, w http.ResponseWriter, r *http.Request) {
@@ -142,6 +136,13 @@ func (q *QueryAST) serve(g *GraphRead, w http.ResponseWriter, r *http.Request) {
 	}
 	if err = r.Context().Err(); err != nil {
 		queryASTFailure(w, r, err)
+		return
+	}
+	select {
+	case q.executions <- struct{}{}:
+		defer func() { <-q.executions }()
+	default:
+		queryASTProblem(w, r, "temporarily-unavailable", "")
 		return
 	}
 	response, err := q.execute(r.Context(), ast)
