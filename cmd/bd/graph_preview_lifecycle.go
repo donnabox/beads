@@ -361,6 +361,9 @@ func graphPreviewLinkCollectionRequestWith(cmd *cobra.Command, args []string, en
 }
 
 func runGraphPreviewLinkCollection(cmd *cobra.Command, args []string) error {
+	if collectionASTSelected(cmd) && !graphPreviewActive {
+		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "capability_unavailable", "List AST execution requires an existing graph-mode link workspace", 5)
+	}
 	if cmd.Name() == "list" && canonicalOutputSelected(cmd) {
 		return runCanonicalCollection(cmd, true)
 	}
