@@ -147,6 +147,19 @@ func TestCanonicalCRUDObjectEditsEmbeddedWorkflow(t *testing.T) {
 		t.Fatal("flag order changed set-then-unset semantics")
 	}
 	value(removedKey.Link.Metadata, "nested", `{"new":3}`)
+
+	// Historical content is the base for both canonical object planes. The
+	// guard still names the current live revision, not the copied revision.
+	copiedLink := graphMixedResult[mutation](t, call("link", "update", "citation",
+		"--from-revision", "="+createdLink.Link.Revision,
+		"--set-property", "note=Copied and edited",
+		"--patch-metadata", `[{"op":"replace","path":"/nested/old","value":9}]`,
+		"--if-revision", "="+removedKey.Link.Revision))
+	changed(removedKey.Link, copiedLink.Link, copiedLink.Changed)
+	value(copiedLink.Link.Properties, "note", `"Copied and edited"`)
+	value(copiedLink.Link.Metadata, "nested", `{"old":9}`)
+	value(copiedLink.Link.Metadata, "keep", "true")
+	removedKey = copiedLink
 	ownerBeforeNoop := show(source.ID)
 	linkNoop := graphMixedResult[mutation](t, call("link", "update", "citation", "--patch-properties", "[]", "--patch-metadata", "[]", "--if-revision", "="+removedKey.Link.Revision))
 	if linkNoop.Changed {
@@ -176,6 +189,22 @@ func TestCanonicalCRUDObjectEditsEmbeddedWorkflow(t *testing.T) {
 	refuse("gone", "link", "show", "citation")
 
 	currentSource := show(source.ID)
+	copiedSource := graphMixedResult[mutation](t, call("update", source.ID,
+		"--from-revision", "="+first.Memory.Revision,
+		"--set-property", "title=Copied and edited",
+		"--patch-metadata", `[{"op":"replace","path":"/nested/flag","value":false}]`,
+		"--if-revision", "="+currentSource.Revision))
+	changed(currentSource, copiedSource.Memory, copiedSource.Changed)
+	value(copiedSource.Memory.Properties, "title", `"Copied and edited"`)
+	value(copiedSource.Memory.Properties, "body", `"Original body"`)
+	value(copiedSource.Memory.Metadata, "nested", `{"flag":false}`)
+	value(copiedSource.Memory.Metadata, "keep", "true")
+	refuse("invalid_properties", "update", source.ID, "--from-revision", "="+source.Revision,
+		"--set-property", "title=must roll back with historical metadata",
+		"--patch-metadata", `[{"op":"remove","path":"/missing"}]`,
+		"--if-revision", "="+copiedSource.Memory.Revision)
+	equal(show(source.ID), copiedSource.Memory)
+	currentSource = copiedSource.Memory
 	type memoryDelete struct {
 		Memory   resource `json:"memory"`
 		Terminal *struct {

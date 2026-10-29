@@ -109,4 +109,23 @@ func TestCanonicalBatchCLIWorkflow(t *testing.T) {
 	if !reflect.DeepEqual(seed, replay) {
 		t.Fatalf("recovery changed the original result: %+v %+v", seed, replay)
 	}
+
+	// Selection and set mutation cross the real CLI/compiler/provider path in
+	// one invocation; the CLI does not pre-list or expand targets itself.
+	write(`{"operation":"select","name":"chosen","query":{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"filter","input":{"op":"scan","collection":"beads"},"bind":"b","predicate":{"op":"compare","operator":"eq","left":{"op":"field","of":{"op":"binding","name":"b"},"path":["properties","title"]},"right":{"op":"literal","value":"Changed"}}}}}` + "\n" +
+		emit("update", "batch-ref::chosen", "--set-property", "body=Selected atomically"))
+	selected := run("", "batch", "--file", file, "--idempotency-key", "selection")
+	if !selected.Changed || len(selected.Results) != 2 || !reflect.DeepEqual(selected.Results[0].IDs, []string{scope + "first"}) || !reflect.DeepEqual(selected.Results[0].IDs, selected.Results[1].IDs) {
+		t.Fatalf("selection was not executed with the writes: %+v", selected)
+	}
+	write(`{"operation":"select","name":"empty","query":{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"filter","input":{"op":"scan","collection":"beads"},"bind":"b","predicate":false}}}` + "\n" +
+		emit("delete", "batch-ref::empty", "--force"))
+	empty := run("", "batch", "--file", file, "--idempotency-key", "empty-selection")
+	if empty.Changed || empty.Transaction != "" || len(empty.Resources) != 0 || len(empty.Results) != 2 || empty.Results[0].IDs == nil || empty.Results[1].IDs == nil || len(empty.Results[1].IDs) != 0 {
+		t.Fatalf("empty set did not retain complete member results: %+v", empty)
+	}
+	emptyReplay := run("", "batch", "--file", file, "--idempotency-key", "empty-selection")
+	if !reflect.DeepEqual(empty, emptyReplay) {
+		t.Fatalf("empty set decision was reexecuted or lost: %+v %+v", empty, emptyReplay)
+	}
 }
