@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "http_support.go",
         "inventory.go",
+        "list_ast.go",
         "pagination.go",
         "projection.go",
         "query.go",
@@ -31,6 +32,7 @@ go_test(
     srcs = [
         "attribution_basis_test.go",
         "inventory_test.go",
+        "list_ast_test.go",
         "memory_delete_test.go",
         "metadata_projection_test.go",
         "native_types_test.go",
