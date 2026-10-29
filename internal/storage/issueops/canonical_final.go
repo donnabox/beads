@@ -269,9 +269,10 @@ func ApplyCanonicalDependencyMetadataInTx(ctx context.Context, tx *sql.Tx, reque
 			}
 		}
 	}
+	const pairPredicate = `issue_id=? AND depends_on_issue_id=? AND depends_on_wisp_id IS NULL AND depends_on_external IS NULL`
 	var actualType string
 	var metadata sql.NullString
-	if err := tx.QueryRowContext(ctx, `SELECT type, metadata FROM dependencies WHERE issue_id=? AND depends_on_issue_id=? AND depends_on_wisp_id IS NULL AND depends_on_external IS NULL`, request.IssueID, request.DependsOnID).Scan(&actualType, &metadata); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT type, metadata FROM dependencies WHERE `+pairPredicate, request.IssueID, request.DependsOnID).Scan(&actualType, &metadata); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("%w: canonical Dependency pair", storage.ErrNotFound)
 		}
@@ -295,7 +296,7 @@ func ApplyCanonicalDependencyMetadataInTx(ctx context.Context, tx *sql.Tx, reque
 		return nil, err
 	}
 	var stored string
-	if err := tx.QueryRowContext(ctx, `SELECT metadata FROM dependencies WHERE issue_id=? AND depends_on_issue_id=?`, request.IssueID, request.DependsOnID).Scan(&stored); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT metadata FROM dependencies WHERE `+pairPredicate, request.IssueID, request.DependsOnID).Scan(&stored); err != nil {
 		return nil, err
 	}
 	if !DependencyMetadataEqual(stored, dep.Metadata) {

@@ -143,6 +143,9 @@ func (run *atomicBatchRun) finishNativeIssue(id string) error {
 	if err != nil {
 		return err
 	}
+	// This context describes the new revision. An ordinary batch update is
+	// not another historical copy; the predecessor's retained context stays
+	// untouched, as with recordIssueMappingWithContextInTx(..., nil).
 	previous.HistoricalUpdate = nil
 	if err := issueops.RecordVersionInTx(run.ctx, run.tx, before.Properties.ID, run.actor); err != nil {
 		return err
