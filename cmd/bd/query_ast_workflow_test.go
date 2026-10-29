@@ -138,12 +138,12 @@ func TestQueryASTInstalledWorkflow(t *testing.T) {
 				}
 				return result.Count
 			}
-			var status struct {
+			status := graphMixedResult[struct {
 				Capabilities map[string]bool
 				Limits       map[string]int
-			}
-			if raw := call(t, "status", "--graph"); json.Unmarshal([]byte(raw), &status) != nil || !status.Capabilities["queryAST"] || status.Limits["queryAllocatedResources"] != graphstore.QueryMaxResources || status.Limits["queryRequestBytes"] != resourcequery.DefaultLimits().RequestBytes || status.Limits["queryDatasetBytes"] != 16*1024*1024 {
-				t.Fatalf("Query capability/budgets missing from local graph status: %s", raw)
+			}](t, call(t, "status", "--graph"))
+			if !status.Capabilities["queryAST"] || status.Limits["queryAllocatedResources"] != graphstore.QueryMaxResources || status.Limits["queryRequestBytes"] != resourcequery.DefaultLimits().RequestBytes || status.Limits["queryDatasetBytes"] != 16*1024*1024 {
+				t.Fatalf("Query capability/budgets missing from local graph status: %+v", status)
 			}
 			t.Run("JSON-file-stdin", func(t *testing.T) {
 				ast := queryASTWorkflowRequest(t, "query", "resources", walk)

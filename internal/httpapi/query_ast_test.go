@@ -94,7 +94,7 @@ func TestQueryASTConcurrentExecutionBound(t *testing.T) {
 	}
 	second := httptest.NewRecorder()
 	q.serve(g, second, queryASTTestRequest("POST", "/read/?readVersion=1&operation=list", queryASTListFixture).WithContext(ctx))
-	if second.Code != http.StatusServiceUnavailable || calls.Load() != 1 || !strings.Contains(second.Body.String(), `"code":"temporarily-unavailable"`) {
+	if second.Code != http.StatusServiceUnavailable || calls.Load() != 1 || second.Header().Get("Retry-After") != "1" || !strings.Contains(second.Body.String(), `"code":"temporarily-unavailable"`) {
 		t.Fatalf("concurrent Query bypassed execution bound: status=%d calls=%d body=%s", second.Code, calls.Load(), second.Body.String())
 	}
 	close(release)
@@ -110,6 +110,27 @@ func TestQueryASTConcurrentExecutionBound(t *testing.T) {
 	q.serve(g, third, queryASTTestRequest("POST", "/read/?readVersion=1&operation=list", queryASTListFixture).WithContext(ctx))
 	if third.Code != http.StatusOK || calls.Load() != 2 || len(q.executions) != 0 {
 		t.Fatalf("Query execution slot not reusable: status=%d calls=%d active=%d", third.Code, calls.Load(), len(q.executions))
+	}
+}
+
+func TestQueryASTMissingExecutorConfiguration(t *testing.T) {
+	for _, missing := range []string{"authority", "execute", "slots"} {
+		t.Run(missing, func(t *testing.T) {
+			g, q, validated, executed := queryASTTestAdapter(nil)
+			switch missing {
+			case "authority":
+				q.validateAuthority = nil
+			case "execute":
+				q.execute = nil
+			case "slots":
+				q.executions = nil
+			}
+			w := httptest.NewRecorder()
+			q.serve(g, w, queryASTTestRequest("POST", "/read/?readVersion=1&operation=list", queryASTListFixture))
+			if w.Code != http.StatusServiceUnavailable || *validated != 0 || *executed != 0 {
+				t.Fatalf("misconfigured handler reached callbacks: status=%d validations=%d executions=%d", w.Code, *validated, *executed)
+			}
+		})
 	}
 }
 

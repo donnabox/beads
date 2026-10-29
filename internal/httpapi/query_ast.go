@@ -68,7 +68,7 @@ func (q *QueryAST) serve(g *GraphRead, w http.ResponseWriter, r *http.Request) {
 		queryASTProblem(w, r, "resource-not-found", "")
 		return
 	}
-	if q.validateAuthority == nil || q.execute == nil {
+	if q.validateAuthority == nil || q.execute == nil || q.executions == nil {
 		queryASTProblem(w, r, "temporarily-unavailable", "")
 		return
 	}
@@ -142,6 +142,7 @@ func (q *QueryAST) serve(g *GraphRead, w http.ResponseWriter, r *http.Request) {
 	case q.executions <- struct{}{}:
 		defer func() { <-q.executions }()
 	default:
+		w.Header().Set("Retry-After", "1")
 		queryASTProblem(w, r, "temporarily-unavailable", "")
 		return
 	}

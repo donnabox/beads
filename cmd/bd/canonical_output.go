@@ -241,7 +241,7 @@ func canonicalReadError(cmd *cobra.Command, renderer canonicalFailureRenderer, e
 	code, status := fallback, 5
 	switch {
 	case cmd == queryCmd && cmd.Flags().Changed("ast") && (errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled)):
-		code = "temporarily_unavailable"
+		code = "capability_unavailable"
 	case errors.Is(err, resourcequery.ErrInvalid):
 		code, status = "invalid_selector", 2
 	case errors.Is(err, graphstore.ErrVersionUnknown):

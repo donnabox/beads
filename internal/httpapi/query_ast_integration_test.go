@@ -297,6 +297,12 @@ func TestQueryASTEngineRoundTrip(t *testing.T) {
 				}
 			}
 		}
+		if response := send(t, "configured-root-allow", "DELETE", "/read/", nil, ctx); response.Code != 405 || response.Header().Get("Allow") != "GET, HEAD, POST" {
+			t.Fatalf("configured root methods wrong: status=%d allow=%s", response.Code, response.Header().Get("Allow"))
+		}
+		if response := send(t, "resource-allow", "DELETE", parsed.RequestURI(), nil, ctx); response.Code != 405 || response.Header().Get("Allow") != "GET, HEAD" {
+			t.Fatalf("Resource methods changed: status=%d allow=%s", response.Code, response.Header().Get("Allow"))
+		}
 	})
 	t.Run("refusals-cancellation-and-reopen", func(t *testing.T) {
 		pin := map[string]any{"op": "refs", "collection": "beads", "references": []any{map[string]any{"uri": issueA.ID, "revision": issueA.Revision}}}

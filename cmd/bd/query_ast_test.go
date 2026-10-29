@@ -32,7 +32,7 @@ func TestQueryASTContextFailureClassification(t *testing.T) {
 			err := canonicalReadError(queryCmd, nil, errors.Join(errors.New("read failed"), cause), "route_unavailable")
 			want := "route_unavailable"
 			if ast {
-				want = "temporarily_unavailable"
+				want = "capability_unavailable"
 			}
 			var exit *exitError
 			if !errors.As(err, &exit) || exit.Code != 5 || !strings.HasPrefix(diagnostic.String(), want+": ") {

@@ -113,7 +113,11 @@ func (g *GraphRead) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if r.Method != http.MethodGet && r.Method != http.MethodHead {
-		graphReadResponse(w, r, http.StatusMethodNotAllowed, nil, "", "", http.Header{"Allow": []string{"GET, HEAD"}})
+		allow := "GET, HEAD"
+		if g.queryAST != nil && r.URL != nil && r.URL.EscapedPath() == g.path {
+			allow += ", POST"
+		}
+		graphReadResponse(w, r, http.StatusMethodNotAllowed, nil, "", "", http.Header{"Allow": []string{allow}})
 		return
 	}
 	path, query, code := g.requestTarget(r)
