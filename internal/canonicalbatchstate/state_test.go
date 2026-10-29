@@ -28,6 +28,37 @@ func createLink(id, source, target string) canonicalbatch.Member {
 	return canonicalbatch.Member{Operation: "createLink", Kind: graphops.KindLink, ID: testScope + id, Type: reference("references"), Source: operand(source), Target: operand(target), Properties: raw(`{}`)}
 }
 
+func TestMutationPolicyObservesCanceledIntentWithDetachedInputs(t *testing.T) {
+	base := existing("one")
+	members := []canonicalbatch.Member{
+		{Operation: "updateBead", Bead: operand("one"), PropertiesChange: raw(`[{"op":"replace","path":"/title","value":"temporary"}]`)},
+		{Operation: "updateBead", Bead: operand("one"), PropertiesChange: raw(`[{"op":"replace","path":"/title","value":"initial"}]`)},
+	}
+	wantRaw := bytes.Clone(members[0].PropertiesChange)
+	observed := 0
+	input := Input{Scope: testScope, Current: map[string]Resource{base.ID: base}, Members: members}
+	input.AdmitMutation = func(index int, member canonicalbatch.Member, before *Resource) error {
+		if index != observed || before == nil || before.ID != base.ID {
+			t.Fatalf("policy did not receive resolved predecessor: %d %+v", index, before)
+		}
+		if index == 1 && string(before.Properties) != `{"title":"temporary"}` {
+			t.Fatalf("policy observed baseline instead of preceding staged state: %s", before.Properties)
+		}
+		observed++
+		before.Properties[0], member.PropertiesChange[0] = '!', '!'
+		return nil
+	}
+	plan, err := Stage(input)
+	if err != nil || observed != 2 || len(plan.Outcomes) != 1 || plan.Outcomes[0].Changed || !bytes.Equal(plan.Final[base.ID].Envelope, base.Envelope) || !bytes.Equal(members[0].PropertiesChange, wantRaw) {
+		t.Fatalf("policy arguments mutated input/state or lost canceled intent: %+v %v", plan, err)
+	}
+	denied := errors.New("domain policy refused authored intent")
+	input.AdmitMutation = func(_ int, _ canonicalbatch.Member, _ *Resource) error { return denied }
+	if plan, err := Stage(input); !errors.Is(err, denied) || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("policy failure returned partial success: %+v %v", plan, err)
+	}
+}
+
 func TestCreateTwoBeadsAndLink(t *testing.T) {
 	plan, err := Stage(Input{Scope: testScope, Members: []canonicalbatch.Member{createBead("one", ""), createBead("two", ""), createLink("citation", "one", "two")}})
 	if err != nil {

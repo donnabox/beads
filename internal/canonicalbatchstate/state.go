@@ -65,6 +65,11 @@ type Input struct {
 	Allocate        func(index int, kind graphops.ResourceKind) (string, error)
 	ResolveType     func(canonicalbatch.Reference) (canonicalbatch.Reference, error)
 	CheckPin        func(canonicalbatch.Reference) error
+	// AdmitMutation observes each resolved authored mutation before it changes
+	// working state, including edits that later cancel. Before is nil for a
+	// creation. Arguments are detached; an error rejects the complete plan.
+	// The caller owns domain policy and must not perform durable effects here.
+	AdmitMutation func(index int, member canonicalbatch.Member, before *Resource) error
 	// Supplied maps assert complete checked Type authority, not ancestry
 	// inferred from names or population. Both nil support Core-only local and
 	// exact nominal tests; family tests require both authoritative maps.
@@ -526,6 +531,23 @@ func (s *staging) applyOne(index int, a admitted) error {
 			if !exists || baseline.Revision != m.ExpectedRevision {
 				return fmt.Errorf("%w: %s", ErrRevision, r.ID)
 			}
+		}
+	}
+	if s.input.AdmitMutation != nil {
+		var before *Resource
+		if !strings.HasPrefix(m.Operation, "create") {
+			copy := clone(r)
+			before = &copy
+		}
+		member := m
+		member.Properties = bytes.Clone(m.Properties)
+		member.Metadata = bytes.Clone(m.Metadata)
+		member.PropertiesChange = bytes.Clone(m.PropertiesChange)
+		member.MetadataChange = bytes.Clone(m.MetadataChange)
+		member.RevisionProvenance = bytes.Clone(m.RevisionProvenance)
+		member.Query = bytes.Clone(m.Query)
+		if err := s.input.AdmitMutation(index, member, before); err != nil {
+			return err
 		}
 	}
 	s.targets[r.ID] = a.kind
