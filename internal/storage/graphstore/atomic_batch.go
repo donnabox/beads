@@ -170,7 +170,7 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		retained, found, err := readAtomicBatchDecision(ctx, tx, key, contextJSON, request, actor)
+		retained, found, err := readAtomicBatchDecision(ctx, tx, key, contextJSON, request, actor, s.ScopeURL(), batch.Members())
 		if err != nil {
 			return err
 		}
@@ -362,7 +362,7 @@ func projectAtomicBatchLabels(result BatchResult, members []canonicalbatch.Membe
 	return result, nil
 }
 
-func readAtomicBatchDecision(ctx context.Context, tx *sql.Tx, key string, contextJSON, request []byte, actor string) (BatchResult, bool, error) {
+func readAtomicBatchDecision(ctx context.Context, tx *sql.Tx, key string, contextJSON, request []byte, actor, scope string, members []canonicalbatch.Member) (BatchResult, bool, error) {
 	var storedContext, storedRequest, storedActor, result []byte
 	var size uint64
 	err := tx.QueryRowContext(ctx, `SELECT OCTET_LENGTH(context)+OCTET_LENGTH(request)+OCTET_LENGTH(actor)+OCTET_LENGTH(result) FROM graph_preview_batch_decisions WHERE decision_key=?`, key).Scan(&size)
@@ -381,13 +381,9 @@ func readAtomicBatchDecision(ctx context.Context, tx *sql.Tx, key string, contex
 	if !bytes.Equal(storedContext, contextJSON) || !bytes.Equal(storedRequest, request) || string(storedActor) != actor {
 		return BatchResult{}, false, ErrBatchKeyConflict
 	}
-	canonical, err := graph.CanonicalizeJSON(result)
-	if err != nil || !bytes.Equal(canonical, result) {
-		return BatchResult{}, false, fmt.Errorf("%w: malformed retained batch outcome", ErrInvalidStore)
-	}
-	var decoded BatchResult
-	if err := json.Unmarshal(result, &decoded); err != nil || decoded.CapabilityVersion != canonicalbatch.Version || len(decoded.Results) == 0 || decoded.Resources == nil {
-		return BatchResult{}, false, fmt.Errorf("%w: incomplete retained batch outcome", ErrInvalidStore)
+	decoded, err := validateAtomicBatchRetained(result, scope, members)
+	if err != nil {
+		return BatchResult{}, false, err
 	}
 	return decoded, true, nil
 }
