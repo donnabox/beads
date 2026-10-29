@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -42,9 +43,115 @@ func intrinsicHardeningStore(t *testing.T) (context.Context, Options, *Store) {
 	return ctx, o, s
 }
 
+// The shipping test observer reads one complete current context in one native
+// transaction. The separate oracle below retains six independent public Gets.
+func intrinsicHardeningState(t *testing.T, ctx context.Context, s *Store) []string {
+	t.Helper()
+	state, err := readIntrinsicHardeningState(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return state
+}
+
+func readIntrinsicHardeningState(ctx context.Context, s *Store) ([]string, error) {
+	var state []string
+	err := s.withDefinitionReadTx(ctx, txDefinitionRead, func(tx *sql.Tx, budget *intrinsicMetadataBudget) error {
+		var err error
+		state, err = captureIntrinsicHardeningStateInTx(ctx, tx, s, budget)
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return state, nil
+}
+
+func captureIntrinsicHardeningStateInTx(ctx context.Context, tx *sql.Tx, s *Store, budget *intrinsicMetadataBudget) ([]string, error) {
+	// Token, fixed headers/order map and final count strings are bounded here.
+	if err := budget.chargeBody(6 * 4096); err != nil {
+		return nil, err
+	}
+	var token string
+	if err := tx.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&token); err != nil {
+		return nil, err
+	}
+	contextID, err := currentIntrinsicContextInTx(ctx, tx, budget)
+	if err != nil {
+		return nil, err
+	}
+	plan, err := loadIntrinsicContextInTx(ctx, tx, s.options, contextID, budget)
+	if err != nil {
+		return nil, err
+	}
+	if err = budget.chargeBody(2 * intrinsicmaterialization.MaxContextBytes); err != nil {
+		return nil, err
+	}
+	bindings := plan.Bindings()
+	if len(bindings) != 6 {
+		return nil, ErrInvalidStore
+	}
+	byID := make(map[string]intrinsicmaterialization.Binding, 6)
+	for _, binding := range bindings {
+		id := binding.Allocation.PublicID
+		if _, exists := byID[id]; exists {
+			return nil, ErrInvalidStore
+		}
+		byID[id] = binding
+	}
+	state := []string{token}
+	for index, id := range []string{"type-for-type", "type-for-bead-type", "type-for-link-type", "type-for-refines", "bead-type-refines-type", "link-type-refines-type"} {
+		binding, ok := byID[id]
+		if !ok || validatePublicID(id) != nil {
+			return nil, ErrInvalidStore
+		}
+		allocation := binding.Allocation
+		wantKind := "bead"
+		if index >= 4 {
+			wantKind = "link"
+		}
+		if string(allocation.Kind) != wantKind {
+			return nil, ErrInvalidStore
+		}
+		// The full context checks private-path correspondence. Retain the public
+		// resolver too, so another backing with this ID cannot become invisible.
+		identity, err := resolveAllocatedResourceIdentityInTx(ctx, tx, id, budget)
+		if err != nil {
+			return nil, err
+		}
+		if identity.PublicID != id || identity.PrivatePath != allocation.PrivatePath || identity.Kind != allocation.Kind || identity.State != "live" {
+			return nil, ErrInvalidStore
+		}
+		// Reserve before constructor canonicalization/clones and output strings.
+		if err = budget.chargeBody(8 * len(binding.Record)); err != nil {
+			return nil, err
+		}
+		doc, err := definitionDocumentForNative(s.ScopeURL(), IntrinsicDocument{
+			PublicID: id, PrivatePath: allocation.PrivatePath, Kind: allocation.Kind,
+			Revision: allocation.Local.Revision, ContextID: contextID,
+			Global: binding.Global, Body: binding.Record,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if doc.ID() != allocation.Local.URI || doc.Revision() != allocation.Local.Revision || string(doc.Kind()) != wantKind {
+			return nil, ErrInvalidStore
+		}
+		state = append(state, string(doc.NativeJSON()))
+	}
+	for _, query := range []string{`SELECT COUNT(*) FROM graph_preview_intrinsic_contexts`, `SELECT COUNT(*) FROM graph_preview_intrinsic_members`} {
+		var n int
+		if err := tx.QueryRowContext(ctx, query).Scan(&n); err != nil {
+			return nil, err
+		}
+		state = append(state, fmt.Sprint(n))
+	}
+	return state, nil
+}
+
 // Capture exactly the protected intrinsic records and fence, not an entire
 // database dump. Readbacks use production readers, including retained captures.
-func intrinsicHardeningState(t *testing.T, ctx context.Context, s *Store) []string {
+func intrinsicHardeningStateOracle(t *testing.T, ctx context.Context, s *Store) []string {
 	t.Helper()
 	var token string
 	if err := s.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&token); err != nil {
@@ -383,4 +490,120 @@ func TestIntrinsicMaterializationFinalCensusRollback(t *testing.T) {
 	if after := intrinsicHardeningState(t, ctx, s); !reflect.DeepEqual(before, after) {
 		t.Fatal("failed materialization changed committed intrinsic state")
 	}
+}
+
+// Independent public-API oracle comparisons, not the observer compared to itself.
+func TestIntrinsicHardeningStateObserverEquivalence(t *testing.T) {
+	ctx, _, s := intrinsicHardeningStore(t)
+	assertEquivalent := func(label string) {
+		t.Helper()
+		want := intrinsicHardeningStateOracle(t, ctx, s)
+		got, err := readIntrinsicHardeningState(ctx, s)
+		if err != nil || !reflect.DeepEqual(got, want) || len(got) != 9 {
+			t.Fatalf("%s complete protected state differs: %v", label, err)
+		}
+		for i, raw := range got[1:7] {
+			kind := resourceget.DefinitionBead
+			if i >= 4 {
+				kind = resourceget.DefinitionLink
+			}
+			if _, err := resourceget.NewDefinitionDocument(s.ScopeURL(), kind, []byte(raw)); err != nil {
+				t.Fatalf("%s full record %d: %v", label, i, err)
+			}
+		}
+	}
+	assertEquivalent("before-custom-write")
+	if _, err := s.CreateBeadType(ctx, "observer-foo", "hardening"); err != nil {
+		t.Fatal(err)
+	}
+	assertEquivalent("after-custom-write")
+}
+
+func TestIntrinsicHardeningStateObserverRefusals(t *testing.T) {
+	for _, mode := range []string{"retained-member", "retained-snapshot", "public-id-ambiguity", "owned-capture"} {
+		t.Run(mode, func(t *testing.T) {
+			// Independent finite fresh fixtures, not a new cumulative fault-root
+			// sequence or a reset of the original shared90 context.
+			ctx, _, s := intrinsicHardeningStore(t)
+			before := intrinsicHardeningStateOracle(t, ctx, s)
+			var path string
+			if err := s.db.QueryRowContext(ctx, `SELECT path FROM graph_preview_catalog WHERE public_id=?`, "type-for-bead-type").Scan(&path); err != nil {
+				t.Fatal(err)
+			}
+			err := s.withDefinitionReadTx(ctx, txDefinitionRead, func(tx *sql.Tx, budget *intrinsicMetadataBudget) error {
+				switch mode {
+				case "retained-member", "owned-capture":
+					raw := []byte(`{}`)
+					if mode == "owned-capture" {
+						var current []byte
+						if err := tx.QueryRowContext(ctx, `SELECT record FROM graph_preview_intrinsic_members WHERE path=?`, path).Scan(&current); err != nil {
+							return err
+						}
+						var fields map[string]json.RawMessage
+						if err := json.Unmarshal(current, &fields); err != nil {
+							return err
+						}
+						fields["ownedLinks"] = json.RawMessage(`{}`)
+						var err error
+						raw, err = json.Marshal(fields)
+						if err != nil {
+							return err
+						}
+					}
+					// Keep digest coherent: the source/body correspondence must refuse.
+					if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_intrinsic_members SET record=?,record_sha256=? WHERE path=?`, raw, intrinsicDigest(raw), path); err != nil {
+						return err
+					}
+				case "retained-snapshot":
+					if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_versions SET snapshot=? WHERE path=?`, []byte(`{}`), path); err != nil {
+						return err
+					}
+				case "public-id-ambiguity":
+					key := strings.Repeat("f", 32)
+					if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing,backing_key,public_id) SELECT ?,resource_kind,type_url,revision,allocation_state,'generic',?,public_id FROM graph_preview_catalog WHERE path=?`, "beads/"+key, key, path); err != nil {
+						return err
+					}
+				}
+				got, err := captureIntrinsicHardeningStateInTx(ctx, tx, s, budget)
+				if !errors.Is(err, ErrInvalidStore) || got != nil {
+					return fmt.Errorf("%s corrupt observer escaped: %d records, %w", mode, len(got), err)
+				}
+				return nil // Actual production wrapper rolls back the owned mutation.
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := readIntrinsicHardeningState(ctx, s)
+			if err != nil || !reflect.DeepEqual(got, before) {
+				t.Fatalf("%s callback rollback/cleanup changed state: %v", mode, err)
+			}
+		})
+	}
+}
+
+func TestIntrinsicHardeningStateObserverErrors(t *testing.T) {
+	t.Run("canceled-publication-is-empty", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		got, err := readIntrinsicHardeningState(ctx, &Store{})
+		if !errors.Is(err, context.Canceled) || got != nil {
+			t.Fatalf("cancellation cause/result lost: %v %v", got, err)
+		}
+	})
+	t.Run("budget-before-query", func(t *testing.T) {
+		tx, _ := intrinsicProfileTransaction(t)
+		got, err := captureIntrinsicHardeningStateInTx(context.Background(), tx, &Store{}, &intrinsicMetadataBudget{})
+		if !errors.Is(err, ErrLimitExceeded) || got != nil {
+			t.Fatalf("budget/result lost: %v %v", got, err)
+		}
+	})
+	t.Run("token-query-cause", func(t *testing.T) {
+		tx, mock := intrinsicProfileTransaction(t)
+		injected := errors.New("observer token read failed")
+		mock.ExpectQuery(`SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).WillReturnError(injected)
+		got, err := captureIntrinsicHardeningStateInTx(context.Background(), tx, &Store{}, newIntrinsicMetadataBudget())
+		if !errors.Is(err, injected) || got != nil {
+			t.Fatalf("query cause/partial result lost: %v %v", got, err)
+		}
+	})
 }
