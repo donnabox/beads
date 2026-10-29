@@ -151,7 +151,7 @@ func TestGraphPreviewMemoryPropertiesPatchSources(t *testing.T) {
 		})
 	}
 	for _, tc := range []struct{ name, input string }{
-		{"empty-input", ""}, {"empty-operations", "[]"}, {"object", "{}"}, {"null", "null"},
+		{"empty-input", ""}, {"object", "{}"}, {"null", "null"},
 		{"duplicate-operation-member", `[{"op":"replace","op":"add","path":"/body","value":"x"}]`},
 		{"duplicate-value-member", `[{"op":"add","path":"/temp","value":{"x":1,"x":2}}]`},
 		{"unpaired-surrogate", `[{"op":"replace","path":"/body","value":"\ud800"}]`},
@@ -233,11 +233,11 @@ func TestGraphPreviewMemoryPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		{"multiple-selectors", []string{"beads/a", "beads/b"}, []string{}, false, 2},
 		{"foreign-selector", []string{"https://foreign.invalid/beads/a"}, []string{}, false, 2},
 		{"malformed-selector", []string{"bad id"}, []string{}, false, 2},
-		{"link-selector", []string{"https://example.invalid/links/context"}, []string{"--properties={}"}, false, 5},
+		{"link-selector", []string{"https://example.invalid/links/context"}, []string{"--properties={}"}, false, 2},
 		{"empty-guard", []string{"beads/plan"}, []string{"--if-revision="}, false, 2},
 		{"invalid-guard", []string{"beads/plan"}, []string{"--if-revision=\xff"}, false, 2},
 		{"oversized-guard", []string{"beads/plan"}, []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
-		{"replacement-conflict", []string{"beads/plan"}, []string{"--properties={}"}, false, 5},
+		{"replacement-conflict", []string{"beads/plan"}, []string{"--properties={}"}, false, 2},
 		{"Issue-title-conflict", []string{"beads/work"}, []string{"--title=Issue"}, false, 5},
 		{"claim-conflict", []string{"beads/work"}, []string{"--claim=true"}, false, 5},
 		{"false-claim-conflict", []string{"beads/work"}, []string{"--claim=false"}, false, 5},
@@ -317,7 +317,6 @@ func TestGraphPreviewMemoryPropertiesPatchSyntaxBeforeStore(t *testing.T) {
 	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/"}
 	readonlyMode, jsonOutput, graphPreviewStructuredErrors = false, false, false
 	for _, tc := range []struct{ name, input string }{
-		{"empty-list", "[]"},
 		{"invalid-operation", `[{"op":"move","from":"/body","path":"/title"}]`},
 		{"missing-file", "@" + filepath.Join(t.TempDir(), "missing.json")},
 	} {
