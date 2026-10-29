@@ -1,13 +1,17 @@
 package canonicalbatchstate
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"reflect"
 	"strings"
+	"sync/atomic"
 	"testing"
 
 	"github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/canonicalbatch"
+	"github.com/steveyegge/beads/internal/resourcequery"
 )
 
 func selectMember(name, source, predicate string) canonicalbatch.Member {
@@ -209,6 +213,7 @@ func TestSelectionTypeAuthorityAndPinnedAffiliation(t *testing.T) {
 	exact := strings.ReplaceAll(strings.ReplaceAll(predicate, `"family"`, `"exact"`), testScope+"memory", testScope+"task")
 	input.Members = []canonicalbatch.Member{selectMember("exact", beadScan, exact)}
 	input.Current = map[string]Resource{one.ID: one}
+	input.TypeKinds = nil
 	input.TypeFamilies = nil
 	plan, err = Stage(input)
 	if err != nil || len(plan.Selections[0].IDs) != 1 {
@@ -253,5 +258,190 @@ func TestSelectionResultAndPriorCapturesAreDetached(t *testing.T) {
 	plan.Selections[0].IDs[0] = "changed"
 	if plan.Selections[1].IDs[0] != one.ID || one.ID != testScope+"one" {
 		t.Fatal("captures share mutable slices")
+	}
+}
+
+func TestStagedRefAdapterParityWithSharedListKernel(t *testing.T) {
+	one, two, excluded := existing("one"), existing("two"), existing("excluded")
+	one.Type.Revision = "definition-pin"
+	one.Metadata = raw(`{"visible":null}`)
+	two.Metadata = nil
+	excluded.Metadata = raw(`{"visible":null}`)
+	one.Properties = raw(`{"title":"one","literal":{"op":"refs","binding":"not-code","input":{"binding":"not-input"}}}`)
+	prior := selectMember("prior", `{"op":"refs","collection":"beads","references":["`+one.ID+`","`+two.ID+`"]}`, "")
+	for _, tc := range []struct{ name, predicate string }{
+		{"metadata omission", `{"op":"present","value":{"op":"field","of":{"op":"binding","name":"b"},"path":["metadata","visible"]}}`},
+		{"pinned Type representation", `{"op":"compare","operator":"eq","left":{"op":"field","of":{"op":"binding","name":"b"},"path":["type","revision"]},"right":{"op":"literal","value":"definition-pin"}}`},
+		{"opaque literal object", `{"op":"compare","operator":"eq","left":{"op":"field","of":{"op":"binding","name":"b"},"path":["properties","literal"]},"right":{"op":"literal","value":{"op":"refs","binding":"not-code","input":{"binding":"not-input"}}}}`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			staged := selectMember("selected", `{"op":"refs","collection":"beads","references":{"binding":"prior"}}`, tc.predicate)
+			plan, err := Stage(Input{Scope: testScope, Current: map[string]Resource{one.ID: one, two.ID: two, excluded.ID: excluded}, Members: []canonicalbatch.Member{prior, staged}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			fragment := raw(`{"op":"filter","input":` + beadScan + `,"bind":"b","predicate":` + tc.predicate + `}`)
+			selector, err := resourcequery.CompileListIDs(fragment, resourcequery.Limits{})
+			if err != nil {
+				t.Fatal(err)
+			}
+			inventory := resourcequery.ListInventory{Kind: graphops.KindBead, Candidates: []resourcequery.ListCandidate{}}
+			for _, record := range []Resource{one, two} {
+				// Independent closed input construction catches adapter omissions
+				// and broadening of a refs input into the entire Scope inventory.
+				body := map[string]any{"id": record.ID, "type": record.Type, "properties": record.Properties}
+				if record.Metadata != nil {
+					body["metadata"] = record.Metadata
+				}
+				data, err := json.Marshal(body)
+				if err != nil {
+					t.Fatal(err)
+				}
+				inventory.Candidates = append(inventory.Candidates, resourcequery.ListCandidate{Data: data})
+			}
+			want, err := selector.Select(context.Background(), inventory)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !reflect.DeepEqual(plan.Selections[1].IDs, want) || !reflect.DeepEqual(want, []string{one.ID}) {
+				t.Fatalf("staged/source kernel disagreement: staged=%v direct=%v", plan.Selections[1].IDs, want)
+			}
+		})
+	}
+}
+
+func TestSharedSelectorCoreOnlyExactAndOptionalMetadata(t *testing.T) {
+	one, two := existing("one"), existing("two")
+	one.Metadata = nil
+	two.Metadata = raw(`{}`)
+	exact := `{"op":"typeIs","of":{"op":"binding","name":"b"},"type":"` + one.Type.URI + `","match":"exact"}`
+	metadata := `{"op":"present","value":{"op":"field","of":{"op":"binding","name":"b"},"path":["metadata"]}}`
+	plan, err := Stage(Input{Scope: testScope, Current: map[string]Resource{one.ID: one, two.ID: two}, Members: []canonicalbatch.Member{selectMember("exact", beadScan, exact), selectMember("present", beadScan, metadata)}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(plan.Selections[0].IDs, []string{one.ID, two.ID}) || !reflect.DeepEqual(plan.Selections[1].IDs, []string{two.ID}) {
+		t.Fatalf("Core nominal or metadata presence changed: %+v", plan.Selections)
+	}
+}
+
+func TestExplicitMissingRefRefusesEvenWithFalsePredicate(t *testing.T) {
+	one := existing("one")
+	query := selectMember("missing", `{"op":"refs","collection":"beads","references":["`+one.ID+`","`+testScope+`missing"]}`, "false")
+	plan, err := Stage(Input{Scope: testScope, Current: map[string]Resource{one.ID: one}, Members: []canonicalbatch.Member{query}})
+	if !errors.Is(err, ErrNotFound) || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("missing refs became empty success: %+v %v", plan, err)
+	}
+}
+
+func TestSharedSelectionLimitsReturnNoPartialPlan(t *testing.T) {
+	one, two := existing("one"), existing("two")
+	for _, tc := range []struct {
+		name   string
+		change func(*resourcequery.Limits)
+		filter bool
+	}{
+		{"result bound", func(l *resourcequery.Limits) { l.MaxResults = 1 }, false},
+		{"work bound", func(l *resourcequery.Limits) { l.MaxWork = 1 }, false},
+		{"request bound", func(l *resourcequery.Limits) { l.RequestBytes = 64 }, false},
+		{"node bound", func(l *resourcequery.Limits) { l.Nodes = 1 }, true},
+		{"nesting bound", func(l *resourcequery.Limits) { l.Nesting = 1 }, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			limits := resourcequery.DefaultLimits()
+			tc.change(&limits)
+			predicate := ""
+			if tc.filter {
+				predicate = titleIsNew
+			}
+			plan, err := Stage(Input{Scope: testScope, SelectionLimits: limits, Current: map[string]Resource{one.ID: one, two.ID: two}, Members: []canonicalbatch.Member{selectMember("limited", beadScan, predicate)}})
+			if !errors.Is(err, ErrLimit) || !reflect.DeepEqual(plan, Plan{}) {
+				t.Fatalf("selector limit produced partial success: %+v %v", plan, err)
+			}
+		})
+	}
+	limits := resourcequery.DefaultLimits()
+	limits.MaxResults = 1
+	plan, err := Stage(Input{Scope: testScope, SelectionLimits: limits, Current: map[string]Resource{one.ID: one, two.ID: two}, Members: []canonicalbatch.Member{selectMember("first", beadScan, "false"), selectMember("later", beadScan, "")}})
+	if !errors.Is(err, ErrLimit) || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("earlier capture escaped later failure: %+v %v", plan, err)
+	}
+}
+
+func TestStagedContextCancellationBeforeAndDuringWork(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	called := false
+	create := createBead("unused", "")
+	create.ID = ""
+	plan, err := Stage(Input{Context: ctx, Scope: testScope, Members: []canonicalbatch.Member{create}, Allocate: func(int, graphops.ResourceKind) (string, error) { called = true; return testScope + "allocated", nil }})
+	if !errors.Is(err, context.Canceled) || called || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("cancelled input executed: %+v %v", plan, err)
+	}
+	ctx, cancel = context.WithCancel(context.Background())
+	defer cancel()
+	plan, err = Stage(Input{Context: ctx, Scope: testScope, Members: []canonicalbatch.Member{create}, Allocate: func(int, graphops.ResourceKind) (string, error) { cancel(); return testScope + "allocated", nil }})
+	if !errors.Is(err, context.Canceled) || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("cancellation in last member returned a plan: %+v %v", plan, err)
+	}
+}
+
+type selectionCancellingContext struct {
+	context.Context
+	cancel context.CancelFunc
+	checks atomic.Int64
+}
+
+func (c *selectionCancellingContext) Err() error {
+	if c.checks.Add(1) == 100 {
+		c.cancel()
+	}
+	return c.Context.Err()
+}
+
+func TestContextReachesSharedPredicateKernel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	checked := &selectionCancellingContext{Context: ctx, cancel: cancel}
+	one := existing("one")
+	one.Properties = raw(`{"title":"initial","values":[` + strings.Repeat(`"item",`, 199) + `"item"]}`)
+	predicate := `{"op":"member","value":{"op":"literal","value":"absent"},"array":{"op":"field","of":{"op":"binding","name":"b"},"path":["properties","values"]}}`
+	plan, err := Stage(Input{Context: checked, Scope: testScope, Current: map[string]Resource{one.ID: one}, Members: []canonicalbatch.Member{selectMember("cancelled", beadScan, predicate)}})
+	if !errors.Is(err, context.Canceled) || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("shared predicate ignored transaction cancellation: checks=%d plan=%+v err=%v", checked.checks.Load(), plan, err)
+	}
+}
+
+func TestSharedRevisionlessListRejectsUnsupportedFieldsInAllBranches(t *testing.T) {
+	for _, field := range []string{"source", "target", "revision", "revisionProvenance", "derived"} {
+		t.Run(field, func(t *testing.T) {
+			query := selectMember("unsupported", beadScan, `{"op":"or","operands":[true,{"op":"present","value":{"op":"field","of":{"op":"binding","name":"b"},"path":["`+field+`"]}}]}`)
+			called := false
+			create := createBead("unused", "")
+			create.ID = ""
+			plan, err := Stage(Input{Scope: testScope, Members: []canonicalbatch.Member{create, query}, Allocate: func(int, graphops.ResourceKind) (string, error) { called = true; return testScope + "allocated", nil }})
+			if !errors.Is(err, ErrUnsupported) || called || !reflect.DeepEqual(plan, Plan{}) {
+				t.Fatalf("unsupported field hidden by true branch/empty inventory: %+v %v", plan, err)
+			}
+		})
+	}
+}
+
+func TestCandidateByteBudgetIncludesIdentityAndType(t *testing.T) {
+	one := existing(strings.Repeat("a", 512))
+	one.Type.URI = testScope + strings.Repeat("t", 512)
+	if len(one.Properties)+len(one.Metadata) >= 100 {
+		t.Fatal("fixture must fit obsolete payload-only accounting")
+	}
+	member, err := admit(selectMember("later", beadScan, ""), resourcequery.Limits{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := staging{input: Input{Context: context.Background()}, live: map[string]Resource{one.ID: one}, bindings: map[string]capturedBinding{}, selectionBytes: MaxSelectionBytes - 100}
+	if err := state.selectIDs(0, member); !errors.Is(err, ErrLimit) {
+		t.Fatalf("large identity/Type view bypassed cumulative byte bound: %v", err)
+	}
+	if len(state.selections) != 0 || len(state.bindings) != 0 {
+		t.Fatal("over-budget candidate returned a partial capture")
 	}
 }
