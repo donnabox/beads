@@ -308,6 +308,9 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 		if len(encoded) > AtomicBatchResultLimit {
 			return fmt.Errorf("%w: complete batch result exceeds local limit", graph.ErrValidation)
 		}
+		if _, err := validateAtomicBatchRetained(encoded, s.ScopeURL(), members); err != nil {
+			return err
+		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_batch_decisions(decision_key,context,request,actor,result) VALUES(?,?,?,?,?)`, key, contextJSON, request, actor, encoded); err != nil {
 			return err
 		}

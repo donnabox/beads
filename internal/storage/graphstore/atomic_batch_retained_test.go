@@ -43,7 +43,7 @@ func retainedTestFixture(t *testing.T) (BatchResult, []canonicalbatch.Member) {
 }
 
 func TestAtomicBatchRetainedPositiveCarriers(t *testing.T) {
-	for _, scenario := range []string{"generic", "native", "noop", "allocated", "legacy-scalar", "empty-set", "metadata-omitted", "bindings", "remote-type"} {
+	for _, scenario := range []string{"generic", "native", "noop", "allocated", "empty-set", "metadata-omitted", "bindings", "remote-type"} {
 		t.Run(scenario, func(t *testing.T) {
 			result, members := retainedTestFixture(t)
 			switch scenario {
@@ -61,10 +61,6 @@ func TestAtomicBatchRetainedPositiveCarriers(t *testing.T) {
 				result.Resources[0].Resource, result.Resources[0].Outcome = nil, "allocated"
 				result.Results = append(result.Results, BatchOperationResult{OperationIndex: 1, Operation: "deleteBead", IDs: []string{retainedTestScope + "a"}})
 				members = append(members, canonicalbatch.Member{Operation: "deleteBead", Bead: canonicalbatch.Operand{URI: retainedTestScope + "a"}})
-			case "legacy-scalar":
-				result.Changed, result.Transaction, result.Resources = false, "", []BatchResourceOutcome{}
-				result.Results[0] = BatchOperationResult{Operation: "updateBead", ID: retainedTestScope + "a"}
-				members = []canonicalbatch.Member{{Operation: "updateBead", Bead: canonicalbatch.Operand{URI: retainedTestScope + "a"}}}
 			case "empty-set":
 				result.Changed, result.Transaction, result.Resources = false, "", []BatchResourceOutcome{}
 				result.Results = []BatchOperationResult{{Operation: "select", IDs: []string{}}, {OperationIndex: 1, Operation: "deleteBead", IDs: []string{}}}
@@ -114,6 +110,107 @@ func retainedTestOwnedFixture(t *testing.T) (BatchResult, []canonicalbatch.Membe
 	result.Results[0] = BatchOperationResult{Operation: "createLink", IDs: []string{link.ID}}
 	result.Resources = []BatchResourceOutcome{{ID: source.ID, ResourceKind: graph.KindBead, Changed: true, Outcome: "updated", Resource: retainedTestJSON(t, source)}, {ID: link.ID, ResourceKind: graph.KindLink, Changed: true, Outcome: "created", Resource: linkRaw, OwnerRevisions: []BatchOwnerRevision{{ID: source.ID, Revision: source.Revision}}}}
 	return result, []canonicalbatch.Member{{Operation: "createLink", ID: "z-link"}}
+}
+
+func retainedTestScalar(t *testing.T, result *BatchResult) {
+	t.Helper()
+	for i := range result.Results {
+		row := &result.Results[i]
+		if len(row.IDs) != 1 {
+			t.Fatal("scalar fixture requires singleton operation results")
+		}
+		row.ID, row.IDs = row.IDs[0], nil
+	}
+}
+
+func TestAtomicBatchRetainedScalarCompleteCarriers(t *testing.T) {
+	for _, scenario := range []string{"created", "native", "noop", "allocated", "owned-pin", "deleted-owner"} {
+		t.Run(scenario, func(t *testing.T) {
+			result, members := retainedTestFixture(t)
+			switch scenario {
+			case "native", "noop":
+				result.Results[0].Operation = "updateBead"
+				members = []canonicalbatch.Member{{Operation: "updateBead", Bead: canonicalbatch.Operand{URI: retainedTestScope + "a"}}}
+				result.Resources[0].Outcome = "updated"
+				if scenario == "native" {
+					result.Resources[0].Resource = retainedTestEnvelope(t, "a", true)
+				} else {
+					result.Changed, result.Transaction = false, ""
+					result.Resources[0].Changed, result.Resources[0].Outcome = false, "unchanged"
+				}
+			case "allocated":
+				result.Resources[0].Resource, result.Resources[0].Outcome = nil, "allocated"
+				result.Results = append(result.Results, BatchOperationResult{OperationIndex: 1, Operation: "deleteBead", IDs: []string{retainedTestScope + "a"}})
+				members = append(members, canonicalbatch.Member{Operation: "deleteBead", Bead: canonicalbatch.Operand{URI: retainedTestScope + "a"}})
+			case "owned-pin", "deleted-owner":
+				result, members = retainedTestOwnedFixture(t)
+				if scenario == "deleted-owner" {
+					for i := range result.Resources {
+						row := &result.Resources[i]
+						row.Outcome, row.Resource = "deleted", nil
+						row.Deleted = &BatchDeletedIdentity{ID: row.ID, ResourceKind: row.ResourceKind, Type: retainedTestScope + "retired-type", Revision: retainedTestRevision}
+					}
+					result.Results = []BatchOperationResult{{Operation: "deleteLink", IDs: []string{retainedTestScope + "z-link"}}, {OperationIndex: 1, Operation: "deleteBead", IDs: []string{retainedTestScope + "a"}}}
+					members = []canonicalbatch.Member{{Operation: "deleteLink", Link: canonicalbatch.Operand{URI: retainedTestScope + "z-link"}}, {Operation: "deleteBead", Bead: canonicalbatch.Operand{URI: retainedTestScope + "a"}}}
+				}
+			}
+			retainedTestScalar(t, &result)
+			raw := retainedTestJSON(t, result)
+			decoded, err := validateAtomicBatchRetained(raw, retainedTestScope, members)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(raw, retainedTestJSON(t, decoded)) {
+				t.Fatal("validation rewrote complete historical scalar carrier or pins")
+			}
+		})
+	}
+}
+
+func TestAtomicBatchRetainedRejectsScalarDisguisedCorruption(t *testing.T) {
+	for _, scenario := range []string{"missing-all", "missing-one", "wrong-variant", "unrelated-extra", "owner-only-variant", "missing-owner", "owner-revision", "missing-captured-owner"} {
+		t.Run(scenario, func(t *testing.T) {
+			result, members := retainedTestFixture(t)
+			switch scenario {
+			case "missing-all":
+				// This was the fictional compatibility fixture: no historical
+				// producer emitted an update without its Resource outcome.
+				result.Changed, result.Transaction, result.Resources = false, "", []BatchResourceOutcome{}
+				result.Results[0].Operation = "updateBead"
+				members = []canonicalbatch.Member{{Operation: "updateBead", Bead: canonicalbatch.Operand{URI: retainedTestScope + "a"}}}
+			case "missing-one":
+				// Keep another changed outcome so completeness, rather than the
+				// aggregate Changed check, must reject this missing identity.
+				result.Results = append(result.Results, BatchOperationResult{OperationIndex: 1, Operation: "createBead", IDs: []string{retainedTestScope + "b"}})
+				members = append(members, canonicalbatch.Member{Operation: "createBead", ID: "b"})
+			case "wrong-variant":
+				result.Results[0].Operation = "updateBead"
+				members = []canonicalbatch.Member{{Operation: "updateBead", Bead: canonicalbatch.Operand{URI: retainedTestScope + "a"}}}
+			case "unrelated-extra":
+				result.Resources = append(result.Resources, BatchResourceOutcome{ID: retainedTestScope + "z", ResourceKind: graph.KindBead, Changed: true, Outcome: "updated", Resource: retainedTestEnvelope(t, "z", false)})
+			default:
+				result, members = retainedTestOwnedFixture(t)
+				switch scenario {
+				case "owner-only-variant":
+					result.Resources[0].Outcome = "created"
+				case "missing-owner":
+					result.Resources = result.Resources[1:]
+				case "owner-revision":
+					result.Resources[1].OwnerRevisions[0].Revision = retainedTestTransaction
+				case "missing-captured-owner":
+					// A direct owner mutation must not disguise a missing
+					// correlation between its capture and the Link outcome.
+					result.Results = append(result.Results, BatchOperationResult{OperationIndex: 1, Operation: "updateBead", IDs: []string{retainedTestScope + "a"}})
+					members = append(members, canonicalbatch.Member{Operation: "updateBead", Bead: canonicalbatch.Operand{URI: retainedTestScope + "a"}})
+					result.Resources[1].OwnerRevisions = nil
+				}
+			}
+			retainedTestScalar(t, &result)
+			if _, err := validateAtomicBatchRetained(retainedTestJSON(t, result), retainedTestScope, members); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("scalar carrier disguised retained corruption: %v", err)
+			}
+		})
+	}
 }
 
 func TestAtomicBatchRetainedOwnersPinsAndDeletedLastLive(t *testing.T) {

@@ -684,7 +684,9 @@ erasure, restoration or identifier reuse.
 
 ## Ordered property changes
 
-`--patch` applies a nonempty ordered array to a checked predecessor. Memory
+`--patch` applies an ordered operation array to a checked predecessor. The
+array may be empty: `[]` preserves the selected base, so selecting an older
+revision can still restore content that differs from the current resource. Memory
 and Link evaluate inside their write transactions; Issue pins the observed
 revision before evaluating and retries against the new current state if an
 unguarded concurrent writer wins, while its native writer owns the commit.
