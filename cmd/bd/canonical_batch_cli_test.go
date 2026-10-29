@@ -3,9 +3,13 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/spf13/cobra"
 	"testing"
 )
 
@@ -75,5 +79,42 @@ func TestCanonicalMemberEmissionWorkflow(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(work, ".beads")); !os.IsNotExist(err) {
 		t.Fatal("offline authoring initialized a workspace")
+	}
+}
+
+// Execution consumes the actor as frozen invocation input. Emission has no
+// execution identity, and retry must use its already-frozen actor.
+func TestCanonicalBatchActorFlagAdmission(t *testing.T) {
+	saved, savedOutput, savedReporter := canonicalBatchRetry, graphFailureOutput, graphFailureReporter
+	canonicalBatchRetry, graphFailureReporter = nil, nil
+	var diagnostics bytes.Buffer
+	graphFailureOutput = &diagnostics
+	t.Cleanup(func() {
+		canonicalBatchRetry, graphFailureOutput, graphFailureReporter = saved, savedOutput, savedReporter
+	})
+	for _, tc := range []struct{ mode, want string }{
+		{"", "canonical batch requires --file"},
+		{"batch", "--actor is not supported in canonical authoring"},
+	} {
+		cmd := &cobra.Command{Use: "batch"}
+		cmd.Flags().String("actor", "", "")
+		cmd.Flags().String("dry-run-mode", "", "")
+		cmd.Flags().String("file", "", "")
+		args := []string{"--actor", "test-author"}
+		if tc.mode != "" {
+			args = append(args, "--dry-run-mode", tc.mode)
+		}
+		if err := cmd.ParseFlags(args); err != nil {
+			t.Fatal(err)
+		}
+		diagnostics.Reset()
+		err := runCanonicalBatch(cmd)
+		status, ok := err.(*exitError)
+		if !ok || status.Code != 2 || !strings.Contains(diagnostics.String(), tc.want) {
+			t.Fatalf("mode %q: wanted %q and status2, got %v: %s", tc.mode, tc.want, err, diagnostics.String())
+		}
+		if err := canonicalScalarOccurrences(cmd, []string{"--actor", "first", "--actor", "second"}, "actor"); err == nil {
+			t.Fatal("duplicate actor lost invocation intent")
+		}
 	}
 }

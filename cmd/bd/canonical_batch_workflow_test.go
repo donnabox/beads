@@ -128,4 +128,37 @@ func TestCanonicalBatchCLIWorkflow(t *testing.T) {
 	if !reflect.DeepEqual(empty, emptyReplay) {
 		t.Fatalf("empty set decision was reexecuted or lost: %+v %+v", empty, emptyReplay)
 	}
+
+	// The native Issue stays in its authoritative row/version plane. Two batch
+	// edits publish its final state once rather than creating a generic stand-in.
+	native := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Native", "--type", "task", "--id", "native", "--force", "--json"))
+	write(emit("update", "native", "--set-property", "title=Temporary") +
+		emit("update", "native", "--set-property", "title=Published", "--set-metadata", "checked=true"))
+	nativeResult := run("", "batch", "--file", file, "--idempotency-key", "native-content", "--actor", "test-author")
+	if !nativeResult.Changed || len(nativeResult.Resources) != 1 || len(nativeResult.Results) != 2 {
+		t.Fatalf("native batch returned incomplete results: %+v", nativeResult)
+	}
+	var published graphstore.IssueRecord
+	if err := json.Unmarshal(nativeResult.Resources[0].Resource, &published); err != nil {
+		t.Fatal(err)
+	}
+	shown := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "show", native.ID, "--format", "graph-json", "--json"))
+	// graphProjectCompleteRecords intentionally removes the legacy version
+	// alias from CLI output. The experimental batch retains the native record;
+	// compare every field after removing only that checked redundant alias.
+	if shown.Version != "" || published.Version != published.Revision {
+		t.Fatalf("unexpected native/CLI revision aliases: %+v %+v", published, shown)
+	}
+	publishedCLI := published
+	publishedCLI.Version = ""
+	if published.Type != native.Type || published.Properties.Title != "Published" || published.Attribution.Actor != "test-author" || published.Attribution.Status != "claimed" || !reflect.DeepEqual(shown, publishedCLI) {
+		t.Fatalf("batch result diverged from native ordinary show: %+v %+v", published, shown)
+	}
+	// Historical native content uses the existing adapter and the same new
+	// canonical object flags, independently of batch's selected member grammar.
+	copied := graphMixedResult[graphstore.IssueMutationResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "update", native.ID, "--actor", "test-author", "--from-revision", "="+native.Revision,
+		"--set-property", "title=Historical edited", "--patch-metadata", `[{"op":"add","path":"/copied","value":true}]`, "--if-revision", "="+published.Revision, "--json"))
+	if !copied.Changed || copied.Issue.Type != native.Type || copied.Issue.Properties.Title != "Historical edited" || string(copied.Issue.Metadata) != `{"copied":true}` {
+		t.Fatalf("native copy lost canonical edit intent: %+v", copied)
+	}
 }
