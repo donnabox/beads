@@ -362,15 +362,19 @@ func testIntrinsicFooDefinitionCreateAndPrototype(t *testing.T, demoVariable str
 	}
 	definition := decode(created)
 	var identity struct {
-		ID       string `json:"id"`
-		Revision string `json:"revision"`
-		Type     struct {
+		ID         string                     `json:"id"`
+		Revision   string                     `json:"revision"`
+		Properties map[string]json.RawMessage `json:"properties"`
+		Type       struct {
 			URI      string `json:"uri"`
 			Revision string `json:"revision"`
 		} `json:"type"`
 	}
-	if err := json.Unmarshal(definition, &identity); err != nil || identity.ID != "https://example.invalid/intrinsic-show/foo" || identity.Revision == "" || identity.Type.URI != "https://github.com/gastownhall/bdp/types/type-system/bead-type" || identity.Type.Revision != "bead-type-1" {
+	if err := json.Unmarshal(definition, &identity); err != nil || identity.ID != "https://example.invalid/intrinsic-show/foo" || identity.Revision == "" || identity.Type.URI != "https://github.com/gastownhall/bdp/types/type-system/bead-type" || identity.Type.Revision != "bead-type-2" {
 		t.Fatalf("new local definition identity: %v %s", err, definition)
+	}
+	if identity.Properties == nil || len(identity.Properties) != 0 {
+		t.Fatalf("fresh definition manufactured local schema or properties: %s", definition)
 	}
 	assertSame := func(out string) {
 		t.Helper()

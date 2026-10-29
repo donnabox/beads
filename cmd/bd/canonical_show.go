@@ -26,7 +26,7 @@ func canonicalLinkProtection() *clioutput.Protection {
 
 // The fresh local definition adapter adopts PR316's exact local/global identity
 // contract. Legacy records retain bdpwire.Pin and its legacy DTOs unchanged.
-const intrinsicDefinitionContract = "c6dfb3c05fe707cf605030c5661123e8dda0d8f8"
+const intrinsicDefinitionContract = "38534cf653a4dab7ed5a0a3f25337c90318a9b2e"
 
 func canonicalShowDescriptor(_ string, record any) clioutput.Descriptor {
 	descriptor := canonicalResourceDescriptor()
@@ -196,6 +196,16 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 		renderer, err := clioutput.New(descriptor, opts)
 		if err != nil {
 			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
+		}
+		if doc, ok := result.(resourceget.DefinitionDocument); ok && definitionHumanView(opts) {
+			data, err := renderDefinitionHuman(doc)
+			if err != nil {
+				return canonicalFailure(cmd, renderer, "output_error", err.Error(), 1)
+			}
+			if err := writeCanonicalDocument(cmd.OutOrStdout(), data); err != nil {
+				return canonicalCollectionWriteError(cmd, err)
+			}
+			return nil
 		}
 		return renderCanonicalResult(cmd, renderer, result)
 	})

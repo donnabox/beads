@@ -67,13 +67,14 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 // cursor authority. Do not construct an ephemeral pager and publish dead cursors,
 // or set native next:null after discarding undisplayed rows.
 type canonicalCollectionPlan struct {
-	selection       *graphread.Selection
-	linkRequest     graphstore.LinkCollectionRequest
-	options         clioutput.Options
-	paging          clioutput.Paging
-	links           bool
-	jsonl           bool
-	definitionScope string
+	selection           *graphread.Selection
+	linkRequest         graphstore.LinkCollectionRequest
+	options             clioutput.Options
+	paging              clioutput.Paging
+	links               bool
+	jsonl               bool
+	definitionScope     string
+	definitionDocuments []resourceget.DefinitionDocument
 }
 
 type canonicalCollectionFailure struct {
@@ -402,6 +403,24 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 		if err != nil {
 			return canonicalFailure(cmd, failure, "output_error", fmt.Sprintf("BDP collection item: %v", err), 1)
 		}
+	}
+	if plan.definitionDocuments != nil && definitionHumanView(plan.options) {
+		if len(plan.definitionDocuments) != len(records) {
+			return canonicalFailure(cmd, failure, "output_error", "definition display correspondence is incomplete", 1)
+		}
+		for i, doc := range plan.definitionDocuments {
+			if string(doc.NativeJSON()) != string(records[i]) {
+				return canonicalFailure(cmd, failure, "output_error", "definition display correspondence does not match selected record", 1)
+			}
+		}
+		data, err := renderDefinitionHumanCollection(plan.definitionScope, plan.definitionDocuments)
+		if err != nil {
+			return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
+		}
+		if err := writeCanonicalDocument(cmd.OutOrStdout(), data); err != nil {
+			return canonicalCollectionWriteError(cmd, err)
+		}
+		return nil
 	}
 	if plan.jsonl {
 		stream, err := renderer.NewJSONL(cmd.OutOrStdout())

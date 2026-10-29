@@ -96,6 +96,7 @@ func runIntrinsicDefinitionList(cmd *cobra.Command) error {
 		return store.ListDefinitions(ctx, family, exact)
 	}, func(value any) error {
 		documents := value.([]resourceget.DefinitionDocument)
+		plan.definitionDocuments = append([]resourceget.DefinitionDocument{}, documents...)
 		records := make([]json.RawMessage, len(documents))
 		for i, document := range documents {
 			records[i] = document.NativeJSON()

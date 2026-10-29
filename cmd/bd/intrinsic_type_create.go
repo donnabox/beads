@@ -22,8 +22,8 @@ var intrinsicTypeCmd = &cobra.Command{
 }
 
 var intrinsicTypeCreateCmd = &cobra.Command{
-	Use: "create --id ID", Short: "Create a local BeadType with an open object properties schema",
-	Long: "Create a real locally owned BeadType definition in a fresh workspace initialized with --graph-mode link --graph-profile types. The definition uses the standard 2020-12 object properties schema. Custom instance creation remains an explicitly unsaved preview.",
+	Use: "create --id ID", Short: "Create a local BeadType definition",
+	Long: "Create a real locally owned BeadType definition in a fresh workspace initialized with --graph-mode link --graph-profile types. New publication2 workspaces omit propertiesSchema when no local constraints are supplied; inherited constraints still apply. Retained publication1 workspaces preserve their explicit open-object schema. Custom instance creation remains an explicitly unsaved preview.",
 	Args: cobra.NoArgs, SilenceErrors: true, SilenceUsage: true,
 	Annotations: map[string]string{skipStoreAnnotation: "1", canonicalDefaultAnnotation: "1"},
 	RunE:        runIntrinsicTypeCreate,
@@ -180,23 +180,36 @@ func runIntrinsicTypedBeadPreview(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		var definition struct {
-			Type       struct{ URI, Revision string } `json:"type"`
-			Properties struct {
-				Schema json.RawMessage `json:"propertiesSchema"`
-			} `json:"properties"`
-		}
-		if err := json.Unmarshal(doc.NativeJSON(), &definition); err != nil {
-			return nil, "", err
-		}
-		schema, err := graph.CanonicalizeJSON(definition.Properties.Schema)
-		if err != nil || string(schema) != `{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object"}` || definition.Type.URI != "https://github.com/gastownhall/bdp/types/type-system/bead-type" || definition.Type.Revision != "bead-type-1" {
-			return nil, "", fmt.Errorf("%w: provisional create accepts only the generated open-object BeadType", graphstore.ErrCapabilityUnavailable)
+		if !intrinsicPreviewTypeSupported(doc.NativeJSON()) {
+			return nil, "", fmt.Errorf("%w: provisional create accepts only the generated unconstrained BeadType for its recorded publication", graphstore.ErrCapabilityUnavailable)
 		}
 		preview := map[string]any{"prototype": true, "persisted": false, "type": map[string]string{"uri": doc.ID(), "revision": doc.Revision()}, "properties": values}
 		if id != "" {
 			preview["proposedId"] = proposedID
 		}
-		return preview, "Provisional create preview; no Bead was saved. Type: " + doc.ID() + "@" + doc.Revision(), nil
+		return preview, "UNSAVED PREVIEW — no Bead was created.\nIt will not appear in bd list.\nType: " + doc.ID() + "@" + doc.Revision(), nil
 	}, func(value any, human string) error { return graphPrint(value, human, quietFlag) })
+}
+
+// GetDefinition has already checked the complete generated body against its
+// recorded native context. This deliberately narrow preview check is not a
+// generic Type/schema validator: unknown editions and authored constraints refuse.
+// Publication1 keeps its old literal schema; publication2 keeps genuine absence.
+func intrinsicPreviewTypeSupported(raw []byte) bool {
+	var definition struct {
+		Type       struct{ URI, Revision string } `json:"type"`
+		Properties map[string]json.RawMessage     `json:"properties"`
+	}
+	if json.Unmarshal(raw, &definition) != nil || definition.Properties == nil || definition.Type.URI != "https://github.com/gastownhall/bdp/types/type-system/bead-type" {
+		return false
+	}
+	switch definition.Type.Revision {
+	case "bead-type-1":
+		schema, err := graph.CanonicalizeJSON(definition.Properties["propertiesSchema"])
+		return err == nil && string(schema) == `{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object"}`
+	case "bead-type-2":
+		return len(definition.Properties) == 0
+	default:
+		return false
+	}
 }
