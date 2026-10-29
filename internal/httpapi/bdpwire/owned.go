@@ -16,6 +16,9 @@ type OwnedWildcardDeclaration struct {
 // OwnedOutgoingDeclarations separates the reserved wildcard from explicit
 // Link Type declarations. Types must never contain the reserved "*" key.
 // A nil TypeDescriptor.OwnsOutgoing omits the optional declaration altogether.
+// MarshalJSON and UnmarshalJSON own the wildcard/map wire shape. The tags
+// describe the optional wildcard and explicit-type carrier to schema_parity_test;
+// encoding/json does not use them because the custom methods handle this type.
 type OwnedOutgoingDeclarations struct {
 	Wildcard *OwnedWildcardDeclaration       `json:"*,omitempty"`
 	Types    map[string]OwnedLinkDeclaration `json:"-"`
