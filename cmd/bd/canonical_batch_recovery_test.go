@@ -136,6 +136,24 @@ func TestCanonicalBatchRecoveryJournalRoundTrip(t *testing.T) {
 	}
 }
 
+func TestCanonicalBatchLegacyFileFlagCompatibility(t *testing.T) {
+	canonicalRecoveryTestIsolation(t)
+	graphPreviewActive = false
+	cmd := canonicalRecoveryTestCommand(t, "batch", "--file", "earlier.txt", "--file", "last.txt")
+	batchCmd = cmd
+	if handled, err := admitCanonicalAuthoring(cmd); handled || err != nil {
+		t.Fatalf("canonical admission changed legacy scalar parsing: handled=%t err=%v", handled, err)
+	}
+	if file, _ := cmd.Flags().GetString("file"); file != "last.txt" {
+		t.Fatalf("legacy Cobra last-value behavior changed: %q", file)
+	}
+	cmd = canonicalRecoveryTestCommand(t, "batch", "--input-format", "jsonl", "--file", "earlier.jsonl", "--file", "last.jsonl")
+	batchCmd = cmd
+	if handled, err := admitCanonicalAuthoring(cmd); !handled || err == nil {
+		t.Fatalf("explicit canonical input accepted conflicting file arguments: handled=%t err=%v", handled, err)
+	}
+}
+
 func TestCanonicalBatchRecoveryAdmissionUsesFrozenInputs(t *testing.T) {
 	canonicalRecoveryTestIsolation(t)
 	original := canonicalRecoveryConfiguredWorkspace(t, "https://example.invalid/original/")

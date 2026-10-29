@@ -69,8 +69,8 @@ func canonicalBatchSelected(cmd *cobra.Command) bool {
 // A successful emission is an unexecuted request, never a mutation result.
 func admitCanonicalAuthoring(cmd *cobra.Command) (bool, error) {
 	canonicalBatchRetry = nil
-	if cmd == batchCmd {
-		if err := canonicalScalarOccurrences(cmd, os.Args[1:], "scope", "input-format", "batch-version", "file", "dry-run-mode", "idempotency-key", "retry-file", "actor"); err != nil {
+	if canonicalBatchSelected(cmd) {
+		if err := canonicalBatchScalars(cmd); err != nil {
 			return true, graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
@@ -389,6 +389,9 @@ func canonicalCompileCRUDMember(cmd *cobra.Command, args []string, scope string)
 }
 
 func runCanonicalBatch(cmd *cobra.Command) error {
+	if err := canonicalBatchScalars(cmd); err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
 	if canonicalBatchRetry != nil {
 		batch, err := canonicalbatch.Compile(canonicalBatchRetry.Request, canonicalbatch.Options{Format: "json", Scope: canonicalBatchRetry.Scope})
 		if err != nil {
@@ -449,6 +452,10 @@ func runCanonicalBatch(cmd *cobra.Command) error {
 		return executeCanonicalBatch(cmd, batch)
 	}
 	return writeCanonicalDocument(cmd.OutOrStdout(), append(batch.NativeJSON(), '\n'))
+}
+
+func canonicalBatchScalars(cmd *cobra.Command) error {
+	return canonicalScalarOccurrences(cmd, os.Args[1:], "scope", "input-format", "batch-version", "file", "dry-run-mode", "idempotency-key", "retry-file", "actor")
 }
 
 func canonicalAuthoringFlags(cmd *cobra.Command, names ...string) error {
