@@ -158,6 +158,8 @@ var mutationEntryPoints = []string{
 // journaled. The staleness check fails if any stops being flagged, so an
 // exemption cannot rot.
 var beadDMLExemptions = map[string]string{
+	"ApplyCanonicalDependencyFinalRowsInTx":  "private final-row constituent; fixed policy defers all native facts to EmitCanonicalDependencyFinalFactsInTx",
+	"SettleCanonicalDependencyReadinessInTx": "private readiness settlement defers derived facts until final owner publication",
 	// (1) Child counters are derived CLI acceleration state. In contrast,
 	// is_blocked is part of the exported bead snapshot and its recompute helpers
 	// structurally journal every value that actually changes.
