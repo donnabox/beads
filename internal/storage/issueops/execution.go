@@ -227,8 +227,8 @@ func ExecuteUpdate(ctx context.Context, tx *sql.Tx, request publicops.UpdateRequ
 	}
 	if labelsChanged {
 		changedAny = true
-		_, labelTable, eventTable, _ := WispTableRouting(IsActiveWispInTx(ctx, tx, attempt.IssueID))
-		tables.Add(labelTable, eventTable)
+		issueTable, labelTable, eventTable, _ := WispTableRouting(IsActiveWispInTx(ctx, tx, attempt.IssueID))
+		tables.Add(issueTable, labelTable, eventTable)
 	}
 	parentResult, err := ApplyParentPatch(ctx, tx, current, attempt.Patch.ParentID, attempt.Actor)
 	if err != nil {
