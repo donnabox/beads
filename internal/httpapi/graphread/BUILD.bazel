@@ -7,6 +7,9 @@ go_library(
         "inventory.go",
         "pagination.go",
         "projection.go",
+        "query.go",
+        "query_representation.go",
+        "query_representation_time.go",
         "reader.go",
         "selection.go",
         "selector.go",
@@ -18,6 +21,7 @@ go_library(
     deps = [
         "//graphops",
         "//internal/httpapi/bdpwire",
+        "//internal/resourcequery",
         "//internal/storage/graphstore",
     ],
 )
@@ -31,6 +35,9 @@ go_test(
         "metadata_projection_test.go",
         "native_types_test.go",
         "pagination_test.go",
+        "query_representation_test.go",
+        "query_representation_time_test.go",
+        "query_test.go",
         "reader_test.go",
         "selection_integration_test.go",
         "selection_test.go",
@@ -40,6 +47,7 @@ go_test(
     deps = [
         "//graphops",
         "//internal/httpapi/bdpwire",
+        "//internal/resourcequery",
         "//internal/storage/graphstore",
         "//issueops",
     ],
