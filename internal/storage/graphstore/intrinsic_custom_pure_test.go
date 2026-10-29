@@ -11,6 +11,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/intrinsictypecatalog"
 )
 
 func TestCustomBeadTypeGeneratedRecord(t *testing.T) {
@@ -90,9 +91,19 @@ func TestCustomDefinitionContextCodec(t *testing.T) {
 }
 
 func TestCustomDefinitionReadCorrespondence(t *testing.T) {
+	for _, source := range []intrinsictypecatalog.Source{intrinsictypecatalog.SelectedSource(), intrinsictypecatalog.CurrentSource()} {
+		t.Run(source.Path, func(t *testing.T) { testCustomDefinitionReadCorrespondence(t, source) })
+	}
+}
+
+func testCustomDefinitionReadCorrespondence(t *testing.T, source intrinsictypecatalog.Source) {
 	const aggregate = `SELECT COUNT(*),COUNT(p.path),CAST(LEAST(COALESCE(SUM(512+COALESCE(OCTET_LENGTH(c.public_id),0)+COALESCE(OCTET_LENGTH(c.type_url),0)+COALESCE(OCTET_LENGTH(p.properties),0)+COALESCE(OCTET_LENGTH(p.metadata),0)),0),?) AS UNSIGNED) FROM graph_preview_catalog c LEFT JOIN graph_preview_payloads p ON p.path=c.path WHERE c.path=? AND c.backing='type-definition'`
 	const header = `SELECT c.public_id,c.backing_key,c.revision,c.type_url,c.allocation_state,p.metadata,OCTET_LENGTH(p.properties) FROM graph_preview_catalog c JOIN graph_preview_payloads p ON p.path=c.path WHERE c.path=? AND c.backing='type-definition' AND c.resource_kind='bead' AND OCTET_LENGTH(p.metadata)<=512`
-	_, plan := intrinsicCollectionFixture(t)
+	catalog, err := intrinsictypecatalog.LoadSource(source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, plan := intrinsicCollectionFixtureFor(t, catalog)
 	ownType, err := customDefinitionAffiliation(plan)
 	if err != nil {
 		t.Fatal(err)
@@ -159,6 +170,10 @@ func TestCustomDefinitionReadCorrespondence(t *testing.T) {
 						body := raw
 						if mode == "wrong-body" {
 							body = bytes.Replace(raw, []byte(`"type":"object"`), []byte(`"type":"number"`), 1)
+							if bytes.Equal(body, raw) {
+								body = bytes.Clone(raw)
+								body[0] = '!'
+							}
 						}
 						expected := mock.ExpectQuery(`SELECT properties FROM graph_preview_payloads WHERE path=? AND OCTET_LENGTH(properties)=?`).WithArgs(path, len(raw))
 						if mode == "body-query-error" {
@@ -299,6 +314,122 @@ func TestCustomDefinitionSharedCollectionAllowance(t *testing.T) {
 	docs, err := (&Store{options: intrinsicProfileOptions()}).listCustomDefinitionsInTx(context.Background(), tx, plan, budget)
 	if !errors.Is(err, ErrLimitExceeded) || docs != nil {
 		t.Fatalf("shared allowance escaped: %d %v", len(docs), err)
+	}
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestIntrinsicOmissionRecordedEditions(t *testing.T) {
+	for _, source := range []intrinsictypecatalog.Source{intrinsictypecatalog.SelectedSource(), intrinsictypecatalog.CurrentSource()} {
+		t.Run(source.Path, func(t *testing.T) {
+			catalog, err := intrinsictypecatalog.LoadSource(source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, plan := intrinsicCollectionFixtureFor(t, catalog)
+			ownType, err := customDefinitionAffiliation(plan)
+			if err != nil {
+				t.Fatal(err)
+			}
+			doc, err := generatedBeadTypeDocument(plan.Scope().URI, "Foo", strings.Repeat("d", 32), ownType)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, present := doc.Origin(); present {
+				t.Fatal("custom definition acquired intrinsic origin")
+			}
+			var fields map[string]json.RawMessage
+			if err = json.Unmarshal(doc.NativeJSON(), &fields); err != nil {
+				t.Fatal(err)
+			}
+			var props map[string]json.RawMessage
+			if err = json.Unmarshal(fields["properties"], &props); err != nil {
+				t.Fatal(err)
+			}
+			_, present := props["propertiesSchema"]
+			if present != (source == intrinsictypecatalog.SelectedSource()) {
+				t.Fatal("old meaning rewritten or new omission filled")
+			}
+			if present {
+				want, _ := graph.CanonicalizeJSON([]byte(generatedDefinitionProperties))
+				if !bytes.Equal(fields["properties"], want) {
+					t.Fatal("legacy producer properties changed")
+				}
+			} else if len(props) != 0 {
+				t.Fatal("new omission injected values")
+			}
+			codec, err := encodeCustomDefinitionContext(plan.Scope().ContextID, ownType)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := decodeCustomDefinitionContext(codec)
+			if err != nil || got.Type != ownType {
+				t.Fatalf("exact codec pin: %v", err)
+			}
+			for family, count := range map[string]int{"type": 4, "bead-type": 3, "link-type": 1} {
+				docs, err := selectIntrinsicDefinitionBeads(plan.Scope().URI, catalog, plan, family, "", newIntrinsicMetadataBudget())
+				if err != nil || len(docs) != count {
+					t.Fatalf("%s: %d %v", family, len(docs), err)
+				}
+			}
+			other := intrinsictypecatalog.SelectedSource()
+			if source == other {
+				other = intrinsictypecatalog.CurrentSource()
+			}
+			wrong, err := intrinsictypecatalog.LoadSource(other)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if docs, err := selectIntrinsicDefinitionBeads(plan.Scope().URI, wrong, plan, "type", "", newIntrinsicMetadataBudget()); !errors.Is(err, ErrInvalidStore) || docs != nil {
+				t.Fatalf("mixed collection context: %v", err)
+			}
+		})
+	}
+}
+
+func TestIntrinsicContextSourceTupleRefusal(t *testing.T) {
+	for _, source := range []intrinsictypecatalog.Source{intrinsictypecatalog.SelectedSource(), intrinsictypecatalog.CurrentSource()} {
+		t.Run(source.Path, func(t *testing.T) {
+			got, err := intrinsicContextSource(source.Repository, source.Commit, source.Path, source.SHA256, uint64(source.Bytes), source.SemanticSource(), source.Interpretation())
+			if err != nil || got != source {
+				t.Fatalf("recorded tuple: %v", err)
+			}
+			for _, field := range []string{"repo", "commit", "path", "sha", "bytes", "semantic", "interpretation"} {
+				t.Run(field, func(t *testing.T) {
+					repo, commit, path, sha, size, semantic, encoding := source.Repository, source.Commit, source.Path, source.SHA256, uint64(source.Bytes), source.SemanticSource(), source.Interpretation()
+					switch field {
+					case "repo":
+						repo += "x"
+					case "commit":
+						commit = strings.Repeat("0", 40)
+					case "path":
+						path += "x"
+					case "sha":
+						sha = strings.Repeat("0", 64)
+					case "bytes":
+						size++
+					case "semantic":
+						semantic = strings.Repeat("0", 40)
+					case "interpretation":
+						encoding += "x"
+					}
+					if got, err := intrinsicContextSource(repo, commit, path, sha, size, semantic, encoding); !errors.Is(err, ErrInvalidStore) || got != (intrinsictypecatalog.Source{}) {
+						t.Fatalf("mixed tuple escaped: %v", err)
+					}
+				})
+			}
+		})
+	}
+	// Unknown recorded headers must refuse before any full source/member body
+	// query. Strict SQL mocks make accidental fallback/hydration observable.
+	tx, mock := intrinsicProfileTransaction(t)
+	o := intrinsicProfileOptions()
+	id := strings.Repeat("b", 32)
+	source := intrinsictypecatalog.CurrentSource()
+	mock.ExpectQuery(`SELECT scope_url,authority_id,source_repository,source_commit,source_path,source_sha256,OCTET_LENGTH(source_bytes),semantic_source_commit,interpretation,context_sha256 FROM graph_preview_intrinsic_contexts WHERE context_id=? AND OCTET_LENGTH(scope_url)=? AND OCTET_LENGTH(source_repository)<=256 AND OCTET_LENGTH(source_path)<=1024`).WithArgs(id, len(o.Binding.ScopeURL)).WillReturnRows(sqlmock.NewRows([]string{"scope", "authority", "repo", "commit", "path", "sha", "bytes", "semantic", "encoding", "digest"}).AddRow(o.Binding.ScopeURL, o.Binding.AuthorityID, source.Repository, source.Commit, source.Path, source.SHA256, source.Bytes, source.SemanticSource(), "unknown", strings.Repeat("c", 64))).RowsWillBeClosed()
+	if plan, err := loadIntrinsicContextInTx(context.Background(), tx, o, id, newIntrinsicMetadataBudget()); !errors.Is(err, ErrInvalidStore) || plan != nil {
+		t.Fatalf("unknown header hydrated/fell back: %v", err)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatal(err)

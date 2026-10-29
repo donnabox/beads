@@ -33,3 +33,21 @@ mapping while preserving the shared global intrinsic identities remains separate
 The private semantic validator and schema helper support finite refusal tests;
 they are not an alternate public trust boundary. Pure tests do not prove
 installed CLI behavior, storage, registration or provider conformance.
+
+## Successor with an optional local schema
+
+The candidate additionally retains byte-exact `intrinsic-2.json` from committed
+BDP source `38534cf653a4dab7ed5a0a3f25337c90318a9b2e`, SHA-256
+`d5541ba6edcd9f02524e78726a77e4f4b37d2a35af0b9f9694bc075d9b7e983b`.
+This is source selection pending normal qualification, not a claim that BDP main
+or a running provider has adopted it. `SelectedSource`/`LoadSelected` retain
+publication1 exactly; `CurrentSource`/`LoadCurrent` select publication2 for new
+fresh contexts. `LoadSource` accepts only either complete built-in tuple and
+never authenticates arbitrary caller bytes using a supplied digest.
+
+Both editions retain four explicit bootstrap schema environments. Edition2's
+metatype permits an ordinary definition to omit `propertiesSchema`; null still
+refuses and present schemas retain their validation rules. Recorded contexts
+select their own exact definitions, declaration captures and schema fingerprints.
+Publication1 bytes, pins and semantics remain unchanged; unknown or mixed tuples
+refuse. There is no installation, migration, registration or default API.

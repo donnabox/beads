@@ -6,7 +6,10 @@ go_library(
         "catalog.go",
         "source.go",
     ],
-    embedsrcs = ["intrinsic-1.json"],
+    embedsrcs = [
+        "intrinsic-1.json",
+        "intrinsic-2.json",
+    ],
     importpath = "github.com/steveyegge/beads/internal/intrinsictypecatalog",
     visibility = ["//:__subpackages__"],
     deps = [

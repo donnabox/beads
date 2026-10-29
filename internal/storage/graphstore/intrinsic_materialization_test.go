@@ -43,8 +43,11 @@ func TestIntrinsicBeadTypeProductionInitReopen(t *testing.T) {
 	if err = json.Unmarshal(first.Body, &body); err != nil {
 		t.Fatal(err)
 	}
-	if first.PublicID != "type-for-bead-type" || body.ID != o.Binding.ScopeURL+"type-for-bead-type" || body.Revision != first.Revision || body.Type.URI != "https://github.com/gastownhall/bdp/types/type-system/bead-type" || body.Type.Revision != "bead-type-1" {
+	if first.PublicID != "type-for-bead-type" || body.ID != o.Binding.ScopeURL+"type-for-bead-type" || body.Revision != first.Revision || body.Type.URI != "https://github.com/gastownhall/bdp/types/type-system/bead-type" || body.Type.Revision != "bead-type-2" {
 		t.Fatalf("wrong persisted definition: %s", first.Body)
+	}
+	if first.Global.URI != "https://github.com/gastownhall/bdp/types/type-system/bead-type" || first.Global.Revision != "bead-type-2" {
+		t.Fatal("native origin differs from checked shared definition")
 	}
 	first.Body[0] = '!'
 	again, err := s.GetIntrinsicDefinition(ctx, "type-for-bead-type", first.Revision)
@@ -67,6 +70,47 @@ func TestIntrinsicBeadTypeProductionInitReopen(t *testing.T) {
 	}
 	if reopened.Revision != again.Revision || !bytes.Equal(reopened.Body, again.Body) {
 		t.Fatal("reopen changed actual local record")
+	}
+	for _, localID := range []string{"type-for-bead-type", ""} {
+		doc, err := s.GetDefinitionForProjection(ctx, "beads/type-for-bead-type", localID, again.Revision)
+		if err != nil {
+			t.Fatal(err)
+		}
+		origin, ok := doc.Origin()
+		if !ok || origin.URI != first.Global.URI || origin.Revision != first.Global.Revision {
+			t.Fatal("projection origin did not follow checked retained binding")
+		}
+	}
+	foo, err := s.CreateBeadType(ctx, "omitted-schema-Foo", "omission-control")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, present := foo.Origin(); present {
+		t.Fatal("custom definition has intrinsic display origin")
+	}
+	var definition struct {
+		Properties map[string]json.RawMessage     `json:"properties"`
+		Type       struct{ URI, Revision string } `json:"type"`
+	}
+	if err := json.Unmarshal(foo.NativeJSON(), &definition); err != nil {
+		t.Fatal(err)
+	}
+	if _, present := definition.Properties["propertiesSchema"]; present || definition.Type.Revision != "bead-type-2" {
+		t.Fatal("new definition manufactured a local schema or lost exact pin")
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	s, err = OpenExisting(ctx, o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	retained, err := s.GetDefinition(ctx, "omitted-schema-Foo", foo.Revision())
+	if _, present := retained.Origin(); present {
+		t.Fatal("custom exact read acquired intrinsic display origin")
+	}
+	if err != nil || !bytes.Equal(retained.NativeJSON(), foo.NativeJSON()) {
+		t.Fatalf("omission changed on reopen: %v", err)
 	}
 	t.Run("unknown-exact-edition", func(t *testing.T) {
 		if _, e := s.GetDefinition(ctx, "type-for-bead-type", "unavailable-exact-edition"); !errors.Is(e, ErrVersionUnknown) {

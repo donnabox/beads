@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
-
+	"github.com/steveyegge/beads/internal/intrinsictypecatalog"
 	"github.com/steveyegge/beads/resourceget"
 )
 
@@ -22,6 +22,7 @@ type IntrinsicDocument struct {
 	Kind        graph.ResourceKind
 	Revision    string
 	ContextID   string
+	Global      intrinsictypecatalog.Reference `json:"-"` // checked display provenance only
 	Body        json.RawMessage
 }
 
@@ -108,7 +109,7 @@ func (s *Store) readIntrinsicDocumentInTx(ctx context.Context, tx *sql.Tx, path,
 			if err = budget.chargeBody(4 * len(member.Record)); err != nil {
 				return err
 			}
-			*out = IntrinsicDocument{PublicID: a.PublicID, PrivatePath: path, Kind: a.Kind, Revision: revision, ContextID: contextID, Body: append(json.RawMessage(nil), member.Record...)}
+			*out = IntrinsicDocument{PublicID: a.PublicID, PrivatePath: path, Kind: a.Kind, Revision: revision, ContextID: contextID, Global: member.Global, Body: append(json.RawMessage(nil), member.Record...)}
 			return nil
 		}
 	}
@@ -125,11 +126,7 @@ func (s *Store) GetDefinition(ctx context.Context, address, revision string) (re
 	if err != nil {
 		return resourceget.DefinitionDocument{}, err
 	}
-	kind := resourceget.DefinitionBead
-	if native.Kind == graph.KindLink {
-		kind = resourceget.DefinitionLink
-	}
-	return resourceget.NewDefinitionDocument(s.ScopeURL(), kind, native.Body)
+	return definitionDocumentForNative(s.ScopeURL(), native)
 }
 
 // GetDefinitionForProjection is the internal reader adapter: path is explicitly
@@ -158,11 +155,7 @@ func (s *Store) GetDefinitionForProjection(ctx context.Context, path, localID, r
 	if err != nil {
 		return resourceget.DefinitionDocument{}, err
 	}
-	kind := resourceget.DefinitionBead
-	if native.Kind == graph.KindLink {
-		kind = resourceget.DefinitionLink
-	}
-	return resourceget.NewDefinitionDocument(s.ScopeURL(), kind, native.Body)
+	return definitionDocumentForNative(s.ScopeURL(), native)
 }
 
 // LayoutVersion is an immutable request-metadata routing hint, like ScopeURL.
@@ -173,3 +166,21 @@ func (s *Store) LayoutVersion() int { return s.options.Binding.SchemaVersion }
 // intrinsicBeadBackingPath constructs only a private Bead backing locator.
 // Callers validate its key or independently match the whole public selector.
 func intrinsicBeadBackingPath(key string) string { return "beads/" + key }
+
+// Only native readers above construct this internal value. Intrinsic globals
+// come from the exact checked plan binding; custom definitions leave it empty.
+// This sidecar never changes the Resource JSON or supplies admission authority.
+func definitionDocumentForNative(scope string, native IntrinsicDocument) (resourceget.DefinitionDocument, error) {
+	kind := resourceget.DefinitionBead
+	if native.Kind == graph.KindLink {
+		kind = resourceget.DefinitionLink
+	}
+	doc, err := resourceget.NewDefinitionDocument(scope, kind, native.Body)
+	if err != nil {
+		return resourceget.DefinitionDocument{}, err
+	}
+	if native.Global != (intrinsictypecatalog.Reference{}) {
+		return doc.WithOrigin(native.Global.URI, native.Global.Revision)
+	}
+	return doc, nil
+}

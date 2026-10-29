@@ -47,6 +47,8 @@ type publication struct {
 // Catalog is an immutable checked fixed publication, not an installed catalog.
 // All accessors return independent copies, including complete original records.
 type Catalog struct {
+	source      Source
+	edition     string
 	raw         []byte
 	publication publication
 	definitions map[Reference]definition
@@ -58,12 +60,63 @@ type Catalog struct {
 // is deliberately no caller-selected digest, URI, arbitrary input or trust flag.
 func LoadSelected() (*Catalog, error) { return loadSelected(selectedBytes) }
 
-func loadSelected(raw []byte) (*Catalog, error) {
-	source := SelectedSource()
+func loadSelected(raw []byte) (*Catalog, error) { return loadSourceBytes(raw, SelectedSource()) }
+
+// LoadCurrent loads only the embedded successor for new fresh contexts.
+func LoadCurrent() (*Catalog, error) { return LoadSource(CurrentSource()) }
+
+// LoadSource accepts exactly one complete trusted source tuple. A caller's
+// digest cannot authenticate arbitrary bytes or select an unknown publication.
+func LoadSource(source Source) (*Catalog, error) {
+	switch source {
+	case SelectedSource():
+		return loadSourceBytes(selectedBytes, source)
+	case CurrentSource():
+		return loadSourceBytes(currentBytes, source)
+	default:
+		return nil, invalid("unknown fixed publication source")
+	}
+}
+
+func loadSourceBytes(raw []byte, source Source) (*Catalog, error) {
+	var edition string
+	switch source {
+	case SelectedSource():
+		edition = "1"
+	case CurrentSource():
+		edition = "2"
+	default:
+		return nil, invalid("unknown fixed publication source")
+	}
 	if len(raw) != source.Bytes || digest(raw) != source.SHA256 {
 		return nil, invalid("selected publication bytes differ from qualified source")
 	}
-	return validatePublication(raw)
+	return validatePublicationFor(raw, source, edition)
+}
+
+// Source returns the exact immutable artifact behind this checked catalog.
+func (c *Catalog) Source() Source {
+	if c == nil {
+		return Source{}
+	}
+	return c.source
+}
+
+// Pin selects a named intrinsic only inside this checked fixed publication.
+func (c *Catalog) Pin(name string) (Reference, bool) {
+	if c == nil {
+		return Reference{}, false
+	}
+	ref := c.pin(name)
+	_, ok := c.definitions[ref]
+	return ref, ok
+}
+
+func (c *Catalog) pin(name string) Reference {
+	return Reference{namespace + name, name + "-" + c.edition}
+}
+func (c *Catalog) schemaNamespace() string {
+	return "https://github.com/gastownhall/bdp/schemas/types/intrinsic-" + c.edition + "/"
 }
 
 // Bytes returns the complete unchanged publication serialization.
@@ -88,7 +141,7 @@ func (c *Catalog) Category(ref Reference) (graph.ResourceKind, bool) {
 	if !ok {
 		return "", false
 	}
-	if d.Type == pin("link-type") {
+	if d.Type == c.pin("link-type") {
 		return graph.KindLink, true
 	}
 	return graph.KindBead, true
@@ -109,15 +162,14 @@ func cloneRecords(records []json.RawMessage) []json.RawMessage {
 	return result
 }
 
-func pin(name string) Reference       { return Reference{namespace + name, name + "-1"} }
 func identity(d definition) Reference { return Reference{d.ID, d.Revision} }
 func digest(b []byte) string          { h := sha256.Sum256(b); return hex.EncodeToString(h[:]) }
 func invalid(format string, args ...any) error {
 	return fmt.Errorf("%w: fixed intrinsic publication: %s", graph.ErrValidation, fmt.Sprintf(format, args...))
 }
 
-// Private semantic entry point exists for finite mutations, not caller trust.
-func validatePublication(raw []byte) (*Catalog, error) {
+// Private semantic entry point supports the two checked loaders and finite mutations.
+func validatePublicationFor(raw []byte, source Source, edition string) (*Catalog, error) {
 	if len(raw) > 262144 || !utf8.Valid(raw) {
 		return nil, invalid("publication size/UTF-8")
 	}
@@ -133,7 +185,7 @@ func validatePublication(raw []byte) (*Catalog, error) {
 	if len(p.Definitions) != 4 || len(p.Declarations) != 2 {
 		return nil, invalid("expected four definitions and two declarations")
 	}
-	c := &Catalog{raw: bytes.Clone(raw), publication: p, definitions: map[Reference]definition{}, records: map[Reference]json.RawMessage{}}
+	c := &Catalog{source: source, edition: edition, raw: bytes.Clone(raw), publication: p, definitions: map[Reference]definition{}, records: map[Reference]json.RawMessage{}}
 	for _, record := range p.Definitions {
 		var d definition
 		if err := decode(record, &d); err != nil {
@@ -150,14 +202,14 @@ func validatePublication(raw []byte) (*Catalog, error) {
 		c.records[ref] = bytes.Clone(record)
 	}
 	for _, name := range []string{"type", "bead-type", "link-type", "refines"} {
-		ref := pin(name)
+		ref := c.pin(name)
 		d, ok := c.definitions[ref]
 		if !ok {
 			return nil, invalid("missing exact intrinsic %s", name)
 		}
-		affiliation := pin("bead-type")
+		affiliation := c.pin("bead-type")
 		if name == "refines" {
-			affiliation = pin("link-type")
+			affiliation = c.pin("link-type")
 		}
 		if d.Type != affiliation {
 			return nil, invalid("incorrect intrinsic affiliation %s", name)
@@ -172,19 +224,19 @@ func validatePublication(raw []byte) (*Catalog, error) {
 			return nil, invalid("incorrect abstract fact %s", name)
 		}
 	}
-	if !equalJSON(c.definitions[pin("type")].Properties["ownsOutgoing"], []byte(`[{"anyOf":[{"uri":"`+namespace+`refines","revision":"refines-1"}]}]`)) {
+	if !equalJSON(c.definitions[c.pin("type")].Properties["ownsOutgoing"], []byte(`[{"anyOf":[{"uri":"`+namespace+`refines","revision":"refines-`+c.edition+`"}]}]`)) {
 		return nil, invalid("Type must own Refines")
 	}
 	pairs := []any{}
 	for _, name := range []string{"bead-type", "link-type"} {
-		endpoint := map[string]any{"resourceKind": "bead", "scope": "either", "types": map[string]any{"anyOf": []Reference{pin(name)}}}
+		endpoint := map[string]any{"resourceKind": "bead", "scope": "either", "types": map[string]any{"anyOf": []Reference{c.pin(name)}}}
 		pairs = append(pairs, map[string]any{"source": endpoint, "target": endpoint})
 	}
 	expected, err := json.Marshal(map[string]any{"typeConstraints": pairs})
 	if err != nil {
 		return nil, err
 	}
-	if !equalJSON(c.definitions[pin("refines")].Properties["linkConstraints"], expected) {
+	if !equalJSON(c.definitions[c.pin("refines")].Properties["linkConstraints"], expected) {
 		return nil, invalid("Refines category-preserving pairs")
 	}
 	if err := c.checkDeclarations(); err != nil {
@@ -266,7 +318,7 @@ func (c *Catalog) checkDeclarations() error {
 		if _, exists := indexed[key]; exists {
 			return invalid("duplicate declaration")
 		}
-		if d.Properties == nil || d.Revision != "declaration-1" || d.Type != pin("refines") {
+		if d.Properties == nil || d.Revision != "declaration-"+c.edition || d.Type != c.pin("refines") {
 			return invalid("declaration exact pins/properties")
 		}
 		indexed[key] = raw
@@ -275,7 +327,7 @@ func (c *Catalog) checkDeclarations() error {
 	edges := map[Reference][]Reference{}
 	for ref, owner := range c.definitions {
 		for nominal, group := range owner.Owned {
-			if nominal != pin("refines").URI || len(group) == 0 {
+			if nominal != c.pin("refines").URI || len(group) == 0 {
 				return invalid("invalid nominal/empty captured group")
 			}
 			for _, raw := range group {
@@ -290,7 +342,7 @@ func (c *Catalog) checkDeclarations() error {
 				if d.Source != owner.ID {
 					return invalid("captured source differs from owner")
 				}
-				if d.Type != pin("refines") {
+				if d.Type != c.pin("refines") {
 					return invalid("wrong captured affiliation")
 				}
 				if _, ok := c.definitions[d.Target]; !ok {
@@ -321,12 +373,12 @@ func (c *Catalog) checkDeclarations() error {
 	// Fixed selected topology; validation above separately checks actual captured
 	// records, exact targets and DAG rather than relying on these expected names.
 	for _, name := range []string{"bead-type", "link-type"} {
-		key := Reference{namespace + name + "-refines-type", "declaration-1"}
+		key := Reference{namespace + name + "-refines-type", "declaration-" + c.edition}
 		var d declaration
 		if err := decode(indexed[key], &d); err != nil {
 			return invalid("missing assigned declaration %s", name)
 		}
-		if d.Source != pin(name).URI || d.Target != pin("type") {
+		if d.Source != c.pin(name).URI || d.Target != c.pin("type") {
 			return invalid("assigned declaration endpoints")
 		}
 	}
@@ -346,7 +398,7 @@ func (c *Catalog) checkDeclarations() error {
 			visited[ref] = true
 			pending = append(pending, d.Type)
 			for _, target := range edges[ref] {
-				pending = append(pending, pin("refines"), target)
+				pending = append(pending, c.pin("refines"), target)
 			}
 		}
 		if len(visited) != 4 {
@@ -516,12 +568,12 @@ func (c *Catalog) checkSchemas() error {
 	sets := map[Reference]schemaSet{}
 	names := map[string]string{"type": "type-definition", "bead-type": "bead-type-definition", "link-type": "link-type-definition", "refines": "refines"}
 	for name, stem := range names {
-		ref := pin(name)
+		ref := c.pin(name)
 		set, err := schemas(c.definitions[ref])
 		if err != nil {
 			return err
 		}
-		if set.root != schemaNamespace+stem+".properties.schema.json" {
+		if set.root != c.schemaNamespace()+stem+".properties.schema.json" {
 			return invalid("unexpected intrinsic schema identity")
 		}
 		roots[set.root] = set.resources[set.root]
@@ -529,11 +581,14 @@ func (c *Catalog) checkSchemas() error {
 	}
 	compiled := map[Reference]*jsonschema.Schema{}
 	expected := selectedSchemaDigests()
+	if c.edition == "2" {
+		expected = currentSchemaDigests()
+	}
 	for _, name := range []string{"type", "bead-type", "link-type", "refines"} {
-		ref := pin(name)
+		ref := c.pin(name)
 		set := sets[ref]
 		for uri, raw := range set.resources {
-			if strings.HasPrefix(uri, schemaNamespace) && !equalJSON(raw, roots[uri]) {
+			if strings.HasPrefix(uri, c.schemaNamespace()) && !equalJSON(raw, roots[uri]) {
 				return invalid("conflicting retained intrinsic schema")
 			}
 			// Check every retained resource, even unused ones and compiler-reserved
@@ -555,8 +610,8 @@ func (c *Catalog) checkSchemas() error {
 				}
 			}
 		}
-		if ref == pin("bead-type") || ref == pin("link-type") {
-			if _, ok := set.resources[sets[pin("type")].root]; !ok {
+		if ref == c.pin("bead-type") || ref == c.pin("link-type") {
+			if _, ok := set.resources[sets[c.pin("type")].root]; !ok {
 				return invalid("missing retained Type schema")
 			}
 		}
@@ -592,7 +647,7 @@ func (c *Catalog) checkSchemas() error {
 		if err != nil {
 			return err
 		}
-		if err := compiled[pin("refines")].Validate(value); err != nil {
+		if err := compiled[c.pin("refines")].Validate(value); err != nil {
 			return invalid("Refines properties: %v", err)
 		}
 	}

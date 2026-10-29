@@ -20,25 +20,37 @@ func loadIntrinsicContextInTx(ctx context.Context, tx *sql.Tx, o Options, id str
 	if o.Binding.SchemaVersion != TypesFreshSchemaVersion || !authorityID.MatchString(id) {
 		return nil, ErrInvalidStore
 	}
-	source := intrinsictypecatalog.SelectedSource()
-	// Four source/header copies and two bounded context-encoding buffers are
-	// reserved before any row bytes or reconstructed Plan bytes are retained.
-	if err := budget.chargeBody(4*source.Bytes + 4*len(o.Binding.ScopeURL) + 16384 + 2*intrinsicmaterialization.MaxContextBytes); err != nil {
+	// Acquire a bounded header first. Neither current source nor caller-provided
+	// digest may reinterpret a recorded context or authorize its body bytes.
+	if err := budget.chargeBody(4*len(o.Binding.ScopeURL) + 16384); err != nil {
 		return nil, err
 	}
-
 	var scope, authority, repo, commit, path, digest, semantic, interpretation, contextDigest string
-	var raw []byte
-	err := tx.QueryRowContext(ctx, `SELECT scope_url,authority_id,source_repository,source_commit,source_path,source_sha256,source_bytes,semantic_source_commit,interpretation,context_sha256 FROM graph_preview_intrinsic_contexts WHERE context_id=? AND OCTET_LENGTH(source_bytes)=? AND OCTET_LENGTH(scope_url)=? AND OCTET_LENGTH(source_repository)<=256 AND OCTET_LENGTH(source_path)<=1024`, id, source.Bytes, len(o.Binding.ScopeURL)).Scan(&scope, &authority, &repo, &commit, &path, &digest, &raw, &semantic, &interpretation, &contextDigest)
+	var sourceBytes uint64
+	err := tx.QueryRowContext(ctx, `SELECT scope_url,authority_id,source_repository,source_commit,source_path,source_sha256,OCTET_LENGTH(source_bytes),semantic_source_commit,interpretation,context_sha256 FROM graph_preview_intrinsic_contexts WHERE context_id=? AND OCTET_LENGTH(scope_url)=? AND OCTET_LENGTH(source_repository)<=256 AND OCTET_LENGTH(source_path)<=1024`, id, len(o.Binding.ScopeURL)).Scan(&scope, &authority, &repo, &commit, &path, &digest, &sourceBytes, &semantic, &interpretation, &contextDigest)
 	if err != nil {
 		return nil, fmt.Errorf("%w: intrinsic context header: %v", ErrInvalidStore, err)
 	}
-	catalog, err := intrinsictypecatalog.LoadSelected()
+	if scope != o.Binding.ScopeURL || authority != o.Binding.AuthorityID {
+		return nil, fmt.Errorf("%w: intrinsic context authority", ErrInvalidStore)
+	}
+	source, err := intrinsicContextSource(repo, commit, path, digest, sourceBytes, semantic, interpretation)
 	if err != nil {
 		return nil, err
 	}
-	if scope != o.Binding.ScopeURL || authority != o.Binding.AuthorityID || repo != source.Repository || commit != source.Commit || path != source.Path || digest != source.SHA256 || !bytes.Equal(raw, catalog.Bytes()) || semantic != intrinsicSemanticSource || interpretation != intrinsicInterpretation {
-		return nil, fmt.Errorf("%w: intrinsic source/context correspondence", ErrInvalidStore)
+	// Four source/header copies and two context buffers remain charged before
+	// loading, fetching or reconstructing their complete bytes.
+	if err = budget.chargeBody(4*source.Bytes + 2*intrinsicmaterialization.MaxContextBytes); err != nil {
+		return nil, err
+	}
+	catalog, err := intrinsictypecatalog.LoadSource(source)
+	if err != nil {
+		return nil, err
+	}
+	var raw []byte
+	err = tx.QueryRowContext(ctx, `SELECT source_bytes FROM graph_preview_intrinsic_contexts WHERE context_id=? AND OCTET_LENGTH(source_bytes)=?`, id, source.Bytes).Scan(&raw)
+	if err != nil || !bytes.Equal(raw, catalog.Bytes()) {
+		return nil, fmt.Errorf("%w: intrinsic source bytes: %v", ErrInvalidStore, err)
 	}
 	var count, total uint64
 	if err = tx.QueryRowContext(ctx, `SELECT COUNT(*),CAST(LEAST(COALESCE(SUM(OCTET_LENGTH(record)+OCTET_LENGTH(public_id)+OCTET_LENGTH(resource_uri)+OCTET_LENGTH(global_uri)+OCTET_LENGTH(global_revision)),0),?) AS UNSIGNED) FROM graph_preview_intrinsic_members WHERE context_id=?`, intrinsicmaterialization.MaxContextBytes+1, id).Scan(&count, &total); err != nil {
@@ -132,4 +144,15 @@ func loadIntrinsicContextInTx(ctx context.Context, tx *sql.Tx, o Options, id str
 		}
 	}
 	return plan, nil
+}
+
+// A complete source/semantic/encoding tuple selects one of two retained fixed
+// meanings. Unknown or individually mixed fields never fall back to current.
+func intrinsicContextSource(repo, commit, path, sha string, size uint64, semantic, interpretation string) (intrinsictypecatalog.Source, error) {
+	for _, source := range []intrinsictypecatalog.Source{intrinsictypecatalog.SelectedSource(), intrinsictypecatalog.CurrentSource()} {
+		if repo == source.Repository && commit == source.Commit && path == source.Path && sha == source.SHA256 && size == uint64(source.Bytes) && semantic == source.SemanticSource() && interpretation == source.Interpretation() {
+			return source, nil
+		}
+	}
+	return intrinsictypecatalog.Source{}, fmt.Errorf("%w: unknown or mixed intrinsic source/context correspondence", ErrInvalidStore)
 }

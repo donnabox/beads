@@ -20,6 +20,11 @@ func intrinsicCollectionFixture(t *testing.T) (*intrinsictypecatalog.Catalog, *i
 	if err != nil {
 		t.Fatal(err)
 	}
+	return intrinsicCollectionFixtureFor(t, catalog)
+}
+
+func intrinsicCollectionFixtureFor(t *testing.T, catalog *intrinsictypecatalog.Catalog) (*intrinsictypecatalog.Catalog, *intrinsicmaterialization.Plan) {
+	t.Helper()
 	scope := intrinsicmaterialization.Scope{URI: "https://example.test/intrinsic-list/", AuthorityID: strings.Repeat("a", 32), ContextID: strings.Repeat("b", 32)}
 	var allocations []intrinsicmaterialization.Allocation
 	roles := []intrinsicmaterialization.Role{intrinsicmaterialization.Type, intrinsicmaterialization.BeadType, intrinsicmaterialization.LinkType, intrinsicmaterialization.Refines, intrinsicmaterialization.BeadTypeRefinesType, intrinsicmaterialization.LinkTypeRefinesType}
@@ -157,6 +162,59 @@ func TestIntrinsicDefinitionCurrentContextAcquisition(t *testing.T) {
 				}
 				if mode == "budget" && !errors.Is(err, ErrLimitExceeded) {
 					t.Fatalf("wrong budget diagnosis: %v", err)
+				}
+			}
+		})
+	}
+}
+
+func TestIntrinsicDefinitionOriginUsesCheckedBinding(t *testing.T) {
+	for _, source := range []intrinsictypecatalog.Source{intrinsictypecatalog.SelectedSource(), intrinsictypecatalog.CurrentSource()} {
+		t.Run(source.Path, func(t *testing.T) {
+			catalog, err := intrinsictypecatalog.LoadSource(source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, plan := intrinsicCollectionFixtureFor(t, catalog)
+			docs, err := selectIntrinsicDefinitionBeads(plan.Scope().URI, catalog, plan, "type", "", newIntrinsicMetadataBudget())
+			if err != nil || len(docs) != 4 {
+				t.Fatalf("intrinsic collection: %v", err)
+			}
+			for _, binding := range plan.Bindings() {
+				t.Run(string(binding.Allocation.Role), func(t *testing.T) {
+					doc, err := definitionDocumentForNative(plan.Scope().URI, IntrinsicDocument{Kind: binding.Allocation.Kind, Global: binding.Global, Body: binding.Record})
+					if err != nil {
+						t.Fatal(err)
+					}
+					origin, ok := doc.Origin()
+					if !ok || origin.URI != binding.Global.URI || origin.Revision != binding.Global.Revision {
+						t.Fatal("native carrier lost exact checked definition/declaration origin")
+					}
+					expected, err := graph.CanonicalizeJSON(binding.Record)
+					if err != nil || !bytes.Equal(doc.NativeJSON(), expected) {
+						t.Fatal("origin metadata altered full native JSON")
+					}
+				})
+			}
+			for _, doc := range docs {
+				binding, ok := plan.LookupLocal(intrinsictypecatalog.Reference{URI: doc.ID(), Revision: doc.Revision()})
+				if !ok {
+					t.Fatal("missing checked local binding")
+				}
+				origin, ok := doc.Origin()
+				if !ok || origin.URI != binding.Global.URI || origin.Revision != binding.Global.Revision {
+					t.Fatal("origin guessed from local ID/metatype instead of exact binding")
+				}
+				// Fixture public IDs are deliberately opaque and the Refines
+				// definition is itself a Bead affiliated with LinkType.
+				expected, err := graph.CanonicalizeJSON(binding.Record)
+				if err != nil || !bytes.Equal(doc.NativeJSON(), expected) {
+					t.Fatal("sidecar changed Resource bytes")
+				}
+				origin.URI = "https://wrong.example/display-only"
+				again, _ := doc.Origin()
+				if again.URI != binding.Global.URI {
+					t.Fatal("origin accessor aliases mutable state")
 				}
 			}
 		})
