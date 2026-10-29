@@ -26,6 +26,13 @@ boolean operators, and date-relative expressions.
 The query language enables complex filtering that would otherwise require
 multiple flags or piping through jq.
 
+In an existing graph-mode link workspace, --ast executes one JSON graph-query
+AST instead of the Issue expression below. Use --ast JSON, --ast @FILE, or
+--ast - for stdin. The AST selects Resources, count, or graph results; JSON is
+the default output. --omit envelope returns the native result/evaluation value.
+Human expression syntax for this path is deferred. Diagnostic JSON Pointers
+refer to the normalized request {"query": AST}, including on the CLI.
+
 Syntax:
   field=value       Equality comparison
   field!=value      Inequality comparison
@@ -88,6 +95,12 @@ Examples:
 				c.CloseEventAndAdd(evt)
 			}
 		}()
+		if cmd.Flags().Changed("ast") {
+			return runQueryAST(cmd, args)
+		}
+		if cmd.Flags().Changed("output-format") || cmd.Flags().Changed("include") || cmd.Flags().Changed("omit") {
+			return HandleErrorRespectJSON("--output-format, --include and --omit require --ast for query")
+		}
 		if graphPreviewActive {
 			return runGraphPreviewQuery(cmd, args)
 		}

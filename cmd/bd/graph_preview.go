@@ -26,8 +26,10 @@ import (
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/graphpatch"
+	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/memoryapi"
 	"github.com/steveyegge/beads/internal/migration"
+	"github.com/steveyegge/beads/internal/resourcequery"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
@@ -284,7 +286,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 			// command's corrupt-metadata refusal and its diagnostic context.
 			// A damaged graph workspace must still fail before legacy opening.
 			if !markerPresent && requested != "link" {
-				if (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root"))) {
+				if (cmd == queryCmd && cmd.Flags().Changed("ast")) || (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root"))) {
 					return true, graphFailure("graph_not_initialized", err.Error(), 5)
 				}
 				return false, nil
@@ -317,6 +319,9 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
+		if cmd == queryCmd && cmd.Flags().Changed("ast") {
+			return true, graphFailure("capability_unavailable", "JSON Query AST execution requires an existing graph-mode link workspace", 5)
+		}
 		if cmd.Flags().Lookup("exact-type") != nil && cmd.Flags().Changed("exact-type") {
 			return true, graphFailure("capability_unavailable", "--exact-type requires a workspace initialized with graph_mode link", 5)
 		}
@@ -918,8 +923,12 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 		return runGraphPreviewIssueStatus()
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
+		queryLimits := resourcequery.DefaultLimits()
 		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true,
 				"limits": map[string]int{"issueListOutputBytes": graphIssueListOutputLimit, "beadListOutputBytes": graphIssueListOutputLimit,
+					"queryAllocatedResources": graphstore.QueryMaxResources, "queryDatasetBytes": graphread.QueryResourceByteLimit,
+					"queryRequestBytes": queryLimits.RequestBytes, "queryASTNodes": queryLimits.Nodes, "queryASTDepth": queryLimits.Nesting,
+					"queryWork": queryLimits.MaxWork, "queryResults": queryLimits.MaxResults,
 					"beadListInventoryResources": graphstore.PreviewSnapshotLimit,
 					"issueBlockedOutputBytes":    graphIssueBlockedOutputLimit, "issueBlockedInventoryResources": graphstore.PreviewSnapshotLimit,
 					"genericTraversalOutputBytes": graphGenericOutputLimit, "genericTraversalDepth": graphGenericBound,
@@ -945,6 +954,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"memoryDiscoveryDefaultMatches": graphMemoryDiscoveryDefaultLimit, "memoryDiscoveryOutputBytes": graphMemoryDiscoveryOutputLimit,
 					"memoryDiscoveryQueryBytes": graphMemoryDiscoveryQueryLimit, "memoryDiscoveryExcerptCodePoints": graphMemoryDiscoveryExcerptLimit},
 				"capabilities": map[string]bool{
+					"queryAST":     true,
 					"legacyImport": true, "graphImport": false, "graphExport": false,
 					"memoryCreate": true, "memoryRead": true, "memoryBodyRecall": true, "memoryJSONRecall": false,
 					"memoryDiscovery": true, "memoryDiscoveryPagination": false, "memoryBodyFileInput": true, "memoryBodyStdinInput": true,

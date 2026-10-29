@@ -34,7 +34,7 @@ func runGraphServe(cmd *cobra.Command, opts serveOptions) (result error) {
 	if err := reader.ValidateAuthority(ctx); err != nil {
 		return graphStorageError(err)
 	}
-	reads, err := httpapi.NewGraphRead(reader, graphPreviewConfig.GraphScopeURL)
+	reads, err := httpapi.NewGraphReadWithQuery(reader, graphPreviewConfig.GraphScopeURL)
 	if err != nil {
 		return err
 	}
