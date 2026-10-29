@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -429,6 +430,12 @@ func TestGraphPreviewCLICurrentStateDump(t *testing.T) {
 				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			if engine == "embedded" {
+				info, err := os.Stat(filepath.Join(work, ".beads", "embeddeddolt"))
+				if err != nil || !info.IsDir() {
+					t.Fatalf("initialized embedded storage does not match protected directory: %v", err)
+				}
+			}
 			for _, args := range [][]string{
 				{"create", "Export A", "--id", "a", "--force", "--labels", "kept-label", "--json"},
 				{"create", "Export B", "--id", "b", "--force", "--json"},
@@ -463,6 +470,30 @@ func TestGraphPreviewCLICurrentStateDump(t *testing.T) {
 			actual, err := os.ReadFile(metadata)
 			if err != nil || !bytes.Equal(actual, original) {
 				t.Fatalf("storage destination changed metadata: %v", err)
+			}
+			if runtime.GOOS != "windows" {
+				safe := filepath.Join(work, "safe")
+				nested := filepath.Join(work, ".beads", "nested")
+				for _, dir := range []string{safe, nested} {
+					if err := os.Mkdir(dir, 0700); err != nil {
+						t.Fatal(err)
+					}
+				}
+				link := filepath.Join(safe, "link")
+				if err := os.Symlink(nested, link); err != nil {
+					t.Fatal(err)
+				}
+				// Preserve the literal parent segment: filepath.Join would clean it.
+				raw := link + "/../metadata.json"
+				graphPolicyCLI(t, bd, work, home, nil, "", "export", "--current-state", "--readonly", "-o", raw)
+				data, err := os.ReadFile(filepath.Join(safe, "metadata.json"))
+				if err != nil || string(data) != stdout {
+					t.Fatalf("CLI did not publish to prepared destination: %v", err)
+				}
+				actual, err := os.ReadFile(metadata)
+				if err != nil || !bytes.Equal(actual, original) {
+					t.Fatalf("raw parent path changed storage metadata: %v", err)
+				}
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "export", "--current-state", "--all", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "output_error", "export", "--current-state", "-o", work, "--json")

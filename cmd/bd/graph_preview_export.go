@@ -76,6 +76,7 @@ func runGraphPreviewExport(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+// The opener must return a nil source on error; a successful source is closed here.
 func exportGraphCurrentDump(ctx context.Context, open func(context.Context) (graphCurrentDumpReader, string, error), publish func(context.Context, []byte) error) error {
 	captureCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()

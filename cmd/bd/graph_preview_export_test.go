@@ -436,6 +436,7 @@ func TestGraphCurrentDumpPipeline(t *testing.T) {
 		{name: "read", source: currentDumpTestSource{readErr: readErr}, want: readErr, wantEvents: []string{"open", "read", "close"}},
 		{name: "close", source: currentDumpTestSource{closeErr: closeErr}, want: closeErr, wantEvents: []string{"open", "read", "close"}},
 		{name: "encoding", source: currentDumpTestSource{inventory: graphread.Inventory{Beads: []bdpwire.BeadRecord{{Properties: bdpwire.Properties{"bad": json.RawMessage(`{`)}}}}}, want: graphstore.ErrInvalidStore, wantEvents: []string{"open", "read", "close"}},
+		{name: "output limit", source: currentDumpTestSource{inventory: graphread.Inventory{Beads: []bdpwire.BeadRecord{{Properties: bdpwire.Properties{"large": json.RawMessage(`"` + strings.Repeat("x", graphCurrentDumpByteLimit) + `"`)}}}}}, want: graphstore.ErrLimitExceeded, wantEvents: []string{"open", "read", "close"}},
 		{name: "root cancelled on close", cancelOnClose: true, want: context.Canceled, wantEvents: []string{"open", "read", "close"}},
 		{name: "publication", outputErr: outputErr, want: outputErr, wantEvents: []string{"open", "read", "close", "publish"}},
 	} {
@@ -449,7 +450,10 @@ func TestGraphCurrentDumpPipeline(t *testing.T) {
 			err := exportGraphCurrentDump(ctx, func(ctx context.Context) (graphCurrentDumpReader, string, error) {
 				test.source.events = append(test.source.events, "open")
 				acquisition = ctx
-				return &test.source, "https://example.test/work/", test.openErr
+				if test.openErr != nil {
+					return nil, "", test.openErr
+				}
+				return &test.source, "https://example.test/work/", nil
 			}, func(ctx context.Context, data []byte) error {
 				test.source.events = append(test.source.events, "publish")
 				if !errors.Is(acquisition.Err(), context.Canceled) || ctx.Err() != nil {

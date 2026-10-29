@@ -89,6 +89,8 @@ the selected embedded storage directory is also protected when reached through
 symlinks. Capture and cleanup finish before publication. On Unix, files use mode
 `0600` and replacement is atomic; other platforms use their native file permissions
 and replacement semantics.
+File output paths are normalized lexically before publication: `..` after a
+symlink component does not follow that symlink.
 Omit `-o` to write JSON to stdout; a failed pipe can retain partial output.
 
 This interim dump omits History, deleted Resources, historical endpoint bodies,

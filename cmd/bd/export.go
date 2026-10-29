@@ -42,6 +42,8 @@ other non-graph data. Pinned References are retained; their historical payloads
 are omitted and their availability is not certified. This dump is not a backup
 or an import package. Current Memories are included. No field selection or
 legacy export filters are supported by this option.
+File output paths are normalized lexically before publication: .. after a
+symlink component does not follow that symlink.
 
 By default, exports only regular issues (excluding infrastructure beads
 like agents, roles, and messages). Use --all to include everything.
