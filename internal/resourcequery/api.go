@@ -79,6 +79,7 @@ type Request struct {
 	kind           graph.ResourceKind
 	families       []familyUse
 	references     []*node
+	fields         []*node
 }
 
 func (r *Request) Profile() string {
@@ -104,6 +105,25 @@ func (r *Request) Bytes() []byte {
 		return nil
 	}
 	return append([]byte(nil), r.raw...)
+}
+
+// FieldRoots returns the literal object member at the start of every field
+// access, including fields in short-circuited branches. Adapters can refuse a
+// known representation mismatch before acquiring data, without reparsing the
+// AST or changing evaluation. Numeric first segments have no object root.
+// The returned slice is detached; ordinary unknown roots keep their usual
+// missing-field behavior unless an adapter explicitly refuses them.
+func (r *Request) FieldRoots() []string {
+	if r == nil {
+		return nil
+	}
+	roots := make([]string, 0, len(r.fields))
+	for _, field := range r.fields {
+		if len(field.path) != 0 && !field.path[0].indexed {
+			roots = append(roots, field.path[0].key)
+		}
+	}
+	return roots
 }
 
 type Edition struct {

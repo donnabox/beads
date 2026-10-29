@@ -368,6 +368,7 @@ func (r *Request) parse(v any, at string, depth int) (*node, error) {
 				n.path = append(n.path, segment{index: i, indexed: true})
 			}
 		}
+		r.fields = append(r.fields, n)
 	}
 	for _, child := range []struct {
 		key  string
