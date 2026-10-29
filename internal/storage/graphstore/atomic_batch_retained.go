@@ -39,14 +39,15 @@ func validateAtomicBatchRetained(raw []byte, scope string, members []canonicalba
 	created := map[string]bool{}
 	lastOperation := map[string]string{}
 	bindings := map[string][]string{}
-	legacy := result.Results[0].ID != ""
+	// Scalar IDs select only the historical carrier shape, never weaker validation.
+	scalar := result.Results[0].ID != ""
 	for i, row := range result.Results {
 		member := members[i]
-		if row.OperationIndex != i || row.Operation != member.Operation || (row.ID != "") != legacy {
+		if row.OperationIndex != i || row.Operation != member.Operation || (row.ID != "") != scalar {
 			return invalid("operation identity or mixed carriers")
 		}
 		ids := row.IDs
-		if legacy {
+		if scalar {
 			if row.IDs != nil || member.Operation == "select" || setMembers[i] {
 				return invalid("legacy scalar mapping")
 			}
@@ -121,25 +122,23 @@ func validateAtomicBatchRetained(raw []byte, scope string, members []canonicalba
 		if kind := mutations[row.ID]; kind != "" && kind != row.ResourceKind {
 			return invalid("outcome/mutation kind")
 		}
-		if !legacy {
-			last := lastOperation[row.ID]
-			switch {
-			case last == "":
-				if row.Outcome != "updated" && row.Outcome != "unchanged" {
-					return invalid("owner-only outcome variant")
-				}
-			case strings.HasPrefix(last, "delete"):
-				if created[row.ID] && row.Outcome != "allocated" || !created[row.ID] && row.Outcome != "deleted" {
-					return invalid("deleted mutation outcome")
-				}
-			case created[row.ID]:
-				if row.Outcome != "created" {
-					return invalid("creation outcome")
-				}
-			default:
-				if row.Outcome != "updated" && row.Outcome != "unchanged" {
-					return invalid("existing mutation outcome")
-				}
+		last := lastOperation[row.ID]
+		switch {
+		case last == "":
+			if row.Outcome != "updated" && row.Outcome != "unchanged" {
+				return invalid("owner-only outcome variant")
+			}
+		case strings.HasPrefix(last, "delete"):
+			if created[row.ID] && row.Outcome != "allocated" || !created[row.ID] && row.Outcome != "deleted" {
+				return invalid("deleted mutation outcome")
+			}
+		case created[row.ID]:
+			if row.Outcome != "created" {
+				return invalid("creation outcome")
+			}
+		default:
+			if row.Outcome != "updated" && row.Outcome != "unchanged" {
+				return invalid("existing mutation outcome")
 			}
 		}
 		switch row.Outcome {
@@ -174,7 +173,7 @@ func validateAtomicBatchRetained(raw []byte, scope string, members []canonicalba
 		return invalid("aggregate change flag")
 	}
 	for _, row := range result.Resources {
-		if !legacy && mutations[row.ID] == "" && (row.ResourceKind != graph.KindBead || !owners[row.ID]) {
+		if mutations[row.ID] == "" && (row.ResourceKind != graph.KindBead || !owners[row.ID]) {
 			return invalid("unrelated extra outcome")
 		}
 		if row.ResourceKind == graph.KindBead && len(row.Resource) != 0 {
@@ -203,9 +202,6 @@ func validateAtomicBatchRetained(raw []byte, scope string, members []canonicalba
 		}
 		for _, owner := range row.OwnerRevisions {
 			target, exists := outcomes[owner.ID]
-			if !exists && legacy {
-				continue
-			}
 			if !exists || target.ResourceKind != graph.KindBead || target.Outcome == "allocated" {
 				return invalid("missing owner outcome")
 			}
@@ -224,11 +220,9 @@ func validateAtomicBatchRetained(raw []byte, scope string, members []canonicalba
 			}
 		}
 	}
-	if !legacy {
-		for id := range mutations {
-			if _, exists := outcomes[id]; !exists {
-				return invalid("missing mutation outcome")
-			}
+	for id := range mutations {
+		if _, exists := outcomes[id]; !exists {
+			return invalid("missing mutation outcome")
 		}
 	}
 	return result, nil
