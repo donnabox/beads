@@ -1,0 +1,14 @@
+Native Codex implementation council, shared frozen implementation-review-prompt.txt:
+Medium: cancellation test returned context errors without actually canceling the operation context. Repaired with WithCancel and WithTimeout at import-retained, hook returns nil; independent live-context state read after cleanup.
+Low: explicit-prefix dry-run example omitted --source-prefix on apply. Repaired both examples.
+No confirmed implementation code blocker in frozen snapshot. Runtime qualification pending.
+
+Bounded native follow-up on current source:
+Both findings resolved. Graph-only source-prefix CLI guard correctly exercises ordinary refusal and restores global flag. No confirmed correctness/test blocker in these changes; no DB/tests run by reviewer.
+
+Final bounded follow-up:
+Two %w operands preserve ErrInvalidStore and original cancellation/deadline identity. CLI keeps cancellation precedence and outcome_unknown first. Benchmark constructs/reverses independent feeds before ResetTimer; 10/100/1000 sizes and no machine-dependent pass/fail threshold. No confirmed blocker; no tests/DB run by reviewer.
+
+Reviewer: /root/iris_native_review. Actual Claude remains a separate active external reviewer. Gemini excluded by operator.
+
+Final self-contained repair confirmation: no confirmed introduced blocker. Revised label input exposes caller mutation; SDK tests verify json-minus tags and named-field validation; one-way ErrTxDone implies uncertainty permits other legitimate cleanup failures. Dry-run wording/error wrapping preserve intended behavior. Reviewer used no tests/DB or additional traversal.

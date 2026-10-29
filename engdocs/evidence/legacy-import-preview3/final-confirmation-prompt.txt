@@ -1,0 +1,141 @@
+Final bounded repair confirmation. Native Codex and actual Claude get this same prompt. Review only the self-contained diff below, no tools/traversal/files/tests/DB/delegation/network. Output findings only, at most 200 words. Say no confirmed introduced blocker if appropriate.
+
+The previous diff review confirmed a caller-aliasing test weakness, overstrong unknown==ErrTxDone assertion, and dry-run prefix wording. Changes below use shift-sensitive labels, one-way ErrTxDone=>unknown with cancellation identity/state still checked, actual JSON-minus-tag assertions for all refused SDK fields, named-field validation errors, Would-adopt for dry runs, error origin wrapping and uncertainty docs. Facts already verified in first full implementation review: input cloning is encoding/json marshal/unmarshal (deep); all five SDK fields have json:"-"; duplicate dependencies are refused in preparation before any writes; native label coercion loses distinct values => exact verification rollback. No core error-classification changes: uncertain cleanup stays outcome_unknown6 per Janet contract and CLI pure precedence tests. A database/sql closed flag precedes driver rollback completion, so ErrTxDone alone is not verified engine rollback acknowledgment. Runtime proof remains pending. Flag only concrete introduced defects, not speculation about those verified facts.
+
+diff --git a/cmd/bd/graph_preview_assignee_error_test.go b/cmd/bd/graph_preview_assignee_error_test.go
+index c787c5a22..7e6ce38f0 100644
+--- a/cmd/bd/graph_preview_assignee_error_test.go
++++ b/cmd/bd/graph_preview_assignee_error_test.go
+@@ -106,6 +106,10 @@ func TestGraphPreviewLegacyImportSummaryPrefix(t *testing.T) {
+ 	if !strings.Contains(withPrefix, "Workspace Issue prefix: web-app.") {
+ 		t.Fatalf("adopted prefix not disclosed: %s", withPrefix)
+ 	}
++	preview := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{IssuePrefix: "web-app", DryRun: true})
++	if !strings.Contains(preview, "Would adopt Issue prefix: web-app.") || strings.Contains(preview, "Workspace Issue prefix:") {
++		t.Fatalf("dry-run prefix adoption claimed: %s", preview)
++	}
+ 	memories := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{Memories: 1})
+ 	if strings.Contains(memories, "Issue prefix:") {
+ 		t.Fatalf("memory-only prefix invented: %s", memories)
+diff --git a/cmd/bd/graph_preview_import.go b/cmd/bd/graph_preview_import.go
+index 2762fbbb7..e0a0cc422 100644
+--- a/cmd/bd/graph_preview_import.go
++++ b/cmd/bd/graph_preview_import.go
+@@ -61,6 +61,9 @@ func graphPreviewLegacyImportSummary(action, source string, result graphstore.Le
+ 	prefix := ""
+ 	if result.IssuePrefix != "" {
+ 		prefix = fmt.Sprintf(" Workspace Issue prefix: %s.", result.IssuePrefix)
++		if result.DryRun {
++			prefix = fmt.Sprintf(" Would adopt Issue prefix: %s.", result.IssuePrefix)
++		}
+ 	}
+ 	return fmt.Sprintf("%s %d Issues, %d Memories, %d Dependencies and %d comments from %s.%s Source history is not present in legacy exports.", action, result.Issues, result.Memories, result.Dependencies, result.Comments, source, prefix)
+ }
+diff --git a/docs/reference/graph-legacy-import.md b/docs/reference/graph-legacy-import.md
+index b4df31786..c16fafd0d 100644
+--- a/docs/reference/graph-legacy-import.md
++++ b/docs/reference/graph-legacy-import.md
+@@ -73,9 +73,12 @@ sizes: persisted payloads, relations and retained snapshots must also fit the
+ it; the entire transaction rolls back. Byte/resource ceilings use
+ `capability_unavailable`; malformed JSON, including excessive nesting, uses
+ `invalid_properties`. Import does not split a large input into partially
+-committed chunks. Definite failures and dry-runs roll back before commit. If commit or rollback
+-cleanup is uncertain, including cancellation after the driver has ended the
+-transaction, import reports `outcome_unknown` (exit 6), without automatic replay. Inspect the destination before deciding what to do after that error.
++committed chunks. Definite engine failures and dry-runs roll back before
++commit. If commit or rollback cleanup is uncertain, import conservatively reports
++`outcome_unknown` (exit 6) without automatic replay. An unsuccessful rollback,
++including an already-ended driver transaction, does not provide a verified
++rollback acknowledgment. Inspect the destination after that error before
++deciding what to do next.
+ 
+ This is a fresh-workspace interchange operation. It does not migrate an
+ existing workspace in place or carry full backup/restore history.
+diff --git a/internal/storage/graphstore/legacy_import.go b/internal/storage/graphstore/legacy_import.go
+index 27c029aff..c7666ae01 100644
+--- a/internal/storage/graphstore/legacy_import.go
++++ b/internal/storage/graphstore/legacy_import.go
+@@ -85,7 +85,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
+ 		}
+ 		infra, err := issueops.ResolveInfraTypesStrictInTx(ctx, tx)
+ 		if err != nil {
+-			return err
++			return fmt.Errorf("resolve infrastructure Issue types: %w", err)
+ 		}
+ 		for _, issue := range batch.Issues {
+ 			if infra[string(issue.IssueType.Normalize())] {
+@@ -247,8 +247,22 @@ func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix
+ 		return invalid("legacy Issue and Memory strings must be UTF-8")
+ 	}
+ 	for _, issue := range input.Issues {
+-		if issue != nil && (issue.WispPlaneOverride != nil || issue.IDPrefix != "" || issue.PrefixOverride != "" || issue.SourceRepo != "" || issue.IsLitePartial) {
+-			return invalid("Issue %s has unsupported in-memory storage-plane, routing or partial-record state", issue.ID)
++		if issue == nil {
++			continue
++		}
++		for _, field := range []struct {
++			name string
++			set  bool
++		}{
++			{"WispPlaneOverride", issue.WispPlaneOverride != nil},
++			{"IDPrefix", issue.IDPrefix != ""},
++			{"PrefixOverride", issue.PrefixOverride != ""},
++			{"SourceRepo", issue.SourceRepo != ""},
++			{"IsLitePartial", issue.IsLitePartial},
++		} {
++			if field.set {
++				return invalid("Issue %q sets unsupported in-memory field %s", issue.ID, field.name)
++			}
+ 		}
+ 	}
+ 	// encoding/json replaces invalid UTF-8 strings. Check keys/values before
+diff --git a/internal/storage/graphstore/legacy_import_test.go b/internal/storage/graphstore/legacy_import_test.go
+index 292623ca2..181fa26ed 100644
+--- a/internal/storage/graphstore/legacy_import_test.go
++++ b/internal/storage/graphstore/legacy_import_test.go
+@@ -17,6 +17,7 @@ import (
+ 
+ 	graph "github.com/steveyegge/beads/graphops"
+ 	"github.com/steveyegge/beads/internal/legacyimport"
++	"github.com/steveyegge/beads/internal/storage"
+ 	"github.com/steveyegge/beads/internal/types"
+ 	publicops "github.com/steveyegge/beads/issueops"
+ )
+@@ -75,17 +76,21 @@ func TestLegacyImportPrefixAdmission(t *testing.T) {
+ }
+ 
+ func TestLegacyImportLabelSetAndInternalState(t *testing.T) {
+-	issue := &types.Issue{ID: "old-a", Title: "Imported", Labels: []string{"two", "one", "two"}}
++	issue := &types.Issue{ID: "old-a", Title: "Imported", Labels: []string{"one", "two", "one", "three"}}
+ 	prepared, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{issue}}, "importer")
+-	if err != nil || !reflect.DeepEqual(prepared.Issues[0].Labels, []string{"two", "one"}) || !reflect.DeepEqual(issue.Labels, []string{"two", "one", "two"}) {
++	if err != nil || !reflect.DeepEqual(prepared.Issues[0].Labels, []string{"one", "two", "three"}) || !reflect.DeepEqual(issue.Labels, []string{"one", "two", "one", "three"}) {
+ 		t.Fatalf("label set or caller changed: %+v %+v %v", prepared, issue, err)
+ 	}
+ 	plane := false
+-	for _, internal := range []*types.Issue{
+-		{WispPlaneOverride: &plane}, {IDPrefix: "custom"}, {PrefixOverride: "other"}, {SourceRepo: "another"}, {IsLitePartial: true},
++	for field, internal := range map[string]*types.Issue{
++		"WispPlaneOverride": {WispPlaneOverride: &plane}, "IDPrefix": {IDPrefix: "custom"}, "PrefixOverride": {PrefixOverride: "other"}, "SourceRepo": {SourceRepo: "another"}, "IsLitePartial": {IsLitePartial: true},
+ 	} {
++		tag, ok := reflect.TypeOf(types.Issue{}).FieldByName(field)
++		if !ok || tag.Tag.Get("json") != "-" {
++			t.Fatalf("internal field %s entered legacy JSON: %v", field, tag)
++		}
+ 		internal.ID, internal.Title = "old-a", "Imported"
+-		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{internal}}, "importer"); err == nil {
++		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{internal}}, "importer"); !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), field) {
+ 			t.Fatalf("nonserialized state silently ignored: %+v", internal)
+ 		}
+ 	}
+@@ -362,8 +367,8 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
+ 					// a clean explicit rollback keeps the ordinary canceled refusal.
+ 					unknown := errors.Is(err, ErrOutcomeUnknown)
+ 					alreadyDone := errors.Is(err, sql.ErrTxDone)
+-					if !reached || !errors.Is(err, expected) || unknown != alreadyDone || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+-						t.Fatalf("late context cancellation/deadline did not roll back: reached=%v err=%v", reached, err)
++					if !reached || !errors.Is(err, expected) || (alreadyDone && !unknown) || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
++						t.Fatalf("late context classification or rollback failed: reached=%v unknown=%v alreadyDone=%v err=%v", reached, unknown, alreadyDone, err)
+ 					}
+ 				})
+ 			}

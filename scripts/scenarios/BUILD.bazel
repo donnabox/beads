@@ -1,0 +1,100 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_library(
+    name = "scenarios_lib",
+    srcs = [
+        "assert.go",
+        "jsonpath.go",
+        "main.go",
+        "normalize.go",
+        "receipts.go",
+        "runner.go",
+        "scenario.go",
+        "workspace.go",
+    ],
+    importpath = "github.com/steveyegge/beads/scripts/scenarios",
+    visibility = ["//visibility:private"],
+    deps = ["//cmd/bd/protocol"],
+)
+
+go_binary(
+    name = "scenarios",
+    embed = [":scenarios_lib"],
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "scenarios_test",
+    srcs = [
+        "assert_test.go",
+        "fakebd_test.go",
+        "jsonpath_test.go",
+        "manifest_test.go",
+        "normalize_test.go",
+        "run_test.go",
+        "shipped_test.go",
+        "workspace_test.go",
+    ],
+    embed = [":scenarios_lib"],
+)
+
+# --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "repo_doc_files",
+    srcs = glob(
+        [
+            "**/*.md",
+            "**/*.mdx",
+        ],
+        allow_empty = True,
+        exclude = ["**/node_modules/**"],
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+filegroup(
+    name = "repo_go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+        exclude = [
+            "**/*_test.go",
+            "**/node_modules/**",
+        ],
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+filegroup(
+    name = "repo_go_test_srcs",
+    srcs = glob(
+        ["**/*_test.go"],
+        allow_empty = True,
+        exclude = ["**/node_modules/**"],
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+filegroup(
+    name = "repo_other_files",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "**/*.db",
+            "**/*.exe",
+            "**/*.go",
+            "**/*.md",
+            "**/*.mdx",
+            "**/*.out",
+            "**/*.prof",
+            "**/*.pyc",
+            "**/*.test",
+            "**/__pycache__/**",
+            "**/node_modules/**",
+        ],
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end repo_files ---
