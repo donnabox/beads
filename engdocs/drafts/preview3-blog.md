@@ -1,9 +1,9 @@
 # Working with Tasks and Memories with Preview 3
 
-We just pushed Memory Beads Preview 3 out the door. The first preview was there primarily to demonstrate a happy path through:
+We just pushed [Memory Beads Preview 3](https://github.com/donnabox/beads/tree/preview3-acceptance-210f8da) out the door. The first preview was there primarily to demonstrate a happy path through the three big things we are building:
 
-1. Generic graph structure that can span issue and non-issue beads. This mode is enabled by passing `--graph-mode link` to `bd init`, which creates a non-production-ready workspace that enables the new features.
-2. A set of bead and link types that model how memories are modeled in beads.
+1. A generic graph structure that can span issue and non-issue beads. This mode is enabled by passing `--graph-mode link` to `bd init`, which creates a non-production-ready workspace that enables the new features.
+2. A set of bead and link types that model how memories will work with/as beads.
 3. An implementation of a protocol (BDP) designed to allow bead consumers and producers to interoperate and build graphs that span the scope of a single implementation.
 
 The good news is, it all worked. The meh news is that the happy path was pretty narrow. Preview 2 added no new features; it just made the happy path wider, as does Preview 3. The Preview 3 bits have a lot of undone work that will take weeks and a few previews to grind out. But, Preview 3 has two *very* significant features:
@@ -13,7 +13,7 @@ The good news is, it all worked. The meh news is that the happy path was pretty 
 
 This blog covers both features, starting, of course, with how to bring up a workspace based on your existing data.
 
-<!-- Editorial draft. Current reference build: b27df1b0490bbffadadb399097a3b242d5e0677c. The October 25 namespace checks are separate from the broader October 24 evidence; see review notes. Donna owns release wording and publication. -->
+<!-- Editorial draft. Reference build: b27df1b0490bbffadadb399097a3b242d5e0677c. Type names reflect Donna’s agreed unprefixed surface; Trish owns the corresponding implementation update. Import structure was exercised on the reference build; normalized Type labels are editorial, not newly captured runtime output. Donna owns release wording and publication. -->
 
 ## Creating a `--graph-mode link` workspace from existing data
 
@@ -25,18 +25,37 @@ Preview 3 adds support for importing data from a workspace created with version 
 
 To export your data from an existing workspace, use the familiar `bd export` command from an existing 1.3.* build of `bd` that you either got from your favorite package manager or built from the gastownhall/beads repository.  By default, `export` will only export your issues and dependencies. If you want your memories to come along for the ride, add the `--include-memories` flag. The export command's normal filtering still applies if you want to bring over a subset of your beads and dependencies.
 
-For these transcripts, I used the pinned source build `b27df1b04` in both workspace modes, with two Issues, one Dependency, one comment and one key/value memory in the source. Its version output identifies that source build; use your existing installation when exporting your own data. The export path in the output is shortened with an ellipsis.
+For these transcripts, I used the pinned source build `b27df1b04` in both
+workspace modes. The sample 1.3.* workspace has three Issues, two dependencies
+and two key/value memories. The export path
+in the output is shortened with an ellipsis.
 
-/// ok, please show bd list and memories on the export side befoe you export, and the import side on import. Also can you create a couple of dependencies?  it would be good to show that the graph structure survives (and that we can display them using bd link list on the import side.)
 
 ```console
 # Check the source build in the ordinary workspace.
 > bd version
 bd version 1.3.0 (b27df1b04: master@b27df1b0490b)
 
-# Export current Issues, dependencies, comments and key/value memories.
+# Inspect the Issues and their existing dependencies before exporting.
+> bd list --all --flat
+● legacy-ship [P2] [task] - Ship CSV export (blocked by: legacy-review)
+● legacy-review [P2] [task] - Check CSV encoding (blocked by: legacy-export, blocks: legacy-ship)
+○ legacy-export [P2] [task] - Implement CSV export (blocks: legacy-review)
+
+# Inspect the key/value memories before exporting.
+> bd memories
+Memories (2):
+
+  legacy-encoding
+    Use UTF-8 for exported files.
+
+  legacy-headings
+    Include headings even when no rows are selected.
+
+# Export current Issues, dependencies and key/value memories.
 > bd export --include-memories --output /tmp/preview3-export.jsonl
-Exported 2 issues and 1 memories to …/preview3-export.jsonl
+Exported 3 issues and 2 memories to …/preview3-export.jsonl
+
 ```
 
 An ordinary export carries current data. Earlier revisions, Dolt branches and the source database's history do not come with it. Keep this file unchanged while you test the conversion so that you have a clear source for comparison.
@@ -50,10 +69,8 @@ Switch to the selected Preview 3 executable before preparing the destination. Ch
 > bd version
 bd version 1.3.0 (b27df1b04: b27df1b0490b)
 
-# Create a new practice directory outside the existing workspace.
+# Create and enter a new practice directory outside the existing workspace.
 > mkdir beads-preview3-trial
-
-# Enter the new directory.
 > cd beads-preview3-trial
 
 # Give workspace discovery a local Git boundary.
@@ -66,188 +83,411 @@ Initialized disposable mixed graph preview. Use status --graph for supported com
 # List all Beads in the new workspace.
 > bd list --type any --all
 Beads (0; more: false; graph preview)
+
 ```
 
-`bd list` shows that you have no Beads. To remedy that, let's pull in your export file to populate the new workspace. Start with a dry-run:
+`bd list` shows that the new workspace has no Beads. Import the exported JSON file
+to populate it, saving the result maps so you can inspect the destination
+identities. The counts and maps below let you check which records arrived.
 
 ```console
-# Validate the export through the import transaction, then roll it back.
-> bd import /tmp/preview3-export.jsonl --dry-run --json > import-preview.json
-
-# Inspect the proposed counts and history boundary.
-> jq '.result | {dry_run, issues, memories, dependencies, comments, history}' import-preview.json
-{
-  "dry_run": true,
-  "issues": 2,
-  "memories": 1,
-  "dependencies": 1,
-  "comments": 1,
-  "history": "current data only; new initial graph versions; source history is not present in legacy export"
-}
-
-# Check that the workspace is still empty after the dry-run.
-> bd list --type any --all
-Beads (0; more: false; graph preview)
-```
-
-A successful dry-run reports `dry_run: true`; the following list still shows an empty workspace. The result also includes identity maps for the records the importer accepts. Dry-run reserves nothing, so generated Link IDs are provisional and may differ when you apply the import.
-
-After a successful dry-run, apply the same file and options to the same still-fresh destination. Save the result maps so that you can inspect recognizable Issues and Memories. Use the mixed inventory to check both kinds of Bead: `--all` alone changes Issue status coverage, while `--type any` selects the broader population. Compare content and relationships with the export before relying on the converted copy.
-
-```console
-# Apply the same export once to the fresh destination.
+# Import the export file into the fresh destination.
 > bd import /tmp/preview3-export.jsonl --json > import-result.json
 
-
-/// uhm where did the comments go on import? I thought we rejected them?  Can we show through the CLI on the import side that they survived?
-
 # Inspect imported record counts and their destination identities.
-> jq '.result | {issues, memories, dependencies, comments, ids, memory_ids, dependency_ids}' import-result.json
+> jq '.result | {issues, memories, dependencies, ids, memory_ids, dependency_ids}' import-result.json
 {
-  "issues": 2,
-  "memories": 1,
-  "dependencies": 1,
-  "comments": 1,
+  "issues": 3,
+  "memories": 2,
+  "dependencies": 2,
   "ids": {
+    "legacy-export": "https://example.invalid/preview3-trial/legacy-export",
     "legacy-review": "https://example.invalid/preview3-trial/legacy-review",
     "legacy-ship": "https://example.invalid/preview3-trial/legacy-ship"
   },
   "memory_ids": {
-    "legacy-encoding": "https://example.invalid/preview3-trial/legacy-encoding"
+    "legacy-encoding": "https://example.invalid/preview3-trial/legacy-encoding",
+    "legacy-headings": "https://example.invalid/preview3-trial/legacy-headings"
   },
   "dependency_ids": {
-    "legacy-ship -> legacy-review": "https://example.invalid/preview3-trial/xxg7mp"
+    "legacy-review -> legacy-export": "https://example.invalid/preview3-trial/sy64tg",
+    "legacy-ship -> legacy-review": "https://example.invalid/preview3-trial/uwmjb6"
   }
 }
 
+```
+
+The JSON output shows how many objects were imported, along with their
+destination identities. Use the normal `bd` commands to inspect the imported
+content and relationships: `--type any` includes Memories alongside Issues,
+while `--all` includes closed Issues.
+
+```console
 # List Issues and Memories together, including closed Issues.
 > bd list --type any --all
-Beads (3; more: false; graph preview)
+Beads (5; more: false; graph preview)
+legacy-export [task] open P2 "Implement CSV export"
 legacy-review [task] open P2 "Check CSV encoding"
 legacy-ship [task] open P2 "Ship CSV export"
-legacy-encoding [types/memory] "Use UTF-8 for exported files."
+legacy-headings [memory] "Include headings even when no rows are selected."
+legacy-encoding [memory] "Use UTF-8 for exported files."
 
-# Browse the imported Memories.
+# Browse both imported Memories.
 > bd memory memories
-Memories (1):
+Memories (2):
 
   legacy-encoding  Use UTF-8 for exported files.
     Use UTF-8 for exported files. (excerpt)
+  legacy-headings  Include headings even when no rows are selected.
+    Include headings even when no rows are selected. (excerpt)
 
 Title/body summaries. Use bd recall <id> for full text; --details for versions, attribution and Links.
+
+# Check that both dependencies survived as Links.
+> bd link list
+sy64tg [blocks] legacy-review → legacy-export
+uwmjb6 [blocks] legacy-ship → legacy-review
+
 ```
 
-Each imported Issue retains its public ID, and its Type is set to the corresponding Bead Type, which refines the common abstract Issue Type. The imported local dependencies become first-class Links of the corresponding Link Type, which refines the common abstract Dependency Type. Existing comments remain in the Issue's comment feed; they do not become Memory Beads.
+Each imported Issue retains its public ID, and its Type is set to the corresponding Bead Type, which refines the common abstract Issue Type. The imported local dependencies become first-class Links of the corresponding Link Type, which refines the common abstract Dependency Type. The two Links preserve the chain: shipping waits for review, and review waits
+for implementation.
 
-If you passed the `--include-memories` flag at export time, classic key/value memories get translated to Beads of Type `memory`. The key becomes the memory bead's public ID and the exact value becomes its body, while its title is derived independently from that body. Memory Beads *are not* Issue Beads, and you can't link them using Dependency Links. We'll see later how to build graphs of memory beads with issue beads intermixed.
+The `bd list` output shows that the memories were promoted to memory beads on import. The `bd memories` command now is just a filtered `bd list` in a different output format. If you passed the `--include-memories` flag at export time, classic key/value memories get translated to Beads of Type `memory`. The key becomes the memory bead's public ID and the exact value becomes its body, while its title is derived independently from that body. Memory Beads *are not* Issue Beads, and you can't link them using Dependency Links. We'll see later how to build graphs of memory beads with issue beads intermixed.
 
 The importer refuses unsupported or conflicting data as a whole. This includes missing or cross-Scope dependency endpoints, incompatible IDs, unsupported custom Issue classifications or statuses, and source history payloads. Repeating an import into an occupied workspace refuses; deleting records does not make a used destination fresh again. This is a way to seed a new graph workspace, not a lossless in-place migration or portable graph round trip. Support will expand in future previews; this is a point-in-time build.
 
 ## Introducing Memory Beads
-/// this paragraph is for blog and runbook only - do not bring to spec
-This release is the first one containing intentionally designed bead types; Preview 2 had placeholder typenames (`preview-memory`, `preview-references`) that have now been replaced with types we beleive capture the common scenarios (and satisfy the requirements and scenarios laid out in [Chris' memory proposal]). The rest of this blog is a walk through of the new bead types.
 
-Memory Beads record knowledge for later use by both humans and agents. Memory beads can represent policies, requirements, decisions, or generic information that doesn't fit into a particular category.
+<!-- begin retained blog text - do not overwrite -->
+This release is the first one containing intentionally designed bead types; Preview 2 had placeholder typenames (`preview-memory`, `preview-references`) that have now been replaced with types we beleive capture the common scenarios (and satisfy the requirements and scenarios laid out in [the Memory Beads proposal](https://github.com/gastownhall/beads/issues/5877)). The rest of this blog is a walk through of the new bead types.
+<!-- end retained blog text - do not overwrite -->
 
-A Memory Bead has a `title` and a Markdown `body`; its third property (`status`) is optional. Unlike issues, where the status defines a particular lifecycle specific to work tracking, the `status` field on memory beads is free form text and can be used to map onto whatever lifecycle you, your project, or organization use (e.g., PROPOSED, APPROVED, etc).
 
-/// for the runbook, it's great to refer externally to the conceptual material. I'm finding I'm needing provide it here as I go. I'm not sure how to think about that relative to the BDP and CLI specs' frontmatter.  Let's discuss.
-References Links let readers gather useful context from a memory graph without turning every connection into a blocking Dependency. The [Memory Type overview](https://github.com/gastownhall/bdp/blob/21fa91d3e189bff3832bd977c3d6be49f2b5d93c/specs/types/memory/memory.md#overview-informative) and [Memory CLI introduction](https://github.com/gastownhall/bdp/blob/1979925130a5744add8e45910c8a64931570bc13/docs/cli-design/memory-cli.md) describe that model; the commands below use the selected Preview 3 build's admitted spellings.
+<!-- begin imported section - please retain this comment for provanence -->
+## Using Memory Beads and Links (informative)
 
-### Record notes and the work they explain
+The [Memory Type
+spec](https://github.com/gastownhall/bdp/blob/94f699b947382e3a52385b1895a941575fcc08cb/specs/types/memory/memory.md#overview-informative)
+introduces the model for Memory Beads in great detail. Here we describe the new
+CLI surface for memory (`bd memory`) by walking through one small example: adding CSV
+export to a product, keeping the design notes, and recording the rules the
+feature must follow.
 
-Consider a team adding CSV export to a product. Start with a design note, an encoding note and an interoperability note, each with its own identity. `remember` takes the body as its argument; `--key` selects the same public identity as `--id`, and `--title` supplies readable display text. An identity keeps selecting the same record after its wording changes. This release defines a new top-level command group (`bd memory`) that groups the existing four memory commands (`bd memory remember`, `recall`, `memories` and `forget`) along with addition memory-specific operations. The top-level commands still work; they are aliases to the specific commands under `bd memory`.  That is, calling `bd remember` and `bd memory remember` are the same.
+The installed Bead Type names used here include `memory`, `task` and `bug`;
+Link Type names include `references`, `superseded-by` and `blocks`. The `issue`
+and `dependency` Types are abstract, so creation selects a concrete refinement
+such as `task`, `bug` or `blocks`.
 
-Here is an example that create the three memory beads.
-```sh
-# Record the CSV design under an explicit identity and title.
-bd memory remember 'Export the selected rows as CSV.' \
+The transcripts below show illustrative, abbreviated output; administrative
+fields are omitted. Each example has a comment, a command prefixed with `>`,
+and its output. Blocks described as alternatives demonstrate different ways
+to perform the same operation.
+
+### Creating Memories
+
+Memory Beads record knowledge for later use by both humans and agents. Memory beads can represent policies, requirements, decisions, or generic information that doesn't fit into a particular category. Plain Memory beads are informative; Constraint Beads are Memory Beads that add normative rules while retaining their "memory-ness."
+
+All Memory Beads have a `title` and a Markdown `body`; their third property (`status`) is optional. Unlike Issues, where status defines a lifecycle specific to work tracking, the `status` field on Memory Beads is free-form text and can map onto whatever lifecycle you, your project, or your organization uses (e.g., PROPOSED or APPROVED).
+
+Four common commands work with Memory Beads:
+
+- `bd memory remember [BODY] [--key ID | --update REF]` creates a Memory or edits an existing one.
+- `bd memory recall REF` reads a Memory's Markdown body.
+- `bd memory memories [SEARCH]` browses compact Memory summaries, optionally matching search text.
+- `bd memory forget REF` deletes a Memory.
+
+As we will see, `bd memory` has other commands that are specific to different kinds of memory. The current top-level `bd remember` et al are simply aliases to the corresponding `bd memory` version.
+
+For the CSV feature in this walkthrough, we will start with a design note, an encoding
+note and a note about spreadsheet interoperability. `bd memory remember` takes
+the body as its argument. We use  `--key`
+to choose the identity and `--title` to choose the display text.
+
+```console
+# Record the initial design under an explicit ID and title.
+> bd memory remember 'Export the selected rows as CSV.' \
   --key csv-design --title 'CSV export design' --create-only
+Created csv-design [memory] "CSV export design"
 
-# Record the encoding note that the design will reference.
-bd memory remember 'Use UTF-8.' \
+# Record the text-encoding note that the design will refer to.
+> bd memory remember 'Use UTF-8.' \
   --key csv-encoding --title 'CSV encoding' --create-only
+Created csv-encoding [memory] "CSV encoding"
 
-# Record the spreadsheet checks that tie design decisions to implementation.
-bd memory remember 'Test the exported UTF-8 file in spreadsheet tools; keep the results with the implementation work.' \
+# Record the spreadsheet checks that connect the design to implementation work.
+> bd memory remember 'Test the exported UTF-8 file in spreadsheet tools; keep the results with the implementation work.' \
   --key csv-interop --title 'CSV interoperability checks' --create-only
+Created csv-interop [memory] "CSV interoperability checks"
 
 ```
 
-/// WARNING/ERROR: I thought we got rid of the types/ prefixes (along with beads/ and links/)
+The top-level `bd remember` command remains a compatibility alias for `bd memory
+remember`. Because Memories are Beads, the general `bd create` can create the
+same notes by naming the `memory` Type explicitly. The three spellings below
+are alternatives to the first creation above; you can pick a spelling when creating
+the design note.
 
+```console
+# Create the design note using the top-level compatibility alias.
+> bd remember 'Export the selected rows as CSV.' \
+  --key csv-design --title 'CSV export design'
+Created csv-design [memory] "CSV export design"
 
-The general Bead command can create the same kind of note by selecting its installed Type.
-```sh
-# Alternatively, create the design note through the general Bead command.
-bd create --id csv-design --type types/memory \
+# Alternatively, create the same note using the Memory command group.
+> bd memory remember 'Export the selected rows as CSV.' \
+  --key csv-design --title 'CSV export design'
+Created csv-design [memory] "CSV export design"
+
+# Alternatively, create the same note using the general Bead command.
+> bd create --id csv-design --type memory \
   --properties '{"title":"CSV export design","body":"Export the selected rows as CSV."}'
+Created csv-design [memory] "CSV export design"
 
 ```
 
-/// I would follow this paragraph with an example, showing a two bd remmbers with the same key, followed by the equivalent bd create|update calls. Then show that the bd remember --create-only on the same key fails.  I think that example obviates the need for the previous example
-The `bd remember` command supported both creating new memories and updating existing ones. That continues to work, however to allow callers to specify whether updating is allowed, the new `--create-only` causes the command to fail. /// no need to introduce type updates here.
-
-/// this example confuses the crap out of me. I would have shown the recall/show, forget/delete and memories/list comps (with some explanatory prose preceding each one), all the time emphasizing that memories and now beads
-
-/// see previous comment about refactoring this.
-The notes hold knowledge; Issues record the work of implementing and reviewing the feature. The fixed practice IDs below use `--force` to allow a spelling outside the workspace's configured native Issue prefix. We can then inspect a Memory as a Bead, recall just its body, or browse summaries to choose what to read.
-
-
-```sh
+To finish out our scenario, let's create two Issues using the concrete `task` Type for implementing and reviewing the
+feature. The Issues record the work, while the notes hold knowledge that helps
+people carry it out. Issues use `description` for their text, while Memories
+use `body`.
+```console
 # Create the implementation Issue.
-bd create 'Add CSV export' --id export-work --type task --force \
-  --description 'Implement CSV export for the selected rows.'
+> bd create --id export-work --type task \
+  --properties '{"title":"Add CSV export","description":"Implement CSV export for the selected rows."}'
+Created export-work [task] "Add CSV export"
 
 # Create the review Issue.
-bd create 'Review CSV export' --id review-work --type task --force \
-  --description 'Review the completed CSV export feature.'
-
-# Read the design note's body.
-bd memory recall csv-design
-
-# Browse Memories whose content mentions CSV.
-bd memory memories CSV
-
-# Read the same design note as a complete Bead.
-bd show csv-design
+> bd create --id review-work --type task \
+  --properties '{"title":"Review CSV export","description":"Review the completed CSV export feature."}'
+Created review-work [task] "Review CSV export"
 
 ```
 
-### Connect context, including cycles
+Memory and Issue Beads work with the general Bead commands. We have created
+three Memories and two Issues; use `bd list` to see them together in the mixed
+inventory.
 
+```console
+# List Memory and Issue Beads together in the current Scope.
+> bd list --type any
+csv-design      [memory]  CSV export design
+csv-encoding    [memory]  CSV encoding
+csv-interop     [memory]  CSV interoperability checks
+export-work     [task]  Add CSV export
+review-work     [task]  Review CSV export
 
-References explain useful connections between knowledge and work. The feature design uses the encoding note, the encoding note points to interoperability checks, and those checks refer back to the design. The checks also point to the implementation Issue, which refers to the design it implements. This gives us one cycle entirely among Memories and another that passes through an Issue; neither is a blocking Dependency.
+```
 
-/// please explain that `bd memory reference` and `bd dep add`  are just aliases over the generic bd link create command. No need to show an example, but please use bd dep add for the last link in this list
+To see only Memories or tasks, filter the inventory with `--type`. The
+memory-specific `bd memory memories` command, also available as `bd memories`,
+provides compact Memory summaries rather than the general inventory's full
+Resource formats and paging.
 
-```sh
+```console
+# List the task Type family through the same general command.
+> bd list --type task
+export-work     [task]  Add CSV export
+review-work     [task]  Review CSV export
+
+# List the Memory Type family through the general Bead command.
+> bd list --type memory
+csv-design      [memory]  CSV export design
+csv-encoding    [memory]  CSV encoding
+csv-interop     [memory]  CSV interoperability checks
+
+# Browse summaries through the top-level compatibility alias.
+> bd memories
+csv-design      [memory]  CSV export design
+csv-encoding    [memory]  CSV encoding
+csv-interop     [memory]  CSV interoperability checks
+
+# Browse the same summaries through the Memory command group.
+> bd memory memories
+csv-design      [memory]  CSV export design
+csv-encoding    [memory]  CSV encoding
+csv-interop     [memory]  CSV interoperability checks
+
+```
+
+Likewise, inspect a Memory with the generic `bd show` command or the
+memory-specific `bd memory recall`, also available as `bd recall`. The former
+shows the Bead document, including its properties; the latter writes only its
+Markdown body.
+
+```console
+# Inspect the design note as a Bead document.
+> bd show csv-design --output-format json
+{
+  "id": "csv-design",
+  "type": "memory",
+  "properties": {
+    "title": "CSV export design",
+    "body": "Export the selected rows as CSV."
+  }
+}
+
+# Read only the design note's body through the Memory command group.
+> bd memory recall csv-design
+Export the selected rows as CSV.
+
+# Read the same body through the top-level compatibility alias.
+> bd recall csv-design
+Export the selected rows as CSV.
+
+```
+
+Finally, delete a Memory with the general `bd delete` command or the
+memory-specific `bd memory forget`, also available as `bd forget`. Create a
+separate temporary note so the deletion example leaves the CSV notes available
+for the rest of the walkthrough.
+
+After creating the temporary note, choose one of the deletion commands below.
+The deletion commands are alternatives. On the
+general command, `--force` supplies the intent to apply the deletion, while
+`forget` already expresses that intent.
+
+```console
+# Create a temporary Memory for the deletion examples.
+> bd memory remember 'Temporary note for comparing deletion commands.' \
+  --key deletion-demo
+Created deletion-demo [memory]
+
+# Delete the temporary Memory through the Memory command group.
+> bd memory forget deletion-demo
+Deleted deletion-demo.
+
+# Alternatively, delete it through the top-level compatibility alias.
+> bd forget deletion-demo
+Deleted deletion-demo.
+
+# Alternatively, apply the same deletion through the general Bead command.
+> bd delete deletion-demo --force
+Deleted deletion-demo.
+
+```
+
+These conveniences work with the same Beads as the general commands, with
+Memory-specific defaults and rendering. The mapping for `bd update` is
+different: `remember` supports both creating a new Memory and updating an
+existing one by using the same key. On a new throwaway identity, these two
+calls first create a note and then change its body, preserving its title.
+
+```console
+# Create a reminder under a new identity.
+> bd memory remember 'Include column headings in CSV exports.' \
+  --key remember-demo --title 'CSV headings reminder'
+Created remember-demo [memory] "CSV headings reminder"
+
+# Update that same Memory, leaving its title unchanged.
+> bd memory remember 'Include headings even when no rows are selected.' \
+  --key remember-demo
+Updated remember-demo [memory] "CSV headings reminder"
+
+```
+
+The following general commands are an alternative way to perform those two
+operations. Choose either this block or the preceding one for the new
+`remember-demo` identity.
+
+```console
+# Create the same reminder through the general Bead command.
+> bd create --id remember-demo --type memory \
+  --properties '{"title":"CSV headings reminder","body":"Include column headings in CSV exports."}'
+Created remember-demo [memory] "CSV headings reminder"
+
+# Apply the same body change through the general update command.
+> bd update remember-demo \
+  --set-property body='Include headings even when no rows are selected.'
+Updated remember-demo [memory] "CSV headings reminder"
+
+```
+
+After either block, the identity already exists. If, however, the Bead ID passed to the `remember` command is misspelled, we wind up with an errant second Bead and the intended Memory is not updated. To protect against this situation, the `remember` command accepts two mutually exclusive flags:
+
+- `--update ID` — only update the Memory if the ID exists; fail otherwise.
+- `--create-only` — only create a new Memory; fail if the supplied `--key` or `--id` already exists.
+
+Use `--update` when you intend to edit an existing Memory. The first call below updates the reminder; the second misspells its ID and fails without creating another Bead. The final call uses `--create-only` to protect the existing reminder from an attempted creation.
+
+```console
+# Update the existing reminder while preserving its title.
+> bd memory remember 'Keep headings even when the selection is empty.' \
+  --update remember-demo
+Updated remember-demo [memory] "CSV headings reminder"
+
+# Refuse an update to a misspelled ID rather than creating another Memory.
+> bd memory remember 'This text must not create another Memory.' \
+  --update remembre-demo
+Error: remembre-demo not found.
+
+# Refuse to create another Memory at an identity already used above.
+> bd memory remember 'This text must not replace the saved reminder.' \
+  --key remember-demo --title 'A competing reminder' --create-only
+Error: remember-demo already exists; --create-only refused the write.
+
+```
+
+### Linking Memories
+
+References Links connect memory beads so that readers can follow useful related context.  There is a distinct new link type, `references`, that connects memory beads to one another or to beads of any type (e.g., `task`). Reference links share the same three properties as memory beads (title, body, status) allowing you to treat references between memories as full-fledged parts of the memory graph; unlike memory beads however, all three of these fields are optional. Reference links can be created using the memory-specific `bd memory reference` command or the generic `bd link create` command that works with all link types.
+
+Generic References links provide informative context. The Requires, Defines, and Subject To Link Types are specializations that build normative rules that activities and artifacts have to adhere to; these specialized
+Links are also References. Superseded By expresses normative succession: it
+directs readers to the successor for current guidance. It does not automatically
+approve that successor, change status, rewrite Subject To declarations or erase
+history.
+
+Three commands create and follow References Links:
+
+- `bd memory reference SOURCE TARGET` creates a References Link from the source to the target.
+- `bd memory references REF... [--depth N]` follows outgoing References Links to find related context.
+- `bd memory referenced-by REF... [--depth N]` follows incoming References Links to find Beads that refer to the selected Beads.
+
+In our example, the design uses the encoding note, which points to the interoperability checks;
+those checks refer back to the design. The checks also point to the
+implementation Issue, which refers to the design it implements. These
+connections form one cycle entirely among Memories and another through an
+Issue. A title or body on a Link can explain why the connection matters. The last
+References creation uses `bd link create`, which creates the same kind of Link
+as `bd memory reference` by naming its Type explicitly.
+
+```console
 # Explain which encoding note the design uses.
-bd memory reference csv-design csv-encoding --id encoding-context \
+> bd memory reference csv-design csv-encoding --id encoding-context \
   --title 'Uses this encoding' --body 'Text encoding for exported files'
+Created encoding-context: csv-design --references--> csv-encoding
 
 # Connect the encoding choice to its spreadsheet checks.
-bd memory reference csv-encoding csv-interop --id encoding-checks \
+> bd memory reference csv-encoding csv-interop --id encoding-checks \
   --title 'Interoperability checks for this encoding'
+Created encoding-checks: csv-encoding --references--> csv-interop
 
-# Close the cycle among the three Memories.
-bd memory reference csv-interop csv-design --id checks-design \
+# Close the References cycle among the three Memories.
+> bd memory reference csv-interop csv-design --id checks-design \
   --title 'Design these checks validate'
+Created checks-design: csv-interop --references--> csv-design
 
 # Connect the interoperability checks to the work recording their results.
-bd memory reference csv-interop export-work --id checks-work \
+> bd memory reference csv-interop export-work --id checks-work \
   --title 'Implementation and verification work'
+Created checks-work: csv-interop --references--> export-work
 
-# Close the cycle that passes through the implementation Issue.
-bd memory reference export-work csv-design --id design-context \
-  --title 'Implementation context'
+# Close the References cycle that passes through the implementation Issue.
+> bd link create export-work csv-design --type references --id design-context \
+  --properties '{"title":"Implementation context"}'
+Created design-context: export-work --references--> csv-design
 
-# Make review wait for the implementation Issue to finish.
-bd link create review-work export-work --type blocks --id review-after-export
+# Make the review Issue depend on completion of the implementation Issue.
+> bd link create review-work export-work --type blocks \
+  --id review-after-export
+Created review-after-export: review-work --blocks--> export-work
 
 ```
 
-References links are allowed to create cycles. A traversal stops expanding a Bead it has already visited and keeps the Links that show the relationship, including a cycle-closing Link. The `blocks` Dependency retains its existing workflow meaning: in this case review waits for implementation.
+The three notes form a permitted References cycle. A second cycle follows the
+same encoding and interoperability notes through the implementation Issue and
+back to the design. The `blocks` Dependency separately says that review waits
+for implementation; References supply context without imposing that workflow.
 
 ```mermaid
 flowchart LR
@@ -259,136 +499,475 @@ flowchart LR
     N -->|references| I
 ```
 
-A plain References Link has its own revision; adding or editing it does not revise either endpoint. Use a forward read to find context, or a reverse read to find records referring to a note. The graph viewer can follow the current References family across the connected example.
 
-/// I really wonder if we should apply the `>`/output format used in the import section.  What the heck does bd graph show?  We also should talk about what the link-type flag does (wihtout explaining exact-type here)
+All links, including `references`, `blocks`, etc, can be updated without recreating them using the `bd link update` command.
 
-```sh
-# Find the design note's direct References.
-bd memory references csv-design
+A References Link can carry a free-form status just as a Memory can. Metadata
+is available on both References and Dependency Links, independently of their
+Type-specific properties. These edits keep the existing Link identities.
+
+```console
+# Mark the encoding reference reviewed and record its reviewer in metadata.
+> bd link update encoding-context --set-property status=reviewed \
+  --set-metadata reviewer=csv-review
+Updated encoding-context.
+{
+  "properties": {
+    "status": "reviewed"
+  },
+  "metadata": {
+    "reviewer": "csv-review"
+  }
+}
+
+# Record why the review depends on implementation without adding a property.
+> bd link update review-after-export \
+  --set-metadata rationale='Review after implementation'
+Updated review-after-export.
+{
+  "metadata": {
+    "rationale": "Review after implementation"
+  }
+}
+
+```
+
+
+The generic `bd graph` has been updated to handle cyclic references no matter what the link type is, and can filter out only links of a specific type (e.g., `references`, `blocks`).  For convenience, the `bd memory references` and `bd memory referenced-by` will show the graph of memory references in either outbound or inbound direction.  These two commands are conveniences over the generic `bd graph` command, which can also show these traversals.
+
+```console
+# Find the design note's direct context.
+> bd memory references csv-design
+csv-design [memory] CSV export design
+└─ references → csv-encoding [memory] CSV encoding (depth limit)
+
+# Follow References farther to include both cycles.
+> bd memory references csv-design --depth 4
+csv-design [memory] CSV export design
+└─ references → csv-encoding [memory] CSV encoding
+   └─ references → csv-interop [memory] CSV interoperability checks
+      ├─ references → csv-design (cycle)
+      └─ references → export-work [task] Add CSV export
+         └─ references → csv-design (cycle)
 
 # Find Beads that refer to the design note.
-bd memory referenced-by csv-design
+> bd memory referenced-by csv-design
+csv-design [memory] CSV export design
+├─ references ← csv-interop [memory] CSV interoperability checks (depth limit)
+└─ references ← export-work [task] Add CSV export (depth limit)
+Cross-link: csv-interop --references→ export-work
 
 # Explore the References graph far enough to encounter both cycles.
-bd graph csv-design --link-type types/references --direction out --depth 4
+> bd graph csv-design --link-type references --direction out --depth 4
+csv-design [memory] CSV export design
+└─ references → csv-encoding [memory] CSV encoding
+   └─ references → csv-interop [memory] CSV interoperability checks
+      ├─ references → csv-design (cycle)
+      └─ references → export-work [task] Add CSV export
+         └─ references → csv-design (cycle)
 
 ```
 
-### Revise a note or replace it
+### Memories Over Time
 
-An edit maintains the same piece of knowledge under the same identity. Each accepted change saves a new revision, while an unchanged update leaves the revision alone. A separately maintained replacement is a different Memory, connected to the old one by a Superseded By Link. These operations answer different questions: what changed in this note, and which note should I follow next?
+There are two ways for memory to evolve over time. The simplest way is simply by updating the memory in place. Its id/key stays the same, it just takes on new values. If you are simply changing the specifics of a given memory but it plays the same role as it did before, this is likely the way to go.
 
-/// Darn I wish we would have added bd memory update with --body/--title/--subject. Can you check with Janet whether its there and ask her if it's worth adding for PR3?  Either way, I think this would read better as bd remember - the JSON looks ugly
-```sh
-# Clarify the encoding note while keeping its identity.
-bd update csv-encoding --properties '{"body":"Use UTF-8 without a byte-order mark."}'
+Sometimes however, fundamentally new memories need to be created that effectively replace one or more memories. In this case, agents or humans who reference the memory that's been retired need the ability to know which replacement is in effect.
 
-# Rename the note and label it reviewed in one edit.
-bd update csv-encoding --properties '{"title":"CSV text encoding","status":"reviewed"}'
+Both of these scenarios are supported. Let's look at the first one first.
 
-# List the saved revisions of this identity.
-bd versions csv-encoding
 
-# Read the second saved revision created by this example.
-bd show csv-encoding@2
+#### Revising a Memory
 
-# Recall just the body from that saved revision.
-bd memory recall csv-encoding@2
+A revision identifies an immutable saved state of a Bead. An update that changes
+its state records a new revision; the id/key stays constant while the state it
+references evolves. Deleting a Bead does not rewrite its earlier states. Most
+read commands let you select the current state or, using `@` syntax, a specific
+retained revision from the past.
+
+To see revisions in action, let's update the encoding note twice, changing its title and body each time and marking the final state reviewed. Both edits keep the ID `csv-encoding`. An unchanged update
+leaves the revision unchanged. `bd versions` lists the saved states so that a
+reader can select one explicitly.
+
+```console
+# Clarify the encoding requirement while keeping the same note.
+> bd update csv-encoding --set-property title='CSV text encoding' \
+  --set-property body='Use UTF-8 without a byte-order mark.'
+Updated csv-encoding; revision v9k2tx.
+
+# Refine the title and body again and label the note reviewed.
+> bd update csv-encoding --set-property title='Reviewed CSV encoding' \
+  --set-property body='Use UTF-8 without a byte-order mark for every exported file.' \
+  --set-property status=reviewed
+Updated csv-encoding; revision c6r8wn.
+
+# List the revisions saved for this identity.
+> bd versions csv-encoding
+SEQ  REVISION  TITLE
+1    m7q4pf    CSV encoding
+2    v9k2tx    CSV text encoding
+3    c6r8wn    Reviewed CSV encoding
 
 ```
 
+`SEQ` is the store-local revision number; `REVISION` is the exact stable token
+for the same revision. Use the number when browsing that identity's history in
+the same store. Use the complete exact token when sharing a saved revision,
+recording it in another system or retaining a reference across export and import.
+Local numbers are not portable: another store may assign a different number to
+the same revision, and equal numbers on different Beads do not identify the same
+state.
 
-//// WHOA WHOA WHOA WHOA WHOA.  First, we shoud NOT introduce pinned references UNTIL we discuss the overall revision model and ID@rev syntax.  I have to say, I could swear I've read AND written that section at least once.  I am going to stop editing and sort out with you what happned with that prose and whether we ahve the right document<->document flow.
+The short, random-looking tokens in
+these illustrations are invented; actual tokens are opaque and may be much
+longer. Use the complete token returned by the store when making an exact
+reference.
 
-Use the actual revision numbers and opaque tokens reported by your store. `@2` selects a store-local revision number; `@=TOKEN` selects the exact token for a portable citation. A retained Resource revision does not reconstruct an entire past graph, and this preview's focused Memory relationship reads can refuse endpoint pins that no longer match the captured current state.
+All three revisions share the same id/key (`csv-encoding`). When specifying a bead or link's ID on the command line, you can append `@2` to select
+local revision number 2, or `@=v9k2tx` to select that revision by its exact
+token. These are *pinned* references. Omitting the suffix produces an unpinned
+or *floating* reference, which selects the latest state when used.
 
-```sh
-# Record a separately maintained guide that replaces the short note.
-bd memory remember 'Encoding, headings and spreadsheet examples.' \
+The diagram shows three saved states of one identity,
+with dotted arrows indicating revision history rather than stored Links.
+
+```mermaid
+flowchart LR
+    E1["csv-encoding@1<br/>CSV encoding<br/>Use UTF-8."]
+    E2["csv-encoding@2<br/>CSV text encoding<br/>Use UTF-8 without a byte-order mark."]
+    E3["csv-encoding@3<br/>Reviewed CSV encoding<br/>Use UTF-8 without a byte-order mark for every exported file.<br/>status: reviewed"]
+    E1 -. next revision .-> E2
+    E2 -. next revision .-> E3
+```
+
+
+Here is an example showing unpinned/floating references as well as pinned references using `@` and `@=` to point to a specific revision.
+
+```console
+# Read the current note.
+> bd show csv-encoding --output-format json
+{
+  "id": "csv-encoding",
+  "type": "memory",
+  "revision": "c6r8wn",
+  "properties": {
+    "title": "Reviewed CSV encoding",
+    "body": "Use UTF-8 without a byte-order mark for every exported file.",
+    "status": "reviewed"
+  }
+}
+
+# Read the saved second revision from this example.
+> bd show csv-encoding@2 --output-format json
+{
+  "id": "csv-encoding",
+  "type": "memory",
+  "revision": "v9k2tx",
+  "properties": {
+    "title": "CSV text encoding",
+    "body": "Use UTF-8 without a byte-order mark."
+  }
+}
+
+# Recall just the body of that saved revision.
+> bd memory recall csv-encoding@2
+Use UTF-8 without a byte-order mark.
+
+# Select the same illustrative revision using its exact token.
+> bd show csv-encoding@=v9k2tx --output-format json
+{
+  "id": "csv-encoding",
+  "type": "memory",
+  "revision": "v9k2tx",
+  "properties": {
+    "title": "CSV text encoding",
+    "body": "Use UTF-8 without a byte-order mark."
+  }
+}
+
+```
+
+The Memory convenience command can also edit an existing note while preserving
+omitted content. This title-only example leaves the body unchanged and makes no
+new revision if the title is already equal.
+
+```console
+# Change only the existing note's title through the Memory command.
+> bd memory remember --update csv-encoding --title 'Reviewed CSV encoding'
+Unchanged csv-encoding; revision c6r8wn.
+
+```
+
+An unpinned Reference follows the current revision of its target. A pin selects
+one exact saved revision, which is useful when recording the version a design
+relied on. Add another References Link to revision 2, keeping the original
+floating Link alongside it.
+
+```console
+# Record the exact encoding revision used by the design.
+> bd memory reference csv-design csv-encoding@2 --id encoding-used \
+  --title 'Encoding revision used for the design'
+Created encoding-used: csv-design --references--> csv-encoding@2
+
+```
+
+Both Links identify the same encoding Bead. The diagram separates its current
+and saved representations to make their different revision selections visible.
+
+```mermaid
+flowchart LR
+    D["Memory: csv-design"] -->|references, floating| E["csv-encoding@current<br/>current revision 3"]
+    D -->|references, pinned| E2["csv-encoding@2<br/>exact token v9k2tx"]
+    E -->|references, floating| N["Memory: csv-interop"]
+    N -->|references, floating| D
+```
+
+The pinned Link keeps its exact target token through later edits to the note.
+
+Now update both notes reached through the floating References: the encoding
+note and its interoperability checks. Their identities and the Links stay the
+same, while subsequent floating reads see the updated content. The pinned
+Reference still selects encoding revision 2.
+
+```console
+# Refine the encoding note again without replacing its identity.
+> bd memory remember --update csv-encoding \
+  --body 'Use UTF-8 without a byte-order mark, with CRLF line endings.'
+Updated csv-encoding; revision m2p7zs.
+
+# Extend the checks behind the next floating Reference.
+> bd memory remember --update csv-interop \
+  --body 'Test UTF-8 and CRLF line endings in spreadsheet tools; record the results with the implementation work.'
+Updated csv-interop; revision h8d4vk.
+
+```
+
+The same graph now follows revision 4 of the encoding note and revision 2 of the
+interoperability checks through its floating References. The pinned Link still
+selects encoding revision 2; the changed revision labels are italicized.
+
+```mermaid
+flowchart LR
+    D["Memory: csv-design"] -->|references, floating| E["csv-encoding@current<br/><i>current revision 4 · m2p7zs</i>"]
+    D -->|references, pinned| E2["csv-encoding@2<br/>exact token v9k2tx"]
+    E -->|references, floating| N["csv-interop@current<br/><i>current revision 2 · h8d4vk</i>"]
+    N -->|references, floating| D
+```
+
+The Memory update shorthand accepts `--title`, `--body` and `--status` while
+preserving omitted content. Use `bd update` for the full property-edit surface
+or a Type change.
+
+#### Retiring a Memory using `superseded-by` links
+
+Revisions allow a memory to evolve in place. Floating references pick up the latest state in that evolution; pinned references freeze at a moment in time. Because very few users of a bead are going to meticulously look through its revisions, it's difficult to know whether that evolution reflected refinement of the same fact, statement, or idea, or a direct contradiction. To make replacement obvious and discoverable, use the `superseded-by` link type to indicate that the source bead is being retired and the target bead holds the updated memory. Revisions over time of a given bead assume refinement; traversing beads through `superseded-by` assumes replacement.
+
+Three commands create and follow Superseded By Links:
+
+- `bd memory supersede OLD NEW` creates a Superseded By Link from a retiring Memory to its replacement.
+- `bd memory successor REF... [--depth N]` follows the replacement chain forward from each retiring Memory.
+- `bd memory supersedes REF... [--depth N]` follows the chain backward from a replacement, showing its direct predecessors by default.
+
+For example, a short encoding note may eventually give way to a guide covering headings,
+spreadsheet behavior and examples. Create the guide as a separately maintained
+Memory. A Superseded By Link records that it replaces the old note. The old
+identity and its earlier revisions remain readable.
+
+```console
+# Create the separately maintained replacement guide.
+> bd memory remember 'Encoding, headings and spreadsheet examples.' \
   --key csv-guide --title 'CSV interoperability guide' --create-only
+Created csv-guide [memory] "CSV interoperability guide"
 
-# Connect the retiring note to its replacement.
-bd memory supersede csv-encoding csv-guide --id encoding-replacement
-
-# Follow the replacement path from the old note.
-bd memory successor csv-encoding
-
-# Find the direct predecessors of the replacement guide.
-bd memory supersedes csv-guide
+# Record the old-to-new replacement.
+> bd memory supersede csv-encoding csv-guide --id encoding-replacement
+Created encoding-replacement: csv-encoding --superseded-by--> csv-guide
 
 ```
 
-The Link points from old to new, revises the retiring Memory and leaves the replacement unchanged. The old identity and earlier revisions remain readable, and existing References keep their targets until their authors change them. Each retiring Memory has at most one successor, and replacement chains cannot cycle.
+The replacement Link points from old to new and directs readers to the
+successor for current guidance. This succession is normative: continuing to
+follow the replaced guidance can conflict with that direction. This view shows
+the Link beside the original forward Reference; the other References remain
+unchanged.
 
-## Give constraints a structure
+```mermaid
+flowchart LR
+    D["Memory: csv-design"] -->|references| E["Memory: csv-encoding"]
+    E -->|superseded-by| G["Memory: csv-guide"]
+```
 
-Some knowledge states what work must do, avoid or follow. A Constraint Bead records such an obligation in its body, and its Type tells a reader what kind of rule it is. Policy, Decision, Procedure, Requirement, Scenario and Specification refine Constraint, which itself refines Memory. Use Constraint directly when none of those more specific Types fits; a metadata label does not create Type membership.
+The general Link command expresses the same replacement using the installed
+`superseded-by` Type. This is an alternative to the preceding `bd memory
+supersede` call.
 
-| Type | What it records |
-| --- | --- |
-| Policy | Governing rules for a system, project or team. |
-| Decision | Choices that constrain later work. |
-| Procedure | How work is carried out, with the flow in its body. |
-| Requirement | An outcome or condition that must be met. |
-| Scenario | Required behavior in a particular situation. |
-| Specification | Intended results at any useful level of detail. |
+```console
+# Create the same replacement Link through the general command.
+> bd link create csv-encoding csv-guide --type superseded-by \
+  --id encoding-replacement
+Created encoding-replacement: csv-encoding --superseded-by--> csv-guide
 
-### Define the parts and require other rules
+```
 
-For CSV export, a Specification can define a selected-row Requirement and an empty-selection Scenario. A customer-data Policy can remain independently maintained and govern many features. Its detailed Policies belong to its own definition, even when another Requirement also relies on one of them. Each record has its own identity and can be revised or referenced independently.
+Each retiring Memory has at most one successor, and replacement chains cannot
+cycle. The focused reads below follow that replacement relationship in either
+direction.
 
-```sh
+```console
+# Follow the encoding note's replacement path.
+> bd memory successor csv-encoding
+csv-encoding [memory] Reviewed CSV encoding
+└─ superseded-by → csv-guide [memory] CSV interoperability guide
+
+# Find notes directly replaced by the guide.
+> bd memory supersedes csv-guide
+csv-guide [memory] CSV interoperability guide
+└─ superseded-by ← csv-encoding [memory] Reviewed CSV encoding
+
+# Display the current replacement path with the Beads graph viewer.
+> bd graph csv-encoding --link-type superseded-by --direction out --depth 1000
+csv-encoding [memory] Reviewed CSV encoding
+└─ superseded-by → csv-guide [memory] CSV interoperability guide
+
+```
+
+### Constraints
+
+Generic Memory Beads and References Links (created with `--type memory` and `--type references` respectively) don't have a lot of semantics associated with them. They create a graph of Markdown-based information with a descriptive title and an optional status. What the memory means and how it should be used is implicit in the markdown body.
+
+The `superseded-by` link actually makes a semantic statement; the source bead has been retired and replaced by the target bead.  The meaning is clear, and the discovery is explicit and deterministic.
+
+The family of constraint bead and link types also make semantic statements, whose meaning is clear, and discovery is equally explicit and deterministic.
+
+#### Constraint Beads
+
+Some memories state what work must do, what it must avoid, or how it must be
+carried out. A Constraint Bead records one of these obligations. Its body
+describes the rule, and its Type tells readers what kind of rule they are
+reading.
+
+- A Policy Bead states governing rules or adopted directions for a system, project or team.
+- A Requirement Bead states an outcome or condition that must be met.
+- A Scenario Bead describes required behavior in a particular situation.
+- A Specification Bead describes intended results at any useful level of detail.
+
+You can use the Constraint Bead Type directly if none of the more specific Bead Types fits.
+
+An adopted choice that governs later work is a Policy; record its scope,
+rationale and authority in existing content and metadata. A historical account
+of a choice that imposes no continuing rule is a plain Memory. A `superseded-by`
+Link can connect a Policy to its replacement, but does not approve that
+replacement or rewrite existing Subject To declarations. A required way of
+working is a Policy with the steps and conditions in its body; optional how-to
+guidance is a plain Memory.
+
+These four Types refine Constraint, which itself refines Memory. The Type diagram
+points from each refinement to its parent.
+
+```mermaid
+flowchart BT
+    Constraint -->|refines| Memory
+    Policy -->|refines| Constraint
+    Requirement -->|refines| Constraint
+    Scenario -->|refines| Constraint
+    Specification -->|refines| Constraint
+```
+
+For CSV export, create a Specification, a Requirement and an empty-selection
+Scenario. The `remember --type` creation option chooses each installed
+Type by name; a separate customer-data Policy supplies rules used by more than
+this feature, with two more Policy Beads for its details.
+
+```console
 # Describe the feature's intended result.
-bd create 'CSV export format' --id csv-format --type types/specification \
-  --body 'Export selected rows and follow the rules linked below.'
+> bd memory remember 'Export the selected rows and follow the rules linked below.' \
+  --key csv-format --title 'CSV export format' --type specification --create-only
+Created csv-format [specification] "CSV export format"
 
-# State which rows must appear in the output.
-bd create 'Export every selected row' --id selected-rows --type types/requirement \
-  --body 'Every selected row appears exactly once.'
+# State which rows must appear in the file.
+> bd memory remember 'Every selected row appears exactly once.' \
+  --key selected-rows --title 'Export every selected row' --type requirement --create-only
+Created selected-rows [requirement] "Export every selected row"
 
-# State the expected outcome for an empty selection.
-bd create 'Export an empty selection' --id empty-export --type types/scenario \
-  --body 'Produce headings and no data rows.'
+# State the expected result for an empty selection.
+> bd memory remember 'Produce headings and no data rows.' \
+  --key empty-export --title 'Export an empty selection' --type scenario --create-only
+Created empty-export [scenario] "Export an empty selection"
 
 # Record the independently maintained customer-data Policy.
-bd create 'Protect customer data' --id customer-data --type types/policy \
-  --body 'Keep personal information out of logs and shared sample exports.'
+> bd memory remember 'Keep personal information out of logs and sample exports.' \
+  --key customer-data --title 'Protect customer data' --type policy --create-only
+Created customer-data [policy] "Protect customer data"
 
-# Record the Policy's log-handling detail.
-bd create 'Redact application logs' --id redact-logs --type types/policy \
-  --body 'Remove personal information before writing log entries.'
+# Record the log-handling detail as an ordinary Policy Bead.
+> bd memory remember 'Remove personal information before writing log entries.' \
+  --key redact-logs --title 'Redact application logs' --type policy --create-only
+Created redact-logs [policy] "Redact application logs"
 
-# Record the Policy's sample-data detail.
-bd create 'Use anonymized sample exports' --id sample-exports --type types/policy \
-  --body 'Use anonymized records in shared sample exports.'
+# Record the sample-data detail as another Policy Bead.
+> bd memory remember 'Use anonymized records in shared sample exports.' \
+  --key sample-exports --title 'Use anonymized sample exports' --type policy --create-only
+Created sample-exports [policy] "Use anonymized sample exports"
 
 ```
 
-Defines makes a child part of its parent's definition. Requires names another Constraint that must also be met, including one maintained in a separate defining tree. Defines refines Requires, so a Requires-family read includes both kinds of Link without changing their labels.
+Each record has its own identity and can be read, revised or referenced
+independently. The next section connects them into defining trees and
+cross-references.
 
-```sh
-# Make the selected-row Requirement a defining part of the Specification.
-bd memory defines csv-format selected-rows --id defines-rows
+### Constraint Bead Graphs
+
+Like a generic `--type memory` bead, the `--type references` link is fairly semantics free. You can traverse the memory graph, but why two beads are linked with a `references` link is implicit and based on context.
+
+Constraint graphs rely on specific link types (Requires and Defines) to express compound constraints and cross-referenced dependencies. Both link types connect two Constraint Beads and indicate that the source's constraints cannot be satisfied unless the target's constraints have also been met.
+
+- A `defines` Link builds a compound constraint: a Policy can define subpolicies, or a Specification can define Requirements and Specifications.
+- A `requires` Link can cross-reference constraints maintained in other Specifications, Policies or defining trees. Defines refines Requires, so a Requires-family traversal includes Defines Links too.
+
+Defines Links form defining trees: each child has at most one defining parent, and the trees cannot cycle. Requires Links may form cycles; traversals must detect repeated visits and terminate even when cycles occur. Graph queries can collect the necessary obligations reached through the Requires family, including Defines.
+
+A defining child keeps its own identity and can be required from another tree
+without acquiring a second defining parent.
+
+Six commands create and follow these relationships:
+
+- `bd memory defines PARENT CHILD` creates a Defines Link, making the child part of the parent's definition.
+- `bd memory definition REF... [--depth N]` follows outgoing Defines Links to read defining parts.
+- `bd memory defined-by REF... [--depth N]` follows incoming Defines Links to find defining parents, showing the direct parent by default.
+- `bd memory requires SOURCE TARGET` creates a Requires Link to another Constraint that must also be met.
+- `bd memory requirements REF... [--depth N]` follows outgoing Requires-family Links, including Defines, to read the necessary constraints.
+- `bd memory required-by REF... [--depth N]` follows incoming Requires-family Links to find dependent Constraints, showing direct dependents by default.
+
+```console
+# Make the selected-row Requirement part of the Specification's definition.
+> bd memory defines csv-format selected-rows
+Created Link: csv-format --defines--> selected-rows
 
 # Make the empty-selection Scenario another defining part.
-bd memory defines csv-format empty-export --id defines-empty
+> bd memory defines csv-format empty-export
+Created Link: csv-format --defines--> empty-export
 
 # Give the customer-data Policy its log-handling detail.
-bd memory defines customer-data redact-logs --id defines-logs
+> bd memory defines customer-data redact-logs
+Created Link: customer-data --defines--> redact-logs
 
 # Give the customer-data Policy its sample-data detail.
-bd memory defines customer-data sample-exports --id defines-samples
+> bd memory defines customer-data sample-exports
+Created Link: customer-data --defines--> sample-exports
 
-# Require the independently maintained Policy from the Specification.
-bd memory requires csv-format customer-data --id requires-policy
+# Require that independently maintained Policy from the CSV Specification.
+> bd memory requires csv-format customer-data
+Created Link: csv-format --requires--> customer-data
 
 # Require the same log-handling Policy from the selected-row Requirement.
-bd memory requires selected-rows redact-logs --id requires-log-policy
+> bd memory requires selected-rows redact-logs
+Created Link: selected-rows --requires--> redact-logs
 
 ```
 
-The two defining trees remain distinct. The selected-row Requirement can require the log-handling Policy without becoming its defining parent. A Defines child has at most one defining parent, and defining trees cannot cycle; Requires can cross between trees and may cycle, with repeated expansion stopped during a read.
+The Specification and customer-data Policy each have a defining tree. The last
+Requires Link crosses between them: the log-handling Policy keeps its defining
+parent even though the selected-row Requirement also requires it.
 
 ```mermaid
 flowchart TD
@@ -400,113 +979,235 @@ flowchart TD
     R -->|requires| L
 ```
 
-Both kinds of Link are owned by their source Constraint. A Link change revises that source without revising the target. The following reads distinguish the Specification's own defining parts from the broader set of constraints it requires.
+Each linked target must be met for its source to be met; the source's own text
+still applies, and only an explicit statement makes its listed children
+exhaustive. The reads below distinguish defining parts from the broader
+Requires family, which includes the separate Policies and the cross-reference.
 
-```sh
+```console
 # Read the Specification's defining Requirement and Scenario.
-bd memory definition csv-format
+> bd memory definition csv-format
+csv-format [specification] CSV export format
+├─ defines → selected-rows [requirement] Export every selected row
+└─ defines → empty-export [scenario] Export an empty selection
 
-# Discover its defining parts and the independently maintained Policies it requires.
-bd memory requirements csv-format
+# Read its defining parts and the separate Policies it requires.
+> bd memory requirements csv-format
+csv-format [specification] CSV export format
+├─ defines → selected-rows [requirement] Export every selected row
+│  └─ requires → redact-logs [policy] Redact application logs
+├─ defines → empty-export [scenario] Export an empty selection
+└─ requires → customer-data [policy] Protect customer data
+   ├─ defines → redact-logs (already shown)
+   └─ defines → sample-exports [policy] Use anonymized sample exports
 
-# Find the selected-row Requirement's direct defining parent.
-bd memory defined-by selected-rows
+# Find the direct defining parent of the selected-row Requirement.
+> bd memory defined-by selected-rows
+selected-rows [requirement] Export every selected row
+└─ defines ← csv-format [specification] CSV export format
 
 # Find Constraints that directly require the log-handling Policy.
-bd memory required-by redact-logs
+> bd memory required-by redact-logs
+redact-logs [policy] Redact application logs
+├─ defines ← customer-data [policy] Protect customer data (depth limit)
+└─ requires ← selected-rows [requirement] Export every selected row (depth limit)
+
+# Display only the current Defines tree with the Beads graph viewer.
+> bd graph csv-format --link-type defines --direction out --depth 1000
+csv-format [specification] CSV export format
+├─ defines → selected-rows [requirement] Export every selected row
+└─ defines → empty-export [scenario] Export an empty selection
+
+# Display the Requires family, including Defines and the cross-reference.
+> bd graph csv-format --link-type requires --direction out --depth 1000
+csv-format [specification] CSV export format
+├─ defines → selected-rows [requirement] Export every selected row
+│  └─ requires → redact-logs [policy] Redact application logs
+├─ defines → empty-export [scenario] Export an empty selection
+└─ requires → customer-data [policy] Protect customer data
+   ├─ defines → redact-logs (already shown)
+   └─ defines → sample-exports [policy] Use anonymized sample exports
 
 ```
 
-### Declare which work is governed
+### Applying Constraints
 
-A Subject To Link explicitly declares that a Constraint governs a Bead. The implementation Issue and a Memory describing a preview build can both be subject to the CSV Specification. Starting with either subject, a focused read follows the declared Constraints and their Requires family, including Defines. The paths tell a reader how each rule was reached.
+People and agents need to know which constraints apply to a piece of work. They
+can find relevant rules from context or follow explicit declarations in the graph.
 
-```sh
-# Record the preview build as a second kind of subject.
-bd memory remember 'The CSV preview build is ready for review.' \
+The constraint graphs we just looked at express what conditions must be true in a given context, but they are silent on how that context is established.
+
+The most obvious and flexible way to determine who or what is subject to a constraint graph is implicit inference. An agent may infer relevant constraints from a prompt or ambient context. For example,
+a Policy may state that all bug fixes must include a regression test. The constraint's subjects can be identified this way, but we are relying on inference to find them.
+
+The alternative way to determine the subjects of a constraint is to use the `subject-to` Link. A `subject-to` Link explicitly connects a Bead to a Constraint that governs it.
+Any Bead, including an Issue, can be the source, and it can have several such
+declarations. Starting from those Constraints, a read can follow Requires and
+Defines to deterministically find the set of rules the bead is subject to.
+
+Three commands declare and discover these relationships:
+
+- `bd memory subject-to SUBJECT CONSTRAINT` declares that a Bead is governed by a Constraint.
+- `bd memory constraints SUBJECT...` discovers each subject's explicit declarations and the Requires-family paths, including Defines, that follow from them.
+- `bd memory subjects CONSTRAINT...` finds Beads that directly declare they are subject to the selected Constraints.
+
+For the CSV example, declare that the implementation Issue and a note about the
+preview build are both subject to the CSV Specification. The Issue records the
+implementation work; the Memory records knowledge about the build.
+
+```console
+# Record a note about the preview build as a second kind of subject.
+> bd memory remember 'The CSV preview build is ready for review.' \
   --key csv-preview --title 'CSV preview build' --create-only
+Created csv-preview [memory] "CSV preview build"
 
-# Declare the Specification governing the implementation Issue.
-bd memory subject-to export-work csv-format --id work-obligation
+# Declare which Specification governs the implementation Issue.
+> bd memory subject-to export-work csv-format
+Created Link: export-work --subject-to--> csv-format
 
-# Declare that the same Specification governs the build Memory.
-bd memory subject-to csv-preview csv-format --id build-obligation
+# Declare that the same Specification governs the preview-build note.
+> bd memory subject-to csv-preview csv-format
+Created Link: csv-preview --subject-to--> csv-format
 
-# Discover the rules explicitly governing both subjects.
-bd memory constraints export-work csv-preview
+```
+
+The Issue and the Memory are different kinds of subject governed by the same
+Specification. From either subject, its explicit declaration leads into the
+Specification's Requires family, including Defines.
+
+```mermaid
+flowchart TD
+    I["Issue: export-work"] -->|subject-to| S["Specification: csv-format"]
+    B["Memory: csv-preview"] -->|subject-to| S
+    S -->|defines| R["Requirement: selected-rows"]
+    S -->|defines| C["Scenario: empty-export"]
+    S -->|requires| P["Policy: customer-data"]
+    P -->|defines| L["Policy: redact-logs"]
+    P -->|defines| E["Policy: sample-exports"]
+    R -->|requires| L
+```
+
+The supporting paths explain why each rule was reached for its original subject.
+`constraints` follows those declarations and dependencies; `subjects` answers
+the direct reverse question of which Beads name this Constraint.
+
+```console
+# Discover the rules explicitly governing the implementation Issue.
+> bd memory constraints export-work
+export-work [task] Add CSV export
+└─ subject-to → csv-format [specification] CSV export format
+   ├─ defines → selected-rows [requirement] Export every selected row
+   │  └─ requires → redact-logs [policy] Redact application logs
+   ├─ defines → empty-export [scenario] Export an empty selection
+   └─ requires → customer-data [policy] Protect customer data
+      ├─ defines → redact-logs (already shown)
+      └─ defines → sample-exports [policy] Use anonymized sample exports
+
+# Keep the paths for both subjects visible in one read.
+> bd memory constraints export-work csv-preview
+export-work [task] Add CSV export
+└─ subject-to → csv-format [specification] CSV export format
+   ├─ defines → selected-rows [requirement] Export every selected row
+   │  └─ requires → redact-logs [policy] Redact application logs
+   ├─ defines → empty-export [scenario] Export an empty selection
+   └─ requires → customer-data [policy] Protect customer data
+      ├─ defines → redact-logs (already shown)
+      └─ defines → sample-exports [policy] Use anonymized sample exports
+
+csv-preview [memory] CSV preview build
+└─ subject-to → csv-format [specification] CSV export format
+   ├─ defines → selected-rows [requirement] Export every selected row
+   │  └─ requires → redact-logs [policy] Redact application logs
+   ├─ defines → empty-export [scenario] Export an empty selection
+   └─ requires → customer-data [policy] Protect customer data
+      ├─ defines → redact-logs (already shown)
+      └─ defines → sample-exports [policy] Use anonymized sample exports
 
 # Find the subjects that directly declare the CSV Specification.
-bd memory subjects csv-format
+> bd memory subjects csv-format
+csv-format [specification] CSV export format
+├─ subject-to ← export-work [task] Add CSV export
+└─ subject-to ← csv-preview [memory] CSV preview build
 
 ```
+These declarations help readers discover the rules; they do not prove
+compliance or change Issue readiness. Readiness and scheduling continue to
+follow their workflow and Dependency rules.
 
-Subject To is owned by its source, so a Link change revises the subject while leaving the Constraint unchanged. It does not spread through another Subject To declaration: a document-review Policy governing the Specification does not automatically govern its implementation Issue. These declarations help people and agents discover governing rules; they do not execute prose, prove compliance or change Issue readiness.
+Subject To does not spread through other Subject To declarations. A
+document-review Policy governing the Specification applies to that document; it
+does not automatically govern the implementation Issue. Declare the relationship
+to the Issue explicitly when that is intended.
 
-## Read a proposal as structured knowledge
+A prompt can direct an agent to follow the customer-data Policy today. A future
+executable applicability feature might select subjects using a predicate. This
+walkthrough discovers stored declarations and their Requires paths.
 
-A substantial proposal contains several kinds of knowledge: an explanation of its purpose, requirements that constrain the design, and scenarios that describe its expected use. [Chris's Memory proposal](https://github.com/gastownhall/beads/issues/5877) gives us a concrete example. We can represent it as one Specification, with 32 Requirement Beads and 16 Scenario Beads as its defining children. Each child retains its original text and complete title, including its `Rn` or `Sn` prefix; R27a accounts for the extra Requirement beyond R1–R31.
+<!-- end imported section - please retain this comment for provanence -->
+
+## An example closer to home
+
+We just walked through some fairly tiny examples to demonstrate the core capabilities of the system.  The concepts and mechanisms have been tested out throughout the production of this feature set, but the examples are honestly toys.
+
+A more fully fleshed out example is the [Memory proposal](https://github.com/gastownhall/beads/issues/5877) that kicked off this project. It gives us a concrete example from out in the wild, and it maps very cleanly to the constraint memory bead types we just looked at.
+
+We can represent the proposal as a Specification Bead, with 32 Requirement Beads and 16 Scenario Beads as its defining constraint. Each constraint retains its original text and complete title, including its `Rn` or `Sn` prefix; R27a accounts for the extra Requirement beyond R1–R31.
 
 ### Start with the Specification
 
-For this example, use a separate, focused Scope containing the proposal and its extracted Beads. The [example data](preview3-blog-assets/memory-proposal-data.json) retains the complete source titles and bodies; it is editorial example data, not a format accepted by `bd import`. The Specification's introductory body is newly authored prose, while the children carry the actual proposal text. The compact displays below illustrate the arrangement and abbreviate long titles for the page; they are not an exact terminal transcript or a claim that the entire proposal has been implemented.
+For this example, we create a new scope to contain the proposal and its extracted Beads. The extraction retains the complete source titles and bodies. The displays below illustrate that arrangement; the proposal is represented through Bead and Link creation, rather than passed directly to `bd import`.
 
-```sh
-# Read the Specification's title and introductory body.
-bd show memory-proposal
+The Specification's body retains the proposal's other text verbatim: its
+status and revision notes, Summary, Goals, Core model, Technical considerations,
+Open questions and Out of scope. The Requirements and Scenarios carry their own
+original titles and bodies as separate defining Beads. The compact displays
+below are illustrations with elisions, rather than exact terminal transcripts
+or a claim that the proposal has been implemented.
 
-```
-
-```text
+```console
+# Read the Specification's title and original proposal prose (output excerpt).
+> bd show memory-proposal
 ID:       memory-proposal
 Type:     specification
 Title:    Memory Beads
 Revision: [current revision]
 
-Keep durable project knowledge in Beads so people and agents can
-find it, read it selectively, and understand its relationship to
-their work.
+…
+## Summary
+Beads already has a small memory feature: `bd remember` stores a string under a key, `bd recall` reads it, `bd memories` lists or searches the key/value set, and `bd forget` removes a found non-empty entry. Out-of-band empty rows survive `forget` and require recovery. `bd prime` can inject memory bodies at session start. This is useful for a few reminders, but the storage model has no canonical Bead identity, no history reachable through the memory commands, no structured change authorship, no per-memory version identity, no explicit links, no way to remove a memory without losing its record, and no way for a task to cite the exact knowledge it used.
 
-Give each Memory a persistent identity and its own content.
-Preserve its evolution through recorded revisions, and connect it
-to tasks and other knowledge through explicit Links.
+The gap shows up whenever project knowledge matters for more than one session. A corrected policy can silently replace the only copy of the old policy. A task cannot identify the exact historical state it was written against. Humans and agents cannot inspect how a decision changed or who changed it. At startup, loading every remembered body spends context before the agent knows what it needs.
+…
 
-The defining Requirements and Scenarios describe the proposed
-behavior. They can be read individually or explored together
-through this Specification.
 ```
 
-The introductory body gives readers a starting point without making them read every detail. The Requirements and Scenarios remain independently addressable, so a discussion or implementation task can refer to a particular part of the proposal.
+The proposal's Summary gives readers a starting point, while the complete
+Specification body retains the surrounding rationale and scope. The Requirements and Scenarios remain independently addressable, so a discussion or implementation task can refer to a particular part of the proposal.
 
-```sh
+```console
 # List Requirement Beads in this focused Scope.
-bd list --type requirement
-
-```
-
-```text
+> bd list --type requirement
 ID           TYPE          TITLE
 memory-r1    requirement   R1. Memory is a…
 memory-r2    requirement   R2. Canonical identity does…
 …
 memory-r30   requirement   R30. Core preserves evidence…
 memory-r31   requirement   R31. Every target addition…
+
 ```
 
 These excerpts show the first two and last two entries in the proposal's order. R27a and the other intervening Requirements are present in the stored data. This presentation order does not promise automatic numeric sorting by the CLI.
 
-```sh
+```console
 # List Scenario Beads in this focused Scope.
-bd list --type scenario
-
-```
-
-```text
+> bd list --type scenario
 ID           TYPE       TITLE
 memory-s1    scenario   S1. Record durable knowledge…
 memory-s2    scenario   S2. Search before writing…
 …
 memory-s15   scenario   S15. Temporary knowledge carries…
 memory-s16   scenario   S16. An application…
+
 ```
 
 The ellipses shorten this presentation; the stored titles and bodies remain complete. In a shared Scope, these commands would also list other matching Beads: the Type filter does not select membership in this particular Specification.
@@ -515,42 +1216,56 @@ The ellipses shorten this presentation; the stored titles and bodies remain comp
 
 The lists show what exists, but they do not explain how those Beads form a document. Defines Links make each extracted Requirement and Scenario part of the Specification's definition. Both kinds of child are directly defined by the root Specification, as siblings. A Scenario may exercise several Requirements, so its place in the document does not force it to belong to just one of them.
 
-```sh
+```console
 # Explore the Specification's defining Requirements and Scenarios.
-bd memory definition memory-proposal
-
-```
-
-```text
-memory-proposal [specification]
-├─ defines → memory-r1  [requirement]
-├─ defines → memory-r2  [requirement]
+> bd memory definition memory-proposal
+memory-proposal [specification] Memory Beads
+├─ defines → memory-r1  [requirement] R1. Memory is a…
+├─ defines → memory-r2  [requirement] R2. Canonical identity does…
 │  …
-├─ defines → memory-r30 [requirement]
-├─ defines → memory-r31 [requirement]
-├─ defines → memory-s1  [scenario]
-├─ defines → memory-s2  [scenario]
+├─ defines → memory-r30 [requirement] R30. Core preserves evidence…
+├─ defines → memory-r31 [requirement] R31. Every target addition…
+├─ defines → memory-s1  [scenario] S1. Record durable knowledge…
+├─ defines → memory-s2  [scenario] S2. Search before writing…
 │  …
-├─ defines → memory-s15 [scenario]
-└─ defines → memory-s16 [scenario]
+├─ defines → memory-s15 [scenario] S15. Temporary knowledge carries…
+└─ defines → memory-s16 [scenario] S16. An application…
+
 ```
 
 Defines is a refinement of Requires: a defining child is something that must be met for its parent to be met. The broader requirements read therefore includes the same defining children, along with any additional Requires Links. It preserves `defines` labels rather than relabeling those edges as `requires`.
 
-```sh
+```console
 # Discover the Specification's defining parts and any other required Constraints.
-bd memory requirements memory-proposal
+> bd memory requirements memory-proposal
+memory-proposal [specification] Memory Beads
+├─ defines → memory-r1  [requirement] R1. Memory is a…
+├─ defines → memory-r2  [requirement] R2. Canonical identity does…
+│  …
+├─ defines → memory-r30 [requirement] R30. Core preserves evidence…
+├─ defines → memory-r31 [requirement] R31. Every target addition…
+├─ defines → memory-s1  [scenario] S1. Record durable knowledge…
+├─ defines → memory-s2  [scenario] S2. Search before writing…
+│  …
+├─ defines → memory-s15 [scenario] S15. Temporary knowledge carries…
+└─ defines → memory-s16 [scenario] S16. An application…
 
 ```
 
 With only the Defines Links shown above, this read reaches the same children. If the Specification later requires an independently maintained Policy, that Policy appears in this broader view without becoming part of the Specification's defining tree. The proposal's S-number citations do not automatically create dependency Links among the extracted children.
 
-```sh
+```console
 # Read the first Requirement's title and complete content.
-bd show memory-r1
+> bd show memory-r1
+ID:    memory-r1
+Type:  requirement
+Title: R1. Memory is a first-class core Bead kind.
+
+This feature intentionally expands the Beads charter from project work alone to peer core concepts for project work and durable project knowledge. A Memory Bead uses `type: "memory"`, participates in the Bead graph, and exists beside Task Beads rather than beneath the task model. Readiness, assignment, priority, claiming, completion, closure, and workflow dependencies do not apply to it. Queries and mutations whose meaning requires Task workflow state do not select or affect a Memory, and a workflow mutation addressed to one fails with a typed error. Generic Bead operations such as listing by kind, showing identity, and graph traversal can include Memory Beads. _(S1, S3)_
 
 # Read the first Scenario's Markdown body.
-bd memory recall memory-s1
+> bd memory recall memory-s1
+A developer records why the project avoids a tempting dependency. They supply a Markdown body but no title or key. Beads derives a short title, creates a Memory Bead with a canonical ID and first attributed version, and does not invent a key. A human may add a familiar key later, or repoint one, while agents can continue using the canonical ID.
 
 ```
 
@@ -558,11 +1273,12 @@ Each extracted Bead can be discussed, referenced and revised independently. The 
 
 ## Where Are We
 
-Preview 3 contains a lot of CLI changes and underlying infrastructure work. We are driving toward the requirements set out in [Chris's Memory proposal](https://github.com/gastownhall/beads/issues/5877) and have made steady progress.
+Preview 3 is the first preview that really shows the directional shape we are creating to satisfy the requirements set out in [the original Memory Beads proposal](https://github.com/gastownhall/beads/issues/5877).
+
 
 Some major areas still need more work:
 
-- Fleshing out how to define and register new Bead and Link types. Preview 3 uses a selected graph Type catalog; arbitrary user-authored Bead and Link Type installation is unfinished.
+- Incorporating feedback on the previews, specifically the new memory bead/link types.
 - Implementing the full provenance capabilities outlined in the Memory proposal. Recorded change attribution is available, but the complete provenance surface is unfinished.
 - Implementing the rest of BDP to support the federation requirements outlined in Chris's proposal. The qualified preview surface covers BDP Read; HTTP writes, BDP History, and cross-Scope Links remain outside that surface.
 - Ensuring that the entire Bead, Link, Issue, and Dependency surface works consistently.
@@ -570,4 +1286,6 @@ Some major areas still need more work:
 
 Work on these areas is underway, but the full capabilities aren't ready for prime time. If your curiosity has you spelunking in those areas, prepare to be surprised in future previews.
 
-Once again, try the workflow on a small disposable copy of a project and tell us where it helps or gets in your way. Join the conversation in the [Gas Town Hall Discord](https://discord.gg/xHpUGUzZp2), in the `#beads` and `#memory-beads` channels, or [file a Beads issue](https://github.com/gastownhall/beads/issues) with a `[Memory]` prefix. Feedback on the protocol itself can go straight to the [BDP repo](https://github.com/gastownhall/bdp/issues). Include the integration commit you tried so we can reproduce what you saw.
+Get the [Preview 3 source build](https://github.com/donnabox/beads/tree/preview3-acceptance-210f8da). Once again, try the workflow on a small disposable copy of a project and tell us where it helps or gets in your way. Join the conversation in the [Gas Town Hall Discord](https://discord.gg/xHpUGUzZp2), in the `#beads` and `#memory-beads` channels, or [file a Beads issue](https://github.com/gastownhall/beads/issues) with a `[Memory]` prefix. Feedback on the protocol itself can go straight to the [BDP repo](https://github.com/gastownhall/bdp/issues). Include the integration commit you tried so we can reproduce what you saw.
+
+[Chris' memory proposal]: https://github.com/gastownhall/beads/issues/5877

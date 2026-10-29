@@ -1,0 +1,32 @@
+{
+  "scope": "Local blog import example; no commit, push, publication, product fix or release qualification.",
+  "blog_sha256": "3747b4f381200b3f2742f663b103a7cb72540fdba7a7aaf3abd15fd9a994fed5",
+  "comments_processed": 3,
+  "runtime": {
+    "commands": 23,
+    "source_build": "b27df1b0490bbffadadb399097a3b242d5e0677c",
+    "counts": {
+      "issues": 3,
+      "memories": 2,
+      "dependencies": 2,
+      "comments": 0
+    },
+    "two_memory_id_maps_preserved": true,
+    "both_memory_bodies_visible": true,
+    "five_beads_visible": true,
+    "two_dependencies_visible": true,
+    "types_prefix_still_present": true
+  },
+  "syntax_checked_blog_commands": 99,
+  "comments_removed_from_import_example": true,
+  "two_memories_in_source_and_destination": true,
+  "cli_mirror_and_later_blog_unchanged": true,
+  "cli_and_runbook_unchanged": true,
+  "type_prefix_alert": "Current integration head and source-pinned executable b27df1b0 still output types/memory. Confirmed with both imported Memories; raised directly with Donna. Transcript preserved accurately; implementation remains unresolved.",
+  "document_checks": {
+    "docsync_tests_passed": 10,
+    "shell_syntax": "PASS",
+    "diff_whitespace": "PASS",
+    "full_bazel_gate": "Unavailable: bazel absent; not rerun for this editorial pass"
+  }
+}
