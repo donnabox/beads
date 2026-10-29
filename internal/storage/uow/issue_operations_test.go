@@ -16,6 +16,85 @@ import (
 	"github.com/steveyegge/beads/issueops"
 )
 
+func TestOrderedMetadataUnitOfWorkAdmission(t *testing.T) {
+	for _, tc := range []struct {
+		name, raw   string
+		legacy      issueops.MetadataPatch
+		unsupported bool
+	}{
+		{name: "empty operations", raw: `[]`, unsupported: true},
+		{name: "nonempty operations", raw: `[{"op":"add","path":"/x","value":1}]`, unsupported: true},
+		{name: "missing bytes"},
+		{name: "null", raw: `null`},
+		{name: "object", raw: `{}`},
+		{name: "malformed JSON", raw: `[`},
+		{name: "unsupported opcode", raw: `[{"op":"test","path":"/x","value":1}]`},
+		{name: "missing path", raw: `[{"op":"add","value":1}]`},
+		{name: "duplicate value member", raw: `[{"op":"add","path":"/x","value":{"a":1,"a":2}}]`},
+		{name: "with replacement", raw: `[]`, legacy: issueops.MetadataPatch{Replace: issueops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`{}`)}}},
+		{name: "with merge", raw: `[]`, legacy: issueops.MetadataPatch{Merge: issueops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`{}`)}}},
+		{name: "with set", raw: `[]`, legacy: issueops.MetadataPatch{Set: map[string]json.RawMessage{"x": json.RawMessage(`1`)}}},
+		{name: "with unset", raw: `[]`, legacy: issueops.MetadataPatch{Unset: []string{"x"}}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			patch := issueops.IssuePatch{
+				Title: issueops.Field[string]{Set: true, Value: "must not write"},
+				Metadata: tc.legacy,
+			}
+			patch.Metadata.Operations = issueops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(tc.raw)}
+			assertRefusal := func(err error) {
+				t.Helper()
+				var unsupported *issueops.ErrUnsupported
+				if !tc.unsupported {
+					if !errors.Is(err, issueops.ErrValidation) || errors.As(err, &unsupported) {
+						t.Fatalf("ordered metadata error = %v, want request validation refusal", err)
+					}
+					return
+				}
+				if !errors.As(err, &unsupported) || errors.Is(err, issueops.ErrValidation) {
+					t.Fatalf("ordered metadata error = %v, want capability refusal", err)
+				}
+				if unsupported.Op != "Lifecycle.Update.Metadata.Operations" || unsupported.Backend != "unit-of-work" || unsupported.Capability != "" {
+					t.Fatalf("unexpected unsupported detail: %+v", unsupported)
+				}
+			}
+			provider := &mockUnitOfWorkProvider{newUOWErr: errors.New("unexpected unit-of-work open")}
+			operations, err := NewIssueOperations(provider)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = operations.Update(context.Background(), issueops.UpdateRequest{Actor: "editor", IssueID: "bd-1", Patch: patch})
+			assertRefusal(err)
+			if provider.newUOWCalls != 0 {
+				t.Fatal("refused direct update opened a unit of work")
+			}
+			// Exercise the real public batch route. Nil use cases deliberately
+			// make any target read/write fail the test before an unsupported
+			// operation could be silently dropped and the sibling title accepted.
+			uw := &mockUnitOfWork{}
+			batchProvider := &mockUnitOfWorkProvider{uows: []*mockUnitOfWork{uw}}
+			batch, err := NewBatchApplier(batchProvider)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = batch.ApplyBatch(context.Background(), issueops.ApplyBatchRequest{Actor: "editor", Items: []issueops.ApplyItem{{Kind: issueops.ItemUpdate, Update: &issueops.UpdateItem{Target: issueops.Ref{ID: "bd-1"}, Patch: patch}}}})
+			assertRefusal(err)
+			var itemError *issueops.ItemError
+			if !errors.As(err, &itemError) || itemError.Index != 0 || itemError.Kind != issueops.ItemUpdate {
+				t.Fatalf("batch lost refusal attribution: %v", err)
+			}
+			if batchProvider.newUOWCalls != 1 || uw.commitCount != 0 || !uw.closed {
+				t.Fatalf("batch refusal did not close without committing: calls=%d, unit=%+v", batchProvider.newUOWCalls, uw)
+			}
+			if _, err := updateSpec(issueops.UpdateRequest{Patch: patch}); err == nil {
+				t.Fatal("lowering silently discarded ordered metadata")
+			} else {
+				assertRefusal(err)
+			}
+		})
+	}
+}
+
 func TestIssueOperationsRejectsInvalidRequestsBeforeOpeningUOW(t *testing.T) {
 	provider := &mockUnitOfWorkProvider{newUOWErr: errors.New("unexpected unit-of-work open")}
 	operations, err := NewIssueOperations(provider)

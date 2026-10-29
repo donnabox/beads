@@ -28,6 +28,34 @@ func admitted(t *testing.T, raw string) *Patch {
 	return p
 }
 
+func TestOrdinaryUpdateEmptyOperations(t *testing.T) {
+	if _, err := Parse([]byte(`[]`)); !errors.Is(err, ErrInvalid) {
+		t.Fatalf("legacy Parse accepted an empty array: %v", err)
+	}
+	patch, err := ParseUpdate([]byte(`[]`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	before := properties(t, `{"nested":{"n":1},"array":[true,null]}`)
+	after, err := patch.Apply(before)
+	if err != nil || !after.Equal(before) {
+		t.Fatalf("empty update = %s, %v", after.String(), err)
+	}
+	for _, empty := range []*Patch{nil, {}} {
+		if _, err := empty.Apply(before); !errors.Is(err, ErrInvalid) {
+			t.Fatalf("uninitialized patch admitted: %v", err)
+		}
+	}
+	for _, raw := range []string{"", `null`, `{}`, `[{"op":"test","path":"/x","value":1}]`} {
+		if _, err := ParseUpdate([]byte(raw)); !errors.Is(err, ErrInvalid) {
+			t.Fatalf("invalid ordinary update %q admitted: %v", raw, err)
+		}
+	}
+	if _, err := patch.Apply(properties(t, `{"body":"`+strings.Repeat("x", MaxDocumentBytes)+`"}`)); !errors.Is(err, ErrLimit) {
+		t.Fatalf("empty update bypassed document budget: %v", err)
+	}
+}
+
 // The escaped-name/array case ports resource-evaluator.test.ts:902–924 from
 // BDP 53bdbd03136875f952af184fce7b3c7af8f74e96. The other cases pin the same
 // operation subset plus Go numeric admission and preview representation bounds.
