@@ -15,6 +15,7 @@ import (
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
+	"github.com/steveyegge/beads/internal/resourcequery"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -53,6 +54,7 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 	cmd.Flags().Lookup("output-format").Usage = "Canonical collection output: default, table, detail, json or jsonl; cannot mix legacy --json/--format"
 	cmd.Flags().String("exact-type", "", "Select only the exact declared Type; --type includes refinements")
 	cmd.Flags().String("conforms-to", "", "Select a canonical absolute HTTP(S) Type URI and its conformance family; compatibility alias for --type")
+	cmd.Flags().StringArray("ast", nil, "Apply one candidate-local List JSON AST; use @FILE or - for stdin (graph mode only)")
 	cmd.Flags().Bool("paged", false, "Return one page in canonical output; current local provider refuses truncation")
 	cmd.Flags().Bool("unpaged", false, "Return the complete bounded current selection in canonical output")
 	cmd.Flags().Int("page-size", 50, "Canonical page size; use --unpaged if the complete local selection exceeds this boundary")
@@ -269,6 +271,7 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		return canonicalFailure(cmd, failure, "invalid_selector", "canonical collection listing does not accept positional arguments; use selection flags", 2)
 	}
 	allowed := []string{"type", "exact-type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
+	allowed = append(allowed, "ast")
 	if links {
 		allowed = append(allowed, "from", "to", "incident-to", "direction", "all-revisions")
 	}
@@ -279,6 +282,10 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	if err := canonicalCollectionPreflight(cmd, links, options); err != nil {
+		return canonicalCollectionRequestFailure(cmd, failure, err)
+	}
+	raw, err := readCollectionAST(cmd, links)
+	if err != nil {
 		return canonicalCollectionRequestFailure(cmd, failure, err)
 	}
 	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
@@ -297,8 +304,28 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	if err != nil {
 		return canonicalCollectionRequestFailure(cmd, failure, err)
 	}
-	inventory, err := graphread.New(store).Inventory(ctx)
+	reader := graphread.New(store)
+	var inventory graphread.Inventory
+	if raw != nil {
+		kind := graph.KindBead
+		if links {
+			kind = graph.KindLink
+		}
+		inventory, err = reader.InventoryMatchingList(ctx, raw, kind)
+	} else {
+		inventory, err = reader.Inventory(ctx)
+	}
 	if err != nil {
+		if raw != nil {
+			switch {
+			case errors.Is(err, resourcequery.ErrUnsupported), errors.Is(err, resourcequery.ErrLimit), errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
+				err = errors.Join(graphstore.ErrCapabilityUnavailable, err)
+			case errors.Is(err, resourcequery.ErrUnavailable):
+				err = errors.Join(graphstore.ErrNotFound, err)
+			case errors.Is(err, resourcequery.ErrDataset):
+				err = errors.Join(graphstore.ErrInvalidStore, err)
+			}
+		}
 		return canonicalReadError(cmd, failure, err, "route_unavailable")
 	}
 	records, err := selectCanonicalCollection(plan, inventory)
@@ -311,6 +338,35 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		return canonicalReadError(cmd, failure, closeErr, "route_unavailable")
 	}
 	return renderCanonicalCollection(cmd, plan, records, failure)
+}
+
+// The AST adds a predicate to the existing population/endpoint selectors. It
+// does not change List's result shape, count semantics or delivery controls.
+func collectionASTSelected(cmd *cobra.Command) bool {
+	return cmd.Name() == "list" && cmd.Flags().Lookup("ast") != nil && cmd.Flags().Changed("ast")
+}
+
+func readCollectionAST(cmd *cobra.Command, links bool) ([]byte, error) {
+	if !collectionASTSelected(cmd) {
+		return nil, nil
+	}
+	// Link List's positional endpoint conveniences are admitted independently;
+	// the JSON input is still exactly one bounded document, never an expression.
+	raw, err := readQueryAST(cmd, nil)
+	if err != nil {
+		return nil, err
+	}
+	kind := graph.KindBead
+	if links {
+		kind = graph.KindLink
+	}
+	if err := graphread.AdmitResourceList(raw, kind); err != nil {
+		if errors.Is(err, resourcequery.ErrUnsupported) || errors.Is(err, resourcequery.ErrLimit) {
+			return nil, errors.Join(graphstore.ErrCapabilityUnavailable, err)
+		}
+		return nil, err
+	}
+	return raw, nil
 }
 
 func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread.Inventory) ([]json.RawMessage, error) {
