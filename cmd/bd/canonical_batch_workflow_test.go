@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -39,13 +40,17 @@ func TestCanonicalBatchCLIWorkflow(t *testing.T) {
 	write(emit("create", "--id", "first", "--type", "memory", "--batch-bind", "a", "--properties", `{"title":"First","body":"Original"}`) +
 		emit("create", "--id", "second", "--type", "memory", "--batch-bind", "b", "--properties", `{"title":"Second","body":"Target"}`) +
 		emit("link", "create", "batch-ref::a", "batch-ref::b", "--id", "relation", "--type", "references"))
+	command := func(ctx context.Context, args ...string) *exec.Cmd {
+		cmd := exec.CommandContext(ctx, bd, append(args, "--json")...)
+		cmd.Dir = work
+		cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "TMPDIR=" + os.TempDir(), "XDG_CONFIG_HOME=" + filepath.Join(home, ".config"), "XDG_CACHE_HOME=" + filepath.Join(home, ".cache"), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=" + filepath.Join(home, "missing-gitconfig"), "BD_DISABLE_METRICS=1", "BD_DISABLE_EVENT_FLUSH=1", "BD_NON_INTERACTIVE=1", "BEADS_DOLT_AUTO_START=0", "DOLT_METRICS_DISABLED=1", "NO_COLOR=1"}
+		return cmd
+	}
 	run := func(failure string, args ...string) graphstore.BatchResult {
 		t.Helper()
 		ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 		defer cancel()
-		cmd := exec.CommandContext(ctx, bd, append(args, "--json")...)
-		cmd.Dir = work
-		cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + home, "TMPDIR=" + os.TempDir(), "XDG_CONFIG_HOME=" + filepath.Join(home, ".config"), "XDG_CACHE_HOME=" + filepath.Join(home, ".cache"), "GIT_CONFIG_NOSYSTEM=1", "GIT_CONFIG_GLOBAL=" + filepath.Join(home, "missing-gitconfig"), "BD_DISABLE_METRICS=1", "BD_DISABLE_EVENT_FLUSH=1", "BD_NON_INTERACTIVE=1", "BEADS_DOLT_AUTO_START=0", "DOLT_METRICS_DISABLED=1", "NO_COLOR=1"}
+		cmd := command(ctx, args...)
 		var out, diagnostics bytes.Buffer
 		cmd.Stdout, cmd.Stderr = &out, &diagnostics
 		err := cmd.Run()
@@ -201,6 +206,52 @@ func TestCanonicalBatchCLIWorkflow(t *testing.T) {
 	}
 	if !deletedNativeLink.Changed || !sawDeleted {
 		t.Fatalf("native Link delete result incomplete: %+v", deletedNativeLink)
+	}
+
+	// A read-only stdout descriptor forces a real write error after confirmed
+	// commit, without SIGPIPE or a production test hook. Recovery must return
+	// that committed decision rather than execute the create a second time.
+	write(emit("create", "--id", "lost-output", "--type", "memory", "--properties", `{"title":"Committed without output","body":""}`))
+	stdout, err := os.Open(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	defer cancel()
+	lost := command(ctx, "batch", "--file", file, "--idempotency-key", "lost-output")
+	var diagnostics bytes.Buffer
+	lost.Stdout, lost.Stderr = stdout, &diagnostics
+	err = lost.Run()
+	_ = stdout.Close()
+	if ctx.Err() != nil || err == nil || !strings.Contains(diagnostics.String(), "Batch committed; recover its retained result") {
+		t.Fatalf("did not observe confirmed commit followed by failed output: %v context=%v stderr=%s", err, ctx.Err(), diagnostics.String())
+	}
+	journals, err = filepath.Glob(filepath.Join(work, ".beads", "batch-invocations", "*.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var recovery string
+	for _, journal := range journals {
+		invocation, readErr := readCanonicalBatchInvocation(journal)
+		if readErr != nil {
+			t.Fatal(readErr)
+		}
+		if invocation.Key == "lost-output" {
+			recovery = journal
+		}
+	}
+	if recovery == "" {
+		t.Fatal("confirmed commit has no saved recovery invocation")
+	}
+	if err := os.Remove(file); err != nil {
+		t.Fatal(err)
+	}
+	recovered := run("", "batch", "--retry-file", recovery)
+	if !recovered.Changed || len(recovered.Resources) != 1 || recovered.Resources[0].ID != scope+"lost-output" || recovered.Resources[0].Outcome != "created" {
+		t.Fatalf("lost output did not recover committed result: %+v", recovered)
+	}
+	if again := run("", "batch", "--retry-file", recovery); !reflect.DeepEqual(recovered, again) {
+		t.Fatalf("recovery changed final revision or result: %+v %+v", recovered, again)
 	}
 
 }

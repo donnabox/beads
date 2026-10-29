@@ -59,16 +59,24 @@ func readCanonicalBatchInvocation(file string) (*canonicalBatchInvocation, error
 		return nil, err
 	}
 	defer f.Close()
-	raw, err := io.ReadAll(io.LimitReader(f, canonicalbatch.MaxInputBytes+32769))
+	const canonicalLimit = canonicalbatch.MaxInputBytes + 32768
+	// Earlier invocation files used encoding/json's HTML escaping, which can
+	// expand one accepted '<', '>' or '&' byte into six physical bytes. Read
+	// that bounded historical carrier, then apply the logical limit below.
+	const physicalLimit = 6 * canonicalLimit
+	raw, err := io.ReadAll(io.LimitReader(f, physicalLimit+1))
 	if err != nil {
 		return nil, err
 	}
-	if len(raw) > canonicalbatch.MaxInputBytes+32768 {
+	if len(raw) > physicalLimit {
 		return nil, fmt.Errorf("recovery file exceeds input limit")
 	}
 	raw, err = graph.CanonicalizeJSON(raw)
 	if err != nil {
 		return nil, err
+	}
+	if len(raw) > canonicalLimit {
+		return nil, fmt.Errorf("recovery file exceeds input limit")
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
@@ -100,6 +108,15 @@ func saveCanonicalBatchInvocation(invocation canonicalBatchInvocation) (string, 
 	raw, err := json.Marshal(invocation)
 	if err != nil {
 		return "", err
+	}
+	// Keep accepted request bytes within the recovery reader's logical bound;
+	// json.Marshal alone HTML-escapes even an embedded RawMessage.
+	raw, err = graph.CanonicalizeJSON(raw)
+	if err != nil {
+		return "", err
+	}
+	if len(raw) > canonicalbatch.MaxInputBytes+32768 {
+		return "", fmt.Errorf("recovery file exceeds input limit")
 	}
 	digest := sha256.Sum256(raw)
 	file := filepath.Join(dir, hex.EncodeToString(digest[:])+".json")

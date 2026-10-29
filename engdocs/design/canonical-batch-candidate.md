@@ -121,6 +121,16 @@ Scope snapshots and intermediate Resource revisions are not introduced.
 
 ## Remaining coverage
 
+Saved invocation files retain the original workspace, Scope, actor, request and
+key. Retry does not re-read the source file or substitute today's defaults.
+The journal uses canonical JSON so HTML-rich content does not expand beyond its
+recovery budget; older escaped files remain readable within bounded physical
+and canonical limits. If output fails after a confirmed commit, retry returns
+the retained result, including its original revisions, rather than applying the
+request again. Retained outcomes are checked for structural and identity
+consistency without validating historical properties against today's Types.
+Owned capture arrays retain the producer's order.
+
 Native execution refuses native mutations outside the finite content and
 Dependency slice above, exact Type pins and supplied revision provenance before
 effects. The supported staged List fragment
