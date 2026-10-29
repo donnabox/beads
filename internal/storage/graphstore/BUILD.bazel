@@ -279,6 +279,7 @@ go_test(
         "//issueops",
         "//resourceget",
         "@com_github_data_dog_go_sqlmock//:go-sqlmock",
+        "@com_github_dolthub_vitess//go/vt/sqlparser",
         "@com_github_go_sql_driver_mysql//:mysql",
     ],
 )
