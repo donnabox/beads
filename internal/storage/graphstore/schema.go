@@ -170,6 +170,10 @@ func freshToken() (string, error) {
 }
 
 func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) {
+	return installPreviewWithDDL(ctx, conn, o, nil)
+}
+
+func installPreviewWithDDL(ctx context.Context, conn *sql.Conn, o Options, additionalDDL []string) (err error) {
 	prefix := o.IssuePrefix
 	if prefix == "" {
 		prefix = "bd"
@@ -178,6 +182,11 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 		return fmt.Errorf("%w: invalid Issue prefix", ErrInvalidStore)
 	}
 	for _, ddl := range previewDDL {
+		if _, err = conn.ExecContext(ctx, ddl); err != nil {
+			return err
+		}
+	}
+	for _, ddl := range additionalDDL {
 		if _, err = conn.ExecContext(ctx, ddl); err != nil {
 			return err
 		}
@@ -268,6 +277,9 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 		if err := rows.Close(); err != nil {
 			return err
 		}
+	}
+	if o.Binding.SchemaVersion == AtomicBatchSchemaVersion {
+		return checkAtomicBatchSchemaInTx(ctx, tx)
 	}
 	return nil
 }

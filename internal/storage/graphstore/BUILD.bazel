@@ -4,6 +4,9 @@ go_library(
     name = "graphstore",
     srcs = [
         "assessment_availability.go",
+        "atomic_batch.go",
+        "atomic_batch_profile.go",
+        "atomic_batch_publish.go",
         "backend.go",
         "bead_list.go",
         "bead_write_selector.go",
@@ -92,6 +95,8 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//graphops",
+        "//internal/canonicalbatch",
+        "//internal/canonicalbatchstate",
         "//internal/graphpatch",
         "//internal/legacyimport",
         "//internal/memoryapi",
@@ -126,6 +131,7 @@ go_test(
     timeout = "eternal",
     srcs = [
         "assessment_availability_test.go",
+        "atomic_batch_test.go",
         "backend_transaction_policy_test.go",
         "bead_list_store_test.go",
         "bead_list_test.go",
@@ -238,6 +244,8 @@ go_test(
     shard_count = 32,
     deps = [
         "//graphops",
+        "//internal/canonicalbatch",
+        "//internal/canonicalbatchstate",
         "//internal/config",
         "//internal/graphpatch",
         "//internal/legacyimport",
