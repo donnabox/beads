@@ -339,3 +339,255 @@ func TestAbsentMetadataRealEditsAndExplicitReplacementMaterialize(t *testing.T) 
 		})
 	}
 }
+
+func TestResolvedMutationAdmissionSeesResolvedCreates(t *testing.T) {
+	base := existing("baseline")
+	created := createBead("ignored", "new-bead")
+	created.ID = ""
+	created.Metadata = raw(`{"initialized":true}`)
+	linked := createLink("new-link", "ignored", "baseline")
+	linked.Source = canonicalbatch.Operand{Binding: "new-bead"}
+	linked.Target.Revision = base.Revision
+	linked.Properties = raw(`{"note":"authored"}`)
+	linked.Metadata = raw(`{"link":true}`)
+	var order []int
+	resolved := 0
+	plan, err := Stage(Input{
+		Scope: testScope, Current: map[string]Resource{base.ID: base},
+		Members: []canonicalbatch.Member{created, linked},
+		Allocate: func(index int, kind graphops.ResourceKind) (string, error) {
+			if index != 0 || kind != graphops.KindBead {
+				t.Fatal("unexpected allocation")
+			}
+			return testScope + "allocated", nil
+		},
+		ResolveType: func(ref canonicalbatch.Reference) (canonicalbatch.Reference, error) {
+			ref.Revision = "resolved-type-revision"
+			return ref, nil
+		},
+		AdmitMutation: func(index int, _ canonicalbatch.Member, _ *Resource) error {
+			order = append(order, index*2)
+			return nil
+		},
+		AdmitResolvedMutation: func(index int, member canonicalbatch.Member, before, after *Resource) error {
+			order = append(order, index*2+1)
+			resolved++
+			if before != nil || after == nil || after.Revision != "" || after.Type.Revision != "resolved-type-revision" {
+				t.Fatalf("unresolved create: before=%+v after=%+v", before, after)
+			}
+			if index == 0 {
+				if after.ID != testScope+"allocated" || after.Kind != graphops.KindBead || string(after.Properties) != `{"title":"new"}` || string(after.Metadata) != `{"initialized":true}` {
+					t.Fatalf("lost resolved Bead: %+v", after)
+				}
+			} else if index == 1 {
+				if member.Source.Binding != "new-bead" || after.ID != testScope+"new-link" || after.Kind != graphops.KindLink || after.Source != reference("allocated") || after.Target != (canonicalbatch.Reference{URI: base.ID, Revision: base.Revision}) || string(after.Properties) != `{"note":"authored"}` || string(after.Metadata) != `{"link":true}` {
+					t.Fatalf("lost authored/resolved Link distinction: member=%+v after=%+v", member, after)
+				}
+			} else {
+				t.Fatalf("unexpected resolved index %d", index)
+			}
+			return nil
+		},
+	})
+	if err != nil || resolved != 2 || !reflect.DeepEqual(order, []int{0, 1, 2, 3}) || len(plan.Outcomes) != 2 {
+		t.Fatalf("resolved create admission/order: %+v %v order=%v", plan, err, order)
+	}
+}
+
+func TestResolvedMutationAdmissionDetachesAllArguments(t *testing.T) {
+	base := existing("one")
+	base.Metadata = raw(`{"keep":true}`)
+	members := []canonicalbatch.Member{
+		{Operation: "updateBead", Bead: operand("one"), Properties: raw(`{"title":"first"}`), Metadata: raw(`{"keep":true,"phase":1}`), RevisionProvenance: raw(`{"source":"caller"}`)},
+		{Operation: "updateBead", Bead: operand("one"), PropertiesChange: raw(`[{"op":"replace","path":"/title","value":"final"}]`), MetadataChange: raw(`[{"op":"replace","path":"/phase","value":2}]`)},
+	}
+	memberBytes, err := json.Marshal(members)
+	if err != nil {
+		t.Fatal(err)
+	}
+	baselineBytes, err := json.Marshal(base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	observed := 0
+	plan, err := Stage(Input{
+		Scope: testScope, Current: map[string]Resource{base.ID: base}, Members: members,
+		AdmitResolvedMutation: func(index int, member canonicalbatch.Member, before, after *Resource) error {
+			if index != observed || before == nil || after == nil || before.ID != base.ID || after.ID != base.ID {
+				t.Fatalf("missing resolved update: %d %+v %+v", index, before, after)
+			}
+			if index == 1 && (string(before.Properties) != `{"title":"first"}` || string(before.Metadata) != `{"keep":true,"phase":1}` || string(after.Properties) != `{"title":"final"}` || string(after.Metadata) != `{"keep":true,"phase":2}`) {
+				t.Fatalf("resolved callback lost prior staged content: %+v %+v", before, after)
+			}
+			observed++
+			for _, data := range []json.RawMessage{member.Properties, member.Metadata, member.PropertiesChange, member.MetadataChange, member.RevisionProvenance, member.Query, before.Properties, before.Metadata, before.Envelope, after.Properties, after.Metadata, after.Envelope} {
+				if len(data) != 0 {
+					data[0] = '!'
+				}
+			}
+			member.Bead.URI, member.Type.URI = "changed member target", "changed member Type"
+			before.ID, after.ID, after.Type.URI = "changed predecessor", "changed postimage", "changed postimage Type"
+			return nil
+		},
+	})
+	if err != nil || observed != 2 {
+		t.Fatalf("detached update admission: %+v %v", plan, err)
+	}
+	final := plan.Final[base.ID]
+	if final.ID != base.ID || final.Type != base.Type || string(final.Properties) != `{"title":"final"}` || string(final.Metadata) != `{"keep":true,"phase":2}` || !bytes.Equal(final.Envelope, base.Envelope) || string(plan.Provenance[base.ID][0].Value) != `{"source":"caller"}` {
+		t.Fatalf("callback mutated staged state: %+v", plan)
+	}
+	afterMemberBytes, err := json.Marshal(members)
+	if err != nil {
+		t.Fatal(err)
+	}
+	afterBaselineBytes, err := json.Marshal(base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(memberBytes, afterMemberBytes) || !bytes.Equal(baselineBytes, afterBaselineBytes) {
+		t.Fatal("resolved callback mutated caller input")
+	}
+}
+
+func TestResolvedMutationAdmissionRejectsCreateBeforeCancellation(t *testing.T) {
+	denied := errors.New("resolved creation policy refused")
+	members := []canonicalbatch.Member{
+		createBead("prefix", ""), createBead("denied", ""),
+		{Operation: "deleteBead", Bead: operand("denied")},
+	}
+	observed := 0
+	plan, err := Stage(Input{
+		Scope: testScope, Members: members,
+		AdmitResolvedMutation: func(index int, _ canonicalbatch.Member, before, after *Resource) error {
+			observed++
+			if before != nil || after == nil || after.ID == "" || string(after.Properties) != `{"title":"new"}` {
+				t.Fatalf("missing resolved creation before refusal: %+v %+v", before, after)
+			}
+			if index == 1 {
+				return denied
+			}
+			return nil
+		},
+	})
+	var memberErr *MemberError
+	if !errors.Is(err, denied) || !errors.As(err, &memberErr) || memberErr.OperationIndex != 1 || observed != 2 || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("rejected canceled creation returned partial plan: %+v %v observed=%d", plan, err, observed)
+	}
+}
+
+func TestResolvedMutationAdmissionSeesCanceledCreateAndDeletion(t *testing.T) {
+	members := []canonicalbatch.Member{
+		createBead("one", "new"),
+		{Operation: "updateBead", Bead: canonicalbatch.Operand{Binding: "new"}, PropertiesChange: raw(`[{"op":"replace","path":"/title","value":"edited"}]`)},
+		{Operation: "deleteBead", Bead: canonicalbatch.Operand{Binding: "new"}},
+	}
+	var observed []int
+	admit := func(index int, _ canonicalbatch.Member, before, after *Resource) error {
+		observed = append(observed, index)
+		if index == 0 {
+			if before != nil || after == nil || after.ID != testScope+"one" {
+				t.Fatalf("missing creation: %+v %+v", before, after)
+			}
+		} else if index == 1 {
+			if before == nil || after == nil || string(before.Properties) != `{"title":"new"}` || string(after.Properties) != `{"title":"edited"}` {
+				t.Fatalf("missing staged edit: %+v %+v", before, after)
+			}
+		} else if index == 2 {
+			if before == nil || before.ID != testScope+"one" || string(before.Properties) != `{"title":"edited"}` || after != nil {
+				t.Fatalf("deletion did not receive staged predecessor and nil postimage: %+v %+v", before, after)
+			}
+		}
+		return nil
+	}
+	plan, err := Stage(Input{Scope: testScope, Members: members, AdmitResolvedMutation: admit})
+	if err != nil || !reflect.DeepEqual(observed, []int{0, 1, 2}) || len(plan.Final) != 0 || len(plan.Outcomes) != 1 || plan.Outcomes[0].Outcome != "allocated" || !reflect.DeepEqual(plan.ConsumedIDs, []string{testScope + "one"}) {
+		t.Fatalf("canceled create skipped resolved admission: %+v %v observed=%v", plan, err, observed)
+	}
+	denied := errors.New("resolved deletion refused")
+	plan, err = Stage(Input{Scope: testScope, Members: members, AdmitResolvedMutation: func(index int, member canonicalbatch.Member, before, after *Resource) error {
+		if err := admit(index, member, before, after); err != nil {
+			return err
+		}
+		if after == nil {
+			return denied
+		}
+		return nil
+	}})
+	var memberErr *MemberError
+	if !errors.Is(err, denied) || !errors.As(err, &memberErr) || memberErr.OperationIndex != 2 || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("resolved deletion refusal returned partial plan: %+v %v", plan, err)
+	}
+}
+
+func TestResolvedMutationAdmissionRunsAfterSuccessfulResolutionOnly(t *testing.T) {
+	base := existing("source")
+	member := createLink("link", "source", "missing")
+	beforeCalled, resolvedCalled := false, false
+	plan, err := Stage(Input{
+		Scope: testScope, Current: map[string]Resource{base.ID: base}, Members: []canonicalbatch.Member{member},
+		AdmitMutation: func(_ int, _ canonicalbatch.Member, before *Resource) error {
+			beforeCalled = true
+			if before != nil {
+				t.Fatal("create received predecessor")
+			}
+			return nil
+		},
+		AdmitResolvedMutation: func(_ int, _ canonicalbatch.Member, _, _ *Resource) error {
+			resolvedCalled = true
+			return nil
+		},
+	})
+	if !errors.Is(err, ErrNotFound) || !beforeCalled || resolvedCalled || !reflect.DeepEqual(plan, Plan{}) {
+		t.Fatalf("failed endpoint resolution reached resolved observer: %+v %v before=%t resolved=%t", plan, err, beforeCalled, resolvedCalled)
+	}
+}
+
+func TestResolvedMutationAdmissionOrderedSetFanout(t *testing.T) {
+	one, two := existing("one"), existing("two")
+	members := []canonicalbatch.Member{
+		selectMember("picked", beadScan, ""),
+		{Operation: "updateBead", Bead: canonicalbatch.Operand{Binding: "picked"}, PropertiesChange: raw(`[{"op":"replace","path":"/title","value":"updated"}]`)},
+		{Operation: "deleteBead", Bead: canonicalbatch.Operand{Binding: "picked"}},
+	}
+	var observed []Mapping
+	callback := func(index int, member canonicalbatch.Member, before, after *Resource) error {
+		if before == nil || member.Bead.URI != before.ID || member.Bead.Binding != "" {
+			t.Fatalf("set member did not resolve its scalar target: %+v %+v", member, before)
+		}
+		observed = append(observed, Mapping{OperationIndex: index, ID: before.ID})
+		if index == 1 {
+			if after == nil || string(before.Properties) != `{"title":"initial"}` || string(after.Properties) != `{"title":"updated"}` {
+				t.Fatalf("set update did not resolve content: %+v %+v", before, after)
+			}
+		} else if index == 2 {
+			if string(before.Properties) != `{"title":"updated"}` || after != nil {
+				t.Fatalf("set deletion lost staged update: %+v %+v", before, after)
+			}
+		} else {
+			t.Fatalf("nonmutation reached observer: %d", index)
+		}
+		return nil
+	}
+	input := Input{Scope: testScope, Current: map[string]Resource{two.ID: two, one.ID: one}, Members: members, AdmitResolvedMutation: callback}
+	plan, err := Stage(input)
+	want := []Mapping{{OperationIndex: 1, ID: one.ID}, {OperationIndex: 1, ID: two.ID}, {OperationIndex: 2, ID: one.ID}, {OperationIndex: 2, ID: two.ID}}
+	if err != nil || !reflect.DeepEqual(observed, want) || len(plan.Final) != 0 || len(plan.Outcomes) != 2 {
+		t.Fatalf("resolved set fanout order: %+v %v observed=%+v", plan, err, observed)
+	}
+	denied := errors.New("second set target refused")
+	input.AdmitResolvedMutation = func(index int, member canonicalbatch.Member, before, after *Resource) error {
+		if err := callback(index, member, before, after); err != nil {
+			return err
+		}
+		if index == 1 && before.ID == two.ID {
+			return denied
+		}
+		return nil
+	}
+	plan, err = Stage(input)
+	var memberErr *MemberError
+	if !errors.Is(err, denied) || !errors.As(err, &memberErr) || memberErr.OperationIndex != 1 || !reflect.DeepEqual(plan, Plan{}) || !bytes.Equal(one.Properties, raw(`{"title":"initial"}`)) || !bytes.Equal(two.Properties, raw(`{"title":"initial"}`)) {
+		t.Fatalf("resolved set refusal leaked partial plan/input edits: %+v %v", plan, err)
+	}
+}

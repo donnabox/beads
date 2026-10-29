@@ -70,6 +70,13 @@ type Input struct {
 	// creation. Arguments are detached; an error rejects the complete plan.
 	// The caller owns domain policy and must not perform durable effects here.
 	AdmitMutation func(index int, member canonicalbatch.Member, before *Resource) error
+	// AdmitResolvedMutation observes each scalar mutation after its references and
+	// object edits resolve, before it enters live working state. Before is nil
+	// for creation; after is nil for deletion. Member retains authored operands;
+	// the Resource arguments carry resolved identities and edited content. All
+	// arguments are detached. Errors reject the complete plan, including creates
+	// or edits that would later cancel. This observer must have no durable effects.
+	AdmitResolvedMutation func(index int, member canonicalbatch.Member, before, after *Resource) error
 	// Supplied maps assert complete checked Type authority, not ancestry
 	// inferred from names or population. Both nil support Core-only local and
 	// exact nominal tests; family tests require both authoritative maps.
@@ -533,28 +540,25 @@ func (s *staging) applyOne(index int, a admitted) error {
 			}
 		}
 	}
+	var predecessor *Resource
+	if s.input.AdmitResolvedMutation != nil && !strings.HasPrefix(m.Operation, "create") {
+		before := r
+		predecessor = &before
+	}
 	if s.input.AdmitMutation != nil {
 		var before *Resource
 		if !strings.HasPrefix(m.Operation, "create") {
 			copy := clone(r)
 			before = &copy
 		}
-		member := m
-		member.Properties = bytes.Clone(m.Properties)
-		member.Metadata = bytes.Clone(m.Metadata)
-		member.PropertiesChange = bytes.Clone(m.PropertiesChange)
-		member.MetadataChange = bytes.Clone(m.MetadataChange)
-		member.RevisionProvenance = bytes.Clone(m.RevisionProvenance)
-		member.Query = bytes.Clone(m.Query)
-		if err := s.input.AdmitMutation(index, member, before); err != nil {
+		if err := s.input.AdmitMutation(index, detachedMutationMember(m), before); err != nil {
 			return err
 		}
 	}
-	s.targets[r.ID] = a.kind
-	if m.RevisionProvenance != nil {
-		s.provenance[r.ID] = append(s.provenance[r.ID], ProvenanceInput{index, bytes.Clone(m.RevisionProvenance)})
-	}
 	if strings.HasPrefix(m.Operation, "delete") {
+		if err := s.admitResolved(index, m, predecessor, nil); err != nil {
+			return err
+		}
 		delete(s.live, r.ID)
 	} else {
 		if m.Type.URI != "" {
@@ -591,23 +595,55 @@ func (s *staging) applyOne(index int, a admitted) error {
 		if err != nil {
 			return err
 		}
-		if m.Metadata != nil {
-			s.metadataReplaced[r.ID] = true
-		}
 		// An absent legacy object supplies the empty working object for
 		// patches, not an instruction to publish a newly present object. This
 		// also preserves absence when separate members add then remove values.
 		// Explicit object replacement deliberately supplies presence instead.
-		if baseline, exists := s.initial[r.ID]; exists && baseline.Metadata == nil && !s.metadataReplaced[r.ID] && bytes.Equal(r.Metadata, []byte(`{}`)) {
+		if baseline, exists := s.initial[r.ID]; exists && baseline.Metadata == nil && !s.metadataReplaced[r.ID] && m.Metadata == nil && bytes.Equal(r.Metadata, []byte(`{}`)) {
 			r.Metadata = nil
 		}
+		if err := s.admitResolved(index, m, predecessor, &r); err != nil {
+			return err
+		}
+		if m.Metadata != nil {
+			s.metadataReplaced[r.ID] = true
+		}
 		s.live[r.ID] = clone(r)
+	}
+	s.targets[r.ID] = a.kind
+	if m.RevisionProvenance != nil {
+		s.provenance[r.ID] = append(s.provenance[r.ID], ProvenanceInput{index, bytes.Clone(m.RevisionProvenance)})
 	}
 	if m.Name != "" {
 		s.bindings[m.Name] = capturedBinding{kind: a.kind, ids: []string{r.ID}}
 	}
 	s.mappings = append(s.mappings, Mapping{index, m.Operation, r.ID, m.Name})
 	return nil
+}
+
+func detachedMutationMember(m canonicalbatch.Member) canonicalbatch.Member {
+	m.Properties = bytes.Clone(m.Properties)
+	m.Metadata = bytes.Clone(m.Metadata)
+	m.PropertiesChange = bytes.Clone(m.PropertiesChange)
+	m.MetadataChange = bytes.Clone(m.MetadataChange)
+	m.RevisionProvenance = bytes.Clone(m.RevisionProvenance)
+	m.Query = bytes.Clone(m.Query)
+	return m
+}
+
+func (s *staging) admitResolved(index int, member canonicalbatch.Member, before, after *Resource) error {
+	if s.input.AdmitResolvedMutation == nil {
+		return nil
+	}
+	if before != nil {
+		copy := clone(*before)
+		before = &copy
+	}
+	if after != nil {
+		copy := clone(*after)
+		after = &copy
+	}
+	return s.input.AdmitResolvedMutation(index, detachedMutationMember(member), before, after)
 }
 
 func (s *staging) finish() (Plan, error) {
