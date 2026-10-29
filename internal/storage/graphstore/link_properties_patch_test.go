@@ -236,7 +236,7 @@ func TestLinkPropertiesPatchRefusalAndRollback(t *testing.T) {
 	})
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, _, s, original, _, link := disclosureFixture(t, backend)
+			ctx, _, s, original, target, link := disclosureFixture(t, backend)
 			for _, path := range []string{"beads/work", "beads/prereq"} {
 				if _, err := s.CreateIssue(ctx, path, plainIssue(path)); err != nil {
 					t.Fatal(err)
@@ -257,8 +257,35 @@ func TestLinkPropertiesPatchRefusalAndRollback(t *testing.T) {
 					t.Fatal("refusal changed complete state")
 				}
 			}
+			t.Run("empty-operations", func(t *testing.T) {
+				for _, unconditional := range []bool{false, true} {
+					t.Run(fmt.Sprintf("unconditional-%t", unconditional), func(t *testing.T) {
+						r := request
+						r.Patch = []byte(`[]`)
+						r.Unconditional, r.UnconditionalSource = unconditional, unconditional
+						if unconditional {
+							r.ExpectedRevision, r.ExpectedSourceRevision = "", ""
+						}
+						got, err := s.PatchLinkProperties(ctx, r)
+						if err != nil || got.Changed || got.ReplacedSource != nil || !reflect.DeepEqual(got.Link, link.Link) || !reflect.DeepEqual(got.Source, original) {
+							t.Fatalf("empty patch changed current Link or source: %+v %v", got, err)
+						}
+						if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+							t.Fatal("empty patch changed full store state")
+						}
+						if readback, err := s.ShowLink(ctx, "links/out"); err != nil || !reflect.DeepEqual(readback, link.Link) {
+							t.Fatalf("empty patch changed Link on read-back: %+v %v", readback, err)
+						}
+						for path, want := range map[string]Record{"beads/plan": original, "beads/target": target} {
+							if readback, err := s.Show(ctx, path); err != nil || !reflect.DeepEqual(readback, want) {
+								t.Fatalf("empty patch changed %s on read-back: %+v %v", path, readback, err)
+							}
+						}
+					})
+				}
+			})
 			for _, tc := range []struct{ name, patch string }{
-				{"empty-operations", `[]`}, {"missing-note", `[{"op":"replace","path":"/note","value":"x"}]`}, {"array-final", `[{"op":"replace","path":"","value":[]}]`}, {"late-error", `[{"op":"add","path":"/note","value":"early"},{"op":"remove","path":"/missing"}]`},
+				{"missing-note", `[{"op":"replace","path":"/note","value":"x"}]`}, {"array-final", `[{"op":"replace","path":"","value":[]}]`}, {"late-error", `[{"op":"add","path":"/note","value":"early"},{"op":"remove","path":"/missing"}]`},
 			} {
 				t.Run(tc.name, func(t *testing.T) {
 					r := request

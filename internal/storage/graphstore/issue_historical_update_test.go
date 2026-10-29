@@ -460,7 +460,6 @@ func TestHistoricalIssueOrderedPropertyBase(t *testing.T) {
 				t.Fatalf("equal ordered patch rewrote envelope: %v", err)
 			}
 			for _, raw := range []string{
-				`[]`,
 				`[{"op":"remove","path":"/title"}]`,
 				`[{"op":"replace","path":"/priority","value":null}]`,
 				`[{"op":"replace","path":"/priority","value":1.5}]`,
@@ -472,6 +471,47 @@ func TestHistoricalIssueOrderedPropertyBase(t *testing.T) {
 				if !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
 					t.Fatalf("invalid native ordered patch wrote: %s %v", raw, err)
 				}
+			}
+			// An empty operation list is identity on the selected historical base,
+			// so copying an older body can still change the current resource.
+			copied, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/patch", FromRevision: source.Revision, ExpectedRevision: result.Issue.Revision, Actor: "empty-copy", PropertiesPatch: []byte(`[]`)})
+			if err != nil || !copied.Changed || copied.Issue.Revision == result.Issue.Revision || copied.Issue.Revision == source.Revision || copied.Issue.Version == result.Issue.Version || copied.Issue.Version == source.Version {
+				t.Fatalf("empty historical patch did not mint restored content: %+v %v", copied, err)
+			}
+			h := copied.Issue.Attribution.HistoricalUpdate
+			if !reflect.DeepEqual(IssueEditableProperties(copied.Issue.Properties), IssueEditableProperties(source.Properties)) || string(copied.Issue.Metadata) != string(source.Metadata) || h == nil || h.FromRevision != source.Revision || h.PreviousRevision != result.Issue.Revision || copied.Issue.Attribution.Actor != "empty-copy" || copied.Issue.Attribution.Inception != source.Attribution.Inception {
+				t.Fatalf("empty historical patch lost source content or attribution: %+v", copied)
+			}
+			if copied.Issue.ID != result.Issue.ID || copied.Issue.Type != result.Issue.Type || copied.Issue.Properties.ID != result.Issue.Properties.ID || copied.Issue.Properties.Status != result.Issue.Properties.Status || !copied.Issue.Properties.CreatedAt.Equal(result.Issue.Properties.CreatedAt) || copied.Issue.Properties.CreatedBy != result.Issue.Properties.CreatedBy || !reflect.DeepEqual(copied.Issue.Properties.Labels, result.Issue.Properties.Labels) || !reflect.DeepEqual(copied.Issue.Owned, result.Issue.Owned) {
+				t.Fatal("empty historical patch rewound identity or protected structure")
+			}
+			readback, err := s.ShowIssue(ctx, "beads/patch")
+			if err != nil || !reflect.DeepEqual(readback, copied.Issue) {
+				t.Fatalf("restored Issue differs on read-back: %+v %v", readback, err)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/patch", copied.Issue)
+			before = workflowState(t, ctx, s)
+			for _, unconditional := range []bool{false, true} {
+				r := UpdateIssueRequest{Path: "beads/patch", FromRevision: copied.Issue.Revision, Actor: "empty-noop", Unconditional: unconditional, PropertiesPatch: []byte(`[]`)}
+				if !unconditional {
+					r.ExpectedRevision = copied.Issue.Revision
+				}
+				noop, err := s.UpdateIssue(ctx, r)
+				if err != nil || noop.Changed || !reflect.DeepEqual(noop.Issue, copied.Issue) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("equal-base empty patch rewrote Issue or store state (unconditional=%t): %+v %v", unconditional, noop, err)
+				}
+				readback, err := s.ShowIssue(ctx, "beads/patch")
+				if err != nil || !reflect.DeepEqual(readback, copied.Issue) {
+					t.Fatalf("empty no-op differs on read-back: %+v %v", readback, err)
+				}
+			}
+			stale, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/patch", FromRevision: source.Revision, ExpectedRevision: result.Issue.Revision, Actor: "empty-stale", PropertiesPatch: []byte(`[]`)})
+			if !errors.Is(err, ErrConflict) || !reflect.ValueOf(stale).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatalf("empty historical patch ignored stale guard or changed store state: %+v %v", stale, err)
+			}
+			readback, err = s.ShowIssue(ctx, "beads/patch")
+			if err != nil || !reflect.DeepEqual(readback, copied.Issue) {
+				t.Fatalf("stale refusal changed current Issue: %+v %v", readback, err)
 			}
 			replaced, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/patch", FromRevision: source.Revision, Actor: "replace", Unconditional: true, PropertiesPatch: []byte(`[{"op":"replace","path":"","value":{"title":"Replacement","priority":0}}]`)})
 			if err != nil || !replaced.Changed || replaced.Issue.Properties.Title != "Replacement" || replaced.Issue.Properties.Priority != 0 || replaced.Issue.Properties.Description != "" || replaced.Issue.Properties.EstimatedMinutes != nil || string(replaced.Issue.Metadata) != string(source.Metadata) {
