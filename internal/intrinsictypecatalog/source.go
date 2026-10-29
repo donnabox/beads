@@ -1,4 +1,4 @@
-// Package intrinsictypecatalog retains one fixed trusted publication. It does
+// Package intrinsictypecatalog retains two fixed trusted publications. It does
 // not register Types, allocate Resources, install defaults or admit operations.
 package intrinsictypecatalog
 
@@ -6,6 +6,9 @@ import _ "embed"
 
 //go:embed intrinsic-1.json
 var selectedBytes []byte
+
+//go:embed intrinsic-2.json
+var currentBytes []byte
 
 // Source identifies checked source bytes; it is not a provider or ownership claim.
 type Source struct {
@@ -20,6 +23,37 @@ type Source struct {
 func SelectedSource() Source {
 	return Source{Repository: "gastownhall/bdp", Commit: "ba8d18c6355cbd6dd3499befe03641874bb01c73",
 		Path: "specs/profiles/types/intrinsic-1.json", SHA256: "73b16c93b6963f9657be3569ba9d16f722edbf6f49090803e748c907c39aab7e", Bytes: 100125}
+}
+
+// CurrentSource identifies the reviewed successor used by new fresh contexts.
+// Its publication is a committed source selection, not a runtime adoption claim.
+func CurrentSource() Source {
+	return Source{Repository: "gastownhall/bdp", Commit: "38534cf653a4dab7ed5a0a3f25337c90318a9b2e",
+		Path: "specs/profiles/types/intrinsic-2.json", SHA256: "d5541ba6edcd9f02524e78726a77e4f4b37d2a35af0b9f9694bc075d9b7e983b", Bytes: 101307}
+}
+
+// SemanticSource returns only the exact contract paired with a known artifact.
+func (s Source) SemanticSource() string {
+	switch s {
+	case SelectedSource():
+		return "c6dfb3c05fe707cf605030c5661123e8dda0d8f8"
+	case CurrentSource():
+		return "38534cf653a4dab7ed5a0a3f25337c90318a9b2e"
+	default:
+		return ""
+	}
+}
+
+// Interpretation is the closed private context encoding for a known source.
+func (s Source) Interpretation() string {
+	switch s {
+	case SelectedSource():
+		return "intrinsic-materialization-plan/1"
+	case CurrentSource():
+		return "intrinsic-materialization-plan/2"
+	default:
+		return ""
+	}
 }
 
 const namespace = "https://github.com/gastownhall/bdp/types/type-system/"
@@ -43,4 +77,18 @@ func selectedSchemaDigests() map[string]string {
 		"https://json-schema.org/draft/2020-12/meta/validation":                                                    "34fba27426a2fe175b459326a4013434775f06dd33d1209cab9028decae1e240",
 		"https://json-schema.org/draft/2020-12/schema":                                                             "c1cacf82bea665da4dbaf58eb341b7af39420d4c9248a012aba3436ef1f802bb",
 	}
+}
+
+func currentSchemaDigests() map[string]string {
+	result := selectedSchemaDigests()
+	for uri := range result {
+		if len(uri) >= len(schemaNamespace) && uri[:len(schemaNamespace)] == schemaNamespace {
+			delete(result, uri)
+		}
+	}
+	result["https://github.com/gastownhall/bdp/schemas/types/intrinsic-2/bead-type-definition.properties.schema.json"] = "d25234e8b6cb4ed63d9197dd890a68d7287c5998bc2ce7c0ced2edf465f8c131"
+	result["https://github.com/gastownhall/bdp/schemas/types/intrinsic-2/link-type-definition.properties.schema.json"] = "3710c5dae6403476c3eed5ac612ea55cc8417e1c048487826e0f36376dd71e90"
+	result["https://github.com/gastownhall/bdp/schemas/types/intrinsic-2/refines.properties.schema.json"] = "67d9af3932dd223e360f6020ce5b68ad85b623bb1aa84c6d3215abd33285bbc1"
+	result["https://github.com/gastownhall/bdp/schemas/types/intrinsic-2/type-definition.properties.schema.json"] = "9481a41b5a123bda01a1fbcdfbaa228f2a853cad6dccfe3162dbb634505ea09b"
+	return result
 }

@@ -393,3 +393,48 @@ func TestIndependentContexts(t *testing.T) {
 		t.Fatal("decoder retained caller bytes")
 	}
 }
+
+func TestRecordedPublicationEditions(t *testing.T) {
+	for _, source := range []intrinsictypecatalog.Source{intrinsictypecatalog.SelectedSource(), intrinsictypecatalog.CurrentSource()} {
+		t.Run(source.Path, func(t *testing.T) {
+			c, err := intrinsictypecatalog.LoadSource(source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			s, a := candidates()
+			p, err := Build(c, s, a)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if p.Source() != source {
+				t.Fatal("wrong recorded source")
+			}
+			raw, err := p.EncodeContext()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err = DecodeContext(c, raw); err != nil {
+				t.Fatal(err)
+			}
+			for _, b := range p.Bindings() {
+				if b.Allocation.Kind == graph.KindBead {
+					ref, _ := c.Pin(string(b.Allocation.Role))
+					if b.Global != ref {
+						t.Fatal("wrong global edition")
+					}
+				}
+			}
+			other := intrinsictypecatalog.CurrentSource()
+			if source == other {
+				other = intrinsictypecatalog.SelectedSource()
+			}
+			wrong, err := intrinsictypecatalog.LoadSource(other)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := DecodeContext(wrong, raw); !errors.Is(err, ErrPlan) {
+				t.Fatalf("current/old source fallback: %v", err)
+			}
+		})
+	}
+}

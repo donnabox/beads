@@ -57,3 +57,12 @@ exercise the production assembler/codec, captures, unchanged properties and
 pins, refusal paths and independent old/new contexts. Source preparation alone
 is not test evidence. Canonical Bazel/nogo, supported Linux and any later
 persistence/provider/CLI qualification remain separate gates.
+
+Recorded publication selection is now closed over the two trusted fixed sources.
+`Build` retains the supplied checked catalog's exact source, semantic commit and
+private interpretation; `DecodeContext` reconstructs under that same source.
+Publication1's existing interpretation and body serialization remain unchanged.
+Publication2 uses new exact global revisions and interpretation2, preserving the
+same local six-allocation mapping law. Passing a current catalog to decode an old
+context refuses rather than reconstructing it from a newer head. This candidate
+source change is unqualified until its focused checks and normal gates run.

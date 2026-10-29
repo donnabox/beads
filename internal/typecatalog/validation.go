@@ -144,6 +144,9 @@ func (c *Catalog) ValidateProperties(ref Reference, raw json.RawMessage) error {
 		if c.entries[id].definition.NominalOnly {
 			return invalid("properties of %s require its native domain validator", id)
 		}
+		if c.entries[id].schema == nil {
+			continue // Genuine absent local constraint; every ancestor still follows.
+		}
 		if err := c.entries[id].schema.Validate(value); err != nil {
 			return invalid("properties violate %s: %v", id, err)
 		}
@@ -158,8 +161,10 @@ func (offlineLoader) Load(uri string) (any, error) {
 }
 
 func compileProperties(d Definition) (*jsonschema.Schema, error) {
-	if err := checkSchemaRetrievalURI(d.SchemaBase); err != nil {
-		return nil, fmt.Errorf("explicit schema retrieval URI: %w", err)
+	if len(d.PropertiesSchema) != 0 || d.SchemaBase != "" {
+		if err := checkSchemaRetrievalURI(d.SchemaBase); err != nil {
+			return nil, fmt.Errorf("explicit schema retrieval URI: %w", err)
+		}
 	}
 	compiler := jsonschema.NewCompiler()
 	compiler.DefaultDraft(jsonschema.Draft2020)
@@ -190,10 +195,12 @@ func compileProperties(d Definition) (*jsonschema.Schema, error) {
 	for uri, raw := range d.SchemaResources {
 		resources[uri] = raw
 	}
-	if _, conflict := resources[d.SchemaBase]; conflict {
-		return nil, invalid("schema resource replaces the properties schema retrieval URI")
+	if len(d.PropertiesSchema) != 0 {
+		if _, conflict := resources[d.SchemaBase]; conflict {
+			return nil, invalid("schema resource replaces the properties schema retrieval URI")
+		}
+		resources[d.SchemaBase] = d.PropertiesSchema
 	}
-	resources[d.SchemaBase] = d.PropertiesSchema
 	var uris []string
 	for uri := range resources {
 		uris = append(uris, uri)
@@ -229,6 +236,9 @@ func compileProperties(d Definition) (*jsonschema.Schema, error) {
 		if _, err := compiler.Compile(uri); err != nil {
 			return nil, err
 		}
+	}
+	if len(d.PropertiesSchema) == 0 {
+		return nil, nil
 	}
 	return compiler.Compile(d.SchemaBase)
 }

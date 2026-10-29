@@ -317,3 +317,93 @@ func TestSelectedSourceBytesRefuseDrift(t *testing.T) {
 		}
 	}
 }
+
+func TestTwoFixedPublicationEditions(t *testing.T) {
+	for _, source := range []Source{SelectedSource(), CurrentSource()} {
+		t.Run(source.Path, func(t *testing.T) {
+			c, err := LoadSource(source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if c.Source() != source || len(c.Bytes()) != source.Bytes || digest(c.Bytes()) != source.SHA256 {
+				t.Fatal("source binding")
+			}
+			if len(c.Definitions()) != 4 || len(c.Declarations()) != 2 {
+				t.Fatal("fixed census")
+			}
+			for _, name := range []string{"type", "bead-type", "link-type", "refines"} {
+				ref, ok := c.Pin(name)
+				if !ok {
+					t.Fatal(name)
+				}
+				if _, ok := c.Definition(ref); !ok {
+					t.Fatal("missing exact definition")
+				}
+				parents, ok := c.Ancestors(ref)
+				if !ok {
+					t.Fatal("missing closure")
+				}
+				if name == "bead-type" || name == "link-type" {
+					typ, _ := c.Pin("type")
+					if !reflect.DeepEqual(parents, []Reference{typ}) {
+						t.Fatal("wrong exact parent")
+					}
+				}
+				wrong := ref
+				wrong.Revision = "unknown"
+				if _, ok := c.Definition(wrong); ok {
+					t.Fatal("revision fallback")
+				}
+			}
+			ref, _ := c.Pin("bead-type")
+			set, err := schemas(c.definitions[ref])
+			if err != nil {
+				t.Fatal(err)
+			}
+			compiled, err := compileSchemas(set)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err = compiled.Validate(map[string]any{}); (err == nil) != (source == CurrentSource()) {
+				t.Fatalf("omission edition meaning: %v", err)
+			}
+			if err = compiled.Validate(map[string]any{"propertiesSchema": nil}); err == nil {
+				t.Fatal("null became omission")
+			}
+			if err = compiled.Validate(map[string]any{"propertiesSchema": false}); err != nil {
+				t.Fatalf("explicit boolean schema: %v", err)
+			}
+			b := c.Bytes()
+			b[0] = '!'
+			if digest(c.Bytes()) != source.SHA256 {
+				t.Fatal("mutable source")
+			}
+		})
+	}
+}
+
+func TestFixedPublicationSourceMixRefuses(t *testing.T) {
+	mixed := CurrentSource()
+	mixed.Commit = SelectedSource().Commit
+	for _, source := range []Source{{}, mixed} {
+		if c, err := LoadSource(source); c != nil || !errors.Is(err, graph.ErrValidation) {
+			t.Fatalf("unknown/mixed source: %v", err)
+		}
+	}
+	if c, err := loadSourceBytes(selectedBytes, CurrentSource()); c != nil || !errors.Is(err, graph.ErrValidation) {
+		t.Fatalf("cross-edition bytes: %v", err)
+	}
+	bad := bytes.Replace(currentBytes, []byte(`"bead-type-2"`), []byte(`"bead-type-1"`), 1)
+	if c, err := validatePublicationFor(bad, CurrentSource(), "2"); c != nil || !errors.Is(err, graph.ErrValidation) {
+		t.Fatalf("mixed metatype pin: %v", err)
+	}
+	if c, err := loadSourceBytes(append(bytes.Clone(currentBytes), ' '), CurrentSource()); c != nil || !errors.Is(err, graph.ErrValidation) {
+		t.Fatalf("source drift: %v", err)
+	}
+}
+
+// Legacy finite mutation helpers are test-only, never alternative trust APIs.
+func pin(name string) Reference { return Reference{namespace + name, name + "-1"} }
+func validatePublication(raw []byte) (*Catalog, error) {
+	return validatePublicationFor(raw, SelectedSource(), "1")
+}

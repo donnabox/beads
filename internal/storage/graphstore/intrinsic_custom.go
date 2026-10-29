@@ -25,8 +25,8 @@ type customDefinitionContext struct {
 }
 
 // CreateBeadType is the first small ordinary definition writer, not general
-// schema admission or registration. Only the fixed generated object schema is
-// supported. The six intrinsic members and their captured records never change.
+// schema admission or registration. Source1 retains its fixed object schema;
+// source2 omits the unprovided local schema. All six intrinsic members stay fixed.
 func (s *Store) CreateBeadType(ctx context.Context, id, actor string) (resourceget.DefinitionDocument, error) {
 	if s.options.Binding.SchemaVersion != TypesFreshSchemaVersion {
 		return resourceget.DefinitionDocument{}, ErrCapabilityUnavailable
@@ -132,7 +132,10 @@ func customDefinitionAffiliation(plan *intrinsicmaterialization.Plan) (intrinsic
 	}
 	// This exact published pair must have a witness in the checked mapping;
 	// LocalFor returns only the reference and avoids cloning all six bodies.
-	ref := intrinsicmaterialization.Reference{URI: "https://github.com/gastownhall/bdp/types/type-system/bead-type", Revision: "bead-type-1"}
+	ref, ok := plan.GlobalForRole(intrinsicmaterialization.BeadType)
+	if !ok {
+		return intrinsicmaterialization.Reference{}, ErrInvalidStore
+	}
 	if _, ok := plan.LocalFor(ref); !ok {
 		return intrinsicmaterialization.Reference{}, ErrInvalidStore
 	}
@@ -144,13 +147,23 @@ func generatedBeadTypeDocument(scope, id, revision string, ownType intrinsicmate
 	if err != nil {
 		return resourceget.DefinitionDocument{}, err
 	}
+	// These exact affiliations are emitted only after recorded-context proof.
+	// Never fill an omitted schema with true/{} or rewrite a source1 body.
+	properties := generatedDefinitionProperties
+	switch ownType {
+	case (intrinsicmaterialization.Reference{URI: "https://github.com/gastownhall/bdp/types/type-system/bead-type", Revision: "bead-type-1"}):
+	case (intrinsicmaterialization.Reference{URI: "https://github.com/gastownhall/bdp/types/type-system/bead-type", Revision: "bead-type-2"}):
+		properties = "{}"
+	default:
+		return resourceget.DefinitionDocument{}, ErrInvalidStore
+	}
 	body := struct {
 		ID         string                             `json:"id"`
 		Revision   string                             `json:"revision"`
 		Type       intrinsicmaterialization.Reference `json:"type"`
 		Properties json.RawMessage                    `json:"properties"`
 		OwnedLinks map[string]json.RawMessage         `json:"ownedLinks"`
-	}{uri, revision, ownType, json.RawMessage(generatedDefinitionProperties), map[string]json.RawMessage{}}
+	}{uri, revision, ownType, json.RawMessage(properties), map[string]json.RawMessage{}}
 	raw, err := json.Marshal(body)
 	if err != nil {
 		return resourceget.DefinitionDocument{}, err

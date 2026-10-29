@@ -9,6 +9,54 @@ import (
 
 const definitionScope = "https://example.test/work/"
 
+func TestDefinitionOriginIsImmutableAndOutsideResourceJSON(t *testing.T) {
+	doc, err := NewDefinitionDocument(definitionScope, DefinitionBead, definitionBytes(t, definitionFixture(t)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := doc.Origin(); ok {
+		t.Fatal("ordinary carrier invented intrinsic provenance")
+	}
+	const uri = "https://github.com/gastownhall/bdp/types/type-system/type"
+	annotated, err := doc.WithOrigin(uri, "type-2")
+	if err != nil {
+		t.Fatal(err)
+	}
+	origin, ok := annotated.Origin()
+	if !ok || origin.URI != uri || origin.Revision != "type-2" {
+		t.Fatalf("lost exact provenance: %+v", origin)
+	}
+	origin.URI = "https://foreign.example/type"
+	if original, _ := annotated.Origin(); original.URI != uri {
+		t.Fatal("returned provenance mutated carrier")
+	}
+	if _, ok := doc.Origin(); ok {
+		t.Fatal("annotation mutated original document")
+	}
+	before, err := json.Marshal(doc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	after, err := json.Marshal(annotated)
+	if err != nil || !bytes.Equal(before, after) || !bytes.Equal(doc.NativeJSON(), annotated.NativeJSON()) {
+		t.Fatalf("display provenance changed Resource JSON: %v", err)
+	}
+	if _, err := annotated.WithOrigin(uri, "type-2"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := annotated.WithOrigin(uri, "type-1"); err == nil {
+		t.Fatal("replaced checked origin with another edition")
+	}
+	for _, input := range []DefinitionOrigin{{URI: "type", Revision: "type-2"}, {URI: uri}, {URI: uri, Revision: string([]byte{0xff})}} {
+		if _, err := doc.WithOrigin(input.URI, input.Revision); err == nil {
+			t.Fatalf("accepted incomplete origin: %+v", input)
+		}
+	}
+	if _, err := (DefinitionDocument{}).WithOrigin(uri, "type-2"); err == nil {
+		t.Fatal("annotated uninitialized document")
+	}
+}
+
 func definitionFixture(t *testing.T) map[string]any {
 	t.Helper()
 	return map[string]any{

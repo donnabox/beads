@@ -36,10 +36,10 @@ func (s *Store) ListDefinitions(ctx context.Context, family, exact string) ([]re
 		}
 		// This second catalog value supplies only the fixed source's exact Refines
 		// ancestry; it is not another installed inventory or a latest lookup.
-		if err = budget.chargeBody(4 * intrinsictypecatalog.SelectedSource().Bytes); err != nil {
+		if err = budget.chargeBody(4 * plan.Source().Bytes); err != nil {
 			return err
 		}
-		catalog, err := intrinsictypecatalog.LoadSelected()
+		catalog, err := intrinsictypecatalog.LoadSource(plan.Source())
 		if err != nil {
 			return err
 		}
@@ -126,7 +126,7 @@ func currentIntrinsicContextInTx(ctx context.Context, tx *sql.Tx, budget *intrin
 }
 
 func selectIntrinsicDefinitionBeads(scope string, catalog *intrinsictypecatalog.Catalog, plan *intrinsicmaterialization.Plan, family, exact string, budget *intrinsicMetadataBudget) ([]resourceget.DefinitionDocument, error) {
-	if catalog == nil || plan == nil {
+	if catalog == nil || plan == nil || catalog.Source() != plan.Source() {
 		return nil, ErrInvalidStore
 	}
 	// Bindings copies original and local records; reserve before requesting
@@ -175,6 +175,10 @@ func selectIntrinsicDefinitionBeads(scope string, catalog *intrinsictypecatalog.
 		if e != nil {
 			return nil, fmt.Errorf("%w: definition carrier: %v", ErrInvalidStore, e)
 		}
+		doc, e = doc.WithOrigin(binding.Global.URI, binding.Global.Revision)
+		if e != nil {
+			return nil, fmt.Errorf("%w: checked definition origin: %v", ErrInvalidStore, e)
+		}
 		result = append(result, doc)
 	}
 	slices.SortFunc(result, func(a, b resourceget.DefinitionDocument) int { return graph.CompareCodeUnits(a.ID(), b.ID()) })
@@ -186,18 +190,22 @@ func resolveIntrinsicDefinitionCategory(catalog *intrinsictypecatalog.Catalog, p
 	if raw == "" {
 		return intrinsictypecatalog.Reference{}, nil
 	}
-	var ref intrinsictypecatalog.Reference
+	var name string
 	switch raw {
 	case "type", "https://github.com/gastownhall/bdp/types/type-system/type":
-		ref = intrinsictypecatalog.Reference{URI: "https://github.com/gastownhall/bdp/types/type-system/type", Revision: "type-1"}
+		name = "type"
 	case "bead-type", "https://github.com/gastownhall/bdp/types/type-system/bead-type":
-		ref = intrinsictypecatalog.Reference{URI: "https://github.com/gastownhall/bdp/types/type-system/bead-type", Revision: "bead-type-1"}
+		name = "bead-type"
 	case "link-type", "https://github.com/gastownhall/bdp/types/type-system/link-type":
-		ref = intrinsictypecatalog.Reference{URI: "https://github.com/gastownhall/bdp/types/type-system/link-type", Revision: "link-type-1"}
+		name = "link-type"
 	default:
 		return intrinsictypecatalog.Reference{}, fmt.Errorf("%w: unsupported intrinsic Bead category selector", ErrCapabilityUnavailable)
 	}
-	if catalog == nil || plan == nil {
+	if catalog == nil || plan == nil || catalog.Source() != plan.Source() {
+		return intrinsictypecatalog.Reference{}, ErrInvalidStore
+	}
+	ref, known := catalog.Pin(name)
+	if !known {
 		return intrinsictypecatalog.Reference{}, ErrInvalidStore
 	}
 	if _, known := catalog.Ancestors(ref); !known {

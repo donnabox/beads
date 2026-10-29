@@ -32,8 +32,6 @@ const (
 	BeadTypeRefinesType Role = "bead-type-refines-type"
 	LinkTypeRefinesType Role = "link-type-refines-type"
 	namespace                = "https://github.com/gastownhall/bdp/types/type-system/"
-	semanticSource           = "c6dfb3c05fe707cf605030c5661123e8dda0d8f8"
-	contextEncoding          = "intrinsic-materialization-plan/1"
 	// MaxContextBytes is a private planning budget, not a Resource ID grammar cap.
 	MaxContextBytes = 1 << 20
 )
@@ -92,6 +90,19 @@ func members() [6]member {
 		{LinkType, "link-type-1", graph.KindBead}, {Refines, "refines-1", graph.KindBead},
 		{BeadTypeRefinesType, "declaration-1", graph.KindLink}, {LinkTypeRefinesType, "declaration-1", graph.KindLink}}
 }
+func membersFor(c *intrinsictypecatalog.Catalog) [6]member {
+	result := members()
+	for i := range result {
+		if i < 4 {
+			ref, _ := c.Pin(string(result[i].role))
+			result[i].revision = ref.Revision
+		} else if c.Source() == intrinsictypecatalog.CurrentSource() {
+			result[i].revision = "declaration-2"
+		}
+	}
+	return result
+}
+
 func invalid(format string, args ...any) error {
 	return fmt.Errorf("%w: %s", ErrPlan, fmt.Sprintf(format, args...))
 }
@@ -104,7 +115,10 @@ func Build(c *intrinsictypecatalog.Catalog, scope Scope, allocations []Allocatio
 	if c == nil {
 		return nil, invalid("missing checked catalog")
 	}
-	source := intrinsictypecatalog.SelectedSource()
+	source := c.Source()
+	if source.SemanticSource() == "" {
+		return nil, invalid("unselected catalog")
+	}
 	raw := c.Bytes()
 	if len(raw) != source.Bytes || digest(raw) != source.SHA256 {
 		return nil, invalid("unselected catalog")
@@ -132,7 +146,7 @@ func Build(c *intrinsictypecatalog.Catalog, scope Scope, allocations []Allocatio
 			return nil, invalid("candidate context exceeds planning budget")
 		}
 		var selected *member
-		for _, m := range members() {
+		for _, m := range membersFor(c) {
 			if m.role == a.Role {
 				copy := m
 				selected = &copy
@@ -158,7 +172,7 @@ func Build(c *intrinsictypecatalog.Catalog, scope Scope, allocations []Allocatio
 		if _, err := graph.NewRevision(a.Local.Revision); err != nil {
 			return nil, invalid("role %q revision: %v", a.Role, err)
 		}
-		for _, m := range members() {
+		for _, m := range membersFor(c) {
 			if a.Local.URI == namespace+string(m.role) {
 				return nil, invalid("candidate would rebind shared publication identity")
 			}
@@ -180,7 +194,7 @@ func Build(c *intrinsictypecatalog.Catalog, scope Scope, allocations []Allocatio
 		}
 		originals[id.ID] = r
 	}
-	p := &Plan{payload: contextPayload{contextEncoding, semanticSource, source, scope, make([]Binding, 0, 6)}}
+	p := &Plan{payload: contextPayload{source.Interpretation(), source.SemanticSource(), source, scope, make([]Binding, 0, 6)}}
 	records := make(map[Role]json.RawMessage, 6)
 	// Real local Links are constructed first, then captured under final owners.
 	for _, role := range []Role{BeadTypeRefinesType, LinkTypeRefinesType} {
@@ -223,7 +237,7 @@ func Build(c *intrinsictypecatalog.Catalog, scope Scope, allocations []Allocatio
 			return nil, invalid("local Bead: %v", err)
 		}
 	}
-	for _, m := range members() {
+	for _, m := range membersFor(c) {
 		p.payload.Bindings = append(p.payload.Bindings, Binding{byRole[m.role], Reference{URI: namespace + string(m.role), Revision: m.revision}, originals[namespace+string(m.role)], records[m.role]})
 	}
 	if _, err := p.EncodeContext(); err != nil {
@@ -261,6 +275,26 @@ func (p *Plan) Scope() Scope {
 		return Scope{}
 	}
 	return p.payload.Scope
+}
+
+// Source is the exact recorded artifact; no current-head reconstruction occurs.
+func (p *Plan) Source() intrinsictypecatalog.Source {
+	if p == nil {
+		return intrinsictypecatalog.Source{}
+	}
+	return p.payload.ArtifactSource
+}
+
+// GlobalForRole selects a fixed semantic pair already present in this context.
+func (p *Plan) GlobalForRole(role Role) (Reference, bool) {
+	if p != nil {
+		for _, b := range p.payload.Bindings {
+			if b.Allocation.Role == role {
+				return b.Global, true
+			}
+		}
+	}
+	return Reference{}, false
 }
 
 // Bindings returns all six roles in fixed publication order with independent bytes.
@@ -302,7 +336,7 @@ func (p *Plan) LocalFor(ref Reference) (Reference, bool) {
 
 // EncodeContext encodes private candidate planning data, never installed state.
 func (p *Plan) EncodeContext() ([]byte, error) {
-	if p == nil || p.payload.Encoding != contextEncoding || len(p.payload.Bindings) != 6 {
+	if p == nil || (p.payload.Encoding != p.payload.ArtifactSource.Interpretation() || p.payload.ArtifactSource.SemanticSource() == "" || p.payload.SemanticSource != p.payload.ArtifactSource.SemanticSource()) || len(p.payload.Bindings) != 6 {
 		return nil, invalid("uninitialized plan")
 	}
 	payload, err := canonicalPayload(p.payload)

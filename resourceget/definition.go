@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/steveyegge/beads/graphops"
 )
@@ -32,6 +33,15 @@ type DefinitionDocument struct {
 	id       string
 	revision string
 	native   []byte
+	origin   *DefinitionOrigin
+}
+
+// DefinitionOrigin carries display provenance supplied by the trusted native
+// reader after checking its persisted exact local/global correspondence. It is
+// not part of the Resource representation and grants no authority or admission.
+type DefinitionOrigin struct {
+	URI      string
+	Revision string
 }
 
 // NewDefinitionDocument admits the selected complete definition carrier. Exact
@@ -64,6 +74,34 @@ func (d DefinitionDocument) ID() string           { return d.id }
 func (d DefinitionDocument) Revision() string     { return d.revision }
 func (d DefinitionDocument) ScopeURL() string     { return d.scope }
 func (d DefinitionDocument) Kind() DefinitionKind { return d.kind }
+
+// WithOrigin returns a new document with the reader's checked provenance. The
+// caller must establish correspondence; URL syntax alone cannot establish it.
+// A document's immutable local identity, revision and bytes remain unchanged.
+func (d DefinitionDocument) WithOrigin(uri, revision string) (DefinitionDocument, error) {
+	if len(d.native) == 0 {
+		return DefinitionDocument{}, fmt.Errorf("uninitialized definition document")
+	}
+	if err := graphops.ValidateReferenceURI(uri); err != nil {
+		return DefinitionDocument{}, fmt.Errorf("definition origin: %w", err)
+	}
+	if revision == "" || !utf8.ValidString(revision) {
+		return DefinitionDocument{}, fmt.Errorf("definition origin requires an exact revision")
+	}
+	if d.origin != nil && (d.origin.URI != uri || d.origin.Revision != revision) {
+		return DefinitionDocument{}, fmt.Errorf("definition origin cannot be replaced")
+	}
+	d.origin = &DefinitionOrigin{URI: uri, Revision: revision}
+	return d, nil
+}
+
+// Origin returns an independent provenance value, never a mutable carrier.
+func (d DefinitionDocument) Origin() (DefinitionOrigin, bool) {
+	if d.origin == nil {
+		return DefinitionOrigin{}, false
+	}
+	return *d.origin, true
+}
 
 // NativeJSON returns an independent copy of the complete native representation.
 func (d DefinitionDocument) NativeJSON() []byte { return bytes.Clone(d.native) }

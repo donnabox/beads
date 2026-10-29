@@ -13,9 +13,6 @@ import (
 	"github.com/steveyegge/beads/internal/intrinsictypecatalog"
 )
 
-const intrinsicSemanticSource = "c6dfb3c05fe707cf605030c5661123e8dda0d8f8"
-const intrinsicInterpretation = "intrinsic-materialization-plan/1"
-
 var intrinsicDDL = []string{
 	`CREATE TABLE graph_preview_intrinsic_contexts (
  context_id VARBINARY(32) PRIMARY KEY, scope_url LONGBLOB NOT NULL,
@@ -47,10 +44,10 @@ func installIntrinsicMembers(ctx context.Context, tx *sql.Tx, o Options, budget 
 	if err := (&Store{}).touchCoordination(ctx, tx); err != nil {
 		return err
 	}
-	if err := budget.chargeBody(4*intrinsictypecatalog.SelectedSource().Bytes + 2*intrinsicmaterialization.MaxContextBytes); err != nil {
+	if err := budget.chargeBody(4*intrinsictypecatalog.CurrentSource().Bytes + 2*intrinsicmaterialization.MaxContextBytes); err != nil {
 		return err
 	}
-	catalog, err := intrinsictypecatalog.LoadSelected()
+	catalog, err := intrinsictypecatalog.LoadCurrent()
 	if err != nil {
 		return err
 	}
@@ -100,8 +97,8 @@ func installIntrinsicMembers(ctx context.Context, tx *sql.Tx, o Options, budget 
 	if err != nil {
 		return err
 	}
-	source := intrinsictypecatalog.SelectedSource()
-	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_intrinsic_contexts (context_id,scope_url,authority_id,source_repository,source_commit,source_path,source_sha256,source_bytes,semantic_source_commit,interpretation,context_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, contextID, o.Binding.ScopeURL, o.Binding.AuthorityID, source.Repository, source.Commit, source.Path, source.SHA256, catalog.Bytes(), intrinsicSemanticSource, intrinsicInterpretation, intrinsicDigest(encoded)); err != nil {
+	source := intrinsictypecatalog.CurrentSource()
+	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_intrinsic_contexts (context_id,scope_url,authority_id,source_repository,source_commit,source_path,source_sha256,source_bytes,semantic_source_commit,interpretation,context_sha256) VALUES (?,?,?,?,?,?,?,?,?,?,?)`, contextID, o.Binding.ScopeURL, o.Binding.AuthorityID, source.Repository, source.Commit, source.Path, source.SHA256, catalog.Bytes(), source.SemanticSource(), source.Interpretation(), intrinsicDigest(encoded)); err != nil {
 		return err
 	}
 	for _, member := range plan.Bindings() {
