@@ -7,8 +7,9 @@ Links. It can return Resources, an exact count, or a traversal graph.
 
 This is an unreleased contributor guide. A normal development build and a
 bounded embedded-Dolt CLI smoke passed. Expanded native Dolt and focused
-Bazel checks also passed; full hosted repository qualification remains open. The pinned-release user docs and installed binary have not changed. This
-does not claim complete BDP v0.1 service support.
+Bazel checks also passed; full hosted repository qualification remains open.
+The pinned-release user docs and installed binary have not changed. This does
+not claim complete BDP v0.1 service support.
 
 ## Supply one request
 
@@ -87,14 +88,16 @@ Type-family tests require complete authoritative Type interpretation.
 AST, evaluation, allocation and mapped-input budgets. Mapped evaluator input is
 limited to16MiB before defensive validation retains further copies. The CLI read
 has a30second deadline. The configured HTTP handler admits one complete Query
-execution at a time; excess concurrent requests receive503 temporarily-unavailable.
+execution at a time; excess concurrent requests receive503 temporarily-unavailable
+with `Retry-After: 1`.
 These are operational limits, independent of traversal depth.
 
 The configured BDP operation accepts `{"query": AST}` at its Scope root using
 `POST S?readVersion=1&operation=list` or `operation=query`, with
-`application/vnd.bdp.v0.1+json`. This direct operation is being qualified
-separately. Generic v0.1 discovery remains unavailable until the service's
-required Core capabilities are implemented.
+`application/vnd.bdp.v0.1+json`. The configured handler has passed real-store
+qualification through its security chain and an HTTP recorder; this does not
+qualify a socket/listener deployment. Generic v0.1 discovery remains unavailable
+until the service's required Core capabilities are implemented.
 
 The implementation's selected AST schema is
 [query.schema.json](../../internal/resourcequery/query.schema.json). Exact source
@@ -140,3 +143,8 @@ edition mappings, error delivery, and close/reopen. A separate fresh dependency-
 control preserved the old no-AST Issue query and refused AST mode. No selected
 cases failed or skipped. These are development qualification results, not a
 release or PostgreSQL/SQLite support claim.
+
+The later [shipping correction evidence](https://github.com/donnabox/agent-coordination/tree/ad0fc168940c9841d48c836cd47023cde5e51748/context/melinda/json-query-20261028/evidence/daytime-hardening-2)
+qualifies additional embedded mixed-graph, configured HTTP, capability and legacy
+compatibility cases. It records the exact runtime source separately from this
+contributor-prose update. Hosted receiving-tree CI remains a landing gate.

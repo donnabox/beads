@@ -65,52 +65,48 @@ dependencies are implemented.
 
 ## Verification completed
 
-- A normal `make build` produced candidate SHA256
-  `4fd2cb928050fe79b36161a4667fcc9543f639cd497857d74ba0362c68a5288f`.
-- A fresh embedded-Dolt CLI smoke created an Issue, Memory and Reference Link.
-  Scan, title selection, count2, outgoing one-hop and separate-process repeat
-  reads passed. All10 commands exited0 with empty stderr. Exact receipts are
-  published in coordination commit
-  `deb5815abeae83d29f4b588a26f5ad1a46155d3b`.
-- A normal Bazel run passed49 selected top-level pure/fake tests and138 named
-  cases across the evaluator, store, representation, HTTP and CLI packages.
-  Both actual Go run/pass events and XML agree; no cases failed or skipped.
-  This does not execute the native engine fixtures.
-- The managed BUILD metadata generator reached a clean fixed point after two
-  BUILD-only repairs. A subsequent documentation runfiles fix exports the
-  schema linked by the candidate guide; that successor needs its own check.
-- Historical native Codex and actual Claude findings were processed. A new
-  shipping review examines the current source; reduced reviewer coverage will
-  be stated if a backend cannot complete.
+The current four signed DRAFT layers are [350 evaluator](https://github.com/donnabox/beads/pull/350),
+[351 snapshot](https://github.com/donnabox/beads/pull/351),
+[352 reader](https://github.com/donnabox/beads/pull/352), and
+[353 CLI/HTTP](https://github.com/donnabox/beads/pull/353).
 
-Receipts and exact source freezes live in
-`/Users/dbox/.local/state/melinda/query-implementation-20261028/`. Historical
-sandbox/metadata experiments remain archived there and are not prerequisites
-for the ordinary product build or publication path.
+- A normal make-built predecessor passed ten actual embedded-Dolt CLI commands.
+  Its private candidate and exact source are separately preserved; PATH was not
+  replaced. The earlier canonical pure/fake cohort passed49roots/138named cases.
+- Shipping Codex and actual Claude reviews were processed. The final source
+  closure found no remaining actionable finding. Gemini could not access its
+  headless tool, so substantive three-provider review is unavailable.
+- A changed-source run exposed a real CLI initialization cycle. Its failure is
+  preserved; the evaluator, reader and HTTP cases passed45roots/118named. The
+  corrected CLI then passed7roots/36named cases plus formatting. The actual
+  evaluator bottom passed its new Unicode test and14subcases before publication.
+- Final native checks passed configured embedded HTTP7named, actual mixed CLI
+  5named, the existing closed-world capability guard, and legacy dependency-mode
+  Query. All131captured artifacts matched their hashes and raw Go/XML census;
+  no selected case failed or skipped. The32HTTP JSON receipts include successful
+  store closure. HTTP used the actual configured security chain and a recorder;
+  socket/listener behavior is a separate proof.
+- Janet independently accepted the final source/custody handback. All owned
+  engine windows are released. Runtime evidence binds exact top
+  `d43a9ff4b66fa2ae00133bddf5007c66fea08ee4`; this later verification-prose update
+  changes no Go, BUILD, schema, imports or contract.
 
-The later hardening successor passed37 affected pure/fake roots and120 named
-cases plus formatting. The real embedded HTTP fixture passed its root and six
-semantic cases. Actual embedded CLI tests passed the mixed graph root and four
-subcases, and a fresh dependency-mode control passed. Raw Go events and XML
-censuses match, with no selected failure or skip. Exact commands, source hashes
-and captured undeclared-output HTTP receipts are retained in the hardening
-subdirectory. The first HTTP attempt failed before engine acquisition because
-its receipt path was outside the Bazel sandbox; the corrected fixture uses the
-standard undeclared-output directory, with no permission expansion.
+[Exact source, reviews, commands, raw results, failures and independent census](https://github.com/donnabox/agent-coordination/tree/ad0fc168940c9841d48c836cd47023cde5e51748/context/melinda/json-query-20261028/evidence/daytime-hardening-2)
+are immutable. Earlier sandbox and metadata experiments remain historical,
+separately source-bound evidence; no old failure has been relabelled as a pass.
 
 ## Remaining readiness work
 
-- [x] Close the native shipping finding and test its admission correction.
-- [ ] Complete the remaining external review and resolve supported findings.
-- [x] Qualify expanded Issue/Dependency/Memory and configured HTTP scenarios on
-      a fresh owned graph in Janet's reserved engine window.
-- [x] Preserve a dependency-mode legacy-query compatibility proof.
-- [ ] Run affected documentation/format checks and hosted Linux repository CI
-      against the actual publication commits.
-- [ ] Publish the layered implementation PRs with exact evidence and restrictions.
-- [ ] Reconcile Query with the receiving integration tree under Janet; no main
-      merge, wire pin movement or release is implied by a passing candidate.
+- [x] Process supported shipping review findings and qualify their corrections.
+- [x] Publish four ordinary signed layered DRAFT PRs.
+- [x] Qualify mixed Issue/Dependency/Memory, configured HTTP, capability reporting
+      and dependency-mode compatibility on a fresh owned embedded graph.
+- [ ] Pass required hosted Linux CI on each actual receiving head/base. Upper
+      branch-base PRs require sequential retargeting; absent checks are not green.
+- [ ] Reconcile the canonical evaluator seam with Sybil's staged List work and
+      validate the resulting integration tree under Janet before main landing.
 
 PostgreSQL/SQLite product adapters, service-side SQL pushdown, retained Query
 acquisition, complete v0.1 discovery and deferred delivery controls remain
-separate work. They must not be advertised as installed capabilities.
+separate work. They must not be advertised as installed capabilities. No main
+merge, release or runtime pin movement follows from these bounded passes.
