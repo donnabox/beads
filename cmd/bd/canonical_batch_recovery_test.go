@@ -11,6 +11,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/canonicalbatch"
+	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
@@ -151,6 +152,88 @@ func TestCanonicalBatchLegacyFileFlagCompatibility(t *testing.T) {
 	batchCmd = cmd
 	if handled, err := admitCanonicalAuthoring(cmd); !handled || err == nil {
 		t.Fatalf("explicit canonical input accepted conflicting file arguments: handled=%t err=%v", handled, err)
+	}
+}
+
+// With no canonical flag, authoring admission precedes discovery and leaves
+// batch on the legacy path. The real command must recheck scalar occurrences
+// after discovery selects graph mode, before consuming input or opening a store.
+func TestCanonicalBatchDiscoveredGraphRefusesConflictingFileFlags(t *testing.T) {
+	canonicalRecoveryTestIsolation(t)
+	cmd := batchCmd // Keep the registered flags and actual RunE wrapper chain.
+	resetCommandFlags(rootCmd)
+	oldIn, oldOut, oldErr := cmd.InOrStdin(), cmd.OutOrStdout(), cmd.ErrOrStderr()
+	oldSilenceErrors, oldSilenceUsage := cmd.SilenceErrors, cmd.SilenceUsage
+	oldGeneration := graphPreviewTypeGeneration
+	t.Cleanup(func() {
+		resetCommandFlags(rootCmd)
+		cmd.SetIn(oldIn)
+		cmd.SetOut(oldOut)
+		cmd.SetErr(oldErr)
+		cmd.SilenceErrors, cmd.SilenceUsage = oldSilenceErrors, oldSilenceUsage
+		graphPreviewTypeGeneration = oldGeneration
+		config.ResetForTesting()
+	})
+	cfg := canonicalRecoveryConfiguredWorkspace(t, "https://example.invalid/lazy-batch/")
+	t.Chdir(filepath.Dir(cfg.GraphWorkspace))
+	t.Setenv("BEADS_DIR", cfg.GraphWorkspace)
+	t.Setenv("BD_SCOPE", "")
+	t.Setenv("BD_GRAPH_MODE", "")
+	t.Setenv("BEADS_DOLT_AUTO_START", "0")
+	metadataPath := configfile.ConfigPath(cfg.GraphWorkspace)
+	metadataBefore, err := os.ReadFile(metadataPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name, flag, last string
+	}{
+		{"stdin", "--file", "-"},
+		{"missing file shorthand", "-f", filepath.Join(t.TempDir(), "must-not-open.jsonl")},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			resetCommandFlags(rootCmd)
+			graphPreviewActive, graphPreviewConfig, graphPreviewDir = false, nil, ""
+			args := []string{tc.flag, "earlier.jsonl", tc.flag, tc.last}
+			os.Args = append([]string{"bd", "batch"}, args...)
+			if err := cmd.ParseFlags(args); err != nil {
+				t.Fatal(err)
+			}
+			if handled, err := admitCanonicalAuthoring(cmd); handled || err != nil {
+				t.Fatalf("pre-discovery admission intercepted legacy-shaped flags: handled=%t err=%v", handled, err)
+			}
+			if handled, err := admitCanonicalGraphPreview(cmd); !handled || err != nil || !graphPreviewActive || graphPreviewDir != cfg.GraphWorkspace {
+				t.Fatalf("actual graph discovery: handled=%t active=%t dir=%q err=%v", handled, graphPreviewActive, graphPreviewDir, err)
+			}
+			input := strings.NewReader(`{"operation":"createBead","id":"must-not-land","type":"memory","properties":{"title":"Unconsumed"}}`)
+			inputSize := input.Len()
+			var output bytes.Buffer
+			cmd.SetIn(input)
+			cmd.SetOut(&output)
+			diagnostics := graphFailureOutput.(*bytes.Buffer)
+			diagnostics.Reset()
+			err := cmd.RunE(cmd, nil)
+			status, ok := err.(*exitError)
+			if !ok || status.Code != 2 || !strings.Contains(diagnostics.String(), "invalid_selector: conflicting --file values") {
+				t.Fatalf("actual batch handler did not refuse conflicting files first: %v: %s", err, diagnostics.String())
+			}
+			if input.Len() != inputSize || output.Len() != 0 {
+				t.Fatalf("refusal consumed input or emitted a result: input=%d/%d output=%q", input.Len(), inputSize, output.String())
+			}
+			metadataAfter, err := os.ReadFile(metadataPath)
+			if err != nil || !bytes.Equal(metadataBefore, metadataAfter) {
+				t.Fatalf("refusal modified workspace metadata: %v", err)
+			}
+			entries, err := os.ReadDir(cfg.GraphWorkspace)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, entry := range entries {
+				if entry.Name() != configfile.ConfigFileName && entry.Name() != graphPreviewMarker {
+					t.Fatalf("refusal created provider/journal state: %s", entry.Name())
+				}
+			}
+		})
 	}
 }
 
