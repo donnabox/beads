@@ -1,0 +1,260 @@
+diff --git a/cmd/bd/graph_preview_import_workflow_test.go b/cmd/bd/graph_preview_import_workflow_test.go
+--- a/cmd/bd/graph_preview_import_workflow_test.go
++++ b/cmd/bd/graph_preview_import_workflow_test.go
+@@ -3,13 +3,19 @@
+ package main
+ 
+ import (
++	"bytes"
++	"encoding/json"
+ 	"os"
+ 	"path/filepath"
++	"reflect"
++	"sort"
+ 	"strings"
+ 	"testing"
+ 	"time"
+ 
++	graph "github.com/steveyegge/beads/graphops"
+ 	"github.com/steveyegge/beads/internal/storage/graphstore"
++	"github.com/steveyegge/beads/internal/types"
+ )
+ 
+ // Installed process admission, input selection and persisted graph projections
+@@ -114,3 +120,236 @@
+ 		})
+ 	}
+ }
++
++// This separate producer-backed corpus proves that ordinary keys and a
++// hyphenated source prefix survive the installed process and engine boundaries.
++// Generate its fixture with legacy-import-fixture.py --profile completeness
++// --prefix web-app; never substitute hand-edited output for the producer receipt.
++func TestGraphPreviewLegacyImportCompletenessInstalledWorkflow(t *testing.T) {
++	bd := buildBDUnderTest(t)
++	fixture, err := os.ReadFile(filepath.Join("testdata", "legacy-import-complete", "ordinary.jsonl"))
++	if err != nil {
++		t.Fatal(err)
++	}
++	var issues []*types.Issue
++	memories := map[string]string{}
++	for _, line := range bytes.Split(fixture, []byte{'\n'}) {
++		if len(bytes.TrimSpace(line)) == 0 {
++			continue
++		}
++		var record struct {
++			Kind  string `json:"_type"`
++			Key   string `json:"key"`
++			Value string `json:"value"`
++		}
++		if err := json.Unmarshal(line, &record); err != nil {
++			t.Fatal(err)
++		}
++		switch record.Kind {
++		case "issue":
++			var issue types.Issue
++			if err := json.Unmarshal(line, &issue); err != nil {
++				t.Fatal(err)
++			}
++			issues = append(issues, &issue)
++		case "memory":
++			if _, exists := memories[record.Key]; exists {
++				t.Fatalf("producer repeated memory key %q", record.Key)
++			}
++			memories[record.Key] = record.Value
++		default:
++			t.Fatalf("unexpected producer record %q", record.Kind)
++		}
++	}
++	if len(issues) != 4 || len(memories) != 16 {
++		t.Fatalf("completeness producer corpus: %d Issues, %d memories", len(issues), len(memories))
++	}
++	for _, key := range []string{"fixture-key", "has space", "has%20space", " leading", "trailing ", "記憶", "%E8%A8%98%E6%86%B6", "100%", ".", "..", "path/part", "double//separator", "back\\slash", "tab\tline\nbreak", "web-app-a1b", "empty-value"} {
++		if _, exists := memories[key]; !exists {
++			t.Fatalf("producer omitted memory key %q", key)
++		}
++	}
++	if memories["empty-value"] != "" {
++		t.Fatal("producer empty value changed")
++	}
++	for _, engine := range []string{"embedded", "server"} {
++		t.Run(engine, func(t *testing.T) {
++			isolateBeadsDirForTest(t)
++			work, home := t.TempDir(), t.TempDir()
++			const scope = "https://example.invalid/legacy-import-complete/"
++			call := func(input, code string, args ...string) string {
++				t.Helper()
++				if args[0] != "list" {
++					args = append(args, "--json")
++				}
++				return graphPatchProcess(t, bd, work, home, strings.NewReader(input), code, 90*time.Second, args...)
++			}
++			init := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
++			if engine == "server" {
++				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
++				if port == "" {
++					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for required shared-server completeness proof")
++				}
++				init = append(init, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
++			}
++			call("", "", init...)
++			before := call("", "", "list", "--all", "--format", "records-json")
++			for _, invalid := range []string{
++				string(fixture) + `{"_type":"memory","key":"has space","value":"duplicate"}` + "\n",
++				string(fixture) + `{"_type":"memory","key":"new-key","value":null}` + "\n",
++				string(fixture) + `{"_type":"issue","id":"web-api-123","title":"Different source prefix"}` + "\n",
++			} {
++				call(invalid, "invalid_properties", "import", "-")
++				if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
++					t.Fatal("refused completeness import changed inventory")
++				}
++			}
++			var ambiguous []byte
++			for _, source := range issues {
++				if source.ID == "web-app-abcdef" {
++					var err error
++					ambiguous, err = json.Marshal(source)
++					if err != nil {
++						t.Fatal(err)
++					}
++				}
++			}
++			if len(ambiguous) == 0 {
++				t.Fatal("producer lacks all-letter hash suffix")
++			}
++			call(string(ambiguous), "invalid_properties", "import", "-", "--dry-run")
++			explicit := graphMixedResult[graphstore.LegacyImportResult](t, call(string(ambiguous), "", "import", "-", "--source-prefix", "web-app", "--dry-run"))
++			if explicit.IssuePrefix != "web-app" || explicit.IDs["web-app-abcdef"] != scope+"beads/web-app-abcdef" {
++				t.Fatalf("explicit prefix remapped original ID: %+v", explicit)
++			}
++			call(string(ambiguous), "invalid_properties", "import", "-", "--source-prefix", "other", "--dry-run")
++			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--dry-run"))
++			lines := bytes.Split(bytes.TrimSpace(fixture), []byte{'\n'})
++			for i, j := 0, len(lines)-1; i < j; i, j = i+1, j-1 {
++				lines[i], lines[j] = lines[j], lines[i]
++			}
++			reversed := string(bytes.Join(lines, []byte{'\n'})) + "\n"
++			reordered := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-", "--dry-run"))
++			if !preview.DryRun || preview.IssuePrefix != "web-app" || preview.Issues != len(issues) || preview.Memories != len(memories) || preview.Dependencies != 1 || preview.Comments != 1 || !reflect.DeepEqual(preview.MemoryIDs, reordered.MemoryIDs) {
++				t.Fatalf("dry-run counts or order-dependent remapping: %+v %+v", preview, reordered)
++			}
++			if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
++				t.Fatal("completeness dry-run reserved data")
++			}
++			result := graphMixedResult[graphstore.LegacyImportResult](t, call(reversed, "", "import", "-"))
++			if result.DryRun || !reflect.DeepEqual(result.IDs, preview.IDs) || !reflect.DeepEqual(result.MemoryIDs, preview.MemoryIDs) {
++				t.Fatalf("apply did not preserve dry-run identity maps: %+v", result)
++			}
++			allocated := map[string]bool{}
++			for _, source := range issues {
++				id := result.IDs[source.ID]
++				if id != scope+"beads/"+source.ID {
++					t.Fatalf("Issue identity changed: %q -> %q", source.ID, id)
++				}
++				allocated[id] = true
++				got := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", id, "--format", "graph-json"))
++				want := *source
++				want.Metadata, want.Dependencies, want.Comments = nil, nil, nil
++				want.IsBlocked = false
++				actual := *got.Properties
++				actual.IsBlocked = false
++				want.Labels = append([]string(nil), want.Labels...)
++				actual.Labels = append([]string(nil), actual.Labels...)
++				sort.Strings(want.Labels)
++				sort.Strings(actual.Labels)
++				wantJSON, err := json.Marshal(want)
++				if err != nil {
++					t.Fatal(err)
++				}
++				gotJSON, err := json.Marshal(actual)
++				if err != nil {
++					t.Fatal(err)
++				}
++				if !bytes.Equal(wantJSON, gotJSON) {
++					t.Fatalf("Issue %s lost exported fields:\nwant %s\ngot %s", source.ID, wantJSON, gotJSON)
++				}
++				metadata := source.Metadata
++				if len(metadata) == 0 {
++					metadata = []byte(`{}`)
++				}
++				canonical, err := graph.CanonicalizeJSON(metadata)
++				if err != nil || got.Revision == "" || !bytes.Equal(canonical, got.Metadata) {
++					t.Fatalf("Issue %s metadata changed: %s (%v)", source.ID, got.Metadata, err)
++				}
++				wantOwned := 0
++				if source.ID == "web-app-b2c" {
++					wantOwned = 1
++				}
++				if len(got.Owned) != wantOwned {
++					t.Fatalf("Issue %s dependency count: got %d want %d", source.ID, len(got.Owned), wantOwned)
++				}
++				if wantOwned == 1 {
++					var link graphstore.LinkRecord
++					if err := json.Unmarshal(got.Owned[0], &link); err != nil {
++						t.Fatal(err)
++					}
++					if link.Type != graphstore.DependencyTypeURL(scope) || link.Source != id || link.Target != result.IDs["web-app-a1b"] || link.Properties["dep_type"] != "blocks" {
++						t.Fatalf("Issue %s dependency lost type or endpoints: %+v", source.ID, link)
++					}
++				}
++				retained := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", id, "--version", got.Revision))
++				if !reflect.DeepEqual(got.Properties, retained.Properties) || !bytes.Equal(got.Metadata, retained.Metadata) || !reflect.DeepEqual(got.Owned, retained.Owned) {
++					t.Fatalf("Issue %s initial retained state differs", source.ID)
++				}
++				var comments []*types.Comment
++				if err := json.Unmarshal([]byte(call("", "", "comments", id)), &comments); err != nil {
++					t.Fatal(err)
++				}
++				// Graph comments expose local graph ownership; the imported
++				// native feed still preserves the source Issue's original ID.
++				wantComments := make([]*types.Comment, len(source.Comments))
++				for i, original := range source.Comments {
++					comment := *original
++					comment.IssueID = strings.TrimPrefix(id, scope)
++					wantComments[i] = &comment
++				}
++				if !reflect.DeepEqual(wantComments, comments) && !(len(wantComments) == 0 && len(comments) == 0) {
++					t.Fatalf("Issue %s comment feed changed: %+v", source.ID, comments)
++				}
++			}
++			for key, value := range memories {
++				id := result.MemoryIDs[key]
++				if !strings.HasPrefix(id, scope) || allocated[id] {
++					t.Fatalf("memory %q has absent or colliding graph identity %q", key, id)
++				}
++				if err := graph.ValidateBeadPath(strings.TrimPrefix(id, scope)); err != nil {
++					t.Fatalf("memory %q has invalid graph path: %v", key, err)
++				}
++				allocated[id] = true
++				got := graphMixedResult[graphstore.Record](t, call("", "", "show", id))
++				retained := graphMixedResult[graphstore.Record](t, call("", "", "show", id, "--version", got.Revision))
++				if got.ID != id || got.Revision == "" || got.Properties.Title != key || got.Properties.Body != value || !reflect.DeepEqual(got.Properties, retained.Properties) {
++					t.Fatalf("memory %q lost original key/value or retained state: %+v %+v", key, got, retained)
++				}
++			}
++			for _, key := range []string{"fixture-key", "has%20space", "%E8%A8%98%E6%86%B6", "path/part", "empty-value"} {
++				if result.MemoryIDs[key] != scope+"beads/"+key {
++					t.Fatalf("safe free memory path changed for %q", key)
++				}
++			}
++			inventory := call("", "", "list", "--all", "--format", "records-json")
++			versions := call("", "", "versions", "web-app-b2c")
++			for _, dry := range []bool{false, true} {
++				args := []string{"import", "-"}
++				if dry {
++					args = append(args, "--dry-run")
++				}
++				call(string(fixture), "invalid_properties", args...)
++				if call("", "", "list", "--all", "--format", "records-json") != inventory || call("", "", "versions", "web-app-b2c") != versions {
++					t.Fatal("repeat completeness import changed data or history")
++				}
++			}
++			fresh := graphMixedResult[graphstore.IssueRecord](t, call("", "", "create", "After hyphenated prefix import"))
++			if !strings.HasPrefix(fresh.Properties.ID, "web-app-") {
++				t.Fatalf("hyphenated source prefix was not adopted: %s", fresh.Properties.ID)
++			}
++			call("", "", "dep", "add", fresh.ID, "web-app-a1b")
++			call("", "", "dep", "add", "web-app-b2c", fresh.ID)
++		})
++	}
++}
