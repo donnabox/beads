@@ -16,6 +16,7 @@ import (
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 func init() {
@@ -66,12 +67,13 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 // cursor authority. Do not construct an ephemeral pager and publish dead cursors,
 // or set native next:null after discarding undisplayed rows.
 type canonicalCollectionPlan struct {
-	selection   *graphread.Selection
-	linkRequest graphstore.LinkCollectionRequest
-	options     clioutput.Options
-	paging      clioutput.Paging
-	links       bool
-	jsonl       bool
+	selection       *graphread.Selection
+	linkRequest     graphstore.LinkCollectionRequest
+	options         clioutput.Options
+	paging          clioutput.Paging
+	links           bool
+	jsonl           bool
+	definitionScope string
 }
 
 type canonicalCollectionFailure struct {
@@ -373,7 +375,12 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 		}
 		return canonicalFailure(cmd, failure, "capability_unavailable", fmt.Sprintf("complete selection of %d items exceeds the %s; local collection reads cannot satisfy this bound with a safe continuation, so no items were emitted; use --unpaged --limit 0 or a narrower selection", len(records), bound), 5)
 	}
-	descriptor, err := canonicalCollectionDescriptor(plan.links, records)
+	var descriptor clioutput.CollectionDescriptor
+	if plan.definitionScope != "" {
+		descriptor, err = intrinsicDefinitionCollectionDescriptor(plan.definitionScope, records)
+	} else {
+		descriptor, err = canonicalCollectionDescriptor(plan.links, records)
+	}
 	if err != nil {
 		return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
 	}
@@ -383,7 +390,9 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 	}
 	// Qualify the same current public DTOs used by BDP Read before projecting.
 	for _, record := range records {
-		if plan.links {
+		if plan.definitionScope != "" {
+			_, err = resourceget.NewDefinitionDocument(plan.definitionScope, resourceget.DefinitionBead, record)
+		} else if plan.links {
 			var link bdpwire.LinkRecord
 			err = bdpwire.Unmarshal(record, &link)
 		} else {

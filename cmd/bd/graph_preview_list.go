@@ -27,6 +27,9 @@ const graphIssueListOutputLimit = 16 << 20
 var errGraphListSelector = errors.New("invalid Issue list selector")
 
 func runGraphPreviewList(cmd *cobra.Command) error {
+	if graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion {
+		return runIntrinsicDefinitionList(cmd)
+	}
 	if canonicalOutputSelected(cmd) {
 		return runCanonicalCollection(cmd, false)
 	}
