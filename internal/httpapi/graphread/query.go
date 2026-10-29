@@ -8,6 +8,22 @@ import (
 	"github.com/steveyegge/beads/internal/resourcequery"
 )
 
+// QueryResourceByteLimit bounds the mapped evaluator input before validation
+// and evaluation retain their own copies, independently of persisted byte limits.
+const QueryResourceByteLimit = 16 * 1024 * 1024
+
+func queryResourceWithinBudget(kind graph.ResourceKind, value any, remaining *int) (resourcequery.Resource, error) {
+	raw, err := queryResourceJSON(value)
+	if err != nil {
+		return resourcequery.Resource{}, err
+	}
+	if len(raw) > *remaining {
+		return resourcequery.Resource{}, resourcequery.ErrLimit
+	}
+	*remaining -= len(raw)
+	return resourcequery.NewResource(kind, raw)
+}
+
 // ExecuteResourceQuery is the shared local service entry point for CLI and BDP
 // Query. Admission precedes acquisition. The store captures one checked read
 // context; projection and evaluation use only captured values afterwards.
@@ -37,12 +53,9 @@ func (r *Reader) ExecuteResourceQuery(ctx context.Context, raw []byte) (resource
 	}
 	data := resourcequery.Dataset{TypeFamilies: snapshot.TypeFamilies, TypeKinds: snapshot.TypeKinds,
 		Resources: make([]resourcequery.Resource, 0, len(inventory.Beads)+len(inventory.Links))}
+	remaining := QueryResourceByteLimit
 	appendResource := func(kind graph.ResourceKind, value any) error {
-		rawRecord, err := queryResourceJSON(value)
-		if err != nil {
-			return err
-		}
-		record, err := resourcequery.NewResource(kind, rawRecord)
+		record, err := queryResourceWithinBudget(kind, value, &remaining)
 		if err != nil {
 			return err
 		}
