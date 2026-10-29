@@ -1,0 +1,79 @@
+//go:build cgo
+
+package main
+
+import (
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"testing"
+)
+
+// These are actual command front doors, deliberately run without any workspace.
+// A provider-dependent command cannot accidentally pass this workflow.
+func TestCanonicalMemberEmissionWorkflow(t *testing.T) {
+	isolateBeadsDirForTest(t)
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	const scope = "https://example.invalid/canonical-batch/"
+	emit := func(args ...string) json.RawMessage {
+		t.Helper()
+		out := graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--scope", scope, "--dry-run-mode", "batch")...)
+		var member map[string]json.RawMessage
+		if err := json.Unmarshal([]byte(out), &member); err != nil {
+			t.Fatal(err)
+		}
+		if len(member["operation"]) == 0 {
+			t.Fatalf("missing member discriminator: %s", out)
+		}
+		return json.RawMessage(out)
+	}
+	a := emit("create", "--type", "memory", "--id", "note-a", "--batch-bind", "first", "--properties", `{"title":"A","body":"Alpha"}`)
+	b := emit("create", "--type", "memory", "--id", "note-b", "--batch-bind", "second", "--properties", `{"title":"B","body":"Beta"}`)
+	rel := emit("link", "create", "batch-ref::first", "batch-ref::second", "--type", "references", "--id", "relation")
+	edit := emit("update", "note-a", "--set-property", "a/b~c=42", "--unset-property", "missing", "--patch-metadata", "[]", "--if-revision", "=baseline")
+	var edited struct {
+		Properties []struct{ Path string } `json:"propertiesChange"`
+		Expected   string                  `json:"expectedRevision"`
+		Metadata   json.RawMessage         `json:"metadataChange"`
+	}
+	if err := json.Unmarshal(edit, &edited); err != nil {
+		t.Fatal(err)
+	}
+	if edited.Properties[0].Path != "/a~1b~0c" || edited.Expected != "baseline" || string(edited.Metadata) != "[]" {
+		t.Fatalf("lost authored intent: %s", edit)
+	}
+	emit("delete", "note-a", "--force")
+	emit("link", "update", "relation", "--replace-properties", `{}`, "--set-metadata", "reviewed=true")
+	emit("link", "delete", "relation", "--force")
+	file := filepath.Join(work, "members.jsonl")
+	if err := os.WriteFile(file, append(append(a, b...), rel...), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	out := graphPolicyCLI(t, bd, work, home, nil, "", "batch", "--file", file, "--scope", scope, "--dry-run-mode", "batch")
+	var request struct {
+		Version    string            `json:"capabilityVersion"`
+		Operations []json.RawMessage `json:"operations"`
+	}
+	if err := json.Unmarshal([]byte(out), &request); err != nil {
+		t.Fatal(err)
+	}
+	if request.Version != "2" || len(request.Operations) != 3 {
+		t.Fatalf("bad compiled request: %s", out)
+	}
+	for _, args := range [][]string{
+		{"delete", "note-a", "--scope", scope, "--dry-run-mode", "batch"},
+		{"create", "--type", "memory", "--force", "--scope", scope, "--dry-run-mode", "batch"},
+		{"link", "create", "--from", "note-a", "--from", "note-b", "--to", "note-b", "--type", "references", "--scope", scope, "--dry-run-mode", "batch"},
+		{"batch", "--file", file, "--dry-run", "--scope", scope, "--dry-run-mode", "batch"},
+		{"batch", "--file", file, "--scope", scope, "--dry-run-mode", "batch", "--omit", "envelope"},
+		{"batch", "--file", file, "--scope", scope, "--scope", "https://other.invalid/", "--dry-run-mode", "batch"},
+		{"create", "--type", "memory", "--properties", `{"title":"First"}`, "--properties", `{"title":"Discarded first"}`, "--scope", scope, "--dry-run-mode", "batch"},
+		{"update", "note-a", "--patch-metadata", "[]", "--patch-metadata", `[{"op":"add","path":"/x","value":1}]`, "--scope", scope, "--dry-run-mode", "batch"},
+	} {
+		graphPolicyCLI(t, bd, work, home, nil, "stderr:invalid_selector:", args...)
+	}
+	if _, err := os.Stat(filepath.Join(work, ".beads")); !os.IsNotExist(err) {
+		t.Fatal("offline authoring initialized a workspace")
+	}
+}

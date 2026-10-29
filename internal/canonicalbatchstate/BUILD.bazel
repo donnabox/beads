@@ -28,6 +28,11 @@ go_test(
     ],
 )
 
+exports_files(
+    ["state.go"],
+    visibility = ["//test/docsync:__pkg__"],
+)
+
 # --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
 
 filegroup(

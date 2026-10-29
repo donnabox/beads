@@ -1300,6 +1300,9 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Admit persisted graph format before legacy store discovery or maintenance.
+		if handled, err := admitCanonicalAuthoring(cmd); handled || err != nil {
+			return err
+		}
 		if handled, err := admitCanonicalGraphPreview(cmd); handled || err != nil {
 			return err
 		}

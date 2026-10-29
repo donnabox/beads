@@ -122,6 +122,9 @@ func init() {
 // workspace must never resolve to an unrelated store. Existing legacy discovery
 // is unchanged when this gate does not find a graph workspace.
 func graphCandidateDir(cmd *cobra.Command) (string, error) {
+	if cmd == batchCmd && canonicalBatchRetry != nil {
+		return canonicalBatchRetry.Workspace, nil
+	}
 	if cmd.Root().PersistentFlags().Changed("db") || os.Getenv("BEADS_DB") != "" || os.Getenv("BD_DB") != "" {
 		return selectedNoDBBeadsDir(cmd), nil
 	}
@@ -317,6 +320,12 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
+		if cmd == batchCmd && canonicalBatchSelected(cmd) {
+			return true, graphFailure("capability_unavailable", "canonical batch requires a graph workspace; legacy batch cannot accept canonical inputs", 5)
+		}
+		if canonicalCRUDFlagsChanged(cmd) {
+			return true, graphFailure("capability_unavailable", "canonical object edit flags require a workspace initialized with graph_mode link", 5)
+		}
 		if cmd.Flags().Lookup("exact-type") != nil && cmd.Flags().Changed("exact-type") {
 			return true, graphFailure("capability_unavailable", "--exact-type requires a workspace initialized with graph_mode link", 5)
 		}
@@ -381,7 +390,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err := requireDoltBackend(cfg, dir); err != nil {
 		return true, graphFailure("graph_not_initialized", "graph_mode link: "+err.Error(), 5)
 	}
-	if cfg == nil || !graphPreviewGenerationSupported(marker) || !cfg.GraphReady || cfg.GraphSchemaVersion != graphstore.SchemaVersion || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
+	if cfg == nil || !graphPreviewGenerationSupported(marker) || !cfg.GraphReady || !canonicalGraphSchemaSupported(cfg.GraphSchemaVersion) || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
 		return true, graphFailure("graph_not_initialized", "graph_mode link metadata is missing, incomplete, or unsupported; no database was opened", 5)
 	}
 	real, err := filepath.EvalSymlinks(dir)
@@ -398,7 +407,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	case supersedeCmd:
 		return true, graphFailure("capability_unavailable", "graph supersede requires one atomic supersedes edge and native close reason; this graph CLI does not provide that journey yet", 5)
 	}
-	if !graphPreviewMemoryNamespaceCommand(cmd) && !graphPreviewLinkNamespaceCommand(cmd) && graphPreviewMemoryTopCommand(cmd) == nil && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != labelListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != tagCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
+	if !graphPreviewMemoryNamespaceCommand(cmd) && !graphPreviewLinkNamespaceCommand(cmd) && graphPreviewMemoryTopCommand(cmd) == nil && cmd != importCmd && cmd != batchCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != labelListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != tagCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
 		// runGraphPreviewVersions. Admission suppresses legacy store opening,
@@ -426,6 +435,12 @@ func graphPreviewFlags(cmd *cobra.Command, allowed ...string) error {
 	}
 	var bad string
 	cmd.Flags().Visit(func(f *pflag.Flag) {
+		// pflag.Visit retains consumed canonical aliases in its actual map.
+		// Only these three lowered property spellings are exempt; every other
+		// command-specific refusal remains based on explicit flag presence.
+		if canonicalCRUDConsumedPropertyAlias(cmd, f) {
+			return
+		}
 		if !set[f.Name] && bad == "" {
 			bad = f.Name
 		}
@@ -457,7 +472,7 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "scope-url", "prefix", "server", "external", "server-host", "server-port", "server-user", "server-socket", "server-tls", "database", "skip-hooks", "skip-agents", "non-interactive"); err != nil {
+	if err := graphPreviewFlags(cmd, "scope-url", "prefix", "server", "external", "server-host", "server-port", "server-user", "server-socket", "server-tls", "database", "skip-hooks", "skip-agents", "non-interactive", "atomic-batch"); err != nil {
 		return err
 	}
 	scope, _ := cmd.Flags().GetString("scope-url")
@@ -491,6 +506,9 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	}
 	id := hex.EncodeToString(token)
 	cfg := &configfile.Config{Backend: "dolt", GraphMode: "link", GraphScopeURL: scope, GraphAuthorityID: id, GraphSchemaVersion: graphstore.SchemaVersion, DoltMode: "embedded", DoltDatabase: "beads_graph_" + id, ProjectID: id}
+	if enabled, _ := cmd.Flags().GetBool("atomic-batch"); enabled {
+		cfg.GraphSchemaVersion = graphstore.AtomicBatchSchemaVersion
+	}
 	if server {
 		cfg.DoltMode = "server"
 		cfg.DoltServerHost, _ = cmd.Flags().GetString("server-host")
@@ -557,7 +575,7 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 		prefix = filepath.Base(filepath.Dir(real))
 	}
 	options.IssuePrefix = normalizeIssuePrefix(prefix)
-	if err := graphstore.Init(ctx, options); err != nil {
+	if err := initSelectedGraphStore(ctx, options); err != nil {
 		return graphStorageError(err)
 	}
 	if err := guidance.install(); err != nil {
@@ -617,7 +635,7 @@ func withGraphStoreErrorMapper(budget time.Duration, fn func(context.Context, *g
 func withGraphStoreStageErrorMappers(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error, mapOpenError, mapOperationError func(error) error) error {
 	ctx, cancel := context.WithTimeout(getRootContext(), budget)
 	defer cancel()
-	s, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+	s, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
 		return mapOpenError(err)
 	}
