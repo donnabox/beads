@@ -193,7 +193,7 @@ func TestCustomDefinitionReadCorrespondence(t *testing.T) {
 			if mode == "unknown-edition" || mode == "extra-edition" {
 				requested = "unavailable"
 			}
-			budget, _ := newIntrinsicMetadataBudget(limit)
+			budget := &intrinsicMetadataBudget{remaining: limit}
 			actual, err := readCustomDefinitionInTx(context.Background(), tx, o, path, requested, plan, budget)
 			if mode == "success" {
 				if err != nil || !bytes.Equal(actual.NativeJSON(), raw) {
@@ -263,7 +263,7 @@ func TestCustomDefinitionInventoryRefusesOmissions(t *testing.T) {
 					}
 				}
 			}
-			budget, _ := newIntrinsicMetadataBudget(limit)
+			budget := &intrinsicMetadataBudget{remaining: limit}
 			docs, err := (&Store{options: o}).listCustomDefinitionsInTx(context.Background(), tx, plan, budget)
 			if mode == "empty" {
 				if err != nil || len(docs) != 0 {
@@ -286,10 +286,7 @@ func TestCustomDefinitionInventoryRefusesOmissions(t *testing.T) {
 func TestCustomDefinitionSharedCollectionAllowance(t *testing.T) {
 	catalog, plan := intrinsicCollectionFixture(t)
 	tx, mock := intrinsicProfileTransaction(t)
-	budget, err := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-	if err != nil {
-		t.Fatal(err)
-	}
+	budget := newIntrinsicMetadataBudget()
 	intrinsic, err := selectIntrinsicDefinitionBeads(plan.Scope().URI, catalog, plan, "type", "", budget)
 	if err != nil || len(intrinsic) != 4 {
 		t.Fatalf("intrinsic selection: %d %v", len(intrinsic), err)

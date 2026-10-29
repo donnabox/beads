@@ -39,6 +39,17 @@ const intrinsicReceiver = "6dd6a81f5c733a0b13f92f787e5e16c91affbb1d"
 // Eligible operation dispatch follows this fact and precedes body acquisition.
 type checkedStoreProfile struct{ schemaVersion int }
 
+// requireBinding consumes only an already checked same-transaction fact. The
+// selected/persisted binding must retain that exact supported layout before
+// dependent catalog/config/member writes or operation dispatch/body acquisition.
+// Bootstrap DDL and binding insertion precede the initializer's fact acquisition.
+func (p checkedStoreProfile) requireBinding(b Binding) error {
+	if p.schemaVersion != TypesFreshSchemaVersion || p.schemaVersion != b.SchemaVersion {
+		return fmt.Errorf("%w: checked intrinsic profile differs from binding", ErrInvalidStore)
+	}
+	return nil
+}
+
 type intrinsicNativeProjection struct {
 	Status            string                         `json:"status"`
 	Receiver          string                         `json:"receiver"`
@@ -153,18 +164,15 @@ func decodeIntrinsicExpected(raw []byte) (intrinsicExpectedManifest, error) {
 // cells before application bounds, and the parser cannot be preempted by ctx.
 type intrinsicMetadataBudget struct{ remaining, metadata int }
 
-func newIntrinsicMetadataBudget(remaining int) (*intrinsicMetadataBudget, error) {
-	if remaining < 0 || remaining > PreviewCurrentReadByteLimit {
-		return nil, fmt.Errorf("%w: intrinsic shared budget", ErrLimitExceeded)
-	}
-	return &intrinsicMetadataBudget{remaining: remaining}, nil
+func newIntrinsicMetadataBudget() *intrinsicMetadataBudget {
+	return &intrinsicMetadataBudget{remaining: PreviewCurrentReadByteLimit}
 }
 
 // chargeBody shares the operation allowance without spending its distinct
 // metadata sublimit. All debits precede database byte acquisition/copy creation;
 // this is logical custody, not a claim about engine/driver peak allocation.
 func (b *intrinsicMetadataBudget) chargeBody(n int) error {
-	if b == nil || n < 0 || n > b.remaining {
+	if b == nil || b.remaining < 0 || b.remaining > PreviewCurrentReadByteLimit || n < 0 || n > b.remaining {
 		return fmt.Errorf("%w: intrinsic operation custody", ErrLimitExceeded)
 	}
 	b.remaining -= n
@@ -180,16 +188,12 @@ func (b *intrinsicMetadataBudget) charge(n int) error {
 	return nil
 }
 
-func intrinsicCellString(raw any, nullable bool) (string, error) {
+func intrinsicCellString(raw any) (string, error) {
 	switch v := raw.(type) {
 	case string:
 		return v, nil
 	case []byte:
 		return string(v), nil
-	case nil:
-		if nullable {
-			return "", nil
-		}
 	}
 	return "", fmt.Errorf("%w: metadata text encoding", ErrInvalidStore)
 }
@@ -220,7 +224,7 @@ func intrinsicUnsigned(raw any) (uint64, error) {
 		}
 		return 0, fmt.Errorf("%w: negative metadata scalar", ErrInvalidStore)
 	}
-	text, err := intrinsicCellString(raw, false)
+	text, err := intrinsicCellString(raw)
 	if err != nil || text == "" || len(text) > 20 {
 		return 0, fmt.Errorf("%w: metadata integer", ErrInvalidStore)
 	}
@@ -344,11 +348,11 @@ func readIntrinsicBinding(ctx context.Context, tx *sql.Tx, o Options, b *intrins
 	if err != nil {
 		return err
 	}
-	workspace, e1 := intrinsicCellString(row[0], false)
-	scope, e2 := intrinsicCellString(row[1], false)
-	authority, e3 := intrinsicCellString(row[2], false)
+	workspace, e1 := intrinsicCellString(row[0])
+	scope, e2 := intrinsicCellString(row[1])
+	authority, e3 := intrinsicCellString(row[2])
 	version, e4 := intrinsicUnsigned(row[3])
-	token, e5 := intrinsicCellString(row[4], false)
+	token, e5 := intrinsicCellString(row[4])
 	if err = errors.Join(e1, e2, e3, e4, e5); err != nil {
 		return err
 	}
@@ -392,7 +396,7 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 	if err != nil {
 		return err
 	}
-	mode, e1 := intrinsicCellString(row[0], false)
+	mode, e1 := intrinsicCellString(row[0])
 	system, e2 := intrinsicUnsigned(row[1])
 	if err = errors.Join(e1, e2); err != nil {
 		return err
@@ -416,8 +420,8 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 	}
 	seen := make(map[string]bool)
 	for _, r := range rows {
-		name, e1 := intrinsicCellString(r[0], false)
-		kind, e2 := intrinsicCellString(r[1], false)
+		name, e1 := intrinsicCellString(r[0])
+		kind, e2 := intrinsicCellString(r[1])
 		if err = errors.Join(e1, e2); err != nil {
 			return err
 		}
@@ -439,8 +443,8 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 		if err != nil {
 			return err
 		}
-		name, e1 := intrinsicCellString(row[0], false)
-		ddl, e2 := intrinsicCellString(row[1], false)
+		name, e1 := intrinsicCellString(row[0])
+		ddl, e2 := intrinsicCellString(row[1])
 		if err = errors.Join(e1, e2); err != nil {
 			return err
 		}
@@ -450,10 +454,11 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 		if err = b.charge(intrinsicSyntaxCopyMultiplier * len(ddl)); err != nil {
 			return err
 		}
-		if _, err = parseIntrinsicSyntax(ctx, ddl, name, object.Kind); err != nil {
-			return fmt.Errorf("%s %s: %w", object.Kind, name, err)
+		syntax, parseErr := parseIntrinsicSyntax(ctx, ddl, name, object.Kind)
+		if parseErr != nil {
+			return fmt.Errorf("%s %s: %w", object.Kind, name, parseErr)
 		}
-		if intrinsicNativeSelected(m) && m.Native.Tables[name] != ddl {
+		if intrinsicNativeSelected(m) && m.Native.Tables[syntax.name] != ddl {
 			return fmt.Errorf("%w: fixed native table correspondence %s", ErrInvalidStore, name)
 		}
 	}
@@ -470,7 +475,7 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 		return fmt.Errorf("%w: fixed native schema envelope", ErrInvalidStore)
 	}
 	for i, name := range []string{"type", "name", "fragment", "extra", "sql_mode"} {
-		field, err := intrinsicCellString(rows[i][0], false)
+		field, err := intrinsicCellString(rows[i][0])
 		if err != nil || field != name {
 			return fmt.Errorf("%w: schema envelope order", ErrInvalidStore)
 		}
@@ -488,10 +493,10 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 	}
 	viewSeen := make(map[string]bool)
 	for _, r := range rows {
-		kind, e1 := intrinsicCellString(r[0], false)
-		name, e2 := intrinsicCellString(r[1], false)
-		fragment, e3 := intrinsicCellString(r[2], false)
-		sqlMode, e4 := intrinsicCellString(r[4], false)
+		kind, e1 := intrinsicCellString(r[0])
+		name, e2 := intrinsicCellString(r[1])
+		fragment, e3 := intrinsicCellString(r[2])
+		sqlMode, e4 := intrinsicCellString(r[4])
 		if err = errors.Join(e1, e2, e3, e4); err != nil {
 			return err
 		}
@@ -502,7 +507,7 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 		viewSeen[name] = true
 		if intrinsicNativeSelected(m) {
 			expected, exists := m.Native.Views[name]
-			extra, e := intrinsicCellString(r[3], false)
+			extra, e := intrinsicCellString(r[3])
 			if !exists || e != nil || fragment != expected.Fragment || extra != expected.Extra || sqlMode != expected.SQLMode {
 				return fmt.Errorf("%w: fixed native view correspondence %s", ErrInvalidStore, name)
 			}
@@ -514,21 +519,22 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 		if err = b.charge(intrinsicSyntaxCopyMultiplier * len(fragment)); err != nil {
 			return err
 		}
-		if _, err = parseIntrinsicSyntax(ctx, fragment, name, "VIEW"); err != nil {
-			return err
+		syntax, parseErr := parseIntrinsicSyntax(ctx, fragment, name, "VIEW")
+		if parseErr != nil {
+			return parseErr
 		}
-		resolved, err := readIntrinsicMetadataRows(ctx, tx, b, "SHOW FULL COLUMNS FROM "+db+"."+intrinsicQuote(name), 9, 128)
+		resolved, err := readIntrinsicMetadataRows(ctx, tx, b, "SHOW FULL COLUMNS FROM "+db+"."+intrinsicQuote(syntax.name), 9, 128)
 		if err != nil {
 			return err
 		}
-		if intrinsicNativeSelected(m) && !reflect.DeepEqual(resolved, m.Native.Views[name].Columns) {
+		if intrinsicNativeSelected(m) && !reflect.DeepEqual(resolved, m.Native.Views[syntax.name].Columns) {
 			return fmt.Errorf("%w: fixed native resolved view %s", ErrInvalidStore, name)
 		}
 		if len(resolved) != len(object.ResolvedNames) {
 			return fmt.Errorf("%w: resolved view census", ErrInvalidStore)
 		}
 		for i, want := range object.ResolvedNames {
-			got, err := intrinsicCellString(resolved[i][0], false)
+			got, err := intrinsicCellString(resolved[i][0])
 			if err != nil || got != want {
 				return fmt.Errorf("%w: resolved view field", ErrInvalidStore)
 			}
@@ -545,8 +551,10 @@ func acquireIntrinsicMetadata(ctx context.Context, tx *sql.Tx, o Options, m intr
 	return checkIntrinsicIgnorePolicy(m.Objects, rows)
 }
 
-// No backend calls this function in this slice. A future hook must preserve
-// original11 diagnosis and closed operation dispatch. This function NEVER calls
+// Fresh initialization consumes this fact after bootstrap DDL/binding insertion
+// and before dependent catalog/config/member writes. Types14 admission consumes
+// it before operation dispatch/body acquisition. Original11 diagnosis is unchanged.
+// This function never calls
 // checkBinding (which loads old installed descriptors), checkIntrinsicState,
 // currentSnapshot or a source/member/record/owned-Link hydration function.
 func checkTypesFreshProfileInTx(ctx context.Context, tx *sql.Tx, o Options, b *intrinsicMetadataBudget) (checkedStoreProfile, error) {
@@ -568,8 +576,8 @@ func checkTypesFreshProfileInTx(ctx context.Context, tx *sql.Tx, o Options, b *i
 	if intrinsicNativeSelected(m) {
 		return checkedStoreProfile{schemaVersion: TypesFreshSchemaVersion}, nil
 	}
-	// Explicit hard stop. The source data is not a qualified native manifest;
-	// successful metadata acquisition or a bool/digest cannot promote it.
+	// Unknown native projections remain a hard stop. Syntax acquisition or a
+	// caller boolean/digest cannot promote an unselected source manifest.
 	return checkedStoreProfile{}, fmt.Errorf("%w: Types14 canonical schema/view correspondence remains unqualified", ErrInvalidStore)
 }
 

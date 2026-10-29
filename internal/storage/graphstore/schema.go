@@ -212,11 +212,12 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 		return err
 	}
 	if o.Binding.SchemaVersion == TypesFreshSchemaVersion {
-		intrinsicBudget, err = newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-		if err != nil {
-			return err
+		intrinsicBudget = newIntrinsicMetadataBudget()
+		profile, checkErr := checkTypesFreshProfileInTx(ctx, tx, o, intrinsicBudget)
+		if checkErr != nil {
+			return checkErr
 		}
-		if _, err = checkTypesFreshProfileInTx(ctx, tx, o, intrinsicBudget); err != nil {
+		if err = profile.requireBinding(b); err != nil {
 			return err
 		}
 	}
@@ -270,13 +271,13 @@ func checkBindingWithIntrinsicBudget(ctx context.Context, tx *sql.Tx, o Options,
 	}
 	if o.Binding.SchemaVersion == TypesFreshSchemaVersion {
 		if budget == nil {
-			budget, err = newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-			if err != nil {
-				return err
-			}
+			budget = newIntrinsicMetadataBudget()
 		}
-		_, err = checkTypesFreshProfileInTx(ctx, tx, o, budget)
-		return err
+		profile, checkErr := checkTypesFreshProfileInTx(ctx, tx, o, budget)
+		if checkErr != nil {
+			return checkErr
+		}
+		return profile.requireBinding(b)
 	}
 	installed, err := installedPreviewTypes(ctx, tx, b.ScopeURL)
 	if err != nil {

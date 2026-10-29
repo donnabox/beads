@@ -58,7 +58,7 @@ func TestIntrinsicDefinitionCollectionFamilies(t *testing.T) {
 		{"disjoint", "bead-type", "link-type", 0},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			budget, _ := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
+			budget := newIntrinsicMetadataBudget()
 			docs, err := selectIntrinsicDefinitionBeads(scope, catalog, plan, tc.family, tc.exact, budget)
 			if err != nil || len(docs) != tc.want {
 				t.Fatalf("want%d got%d: %v", tc.want, len(docs), err)
@@ -97,14 +97,14 @@ func TestIntrinsicDefinitionCollectionFamilies(t *testing.T) {
 	}
 	for _, selector := range []string{"Type", "refines", "unknown", "https://other.test/type", scope + "opaque-type", "opaque-type", "x/type"} {
 		t.Run("refuse-"+selector, func(t *testing.T) {
-			budget, _ := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
+			budget := newIntrinsicMetadataBudget()
 			docs, err := selectIntrinsicDefinitionBeads(scope, catalog, plan, selector, "", budget)
 			if !errors.Is(err, ErrCapabilityUnavailable) || docs != nil {
 				t.Fatalf("unsupported selector escaped: %v %v", docs, err)
 			}
 		})
 	}
-	budget, _ := newIntrinsicMetadataBudget(0)
+	budget := &intrinsicMetadataBudget{remaining: 0}
 	if docs, err := selectIntrinsicDefinitionBeads(scope, catalog, plan, "type", "", budget); !errors.Is(err, ErrLimitExceeded) || docs != nil {
 		t.Fatalf("exhausted shared budget: %v %v", docs, err)
 	}
@@ -142,7 +142,7 @@ func TestIntrinsicDefinitionCurrentContextAcquisition(t *testing.T) {
 					expected.WillReturnRows(rows).RowsWillBeClosed()
 				}
 			}
-			budget, _ := newIntrinsicMetadataBudget(limit)
+			budget := &intrinsicMetadataBudget{remaining: limit}
 			id, err := currentIntrinsicContextInTx(context.Background(), tx, budget)
 			if mode == "one" {
 				if err != nil || id != strings.Repeat("c", 32) {

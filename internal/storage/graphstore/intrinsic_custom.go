@@ -40,12 +40,9 @@ func (s *Store) CreateBeadType(ctx context.Context, id, actor string) (resourceg
 	if !utf8.ValidString(actor) {
 		return resourceget.DefinitionDocument{}, fmt.Errorf("%w: invalid actor encoding", graph.ErrValidation)
 	}
-	budget, err := newIntrinsicMetadataBudget(PreviewCurrentReadByteLimit)
-	if err != nil {
-		return resourceget.DefinitionDocument{}, err
-	}
+	budget := newIntrinsicMetadataBudget()
 	var result resourceget.DefinitionDocument
-	err = s.withTxPolicy(ctx, txPolicy{purpose: txDefinitionCreate, allowance: budget, mayWrite: true, commit: true}, func(tx *sql.Tx) error {
+	err := s.withTxPolicy(ctx, txPolicy{purpose: txDefinitionCreate, allowance: budget, mayWrite: true, commit: true}, func(tx *sql.Tx) error {
 		contextID, e := currentIntrinsicContextInTx(ctx, tx, budget)
 		if e != nil {
 			return e

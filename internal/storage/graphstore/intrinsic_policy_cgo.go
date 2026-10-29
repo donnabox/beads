@@ -21,7 +21,7 @@ func checkIntrinsicIgnorePolicy(objects []intrinsicExpectedObject, rows [][]any)
 		if len(row) != 2 {
 			return fmt.Errorf("%w: ignore row shape", ErrInvalidStore)
 		}
-		pattern, err := intrinsicCellString(row[0], false)
+		pattern, err := intrinsicCellString(row[0])
 		if err != nil {
 			return err
 		}
