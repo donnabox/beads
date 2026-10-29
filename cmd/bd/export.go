@@ -34,6 +34,14 @@ capture Dolt branches, commit history, working-set state, or non-issue tables.
 For supported full backup/restore flows, use 'bd backup init', 'bd backup sync',
 and 'bd backup restore'.
 
+Graph workspaces: use --current-state for an interim JSON dump of current
+public Beads, Links and installed Type descriptors from one checked read.
+It includes current owned Links but omits History, deleted records, all durable
+Issue comments (including bd comment/comments add), configuration and
+other non-graph data. Pinned References are retained; their historical payloads
+are omitted and their availability is not certified. This dump is not a backup
+or an import package. No field selection is supported.
+
 By default, exports only regular issues (excluding infrastructure beads
 like agents, roles, and messages). Use --all to include everything.
 
@@ -65,6 +73,7 @@ var (
 )
 
 func init() {
+	exportCmd.Flags().Bool("current-state", false, "Graph only: dump current public Beads, Links and Types as JSON; not restorable")
 	exportCmd.Flags().StringVarP(&exportOutput, "output", "o", "", "Output file path (default: stdout)")
 	exportCmd.Flags().BoolVar(&exportAll, "all", false, "Include all records (infra, templates, gates, memories)")
 	exportCmd.Flags().BoolVar(&exportIncludeInfra, "include-infra", false, "Include infrastructure beads (agents, roles, messages)")
@@ -78,6 +87,9 @@ func init() {
 }
 
 func runExport(cmd *cobra.Command, args []string) error {
+	if graphPreviewActive {
+		return runGraphPreviewExport(cmd, args)
+	}
 	evt := metrics.NewCommandEvent("export")
 	defer func() {
 		if c := metrics.Global(); c != nil {

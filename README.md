@@ -78,6 +78,26 @@ This project uses bd (beads) for issue tracking.
 | `bd prime` | Print agent workflow context and persistent memories. |
 | `bd remember "insight"` | Store project memory that `bd prime` injects later. |
 
+### Current-state graph dump (preview)
+
+In an initialized graph workspace, `bd export --current-state -o dump.json`
+writes one checked current capture of public Beads (including Issues and
+Memories), Links and installed Type descriptors. Beads retain their public
+properties, metadata and owned Links. The JSON file names its scope and
+omissions and sets `restorable` to `false`. Output must be outside `.beads`;
+files use mode `0600` and are replaced atomically after capture and cleanup.
+Omit `-o` to write JSON to stdout; a failed pipe can retain partial output.
+
+This interim dump omits History, deleted Resources, historical endpoint bodies,
+all durable Issue comments (including `bd comment`/`bd comments add`), configuration, events,
+wisps, legacy KV memories and private storage/authority state. Installed Types
+are public descriptors, not bootstrap definitions. It is not an import package
+or a recovery backup. The current reader refuses more than 1,000 live Resources
+or its 16 MiB acquisition budget; encoded output also has a 16 MiB limit.
+Omission counts are not measured; this dump does not certify integrity of omitted
+planes or availability of historical endpoint payloads. JSONL, projections and legacy export filters are not supported by this option.
+Ordinary workspace `bd export` keeps its existing issue JSONL behavior.
+
 ## 🔗 Hierarchy & Workflow
 
 Beads supports hierarchical IDs for epics:
