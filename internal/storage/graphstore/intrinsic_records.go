@@ -140,7 +140,7 @@ func (s *Store) GetDefinitionForProjection(ctx context.Context, path, localID, r
 		return resourceget.DefinitionDocument{}, ErrNotFound
 	}
 	if localID != "" {
-		if path != "beads/"+localID {
+		if path != intrinsicBeadBackingPath(localID) {
 			return resourceget.DefinitionDocument{}, fmt.Errorf("%w: inconsistent local selector", graph.ErrValidation)
 		}
 		return s.GetDefinition(ctx, localID, revision)
@@ -169,3 +169,7 @@ func (s *Store) GetDefinitionForProjection(ctx context.Context, path, localID, r
 // It grants no support/ownership: every definition read checks the actual
 // same-transaction persisted binding/schema/policy before acquiring bodies.
 func (s *Store) LayoutVersion() int { return s.options.Binding.SchemaVersion }
+
+// intrinsicBeadBackingPath constructs only a private Bead backing locator.
+// Callers validate its key or independently match the whole public selector.
+func intrinsicBeadBackingPath(key string) string { return "beads/" + key }

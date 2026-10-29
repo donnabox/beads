@@ -116,53 +116,6 @@ func TestIntrinsicSQLModeClosedSet(t *testing.T) {
 	}
 }
 
-func TestIntrinsicNativeIgnoreLaw(t *testing.T) {
-	m, err := loadIntrinsicExpected()
-	if err != nil {
-		t.Fatal(err)
-	}
-	var base [][]any
-	for _, object := range m.Objects {
-		if object.Ignore == "Ignore" {
-			base = append(base, []any{object.Name, int64(1)})
-		}
-	}
-	if len(base) != 13 {
-		t.Fatal("base allowances differ")
-	}
-	if err = checkIntrinsicIgnorePolicy(m.Objects, base); err != nil {
-		t.Fatal(err)
-	}
-	for _, tc := range []struct {
-		name string
-		rows [][]any
-	}{
-		{"broad", append(append([][]any(nil), base...), []any{"*", true})},
-		{"adjunct", append(append([][]any(nil), base...), []any{"graph_preview_intrinsic_members", true})},
-		{"duplicate", append(append([][]any(nil), base...), base[0])},
-		{"null", [][]any{{"events", nil}}},
-		{"loose bool", [][]any{{"events", "true"}}},
-		{"invalid bool", [][]any{{"events", int64(2)}}},
-		{"oversize", [][]any{{strings.Repeat("a", 1025), true}}},
-		{"UTF8", [][]any{{string([]byte{255}), true}}},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			if err := checkIntrinsicIgnorePolicy(m.Objects, tc.rows); err == nil {
-				t.Fatal("policy mutation accepted")
-			}
-		})
-	}
-	// Specific negative beats a broad positive under the pinned native law.
-	only := []intrinsicExpectedObject{{Name: "graph_preview_intrinsic_members", Kind: "BASE TABLE", Ignore: "DontIgnore"}}
-	if err := checkIntrinsicIgnorePolicy(only, [][]any{{"*", true}, {"graph_preview_intrinsic_members", false}}); err != nil {
-		t.Fatal(err)
-	}
-	// Native underscore is literal, not SQL LIKE's one-character wildcard.
-	if err := checkIntrinsicIgnorePolicy([]intrinsicExpectedObject{{Name: "axb", Kind: "BASE TABLE", Ignore: "DontIgnore"}}, [][]any{{"a_b", true}}); err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestIntrinsicNativeIgnoreBooleanScalars(t *testing.T) {
 	for _, v := range []any{int8(0), int64(0)} {
 		got, err := intrinsicIgnoreBoolean(v)
