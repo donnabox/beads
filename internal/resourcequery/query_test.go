@@ -214,6 +214,45 @@ func TestCoreNumbersMissingNullAndLiteralPaths(t *testing.T) {
 	}
 }
 
+func TestUnicodeScalarStringComparisons(t *testing.T) {
+	// Query value comparisons use Unicode scalar order: U+E000 precedes
+	// U+1F600. UTF-16 code-unit order would reverse these two values.
+	// Identities stay canonical ASCII; the Unicode values are properties.
+	const supplementary, bmp = "\U0001F600", "\uE000"
+	d := Dataset{Resources: []Resource{
+		bead(t, "A", ast{"text": supplementary}),
+		bead(t, "B", ast{"text": bmp}),
+		bead(t, "M", ast{}),
+		bead(t, "N", ast{"text": 0}),
+		bead(t, "T", ast{"text": false}),
+	}}
+	for _, tc := range []struct {
+		name, operator string
+		right          any
+		want           []string
+	}{
+		{"less than BMP", "lt", bmp, nil},
+		{"less than supplementary", "lt", supplementary, []string{"B"}},
+		{"at most BMP", "le", bmp, []string{"B"}},
+		{"at most supplementary", "le", supplementary, []string{"A", "B"}},
+		{"greater than BMP", "gt", bmp, []string{"A"}},
+		{"greater than supplementary", "gt", supplementary, nil},
+		{"at least BMP", "ge", bmp, []string{"A", "B"}},
+		{"at least supplementary", "ge", supplementary, []string{"A"}},
+		{"equal BMP", "eq", bmp, []string{"B"}},
+		{"equal supplementary", "eq", supplementary, []string{"A"}},
+		{"not equal BMP", "ne", bmp, []string{"A", "M", "N", "T"}},
+		{"not equal supplementary", "ne", supplementary, []string{"B", "M", "N", "T"}},
+		{"numeric ordering stays numeric", "ge", 0, []string{"N"}},
+		{"number is not a string", "eq", "0", nil},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			predicate := compare(tc.operator, field(binding("b"), "properties", "text"), literal(tc.right))
+			assertIDs(t, execute(t, request(t, "query", "resources", filter(scan("beads"), "b", predicate)), d), tc.want...)
+		})
+	}
+}
+
 func TestNestedCorrelationShadowingAnyAll(t *testing.T) {
 	d := Dataset{Resources: []Resource{bead(t, "A", ast{}), bead(t, "B", ast{}), link(t, "ab", "Requires", base+"A", base+"B")}}
 	b := binding("b")
