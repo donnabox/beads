@@ -84,6 +84,103 @@ func atomicBatchMemory(t *testing.T, s *Store, result BatchResult, id string) Re
 	return memory
 }
 
+func TestCanonicalBatchNativeStagedListAndSetPublication(t *testing.T) {
+	ctx, _, s := atomicBatchFixture(t)
+	input := `{"operation":"createBead","id":"a","type":"memory","properties":{"title":"A","body":"","status":"ready"}}
+{"operation":"createBead","id":"b","type":"memory","properties":{"title":"B","body":"","status":"ready"}}
+{"operation":"createBead","id":"c","type":"memory","properties":{"title":"C","body":"","status":"waiting"}}
+{"operation":"select","name":"checks","query":{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"filter","input":{"op":"scan","collection":"beads"},"bind":"b","predicate":{"op":"compare","operator":"eq","left":{"op":"field","of":{"op":"binding","name":"b"},"path":["properties","status"]},"right":{"op":"literal","value":"ready"}}}}}
+{"operation":"updateBead","bead":"c","propertiesChange":[{"op":"replace","path":"/status","value":"ready"}]}
+{"operation":"updateBead","bead":{"binding":"checks"},"propertiesChange":[{"op":"replace","path":"/status","value":"done"}]}
+{"operation":"select","name":"reread","query":{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"filter","input":{"op":"refs","collection":"beads","references":{"binding":"checks"}},"bind":"b","predicate":{"op":"compare","operator":"eq","left":{"op":"field","of":{"op":"binding","name":"b"},"path":["properties","status"]},"right":{"op":"literal","value":"done"}}}}}
+{"operation":"deleteBead","bead":{"binding":"reread"}}
+{"operation":"select","name":"remaining","query":{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"filter","input":{"op":"scan","collection":"beads"},"bind":"b","predicate":{"op":"compare","operator":"eq","left":{"op":"field","of":{"op":"binding","name":"b"},"path":["properties","status"]},"right":{"op":"literal","value":"ready"}}}}}`
+	result, err := s.ApplyCanonicalBatch(ctx, atomicBatchCompile(t, s, input), "staged-list", "test-author")
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantSet := []string{s.ScopeURL() + "a", s.ScopeURL() + "b"}
+	if len(result.Results) != 9 || !reflect.DeepEqual(result.Results[3].IDs, wantSet) || !reflect.DeepEqual(result.Results[5].IDs, wantSet) || !reflect.DeepEqual(result.Results[6].IDs, wantSet) || !reflect.DeepEqual(result.Results[7].IDs, wantSet) || !reflect.DeepEqual(result.Results[8].IDs, []string{s.ScopeURL() + "c"}) {
+		t.Fatalf("staged visibility or fixed membership lost: %+v", result)
+	}
+	for _, id := range []string{"a", "b"} {
+		outcome := atomicBatchOutcome(t, result, s.ScopeURL()+id)
+		if outcome.Outcome != "allocated" || len(outcome.Resource) != 0 || outcome.Deleted != nil {
+			t.Fatalf("new staged selection fabricated a public version: %+v", outcome)
+		}
+	}
+	c := atomicBatchMemory(t, s, result, "c")
+	if c.Revision == "" || !bytes.Contains([]byte(c.Properties.extra), []byte(`"ready"`)) {
+		t.Fatalf("late match joined earlier set: %+v", c)
+	}
+	// Recovery returns the original frozen sets even after the graph changes.
+	_, err = s.ApplyCanonicalBatch(ctx, atomicBatchCompile(t, s, `{"operation":"updateBead","bead":"c","propertiesChange":[{"op":"replace","path":"/status","value":"later"}]}`), "later", "test-author")
+	if err != nil {
+		t.Fatal(err)
+	}
+	renamed := strings.ReplaceAll(input, "checks", "renamed")
+	replayed, err := s.ApplyCanonicalBatch(ctx, atomicBatchCompile(t, s, renamed), "staged-list", "test-author")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := result
+	want.Results = append([]BatchOperationResult{}, result.Results...)
+	want.Results[3].OperationName = "renamed"
+	if !reflect.DeepEqual(want, replayed) {
+		t.Fatalf("recovery reselected or changed publication: want=%+v got=%+v", want, replayed)
+	}
+	missing := atomicBatchCompile(t, s, fmt.Sprintf(`{"operation":"createBead","id":"rollback","type":"memory","properties":{"title":"Must roll back","body":""}}
+{"operation":"select","name":"required","query":{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"refs","collection":"beads","references":[%q]}}}`, s.ScopeURL()+"missing"))
+	if _, err := s.ApplyCanonicalBatch(ctx, missing, "missing-required", "test-author"); !errors.Is(err, canonicalbatchstate.ErrNotFound) {
+		t.Fatalf("unavailable required identity became empty success: %v", err)
+	}
+	if _, err := s.ResolveExactAllocatedResourcePath(ctx, "rollback"); !errors.Is(err, ErrNotFound) {
+		t.Fatalf("failed selection retained a prefix allocation: %v", err)
+	}
+}
+
+func TestCanonicalBatchNativeEmptySelectionRecovery(t *testing.T) {
+	ctx, o, s := atomicBatchFixture(t)
+	input := `{"operation":"select","name":"empty","query":{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"scan","collection":"beads"}}}
+{"operation":"updateBead","bead":{"binding":"empty"},"propertiesChange":[]}
+{"operation":"deleteBead","bead":{"binding":"empty"}}`
+	batch := atomicBatchCompile(t, s, input)
+	result, err := s.ApplyCanonicalBatch(ctx, batch, "empty", "test-author")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Changed || result.Transaction != "" || result.Resources == nil || len(result.Resources) != 0 || len(result.Results) != 3 {
+		t.Fatalf("empty set decision invented an effect: %+v", result)
+	}
+	for _, row := range result.Results {
+		if row.IDs == nil || len(row.IDs) != 0 {
+			t.Fatalf("empty set omitted its member result: %+v", row)
+		}
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	reopened, err := OpenAtomicBatch(ctx, o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = reopened.Close() }()
+	// The retained zero-resource decision remains valid after a later creation.
+	_, err = reopened.ApplyCanonicalBatch(ctx, atomicBatchCompile(t, reopened, `{"operation":"createBead","id":"new","type":"memory","properties":{"title":"Later","body":""}}`), "later", "test-author")
+	if err != nil {
+		t.Fatal(err)
+	}
+	replayed, err := reopened.ApplyCanonicalBatch(ctx, batch, "empty", "test-author")
+	if err != nil || !reflect.DeepEqual(result, replayed) {
+		t.Fatalf("empty decision was not durably retained: %+v %v", replayed, err)
+	}
+	familyInput := fmt.Sprintf(`{"operation":"select","name":"family","query":{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"filter","input":{"op":"scan","collection":"beads"},"bind":"b","predicate":{"op":"typeIs","of":{"op":"binding","name":"b"},"type":%q,"match":"family"}}}}`, MemoryTypeURL(s.ScopeURL()))
+	family, err := reopened.ApplyCanonicalBatch(ctx, atomicBatchCompile(t, reopened, familyInput), "family", "test-author")
+	if err != nil || family.Changed || len(family.Results) != 1 || !reflect.DeepEqual(family.Results[0].IDs, []string{s.ScopeURL() + "new"}) {
+		t.Fatalf("same-transaction Type family authority lost: %+v %v", family, err)
+	}
+}
+
 func TestCanonicalBatchNativeCreateGraphAndRecovery(t *testing.T) {
 	ctx, o, s := atomicBatchFixture(t)
 	seed := atomicBatchSeed(t, ctx, s)

@@ -321,8 +321,10 @@ func (run *atomicBatchRun) deleteBead(o canonicalbatchstate.Outcome) error {
 
 func (run *atomicBatchRun) result() (BatchResult, error) {
 	result := BatchResult{CapabilityVersion: canonicalbatch.Version, Results: []BatchOperationResult{}, Resources: []BatchResourceOutcome{}}
-	for _, mapping := range run.plan.Mappings {
-		result.Results = append(result.Results, BatchOperationResult{mapping.OperationIndex, mapping.Operation, mapping.ID, mapping.OperationName})
+	var err error
+	result.Results, err = atomicBatchOperationResults(run.members, run.plan)
+	if err != nil {
+		return result, err
 	}
 	outcomes := map[string]canonicalbatchstate.Outcome{}
 	for _, o := range run.plan.Outcomes {

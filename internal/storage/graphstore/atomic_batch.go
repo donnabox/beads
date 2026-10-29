@@ -20,10 +20,66 @@ const AtomicBatchResultLimit = 4 << 20
 var ErrBatchKeyConflict = errors.New("batch key belongs to a different frozen request")
 
 type BatchOperationResult struct {
-	OperationIndex int    `json:"operationIndex"`
-	Operation      string `json:"operation"`
-	ID             string `json:"id"`
-	OperationName  string `json:"operationName,omitempty"`
+	OperationIndex int      `json:"operationIndex"`
+	Operation      string   `json:"operation"`
+	IDs            []string `json:"ids"`
+	OperationName  string   `json:"operationName,omitempty"`
+	// ID preserves the first local candidate's retained scalar result. New
+	// decisions always use IDs; recovery must not rewrite an old frozen result.
+	ID string `json:"id,omitempty"`
+}
+
+func (r BatchOperationResult) MarshalJSON() ([]byte, error) {
+	if r.ID != "" {
+		if r.IDs != nil {
+			return nil, fmt.Errorf("%w: mixed batch result mappings", ErrInvalidStore)
+		}
+		return json.Marshal(struct {
+			OperationIndex int    `json:"operationIndex"`
+			Operation      string `json:"operation"`
+			ID             string `json:"id"`
+			OperationName  string `json:"operationName,omitempty"`
+		}{r.OperationIndex, r.Operation, r.ID, r.OperationName})
+	}
+	type current BatchOperationResult
+	return json.Marshal(current(r))
+}
+
+func (r *BatchOperationResult) UnmarshalJSON(raw []byte) error {
+	canonical, err := graph.CanonicalizeJSON(raw)
+	if err != nil {
+		return err
+	}
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(canonical, &fields); err != nil {
+		return err
+	}
+	for key := range fields {
+		switch key {
+		case "operationIndex", "operation", "operationName", "id", "ids":
+		default:
+			return fmt.Errorf("%w: unknown batch result member", ErrInvalidStore)
+		}
+	}
+	_, scalar := fields["id"]
+	_, array := fields["ids"]
+	if scalar == array || fields["operationIndex"] == nil || fields["operation"] == nil || bytes.Equal(fields["operationIndex"], []byte("null")) {
+		return fmt.Errorf("%w: incomplete or mixed batch result mappings", ErrInvalidStore)
+	}
+	if name, present := fields["operationName"]; present && (len(name) == 0 || name[0] != '"') {
+		return fmt.Errorf("%w: invalid batch operation name", ErrInvalidStore)
+	}
+	type current BatchOperationResult
+	var decoded current
+	if err := json.Unmarshal(canonical, &decoded); err != nil {
+		return err
+	}
+	_, named := fields["operationName"]
+	if decoded.OperationIndex < 0 || decoded.Operation == "" || named && decoded.OperationName == "" || scalar && decoded.ID == "" || array && decoded.IDs == nil {
+		return fmt.Errorf("%w: invalid batch result mappings", ErrInvalidStore)
+	}
+	*r = BatchOperationResult(decoded)
+	return nil
 }
 
 type BatchDeletedIdentity struct {
@@ -65,6 +121,7 @@ type atomicBatchRun struct {
 	ctx             context.Context
 	actor           string
 	plan            canonicalbatchstate.Plan
+	members         []canonicalbatch.Member
 	initial         map[string]any
 	paths           map[string]string
 	backings        map[string]string
@@ -118,8 +175,8 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 			return err
 		}
 		for i, m := range members {
-			if m.Type.Revision != "" || m.RevisionProvenance != nil || m.Operation == "select" || m.Set {
-				return &canonicalbatchstate.MemberError{OperationIndex: i, Err: fmt.Errorf("%w: exact Type pins, supplied provenance and selections have no layout-15 publisher", ErrCapabilityUnavailable)}
+			if m.Type.Revision != "" || m.RevisionProvenance != nil {
+				return &canonicalbatchstate.MemberError{OperationIndex: i, Err: fmt.Errorf("%w: exact Type pins and supplied provenance have no layout-15 publisher", ErrCapabilityUnavailable)}
 			}
 			if m.Type.URI != "" {
 				if err := s.requireAssessmentAuthoring(m.Type.URI); err != nil {
@@ -139,7 +196,11 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 		if err != nil {
 			return err
 		}
-		run := atomicBatchRun{store: s, tx: tx, ctx: ctx, actor: actor, initial: map[string]any{}, paths: map[string]string{}, backings: map[string]string{}, final: map[string]any{}, ownerIDs: map[string][]string{}, ownerCandidates: map[string]bool{}}
+		typeKinds, typeFamilies, err := atomicBatchTypeAuthority(ctx, snapshot.Types)
+		if err != nil {
+			return err
+		}
+		run := atomicBatchRun{members: members, store: s, tx: tx, ctx: ctx, actor: actor, initial: map[string]any{}, paths: map[string]string{}, backings: map[string]string{}, final: map[string]any{}, ownerIDs: map[string][]string{}, ownerCandidates: map[string]bool{}}
 		current := map[string]canonicalbatchstate.Resource{}
 		for _, record := range snapshot.Records {
 			r, err := atomicBatchStateRecord(record)
@@ -198,7 +259,7 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 			_, err = s.endpointPinInTx(ctx, tx, path, EndpointPin{Revision: ref.Revision}, &pinBytes)
 			return err
 		}
-		plan, err := canonicalbatchstate.Stage(canonicalbatchstate.Input{Scope: s.ScopeURL(), Current: current, ReservedIDs: reserved, Members: members, Allocate: allocate, CheckPin: checkPin})
+		plan, err := canonicalbatchstate.Stage(canonicalbatchstate.Input{Context: ctx, TypeKinds: typeKinds, TypeFamilies: typeFamilies, Scope: s.ScopeURL(), Current: current, ReservedIDs: reserved, Members: members, Allocate: allocate, CheckPin: checkPin})
 		if err != nil {
 			return err
 		}
@@ -250,12 +311,34 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 // slots, so an equivalent retry may rename (or add/remove) unused names without
 // changing any published identity, body, revision or transaction.
 func projectAtomicBatchLabels(result BatchResult, members []canonicalbatch.Member) (BatchResult, error) {
+	if len(result.Results) != len(members) {
+		return BatchResult{}, fmt.Errorf("%w: retained member count", ErrInvalidStore)
+	}
+	setMembers := atomicBatchSetMembers(members)
 	for i := range result.Results {
 		row := &result.Results[i]
-		if row.OperationIndex < 0 || row.OperationIndex >= len(members) || members[row.OperationIndex].Operation != row.Operation {
+		if row.OperationIndex != i || members[i].Operation != row.Operation {
 			return BatchResult{}, fmt.Errorf("%w: invalid retained operation mapping", ErrInvalidStore)
 		}
-		row.OperationName = members[row.OperationIndex].Name
+		if row.ID != "" {
+			if row.IDs != nil || members[i].Operation == "select" || setMembers[i] || graph.ValidateReferenceURI(row.ID) != nil {
+				return BatchResult{}, fmt.Errorf("%w: invalid retained scalar mapping", ErrInvalidStore)
+			}
+			row.OperationName = members[i].Name
+			continue
+		}
+		if row.IDs == nil {
+			return BatchResult{}, fmt.Errorf("%w: missing retained identity array", ErrInvalidStore)
+		}
+		for j, id := range row.IDs {
+			if graph.ValidateReferenceURI(id) != nil || j > 0 && graph.CompareCodeUnits(row.IDs[j-1], id) >= 0 {
+				return BatchResult{}, fmt.Errorf("%w: retained identity array", ErrInvalidStore)
+			}
+		}
+		if members[i].Operation != "select" && !setMembers[i] && len(row.IDs) != 1 {
+			return BatchResult{}, fmt.Errorf("%w: retained singleton mapping", ErrInvalidStore)
+		}
+		row.OperationName = members[i].Name
 	}
 	raw, err := canonicalJSON(result)
 	if err != nil {
@@ -291,7 +374,7 @@ func readAtomicBatchDecision(ctx context.Context, tx *sql.Tx, key string, contex
 		return BatchResult{}, false, fmt.Errorf("%w: malformed retained batch outcome", ErrInvalidStore)
 	}
 	var decoded BatchResult
-	if err := json.Unmarshal(result, &decoded); err != nil || decoded.CapabilityVersion != canonicalbatch.Version || len(decoded.Results) == 0 || len(decoded.Resources) == 0 {
+	if err := json.Unmarshal(result, &decoded); err != nil || decoded.CapabilityVersion != canonicalbatch.Version || len(decoded.Results) == 0 || decoded.Resources == nil {
 		return BatchResult{}, false, fmt.Errorf("%w: incomplete retained batch outcome", ErrInvalidStore)
 	}
 	return decoded, true, nil

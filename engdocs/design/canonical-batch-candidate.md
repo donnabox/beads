@@ -35,11 +35,22 @@ emission do not initialize or open a database. BDP/HTTP request preview refuses
 until an actual discovered Write route exists.
 
 The native candidate admits six CRUD operations for generic Memory-family Beads
-and informational Links, including prior creation bindings. A batch sees staged
-values, checks literal guards against the original committed baseline and assigns
+and informational Links, including prior creation bindings. Local List selections
+can capture a fixed set for later update/delete members. A subsequent selection
+can inspect the current staged bodies of a prior capture; the original set does
+not change when a later edit makes another identity match. Selection and writes
+use the same checked transaction. A batch sees staged values, checks literal
+guards against the original committed baseline and assigns
 public revisions only to final published states. It preserves no-op revisions,
 captures final owned Links once, and permanently consumes a create-then-delete
 identity without inventing a Resource or revision for it.
+
+The supported List fragment uses the shared Query predicate kernel over a closed
+revisionless view: identity, Type, properties and optional metadata. Sources may
+scan one local collection or use explicit current References/prior captures;
+family tests use the complete checked Type inventory. Missing required identities,
+unsupported branches and exhausted limits fail the whole batch. This candidate
+does not acquire endpoints or execute Graph/full Query selectors.
 
 ## Recovery and result boundaries
 
@@ -49,6 +60,13 @@ database, schema, actor, request and key under the workspace's private
 identity and complete result together. `bd batch --retry-file FILE` uses those
 frozen values rather than rereading JSONL, arguments or today's configuration.
 Equivalent capture renaming changes only returned presentation labels.
+
+New decisions return one `results` entry per member with an `ids` array, including
+empty selections and empty set writes. Resource outcomes describe final states,
+not intermediate postimages. Read-only/empty decisions retain complete recovery
+results without a public transaction token. Recovery of the earlier local scalar
+candidate preserves its retained `id` spelling; it does not reinterpret that
+stored outcome as a new array result.
 
 Unknown commit outcomes remain unknown and print the recovery filename. A
 rendering failure after confirmed commit reports that the decision committed and
@@ -62,12 +80,12 @@ Scope snapshots and intermediate Resource revisions are not introduced.
 
 ## Remaining coverage
 
-Native execution refuses selection/set members, native Issue/Dependency mutation,
-exact Type pins and supplied revision provenance before effects. Pure staged List
-and set expansion are implemented separately, but need the checked revisionless
-selector integration before the native gate can open. Full Query/Graph evaluation
-is not inferred from that subset. Types materialization and current-read Query
-have separate owners.
+Native execution refuses native Issue/Dependency mutation, exact Type pins and
+supplied revision provenance before effects. The supported staged List fragment
+does not imply full Query/Graph evaluation. Ordinary CRUD content copy through
+`--from-revision` uses the existing checked writers and composes with the new
+canonical object edits; batch members do not yet accept a copy source. Types
+materialization and current-read Query have separate owners.
 
 The complete target still needs singleton durable delivery, failed-outcome
 retention, Events correlation, native domain publishers, complete output/transport
@@ -92,3 +110,11 @@ CRUD object edits/guards/deletion. These are cgo tests: run their named cases in
 the embedded-capable lane described in [Testing](../TESTING.md), and verify actual
 RUN/PASS/zero skips rather than treating a compile or absent test as qualification.
 The default and other required Bazel gates still apply.
+
+Additional native cases cover staged List/set publication, fixed membership,
+fresh reads of captured bodies, missing-identity rollback, authoritative family
+matching and close/reopen of empty retained decisions. The actual CLI workflows
+also cover selection/set/empty replay and historical copy combined with keyed
+properties and strict metadata patches. Pure tests check shared predicate parity
+and strict scalar/array retained-carrier admission. Runtime proof of those paths
+does not establish a passing full repository gate or a public Write profile.
