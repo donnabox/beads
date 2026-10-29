@@ -195,7 +195,7 @@ func TestCanonicalNativeActorAdmissionBeforeNoop(t *testing.T) {
 	issue := IssueRecord{ID: scope + "source", Type: scope + "task", Properties: &publicops.Issue{ID: "source", Title: "Old", IssueType: types.TypeTask}}
 	target := IssueRecord{ID: scope + "target", Type: scope + "task", Properties: &publicops.Issue{ID: "target", Title: "Target", IssueType: types.TypeTask}}
 	link := LinkRecord{ID: scope + "link", Type: scope + "related", Source: issue.ID, Target: target.ID, Properties: map[string]any{"dep_type": "related"}, Metadata: json.RawMessage(`{}`)}
-	run := atomicBatchRun{initial: map[string]any{issue.ID: issue, target.ID: target, link.ID: link}, backings: map[string]string{link.ID: "dependency"}}
+	run := atomicBatchRun{store: &Store{options: Options{Binding: Binding{ScopeURL: scope}}}, initial: map[string]any{issue.ID: issue, target.ID: target, link.ID: link}, backings: map[string]string{link.ID: "dependency"}}
 	for _, tc := range []struct {
 		record any
 		member canonicalbatch.Member

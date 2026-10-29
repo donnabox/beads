@@ -161,4 +161,46 @@ func TestCanonicalBatchCLIWorkflow(t *testing.T) {
 	if !copied.Changed || copied.Issue.Type != native.Type || copied.Issue.Properties.Title != "Historical edited" || string(copied.Issue.Metadata) != `{"copied":true}` {
 		t.Fatalf("native copy lost canonical edit intent: %+v", copied)
 	}
+	// Native Link CRUD uses the same emitted members and real batch route.
+	// The concrete Type and native dep_type agree; no generic Link is substituted.
+	nativeTarget := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "Native target", "--type", "task", "--id", "native-target", "--force", "--json"))
+	write(emit("link", "create", native.ID, nativeTarget.ID, "--type", "blocks", "--id", "native-batch-link", "--properties", `{"dep_type":"blocks"}`))
+	createdNativeLink := run("", "batch", "--file", file, "--idempotency-key", "native-link-create", "--actor", "test-author")
+	var batchLink graphstore.LinkRecord
+	for _, row := range createdNativeLink.Resources {
+		if row.ID == scope+"native-batch-link" {
+			if err := json.Unmarshal(row.Resource, &batchLink); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	shownLink := graphMixedResult[graphstore.LinkRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "link", "show", scope+"native-batch-link", "--json"))
+	if batchLink.Revision == "" || batchLink.Version != batchLink.Revision || shownLink.Version != "" {
+		t.Fatalf("unexpected native Link revision aliases: %+v %+v", batchLink, shownLink)
+	}
+	batchLink.Version = ""
+	if !reflect.DeepEqual(shownLink, batchLink) || batchLink.Properties["dep_type"] != "blocks" {
+		t.Fatalf("native batch Link differs from ordinary show: %+v %+v", batchLink, shownLink)
+	}
+	write(emit("link", "update", scope+"native-batch-link", "--set-metadata", "review=final"))
+	updatedNativeLink := run("", "batch", "--file", file, "--idempotency-key", "native-link-metadata", "--actor", "test-author")
+	if !updatedNativeLink.Changed {
+		t.Fatal("native Link metadata command did not apply")
+	}
+	shownLink = graphMixedResult[graphstore.LinkRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "link", "show", scope+"native-batch-link", "--json"))
+	if string(shownLink.Metadata) != `{"review":"final"}` || shownLink.Revision == batchLink.Revision {
+		t.Fatalf("native metadata not final-published: %+v", shownLink)
+	}
+	write(emit("link", "delete", scope+"native-batch-link", "--force"))
+	deletedNativeLink := run("", "batch", "--file", file, "--idempotency-key", "native-link-delete", "--actor", "test-author")
+	var sawDeleted bool
+	for _, row := range deletedNativeLink.Resources {
+		if row.ID == scope+"native-batch-link" {
+			sawDeleted = row.Outcome == "deleted" && row.Deleted != nil
+		}
+	}
+	if !deletedNativeLink.Changed || !sawDeleted {
+		t.Fatalf("native Link delete result incomplete: %+v", deletedNativeLink)
+	}
+
 }

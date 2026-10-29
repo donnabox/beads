@@ -18,7 +18,7 @@ import (
 // Final diffs alone cannot authorize a canceled protected field or template edit.
 func (run *atomicBatchRun) admitNativeMutation(_ int, member canonicalbatch.Member, before *canonicalbatchstate.Resource) error {
 	if before == nil {
-		return nil // Native creations are statically refused by the receiver.
+		return nil // Resolved creation intent is checked after native properties/endpoints resolve.
 	}
 	refuse := func() error {
 		return fmt.Errorf("%w: authored native mutation requires an unavailable final publisher", ErrCapabilityUnavailable)
@@ -63,39 +63,16 @@ func (run *atomicBatchRun) admitNativeMutation(_ int, member canonicalbatch.Memb
 			}
 			return nil
 		}
-		if run.actor == "" {
-			return fmt.Errorf("%w: Dependency update requires a nonempty UTF-8 actor", storage.ErrValidation)
-		}
-		if member.Operation != "updateLink" || member.Properties != nil || member.Source.Present() || member.Target.Present() || member.Type.URI != "" && member.Type.URI != original.Type {
-			return refuse()
-		}
-		var operations []json.RawMessage
-		if member.PropertiesChange != nil && json.Unmarshal(member.PropertiesChange, &operations) != nil || len(operations) != 0 {
-			return refuse()
-		}
-		kind, err := nativeDependencyProperties(before.Properties)
-		if err != nil {
-			return err
-		}
-		if !kind.IsWellKnown() || kind.AffectsReadyWork() {
-			return refuse()
-		}
-		for _, id := range []string{original.Source, original.Target} {
-			endpoint, ok := run.initial[id].(IssueRecord)
-			if !ok || endpoint.Properties == nil || endpoint.Properties.Ephemeral || endpoint.Properties.NoHistory {
-				return refuse()
-			}
-			if id == original.Source {
-				if err := issueops.AuthorizeTemplateUpdate(endpoint.Properties, publicops.UpdateRequest{}); err != nil {
-					return err
-				}
-			}
-		}
+		return run.admitAuthoredNativeDependency(member, before)
+
 	case Record:
 		if member.Type.URI != "" && !run.store.isMemoryType(member.Type.URI) {
 			return refuse()
 		}
 	case nil:
+		if before.Kind == graph.KindLink && isConcreteNativeDependency(run.store.ScopeURL(), before.Type.URI, run.nativeDescriptors...) {
+			return run.admitAuthoredNativeDependency(member, before)
+		}
 		// Earlier creations have no committed baseline. They still cannot
 		// temporarily acquire an unsupported native backing and cancel it.
 		if member.Type.URI != "" && (before.Kind == graph.KindBead && !run.store.isMemoryType(member.Type.URI) || before.Kind == graph.KindLink && !IsInformationalTypeURL(run.store.ScopeURL(), member.Type.URI)) {

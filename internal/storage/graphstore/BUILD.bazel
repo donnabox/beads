@@ -5,6 +5,9 @@ go_library(
     srcs = [
         "assessment_availability.go",
         "atomic_batch.go",
+        "atomic_batch_dependency_admission.go",
+        "atomic_batch_dependency_plan.go",
+        "atomic_batch_dependency_publish.go",
         "atomic_batch_native.go",
         "atomic_batch_native_admission.go",
         "atomic_batch_profile.go",
@@ -134,6 +137,8 @@ go_test(
     timeout = "eternal",
     srcs = [
         "assessment_availability_test.go",
+        "atomic_batch_dependency_plan_test.go",
+        "atomic_batch_dependency_test.go",
         "atomic_batch_native_admission_test.go",
         "atomic_batch_native_test.go",
         "atomic_batch_selection_test.go",
