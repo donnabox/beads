@@ -7,6 +7,7 @@ package canonicalbatchstate
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,6 +17,7 @@ import (
 	"github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/canonicalbatch"
 	"github.com/steveyegge/beads/internal/graphpatch"
+	"github.com/steveyegge/beads/internal/resourcequery"
 )
 
 var (
@@ -50,15 +52,22 @@ type Resource struct {
 // CheckPin checks an exact retained committed Bead version, never a staged one.
 // Without it only a matching baseline Bead revision can satisfy an endpoint pin.
 type Input struct {
-	Scope       string
-	Current     map[string]Resource
-	ReservedIDs []string
-	Members     []canonicalbatch.Member
-	Allocate    func(index int, kind graphops.ResourceKind) (string, error)
-	ResolveType func(canonicalbatch.Reference) (canonicalbatch.Reference, error)
-	CheckPin    func(canonicalbatch.Reference) error
-	// These are complete checked Type authority, not ancestry inferred from
-	// names or the currently populated records. Nil maps mean unavailable.
+	// Context governs staging and the shared pure selector. Nil defaults to
+	// Background; native owners pass the transaction's own context.
+	Context context.Context
+	// Zero selects the shared selector's defaults. Nonzero limits use its
+	// ordinary complete positive limits contract, with no truncated success.
+	SelectionLimits resourcequery.Limits
+	Scope           string
+	Current         map[string]Resource
+	ReservedIDs     []string
+	Members         []canonicalbatch.Member
+	Allocate        func(index int, kind graphops.ResourceKind) (string, error)
+	ResolveType     func(canonicalbatch.Reference) (canonicalbatch.Reference, error)
+	CheckPin        func(canonicalbatch.Reference) error
+	// Supplied maps assert complete checked Type authority, not ancestry
+	// inferred from names or population. Both nil support Core-only local and
+	// exact nominal tests; family tests require both authoritative maps.
 	TypeKinds    map[string]graphops.ResourceKind
 	TypeFamilies map[string][]string
 }
@@ -156,6 +165,12 @@ type staging struct {
 // applies members in order. On any error it returns a zero Plan and never changes
 // the caller's baseline, member byte slices, or retained envelopes.
 func Stage(input Input) (Plan, error) {
+	if input.Context == nil {
+		input.Context = context.Background()
+	}
+	if err := input.Context.Err(); err != nil {
+		return Plan{}, err
+	}
 	if err := graphops.ValidateScopeURL(input.Scope); err != nil {
 		return Plan{}, fmt.Errorf("%w: scope: %v", ErrInvalid, err)
 	}
@@ -165,7 +180,10 @@ func Stage(input Input) (Plan, error) {
 	members := make([]admitted, len(input.Members))
 	names := map[string]graphops.ResourceKind{}
 	for i, m := range input.Members {
-		a, err := admit(m)
+		if err := input.Context.Err(); err != nil {
+			return Plan{}, err
+		}
+		a, err := admit(m, input.SelectionLimits)
 		if err != nil {
 			return Plan{}, &MemberError{i, err}
 		}
@@ -202,6 +220,9 @@ func Stage(input Input) (Plan, error) {
 	}
 	s := staging{input: input, initial: map[string]Resource{}, live: map[string]Resource{}, reserved: map[string]bool{}, created: map[string]graphops.ResourceKind{}, bindings: map[string]capturedBinding{}, targets: map[string]graphops.ResourceKind{}, provenance: map[string][]ProvenanceInput{}, metadataReplaced: map[string]bool{}}
 	for id, r := range input.Current {
+		if err := input.Context.Err(); err != nil {
+			return Plan{}, err
+		}
 		if id != r.ID || !r.Kind.Valid() || r.Revision == "" || r.Type.URI == "" {
 			return Plan{}, fmt.Errorf("%w: incomplete baseline resource %q", ErrInvalid, id)
 		}
@@ -222,24 +243,37 @@ func Stage(input Input) (Plan, error) {
 		s.reserved[id] = true
 	}
 	for _, id := range input.ReservedIDs {
+		if err := input.Context.Err(); err != nil {
+			return Plan{}, err
+		}
 		if err := s.localID(id); err != nil {
 			return Plan{}, err
 		}
 		s.reserved[id] = true
 	}
 	for i, a := range members {
+		if err := input.Context.Err(); err != nil {
+			return Plan{}, err
+		}
 		if err := s.apply(i, a); err != nil {
 			return Plan{}, &MemberError{i, err}
 		}
 	}
-	return s.finish()
+	plan, err := s.finish()
+	if err != nil {
+		return Plan{}, err
+	}
+	if err := input.Context.Err(); err != nil {
+		return Plan{}, err
+	}
+	return plan, nil
 }
 
-func admit(m canonicalbatch.Member) (admitted, error) {
+func admit(m canonicalbatch.Member, limits resourcequery.Limits) (admitted, error) {
 	a := admitted{member: m}
 	if m.Operation == "select" {
 		var err error
-		a.selection, err = admitSelection(m)
+		a.selection, err = admitSelection(m, limits)
 		if err != nil {
 			return a, err
 		}
