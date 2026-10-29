@@ -10,6 +10,31 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 )
 
+func TestReferenceInputContainerAdmission(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		value any
+		want  error
+	}{
+		{"number", 7, ErrInvalid},
+		{"null", nil, ErrInvalid},
+		{"boolean", true, ErrInvalid},
+		{"string", "prior", ErrInvalid},
+		{"empty object", ast{}, ErrInvalid},
+		{"wrong binding kind", ast{"binding": 7}, ErrInvalid},
+		{"empty binding", ast{"binding": ""}, ErrInvalid},
+		{"extra member", ast{"binding": "prior", "extra": true}, ErrInvalid},
+		{"batch binding", ast{"binding": "prior"}, ErrUnsupported},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			selection := ast{"op": "refs", "collection": "beads", "references": tc.value}
+			if _, err := Decode(request(t, "query", "resources", selection)); !errors.Is(err, tc.want) {
+				t.Fatalf("references=%v: want %v, got %v", tc.value, tc.want, err)
+			}
+		})
+	}
+}
+
 func TestWholeASTShapeAdmission(t *testing.T) {
 	b := binding("b")
 	for _, bad := range []ast{
