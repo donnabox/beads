@@ -230,7 +230,7 @@ func readCustomDefinitionInTx(ctx context.Context, tx *sql.Tx, o Options, path, 
 	if err != nil {
 		return resourceget.DefinitionDocument{}, fmt.Errorf("%w: custom definition header: %w", ErrInvalidStore, err)
 	}
-	if state != "live" || !authorityID.MatchString(key) || !authorityID.MatchString(revision) || path != "beads/"+key || validatePublicID(id) != nil {
+	if state != "live" || !authorityID.MatchString(key) || !authorityID.MatchString(revision) || path != intrinsicBeadBackingPath(key) || validatePublicID(id) != nil {
 		return resourceget.DefinitionDocument{}, fmt.Errorf("%w: custom definition allocation identity", ErrInvalidStore)
 	}
 	if requested != "" && requested != revision {
