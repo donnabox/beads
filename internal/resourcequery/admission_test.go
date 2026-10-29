@@ -231,3 +231,25 @@ func TestIRKindAndUnsupportedIdentifier(t *testing.T) {
 		})
 	}
 }
+
+// Adapter inspection is syntax-only: all branches are visited, but literals
+// containing an "op" member do not become executable field accesses.
+func TestRequestFieldRootsAreCompleteAndDetached(t *testing.T) {
+	raw := []byte(`{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"filter","input":{"op":"scan","collection":"beads"},"bind":"b","predicate":{"op":"or","operands":[true,{"op":"present","value":{"op":"field","of":{"op":"binding","name":"b"},"path":["revisionProvenance"]}},{"op":"compare","operator":"eq","left":{"op":"field","of":{"op":"binding","name":"b"},"path":["properties","ownedLinks"]},"right":{"op":"literal","value":{"op":"field","path":["fakeRoot"]}}}]}},"result":{"form":"resources"}}`)
+	request, err := Decode(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	roots := request.FieldRoots()
+	if len(roots) != 2 || roots[0] != "revisionProvenance" || roots[1] != "properties" {
+		t.Fatalf("field roots: %v", roots)
+	}
+	roots[0] = "mutated"
+	if request.FieldRoots()[0] != "revisionProvenance" {
+		t.Fatal("inspection mutated admitted request")
+	}
+	var absent *Request
+	if absent.FieldRoots() != nil {
+		t.Fatal("nil request invented field roots")
+	}
+}
