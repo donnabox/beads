@@ -9,9 +9,12 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/canonicalbatch"
 	"github.com/steveyegge/beads/internal/canonicalbatchstate"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 )
 
 func (run *atomicBatchRun) publish() error {
+	unscope := issueops.ScopeVersionedHistoryTransaction(run.tx, true)
+	defer unscope()
 	for id, value := range run.initial {
 		run.final[id] = value
 	}
@@ -20,6 +23,12 @@ func (run *atomicBatchRun) publish() error {
 	// final Links, so its capture contains their actual published revisions.
 	for _, o := range run.plan.Outcomes {
 		if o.After == nil || o.Kind != graph.KindBead || !o.Changed {
+			continue
+		}
+		if run.backings[o.ID] == "issue" {
+			if err := run.writeNativeIssue(o); err != nil {
+				return err
+			}
 			continue
 		}
 		r := *o.After
@@ -85,12 +94,16 @@ func (run *atomicBatchRun) publish() error {
 		if o.After == nil || o.Kind != graph.KindLink || !o.Changed {
 			continue
 		}
-		if err := run.writeLink(o); err != nil {
+		if run.backings[o.ID] == "dependency" {
+			if err := run.writeNativeLink(o); err != nil {
+				return err
+			}
+		} else if err := run.writeLink(o); err != nil {
 			return err
 		}
 	}
 	for _, o := range run.plan.Outcomes {
-		if o.After == nil || o.Kind != graph.KindLink || !o.Changed {
+		if o.After == nil || o.Kind != graph.KindLink || !o.Changed || run.backings[o.ID] == "dependency" {
 			continue
 		}
 		link, err := run.store.currentInformationalLinkInTx(run.ctx, run.tx, run.paths[o.ID])
@@ -115,7 +128,11 @@ func (run *atomicBatchRun) publish() error {
 		if _, survives := run.plan.Final[id]; !survives {
 			continue
 		}
-		if err := run.finishBead(id); err != nil {
+		if run.backings[id] == "issue" {
+			if err := run.finishNativeIssue(id); err != nil {
+				return err
+			}
+		} else if err := run.finishBead(id); err != nil {
 			return err
 		}
 	}
@@ -139,6 +156,9 @@ func (run *atomicBatchRun) publish() error {
 		if _, err := run.tx.ExecContext(run.ctx, `INSERT INTO graph_preview_batch_allocations(public_id,resource_kind) VALUES(?,?)`, local, kind); err != nil {
 			return err
 		}
+	}
+	if err := run.emitNativeFacts(); err != nil {
+		return err
 	}
 	return run.store.afterStage("batch-final-state")
 }

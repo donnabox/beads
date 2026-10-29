@@ -13,6 +13,8 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/canonicalbatch"
 	"github.com/steveyegge/beads/internal/canonicalbatchstate"
+	"github.com/steveyegge/beads/internal/storage/issueops"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 const AtomicBatchResultLimit = 4 << 20
@@ -122,6 +124,9 @@ type atomicBatchRun struct {
 	actor           string
 	plan            canonicalbatchstate.Plan
 	members         []canonicalbatch.Member
+	nativeContents  map[string]issueops.CanonicalIssueContent
+	nativeChanged   map[string]bool
+	nativeFacts     []*issueops.CanonicalFinalFacts
 	initial         map[string]any
 	paths           map[string]string
 	backings        map[string]string
@@ -187,7 +192,7 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 				}
 				// A later deletion/cancellation does not grant this generic
 				// publisher authority to stage a native domain creation/retype.
-				if ((m.Operation == "createBead" || m.Operation == "updateBead") && !catalog.memoryType(m.Type.URI)) || ((m.Operation == "createLink" || m.Operation == "updateLink") && !IsInformationalTypeURL(s.ScopeURL(), m.Type.URI)) {
+				if (m.Operation == "createBead" && !catalog.memoryType(m.Type.URI)) || (m.Operation == "createLink" && !IsInformationalTypeURL(s.ScopeURL(), m.Type.URI)) {
 					return &canonicalbatchstate.MemberError{OperationIndex: i, Err: fmt.Errorf("%w: authored Type requires its native domain publisher", ErrCapabilityUnavailable)}
 				}
 			}
@@ -200,7 +205,7 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 		if err != nil {
 			return err
 		}
-		run := atomicBatchRun{members: members, store: s, tx: tx, ctx: ctx, actor: actor, initial: map[string]any{}, paths: map[string]string{}, backings: map[string]string{}, final: map[string]any{}, ownerIDs: map[string][]string{}, ownerCandidates: map[string]bool{}}
+		run := atomicBatchRun{nativeContents: map[string]issueops.CanonicalIssueContent{}, nativeChanged: map[string]bool{}, members: members, store: s, tx: tx, ctx: ctx, actor: actor, initial: map[string]any{}, paths: map[string]string{}, backings: map[string]string{}, final: map[string]any{}, ownerIDs: map[string][]string{}, ownerCandidates: map[string]bool{}}
 		current := map[string]canonicalbatchstate.Resource{}
 		for _, record := range snapshot.Records {
 			r, err := atomicBatchStateRecord(record)
@@ -259,7 +264,7 @@ func (s *Store) ApplyCanonicalBatch(ctx context.Context, batch *canonicalbatch.B
 			_, err = s.endpointPinInTx(ctx, tx, path, EndpointPin{Revision: ref.Revision}, &pinBytes)
 			return err
 		}
-		plan, err := canonicalbatchstate.Stage(canonicalbatchstate.Input{Context: ctx, TypeKinds: typeKinds, TypeFamilies: typeFamilies, Scope: s.ScopeURL(), Current: current, ReservedIDs: reserved, Members: members, Allocate: allocate, CheckPin: checkPin})
+		plan, err := canonicalbatchstate.Stage(canonicalbatchstate.Input{AdmitMutation: run.admitNativeMutation, Context: ctx, TypeKinds: typeKinds, TypeFamilies: typeFamilies, Scope: s.ScopeURL(), Current: current, ReservedIDs: reserved, Members: members, Allocate: allocate, CheckPin: checkPin})
 		if err != nil {
 			return err
 		}
@@ -427,6 +432,12 @@ func (run *atomicBatchRun) admit() error {
 		}
 	}
 	for _, o := range run.plan.Outcomes {
+		if handled, err := run.admitNativeOutcome(o); handled || err != nil {
+			if err != nil {
+				return err
+			}
+			continue
+		}
 		if o.Before != nil && o.Changed {
 			backing := run.backings[o.ID]
 			if backing != "generic" && backing != "informational" {
@@ -516,8 +527,17 @@ func (run *atomicBatchRun) admit() error {
 	}
 	for id := range run.ownerCandidates {
 		if value, ok := run.initial[id]; ok {
-			if _, generic := value.(Record); !generic {
-				return fmt.Errorf("%w: native owning Bead has no final atomic publisher", ErrCapabilityUnavailable)
+			switch owner := value.(type) {
+			case Record:
+			case IssueRecord:
+				if owner.Properties == nil || owner.Properties.Ephemeral || owner.Properties.NoHistory {
+					return fmt.Errorf("%w: native owner must be a durable Issue", ErrCapabilityUnavailable)
+				}
+				if err := issueops.AuthorizeTemplateUpdate(owner.Properties, publicops.UpdateRequest{}); err != nil {
+					return err
+				}
+			default:
+				return fmt.Errorf("%w: unknown owning Bead", ErrCapabilityUnavailable)
 			}
 		}
 	}
