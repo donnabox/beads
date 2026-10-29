@@ -28,6 +28,7 @@ type graphPreviewAgentInstructions struct {
 	after   []byte
 	mode    os.FileMode
 	existed bool
+	profile agents.Profile
 }
 
 // The step each command offers when it refuses the agents file. --skip-agents
@@ -41,6 +42,13 @@ const (
 // remedy is the caller's step for a refused file and ends each refusal that
 // names the file's own state. A caller with no step to offer passes "".
 func prepareGraphPreviewAgentInstructions(workspace, filename string, skip bool, remedy string) (*graphPreviewAgentInstructions, error) {
+	return prepareGraphPreviewAgentInstructionsForProfile(workspace, filename, skip, remedy, agents.ProfileGraphPreview)
+}
+
+func prepareGraphPreviewAgentInstructionsForProfile(workspace, filename string, skip bool, remedy string, profile agents.Profile) (*graphPreviewAgentInstructions, error) {
+	if profile != agents.ProfileGraphPreview && profile != agents.ProfileGraphTypes {
+		return nil, fmt.Errorf("unsupported graph guidance profile %q", profile)
+	}
 	if skip {
 		return nil, nil
 	}
@@ -51,7 +59,7 @@ func prepareGraphPreviewAgentInstructions(workspace, filename string, skip bool,
 	if remedy != "" {
 		step = "; " + remedy
 	}
-	plan := &graphPreviewAgentInstructions{path: filepath.Join(workspace, filename), mode: 0644}
+	plan := &graphPreviewAgentInstructions{path: filepath.Join(workspace, filename), mode: 0644, profile: profile}
 	info, err := os.Lstat(plan.path)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, fmt.Errorf("inspect agent file: %w", err)
@@ -77,7 +85,7 @@ func prepareGraphPreviewAgentInstructions(workspace, filename string, skip bool,
 		if content != "" {
 			content += "\n"
 		}
-		plan.after = []byte(content + agents.RenderSection(agents.ProfileGraphPreview))
+		plan.after = []byte(content + agents.RenderSection(profile))
 		return plan, nil
 	}
 	if begins != 1 || ends != 1 {
@@ -88,10 +96,10 @@ func prepareGraphPreviewAgentInstructions(workspace, filename string, skip bool,
 		return nil, fmt.Errorf("agent file %s has an unsupported or malformed managed marker%s", filename, step)
 	}
 	meta := agents.ParseMarker(marker)
-	if meta == nil || (meta.Profile != agents.ProfileMinimal && meta.Profile != agents.ProfileGraphPreview) {
+	if meta == nil || (meta.Profile != agents.ProfileMinimal && meta.Profile != agents.ProfileGraphPreview && meta.Profile != agents.ProfileGraphTypes) {
 		return nil, fmt.Errorf("agent file %s has a full or unknown managed profile%s", filename, step)
 	}
-	replaced, _, err := agents.ReplaceSection(content, agents.ProfileGraphPreview)
+	replaced, _, err := agents.ReplaceSection(content, profile)
 	if err != nil {
 		return nil, fmt.Errorf("agent file %s: %w%s", filename, err, step)
 	}
@@ -107,7 +115,7 @@ func (p *graphPreviewAgentInstructions) install() error {
 	// appeared since preflight. Atomic replacement avoids truncating user text
 	// on an I/O failure; this is not a lock or a concurrent file-editor protocol.
 	// The store exists by now and init cannot be run over it, so no step is offered.
-	current, err := prepareGraphPreviewAgentInstructions(filepath.Dir(p.path), filepath.Base(p.path), false, "")
+	current, err := prepareGraphPreviewAgentInstructionsForProfile(filepath.Dir(p.path), filepath.Base(p.path), false, "", p.profile)
 	if err != nil {
 		return err
 	}

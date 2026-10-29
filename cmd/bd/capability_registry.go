@@ -245,6 +245,8 @@ const backupRemoteSchemeTracking = "open question, not a verdict: remote-scheme 
 // proxyCapabilityRegistry is the whole path-keyed policy. Rows for permitted
 // paths are appended from proxyPermittedPaths by init.
 var proxyCapabilityRegistry = []capabilityRow{
+	// The first local definition writer has no proxied provider route yet.
+	refusedPath("type create", "proxy.type.create.unsupported", ProxyReasonUnimplemented, "gastownhall/bdp#59"),
 	// --- doctor -------------------------------------------------------------
 	// Diagnosis needs no version-control surface; the checks simply have no
 	// proxied dual yet. S6 splits them into client-local and store-backed.

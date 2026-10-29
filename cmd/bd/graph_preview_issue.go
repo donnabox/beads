@@ -25,6 +25,9 @@ import (
 // --graph-path separately chooses a graph path with a generated native ID.
 // No production nominal-Type contract is established here.
 func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
+	if graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion {
+		return runIntrinsicTypedBeadPreview(cmd, args)
+	}
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}

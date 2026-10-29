@@ -24,6 +24,13 @@ func New(store *graphstore.Store) *Reader { return &Reader{store: store} }
 // allocation catalog, never from the spelling of a public identifier. Deleted
 // allocations remain reserved; a subsequent current read reports their state.
 func (r *Reader) PublicRouteKind(ctx context.Context, id string) (string, error) {
+	if r.store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+		document, err := r.store.GetDefinition(ctx, id, "")
+		if err != nil {
+			return "", err
+		}
+		return string(document.Kind()), nil
+	}
 	uri, err := graph.CanonicalPublicResourceURL(r.ScopeURL(), id)
 	if err != nil {
 		return "", err
@@ -46,9 +53,13 @@ func (r *Reader) PublicRouteKind(ctx context.Context, id string) (string, error)
 
 // Resource reads a canonical public Scope URL or an internal locator. Storage absence,
 // deletion and corruption errors remain distinct for the future HTTP adapter.
-// The result is either bdpwire.BeadRecord or bdpwire.LinkRecord, never a private
-// preview envelope. This method does not select historical versions.
+// The result is a BDP Bead/Link record or a complete local DefinitionDocument,
+// never a private preview envelope. This method does not select historical versions.
 func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
+	if r.store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+		return r.store.GetDefinitionForProjection(ctx, path, "", "")
+	}
+
 	record, projection, err := r.store.ReadForProjection(ctx, path)
 	if err != nil {
 		return nil, err
@@ -59,6 +70,14 @@ func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
 // ResourceSelected resolves a local opaque public ID in storage's checked
 // snapshot with its checked projection context before projecting its Resource.
 func (r *Reader) ResourceSelected(ctx context.Context, path, localID string) (string, any, error) {
+	if r.store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+		document, err := r.store.GetDefinitionForProjection(ctx, path, localID, "")
+		if err != nil {
+			return "", nil, err
+		}
+		return document.ID(), document, nil
+	}
+
 	selected, record, projection, err := r.store.ReadSelectedForProjection(ctx, path, localID)
 	if err != nil {
 		return "", nil, err
@@ -72,6 +91,10 @@ func (r *Reader) ResourceSelected(ctx context.Context, path, localID string) (st
 // or advertises HTTP History support. Installed preview Type definitions are
 // immutable; owned Links come from the retained snapshot.
 func (r *Reader) ResourceVersion(ctx context.Context, path, revision string) (any, error) {
+	if r.store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+		return r.store.GetDefinitionForProjection(ctx, path, "", revision)
+	}
+
 	record, projection, err := r.store.ReadVersionForProjection(ctx, path, revision)
 	if err != nil {
 		return nil, err
