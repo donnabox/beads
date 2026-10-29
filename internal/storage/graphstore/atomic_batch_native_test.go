@@ -140,6 +140,20 @@ func TestCanonicalBatchNativeIssueNoopPolicyAndRollback(t *testing.T) {
 			t.Fatal("actorless native refusal retained effects or a decision")
 		}
 	}
+	// Ordinary scalar input constraints apply before cancellation, including
+	// invalid values repaired inside a single member's ordered change array.
+	for index, invalid := range []string{
+		fmt.Sprintf(`{"operation":"updateBead","bead":%q,"propertiesChange":[{"op":"replace","path":"/priority","value":5},{"op":"replace","path":"/priority","value":2}]}`, source.ID),
+		fmt.Sprintf(`{"operation":"updateBead","bead":%q,"propertiesChange":[{"op":"remove","path":"/title"},{"op":"add","path":"/title","value":"Source"}]}`, source.ID),
+		fmt.Sprintf(`{"operation":"updateBead","bead":%q,"propertiesChange":[{"op":"add","path":"/estimated_minutes","value":-1}]}`+"\n"+`{"operation":"updateBead","bead":%q,"propertiesChange":[{"op":"remove","path":"/estimated_minutes"}]}`, source.ID, source.ID),
+	} {
+		if _, err := s.ApplyCanonicalBatch(ctx, atomicBatchCompile(t, s, invalid), fmt.Sprintf("native-invalid-scalar-%d", index), "test-author"); !errors.Is(err, storage.ErrValidation) {
+			t.Fatalf("canceled invalid native scalar admitted: %v", err)
+		}
+		if after := workflowState(t, ctx, s); !reflect.DeepEqual(before, after) {
+			t.Fatal("invalid native scalar retained effects or a decision")
+		}
+	}
 	result, err := s.ApplyCanonicalBatch(ctx, atomicBatchCompile(t, s, input), "native-noop", "test-author")
 	if err != nil || result.Changed || result.Transaction != "" {
 		t.Fatalf("native canceled changes published: %+v %v", result, err)

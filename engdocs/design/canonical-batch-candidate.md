@@ -61,7 +61,9 @@ retry uses the saved actor. Read-only selections and generic records retain thei
 Native optional properties use removal for clearing: explicit null or empty
 optional strings are refused because the native DTO would omit that presence.
 Dates must have canonical UTC whole-second spelling. This admission happens
-before a later selection can observe an unrepresentable staged value. Native
+before a later selection can observe an unrepresentable staged value. Each
+authored scalar also passes the ordinary native field validator, including
+values or required-field removals later canceled within one change array. Native
 status, assignment, leases, notes, labels, full property replacement, creation,
 deletion and reclassification remain outside this slice. Dependency edits that
 could affect readiness require a separate final graph and readiness publisher.

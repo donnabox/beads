@@ -218,3 +218,43 @@ func TestCanonicalNativeActorAdmissionBeforeNoop(t *testing.T) {
 		run.actor = ""
 	}
 }
+
+func TestCanonicalNativeScalarAdmissionBeforeCancellation(t *testing.T) {
+	const scope = "https://example.invalid/"
+	before := IssueRecord{ID: scope + "source", Type: scope + "task", Revision: "original", Properties: &publicops.Issue{ID: "native-source", Title: "Old", IssueType: types.TypeTask, Priority: 2}, Metadata: json.RawMessage(`{}`)}
+	state, err := atomicBatchStateRecord(before)
+	if err != nil {
+		t.Fatal(err)
+	}
+	run := atomicBatchRun{actor: "test-author", initial: map[string]any{before.ID: before}}
+	for _, patch := range []string{
+		`[{"op":"replace","path":"/priority","value":5},{"op":"replace","path":"/priority","value":2}]`,
+		`[{"op":"replace","path":"/priority","value":"2"},{"op":"replace","path":"/priority","value":2}]`,
+		`[{"op":"replace","path":"/priority","value":2.5},{"op":"replace","path":"/priority","value":2}]`,
+		`[{"op":"remove","path":"/priority"},{"op":"add","path":"/priority","value":2}]`,
+		`[{"op":"remove","path":"/title"},{"op":"add","path":"/title","value":"Old"}]`,
+		`[{"op":"replace","path":"/title","value":null},{"op":"replace","path":"/title","value":"Old"}]`,
+		`[{"op":"replace","path":"/title","value":42},{"op":"replace","path":"/title","value":"Old"}]`,
+		`[{"op":"replace","path":"/title","value":""},{"op":"replace","path":"/title","value":"Old"}]`,
+		`[{"op":"add","path":"/estimated_minutes","value":-1},{"op":"remove","path":"/estimated_minutes"}]`,
+		`[{"op":"add","path":"/estimated_minutes","value":2147483648},{"op":"remove","path":"/estimated_minutes"}]`,
+		`[{"op":"add","path":"/description","value":12},{"op":"remove","path":"/description"}]`,
+	} {
+		member := canonicalbatch.Member{Operation: "updateBead", Bead: canonicalbatch.Operand{URI: before.ID}, PropertiesChange: json.RawMessage(patch)}
+		selection := canonicalbatch.Member{Operation: "select", Name: "observed", Set: true, Query: json.RawMessage(`{"ir":"bdp-query-design-1","profile":"list","selection":{"op":"scan","collection":"beads"}}`)}
+		plan, err := canonicalbatchstate.Stage(canonicalbatchstate.Input{Scope: scope, Current: map[string]canonicalbatchstate.Resource{before.ID: state}, Members: []canonicalbatch.Member{member, selection}, AdmitMutation: run.admitNativeMutation})
+		if !errors.Is(err, storage.ErrValidation) || len(plan.Final) != 0 || len(plan.Selections) != 0 {
+			t.Fatalf("invalid authored scalar reached canceled state/selection: %s %+v %v", patch, plan, err)
+		}
+	}
+	// The native title validator permits whitespace; do not tighten its policy.
+	if err := canonicalNativeAuthoredValue("/title", json.RawMessage(`" "`)); err != nil {
+		t.Fatal(err)
+	}
+	// Nullable removal remains the admitted clear form after shared decoding.
+	for _, path := range []string{"/description", "/design", "/acceptance_criteria", "/spec_id", "/estimated_minutes", "/external_ref", "/due_at"} {
+		if err := canonicalNativeAuthoredValue(path, nil); err != nil {
+			t.Fatalf("optional clear %s refused: %v", path, err)
+		}
+	}
+}
