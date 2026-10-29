@@ -80,6 +80,28 @@ func TestDefinitionDocumentStandaloneLinkAndRecordedEmptyBucket(t *testing.T) {
 	}
 }
 
+func TestDefinitionDocumentPreservesOptionalMetadataAbsence(t *testing.T) {
+	fixture := definitionFixture(t)
+	delete(fixture, "metadata")
+	link := fixture["ownedLinks"].(map[string]any)["https://types.example/Refines"].([]any)[0].(map[string]any)
+	delete(link, "metadata")
+	for _, tc := range []struct {
+		kind DefinitionKind
+		body map[string]any
+	}{{DefinitionBead, fixture}, {DefinitionLink, link}} {
+		t.Run(string(tc.kind), func(t *testing.T) {
+			native := definitionBytes(t, tc.body)
+			doc, err := NewDefinitionDocument(definitionScope, tc.kind, native)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(native, doc.NativeJSON()) || bytes.Contains(doc.NativeJSON(), []byte(`"metadata"`)) {
+				t.Fatalf("changed absent metadata: %s", doc.NativeJSON())
+			}
+		})
+	}
+}
+
 func TestDefinitionDocumentRejectsWrongOrIncompleteCarrier(t *testing.T) {
 	cases := []struct {
 		name string
@@ -91,7 +113,8 @@ func TestDefinitionDocumentRejectsWrongOrIncompleteCarrier(t *testing.T) {
 		{"different-Scope-prefix", func(v map[string]any) { v["id"] = "https://example.test/work-extra/Task" }},
 		{"missing-revision", func(v map[string]any) { delete(v, "revision") }},
 		{"null-properties", func(v map[string]any) { v["properties"] = nil }},
-		{"missing-metadata", func(v map[string]any) { delete(v, "metadata") }},
+		{"null-metadata", func(v map[string]any) { v["metadata"] = nil }},
+		{"array-metadata", func(v map[string]any) { v["metadata"] = []any{} }},
 		{"missing-owned-plane", func(v map[string]any) { delete(v, "ownedLinks") }},
 		{"null-owned-plane", func(v map[string]any) { v["ownedLinks"] = nil }},
 		{"incident-aggregate", func(v map[string]any) { v["links"] = map[string]any{"items": []any{}, "next": nil} }},
@@ -117,7 +140,7 @@ func TestDefinitionDocumentRejectsWrongOrIncompleteCarrier(t *testing.T) {
 }
 
 func TestDefinitionOwnedLinksAreCompleteUniqueAndOwnerMatched(t *testing.T) {
-	for _, test := range []string{"unpinned-Type", "wrong-source", "wrong-bucket", "duplicate-ID", "foreign-ID", "missing-metadata", "partial-endpoint"} {
+	for _, test := range []string{"unpinned-Type", "wrong-source", "wrong-bucket", "duplicate-ID", "foreign-ID", "null-metadata", "partial-endpoint"} {
 		t.Run(test, func(t *testing.T) {
 			fixture := definitionFixture(t)
 			owned := fixture["ownedLinks"].(map[string]any)
@@ -133,8 +156,8 @@ func TestDefinitionOwnedLinksAreCompleteUniqueAndOwnerMatched(t *testing.T) {
 				owned["https://types.example/Refines"] = []any{link, link}
 			case "foreign-ID":
 				link["id"] = "https://other.example/link-1"
-			case "missing-metadata":
-				delete(link, "metadata")
+			case "null-metadata":
+				link["metadata"] = nil
 			case "partial-endpoint":
 				link["target"] = map[string]any{"uri": "https://types.example/Issue"}
 			}

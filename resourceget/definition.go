@@ -100,7 +100,13 @@ func validateDefinitionRecord(scope string, kind DefinitionKind, fields map[stri
 		return fmt.Errorf("definition Type affiliation: %w", err)
 	}
 	for _, name := range []string{"properties", "metadata"} {
-		if _, err := definitionObject(fields[name]); err != nil {
+		raw, present := fields[name]
+		// The selected Core record requires properties; metadata is optional.
+		// Preserve its absence rather than inventing an empty metadata object.
+		if name == "metadata" && !present {
+			continue
+		}
+		if _, err := definitionObject(raw); err != nil {
 			return fmt.Errorf("definition %s: %w", name, err)
 		}
 	}
