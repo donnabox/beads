@@ -15,6 +15,25 @@ import (
 
 const queryRepresentationBase = "https://query.example/"
 
+func TestQueryResourceBudgetBeforeRetention(t *testing.T) {
+	bead := queryRepresentationBead()
+	raw, err := queryResourceJSON(bead)
+	if err != nil {
+		t.Fatal(err)
+	}
+	remaining := len(raw) - 1
+	if record, err := queryResourceWithinBudget(graph.KindBead, bead, &remaining); !errors.Is(err, resourcequery.ErrLimit) || record.Data != nil || remaining != len(raw)-1 {
+		t.Fatalf("over-budget Resource retained or budget changed: %+v %v remaining=%d", record, err, remaining)
+	}
+	remaining = len(raw)
+	if record, err := queryResourceWithinBudget(graph.KindBead, bead, &remaining); err != nil || len(record.Data) == 0 || remaining != 0 {
+		t.Fatalf("exact-bound Resource refused: %+v %v remaining=%d", record, err, remaining)
+	}
+	if record, err := queryResourceWithinBudget(graph.KindBead, bead, &remaining); !errors.Is(err, resourcequery.ErrLimit) || record.Data != nil || remaining != 0 {
+		t.Fatalf("cumulative Resource budget reset: %+v %v remaining=%d", record, err, remaining)
+	}
+}
+
 func queryRepresentationLink() bdpwire.LinkRecord {
 	return bdpwire.LinkRecord{ID: queryRepresentationBase + "L", Type: queryRepresentationBase + "Reference", Revision: "l1",
 		Source: bdpwire.Reference{URI: queryRepresentationBase + "A"}, Target: bdpwire.Reference{URI: queryRepresentationBase + "B", Revision: "b7"},
