@@ -26,7 +26,7 @@ func TestListASTInstalledWorkflow(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Shared Work", "--id", "i1", "--type", "task", "--force"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Shared Work", "--id", "i1", "--type", "task", "--force", "--metadata", `{"n":1,"marker":null,"series":[1,2],"payload":{"aa":1,"b":2}}`))
 			memory := graphMixedResult[graphstore.Record](t, call("create", "Shared Plan", "--id", "m1", "--type", "memory", "--body", "safe rails"))
 			call("create", "Other", "--id", "m2", "--type", "memory")
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", issue.ID, memory.ID, "--id", "a", "--type", "references", "--properties", `{"title":"Evidence"}`))
@@ -91,6 +91,44 @@ func TestListASTInstalledWorkflow(t *testing.T) {
 			}
 			if got := read(links, "", "link", "list", "--from", memory.ID); len(got) != 0 {
 				t.Fatalf("Link endpoint filter was ignored: %s", got)
+			}
+			for _, tc := range []struct {
+				args  []string
+				count int
+			}{
+				{[]string{"list", "--type", "memory", "--property-field", "title=Shared Plan", "--has-property-key", "body"}, 1},
+				{[]string{"list", "--exact-type", "memory", "--property-field", "title=Shared Plan"}, 1},
+				{[]string{"list", "--type", "memory", "--property-field", "title=Shared Plan", "--property-field", "title=Other"}, 0},
+				{[]string{"list", "--type", "memory", "--ast", shared}, 1},
+				{[]string{"link", "list", "--from", issue.ID, "--property-field", "title=Evidence"}, 1},
+				{[]string{"link", "list", "--from", memory.ID, "--property-field", "title=Evidence"}, 0},
+				{[]string{"list", "--type", "memory", "--page-size", "1", "--limit", "1"}, 2},
+			} {
+				args := append(tc.args, "--count-only", "--output-format", "json", "--omit", "envelope")
+				out, diagnostic, exit := queryASTWorkflowRun(t, bd, work, home, "", args...)
+				var counted struct {
+					Count int `json:"count"`
+				}
+				if exit != 0 || diagnostic != "" || json.Unmarshal([]byte(out), &counted) != nil || counted.Count != tc.count {
+					t.Fatalf("field/Type/AST/endpoint count intersection: args%v exit%d stderr%s out%s", args, exit, diagnostic, out)
+				}
+			}
+			// Compare the new captured-graph field adapter with the existing
+			// SQL-backed metadata selector on the same Issue and engine. Search
+			// remains an Issue-only compatibility command; no code there changes.
+			for _, field := range []string{"n=1", "n=1.0", "marker=null", "marker=", "series=[1, 2]", "series=[1,2]", `payload={"b": 2, "aa": 1}`} {
+				legacyOut := call("search", "Shared", "--metadata-field", field)
+				var legacy []graphstore.IssueRecord
+				if err := json.Unmarshal([]byte(legacyOut), &legacy); err != nil {
+					t.Fatalf("legacy metadata oracle: %s %v", legacyOut, err)
+				}
+				out, diagnostic, exit := queryASTWorkflowRun(t, bd, work, home, "", "list", "--metadata-field", field, "--count-only", "--output-format", "json", "--omit", "envelope")
+				var counted struct {
+					Count int `json:"count"`
+				}
+				if exit != 0 || diagnostic != "" || json.Unmarshal([]byte(out), &counted) != nil || counted.Count != len(legacy) {
+					t.Fatalf("metadata compatibility %q: legacy%s count%s stderr%s exit%d", field, legacyOut, out, diagnostic, exit)
+				}
 			}
 			for _, args := range [][]string{
 				{"list", "--ast", links},

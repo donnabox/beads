@@ -82,7 +82,7 @@ func canonicalOutputDefault(cmd *cobra.Command) bool {
 }
 
 func canonicalOutputSelected(cmd *cobra.Command) bool {
-	if cmd == queryCmd && cmd.Flags().Changed("ast") || collectionASTSelected(cmd) {
+	if cmd == queryCmd && cmd.Flags().Changed("ast") || collectionASTSelected(cmd) || collectionFieldFlagsSelected(cmd) {
 		return true
 	}
 	return canonicalOutputDefault(cmd) || cmd.Flags().Changed("output-format")

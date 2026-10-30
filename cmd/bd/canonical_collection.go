@@ -8,14 +8,17 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/resourcequery"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -24,6 +27,9 @@ func init() {
 		registerCanonicalCollectionFlags(cmd)
 		links := cmd == linkListCmd
 		canonicalFailureFactories[cmd] = func(options clioutput.Options) (canonicalFailureRenderer, error) {
+			if collectionCountSelected(cmd) {
+				return clioutput.New(canonicalCollectionCountDescriptor(), canonicalCollectionCountOptions(options))
+			}
 			descriptor, err := canonicalCollectionDescriptor(links, nil)
 			if err != nil {
 				return nil, err
@@ -55,6 +61,15 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 	cmd.Flags().String("exact-type", "", "Select only the exact declared Type; --type includes refinements")
 	cmd.Flags().String("conforms-to", "", "Select a canonical absolute HTTP(S) Type URI and its conformance family; compatibility alias for --type")
 	cmd.Flags().StringArray("ast", nil, "Apply one candidate-local List JSON AST; use @FILE or - for stdin (graph mode only)")
+	cmd.Flags().StringArray("property-field", nil, "Filter by literal property key=value; repeat to AND conditions (graph mode only)")
+	cmd.Flags().StringArray("has-property-key", nil, "Require a literal property key, including an explicit null; repeat to AND conditions (graph mode only)")
+	// Ordinary List retains its existing metadata flags and dependency-mode
+	// parser. Link List and isolated command fixtures need the same spellings.
+	if cmd != listCmd {
+		cmd.Flags().StringArray("metadata-field", nil, "Filter by literal metadata key=value; repeat to AND conditions")
+		cmd.Flags().String("has-metadata-key", "", "Require a literal metadata key, including an explicit null")
+	}
+	cmd.Flags().Bool("count-only", false, "Return the exact count of all matches before paging (graph mode only)")
 	cmd.Flags().Bool("paged", false, "Return one page in canonical output; current local provider refuses truncation")
 	cmd.Flags().Bool("unpaged", false, "Return the complete bounded current selection in canonical output")
 	cmd.Flags().Int("page-size", 50, "Canonical page size; use --unpaged if the complete local selection exceeds this boundary")
@@ -74,6 +89,8 @@ type canonicalCollectionPlan struct {
 	paging      clioutput.Paging
 	links       bool
 	jsonl       bool
+	fields      *graphread.LegacyListFields
+	countOnly   bool
 }
 
 type canonicalCollectionFailure struct {
@@ -186,6 +203,12 @@ func canonicalCollectionRequestIn(cmd *cobra.Command, links bool, options cliout
 // Endpoint allocation and pin checks stay inside the canonical read owner.
 func canonicalCollectionPureRequest(cmd *cobra.Command, links bool, options clioutput.Options) (canonicalCollectionPlan, string, string, error) {
 	plan := canonicalCollectionPlan{options: options, links: links}
+	plan.countOnly = collectionCountSelected(cmd)
+	var err error
+	plan.fields, err = collectionFieldConditions(cmd)
+	if err != nil {
+		return plan, "", "", err
+	}
 	format := "default"
 	if len(options.Formats) != 0 {
 		format = options.Formats[0]
@@ -232,7 +255,8 @@ func canonicalCollectionPreflight(cmd *cobra.Command, links bool, options cliout
 	return err
 }
 
-func canonicalCollectionRequestFailure(cmd *cobra.Command, failure canonicalCollectionFailure, err error) error {
+func canonicalCollectionRequestFailure(cmd *cobra.Command, failure canonicalFailureRenderer, err error) error {
+	err = canonicalCollectionEvaluationError(err)
 	var endpoint *canonicalCollectionEndpointReadError
 	if errors.As(err, &endpoint) {
 		if errors.Is(endpoint.error, graph.ErrValidation) {
@@ -266,19 +290,26 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	if len(options.Formats) > 0 {
 		format = options.Formats[0]
 	}
-	failure := canonicalCollectionFailure{renderer: renderer, jsonl: format == "jsonl"}
+	var failure canonicalFailureRenderer = canonicalCollectionFailure{renderer: renderer, jsonl: format == "jsonl"}
+	if collectionCountSelected(cmd) {
+		countRenderer, countErr := clioutput.New(canonicalCollectionCountDescriptor(), canonicalCollectionCountOptions(options))
+		if countErr != nil {
+			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", countErr.Error(), 2)
+		}
+		failure = countRenderer
+	}
 	if len(cmd.Flags().Args()) != 0 && !links {
 		return canonicalFailure(cmd, failure, "invalid_selector", "canonical collection listing does not accept positional arguments; use selection flags", 2)
 	}
 	allowed := []string{"type", "exact-type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
-	allowed = append(allowed, "ast")
+	allowed = append(allowed, "ast", "property-field", "has-property-key", "metadata-field", "has-metadata-key", "count-only")
 	if links {
 		allowed = append(allowed, "from", "to", "incident-to", "direction", "all-revisions")
 	}
 	if err := canonicalGraphFlags(cmd, failure, allowed...); err != nil {
 		return err
 	}
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "all-revisions", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "all-revisions", "paged", "unpaged", "page-size", "limit", "continue", "has-metadata-key", "count-only"); err != nil {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	if err := canonicalCollectionPreflight(cmd, links, options); err != nil {
@@ -317,20 +348,17 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	}
 	if err != nil {
 		if raw != nil {
-			switch {
-			case errors.Is(err, resourcequery.ErrUnsupported), errors.Is(err, resourcequery.ErrLimit), errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
-				err = errors.Join(graphstore.ErrCapabilityUnavailable, err)
-			case errors.Is(err, resourcequery.ErrUnavailable):
-				err = errors.Join(graphstore.ErrNotFound, err)
-			case errors.Is(err, resourcequery.ErrDataset):
-				err = errors.Join(graphstore.ErrInvalidStore, err)
-			}
+			err = canonicalCollectionEvaluationError(err)
 		}
 		return canonicalReadError(cmd, failure, err, "route_unavailable")
 	}
 	records, err := selectCanonicalCollection(plan, inventory)
 	if err != nil {
 		return canonicalReadError(cmd, failure, err, "route_unavailable")
+	}
+	records, err = plan.fields.Select(ctx, records)
+	if err != nil {
+		return canonicalReadError(cmd, failure, canonicalCollectionEvaluationError(err), "route_unavailable")
 	}
 	closeErr := store.Close()
 	closed = true
@@ -344,6 +372,117 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 // does not change List's result shape, count semantics or delivery controls.
 func collectionASTSelected(cmd *cobra.Command) bool {
 	return cmd.Name() == "list" && cmd.Flags().Lookup("ast") != nil && cmd.Flags().Changed("ast")
+}
+
+func collectionCountSelected(cmd *cobra.Command) bool {
+	if cmd.Name() != "list" || cmd.Flags().Lookup("count-only") == nil {
+		return false
+	}
+	count, _ := cmd.Flags().GetBool("count-only")
+	return count
+}
+
+// New flags opt into the additive graph path. Existing metadata flags retain
+// their old dependency-mode parser and output when that mode is selected.
+func collectionFieldFlagsSelected(cmd *cobra.Command) bool {
+	if cmd.Name() != "list" {
+		return false
+	}
+	for _, name := range []string{"property-field", "has-property-key", "count-only"} {
+		if cmd.Flags().Lookup(name) != nil && cmd.Flags().Changed(name) {
+			return true
+		}
+	}
+	return graphPreviewActive && (cmd.Flags().Changed("metadata-field") || cmd.Flags().Changed("has-metadata-key"))
+}
+
+// Read the stored arguments directly: GetStringArray's CSV round trip turns a
+// sole explicit empty argument into an empty slice, hiding invalid field keys.
+func collectionFieldArguments(cmd *cobra.Command, name string) ([]string, error) {
+	flag := cmd.Flags().Lookup(name)
+	if flag == nil || flag.Value.Type() != "stringArray" {
+		return nil, fmt.Errorf("--%s must be a string-array flag", name)
+	}
+	value, ok := flag.Value.(pflag.SliceValue)
+	if !ok {
+		return nil, fmt.Errorf("--%s does not expose its arguments", name)
+	}
+	return value.GetSlice(), nil
+}
+
+func collectionFieldConditions(cmd *cobra.Command) (*graphread.LegacyListFields, error) {
+	var fields []graphread.LegacyListField
+	for _, namespace := range []string{"properties", "metadata"} {
+		flag := "property-field"
+		presence := "has-property-key"
+		if namespace == "metadata" {
+			flag, presence = "metadata-field", "has-metadata-key"
+		}
+		values, err := collectionFieldArguments(cmd, flag)
+		if err != nil {
+			return nil, err
+		}
+		for _, value := range values {
+			key, text, ok := strings.Cut(value, "=")
+			if !ok {
+				return nil, fmt.Errorf("--%s requires KEY=VALUE", flag)
+			}
+			if err := storage.ValidateMetadataKey(key); err != nil {
+				return nil, fmt.Errorf("--%s: %w", flag, err)
+			}
+			fields = append(fields, graphread.LegacyListField{Namespace: namespace, Key: key, Value: text})
+		}
+		var keys []string
+		if namespace == "metadata" {
+			if cmd.Flags().Changed(presence) {
+				key, _ := cmd.Flags().GetString(presence)
+				keys = append(keys, key)
+			}
+		} else {
+			keys, err = collectionFieldArguments(cmd, presence)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for _, key := range keys {
+			if err := storage.ValidateMetadataKey(key); err != nil {
+				return nil, fmt.Errorf("--%s: %w", presence, err)
+			}
+			fields = append(fields, graphread.LegacyListField{Namespace: namespace, Key: key, Presence: true})
+		}
+	}
+	return graphread.CompileLegacyListFields(fields)
+}
+
+func canonicalCollectionCountDescriptor() clioutput.Descriptor {
+	return clioutput.Descriptor{BDPSpec: bdpwire.Pin, ResultKind: "aggregate", Protection: &clioutput.Protection{Required: []string{"count"}}}
+}
+
+func canonicalCollectionEvaluationError(err error) error {
+	switch {
+	case errors.Is(err, resourcequery.ErrUnsupported), errors.Is(err, resourcequery.ErrLimit), errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
+		return errors.Join(graphstore.ErrCapabilityUnavailable, err)
+	case errors.Is(err, resourcequery.ErrUnavailable):
+		return errors.Join(graphstore.ErrNotFound, err)
+	case errors.Is(err, resourcequery.ErrDataset):
+		return errors.Join(graphstore.ErrInvalidStore, err)
+	default:
+		return err
+	}
+}
+
+// Resource field masks have already been validated by the collection renderer.
+// They cannot change an aggregate; only envelope delivery applies to its result.
+func canonicalCollectionCountOptions(options clioutput.Options) clioutput.Options {
+	options.Include = nil
+	var omit []string
+	for _, path := range options.Omit {
+		if path == "envelope" {
+			omit = append(omit, path)
+		}
+	}
+	options.Omit = omit
+	return options
 }
 
 func readCollectionAST(cmd *cobra.Command, links bool) ([]byte, error) {
@@ -405,7 +544,16 @@ func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread
 	return filtered, nil
 }
 
-func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan, records []json.RawMessage, failure canonicalCollectionFailure) error {
+func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan, records []json.RawMessage, failure canonicalFailureRenderer) error {
+	if plan.countOnly {
+		renderer, err := clioutput.New(canonicalCollectionCountDescriptor(), canonicalCollectionCountOptions(plan.options))
+		if err != nil {
+			return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
+		}
+		return renderCanonicalResult(cmd, renderer, struct {
+			Count int `json:"count"`
+		}{Count: len(records)})
+	}
 	if records == nil {
 		records = []json.RawMessage{}
 	}
