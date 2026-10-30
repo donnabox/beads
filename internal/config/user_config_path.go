@@ -88,6 +88,25 @@ func UserConfigYamlPath() (string, error) {
 	return selectUserConfigYamlPath(currentUserConfigYamlCandidates())
 }
 
+// strictUserConfigYamlPath retains the existing user-config path precedence,
+// but does not treat an inaccessible higher-priority path as an absent file.
+func strictUserConfigYamlPath() (string, error) {
+	candidates := currentUserConfigYamlCandidates()
+	seen := make(map[string]bool, 2)
+	for _, path := range []string{candidates.documented, candidates.native} {
+		if path == "" || seen[path] {
+			continue
+		}
+		seen[path] = true
+		if _, err := os.Stat(path); err == nil {
+			return path, nil
+		} else if !os.IsNotExist(err) {
+			return "", fmt.Errorf("inspect user config %s: %w", path, err)
+		}
+	}
+	return selectUserConfigYamlPath(candidates)
+}
+
 func selectUserConfigYamlPath(candidates userConfigYamlCandidates) (string, error) {
 	if userConfigPathExists(candidates.documented) {
 		return candidates.documented, nil

@@ -19,6 +19,12 @@ func init() {
 // conformsTo predicates. Native bare labels are Beads adapter conveniences;
 // generic BDP relative operands do not use this resolver.
 func graphPreviewCollectionTypes(cmd *cobra.Command, scope string, links bool) (exact, family string, err error) {
+	return graphPreviewCollectionTypesWithDefault(cmd, scope, links, true)
+}
+
+// issueDefault is a caller-selected population policy, independent of the
+// resource kind and of all explicit exact/family selectors.
+func graphPreviewCollectionTypesWithDefault(cmd *cobra.Command, scope string, links, issueDefault bool) (exact, family string, err error) {
 	changed := func(name string) bool {
 		return cmd.Flags().Lookup(name) != nil && cmd.Flags().Changed(name)
 	}
@@ -26,7 +32,7 @@ func graphPreviewCollectionTypes(cmd *cobra.Command, scope string, links bool) (
 		return "", "", fmt.Errorf("--type and --conforms-to both select the Type family; supply only one")
 	}
 	if !changed("type") && !changed("exact-type") && !changed("conforms-to") {
-		if !links {
+		if !links && issueDefault {
 			return "", graphstore.IssueTypeURL(scope), nil
 		}
 		return "", "", nil
