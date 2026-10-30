@@ -188,6 +188,9 @@ var listCmd = &cobra.Command{
 // flags and calls this core directly rather than listCmd.RunE, which would emit
 // a second "list" event for a single user command.
 func runListCore(cmd *cobra.Command, _ []string) error {
+	if dependencyListCountSelected(cmd) {
+		return runDependencyListCount(cmd)
+	}
 	if collectionASTSelected(cmd) || collectionFieldFlagsSelected(cmd) {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "capability_unavailable", "Canonical List field/AST/count execution requires an existing graph-mode link workspace", 5)
 	}

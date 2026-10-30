@@ -1304,7 +1304,14 @@ var rootCmd = &cobra.Command{
 			return err
 		}
 		if canonicalOutputSelected(cmd) {
-			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "capability_unavailable", "canonical Resource output requires a graph workspace", 5)
+			if !dependencyListCountRequested(cmd) {
+				return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "capability_unavailable", "canonical Resource output requires a graph workspace", 5)
+			}
+			// Validate count occurrences even when a final false value would
+			// otherwise hide a true/false conflict. No Resource fallback.
+			if _, err := dependencyListCountRenderer(cmd); err != nil {
+				return err
+			}
 		}
 
 		// Block dangerous env var overrides that could cause data fragmentation (bd-hevyw).

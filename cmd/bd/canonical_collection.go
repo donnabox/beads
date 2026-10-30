@@ -69,7 +69,7 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 		cmd.Flags().StringArray("metadata-field", nil, "Filter by literal metadata key=value; repeat to AND conditions")
 		cmd.Flags().String("has-metadata-key", "", "Require a literal metadata key, including an explicit null")
 	}
-	cmd.Flags().Bool("count-only", false, "Return the exact count of all matches before paging (graph mode only)")
+	cmd.Flags().Bool("count-only", false, "Return the exact count before paging; dependency mode currently supports untyped flat List selections")
 	cmd.Flags().Bool("paged", false, "Return one page in canonical output; current local provider refuses truncation")
 	cmd.Flags().Bool("unpaged", false, "Return the complete bounded current selection in canonical output")
 	cmd.Flags().Int("page-size", 50, "Canonical page size; use --unpaged if the complete local selection exceeds this boundary")

@@ -21,9 +21,9 @@ The field flags are `--property-field KEY=VALUE`, `--has-property-key KEY`, `--m
 
 A missing member fails equality and presence. An explicit JSON null is present. Fixed flags inspect only the candidate's properties or metadata; they cannot dereference a Link endpoint. Optional AST input is recursively checked against the List profile before acquisition, including short-circuited branches. Walks, endpoint dereferencing, reference-set acquisition, nested/global selections and any/all subqueries refuse. A Link's stored endpoint reference remains its own data. The four existing representation-root refusals remain.
 
-Existing dependency-mode metadata flags retain their existing parser, provider and output. New property/count flags refuse there instead of falling into Issue machinery. In graph mode field flags select the additive canonical List path; no new text expression grammar is introduced.
+Existing dependency-mode metadata flags retain their existing parser and provider. Property flags and raw List AST still require graph mode. The additive flat dependency-mode `bd list --count-only --output-format json` adapter reuses the existing List selection and reader, removes delivery paging, and emits a count only after a complete read and successful cleanup. Max-row safeguards remain active. Explicit canonical Type selectors, conflicting metadata equalities, continuation, watch and hierarchical/dependency rendering are refused where this adapter cannot honor them; these are remaining audited gaps, not approved exceptions. In graph mode field flags select the additive canonical List path; no new text expression grammar is introduced.
 
-The graph-only admission of these new flags is an explicit cross-mode audit item, not an approved permanent exception or a claim of canonical/compat profile support. Before claiming cross-mode completeness, account for an additive dependency-mode adapter or obtain an explicit scoped disposition. Existing dependency-mode behavior must stay unchanged. Cosmetic output normalization may wait; selection, exact counts, identity/revision, completeness and errors remain substantive.
+Remaining dependency-mode property/AST filtering and canonical Type-authority gaps are explicit cross-mode audit items, not approved permanent exceptions or claims of full canonical/compat support. The flat count adapter described below is additive and does not close those gaps. Existing dependency-mode selection behavior must stay unchanged. Cosmetic output normalization may wait; selection, exact counts, identity/revision, completeness and errors remain substantive.
 
 ## Settled compatibility rule
 
@@ -39,7 +39,7 @@ The executed native differential compares old SQL-backed Issue-search metadata p
 
 Donna confirmed `bd list --count-only` and `bd link list --count-only`. Exact Count applies to the complete intersection above, before page boundaries or delivery limits. Valid Resource field masks cannot change its value; only envelope delivery carries to the aggregate. Aggregate output uses existing `clioutput` rendering with `result_kind: aggregate` and a protected `count` field. Existing legacy `bd count`/grouped-count behavior is not changed in this slice.
 
-The evaluator already supports a `count` result form, but the retained public List AST remains a Resource-selection document. The CLI's count-only result operation counts the complete List selection including Type and endpoint selectors; it does not count a returned page or discard a refusal. An acquisition bound/error is never an exact partial total. Current execution still captures and evaluates the checked inventory: this is not a claim of SQL COUNT pushdown or improved storage latency.
+For graph-mode List, the evaluator already supports a `count` result form, but the retained public List AST remains a Resource-selection document. The CLI's count-only result operation counts the complete List selection including Type and endpoint selectors; it does not count a returned page or discard a refusal. An acquisition bound/error is never an exact partial total. Current execution still captures and evaluates the checked inventory: this is not a claim of SQL COUNT pushdown or improved storage latency.
 
 ## Review and qualification
 
@@ -52,3 +52,11 @@ The bounded executions cover recursive List AST admission, literal keys and name
 Published user CLI documentation remains pinned to release `v1.2.2` through `docs/cli-docs.pin`. This unreleased candidate does not move that pin or hand-edit generated CLI reference files. Its source help and this contributor note describe the proposed follow-on.
 
 Separate pure Type-affiliation hardening is published in fork draft PR365 at `d32230778fa74b69ac7d357893d06cb64e71a342`, based on this same361 commit. Its four files do not overlap this follow-on's Go edits. It is not silently adopted here: receiving composition and native acquisition remain separate owner-reviewed steps.
+
+## Dependency-mode count follow-on
+
+The flat dependency Count adapter uses `IssueReader.List` through the shared complete-List helper. It preserves visibility, ready, parent, label, metadata and Issue/wisp selection policy; the legacy Count reader has different population/readiness behavior and is not substituted. Delivery limits/cursors are removed, Resource masks are validated before their aggregate effect is discarded, and malformed, duplicate-ID, truncated, capped, canceled or failed reads produce an error without a partial count. Existing `bd count` remains unchanged.
+
+Qualification uses separate exact-source results: WorkAPI four roots/nine named cases from the initial cohort, eighteen passing command roots from the next cohort, then the corrected error-helper root containing all six plain-loop rows plus fmt/CI-nogo-race and two normal generation fixed points. The two historical failed cohorts remain recorded as failures. The final cause-specific run passed one named RUN/PASS/XML root and fmt, with 92 settled natural-zero children, 184 raw streams and unchanged 6,163 source/index facts. The six rows are not six separately logged subtests. This does not establish a new whole-cohort pass, native/store/server CLI behavior, installation, complete canonical coverage or main readiness.
+
+The public documentation pin remains unchanged. This contributor note records development source behavior and evidence; it does not advertise support in the pinned release.
