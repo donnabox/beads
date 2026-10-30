@@ -6728,6 +6728,17 @@ func requireWorkflowProducesArtifact(t *testing.T, file, name, artifact string) 
 	}
 }
 
+func TestDocsAutofixRequiresPatchBeforeCredentials(t *testing.T) {
+	job := readCIWorkflow(t, "docs-autofix.yml").job(t, "autofix")
+	appToken := job.step(t, "Mint autofix app token")
+	if appToken.If != "steps.patch.outputs.found == 'true' && github.event.workflow_run.head_repository.full_name == github.repository" {
+		t.Errorf("app-token step if = %q, want an actual patch and the same-repo check", appToken.If)
+	}
+	if job.stepIndex(t, "Download docs freshness patch (if any)") >= job.stepIndex(t, appToken.Name) {
+		t.Error("docs patch discovery must precede credential minting")
+	}
+}
+
 // Both autofix workflows push to the same PR branches. Job-level concurrency
 // (skipped runs take no part) in ONE group per head branch, never cancelling:
 // they queue instead of racing, and an unrelated completion cannot cancel a
