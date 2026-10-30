@@ -9,8 +9,8 @@ import (
 // Upstream's final survival-shape/behavior controls are preserved at the
 // forward extension. The signed-off fork0071 CREATE remains byte-for-byte
 // frozen; no premise that its old schema was never applied is used here.
-func TestMigration0074ExtendsSurvivalWithoutRewritingFrozenBase(t *testing.T) {
-	upSQL, err := MigrationSQL("0074_extend_epoch_survival.up.sql")
+func TestMigration0075ExtendsSurvivalWithoutRewritingFrozenBase(t *testing.T) {
+	upSQL, err := MigrationSQL("0075_extend_epoch_survival.up.sql")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,25 +45,25 @@ func TestMigration0074ExtendsSurvivalWithoutRewritingFrozenBase(t *testing.T) {
 			t.Errorf("frozen base unexpectedly contains %s", name)
 		}
 	}
-	direct := cliCompatibleMigrationSQL("0074_extend_epoch_survival.up.sql", upSQL)
+	direct := cliCompatibleMigrationSQL("0075_extend_epoch_survival.up.sql", upSQL)
 	if strings.Contains(strings.ToUpper(direct), "PREPARE") || direct == upSQL {
 		t.Error("fresh CLI bundle needs direct-DDL override")
 	}
 }
 
-func TestLatestVersionIncludesMigration0074(t *testing.T) {
-	if got := LatestVersion(); got != 74 {
-		t.Fatalf("LatestVersion=%d,want74 forward epoch survival extension", got)
+func TestLatestVersionIncludesMigration0075(t *testing.T) {
+	if got := LatestVersion(); got != 75 {
+		t.Fatalf("LatestVersion=%d,want75 forward epoch survival extension", got)
 	}
 }
 
-// TestMigration0074RecordsSurvivalInTheAddressTableThroughDoltCLI applies the
+// TestMigration0075RecordsSurvivalInTheAddressTableThroughDoltCLI applies the
 // full migration bundle through a real `dolt` binary (skipped without one, see
 // testutil.RequireDoltBinary) and checks what a pure-Go SQL-text check cannot:
 // the column types and nullability Dolt reports, the index it actually built,
 // and that the CHECK is enforced on both INSERT and UPDATE, with the boundary
 // it is meant to have.
-func TestMigration0074RecordsSurvivalInTheAddressTableThroughDoltCLI(t *testing.T) {
+func TestMigration0075RecordsSurvivalInTheAddressTableThroughDoltCLI(t *testing.T) {
 	testutil.RequireDoltBinary(t)
 
 	dir := t.TempDir()

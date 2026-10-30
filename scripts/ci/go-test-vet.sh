@@ -18,7 +18,7 @@ source "$REPO_ROOT/scripts/ci/lib/timing.sh"
 
 cd "$REPO_ROOT"
 
-GO_TEST_VET_FLAGS=(-atomic -bool -buildtags -directive -errorsas -ifaceassert -nilfunc -printf -slog -stringintconv -tests)
+GO_TEST_VET_FLAGS=(-atomic -bools -buildtag -directive -errorsas -ifaceassert -nilfunc -printf -slog -stdversion -stringintconv -tests)
 
 ci_time "go vet (go test's checks)" -- \
     go vet -tags gms_pure_go "${GO_TEST_VET_FLAGS[@]}" ./...

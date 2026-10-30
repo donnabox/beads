@@ -158,7 +158,11 @@ func bazelCallOutputValueIn(t *testing.T, name string, jobs, with map[string]str
 		// union's per-tier keys: must-fix 2). jobs is keyed by job name only,
 		// so every reference to a given job resolves to the same simulated
 		// value regardless of which output key reads it.
-		ctx[m[0]] = jobs[m[1]]
+		value, specified := jobs[m[1]+"."+m[2]]
+		if !specified {
+			value = jobs[m[1]]
+		}
+		ctx[m[0]] = value
 	}
 	v, err := evalGHExpr(expr, ctx)
 	if err != nil {
@@ -480,7 +484,7 @@ func TestBazelDoltRaceArmsExactlyOnePerMode(t *testing.T) {
 		t.Fatalf("members %v, want bazelUnionLanes' %v", got, bazelUnionLanes[bazelDoltRaceJobName])
 	}
 	for name, m := range members {
-		if got, want := workflow.job(t, name).If, withDoltTiers(m.ifExpr); got != want {
+		if got, want := workflow.job(t, name).If, withFullLocalTier(withDoltTiers(m.ifExpr)); got != want {
 			t.Errorf("%s if = %q, want %q", name, got, want)
 		}
 	}

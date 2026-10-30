@@ -157,7 +157,7 @@ func TestForkFullLocalWorkflowUsesDedicatedRecordedResults(t *testing.T) {
 			}
 			actual = step.Env
 		}
-		if step.ID == "result" && step.If == "always()" && step.Run == `echo "result=${{ job.status }}" >> "$GITHUB_OUTPUT"` && (step.ContinueOnError == nil || step.ContinueOnError == false) {
+		if step.ID == "result" && step.If == "always()" && step.Run == `echo "result=$JOB_STATUS" >> "$GITHUB_OUTPUT"` && step.Env["JOB_STATUS"] == "${{ job.status }}" && (step.ContinueOnError == nil || step.ContinueOnError == false) {
 			recorded = true
 		}
 	}

@@ -590,6 +590,11 @@ func TestCIScopePRGate(t *testing.T) {
 		}
 		var want []string
 		for _, id := range wantSkips[event] {
+			// With coverage false, retirement derivatives succeed; only
+			// the absent raw execution facts consume a scope skip.
+			if event == "push" && slices.Contains([]string{"BAZEL_EMBEDDED_RETIRED", "BAZEL_DOLT_SERVER_RETIRED", "BAZEL_PR_LANES_RETIRED"}, id) {
+				continue
+			}
 			if contains(required, id) {
 				want = append(want, id)
 			}

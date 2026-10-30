@@ -55,7 +55,8 @@ const sameRepoBlacksmithWindows4vcpu = "${{ github.repository_owner == 'gastownh
 const sameRepoBlacksmithWindows8vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-8vcpu-windows-2025' || 'windows-latest' }}"
 const sameRepoBlacksmithWindows16vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-16vcpu-windows-2025' || 'windows-latest' }}"
 
-// bazel.yml's lanes pick their runner from the rbe job's decision alone
+// bazel.yml keeps forks on GitHub-hosted runners. Upstream lanes pick
+// their runner from the rbe job's decision
 // (TestBazelRBEJobDecidesOnce): Blacksmith in modes remote and cache,
 // GitHub-hosted otherwise. Mode cache reads rbe-cache (rbe-west's anonymous
 // read-only cache), which refuses GitHub-hosted runners, so its lanes (an
@@ -63,7 +64,7 @@ const sameRepoBlacksmithWindows16vcpu = "${{ github.repository_owner == 'gastown
 // bazelRemoteRunsOn builds that ternary for one Blacksmith size so every
 // lane's pinned runs-on is the same literal apart from the label.
 func bazelRemoteRunsOn(label string) string {
-	return "${{ (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '" + label + "' || 'ubuntu-latest' }}"
+	return "${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '" + label + "' || 'ubuntu-latest' }}"
 }
 
 // bazelRRCCacheReaderRunsOn is bazelRemoteRunsOn for the lanes that read the
@@ -73,7 +74,7 @@ func bazelRemoteRunsOn(label string) string {
 // move under them. (Mode cache itself now runs on Blacksmith's
 // ubuntu-2404, the family rrc-seed writes from.)
 func bazelRRCCacheReaderRunsOn(label string) string {
-	return "${{ (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '" + label + "' || 'ubuntu-24.04' }}"
+	return "${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '" + label + "' || 'ubuntu-24.04' }}"
 }
 
 // bazelBlacksmithModes: the modes in which bazelRemoteRunsOn picks the
@@ -116,7 +117,7 @@ var bazelPackageRunsOn = map[string]string{
 // package-mcp's BEADS_MCP_PYTEST_WORKERS: 16 xdist workers on the 8 vCPU
 // Blacksmith runner (modes remote and cache), package-mcp.sh's default 8 on
 // the GitHub-hosted fallback (forks, Dependabot, rbe off/skip).
-const bazelMCPPytestWorkers = "${{ (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '16' || '8' }}"
+const bazelMCPPytestWorkers = "${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '16' || '8' }}"
 
 // Same-repo Blacksmith macOS (Apple Silicon M4, ARM64). Pinned to macos-26
 // rather than blacksmith-*-macos-latest because GitHub's macos-latest (the
@@ -688,7 +689,7 @@ func TestBlacksmithBazelRunnerSizes(t *testing.T) {
 		t.Errorf("package-mcp Run MCP package gate BEADS_MCP_PYTEST_WORKERS = %q, want %q", got, bazelMCPPytestWorkers)
 	}
 	for _, mode := range []string{"remote", "fork-ro", "fork-rw", "local", "cache", "skip"} {
-		ctx := map[string]string{"needs.rbe.outputs.mode": mode}
+		ctx := map[string]string{"needs.rbe.outputs.mode": mode, "github.repository_owner": "gastownhall"}
 		for name, job := range workflow.Jobs {
 			if name == bazelRBEJobName || isBazelRRCJob(name) {
 				continue // rrc jobs: push/schedule only, never a fork (literal label)

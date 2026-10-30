@@ -315,7 +315,7 @@ func TestPRLegacyLanesDeferToBazelLanes(t *testing.T) {
 	add("merge_group, covered, remote, lanes passed, legacy skipped", prGateFor(t, lanes, "merge_group", "remote", cov("true")), true, "")
 	for _, lane := range tier.bazelLanes {
 		sc := prGateFor(t, lanes, "merge_group", "remote", cov("true"))
-		sc.outputs[lane] = "failure"
+		setBazelTierOutcome(sc.outputs, lane, "remote", "failure")
 		add("merge_group, covered, "+lane+" failed", sc, false, tier.retiredID)
 	}
 	for _, mode := range []string{"skip", "cache"} {
@@ -332,7 +332,7 @@ func TestPRLegacyLanesDeferToBazelLanes(t *testing.T) {
 		add("not covered, mode "+mode+", legacy ran", prGateFor(t, lanes, "pull_request", mode, cov("false")), true, "")
 	}
 	for _, mode := range []string{"local", "cache"} {
-		add("not covered, mode "+mode+", legacy ran", prGateFor(t, lanes, "pull_request", mode, cov("false")), true, "")
+		add("not covered, mode "+mode+", legacy ran", prGateFor(t, lanes, "pull_request", mode, cov("false")), false, "BAZEL_REMOTE")
 	}
 	for job, id := range tier.jobs {
 		// Covered, but the job ran anyway and failed: red.
@@ -349,7 +349,7 @@ func TestPRLegacyLanesDeferToBazelLanes(t *testing.T) {
 	for _, lane := range tier.bazelLanes {
 		for _, res := range []string{"failure", "cancelled", "skipped", ""} {
 			sc := prGateFor(t, lanes, "pull_request", "remote", cov("true"))
-			sc.outputs[lane] = res
+			setBazelTierOutcome(sc.outputs, lane, "remote", res)
 			add(fmt.Sprintf("covered, %s %q", lane, res), sc, false, tier.retiredID)
 		}
 	}
@@ -544,11 +544,11 @@ func testPackageGateJobs(t *testing.T, prGateRequired []string) {
 		// the now-deleted main.yml package jobs.
 		langStep := job.step(t, lane.langStepName)
 		if lane.job == bazelPackageMCPJobName {
-			if langStep.Uses != "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97" || langStep.With["python-version"] != "3.14" {
+			if langStep.Uses != "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97" || langStep.With["python-version"] != "3.14.10" {
 				t.Errorf("%s Python setup changed: uses %q, with %v", lane.job, langStep.Uses, langStep.With)
 			}
 			installUv := job.step(t, "Install uv")
-			if installUv.Run != "python -m pip install uv==0.11.16" {
+			if installUv.Run != "python -m pip install uv==0.13.6" {
 				t.Errorf("%s Install uv: run %q", lane.job, installUv.Run)
 			}
 		} else if langStep.Uses != "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020" || langStep.With["node-version"] != "24" {
@@ -574,7 +574,7 @@ func TestPRDoltServerFingerprintRunsOnEveryPR(t *testing.T) {
 	// F7a: moved to the same same-repo Blacksmith expression every other
 	// cache-free same-repo pr.yml job uses; forks/Dependabot still fall back
 	// to ubuntu-latest (TestSameRepoBlacksmithRunners covers that fallback).
-	if job.If != "" || len(job.Needs) != 0 || job.ContinueOnError || job.RunsOn != sameRepoBlacksmith2vcpu || job.TimeoutMinutes == 0 {
+	if job.If != "${{ needs.scope.outputs.linux == 'true' }}" || !reflect.DeepEqual([]string(job.Needs), []string{"scope"}) || job.ContinueOnError || job.RunsOn != sameRepoBlacksmith2vcpu || job.TimeoutMinutes == 0 {
 		t.Errorf("%s: if %q, needs %v, continue-on-error %v, runs-on %q, timeout %d; want an unconditional same-repo-Blacksmith job with a timeout",
 			prFingerprintJob, job.If, job.Needs, job.ContinueOnError, job.RunsOn, job.TimeoutMinutes)
 	}
@@ -621,7 +621,7 @@ func TestPRRunsGoTestsBazelSkips(t *testing.T) {
 	job := pr.job(t, prScriptsChecksJob)
 	// F7b: same-repo PRs now run this job on Blacksmith (forks/Dependabot keep
 	// ubuntu-latest); see sameRepoBlacksmith4vcpu in ci_blacksmith_runner_test.go.
-	if job.If != "" || job.ContinueOnError || len(job.Needs) != 0 || job.RunsOn != sameRepoBlacksmith4vcpu || job.TimeoutMinutes == 0 {
+	if job.If != "${{ needs.scope.outputs.linux == 'true' }}" || job.ContinueOnError || !reflect.DeepEqual([]string(job.Needs), []string{"scope"}) || job.RunsOn != sameRepoBlacksmith4vcpu || job.TimeoutMinutes == 0 {
 		t.Errorf("%s: if %q, continue-on-error %v, needs %v, runs-on %q, timeout %d; want an unconditional same-repo-Blacksmith job with a timeout",
 			prScriptsChecksJob, job.If, job.ContinueOnError, job.Needs, job.RunsOn, job.TimeoutMinutes)
 	}
@@ -1029,3 +1029,21 @@ func TestGoToolchainNamePadsAMissingPatchComponent(t *testing.T) {
 // `bazel test` adds --config=sole-run, whose lines are exactly no cached
 // test results and no whole-invocation retry after a remote cache eviction;
 // their Bazel steps and configs are pinned exactly.
+
+// setBazelTierOutcome changes the reporter active in this execution mode.
+// Per-tier union output keys keep its neighbor's success independent.
+func setBazelTierOutcome(outputs map[string]string, lane, mode, result string) {
+	if mode == "remote" {
+		keys := map[string]string{
+			bazelDoltJobName:    bazelDoltRaceJobName + ".result",
+			bazelProxiedJobName: bazelDoltRaceJobName + ".result",
+			bazelServerJobName:  bazelDoltIntJobName + ".server_storage_result",
+			bazelCmdDoltJobName: bazelDoltIntJobName + ".cmd_dolt_result",
+		}
+		if key, found := keys[lane]; found {
+			outputs[key] = result
+			return
+		}
+	}
+	outputs[lane] = result
+}

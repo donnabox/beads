@@ -9,7 +9,7 @@ import (
 	"unicode"
 )
 
-const forkEpochExtensionVersion = 74
+const forkEpochExtensionVersion = 75
 
 // EpochMigrationCompatibilityError refuses an unrecognized migration lineage
 // or an epoch format for which this binary has no loss-preserving adapter.
@@ -30,7 +30,8 @@ var forkEpochLineageFiles = map[int]string{
 	71: "0071_add_epoch_minted_addresses.up.sql",
 	72: "0072_add_participation_generation.up.sql",
 	73: "0073_add_arrival_seq.up.sql",
-	74: "0074_extend_epoch_survival.up.sql",
+	74: "0074_create_id_tombstones.up.sql",
+	75: "0075_extend_epoch_survival.up.sql",
 }
 
 // checkForkEpochAdmission must run before bootstrap, ignored-state repair or
@@ -74,7 +75,7 @@ func checkForkEpochAdmission(ctx context.Context, db DBConn, target int) error {
 		if !hasHash {
 			return epochCompatibility("collision-range cursor has no content_hash column")
 		}
-		rows, err := db.QueryContext(ctx, "SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 74 ORDER BY version")
+		rows, err := db.QueryContext(ctx, "SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 75 ORDER BY version")
 		if err != nil {
 			return fmt.Errorf("reading collision-range lineage: %w", err)
 		}

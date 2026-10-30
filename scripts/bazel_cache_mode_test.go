@@ -232,7 +232,7 @@ func TestBazelCacheModeReachesTheRC(t *testing.T) {
 
 			var lanes []string
 			for name, job := range workflow.Jobs {
-				if name == bazelRBEJobName || isBazelRRCJob(name) || name == bazelDispatchCoverageJobName {
+				if name == bazelRBEJobName || isBazelRRCJob(name) || name == bazelDispatchCoverageJobName || name == "bazel-local-coverage" {
 					continue // not lanes: never in a PR call (bazel_rrc_test.go)
 				}
 				runs := bazelLaneRunModes(t, name, job.If, s.with)[mode]
@@ -262,7 +262,7 @@ func TestBazelCacheModeReachesTheRC(t *testing.T) {
 				// rbe-cache refuses GitHub-hosted runners: every lane that
 				// runs in mode cache is on Blacksmith.
 				if mode == "cache" {
-					if got := mustEvalGHRunsOn(t, job.RunsOn, map[string]string{"needs.rbe.outputs.mode": mode}); !strings.HasPrefix(got, "blacksmith-") {
+					if got := mustEvalGHRunsOn(t, job.RunsOn, map[string]string{"needs.rbe.outputs.mode": mode, "github.repository_owner": "gastownhall"}); !strings.HasPrefix(got, "blacksmith-") {
 						t.Errorf("%s runs in mode cache on %q, want a Blacksmith runner (rbe-cache refuses GitHub-hosted ones)", name, got)
 					}
 				}

@@ -194,7 +194,7 @@ func cliCompatibleMigrationSQL(name, sqlText string) string {
 		// the wisp tables must use the frozen source text instead -- see
 		// cliSubstituteAssumesWispTables.
 		return cliMigration0073AddArrivalSeq
-	case "0074_extend_epoch_survival.up.sql":
+	case "0075_extend_epoch_survival.up.sql":
 		// Fresh bundle only: frozen0071 created the base table without these
 		// objects. This is not an adapter for existing or partial stores.
 		return cliMigration0074ExtendEpochSurvival

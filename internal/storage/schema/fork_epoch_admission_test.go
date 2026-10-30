@@ -71,7 +71,7 @@ func TestEpochAdmissionRefusesAmbiguousLineageBeforeWrites(t *testing.T) {
 		hash       any
 		hasRow     bool
 	}{
-		{"future cursor", 75, false, nil, false},
+		{"future cursor", 76, false, nil, false},
 		{"missing hash column", 70, false, nil, false},
 		{"NULL hash", 70, true, nil, true},
 		{"missing collision row", 70, true, nil, false},
@@ -97,7 +97,7 @@ func TestEpochAdmissionRefusesAmbiguousLineageBeforeWrites(t *testing.T) {
 					if test.hasRow {
 						rows.AddRow(70, test.hash)
 					}
-					mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 74 ORDER BY version")).WillReturnRows(rows)
+					mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 75 ORDER BY version")).WillReturnRows(rows)
 				}
 			}
 			err = checkForkEpochAdmission(context.Background(), guard, forkEpochExtensionVersion)
@@ -160,7 +160,7 @@ func expectSelectedEpochLineage(t *testing.T, mock sqlmock.Sqlmock, version int)
 		}
 		rows.AddRow(v, fmt.Sprintf("%x", sha256.Sum256(data)))
 	}
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 74 ORDER BY version")).WillReturnRows(rows)
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 75 ORDER BY version")).WillReturnRows(rows)
 }
 
 func TestEpochAdmissionDistinguishesOldAndCompletedData(t *testing.T) {
@@ -169,12 +169,12 @@ func TestEpochAdmissionDistinguishesOldAndCompletedData(t *testing.T) {
 		version, target        int
 		full, occupied, refuse bool
 	}{
-		{"empty old table without writer fence", 72, 74, false, false, true},
-		{"occupied old table", 72, 74, false, true, true},
-		{"occupied pending extension", 73, 74, true, true, true},
-		{"empty pending extension without writer fence", 73, 74, true, false, true},
-		{"completed extension retains rows", 74, 74, true, true, false},
-		{"completed cursor with old shape", 74, 74, false, false, true},
+		{"empty old table without writer fence", 72, 75, false, false, true},
+		{"occupied old table", 72, 75, false, true, true},
+		{"occupied pending extension", 73, 75, true, true, true},
+		{"empty pending extension without writer fence", 73, 75, true, false, true},
+		{"completed extension retains rows", 75, 75, true, true, false},
+		{"completed cursor with old shape", 75, 75, false, false, true},
 		{"default target refuses occupied old", 72, 0, false, true, true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
@@ -225,9 +225,9 @@ func TestEpochAdmissionRejectsChangedIndexOrDisabledCheck(t *testing.T) {
 			defer db.Close()
 			guard := &admissionNoWrites{DB: db}
 			expectAdmissionTables(mock, true, true)
-			expectSelectedEpochLineage(t, mock, 74)
+			expectSelectedEpochLineage(t, mock, 75)
 			expectEpochMetadata(mock, true, test.prefix, test.enforced)
-			err = checkForkEpochAdmission(context.Background(), guard, 74)
+			err = checkForkEpochAdmission(context.Background(), guard, 75)
 			var refused *EpochMigrationCompatibilityError
 			if !errors.As(err, &refused) {
 				t.Fatalf("unsafe metadata admitted: %v", err)
@@ -251,7 +251,7 @@ func TestEpochAdmissionTableDiscoveryFailureIsNotFresh(t *testing.T) {
 	guard := &admissionNoWrites{DB: db}
 	failed := errors.New("catalog unavailable")
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = DATABASE()")).WillReturnError(failed)
-	err = checkForkEpochAdmission(context.Background(), guard, 74)
+	err = checkForkEpochAdmission(context.Background(), guard, 75)
 	if !errors.Is(err, failed) {
 		t.Fatalf("catalog failure treated as fresh or lost: %v", err)
 	}
@@ -282,7 +282,7 @@ func TestMigrationAuthorityDoesNotBypassOccupiedEpochRefusal(t *testing.T) {
 	}{
 		{"local consent", func() { SetLocalMigrateConsent(true) }, MigrateUp},
 		{"force consent", func() { SetForceAllowRemoteMigrate(true) }, MigrateUp},
-		{"historical API at latest", func() {}, func(ctx context.Context, db DBConn) (int, error) { return MigrateUpTo(ctx, db, 74) }},
+		{"historical API at latest", func() {}, func(ctx context.Context, db DBConn) (int, error) { return MigrateUpTo(ctx, db, 75) }},
 		{"bootstrap consent seam", func() {}, migrateUpConsented},
 	} {
 		t.Run(route.name, func(t *testing.T) {

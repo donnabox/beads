@@ -2524,7 +2524,9 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 		}
 	}
 	sort.Strings(names)
-	if !reflect.DeepEqual(names, bazelJobNames) {
+	wantNames := slices.Clone(bazelJobNames)
+	sort.Strings(wantNames)
+	if !reflect.DeepEqual(names, wantNames) {
 		t.Errorf("%s jobs = %v, want %v", bazelWorkflowName, names, bazelJobNames)
 	}
 	// Every lane needs the rbe job and takes its runner, skip rule and
@@ -2536,8 +2538,8 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 	// GitHub-hosted runner. Only mode remote gets the secrets; fork modes get
 	// BAZEL_FORK_REMOTE (setup-bazel mints the certificate), cache runs
 	// BAZEL_FORK_CACHE.
-	const wantRunsOn = "${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
-	const wantRunsOnUbuntu24 = "${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-24.04' }}"
+	wantRunsOn := bazelLaneRunsOn
+	wantRunsOnUbuntu24 := bazelRRCCacheReaderRunsOn("blacksmith-4vcpu-ubuntu-2404")
 	// Local-capable lanes skip only in mode skip (same-repo, RBE_WEST_WORKERS
 	// unset); remote-only lanes (27 race processes and more, an hour or more
 	// on a GitHub-hosted runner, for tests the Go jobs already run there)
@@ -2605,13 +2607,13 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 		// tests pin the member targets and workflow_call result mapping.
 		switch name {
 		case bazelJobName:
-			wantJobRunsOn = "${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-24.04' }}"
+			wantJobRunsOn = bazelRRCCacheReaderRunsOn("blacksmith-8vcpu-ubuntu-2404")
 		case bazelPureJobName, bazelIntegJobName, bazelCmdDoltJobName, bazelDoltJobName:
 			wantJobRunsOn = wantRunsOnUbuntu24
 		case bazelPackageMCPJobName:
-			wantJobRunsOn = "${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
+			wantJobRunsOn = bazelPackageRunsOn[name]
 		case bazelRBEPrewarmJobName:
-			wantJobRunsOn = "${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
+			wantJobRunsOn = bazelPrewarmRunsOn
 		}
 		if name == bazelReleaseCrossJobName {
 			// Cross-compilation does not read repository contents during tests;
@@ -2669,7 +2671,7 @@ func TestMCPPytestWorkerCountPinned(t *testing.T) {
 		t.Errorf("scripts/ci/package-mcp.sh mcp_pytest() must default to eight bounded workers and pass that count to pytest")
 	}
 	bazelWorkflow := readPolicyFile(t, root, ".github/workflows/bazel.yml")
-	if !strings.Contains(bazelWorkflow, "BEADS_MCP_PYTEST_WORKERS: ${{ needs.rbe.outputs.mode == 'remote' && '16' || '8' }}") {
+	if !strings.Contains(bazelWorkflow, "BEADS_MCP_PYTEST_WORKERS: "+bazelMCPPytestWorkers) {
 		t.Errorf("bazel.yml must choose 16 workers only in remote mode and eight otherwise")
 	}
 	if strings.Contains(script, "-n auto") {
@@ -3484,6 +3486,12 @@ func bazelLaneRunModes(t *testing.T, lane, ifExpr string, with map[string]string
 // mode/scope rules; only six named dedicated jobs have a Q alternate.
 func bazelLaneRunModesWithLocalProof(t *testing.T, lane, ifExpr string, with map[string]string, fullLocal bool) map[string]bool {
 	t.Helper()
+	if lane == "bazel-local-coverage" {
+		if ifExpr != "${{ always() && needs.rbe.outputs.local_full == 'true' }}" {
+			t.Fatalf("invalid result-only complete-local guard: %s", ifExpr)
+		}
+		return map[string]bool{} // Independently required proof, not an execution lane.
+	}
 	const qPrefix = "${{ needs.rbe.outputs.local_full == 'true' || ("
 	if body, ok := strings.CutPrefix(ifExpr, qPrefix); ok {
 		allowed := map[string]bool{bazelEmbedJobName: true, bazelIntegJobName: true, bazelDoltJobName: true, bazelProxiedJobName: true, bazelServerJobName: true, bazelCmdDoltJobName: true}
@@ -4531,7 +4539,7 @@ func TestBazelDoltJobMirrorsContainerJobs(t *testing.T) {
 	if got := bazel.job(t, bazelDoltJobName).If; !strings.Contains(got, "mode != 'remote'") {
 		t.Errorf("%s if = %q; the member lane must stand down for the remote union", bazelDoltJobName, got)
 	}
-	if got := bazel.job(t, bazelDoltRaceJobName).If; got != "${{ needs.rbe.outputs.mode == 'remote' }}" {
+	if got := bazel.job(t, bazelDoltRaceJobName).If; got != withDoltTiers("${{ needs.rbe.outputs.mode == 'remote' }}") {
 		t.Errorf("%s if = %q; the union must run only in remote mode", bazelDoltRaceJobName, got)
 	}
 	if got := pr.Env["BAZEL_RETIRES_LEGACY_PR_LANES"]; got != "false" {
@@ -5719,10 +5727,11 @@ func TestBazelRBEJobDecidesOnce(t *testing.T) {
 			bazelRBEJobName, job.Needs, job.If, job.RunsOn, job.Env, wantRBERunsOn)
 	}
 	wantOutputs := map[string]string{
-		"enabled": "${{ steps.decide.outputs.enabled }}",
-		"mode":    "${{ steps.decide.outputs.mode }}",
-		"rrc":     "${{ steps.rrc.outputs.rrc }}",
-		"tier":    "${{ steps.decide.outputs.tier }}",
+		"local_full": "${{ steps.decide.outputs.local_full }}",
+		"enabled":    "${{ steps.decide.outputs.enabled }}",
+		"mode":       "${{ steps.decide.outputs.mode }}",
+		"rrc":        "${{ steps.rrc.outputs.rrc }}",
+		"tier":       "${{ steps.decide.outputs.tier }}",
 	}
 	if !reflect.DeepEqual(job.Outputs, wantOutputs) {
 		t.Errorf("%s outputs = %v, want %v", bazelRBEJobName, job.Outputs, wantOutputs)
@@ -5789,6 +5798,23 @@ func TestBazelRBEJobDecidesOnce(t *testing.T) {
 		// decision but decides something else entirely (where the decide
 		// step runs, not what it decides) - not a re-derivation of mode.
 		if path == ".jobs."+bazelRBEJobName+".runs-on" {
+			return
+		}
+		if (path == ".jobs.rrc-seed.runs-on" || path == ".jobs.rrc-verify.runs-on") &&
+			value == "${{ github.repository_owner == 'gastownhall' && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}" {
+			return // Exact reviewed maintenance venue; mode guards stay independent.
+		}
+		// Venue and worker sizing do not re-decide execution mode. Admit only
+		// the shared pinned expressions; the per-job census pins their sizes.
+		if strings.HasSuffix(path, ".runs-on") {
+			for _, size := range []string{"2", "4", "8"} {
+				label := "blacksmith-" + size + "vcpu-ubuntu-2404"
+				if value == bazelRemoteRunsOn(label) || value == bazelRRCCacheReaderRunsOn(label) {
+					return
+				}
+			}
+		}
+		if strings.HasSuffix(path, ".env.BEADS_MCP_PYTEST_WORKERS") && value == bazelMCPPytestWorkers {
 			return
 		}
 		// The checkout opt-in for fork code (TestBazelWorkflowForkFarmInputs

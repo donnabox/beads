@@ -24,8 +24,8 @@ func TestEmbeddedPreEpochSelectedLineageMigrates(t *testing.T) {
 	if _, err := schema.MigrateUp(ctx, conn); err != nil {
 		t.Fatalf("pre-epoch selected upgrade: %v", err)
 	}
-	if got := currentMainVersion(t, ctx, conn); got != 74 {
-		t.Fatalf("cursor%d, want74", got)
+	if got := currentMainVersion(t, ctx, conn); got != 75 {
+		t.Fatalf("cursor%d, want75", got)
 	}
 	// A second ordinary pass must accept the completed actual engine metadata
 	// through the same enforced-shape guard and perform no numbered migration.

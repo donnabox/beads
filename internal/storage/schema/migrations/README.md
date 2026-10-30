@@ -109,7 +109,7 @@ Live is absence of a value, never a stored spelling. Use these underscore
 values; do not copy historical header typography into retained rows.
 
 Fork0070/0071/0072 are immutable and are not upstream's permuted slots.
-Forward0074 adds explicit epoch survival to the frozen0071 base. The Go
+Forward0075 adds explicit epoch survival to the frozen0071 base. The Go
 migration admission guard must validate selected hashes before any bootstrap,
 ignore repair or migration write. Occupied old or partially extended epoch
 stores and unknown/upstream collision-range lineage are deliberately refused;
@@ -117,7 +117,7 @@ this change includes no inferred-loss backfill, cursor rewrite, table reset,
 or generic downgrade adapter. Fresh or recognized pre-epoch state can progress.
 Existing old epoch tables are refused even when empty: migrator advisory locks
 cannot fence already-open old writers. No existing-epoch adapter is provided.
-Completed74 must have the complete enforced shape. Partial epoch DDL is refused
+Completed75 must have the complete enforced shape. Partial epoch DDL is refused
 before repair; its uncommitted debris is preserved without reset or commit.
 Keep migration ownership exclusive throughout checks and apply. Raw `AllMigrationsSQL` is fresh-install
 only, not an existing-store replay/admission API.
