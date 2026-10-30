@@ -113,6 +113,13 @@ func dependencyListCountRendererWithArgs(cmd *cobra.Command, argv []string) (*cl
 	if _, err := clioutput.ResolvePaging(clioutput.PagingOptions{Paged: paged, Unpaged: unpaged, PageSize: pageSize, Limit: limit}, format); err != nil {
 		return nil, dependencyListCountFailure(cmd, failure, errors.Join(resourcequery.ErrInvalid, err))
 	}
+	// This fallback reuses the compatibility Issue selection. Canonical graph
+	// count is handled before this boundary; output formatting alone does not
+	// opt into the canonical population contract. Validate syntax first, then
+	// refuse the semantic profile before legacy selection or reader acquisition.
+	if canonicalCLIProfileSelected(cmd) {
+		return nil, dependencyListCountFailure(cmd, failure, fmt.Errorf("%w: canonical List count requires a graph workspace; dependency List count is compat-only", graphstore.ErrCapabilityUnavailable))
+	}
 	return renderer, nil
 }
 

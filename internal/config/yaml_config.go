@@ -24,6 +24,9 @@ import (
 // not.
 var ErrNoProjectConfigYaml = errors.New("no project config.yaml in this workspace")
 
+// CLIProfileKey is a proposed receiving spelling, not an adopted protocol key.
+const CLIProfileKey = "cli.profile"
+
 // YamlOnlyKeys are configuration keys that must be stored in config.yaml
 // rather than the database. These are "startup" settings that are
 // read before the database is opened.
@@ -32,6 +35,7 @@ var ErrNoProjectConfigYaml = errors.New("no project config.yaml in this workspac
 // appeared to succeed but had no effect (because no-db is read from yaml
 // at startup, not from the database).
 var YamlOnlyKeys = map[string]bool{
+	CLIProfileKey: true,
 	// Bootstrap flags (affect how bd starts)
 	"no-db": true,
 	"json":  true,
@@ -372,6 +376,7 @@ var userGlobalKeyPrefixes = []string{"metrics."}
 // to ~/.config/bd/config.yaml keeps it per-machine; viper still merges that
 // file, so config.NodeID() reads it back.
 var userGlobalExactKeys = map[string]bool{
+	CLIProfileKey:          true,
 	"dolt.remotesapi-port": true,
 	"node_id":              true,
 }
@@ -487,22 +492,26 @@ func WorkspaceYamlValueStrictWithLocal(beadsDir, key string) (value string, pres
 }
 
 func strictYamlValueAtPath(path, key string) (value string, present bool, err error) {
-	data, err := os.ReadFile(path) //nolint:gosec // path is caller-resolved workspace state
+	return strictYamlValueAtPathLabeled(path, key, "workspace")
+}
+
+func strictYamlValueAtPathLabeled(path, key, label string) (value string, present bool, err error) {
+	data, err := os.ReadFile(path) //nolint:gosec // path is caller-resolved configuration state
 	if os.IsNotExist(err) {
 		return "", false, nil
 	}
 	if err != nil {
-		return "", false, fmt.Errorf("reading workspace %s: %w", filepath.Base(path), err)
+		return "", false, fmt.Errorf("reading %s %s: %w", label, filepath.Base(path), err)
 	}
 	var root map[string]interface{}
 	if err := yaml.Unmarshal(data, &root); err != nil {
-		return "", false, fmt.Errorf("parsing workspace %s: %w", filepath.Base(path), err)
+		return "", false, fmt.Errorf("parsing %s %s: %w", label, filepath.Base(path), err)
 	}
 	if root == nil {
 		return "", false, nil
 	}
 	if raw, ok := root[key]; ok {
-		value, err := strictYamlScalarString(raw)
+		value, err := strictYamlScalarStringLabeled(raw, label)
 		if err != nil {
 			return "", true, err
 		}
@@ -513,14 +522,14 @@ func strictYamlValueAtPath(path, key string) (value string, present bool, err er
 	for i, part := range parts {
 		m, ok := node.(map[string]interface{})
 		if !ok {
-			return "", true, fmt.Errorf("workspace config key %q has a non-map parent", key)
+			return "", true, fmt.Errorf("%s config key %q has a non-map parent", label, key)
 		}
 		node, ok = m[part]
 		if !ok {
 			return "", false, nil
 		}
 		if i == len(parts)-1 {
-			value, err := strictYamlScalarString(node)
+			value, err := strictYamlScalarStringLabeled(node, label)
 			if err != nil {
 				return "", true, err
 			}
@@ -531,12 +540,16 @@ func strictYamlValueAtPath(path, key string) (value string, present bool, err er
 }
 
 func strictYamlScalarString(v interface{}) (string, error) {
+	return strictYamlScalarStringLabeled(v, "workspace")
+}
+
+func strictYamlScalarStringLabeled(v interface{}, label string) (string, error) {
 	if v == nil {
-		return "", fmt.Errorf("workspace config value is null")
+		return "", fmt.Errorf("%s config value is null", label)
 	}
 	switch v.(type) {
 	case map[string]interface{}, []interface{}:
-		return "", fmt.Errorf("workspace config value must be a scalar")
+		return "", fmt.Errorf("%s config value must be a scalar", label)
 	default:
 		return fmt.Sprintf("%v", v), nil
 	}
@@ -577,6 +590,26 @@ func yamlScalarString(v interface{}) (string, bool) {
 	default:
 		return fmt.Sprintf("%v", s), true
 	}
+}
+
+// UserYamlValueStrict reads only the existing user-global YAML file. Missing
+// files/keys are absent; unreadable files, malformed YAML and non-scalar/null
+// values are errors. Project config, BEADS_DIR and merged Viper are not read.
+func UserYamlValueStrict(key string) (string, bool, error) {
+	path, err := strictUserConfigYamlPath()
+	if err != nil {
+		return "", false, err
+	}
+	return strictYamlValueAtPathLabeled(path, key, "user-global")
+}
+
+// userYamlConfigPathForKey keeps existing paths for other settings and makes
+// the proposed CLI profile strict on reads, writes and unset.
+func userYamlConfigPathForKey(key string) (string, error) {
+	if key == CLIProfileKey {
+		return strictUserConfigYamlPath()
+	}
+	return UserConfigYamlPath()
 }
 
 // GetUserYamlConfig reads a single dotted key from the user-global config.yaml
@@ -639,7 +672,7 @@ func MetricsNoticeShownByUserConfig() bool {
 // UnsetYamlConfig: an absent file or an absent key is (false, nil), not an
 // error.
 func UnsetUserYamlConfig(key string) (bool, error) {
-	configPath, err := UserConfigYamlPath()
+	configPath, err := userYamlConfigPathForKey(key)
 	if err != nil {
 		return false, err
 	}
@@ -661,7 +694,12 @@ func UnsetUserYamlConfig(key string) (bool, error) {
 	// meaning "the key was there", and skipping the write on false leaves a
 	// CRLF file byte-identical.
 	normalized := strings.ReplaceAll(string(content), "\r\n", "\n")
-	newContent, err := commentOutYamlKey(normalized, key)
+	var newContent string
+	if key == CLIProfileKey {
+		newContent, err = commentOutCLIProfileKey(normalized)
+	} else {
+		newContent, err = commentOutYamlKey(normalized, key)
+	}
 	if err != nil {
 		return false, err
 	}
@@ -679,11 +717,140 @@ func UnsetUserYamlConfig(key string) (bool, error) {
 	return true, nil
 }
 
+// commentOutCLIProfileKey keeps the profile absent after a nested unset. An
+// active cli: with only commented children is YAML null, which the strict
+// reader must reject. Comment its emptied parent too; do not emit cli: {},
+// whose flow style the next set would retain and the next unset would refuse.
+// The generic unset format and strict reader are deliberately unchanged.
+func commentOutCLIProfileKey(content string) (string, error) {
+	var document yaml.Node
+	if err := yaml.Unmarshal([]byte(content), &document); err != nil {
+		return "", fmt.Errorf("cannot unset %q: parsing user config.yaml: %w", CLIProfileKey, err)
+	}
+	if len(document.Content) == 0 {
+		return content, nil
+	}
+	var before map[string]interface{}
+	if err := document.Decode(&before); err != nil {
+		return "", fmt.Errorf("cannot unset %q: reading user config.yaml: %w", CLIProfileKey, err)
+	}
+	want := make(map[string]interface{}, len(before))
+	for key, value := range before {
+		want[key] = value
+	}
+	delete(want, CLIProfileKey)
+	if value, present := before["cli"]; present {
+		mapping, ok := value.(map[string]interface{})
+		if !ok {
+			return "", fmt.Errorf("cannot unset %q: user-global config has a non-map parent", CLIProfileKey)
+		}
+		if _, present := mapping["profile"]; present {
+			// Copy before removing the leaf: an alias elsewhere must retain its
+			// original value in the expected result, not share this mutation.
+			remaining := make(map[string]interface{}, len(mapping)-1)
+			for key, value := range mapping {
+				if key != "profile" {
+					remaining[key] = value
+				}
+			}
+			if len(remaining) == 0 {
+				delete(want, "cli")
+			} else {
+				want["cli"] = remaining
+			}
+		}
+	}
+	// Protect references to the nodes this edit changes. Removing a repeated
+	// anchor can rebind a later alias to an earlier declaration, even if the
+	// resulting YAML still parses and its canonical scalar text looks equal.
+	// Walk Content only: following Alias pointers would revisit other nodes.
+	top := document.Content[0]
+	modified := make(map[*yaml.Node]bool)
+	var changingValues []*yaml.Node
+	if top.Kind == yaml.MappingNode {
+		if idx := findMappingChild(top, CLIProfileKey); idx != -1 {
+			changingValues = append(changingValues, top.Content[idx+1])
+		}
+		if idx := findMappingChild(top, "cli"); idx != -1 {
+			value := top.Content[idx+1]
+			if value.Kind == yaml.MappingNode {
+				if leaf := findMappingChild(value, "profile"); leaf != -1 {
+					modified[value] = true
+					changingValues = append(changingValues, value.Content[leaf+1])
+				}
+			}
+		}
+	}
+	// A repair may remove an invalid collection-valued profile too. Protect
+	// anchors in that whole value, not just an anchor on the value's root.
+	for len(changingValues) > 0 {
+		node := changingValues[len(changingValues)-1]
+		changingValues = changingValues[:len(changingValues)-1]
+		modified[node] = true
+		changingValues = append(changingValues, node.Content...)
+	}
+	pending := []*yaml.Node{&document}
+	for len(pending) > 0 {
+		node := pending[len(pending)-1]
+		pending = pending[:len(pending)-1]
+		if node.Kind == yaml.AliasNode && modified[node.Alias] {
+			return "", fmt.Errorf("cannot unset %q: another YAML alias refers to the profile or its parent", CLIProfileKey)
+		}
+		pending = append(pending, node.Content...)
+	}
+	updated, err := commentOutYamlKey(content, CLIProfileKey)
+	if err != nil {
+		return "", err
+	}
+	mapping := document.Content[0]
+	if mapping.Kind == yaml.MappingNode {
+		if idx := findMappingChild(mapping, "cli"); idx != -1 {
+			parent, value := mapping.Content[idx], mapping.Content[idx+1]
+			if value.Kind == yaml.MappingNode && len(value.Content) == 2 && value.Content[0].Value == "profile" {
+				lines, changed := strings.Split(content, "\n"), strings.Split(updated, "\n")
+				parentLine, leafLine := parent.Line-1, value.Content[0].Line-1
+				if parentLine < 0 || parentLine >= len(lines) || leafLine < 0 || leafLine >= len(lines) || len(lines) != len(changed) {
+					return "", fmt.Errorf("cannot unset %q: unsupported YAML line layout", CLIProfileKey)
+				}
+				commentedLeaf := strings.Repeat(" ", lineIndent(lines[leafLine])) + "# " + strings.TrimLeft(lines[leafLine], " \t")
+				if changed[leafLine] == commentedLeaf && changed[parentLine] == lines[parentLine] {
+					changed[parentLine] = strings.Repeat(" ", lineIndent(lines[parentLine])) + "# " + strings.TrimLeft(lines[parentLine], " \t")
+					updated = strings.Join(changed, "\n")
+				}
+			}
+		}
+	}
+	var after map[string]interface{}
+	if err := yaml.Unmarshal([]byte(updated), &after); err != nil {
+		return "", fmt.Errorf("cannot unset %q without invalidating user config.yaml: %w", CLIProfileKey, err)
+	}
+	if after == nil {
+		after = map[string]interface{}{}
+	}
+	// Compare decoded values canonically, including YAML NaN values that are
+	// unequal to themselves under reflect.DeepEqual. These bytes are only a
+	// validation aid: write the line-edited text, never a re-marshaled file.
+	wantValues, err := yaml.Marshal(want)
+	if err != nil {
+		return "", fmt.Errorf("cannot unset %q: validating original user configuration: %w", CLIProfileKey, err)
+	}
+	afterValues, err := yaml.Marshal(after)
+	if err != nil {
+		return "", fmt.Errorf("cannot unset %q: validating proposed user configuration: %w", CLIProfileKey, err)
+	}
+	// This also detects alias-induced changes outside the requested key,
+	// even when the proposed document still parses.
+	if string(wantValues) != string(afterValues) {
+		return "", fmt.Errorf("cannot unset %q without changing other user configuration", CLIProfileKey)
+	}
+	return updated, nil
+}
+
 func SetUserYamlConfig(key, value string) error {
 	if err := validateYamlConfigValue(key, value); err != nil {
 		return err
 	}
-	configPath, err := UserConfigYamlPath()
+	configPath, err := userYamlConfigPathForKey(key)
 	if err != nil {
 		return err
 	}
@@ -1559,6 +1726,10 @@ func isDuration(s string) bool {
 // Returns an error if the value is invalid for the given key.
 func validateYamlConfigValue(key, value string) error {
 	switch key {
+	case CLIProfileKey:
+		if value != "canonical" && value != "compat" {
+			return fmt.Errorf("%s must be canonical or compat, got %q", key, value)
+		}
 	case "hierarchy.max-depth":
 		// Must be a positive integer >= 1 (GH#995)
 		depth, err := strconv.Atoi(value)

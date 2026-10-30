@@ -12,6 +12,8 @@ import (
 type record struct {
 	kind              graph.ResourceKind
 	id, revision, typ string
+	typePin           string
+	family            map[string]bool
 	body              map[string]any
 	raw               json.RawMessage
 	source, target    reference
@@ -72,7 +74,7 @@ func readRecord(kind graph.ResourceKind, raw []byte) (*record, error) {
 			return bad()
 		}
 	}
-	r := &record{kind: kind, id: id, revision: rev, typ: typ.uri, body: m, raw: canonical}
+	r := &record{kind: kind, id: id, revision: rev, typ: typ.uri, typePin: typ.pin, body: m, raw: canonical}
 	if kind == graph.KindLink {
 		r.source, err = parseReference(m["source"], "")
 		if err != nil {
@@ -144,34 +146,12 @@ func newEvaluation(ctx context.Context, r *Request, data Dataset, l Limits) (*ev
 	}
 	// All family uses are checked before expression evaluation, including empty
 	// inventories and unreachable Boolean branches. No nominal-name fallback.
-	if len(r.families) != 0 && (data.TypeKinds == nil || data.TypeFamilies == nil) {
-		return nil, fail("family-mechanism-unavailable", r.families[0].at, "authoritative Type family interpretation is unsupported", ErrUnsupported)
-	}
-	familyKinds := map[graph.ResourceKind]bool{}
-	for _, use := range r.families {
-		if err := e.tick(); err != nil {
+	if data.TypeEditions != nil {
+		if err := e.loadEditionFamilies(data.TypeEditions); err != nil {
 			return nil, err
 		}
-		kind, ok := data.TypeKinds[use.uri]
-		if !ok {
-			return nil, fail("family-authority-unavailable", use.at, "queried Type has no authoritative kind", ErrUnavailable)
-		}
-		if kind != use.kind {
-			return nil, fail("invalid-type-kind", use.at, "queried Type describes another Resource kind", ErrInvalid)
-		}
-		if err := e.loadFamily(use.uri, kind, data); err != nil {
-			return nil, err
-		}
-		familyKinds[kind] = true
-	}
-	// An actual Resource's ancestry depends on its kind, not on how many
-	// syntactic family tests mention that kind. Preload it once per record.
-	for _, rec := range e.byID {
-		if familyKinds[rec.kind] {
-			if err := e.loadFamily(rec.typ, rec.kind, data); err != nil {
-				return nil, err
-			}
-		}
+	} else if err := e.loadNominalFamilies(data); err != nil {
+		return nil, err
 	}
 	for _, refs := range r.references {
 		for _, ref := range refs.refs {
@@ -181,6 +161,150 @@ func newEvaluation(ctx context.Context, r *Request, data Dataset, l Limits) (*ev
 		}
 	}
 	return e, nil
+}
+
+func (e *evaluation) loadNominalFamilies(data Dataset) error {
+	if len(e.request.families) != 0 && (data.TypeKinds == nil || data.TypeFamilies == nil) {
+		return fail("family-mechanism-unavailable", e.request.families[0].at, "authoritative Type family interpretation is unsupported", ErrUnsupported)
+	}
+	familyKinds := map[graph.ResourceKind]bool{}
+	for _, use := range e.request.families {
+		if err := e.tick(); err != nil {
+			return err
+		}
+		kind, ok := data.TypeKinds[use.uri]
+		if !ok {
+			return fail("family-authority-unavailable", use.at, "queried Type has no authoritative kind", ErrUnavailable)
+		}
+		if kind != use.kind {
+			return fail("invalid-type-kind", use.at, "queried Type describes another Resource kind", ErrInvalid)
+		}
+		if err := e.loadFamily(use.uri, kind, data); err != nil {
+			return err
+		}
+		familyKinds[kind] = true
+	}
+	// An actual Resource's ancestry depends on its kind, not on how many
+	// syntactic family tests mention that kind. Preload it once per record.
+	for _, rec := range e.byID {
+		if familyKinds[rec.kind] {
+			if rec.typePin != "" {
+				return fail("exact-family-authority-unsupported", "", "pinned Type affiliation requires exact captured ancestry", ErrUnsupported)
+			}
+			if err := e.loadFamily(rec.typ, rec.kind, data); err != nil {
+				return err
+			}
+			rec.family = e.families[rec.typ]
+		}
+	}
+	return nil
+}
+
+// loadEditionFamilies never interprets a retained affiliation using the current
+// edition's ancestry. Current evidence only resolves unpinned selection; the
+// actual record's exact affiliation chooses its membership set.
+func (e *evaluation) loadEditionFamilies(facts []TypeEditionFact) error {
+	if len(e.request.families) == 0 {
+		return nil
+	}
+	bad := func() error {
+		return fail("invalid-family-authority", "", "invalid exact captured Type authority", ErrDataset)
+	}
+	// Grow only after charging work; a caller-supplied inventory length must
+	// not trigger a large allocation before its operational budget is checked.
+	byEdition := map[Edition]TypeEditionFact{}
+	current := map[string]Edition{}
+	for _, fact := range facts {
+		if err := e.tick(); err != nil {
+			return err
+		}
+		if graph.ValidateTypeURL(fact.Reference.ID) != nil || graph.ValidateReferenceURI(fact.Reference.ID) != nil || strings.Contains(fact.Reference.ID, "?") || fact.Reference.Revision == "" || !fact.Kind.Valid() {
+			return bad()
+		}
+		if _, duplicate := byEdition[fact.Reference]; duplicate {
+			return bad()
+		}
+		byEdition[fact.Reference] = fact
+		if fact.Current {
+			if _, duplicate := current[fact.Reference.ID]; duplicate {
+				return bad()
+			}
+			current[fact.Reference.ID] = fact.Reference
+		}
+	}
+	sets := map[Edition]map[string]bool{}
+	exactSets := map[Edition]map[Edition]bool{}
+	for _, fact := range facts {
+		seen := map[Edition]bool{}
+		set := map[string]bool{}
+		for _, ancestor := range fact.Ancestors {
+			if err := e.tick(); err != nil {
+				return err
+			}
+			parent, known := byEdition[ancestor]
+			if !known || parent.Kind != fact.Kind || seen[ancestor] {
+				return bad()
+			}
+			seen[ancestor] = true
+			set[ancestor.ID] = true
+		}
+		if !seen[fact.Reference] {
+			return bad()
+		}
+		sets[fact.Reference] = set
+		exactSets[fact.Reference] = seen
+	}
+	// A claimed complete closure must include the captured ancestors of each
+	// ancestor. Charge this consistency check rather than trusting a truncated
+	// set that could silently turn a family match into a negative result.
+	for _, fact := range facts {
+		for _, ancestor := range fact.Ancestors {
+			for _, inherited := range byEdition[ancestor].Ancestors {
+				if err := e.tick(); err != nil {
+					return err
+				}
+				if !exactSets[fact.Reference][inherited] {
+					return bad()
+				}
+			}
+		}
+	}
+	kinds := map[graph.ResourceKind]bool{}
+	for _, use := range e.request.families {
+		if err := e.tick(); err != nil {
+			return err
+		}
+		selected, known := current[use.uri]
+		if !known {
+			return fail("family-authority-unavailable", use.at, "queried Type has no captured current authority", ErrUnavailable)
+		}
+		if byEdition[selected].Kind != use.kind {
+			return fail("invalid-type-kind", use.at, "queried Type describes another Resource kind", ErrInvalid)
+		}
+		kinds[use.kind] = true
+	}
+	for _, rec := range e.byID {
+		if err := e.tick(); err != nil {
+			return err
+		}
+		if !kinds[rec.kind] {
+			continue
+		}
+		affiliation := Edition{ID: rec.typ, Revision: rec.typePin}
+		if affiliation.Revision == "" {
+			var known bool
+			affiliation, known = current[rec.typ]
+			if !known {
+				return bad()
+			}
+		}
+		fact, known := byEdition[affiliation]
+		if !known || fact.Kind != rec.kind {
+			return bad()
+		}
+		rec.family = sets[affiliation]
+	}
+	return nil
 }
 func (e *evaluation) loadFamily(uri string, kind graph.ResourceKind, data Dataset) error {
 	if err := e.tick(); err != nil {

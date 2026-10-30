@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/resourcequery"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	storageissueops "github.com/steveyegge/beads/internal/storage/issueops"
@@ -290,5 +291,70 @@ func assertDependencyCountFailure(t *testing.T, err error, document, code string
 	var extra any
 	if err := decoder.Decode(&extra); err != io.EOF {
 		t.Fatalf("multiple failure documents or trailing output: %v %s", err, document)
+	}
+}
+
+// Exercise the real profile router and the same pure admission called by the
+// production root before legacy discovery. The callback represents the later
+// reader boundary; no provider, global production command or engine is opened.
+func TestDependencyListCountProfileCompositionAdmission(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		profile cliSurfaceProfile
+		prefix  []string
+		refuse  bool
+	}{
+		{name: "saved canonical", profile: cliSurfaceCanonical, refuse: true},
+		{name: "explicit canonical", profile: cliSurfaceCompat, prefix: []string{"--cli-profile=canonical"}, refuse: true},
+		{name: "compat Resource formatting", profile: cliSurfaceCompat},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd, out, _ := canonicalCollectionTestCommand(t, false)
+			root := &cobra.Command{Use: "bd", SilenceErrors: true, SilenceUsage: true}
+			root.AddCommand(cmd)
+			acquired := 0
+			args := []string{"--count-only", "--output-format=json"}
+			cmd.RunE = func(actual *cobra.Command, _ []string) error {
+				if _, err := dependencyListCountRendererWithArgs(actual, args); err != nil {
+					return err
+				}
+				acquired++
+				return nil
+			}
+			argv := append(append([]string{}, tc.prefix...), "list")
+			argv = append(argv, args...)
+			_, err := executeCLIProfileRootWith(root, argv, runtimeProfile(tc.profile))
+			if tc.refuse {
+				assertDependencyCountFailure(t, err, out.String(), "capability_unavailable", 5, "compat-only")
+				if acquired != 0 {
+					t.Fatal("canonical dependency count reached the reader boundary")
+				}
+			} else if err != nil || acquired != 1 || out.Len() != 0 {
+				t.Fatalf("compat Resource formatting changed selection admission: acquired=%d err=%v output=%s", acquired, err, out.String())
+			}
+		})
+	}
+}
+
+func TestDependencyListCountCanonicalCompositionValidationPrecedence(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		args   []string
+		code   string
+		exit   int
+		detail string
+	}{
+		{name: "conflicting count", args: []string{"--count-only", "--count-only=false"}, code: "invalid_selector", exit: 2, detail: "conflicting --count-only"},
+		{name: "false", args: []string{"--count-only=false"}, code: "capability_unavailable", exit: 5, detail: "--count-only=false"},
+		{name: "invalid page size", args: []string{"--count-only", "--page-size=0"}, code: "invalid_selector", exit: 2, detail: "--page-size must be positive"},
+		{name: "unsupported Type", args: []string{"--count-only", "--type=issue"}, code: "capability_unavailable", exit: 5, detail: "Type authority"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			args := append([]string{"--output-format=json"}, tc.args...)
+			cmd, out, _ := canonicalCollectionTestCommand(t, false, args...)
+			cmd.Annotations = map[string]string{cliSurfaceProfileAnnotation: string(cliSurfaceCanonical)}
+			_, err := dependencyListCountRendererWithArgs(cmd, args)
+			assertDependencyCountFailure(t, err, out.String(), tc.code, tc.exit, tc.detail)
+		})
 	}
 }
