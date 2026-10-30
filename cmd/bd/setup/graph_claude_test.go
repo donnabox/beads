@@ -335,3 +335,30 @@ func TestGraphPreviewClaudeStopPreflightRefusalMessages(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewClaudeManagedPluginRefusal(t *testing.T) {
+	env, _, _ := newClaudeTestEnv(t)
+	env.managedDir = filepath.Join(t.TempDir(), "managed")
+	managed := filepath.Join(env.managedDir, "managed-settings.json")
+	project := projectSettingsPath(env.projectDir)
+	writeSettings(t, project, map[string]interface{}{"enabledPlugins": map[string]interface{}{"beads@example": false}})
+	writeSettings(t, managed, map[string]interface{}{"enabledPlugins": map[string]interface{}{"beads@example": true}})
+	before, err := os.ReadFile(project)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := graphClaudeStop(env, false, false); err == nil || !strings.Contains(err.Error(), managed) {
+		t.Fatalf("managed plugin refusal = %v, want enabling managed file", err)
+	}
+	after, err := os.ReadFile(project)
+	if err != nil || !bytes.Equal(before, after) {
+		t.Fatalf("project settings changed on refusal: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(env.projectDir, claudeInstructionsFile)); !os.IsNotExist(err) {
+		t.Fatalf("instruction import published on refusal: %v", err)
+	}
+	writeSettings(t, managed, map[string]interface{}{"enabledPlugins": map[string]interface{}{"beads@example": false, "design-to-beads@example": true}})
+	if got := graphClaudeEnablingFiles(env); len(got) != 0 {
+		t.Fatalf("disabled beads or unrelated plugin counted: %v", got)
+	}
+}

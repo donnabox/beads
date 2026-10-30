@@ -103,7 +103,7 @@ func graphClaudeStopMode(env claudeEnv, check, remove, preflight bool) error {
 				return err
 			}
 		}
-		if hasBeadsPlugin(env) {
+		if len(graphClaudeEnablingFiles(env)) != 0 {
 			return graphClaudePluginRefusal(env)
 		}
 		for _, existing := range []string{path, globalSettingsPath(env.homeDir), legacyProjectSettingsPath(env.projectDir)} {
@@ -144,7 +144,7 @@ func graphClaudeStopMode(env claudeEnv, check, remove, preflight bool) error {
 			_, _ = fmt.Fprintf(env.stdout, "Graph Claude Stop hook is absent from %s; instructions preserved.\n", path)
 			return nil
 		}
-		removeHookCommand(hooks, "Stop", claudeStopHookCommand)
+		removeHookCommand(env.stdout, hooks, "Stop", claudeStopHookCommand)
 	} else {
 		if installed {
 			_, _ = fmt.Fprintf(env.stdout, "Graph Claude Stop hook configured in %s; guidance loaded by %s.\n", path, importPath)
@@ -214,17 +214,33 @@ func graphClaudeSettings(env claudeEnv, path string) (map[string]interface{}, bo
 	return settings, true, nil
 }
 
-// graphClaudePluginRefusal names every settings file that enables the Beads
-// plugin. hasBeadsPlugin reports the plugin when ANY of these files enables
-// it, so a false entry in one file does not override another file's true
-// entry: advice to disable it "for this project" alone would be a dead end.
-func graphClaudePluginRefusal(env claudeEnv) error {
+// graphClaudeEnablingFiles preserves graph setup's conservative per-file
+// refusal. Ordinary setup resolves precedence; graph setup requires explicit
+// removal of every enabling recipe before adding a different hook contract.
+func graphClaudeEnablingFiles(env claudeEnv) []string {
 	var enabling []string
-	for _, candidate := range []string{projectSettingsPath(env.projectDir), globalSettingsPath(env.homeDir), legacyProjectSettingsPath(env.projectDir)} {
-		if checkBeadsPluginInFile(env.readFile, candidate) {
-			enabling = append(enabling, candidate)
+	seen := map[string]bool{}
+	paths := []string{projectSettingsPath(env.projectDir), globalSettingsPath(env.homeDir), legacyProjectSettingsPath(env.projectDir)}
+	paths = append(paths, claudePluginSettingsPaths(env, false)...)
+	for _, candidate := range paths {
+		if seen[candidate] {
+			continue
+		}
+		seen[candidate] = true
+		for _, enabled := range beadsPluginEntries(env.readFile, candidate) {
+			if enabled {
+				enabling = append(enabling, candidate)
+				break
+			}
 		}
 	}
+	return enabling
+}
+
+// graphClaudePluginRefusal names every enabling file, including recipes
+// shadowed by another settings file, so the operator can remove each one.
+func graphClaudePluginRefusal(env claudeEnv) error {
+	enabling := graphClaudeEnablingFiles(env)
 	where, scope := strings.Join(enabling, " and "), "each of those files"
 	if len(enabling) == 1 {
 		scope = "that file"
