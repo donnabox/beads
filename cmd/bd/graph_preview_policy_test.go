@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -335,6 +336,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		// from historyExact, which stays false and describes the HTTP profile.
 		"versionList",
 		"memoryPropertiesPatch", "linkPropertiesPatch", "legacyImport",
+		"currentStateDump", // Interim public JSON dump, distinct from graphExport.
 		"issueTodo", "issueHeartbeat", "issueReclaim", "issueStateRead", "issueStatus", "issueMergeSlot",
 	} {
 		wantEnabled[capability] = true
@@ -410,5 +412,94 @@ func TestGraphPreviewImportRootRefusesDamagedLegacyOpening(t *testing.T) {
 		if after := legacyUpgradeTreeDigest(t, work); after != before {
 			t.Fatal("import root opened or changed damaged legacy metadata")
 		}
+	}
+}
+
+func TestGraphPreviewCLICurrentStateDump(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/current-dump/"
+			args := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			if engine == "embedded" {
+				info, err := os.Stat(filepath.Join(work, ".beads", "embeddeddolt"))
+				if err != nil || !info.IsDir() {
+					t.Fatalf("initialized embedded storage does not match protected directory: %v", err)
+				}
+			}
+			for _, args := range [][]string{
+				{"create", "Export A", "--id", "a", "--force", "--labels", "kept-label", "--json"},
+				{"create", "Export B", "--id", "b", "--force", "--json"},
+				{"create", "Export memory", "--id", "export-context", "--type", "memory", "--body", "Memory body 雪", "--json"},
+				{"link", "create", "--from", "a", "--to", "b", "--type", "relates-to", "--id", "links/related", "--json"},
+				{"comment", "a", "EXPLICITLY-OMITTED-COMMENT", "--json"},
+			} {
+				graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			}
+			before := graphPolicyCLI(t, bd, work, home, nil, "", "show", "a", "--json")
+			stdout := graphPolicyCLI(t, bd, work, home, nil, "", "export", "--current-state", "--readonly")
+			var dump graphCurrentDump
+			if err := json.Unmarshal([]byte(stdout), &dump); err != nil || dump.Scope != scope || dump.Restorable || len(dump.Beads) != 3 || len(dump.Links) != 1 || len(dump.Types) == 0 || len(dump.Omissions) == 0 {
+				t.Fatalf("incomplete current-public dump: %+v %v", dump, err)
+			}
+			if strings.Contains(stdout, "EXPLICITLY-OMITTED-COMMENT") || strings.Contains(stdout, "WriterToken") {
+				t.Fatal("dump includes explicitly omitted content")
+			}
+			output := filepath.Join(work, "current.json")
+			writeFile(t, output, []byte("previous complete output"))
+			graphPolicyCLI(t, bd, work, home, nil, "", "export", "--current-state", "--readonly", "-o", output)
+			data, err := os.ReadFile(output)
+			if err != nil || string(data) != stdout {
+				t.Fatalf("file/stdout mismatch: %v", err)
+			}
+			metadata := filepath.Join(work, ".beads", "metadata.json")
+			original, err := os.ReadFile(metadata)
+			if err != nil {
+				t.Fatal(err)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "export", "--current-state", "-o", metadata, "--json")
+			actual, err := os.ReadFile(metadata)
+			if err != nil || !bytes.Equal(actual, original) {
+				t.Fatalf("storage destination changed metadata: %v", err)
+			}
+			if runtime.GOOS != "windows" {
+				safe := filepath.Join(work, "safe")
+				nested := filepath.Join(work, ".beads", "nested")
+				for _, dir := range []string{safe, nested} {
+					if err := os.Mkdir(dir, 0700); err != nil {
+						t.Fatal(err)
+					}
+				}
+				link := filepath.Join(safe, "link")
+				if err := os.Symlink(nested, link); err != nil {
+					t.Fatal(err)
+				}
+				// Preserve the literal parent segment: filepath.Join would clean it.
+				raw := link + "/../metadata.json"
+				graphPolicyCLI(t, bd, work, home, nil, "", "export", "--current-state", "--readonly", "-o", raw)
+				data, err := os.ReadFile(filepath.Join(safe, "metadata.json"))
+				if err != nil || string(data) != stdout {
+					t.Fatalf("CLI did not publish to prepared destination: %v", err)
+				}
+				actual, err := os.ReadFile(metadata)
+				if err != nil || !bytes.Equal(actual, original) {
+					t.Fatalf("raw parent path changed storage metadata: %v", err)
+				}
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "export", "--current-state", "--all", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "output_error", "export", "--current-state", "-o", work, "--json")
+			if after := graphPolicyCLI(t, bd, work, home, nil, "", "show", "a", "--json"); after != before {
+				t.Fatal("export/refusal changed current public state")
+			}
+		})
 	}
 }
