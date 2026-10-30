@@ -619,6 +619,149 @@ sh_test(
     tags = ["dolt-server-integration"],
 )
 
+# Explicit hosted partitions retain the original manifest and binary. manual
+# keeps remote //... on the canonical16-shard rule above; the hosted matrix
+# selects exactly one partition or conformance and verifies the complete union.
+sh_test(
+    name = "dolt_server_hosted_part0_test",
+    size = "large",
+    # The script's -test.timeout=15m fires before Bazel's 1200s limit.
+    timeout = "eternal",
+    srcs = ["//tools/bazel:go_test_manifest_shard.sh"],
+    args = [
+        "--shard-offset=0",
+        "--shard-total=16",
+        "$(rootpath //:.github/scripts/server-storage-test-shard.sh)",
+        "BEADS_TEST_SERVER_TEST_BINARY",
+        "$(rootpath :dolt_race_off)",
+    ],
+    data = [
+        ":dolt_race_off",
+        ":go_srcs",
+        "//:.github/scripts/server-storage-test-shard.sh",
+        "//:.github/scripts/server-storage-test-shards.txt",
+        "//:go.mod",
+    ],
+    env = {
+        "BEADS_TEST_DOLT_SERVER": "local",
+        "BEADS_TEST_ENV_RUN_DOLT": "1",
+        "BEADS_TEST_GIT_IDENTITY": "1",
+        "BEADS_TEST_REQUIRE_DOLT_CONTAINER": "1",
+        "BEADS_TEST_SUBPROCESS_BINARY": "$(rlocationpath :dolt_race_off)",
+        "GOMAXPROCS": "4",
+    },
+    shard_count = 4,
+    tags = [
+        "dolt-server-integration",
+        "manual",
+    ],
+)
+
+sh_test(
+    name = "dolt_server_hosted_part1_test",
+    size = "large",
+    # The script's -test.timeout=15m fires before Bazel's 1200s limit.
+    timeout = "eternal",
+    srcs = ["//tools/bazel:go_test_manifest_shard.sh"],
+    args = [
+        "--shard-offset=4",
+        "--shard-total=16",
+        "$(rootpath //:.github/scripts/server-storage-test-shard.sh)",
+        "BEADS_TEST_SERVER_TEST_BINARY",
+        "$(rootpath :dolt_race_off)",
+    ],
+    data = [
+        ":dolt_race_off",
+        ":go_srcs",
+        "//:.github/scripts/server-storage-test-shard.sh",
+        "//:.github/scripts/server-storage-test-shards.txt",
+        "//:go.mod",
+    ],
+    env = {
+        "BEADS_TEST_DOLT_SERVER": "local",
+        "BEADS_TEST_ENV_RUN_DOLT": "1",
+        "BEADS_TEST_GIT_IDENTITY": "1",
+        "BEADS_TEST_REQUIRE_DOLT_CONTAINER": "1",
+        "BEADS_TEST_SUBPROCESS_BINARY": "$(rlocationpath :dolt_race_off)",
+        "GOMAXPROCS": "4",
+    },
+    shard_count = 4,
+    tags = [
+        "dolt-server-integration",
+        "manual",
+    ],
+)
+
+sh_test(
+    name = "dolt_server_hosted_part2_test",
+    size = "large",
+    # The script's -test.timeout=15m fires before Bazel's 1200s limit.
+    timeout = "eternal",
+    srcs = ["//tools/bazel:go_test_manifest_shard.sh"],
+    args = [
+        "--shard-offset=8",
+        "--shard-total=16",
+        "$(rootpath //:.github/scripts/server-storage-test-shard.sh)",
+        "BEADS_TEST_SERVER_TEST_BINARY",
+        "$(rootpath :dolt_race_off)",
+    ],
+    data = [
+        ":dolt_race_off",
+        ":go_srcs",
+        "//:.github/scripts/server-storage-test-shard.sh",
+        "//:.github/scripts/server-storage-test-shards.txt",
+        "//:go.mod",
+    ],
+    env = {
+        "BEADS_TEST_DOLT_SERVER": "local",
+        "BEADS_TEST_ENV_RUN_DOLT": "1",
+        "BEADS_TEST_GIT_IDENTITY": "1",
+        "BEADS_TEST_REQUIRE_DOLT_CONTAINER": "1",
+        "BEADS_TEST_SUBPROCESS_BINARY": "$(rlocationpath :dolt_race_off)",
+        "GOMAXPROCS": "4",
+    },
+    shard_count = 4,
+    tags = [
+        "dolt-server-integration",
+        "manual",
+    ],
+)
+
+sh_test(
+    name = "dolt_server_hosted_part3_test",
+    size = "large",
+    # The script's -test.timeout=15m fires before Bazel's 1200s limit.
+    timeout = "eternal",
+    srcs = ["//tools/bazel:go_test_manifest_shard.sh"],
+    args = [
+        "--shard-offset=12",
+        "--shard-total=16",
+        "$(rootpath //:.github/scripts/server-storage-test-shard.sh)",
+        "BEADS_TEST_SERVER_TEST_BINARY",
+        "$(rootpath :dolt_race_off)",
+    ],
+    data = [
+        ":dolt_race_off",
+        ":go_srcs",
+        "//:.github/scripts/server-storage-test-shard.sh",
+        "//:.github/scripts/server-storage-test-shards.txt",
+        "//:go.mod",
+    ],
+    env = {
+        "BEADS_TEST_DOLT_SERVER": "local",
+        "BEADS_TEST_ENV_RUN_DOLT": "1",
+        "BEADS_TEST_GIT_IDENTITY": "1",
+        "BEADS_TEST_REQUIRE_DOLT_CONTAINER": "1",
+        "BEADS_TEST_SUBPROCESS_BINARY": "$(rlocationpath :dolt_race_off)",
+        "GOMAXPROCS": "4",
+    },
+    shard_count = 4,
+    tags = [
+        "dolt-server-integration",
+        "manual",
+    ],
+)
+
 # --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
 
 filegroup(

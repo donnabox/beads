@@ -1139,7 +1139,7 @@ func TestForkRiskReplacementRequiresActualCompleteLocalResults(t *testing.T) {
 // suppress any dedicated tier, and no remote union can stand in for one.
 func TestForkFullLocalSchedulesAllDedicatedTiersDespiteFastSetInputs(t *testing.T) {
 	workflow := readCIWorkflow(t, bazelWorkflowName)
-	want := []string{bazelJobName, bazelPureJobName, bazelReleaseCrossJobName, bazelEmbedJobName, bazelIntegJobName, bazelDoltJobName, bazelProxiedJobName, bazelServerJobName, bazelCmdDoltJobName}
+	want := []string{bazelJobName, bazelPureJobName, bazelReleaseCrossJobName, bazelEmbedJobName, bazelIntegJobName, bazelDoltJobName, bazelProxiedJobName, bazelServerJobName, bazelCmdDoltJobName, "bazel-server-storage-hosted"}
 	slices.Sort(want)
 	var got []string
 	with := map[string]string{"dolt-tiers": "off", "integration": "off", "package-gates": "off"}

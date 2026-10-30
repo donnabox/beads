@@ -105,9 +105,10 @@ if [[ "${1:-}" == --shard-manifest=* ]]; then
 	fi
 	set -- "$bin" "-test.run=^(${selected})\$" "$@"
 fi
-if ! unshare --user --map-root-user --net -- true 2>/dev/null; then
+if ! namespace_error=$(unshare --user --map-root-user --net -- true 2>&1); then
 	if timeout 3 bash -c "exec 3<>/dev/tcp/1.1.1.1/443" 2>/dev/null; then
 		echo "go_test_offline: no network namespace available (unshare failed) and outbound network is reachable" >&2
+		printf 'go_test_offline: namespace probe: %s\n' "$namespace_error" >&2
 		exit 1
 	fi
 	bin="$1"

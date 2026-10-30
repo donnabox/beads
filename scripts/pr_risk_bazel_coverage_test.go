@@ -1889,6 +1889,13 @@ func TestBazelRetiredLanesCannotBeNarrowed(t *testing.T) {
 			},
 		},
 	}
+	// Explicit hosted partitions retain the canonical binary/env and manifest.
+	for part := 0; part < 4; part++ {
+		full := want["//internal/storage/dolt:dolt_server_full_test"]
+		want[fmt.Sprintf("//internal/storage/dolt:dolt_server_hosted_part%d_test", part)] = target{
+			append([]string{fmt.Sprintf("--shard-offset=%d", part*4), "--shard-total=16"}, full.args...), full.env,
+		}
+	}
 	laneTags := regexp.MustCompile(`"(embedded|dolt-server-proxied|dolt-server-integration)"`)
 	quoted := regexp.MustCompile(`"([^"]*)"`)
 	envPair := regexp.MustCompile(`"([^"]*)":\s*"([^"]*)"`)
@@ -2292,5 +2299,145 @@ func TestShardScriptNarrowingCheck(t *testing.T) {
 		if len(shardScriptNarrowing(c, strings.Replace(src, edit[0], edit[1], 1))) == 0 {
 			t.Errorf("%s: mutation %q passes the shard script check", c.script, name)
 		}
+	}
+}
+
+// Hosted partitions must prove one complete current storage-tier union.
+func TestServerStorageHostedProofScript(t *testing.T) {
+	python := requireHostTool(t, "python3")
+	root := sourceRepoRoot(t)
+	cmd := exec.Command(python, "-B", filepath.Join(root, "tools/bazel/server_storage_hosted_test.py"))
+	cmd.Dir = root
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("hosted storage proof controls: %v\n%s", err, out)
+	}
+}
+
+// Hosted wrappers may change only the original shard coordinates and selection venue.
+func TestServerStorageHostedPartitions(t *testing.T) {
+	build := readPolicyFile(t, sourceRepoRoot(t), "internal/storage/dolt/BUILD.bazel")
+	base := bazelRuleBlock(build, "dolt_server_full_test")
+	tags := regexp.MustCompile(`(?s)tags = \[\s*"dolt-server-integration",\s*"manual",?\s*\]`)
+	for part := 0; part < 4; part++ {
+		name := fmt.Sprintf("dolt_server_hosted_part%d_test", part)
+		rule := bazelRuleBlock(build, name)
+		for _, required := range []string{fmt.Sprintf(`"--shard-offset=%d"`, part*4), `"--shard-total=16"`, `shard_count = 4`} {
+			if !strings.Contains(rule, required) {
+				t.Errorf("%s lacks %s", name, required)
+			}
+		}
+		if !tags.MatchString(rule) {
+			t.Errorf("%s must have exactly integration/manual tags", name)
+		}
+		normal := strings.Replace(rule, `name = "`+name+`"`, `name = "dolt_server_full_test"`, 1)
+		normal = strings.Replace(normal, fmt.Sprintf("        \"--shard-offset=%d\",\n        \"--shard-total=16\",\n", part*4), "", 1)
+		normal = strings.Replace(normal, "shard_count = 4", "shard_count = 16", 1)
+		normal = tags.ReplaceAllString(normal, `tags = ["dolt-server-integration"]`)
+		if normal != base {
+			t.Errorf("%s differs from canonical binary/data/env/profile beyond reviewed partition coordinates", name)
+		}
+	}
+}
+
+// Every hosted action and its union are required; matrix outputs cannot stand in for the union.
+func TestServerStorageHostedWorkflow(t *testing.T) {
+	w := readCIWorkflow(t, bazelWorkflowName)
+	body := readPolicyFile(t, sourceRepoRoot(t), ".github/workflows/bazel.yml")
+	hostedBody := strings.Split(strings.Split(body, "\n  bazel-server-storage-hosted:\n")[1], "\n  bazel-server-storage:\n")[0]
+	if !strings.Contains(hostedBody, "    strategy:\n      fail-fast: false\n") {
+		t.Fatal("matrix must explicitly retain every part after another fails")
+	}
+	parts := w.job(t, bazelServerHostedJobName)
+	if parts.If != "${{ needs.rbe.outputs.local_full == 'true' }}" || parts.ContinueOnError || parts.TimeoutMinutes != 30 || parts.Strategy.FailFast || len(parts.Outputs) != 0 {
+		t.Fatalf("hosted partition venue/result/cap contract changed: %+v", parts)
+	}
+	if len(parts.Strategy.Matrix.Include) != 5 {
+		t.Fatal("want exactly four partitions and conformance")
+	}
+	want := []map[string]any{
+		{"part": "0", "target": "dolt_server_hosted_part0_test"},
+		{"part": "1", "target": "dolt_server_hosted_part1_test"},
+		{"part": "2", "target": "dolt_server_hosted_part2_test"},
+		{"part": "3", "target": "dolt_server_hosted_part3_test"},
+		{"part": "conformance", "target": "dolt_server_conformance_test"},
+	}
+	for i, row := range parts.Strategy.Matrix.Include {
+		if !reflect.DeepEqual(row.Extra, want[i]) {
+			t.Errorf("matrix part%d=%v want%v", i, row.Extra, want[i])
+		}
+	}
+	flaky := parts.step(t, "No test target is marked flaky")
+	if !strings.Contains(flaky.Run, `bazel query 'attr(flaky, 1, tests(//internal/storage/dolt:${{ matrix.target }}))'`) {
+		t.Fatal("wildcard flaky query misses explicit manual partitions")
+	}
+	flakyIndex, testIndex := -1, -1
+	for i, step := range parts.Steps {
+		if step.Name == "No test target is marked flaky" {
+			flakyIndex = i
+		}
+		if step.Name == "Test one hosted storage partition" {
+			testIndex = i
+		}
+	}
+	if flaky.If != "" || flakyIndex < 0 || flakyIndex >= testIndex {
+		t.Fatal("explicit flaky admission must run before its test")
+	}
+	test := parts.step(t, "Test one hosted storage partition")
+	if test.TimeoutMinutes != 25 || test.If != "" || !strings.Contains(test.Run, `bazel test "//internal/storage/dolt:${{ matrix.target }}" --config=doltserver-integration --nocache_test_results`) || strings.Contains(test.Run, "bazel test //...") {
+		t.Fatal("hosted part changes the original profile/cap or also runs the canonical full target")
+	}
+	assertTestStepKeepsExitStatus(t, test)
+	upload := parts.step(t, "Upload independent hosted proof")
+	if upload.If != "${{ always() && steps.test.outcome != 'skipped' }}" || upload.With["if-no-files-found"] != "error" || upload.With["name"] != "server-storage-hosted-${{ matrix.part }}-${{ github.run_attempt }}" {
+		t.Fatal("missing unique retained proof per actual invocation")
+	}
+	aggregate := w.job(t, bazelServerJobName)
+	if !reflect.DeepEqual([]string(aggregate.Needs), []string{bazelRBEJobName, bazelServerHostedJobName}) || aggregate.ContinueOnError || aggregate.TimeoutMinutes != 30 || aggregate.Outputs["result"] != "${{ steps.result.outputs.result }}" {
+		t.Fatal("required aggregate is not fail-closed")
+	}
+	if aggregate.step(t, "bazel test //... --config=doltserver-integration").If != "${{ needs.rbe.outputs.local_full != 'true' }}" {
+		t.Fatal("hosted run also selects canonical16")
+	}
+	verify := aggregate.step(t, "All five hosted parts and original shards passed")
+	if verify.If != "${{ always() && needs.rbe.outputs.local_full == 'true' }}" || verify.Env["PARTS_RESULT"] != "${{ needs.bazel-server-storage-hosted.result }}" || !strings.Contains(verify.Run, `test "$PARTS_RESULT" = success`) || !strings.Contains(verify.Run, "server_storage_hosted.py verify") {
+		t.Fatal("aggregate may excuse missing/failed/skipped matrix or omit exact union census")
+	}
+	for _, argument := range []string{`--directory "$RUNNER_TEMP/hosted-proof"`, `--source "$(git rev-parse HEAD)"`, `--run "$GITHUB_RUN_ID" --attempt "$GITHUB_RUN_ATTEMPT"`} {
+		if !strings.Contains(verify.Run, argument) {
+			t.Errorf("union verifier lacks exact provenance argument %s", argument)
+		}
+		capture := parts.step(t, "Capture this independent hosted invocation")
+		if !strings.Contains(capture.Run, argument) || capture.Env["PART"] != "${{ matrix.part }}" {
+			t.Errorf("part capture lacks exact provenance argument %s", argument)
+		}
+	}
+	download := aggregate.step(t, "Download all hosted storage proofs")
+	if download.With["merge-multiple"] != "false" || download.With["pattern"] != "server-storage-hosted-*-${{ github.run_attempt }}" {
+		t.Fatal("artifact identity boundaries lost")
+	}
+}
+
+func TestProxiedHostedOfflinePreflight(t *testing.T) {
+	job := readCIWorkflow(t, bazelWorkflowName).job(t, bazelProxiedJobName)
+	step := job.step(t, "Hosted offline namespace preflight")
+	if step.If != "${{ needs.rbe.outputs.local_full == 'true' }}" || step.TimeoutMinutes != 1 || (step.ContinueOnError != nil && step.ContinueOnError != false) {
+		t.Fatal("hosted namespace prerequisite must fail closed within its own bound")
+	}
+	for _, required := range []string{"unshare --user --map-root-user --net -- true", "ip link set lo up", `timeout 3 bash -c "exec 3<>/dev/tcp/1.1.1.1/443"`, "exit 1"} {
+		if !strings.Contains(step.Run, required) {
+			t.Errorf("namespace preflight lacks %s", required)
+		}
+	}
+	preflight, tests := -1, -1
+	for i, step := range job.Steps {
+		if step.Name == "Hosted offline namespace preflight" {
+			preflight = i
+		}
+		if step.ID == "test" {
+			tests = i
+		}
+	}
+	if preflight < 0 || preflight >= tests {
+		t.Fatal("namespace capability must be checked before the test/engine campaign")
 	}
 }

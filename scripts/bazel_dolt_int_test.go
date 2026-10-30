@@ -435,7 +435,12 @@ func TestBazelDoltIntArmsExactlyOnePerMode(t *testing.T) {
 		t.Fatalf("members %v, want bazelUnionLanes' %v", got, bazelUnionLanes[bazelDoltIntJobName])
 	}
 	for name, m := range members {
-		if got, want := workflow.job(t, name).If, withFullLocalTier(withDoltTiers(m.ifExpr)); got != want {
+		want := withFullLocalTier(withDoltTiers(m.ifExpr))
+		if name == bazelServerJobName {
+			inner := strings.TrimSuffix(strings.TrimPrefix(want, "${{ "), " }}")
+			want = "${{ always() && (" + inner + ") }}"
+		}
+		if got := workflow.job(t, name).If; got != want {
 			t.Errorf("%s if = %q, want %q", name, got, want)
 		}
 	}

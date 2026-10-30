@@ -358,6 +358,7 @@ const (
 	bazelIntegJobName        = "bazel-integration"
 	bazelProxiedJobName      = "bazel-proxied"
 	bazelServerJobName       = "bazel-server-storage"
+	bazelServerHostedJobName = "bazel-server-storage-hosted"
 	bazelCmdDoltJobName      = "bazel-cmd-dolt"
 	// F3: the MCP and npm package gates, moved here from pr.yml so they need
 	// only the rbe job. Unlike every other lane they do not mirror a Bazel

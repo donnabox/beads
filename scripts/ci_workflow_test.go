@@ -2197,7 +2197,7 @@ const (
 const bazelDispatchCoverageJobName = "bazel-dispatch-coverage"
 const bazelDispatchCoverageIf = "${{ always() && github.event_name == 'workflow_dispatch' && inputs.cmd-dolt-required == true }}"
 
-var bazelJobNames = []string{"bazel-local-coverage", bazelCmdDoltJobName, bazelDispatchCoverageJobName, bazelDoltIntJobName, bazelDoltRaceJobName, bazelDoltJobName, bazelEmbedJobName, bazelIntegJobName, bazelProxiedJobName, bazelPureJobName, bazelReleaseCrossJobName, bazelServerJobName, bazelJobName, bazelPackageMCPJobName, bazelPackageNPMJobName, bazelRBEJobName, bazelRBEPrewarmJobName, "rrc-seed", "rrc-verify"}
+var bazelJobNames = []string{"bazel-local-coverage", bazelCmdDoltJobName, bazelDispatchCoverageJobName, bazelDoltIntJobName, bazelDoltRaceJobName, bazelDoltJobName, bazelEmbedJobName, bazelIntegJobName, bazelProxiedJobName, bazelPureJobName, bazelReleaseCrossJobName, bazelServerJobName, bazelServerHostedJobName, bazelJobName, bazelPackageMCPJobName, bazelPackageNPMJobName, bazelRBEJobName, bazelRBEPrewarmJobName, "rrc-seed", "rrc-verify"}
 
 // The lanes that only run remotely (skipped unless the rbe job chose remote);
 // bazel-integration runs remotely or with the read-only cache (bazelIntegIf);
@@ -2577,8 +2577,12 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 			// and execution contract are pinned by TestBazelDispatchCoverageJob.
 			continue
 		}
-		if !reflect.DeepEqual([]string(job.Needs), []string{bazelRBEJobName}) {
-			t.Errorf("%s needs = %v, want [%s]", name, job.Needs, bazelRBEJobName)
+		wantNeeds := []string{bazelRBEJobName}
+		if name == bazelServerJobName {
+			wantNeeds = append(wantNeeds, bazelServerHostedJobName)
+		}
+		if !reflect.DeepEqual([]string(job.Needs), wantNeeds) {
+			t.Errorf("%s needs = %v, want %v", name, job.Needs, wantNeeds)
 		}
 		// RRC seed/verify are event-scoped maintenance, independently pinned
 		// by TestBazelRRCSeedJob and TestBazelRRCVerifyJob. They do not run
@@ -2646,6 +2650,13 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 		if slices.Contains([]string{bazelEmbedJobName, bazelIntegJobName, bazelDoltJobName, bazelProxiedJobName, bazelServerJobName, bazelCmdDoltJobName}, name) {
 			inner := strings.TrimSuffix(strings.TrimPrefix(wantJobIf, "${{ "), " }}")
 			wantJobIf = "${{ needs.rbe.outputs.local_full == 'true' || (" + inner + ") }}"
+		}
+		if name == bazelServerJobName {
+			inner := strings.TrimSuffix(strings.TrimPrefix(wantJobIf, "${{ "), " }}")
+			wantJobIf = "${{ always() && (" + inner + ") }}"
+		}
+		if name == bazelServerHostedJobName {
+			wantJobIf = "${{ needs.rbe.outputs.local_full == 'true' }}"
 		}
 		if job.RunsOn != wantJobRunsOn {
 			t.Errorf("%s runs-on = %q, want %q", name, job.RunsOn, wantJobRunsOn)
@@ -3154,6 +3165,17 @@ func TestBazelLaneIsGatedAlongsideLegacy(t *testing.T) {
 			// outputs rather than an independent PR gate token.
 			continue
 		}
+		if name == bazelServerHostedJobName {
+			// Matrix result is required by the existing tier aggregate, never a last-writer output or advisory arm.
+			aggregate := workflow.job(t, bazelServerJobName)
+			proof := aggregate.step(t, "All five hosted parts and original shards passed")
+			if !contains(aggregate.Needs, name) || len(job.Outputs) != 0 || job.ContinueOnError || aggregate.ContinueOnError ||
+				proof.Env["PARTS_RESULT"] != "${{ needs.bazel-server-storage-hosted.result }}" ||
+				!strings.Contains(proof.Run, `test "$PARTS_RESULT" = success`) || !strings.Contains(proof.Run, "server_storage_hosted.py verify") {
+				t.Fatal("hosted matrix failure or missing evidence can escape its required tier aggregate")
+			}
+			continue
+		}
 		_, gated := bazelLaneGateIDs[name]
 		_, advisory := bazelAdvisoryLanes[name]
 		_, flagGated := bazelFlagGatedLanes[name]
@@ -3491,6 +3513,16 @@ func bazelLaneRunModesWithLocalProof(t *testing.T, lane, ifExpr string, with map
 			t.Fatalf("invalid result-only complete-local guard: %s", ifExpr)
 		}
 		return map[string]bool{} // Independently required proof, not an execution lane.
+	}
+	if lane == bazelServerHostedJobName {
+		if ifExpr != "${{ needs.rbe.outputs.local_full == 'true' }}" {
+			t.Fatalf("invalid hosted storage guard: %s", ifExpr)
+		}
+		return map[string]bool{"local": fullLocal}
+	}
+	if lane == bazelServerJobName && strings.HasPrefix(ifExpr, "${{ always() && (") {
+		inner := strings.TrimSuffix(strings.TrimPrefix(ifExpr, "${{ always() && ("), ") }}")
+		return bazelLaneRunModesWithLocalProof(t, lane, "${{ "+inner+" }}", with, fullLocal)
 	}
 	const qPrefix = "${{ needs.rbe.outputs.local_full == 'true' || ("
 	if body, ok := strings.CutPrefix(ifExpr, qPrefix); ok {
@@ -4844,7 +4876,11 @@ func bazelrcLines(t *testing.T) map[string]bool {
 // by check_testcases.py on that BEP.
 func assertBazelTierStep(t *testing.T, job ciWorkflowJob, jobName, config string) {
 	t.Helper()
-	const id, bep, wantIf = "test", "bazel-bep.json", ""
+	const id, bep = "test", "bazel-bep.json"
+	wantIf := ""
+	if jobName == bazelServerJobName {
+		wantIf = "${{ needs.rbe.outputs.local_full != 'true' }}"
+	}
 	step := job.step(t, "bazel test //... --config="+config)
 	if step.ID != id || step.If != wantIf || step.TimeoutMinutes == 0 || step.TimeoutMinutes >= job.TimeoutMinutes {
 		t.Errorf("%s step --config=%s: id=%q if=%q timeout-minutes=%d; want id %q, if %q, a timeout below the job's %d",
@@ -5089,7 +5125,7 @@ func TestBazelDoltServerTiersMirrorPRRisk(t *testing.T) {
 		for _, step := range j.Steps {
 			proxied := strings.Contains(step.Run, "--config=doltserver-proxied")
 			server := strings.Contains(step.Run, "--config=doltserver-integration")
-			if (proxied && name != bazelProxiedJobName) || (server && name != bazelServerJobName) {
+			if (proxied && name != bazelProxiedJobName) || (server && name != bazelServerJobName && name != bazelServerHostedJobName) {
 				t.Errorf("%s step %q runs a dolt-server tier outside its own job", name, step.Name)
 			}
 			if (name == bazelIntegJobName || name == bazelDoltJobName) && (proxied || server || strings.Contains(step.Run, "doltserver-")) {
