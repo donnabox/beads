@@ -24,6 +24,9 @@ import (
 // not.
 var ErrNoProjectConfigYaml = errors.New("no project config.yaml in this workspace")
 
+// CLIProfileKey is a proposed receiving spelling, not an adopted protocol key.
+const CLIProfileKey = "cli.profile"
+
 // YamlOnlyKeys are configuration keys that must be stored in config.yaml
 // rather than the database. These are "startup" settings that are
 // read before the database is opened.
@@ -32,6 +35,7 @@ var ErrNoProjectConfigYaml = errors.New("no project config.yaml in this workspac
 // appeared to succeed but had no effect (because no-db is read from yaml
 // at startup, not from the database).
 var YamlOnlyKeys = map[string]bool{
+	CLIProfileKey: true,
 	// Bootstrap flags (affect how bd starts)
 	"no-db": true,
 	"json":  true,
@@ -372,6 +376,7 @@ var userGlobalKeyPrefixes = []string{"metrics."}
 // to ~/.config/bd/config.yaml keeps it per-machine; viper still merges that
 // file, so config.NodeID() reads it back.
 var userGlobalExactKeys = map[string]bool{
+	CLIProfileKey:          true,
 	"dolt.remotesapi-port": true,
 	"node_id":              true,
 }
@@ -487,22 +492,26 @@ func WorkspaceYamlValueStrictWithLocal(beadsDir, key string) (value string, pres
 }
 
 func strictYamlValueAtPath(path, key string) (value string, present bool, err error) {
-	data, err := os.ReadFile(path) //nolint:gosec // path is caller-resolved workspace state
+	return strictYamlValueAtPathLabeled(path, key, "workspace")
+}
+
+func strictYamlValueAtPathLabeled(path, key, label string) (value string, present bool, err error) {
+	data, err := os.ReadFile(path) //nolint:gosec // path is caller-resolved configuration state
 	if os.IsNotExist(err) {
 		return "", false, nil
 	}
 	if err != nil {
-		return "", false, fmt.Errorf("reading workspace %s: %w", filepath.Base(path), err)
+		return "", false, fmt.Errorf("reading %s %s: %w", label, filepath.Base(path), err)
 	}
 	var root map[string]interface{}
 	if err := yaml.Unmarshal(data, &root); err != nil {
-		return "", false, fmt.Errorf("parsing workspace %s: %w", filepath.Base(path), err)
+		return "", false, fmt.Errorf("parsing %s %s: %w", label, filepath.Base(path), err)
 	}
 	if root == nil {
 		return "", false, nil
 	}
 	if raw, ok := root[key]; ok {
-		value, err := strictYamlScalarString(raw)
+		value, err := strictYamlScalarStringLabeled(raw, label)
 		if err != nil {
 			return "", true, err
 		}
@@ -513,14 +522,14 @@ func strictYamlValueAtPath(path, key string) (value string, present bool, err er
 	for i, part := range parts {
 		m, ok := node.(map[string]interface{})
 		if !ok {
-			return "", true, fmt.Errorf("workspace config key %q has a non-map parent", key)
+			return "", true, fmt.Errorf("%s config key %q has a non-map parent", label, key)
 		}
 		node, ok = m[part]
 		if !ok {
 			return "", false, nil
 		}
 		if i == len(parts)-1 {
-			value, err := strictYamlScalarString(node)
+			value, err := strictYamlScalarStringLabeled(node, label)
 			if err != nil {
 				return "", true, err
 			}
@@ -531,12 +540,16 @@ func strictYamlValueAtPath(path, key string) (value string, present bool, err er
 }
 
 func strictYamlScalarString(v interface{}) (string, error) {
+	return strictYamlScalarStringLabeled(v, "workspace")
+}
+
+func strictYamlScalarStringLabeled(v interface{}, label string) (string, error) {
 	if v == nil {
-		return "", fmt.Errorf("workspace config value is null")
+		return "", fmt.Errorf("%s config value is null", label)
 	}
 	switch v.(type) {
 	case map[string]interface{}, []interface{}:
-		return "", fmt.Errorf("workspace config value must be a scalar")
+		return "", fmt.Errorf("%s config value must be a scalar", label)
 	default:
 		return fmt.Sprintf("%v", v), nil
 	}
@@ -577,6 +590,26 @@ func yamlScalarString(v interface{}) (string, bool) {
 	default:
 		return fmt.Sprintf("%v", s), true
 	}
+}
+
+// UserYamlValueStrict reads only the existing user-global YAML file. Missing
+// files/keys are absent; unreadable files, malformed YAML and non-scalar/null
+// values are errors. Project config, BEADS_DIR and merged Viper are not read.
+func UserYamlValueStrict(key string) (string, bool, error) {
+	path, err := strictUserConfigYamlPath()
+	if err != nil {
+		return "", false, err
+	}
+	return strictYamlValueAtPathLabeled(path, key, "user-global")
+}
+
+// userYamlConfigPathForKey keeps existing paths for other settings and makes
+// the proposed CLI profile strict on reads, writes and unset.
+func userYamlConfigPathForKey(key string) (string, error) {
+	if key == CLIProfileKey {
+		return strictUserConfigYamlPath()
+	}
+	return UserConfigYamlPath()
 }
 
 // GetUserYamlConfig reads a single dotted key from the user-global config.yaml
@@ -639,7 +672,7 @@ func MetricsNoticeShownByUserConfig() bool {
 // UnsetYamlConfig: an absent file or an absent key is (false, nil), not an
 // error.
 func UnsetUserYamlConfig(key string) (bool, error) {
-	configPath, err := UserConfigYamlPath()
+	configPath, err := userYamlConfigPathForKey(key)
 	if err != nil {
 		return false, err
 	}
@@ -683,7 +716,7 @@ func SetUserYamlConfig(key, value string) error {
 	if err := validateYamlConfigValue(key, value); err != nil {
 		return err
 	}
-	configPath, err := UserConfigYamlPath()
+	configPath, err := userYamlConfigPathForKey(key)
 	if err != nil {
 		return err
 	}
@@ -1559,6 +1592,10 @@ func isDuration(s string) bool {
 // Returns an error if the value is invalid for the given key.
 func validateYamlConfigValue(key, value string) error {
 	switch key {
+	case CLIProfileKey:
+		if value != "canonical" && value != "compat" {
+			return fmt.Errorf("%s must be canonical or compat, got %q", key, value)
+		}
 	case "hierarchy.max-depth":
 		// Must be a positive integer >= 1 (GH#995)
 		depth, err := strconv.Atoi(value)

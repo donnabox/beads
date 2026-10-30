@@ -232,7 +232,10 @@ func canonicalCollectionPureRequest(cmd *cobra.Command, links bool, options clio
 	if cmd.Flags().Changed("continue") {
 		return plan, "", "", fmt.Errorf("%w: local collection reads cannot resume retained continuations; use a complete --unpaged selection", graphstore.ErrCapabilityUnavailable)
 	}
-	exact, family, err := graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, links)
+	// The product compat adapter defaults to the Issue family. Canonical
+	// List's typed request must leave the all-current population unrestricted;
+	// representation selection alone does not change this semantic default.
+	exact, family, err := graphPreviewCollectionTypesWithDefault(cmd, graphPreviewConfig.GraphScopeURL, links, !canonicalCLIProfileSelected(cmd))
 	return plan, exact, family, err
 }
 

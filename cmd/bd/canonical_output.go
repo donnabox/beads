@@ -138,6 +138,9 @@ func canonicalOutputOptions(cmd *cobra.Command) (clioutput.Options, bool, error)
 
 func canonicalGraphFlags(cmd *cobra.Command, renderer canonicalFailureRenderer, extra ...string) error {
 	allowed := map[string]bool{"output-format": true, "include": true, "omit": true, "graph-mode": true, "actor": true, "quiet": true, "no-color": true, "directory": true, "readonly": true}
+	if canonicalOutputDefault(cmd) {
+		allowed["json"] = true
+	}
 	for _, name := range extra {
 		allowed[name] = true
 	}

@@ -591,16 +591,32 @@ var configGetCmd = &cobra.Command{
 			// project's .beads/config.yaml shadow the effective value and report the
 			// opposite of what `bd metrics` actually honors.
 			if config.IsUserGlobalKey(key) {
-				value := config.GetUserYamlConfig(key)
+				var value string
+				var profilePresent bool
+				if key == config.CLIProfileKey {
+					var err error
+					value, profilePresent, err = config.UserYamlValueStrict(key)
+					if err != nil {
+						return HandleError("reading saved CLI profile: %v", err)
+					}
+				} else {
+					value = config.GetUserYamlConfig(key)
+				}
 				location := config.UserConfigYamlDisplayPath()
 				if jsonOutput {
-					return outputJSON(map[string]interface{}{
+					payload := map[string]interface{}{
 						"key":      key,
 						"value":    value,
 						"location": location,
-					})
+					}
+					if key == config.CLIProfileKey {
+						payload["present"] = profilePresent
+					}
+					return outputJSON(payload)
 				}
-				if value == "" {
+				if key == config.CLIProfileKey && profilePresent && value == "" {
+					fmt.Printf("%s = %q (saved empty value in %s; expected canonical or compat)\n", key, value, location)
+				} else if value == "" {
 					fmt.Printf("%s (not set in %s)\n", key, location)
 				} else {
 					fmt.Printf("%s\n", value)
@@ -1416,7 +1432,8 @@ func allRecognizedConfigPrefixes() []string {
 
 // recognizedConfigKeys lists valid non-namespaced config keys.
 var recognizedConfigKeys = map[string]bool{
-	"no-db": true, "json": true, "db": true, "actor": true,
+	config.CLIProfileKey: true,
+	"no-db":              true, "json": true, "db": true, "actor": true,
 	"identity": true, "no-push": true, "no-git-ops": true,
 	"node_id":                    true, // replica identity for the lease guard (read from yaml/env, never the DB)
 	"create.require-description": true, "beads.role": true,

@@ -2905,7 +2905,7 @@ func main() {
 	rootCmd.InitDefaultHelpCmd()
 	registerHelpAllFlag()
 
-	executedCmd, err := rootCmd.ExecuteC()
+	executedCmd, err := executeCLIProfileRoot(rootCmd, os.Args[1:])
 
 	// Let this command's fire-and-forget hooks finish, for the same
 	// every-exit-path reason the metrics flush below is here rather than in
