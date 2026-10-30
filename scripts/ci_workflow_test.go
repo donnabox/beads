@@ -6605,8 +6605,8 @@ func TestBazelAutofixWorkflowSecurity(t *testing.T) {
 				if want := appTokenActionSHA; sha != want {
 					t.Errorf("step %q uses %q; want actions/create-github-app-token@%s", step.Name, step.Uses, want)
 				}
-				if step.If != "github.event.workflow_run.head_repository.full_name == github.repository" {
-					t.Errorf("app-token step if = %q, want the same-repo check (no token we hold can push to a fork)", step.If)
+				if step.If != "steps.patch.outputs.found == 'true' && github.event.workflow_run.head_repository.full_name == github.repository" {
+					t.Errorf("app-token step if = %q, want an actual patch and the same-repo check (no token needed for no-op; no token we hold can push to a fork)", step.If)
 				}
 				want := map[string]string{
 					"app-id":              "${{ secrets.AUTOFIX_APP_ID }}",
