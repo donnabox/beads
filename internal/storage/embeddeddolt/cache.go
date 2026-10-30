@@ -37,7 +37,9 @@ func Open(ctx context.Context, beadsDir, database, branch string) (*EmbeddedDolt
 // failing the open (bd-578h9.5): the gate exists to stop in-place migration,
 // not reads, and server mode's read-only opens already skip migration. The
 // returned store is otherwise a normal writable store (read-only commands
-// can still write incidentally, e.g. the post-command autocommit net).
+// can still write incidentally, e.g. the post-command autocommit net), except
+// that the explicit ahead-schema override returns an uncached read-only
+// attachment after verifying its issue projection.
 func OpenForReadOnlyCommand(ctx context.Context, beadsDir, database, branch string) (*EmbeddedDoltStore, error) {
 	return openCached(ctx, beadsDir, database, branch, openReadOnlyCommand)
 }
@@ -100,6 +102,13 @@ func openCached(ctx context.Context, beadsDir, database, branch string, intent o
 	s, err := newStore(ctx, beadsDir, database, branch, intent)
 	if err != nil {
 		return nil, err
+	}
+
+	// An ahead-schema issue-read override grants only a read-only attachment.
+	// Keep it outside the writable cache, just like OpenReadOnly, so a later
+	// strict or reconcile open must run its own migration admission checks.
+	if s.readOnly {
+		return s, nil
 	}
 
 	cacheMu.Lock()

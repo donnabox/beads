@@ -11,87 +11,9 @@ import (
 	"github.com/steveyegge/beads/internal/storage/dberrors"
 )
 
-// This file implements R20 epoch-transition enforcement (gastownhall/beads#5898
-// revision 9, this slice: be-x5jqd.4 / #6136): a store-wide epoch generation
-// counter (store_epoch, migration 0067) plus a durable record of the
-// addresses minted under each generation (epoch_minted_addresses, migration
-// 0071), used to answer whether a previously-minted address is still served
-// by the store's current epoch. It adds no RetentionFixture/R17 resolve,
-// remove, hold, force-remove, erase, or mint logic — R20 epoch reasoning is
-// evaluated entirely on its own (out of scope for this slice).
-//
-// ALL THREE LEGS SHARE THIS BODY, the same way CompareAndSetMetadataKeyInTx
-// and R16's CompareAndSetVersionInTx do: the two Dolt-backed stores wrap it
-// in their own transaction, and the unit-of-work provider reaches it through
-// its own leg-specific adapter. Each leg's own contract-test file is the
-// translation boundary to and from backend/conformance's
-// Address/EpochBumpTrigger/RetentionAnswer vocabulary — this file knows
-// nothing about the conformance package.
-//
-// ADDRESSES ARE NEVER RECOMPUTED FROM store_epoch. Each is a deterministic
-// token over (storeID, id, the epoch current at mint time) — see
-// epochAddress — persisted once at mint and never rewritten in place: a
-// later mint of the same id under a bumped epoch produces a DIFFERENT
-// address and a new row, so a superseded address's row survives to answer
-// StillServes/Resolve as "no longer served" after the epoch moves on.
-//
-// epochAddress'S ENCODING IS LENGTH-PREFIXED, NOT BARE-COLON-JOINED
-// (gastownhall/beads#6664, bee-ghosttrack review 5268699223, item B2): a
-// colon inside storeID or id can no longer shift the (storeID, id, epoch)
-// field boundary onto a different triple the way the old "epch:%s:%s:%d"
-// form allowed. MintUnderEpochInTx additionally refuses a storeID or id
-// containing ":" outright (validateEpochAddressInputs) so an address stays
-// readable by eye without needing to count length prefixes — belt and
-// braces, not a correctness dependency of epochAddress itself. Given that,
-// upsertEpochMintedAddressInTx's exists branch is a pure no-op: an
-// address's row existing now provably means its stored triple already
-// matches the incoming one, so there is nothing left to write.
-
-// EpochRestriction is this file's own local answer vocabulary for R20 —
-// deliberately not backend/conformance.Restriction (see package doc above).
-// It omits GoneRetention/GoneErasure: those are RetentionFixture/R17
-// outcomes this slice does not produce.
-type EpochRestriction int
-
-const (
-	EpochRestrictionLive EpochRestriction = iota
-	EpochRestrictionGoneReorganization
-	EpochRestrictionUnknown
-)
-
-// EpochResolveResult is ResolveEpochInTx's answer. Epoch is non-nil exactly
-// when the answer required comparing an epoch (Live and GoneReorganization);
-// it is nil for Unknown, which never looks store_epoch up at all.
-type EpochResolveResult struct {
-	Restriction    EpochRestriction
-	ProducingStore string
-	Epoch          *int
-}
-
-// ErrEpochAddressNotFound means the address named was never minted by
-// storeID — distinct from an ordinary "gone" answer, which requires having
-// minted the address in the first place.
-var ErrEpochAddressNotFound = errors.New("epoch CAS: address not minted by this store")
-
-// ErrEpochAddressSeparator means a storeID or id passed to
-// MintUnderEpochInTx contains ":", the character epochAddress's encoding
-// uses as a field delimiter (gastownhall/beads#6664, bee-ghosttrack review
-// 5268699223, item B2b). epochAddress's length-prefixed encoding does not
-// actually depend on this for correctness (see epochAddress's own doc
-// comment), but refusing it outright keeps a minted address readable by eye.
-var ErrEpochAddressSeparator = errors.New("epoch CAS: storeID or id contains \":\", epochAddress's field separator")
-
-// epochAddress is a minted address: a deterministic token over storeID, id,
-// and the epoch current at mint time, so re-minting the same id under the
-// same epoch always reproduces the same address. storeID and id are
-// length-prefixed, not just colon-joined (gastownhall/beads#6664,
-// bee-ghosttrack review 5268699223, item B2a): reading exactly len(storeID)
-// bytes for the first field and len(id) bytes for the second makes the
-// (storeID, id) boundary unambiguous no matter what characters either one
-// contains, so two different triples can never collide on the same address.
-// MintUnderEpochInTx also refuses a storeID or id containing ":" outright
-// (validateEpochAddressInputs, item B2b) so an address stays readable by
-// eye without relying on that.
+// Released fork epoch semantics remain the production default.
+// The separate Survival functions retain the incoming complete-format contract;
+// no schema inspection or migration automatically selects that contract.
 func epochAddress(storeID, id string, epoch int) string {
 	return fmt.Sprintf("epch:%d:%s:%d:%s:%d", len(storeID), storeID, len(id), id, epoch)
 }
@@ -113,7 +35,7 @@ func validateEpochAddressInputs(storeID, id string) error {
 // reports the current epoch either way. Only BumpEpochInTx and
 // MintUnderEpochInTx call this: both are about to write regardless, so
 // creating the row here is not a surprising extra side effect. Every
-// read-only path calls readStoreEpochInTx instead (gastownhall/beads#6664,
+// read-only path calls readLegacyStoreEpochInTx instead (gastownhall/beads#6664,
 // bee-ghosttrack review 5268699223, item B4): a write from what callers
 // reasonably expect to be a read is surprising at best, and a hard failure
 // against a genuinely read-only connection at worst.
@@ -132,7 +54,7 @@ func ensureStoreEpochRow(ctx context.Context, tx DBTX) (int, error) {
 	return epoch, nil
 }
 
-// readStoreEpochInTx reports the current epoch without writing:
+// readLegacyStoreEpochInTx reports the current epoch without writing:
 // store_epoch's singleton row starting absent (migration 0067) and its
 // epoch being 1 are the same state, so a read-only caller can answer from
 // that default instead of initializing the row the way ensureStoreEpochRow
@@ -140,7 +62,7 @@ func ensureStoreEpochRow(ctx context.Context, tx DBTX) (int, error) {
 // ResolveEpochInTx all read this way; only BumpEpochInTx and
 // MintUnderEpochInTx, which are about to write regardless, use
 // ensureStoreEpochRow.
-func readStoreEpochInTx(ctx context.Context, tx DBTX) (int, error) {
+func readLegacyStoreEpochInTx(ctx context.Context, tx DBTX) (int, error) {
 	var epoch int
 	err := tx.QueryRowContext(ctx, `SELECT epoch FROM store_epoch WHERE id = 1`).Scan(&epoch)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -152,8 +74,8 @@ func readStoreEpochInTx(ctx context.Context, tx DBTX) (int, error) {
 	return epoch, nil
 }
 
-// epochMintedAddress is one row as read from epoch_minted_addresses.
-type epochMintedAddress struct {
+// legacyEpochMintedAddress is one row as read from epoch_minted_addresses.
+type legacyEpochMintedAddress struct {
 	storeID     string
 	mintedID    string
 	mintedEpoch int
@@ -163,16 +85,16 @@ type epochMintedAddress struct {
 // (with a zero-value row and nil error) when address was never minted —
 // distinguishing "not found" from an actual query error is the caller's
 // job, the same way readExpectedRevisionRowInTx's callers do it.
-func readEpochMintedAddressInTx(ctx context.Context, tx DBTX, address string) (epochMintedAddress, bool, error) {
-	var row epochMintedAddress
+func readEpochMintedAddressInTx(ctx context.Context, tx DBTX, address string) (legacyEpochMintedAddress, bool, error) {
+	var row legacyEpochMintedAddress
 	err := tx.QueryRowContext(ctx,
 		`SELECT store_id, minted_id, minted_epoch FROM epoch_minted_addresses WHERE address = ?`, address,
 	).Scan(&row.storeID, &row.mintedID, &row.mintedEpoch)
 	if errors.Is(err, sql.ErrNoRows) {
-		return epochMintedAddress{}, false, nil
+		return legacyEpochMintedAddress{}, false, nil
 	}
 	if err != nil {
-		return epochMintedAddress{}, false, fmt.Errorf("epoch CAS: read minted address %s: %w", address, err)
+		return legacyEpochMintedAddress{}, false, fmt.Errorf("epoch CAS: read minted address %s: %w", address, err)
 	}
 	return row, true, nil
 }
@@ -212,8 +134,8 @@ func upsertEpochMintedAddressInTx(ctx context.Context, tx DBTX, address, storeID
 // counter per database, matching production reality (one logical store per
 // database already) — storeID is accepted here only to satisfy
 // EpochFixture's hook signature.
-func CurrentEpochInTx(ctx context.Context, tx DBTX, storeID string) (int, error) {
-	epoch, err := readStoreEpochInTx(ctx, tx)
+func releasedCurrentEpochInTx(ctx context.Context, tx DBTX, storeID string) (int, error) {
+	epoch, err := readLegacyStoreEpochInTx(ctx, tx)
 	if err != nil {
 		return 0, fmt.Errorf("epoch CAS: current epoch for %s: %w", storeID, err)
 	}
@@ -225,7 +147,7 @@ func CurrentEpochInTx(ctx context.Context, tx DBTX, storeID string) (int, error)
 // token-scheme-change — the leg adapter converts the fixture's
 // conformance.EpochBumpTrigger to this plain string via trigger.String(),
 // keeping that vocabulary out of this file per the package doc above).
-func BumpEpochInTx(ctx context.Context, tx DBTX, storeID, reason string) (int, error) {
+func releasedBumpEpochInTx(ctx context.Context, tx DBTX, storeID, reason string) (int, error) {
 	if _, err := ensureStoreEpochRow(ctx, tx); err != nil {
 		return 0, fmt.Errorf("epoch CAS: bump epoch for %s: %w", storeID, err)
 	}
@@ -246,7 +168,7 @@ func BumpEpochInTx(ctx context.Context, tx DBTX, storeID, reason string) (int, e
 // deterministically (epochAddress): minting the same id again under the
 // same epoch reproduces the same address and is an idempotent no-op upsert
 // of the same row.
-func MintUnderEpochInTx(ctx context.Context, tx DBTX, storeID, id string) (string, error) {
+func releasedMintUnderEpochInTx(ctx context.Context, tx DBTX, storeID, id string) (string, error) {
 	if err := validateEpochAddressInputs(storeID, id); err != nil {
 		return "", fmt.Errorf("epoch CAS: mint %s under epoch for %s: %w", id, storeID, err)
 	}
@@ -311,7 +233,7 @@ func mintedIDHasAddressAtEpochInTx(ctx context.Context, tx DBTX, storeID, minted
 // even though the row itself is never deleted (ResolveEpochInTx must still
 // be able to answer for it). An address from a different store, or one
 // never minted, is not served either.
-func StillServesInTx(ctx context.Context, tx DBTX, storeID, address string) (bool, error) {
+func releasedStillServesInTx(ctx context.Context, tx DBTX, storeID, address string) (bool, error) {
 	row, found, err := readEpochMintedAddressInTx(ctx, tx, address)
 	if err != nil {
 		return false, err
@@ -319,7 +241,7 @@ func StillServesInTx(ctx context.Context, tx DBTX, storeID, address string) (boo
 	if !found || row.storeID != storeID {
 		return false, nil
 	}
-	epoch, err := readStoreEpochInTx(ctx, tx)
+	epoch, err := readLegacyStoreEpochInTx(ctx, tx)
 	if err != nil {
 		return false, fmt.Errorf("epoch CAS: still serves %s for %s: %w", address, storeID, err)
 	}
@@ -342,7 +264,7 @@ func StillServesInTx(ctx context.Context, tx DBTX, storeID, address string) (boo
 // ProducingStore is always storeID: this file has no lineage/replica model
 // to attribute a foreign store to (unlike RetentionFixture's cross-store
 // answers).
-func ResolveEpochInTx(ctx context.Context, tx DBTX, storeID, address string) (EpochResolveResult, error) {
+func releasedResolveEpochInTx(ctx context.Context, tx DBTX, storeID, address string) (EpochResolveResult, error) {
 	row, found, err := readEpochMintedAddressInTx(ctx, tx, address)
 	if err != nil {
 		return EpochResolveResult{}, err
@@ -350,7 +272,7 @@ func ResolveEpochInTx(ctx context.Context, tx DBTX, storeID, address string) (Ep
 	if !found || row.storeID != storeID {
 		return EpochResolveResult{Restriction: EpochRestrictionUnknown, ProducingStore: storeID}, nil
 	}
-	epoch, err := readStoreEpochInTx(ctx, tx)
+	epoch, err := readLegacyStoreEpochInTx(ctx, tx)
 	if err != nil {
 		return EpochResolveResult{}, fmt.Errorf("epoch CAS: resolve %s for %s: %w", address, storeID, err)
 	}
@@ -370,7 +292,7 @@ func ResolveEpochInTx(ctx context.Context, tx DBTX, storeID, address string) (Ep
 // CurrentAddressForInTx re-mints oldAddress's underlying id under storeID's
 // CURRENT epoch, giving callers a live address to move to once oldAddress
 // stops being served. oldAddress must be one storeID has actually minted.
-func CurrentAddressForInTx(ctx context.Context, tx DBTX, storeID, oldAddress string) (string, error) {
+func releasedCurrentAddressForInTx(ctx context.Context, tx DBTX, storeID, oldAddress string) (string, error) {
 	row, found, err := readEpochMintedAddressInTx(ctx, tx, oldAddress)
 	if err != nil {
 		return "", err
@@ -378,5 +300,118 @@ func CurrentAddressForInTx(ctx context.Context, tx DBTX, storeID, oldAddress str
 	if !found || row.storeID != storeID {
 		return "", fmt.Errorf("epoch CAS: current address for %s: %w: %s", storeID, ErrEpochAddressNotFound, oldAddress)
 	}
-	return MintUnderEpochInTx(ctx, tx, storeID, row.mintedID)
+	return releasedMintUnderEpochInTx(ctx, tx, storeID, row.mintedID)
+}
+
+// EpochMintDirtyTables includes the singleton initialized by a first mint.
+func EpochMintDirtyTables() ChangedTables { return SurvivalEpochMintDirtyTables() }
+
+// ErrEpochSemanticsDeferred identifies APIs whose incoming survival contract
+// has not been adopted for released workspaces. Refusal occurs before SQL.
+var ErrEpochSemanticsDeferred = errors.New("explicit epoch survival semantics are deferred for released workspaces")
+
+func BumpEpochCarryingInTx(context.Context, DBTX, string, string) (int, error) {
+	return 0, ErrEpochSemanticsDeferred
+}
+
+func LoseVersionInTx(context.Context, DBTX, string, string) error {
+	return ErrEpochSemanticsDeferred
+}
+
+// ErrEpochFormatNotReleased rejects formats whose rows cannot safely be
+// interpreted using the released epoch contract, including nonmigrating opens.
+var ErrEpochFormatNotReleased = errors.New("epoch format is incompatible with released semantics")
+
+const releasedEpochColumnsQuery = `SELECT COLUMN_NAME, COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'epoch_minted_addresses'`
+
+// requireReleasedEpochShape binds interpretation to the operation's runner.
+// It is read-only; schema migration separately checks lineage and constraints.
+func requireReleasedEpochShape(ctx context.Context, tx DBTX) error {
+	rows, err := tx.QueryContext(ctx, releasedEpochColumnsQuery)
+	if err != nil {
+		return fmt.Errorf("read epoch format: %w", err)
+	}
+	defer func() { _ = rows.Close() }()
+	expected := map[string]string{"address": "varchar(255)", "store_id": "varchar(255)", "minted_id": "varchar(255)", "minted_epoch": "int", "minted_at": "datetime"}
+	seen := make(map[string]bool)
+	for rows.Next() {
+		var name, typ, nullable, extra string
+		var defaultValue sql.NullString
+		if err := rows.Scan(&name, &typ, &nullable, &defaultValue, &extra); err != nil {
+			return fmt.Errorf("read epoch column: %w", err)
+		}
+		typ = strings.ToLower(typ)
+		if typ == "int(11)" {
+			typ = "int"
+		}
+		if typ == "datetime(0)" {
+			typ = "datetime"
+		}
+		want, ok := expected[name]
+		if !ok || seen[name] || typ != want || nullable != "NO" || defaultValue.Valid || extra != "" {
+			return fmt.Errorf("%w: unexpected column %q", ErrEpochFormatNotReleased, name)
+		}
+		seen[name] = true
+	}
+	if err := rows.Err(); err != nil {
+		return fmt.Errorf("read epoch columns: %w", err)
+	}
+	if err := rows.Close(); err != nil {
+		return fmt.Errorf("close epoch columns: %w", err)
+	}
+	if len(seen) != len(expected) {
+		return fmt.Errorf("%w: missing epoch columns", ErrEpochFormatNotReleased)
+	}
+	return nil
+}
+
+// CurrentEpochInTx applies the released contract only to its compatible format.
+func CurrentEpochInTx(ctx context.Context, tx DBTX, storeID string) (int, error) {
+	if err := requireReleasedEpochShape(ctx, tx); err != nil {
+		return 0, err
+	}
+	return releasedCurrentEpochInTx(ctx, tx, storeID)
+}
+
+// BumpEpochInTx applies the released contract only to its compatible format.
+func BumpEpochInTx(ctx context.Context, tx DBTX, storeID, reason string) (int, error) {
+	if err := requireReleasedEpochShape(ctx, tx); err != nil {
+		return 0, err
+	}
+	return releasedBumpEpochInTx(ctx, tx, storeID, reason)
+}
+
+// MintUnderEpochInTx applies the released contract only to its compatible format.
+func MintUnderEpochInTx(ctx context.Context, tx DBTX, storeID, id string) (string, error) {
+	if err := validateEpochAddressInputs(storeID, id); err != nil {
+		return "", err
+	}
+	if err := requireReleasedEpochShape(ctx, tx); err != nil {
+		return "", err
+	}
+	return releasedMintUnderEpochInTx(ctx, tx, storeID, id)
+}
+
+// StillServesInTx applies the released contract only to its compatible format.
+func StillServesInTx(ctx context.Context, tx DBTX, storeID, address string) (bool, error) {
+	if err := requireReleasedEpochShape(ctx, tx); err != nil {
+		return false, err
+	}
+	return releasedStillServesInTx(ctx, tx, storeID, address)
+}
+
+// ResolveEpochInTx applies the released contract only to its compatible format.
+func ResolveEpochInTx(ctx context.Context, tx DBTX, storeID, address string) (EpochResolveResult, error) {
+	if err := requireReleasedEpochShape(ctx, tx); err != nil {
+		return EpochResolveResult{}, err
+	}
+	return releasedResolveEpochInTx(ctx, tx, storeID, address)
+}
+
+// CurrentAddressForInTx applies the released contract only to its compatible format.
+func CurrentAddressForInTx(ctx context.Context, tx DBTX, storeID, oldAddress string) (string, error) {
+	if err := requireReleasedEpochShape(ctx, tx); err != nil {
+		return "", err
+	}
+	return releasedCurrentAddressForInTx(ctx, tx, storeID, oldAddress)
 }

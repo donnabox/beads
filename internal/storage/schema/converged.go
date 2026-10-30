@@ -65,6 +65,9 @@ func alreadyConverged(ctx context.Context, db DBConn, databaseName string, selec
 	if needed {
 		return false, nil
 	}
+	if err := checkForkEpochAdmission(ctx, db, mainSource.latest()); err != nil {
+		return false, err
+	}
 
 	// MigrateUp re-asserts the canonical dolt_ignore patterns ahead of that
 	// gate precisely because an out-of-band-materialized database can arrive

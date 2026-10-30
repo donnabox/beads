@@ -22,6 +22,13 @@ import (
 // needs no rename when version_id lands beside it. (bee-ghosttrack, #5898
 // consumer read, 2026-09-20.)
 //
+// ChangeAgent is read from issue_versions.change_agent (migration 0067) but
+// is deliberately NOT part of the JSON shape, which is what `bd versions
+// --json` prints. Provenance V2 (gastownhall/beads#7510) replaces the ad hoc
+// agent field with an actor chain, so publishing it now would make a public
+// contract out of a field that is on its way out. The column and the field
+// stay; only the JSON key is withheld.
+//
 // It lives here rather than in issueops for the same reason HistoryEntry
 // does: issueops imports storage, so the shared row type has to sit on this
 // side of that edge.
@@ -30,7 +37,7 @@ type IssueVersion struct {
 	Revision           int64      `json:"local_revision"`
 	Epoch              int64      `json:"epoch"`
 	ChangeActor        string     `json:"change_actor"`
-	ChangeAgent        string     `json:"change_agent"`
+	ChangeAgent        string     `json:"-"`
 	ChangeMessage      string     `json:"change_message"`
 	ChangeAt           time.Time  `json:"change_at"`
 	AttributionStatus  string     `json:"attribution_status"`
@@ -66,4 +73,30 @@ type VersionLister interface {
 	// An empty result means no retained versions, never "unsupported" --
 	// unsupported is the failed type assertion.
 	ListVersions(ctx context.Context, issueID string) ([]IssueVersion, error)
+}
+
+// HistoryParticipation is implemented by backends that can say which issues
+// participate in versioned history: the issues-table rows whose
+// participation_generation is set (migration 0070, design §16.2b). Only those
+// are versioned by an update-shaped write, so only a value one of them holds
+// can make a later write to that row fail once recording is on; the write
+// fence skips a legacy row (participation_generation NULL) whatever it holds.
+// A write that copies a legacy row's values into a new issue, as `bd mol pour`
+// copies a proto's, is versioned like any create, which is why the switch also
+// keeps a legacy template, and warns of the other legacy issues of a proto.
+//
+// It is the pre-enable scan's second read. The scan finds the issues a version
+// would refuse from what the issue reader returns; participation is not on
+// types.Issue, so it asks this which of those participate and keeps them, and
+// of the legacy ones only the templates.
+// The unit-of-work route answers the same question through its IssueUseCase. A
+// backend that cannot answer is not forced to: the scan keeps every issue it
+// found, an over-approximation that can only refuse more, and says so. That is
+// the reason this is a narrow capability rather than a method on DoltStorage,
+// the same reason VersionLister and HistoryPresence are.
+type HistoryParticipation interface {
+	// ParticipatingIssueIDs returns the subset of ids that name an issues-table
+	// row whose participation_generation is set. An id naming a legacy row, a
+	// wisps-table row or no row at all is absent.
+	ParticipatingIssueIDs(ctx context.Context, ids []string) (map[string]struct{}, error)
 }

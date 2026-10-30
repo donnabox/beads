@@ -36,6 +36,7 @@ var ciAnalyticsLaneJobs = map[string]string{
 // TestBazelLaneIsGatedAlongsideLegacy's gated/advisory/flag-gated split, so
 // a new job in bazel.yml can't silently go unaccounted for here either.
 var ciAnalyticsExcludedJobs = map[string]string{
+	"bazel-local-coverage":       "result-only complete-local proof; no execution or BEP",
 	bazelDispatchCoverageJobName: "dispatch-only result gate: runs no Bazel build or tests and has no BEP to summarize",
 	"rbe":                        "decides the execution mode; builds nothing itself, so there is no BEP/exec-log/profile to summarize",
 	"rbe-prewarm":                "best-effort pre-warm dispatch to gascity's rbe-west pool; not a build/test lane",

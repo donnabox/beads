@@ -761,6 +761,7 @@ func TestAlreadyConvergedDeclinesOnALegacyTrackedCursor(t *testing.T) {
 
 	expectCurrentDatabase(mock, "testdb")
 	expectNoMigrationWorkNeeded(mock)
+	expectCurrentEpochAdmission(t, mock)
 	expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
 	expectHeadTableProbe(mock, "", ignoredSource.cursorTable, true)
 	expectIgnoreResolution(mock, "", ignoredSource.cursorTable, exactlyIgnored(true))
@@ -791,6 +792,7 @@ func TestAlreadyConvergedDeclinesOnASurvivingScratchTable(t *testing.T) {
 
 	expectCurrentDatabase(mock, "testdb")
 	expectNoMigrationWorkNeeded(mock)
+	expectCurrentEpochAdmission(t, mock)
 	expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
 	expectHeadTableProbe(mock, "", ignoredSource.cursorTable, false)
 	expectShowTable(mock, ignoredCursorUntrackTempTable, true)
@@ -817,6 +819,7 @@ func TestAlreadyConvergedAcceptsATrackedCursorTheOperatorUnignored(t *testing.T)
 
 	expectCurrentDatabase(mock, "testdb")
 	expectNoMigrationWorkNeeded(mock)
+	expectCurrentEpochAdmission(t, mock)
 	expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
 	expectHeadTableProbe(mock, "", ignoredSource.cursorTable, true)
 	expectIgnoreResolution(mock, "", ignoredSource.cursorTable, exactlyIgnored(false))
@@ -841,6 +844,7 @@ func TestAlreadyConvergedFailsClosedOnAnUnreadableHeadProbe(t *testing.T) {
 
 	expectCurrentDatabase(mock, "testdb")
 	expectNoMigrationWorkNeeded(mock)
+	expectCurrentEpochAdmission(t, mock)
 	expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
 	mock.ExpectQuery(regexp.QuoteMeta("SHOW TABLES AS OF 'HEAD'")).
 		WillReturnError(sql.ErrConnDone)
@@ -861,6 +865,7 @@ func TestAlreadyConvergedKeepsTheLockProbeLast(t *testing.T) {
 
 	expectCurrentDatabase(mock, "testdb")
 	expectNoMigrationWorkNeeded(mock)
+	expectCurrentEpochAdmission(t, mock)
 	expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
 	expectHeadTableProbe(mock, "", ignoredSource.cursorTable, true)
 	expectIgnoreResolution(mock, "", ignoredSource.cursorTable, exactlyIgnored(true))
@@ -882,6 +887,7 @@ func TestAlreadyConvergedKeepsTheLockProbeLast(t *testing.T) {
 func TestMigrateUpCountsAHealAsWork(t *testing.T) {
 	db, mock := newMockDB(t)
 
+	expectCurrentEpochAdmission(t, mock)
 	expectIgnorePatternSeedNoop(mock, LatestVersion())
 	expectIgnoredCursorGate(mock, "", true, exactlyIgnored(true), false)
 	expectIgnoredCursorBackup(mock, len(cursorTableColumns))

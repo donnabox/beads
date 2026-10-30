@@ -150,6 +150,10 @@ func TestMigration0053PromotesRigWisps(t *testing.T) {
 		`INSERT INTO wisp_child_counters (parent_id, last_child) VALUES (?, 7)`, rigID); err != nil {
 		t.Fatalf("seed wisp child counter: %v", err)
 	}
+	dropEmptyEpochTableFromHistoricalFixture(t, ctx, store.db)
+	if _, err := store.db.ExecContext(ctx, "CALL DOLT_ADD('epoch_minted_addresses')"); err != nil {
+		t.Fatalf("stage historical epoch absence: %v", err)
+	}
 	if _, err := store.db.ExecContext(ctx, "CALL DOLT_ADD('issues')"); err != nil {
 		t.Fatalf("stage seeded issues: %v", err)
 	}
@@ -245,6 +249,7 @@ func TestMigration0053RepairsIssuesMissingRigColumns(t *testing.T) {
 		t.Fatalf("seed rig wisp: %v", err)
 	}
 
+	dropEmptyEpochTableFromHistoricalFixture(t, ctx, store.db)
 	if _, err := store.db.ExecContext(ctx, "CALL DOLT_ADD('-A')"); err != nil {
 		t.Fatalf("stage legacy fixture: %v", err)
 	}
@@ -427,4 +432,20 @@ func TestSchemaRunsInitWhenMissing(t *testing.T) {
 	defer dropCancel()
 	_, _ = store.db.ExecContext(dropCtx, fmt.Sprintf("DROP DATABASE IF EXISTS `%s`", dbName))
 	store.Close()
+}
+
+// Fixtures that rewind before migration71 must not retain its table.
+// Refuse to discard even fixture addresses if a caller accidentally minted any.
+func dropEmptyEpochTableFromHistoricalFixture(t *testing.T, ctx context.Context, db schema.DBConn) {
+	t.Helper()
+	var count int
+	if err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM epoch_minted_addresses").Scan(&count); err != nil {
+		t.Fatal(err)
+	}
+	if count != 0 {
+		t.Fatalf("historical fixture has %d epoch addresses; refusing to discard them", count)
+	}
+	if _, err := db.ExecContext(ctx, "DROP TABLE epoch_minted_addresses"); err != nil {
+		t.Fatal(err)
+	}
 }

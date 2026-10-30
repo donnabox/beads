@@ -49,6 +49,17 @@ func (b aptStepBudget) loopHeader() string {
 func aptStepBudgets() []aptStepBudget {
 	return []aptStepBudget{
 		{
+			workflow:       "bazel.yml",
+			job:            "bazel-proxied",
+			step:           "Install Unix socket relay for hosted tests",
+			updateAttempts: 3,
+			updateTimeout:  60,
+			backoff:        5,
+			installTimeout: 60,
+			installPkgs:    "--no-install-recommends socat",
+			capMinutes:     5,
+		},
+		{
 			workflow:       "release.yml",
 			job:            "goreleaser",
 			step:           "Install cross-compilation toolchains and signing tools",
@@ -69,6 +80,21 @@ func TestAptGetStepsAreBoundedAndRetried(t *testing.T) {
 	for _, b := range aptStepBudgets() {
 		t.Run(b.workflow+"/"+b.step, func(t *testing.T) {
 			step := readCIWorkflow(t, b.workflow).job(t, b.job).step(t, b.step)
+
+			// Budget registration must not hide another unbounded invocation in
+			// the same step. Inspect every explicit apt command, not just the
+			// required fragments below (warning text and comments are inert).
+			for _, line := range strings.Split(step.Run, "\n") {
+				line = strings.TrimSpace(line)
+				if !strings.Contains(line, "apt-get") || strings.HasPrefix(line, "#") || strings.HasPrefix(line, "echo ") {
+					continue
+				}
+				update := fmt.Sprintf("if sudo timeout %d apt-get ", b.updateTimeout)
+				install := fmt.Sprintf("sudo timeout %d apt-get install ", b.installTimeout)
+				if strings.Count(line, "apt-get") != 1 || (!strings.HasPrefix(line, update) && !strings.HasPrefix(line, install)) {
+					t.Errorf("%s contains an unbudgeted apt invocation: %s", b.step, line)
+				}
+			}
 
 			for _, required := range []string{
 				fmt.Sprintf("sudo timeout %d apt-get", b.updateTimeout),

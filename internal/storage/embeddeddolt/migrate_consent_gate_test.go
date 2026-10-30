@@ -43,6 +43,7 @@ func TestEmbeddedMigrateConsent_BehindAndDirtyWorkingSetReconcileRecovers(t *tes
 		store.Close()
 		t.Fatalf("SetConfig(issue_prefix): %v", err)
 	}
+	dropEmptyEpochTableFromHistoricalFixture(t, ctx, dataDir)
 	if err := store.Commit(ctx, "bd init"); err != nil {
 		store.Close()
 		t.Fatalf("Commit (init): %v", err)

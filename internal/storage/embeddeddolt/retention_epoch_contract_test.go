@@ -63,19 +63,19 @@ func TestRetentionContract(t *testing.T) {
 }
 
 // TestEpochContract runs the R20 epoch contract (gastownhall/beads#5898
-// revision 9, this slice: be-x5jqd.4 / #6136) against the embedded-Dolt-
+// revision 9, #6136) against the embedded-Dolt-
 // backed store, which reaches internal/storage/issueops's epoch Tx
 // functions through this leg's own issue-operation transaction
-// (EmbeddedDoltStore.BumpEpoch/MintUnderEpoch/CurrentAddressFor) or a
-// read-only connection (EmbeddedDoltStore.CurrentEpoch/StillServes/Resolve)
-// — see internal/storage/embeddeddolt/epoch_cas.go.
+// (EmbeddedDoltStore.BumpEpoch/BumpEpochCarrying/MintUnderEpoch/LoseVersion)
+// or a read-only connection (EmbeddedDoltStore.CurrentEpoch/StillServes/
+// Resolve/CurrentAddressFor) — see internal/storage/embeddeddolt/epoch_cas.go.
 //
 // All three legs run that one shared body, so this is not an independent
 // vote on the design — it is the check on THIS leg's wrapper and this file's
 // own conformance-vocabulary translation.
 func TestEpochContract(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	fixture := conformance.EpochFixture{
 		IssuePrefix:       "epch",
@@ -85,6 +85,7 @@ func TestEpochContract(t *testing.T) {
 		StillServes:       epochEmbeddedStillServes(te.store),
 		Resolve:           epochEmbeddedResolve(te.store),
 		CurrentAddressFor: epochEmbeddedCurrentAddressFor(te.store),
+		LoseVersion:       epochEmbeddedLoseVersion(te.store),
 	}
 
 	t.Run("AnEpochBumpIsTriggeredOnlyByRestoreReinitOrSchemeChange", func(t *testing.T) {
@@ -93,23 +94,40 @@ func TestEpochContract(t *testing.T) {
 	t.Run("EpochBumpVoidsOnlyAddressesOfVersionsNoLongerServed", func(t *testing.T) {
 		conformance.RunEpochBumpVoidsOnlyAddressesOfVersionsNoLongerServed(t, ctx, fixture)
 	})
+	t.Run("TokenSchemeChangeCarriesLiveAddressesAndOnlyThose", func(t *testing.T) {
+		conformance.RunTokenSchemeChangeCarriesLiveAddressesAndOnlyThose(t, ctx, fixture)
+	})
+	t.Run("ACarriedAddressKeepsResolvingAcrossLaterBumps", func(t *testing.T) {
+		conformance.RunACarriedAddressKeepsResolvingAcrossLaterBumps(t, ctx, fixture)
+	})
+	t.Run("ALostAddressStaysGoneAcrossASchemeChange", func(t *testing.T) {
+		conformance.RunALostAddressStaysGoneAcrossASchemeChange(t, ctx, fixture)
+	})
 }
 
 func epochEmbeddedCurrentEpoch(store *embeddeddolt.EmbeddedDoltStore) func(ctx context.Context, storeID string) (int, error) {
 	return func(ctx context.Context, storeID string) (int, error) {
-		return store.CurrentEpoch(ctx, storeID)
+		return survivalStore(store).CurrentEpoch(ctx, storeID)
 	}
 }
 
+// epochEmbeddedBumpEpoch chooses the bump by the typed trigger: only a
+// token-scheme-change bump carries live addresses to the new epoch, and the
+// other two triggers move the counter alone. The choice lives here, in the
+// contract-test translation layer, because the shared body has no switch on
+// the reason string.
 func epochEmbeddedBumpEpoch(store *embeddeddolt.EmbeddedDoltStore) func(ctx context.Context, storeID string, trigger conformance.EpochBumpTrigger) (int, error) {
 	return func(ctx context.Context, storeID string, trigger conformance.EpochBumpTrigger) (int, error) {
-		return store.BumpEpoch(ctx, storeID, trigger.String())
+		if trigger == conformance.EpochBumpTriggerTokenSchemeChange {
+			return survivalStore(store).BumpEpochCarrying(ctx, storeID, trigger.String())
+		}
+		return survivalStore(store).BumpEpoch(ctx, storeID, trigger.String())
 	}
 }
 
 func epochEmbeddedMintUnderEpoch(store *embeddeddolt.EmbeddedDoltStore) func(ctx context.Context, storeID, id string) (conformance.Address, error) {
 	return func(ctx context.Context, storeID, id string) (conformance.Address, error) {
-		address, err := store.MintUnderEpoch(ctx, storeID, id)
+		address, err := survivalStore(store).MintUnderEpoch(ctx, storeID, id)
 		if err != nil {
 			return "", err
 		}
@@ -119,13 +137,13 @@ func epochEmbeddedMintUnderEpoch(store *embeddeddolt.EmbeddedDoltStore) func(ctx
 
 func epochEmbeddedStillServes(store *embeddeddolt.EmbeddedDoltStore) func(ctx context.Context, storeID string, address conformance.Address) (bool, error) {
 	return func(ctx context.Context, storeID string, address conformance.Address) (bool, error) {
-		return store.StillServes(ctx, storeID, string(address))
+		return survivalStore(store).StillServes(ctx, storeID, string(address))
 	}
 }
 
 func epochEmbeddedResolve(store *embeddeddolt.EmbeddedDoltStore) func(ctx context.Context, storeID string, address conformance.Address) (conformance.RetentionAnswer, error) {
 	return func(ctx context.Context, storeID string, address conformance.Address) (conformance.RetentionAnswer, error) {
-		result, err := store.Resolve(ctx, storeID, string(address))
+		result, err := survivalStore(store).Resolve(ctx, storeID, string(address))
 		if err != nil {
 			return conformance.RetentionAnswer{}, err
 		}
@@ -135,11 +153,17 @@ func epochEmbeddedResolve(store *embeddeddolt.EmbeddedDoltStore) func(ctx contex
 
 func epochEmbeddedCurrentAddressFor(store *embeddeddolt.EmbeddedDoltStore) func(ctx context.Context, storeID string, oldAddress conformance.Address) (conformance.Address, error) {
 	return func(ctx context.Context, storeID string, oldAddress conformance.Address) (conformance.Address, error) {
-		address, err := store.CurrentAddressFor(ctx, storeID, string(oldAddress))
+		address, err := survivalStore(store).CurrentAddressFor(ctx, storeID, string(oldAddress))
 		if err != nil {
 			return "", err
 		}
 		return conformance.Address(address), nil
+	}
+}
+
+func epochEmbeddedLoseVersion(store *embeddeddolt.EmbeddedDoltStore) func(ctx context.Context, storeID string, address conformance.Address) error {
+	return func(ctx context.Context, storeID string, address conformance.Address) error {
+		return survivalStore(store).LoseVersion(ctx, storeID, string(address))
 	}
 }
 
@@ -164,4 +188,16 @@ func epochResolveResultToConformance(r storeops.EpochResolveResult) conformance.
 		ProducingStore: r.ProducingStore,
 		Epoch:          r.Epoch,
 	}
+}
+
+func survivalStore(store *embeddeddolt.EmbeddedDoltStore) embeddeddolt.SurvivalTestAdapter {
+	return embeddeddolt.NewSurvivalTestAdapter(store)
+}
+func newSurvivalTestEnv(t *testing.T, prefix string) *testEnv {
+	t.Helper()
+	te := newTestEnv(t, prefix)
+	if err := embeddeddolt.PrepareSurvivalTestStore(t.Context(), te.store); err != nil {
+		t.Fatal(err)
+	}
+	return te
 }

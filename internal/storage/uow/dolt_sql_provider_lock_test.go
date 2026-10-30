@@ -116,11 +116,9 @@ func TestInitSchemaAcquiresMigrationLockBeforeBootstrapDDL(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(1))
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(*) FROM dolt_status")).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(0))
-	// The shared-store migration gate, between preparation and MigrateUp. This
-	// init just created the database, so the cursor table does not exist yet,
-	// the gate reads version 0, and it allows: creating a database is consent
-	// for its schema.
-	expectCursorProbe(mock, "schema_migrations", false)
+	// Fresh-bootstrap authority skips consent gates; compatibility admission
+	// still proves both the cursor and epoch table absent before any write.
+	expectPreEpochAdmission(mock, false)
 	mock.ExpectExec(regexp.QuoteMeta("INSERT IGNORE INTO dolt_ignore VALUES (?, true)")).
 		WithArgs(sqlmock.AnyArg()).
 		WillReturnError(errors.New("first migration statement failed"))
@@ -194,6 +192,7 @@ func TestInitSchemaConvergenceProbeRunsWithNoSessionDatabase(t *testing.T) {
 	// consent below keeps this test about the lock/probe ordering it exists to
 	// pin. See TestInitSchemaSharedStoreGate for the gate's own behavior.
 	expectSharedGateProbe(mock, 1, 0)
+	expectPreEpochAdmission(mock, true)
 	mock.ExpectExec(regexp.QuoteMeta("INSERT IGNORE INTO dolt_ignore VALUES (?, true)")).
 		WithArgs(sqlmock.AnyArg()).
 		WillReturnError(errors.New("first migration statement failed"))
@@ -262,4 +261,14 @@ func TestSelectProbeDatabaseIssuesPreparationsUse(t *testing.T) {
 			t.Fatalf("unmet SQL expectations (an invalid name must be refused before any statement): %v", err)
 		}
 	})
+}
+
+// The epoch admission guard reads before the first migration write, on the
+// same pinned connection and after the ordinary lock/preparation/consent path.
+func expectPreEpochAdmission(mock sqlmock.Sqlmock, cursorExists bool) {
+	expectCursorProbe(mock, "schema_migrations", cursorExists)
+	expectCursorProbe(mock, "epoch_minted_addresses", false)
+	if cursorExists {
+		mock.ExpectQuery(regexp.QuoteMeta("SELECT COALESCE(MAX(version), 0) FROM schema_migrations")).WillReturnRows(sqlmock.NewRows([]string{"version"}).AddRow(1))
+	}
 }

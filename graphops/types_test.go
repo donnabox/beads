@@ -60,10 +60,20 @@ func TestRevision(t *testing.T) {
 func TestStringsMustBeValidUTF8(t *testing.T) {
 	const scope = "https://beads.example/acme/"
 	// The hazard, stated: encoding/json cannot tell the two apart.
-	ff, _ := json.Marshal("\xff")
-	fe, _ := json.Marshal("\xfe")
-	if string(ff) != string(fe) || string(ff) != `"\ufffd"` {
-		t.Fatalf("test premise: encoding/json serializes \\xff as %s and \\xfe as %s", ff, fe)
+	ff, err := json.Marshal("\xff")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fe, err := json.Marshal("\xfe")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var decoded string
+	if err := json.Unmarshal(ff, &decoded); err != nil {
+		t.Fatal(err)
+	}
+	if string(ff) != string(fe) || decoded != "\ufffd" {
+		t.Fatalf("test premise: encoding/json serializes \\xff as %s and \\xfe as %s (decoded %q)", ff, fe, decoded)
 	}
 	okDecl, _ := graphops.NewOwnedLinkDecl("https://work.example/types/c", "", 1)
 	for name, construct := range map[string]func(s string) error{

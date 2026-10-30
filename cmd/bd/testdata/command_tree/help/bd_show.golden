@@ -1,0 +1,61 @@
+
+
+Graph preview workspaces:
+Use bd show ID or bd show --id ID (equivalent to beads/ID) for a current Memory or
+Issue; use bd show links/ID for a Link. Multiple positional/--id operands
+show current Issues in the supplied order, with ordinary Issue JSON or human
+details. Memory, Link, exact-version and graph-json reads remain single-ID.
+--refs shows incoming Issue references, grouped by relationship; --children
+shows only parent-child references. Both accept current Issue IDs and retain
+the familiar human view or Issue-ID-keyed JSON object.
+--watch follows one current Issue, redrawing its human detail view when that
+Issue changes; stop it with Ctrl+C.
+--current selects the actor's first in-progress Issue, then hooked Issue, then
+the last-touched Issue; it cannot combine with an explicit ID.
+ID@N selects the stable store-local revision number N. ID@=TOKEN or
+'[URL]@=TOKEN' selects one exact retained record; --revision N or
+--revision =TOKEN is an alternative (not both). @current reads current. Unwrapped URL forms containing :// are
+literal, including raw @; use the full canonical Scope URL to escape local
+@ shorthand. Colon-only forms such as plan:v1@=TOKEN use local syntax.
+Bracketed operands require canonical HTTP(S) Scope URLs, not opaque URIs.
+Suffixes are rejected on the selected update and deletion targets; use
+--if-revision for write comparison. The flag forms require a positive local
+ordinal N or =TOKEN; a bare token and current are not flag values.
+Endpoint pins remain unavailable. This is not an ordered history listing.
+A current Issue's
+--json uses the ordinary detail array with Scope-relative Bead IDs and its
+graph revision token. Memory, Link, and exact --revision reads use the
+experimental graph envelope; --format graph-json explicitly requests that
+envelope for a current Issue too. graph-json is not a BDP Resource format.
+Showing an Issue makes it the last-touched Issue for interactive update/close;
+showing a Memory or Link does not.
+
+Usage:
+  bd show [id...] [--id=<id>...] [--current] [flags]
+
+Aliases:
+  show, view
+
+Flags:
+      --as-of string                Show issue as it existed at a specific commit hash or branch (requires Dolt; commit hashes must be the full 32-character hash from 'bd history', not a prefix)
+      --brief-deps                  Reduce each dependency to its identity fields in JSON output (--json only; drops description, design, notes and acceptance criteria)
+      --children                    Show only the children of this issue
+      --comments-tail int           Render only the last N comments in text output, preceded by one elision line naming how many older ones were hidden (text output only; 0, the default, renders every comment unchanged; N must be >= 0)
+      --current                     Show the currently active issue (in-progress, hooked, or last touched)
+      --format string               Output format: json (alias for --json), or graph-json for the experimental complete-record envelope
+  -h, --help                        help for show
+      --id stringArray              Issue ID (use for IDs that look like flags, e.g., --id=gt--xyz)
+      --include stringArray         Include a JSON Pointer; repeat to union selections
+      --include-comments            Stream full comment bodies in JSON output (--json only; may be slow on issues with many comments). Without it the comments field is absent entirely, not truncated: an issue with comments carries comment_count and comments_omitted=true, so check those before reading an absent comments field as none.
+      --include-dependents          Stream full dependent issues in JSON output (--json only; may be slow on hub beads)
+      --local-time                  Show timestamps in local time instead of UTC (date-only fields are always local)
+      --long                        Show all available fields (extended metadata, agent identity, gate fields, etc.)
+      --omit stringArray            Omit an optional JSON Pointer, or envelope for raw JSON; repeatable
+      --output-format stringArray   Canonical output: default, detail or json (cannot combine with legacy --json or --format)
+      --refs                        Show issues that reference this issue (reverse lookup)
+      --revision string             Read retained revision N or =TOKEN (graph preview only)
+      --short                       Show compact one-line output per issue
+      --thread                      Show full conversation thread (for messages)
+  -w, --watch                       Watch for changes and auto-refresh display
+
+For global flags, run `bd --help`.

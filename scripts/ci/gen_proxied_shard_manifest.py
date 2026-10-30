@@ -54,10 +54,10 @@ and read the stderr shard-load report, or pass --check anyway: it still
 reports the block's current loads to stderr even though it only gates on
 name coverage.
 
-The manifest file holds the Bazel-only lane's one block (34 shards since
-2026-10-09; the legacy, frozen 15-shard block pr-risk.yml/main.yml's retired
-fork/push jobs used to read has been deleted — those jobs no longer exist,
-see engdocs/TESTING.md). By default this prints the requested total's block
+The fork retains legacy15, fork30 and upstream Bazel34 blocks. Legacy15
+keeps its existing assignments: the plain 15 --write command uses inits
+weights to place only new names; do not repack that retained lane.
+By default this prints the requested total's block
 to stdout, which is NOT safe to redirect straight into the manifest file
 (`gen... 30 > file` loses the header if total does not match what is
 committed). Use --write to update the file in place instead. Use --check to
@@ -330,7 +330,7 @@ def check_coverage(path, total, universe):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('total_shards', nargs='?', type=int, default=34)
-    ap.add_argument('--weights', choices=['inits', 'duration'], default='duration')
+    ap.add_argument('--weights', choices=['inits', 'duration'], default=None)
     ap.add_argument('--manifest', default=default_manifest_path,
                      help=f'manifest file to read/write (default: {default_manifest_path})')
     mode = ap.add_mutually_exclusive_group()
@@ -347,6 +347,9 @@ def main():
                           'from-scratch LPT pack, instead of the default incremental placement '
                           'that keeps every already-assigned test on its current shard')
     args = ap.parse_args()
+    # The fork retains the frozen legacy15 lane and its plain top-up command.
+    if args.weights is None:
+        args.weights = 'inits' if args.total_shards == 15 else 'duration'
 
     inits = discover_inits_cost()
     costs = inits if args.weights == 'inits' else duration_cost(inits)

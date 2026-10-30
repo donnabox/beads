@@ -56,6 +56,8 @@ func seedAuxRekeyFixture(ctx context.Context, t *testing.T, db *sql.DB, clonePre
 		t.Fatalf("seed event: %v", err)
 	}
 
+	dropEmptyEpochTableFromHistoricalFixture(t, ctx, db)
+
 	// Regress the main cursor below the re-key watershed: a pre-rekey lineage
 	// was last migrated by a binary without the pass, so its cursor cannot
 	// have reached auxRekeyShippedMainVersion (bd-578h9.4). MigrateUp

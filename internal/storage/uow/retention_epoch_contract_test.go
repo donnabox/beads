@@ -3,6 +3,7 @@ package uow
 import (
 	"context"
 	"fmt"
+	"github.com/steveyegge/beads/internal/testutil/epochfixture"
 	"testing"
 
 	"github.com/steveyegge/beads/backend/conformance"
@@ -60,13 +61,13 @@ func TestRetentionContract(t *testing.T) {
 }
 
 // TestEpochContract runs the R20 epoch contract (gastownhall/beads#5898
-// revision 9, this slice: be-x5jqd.4 / #6136) against the unit-of-work
+// revision 9, #6136) against the unit-of-work
 // provider, which reaches the same internal/storage/issueops's epoch Tx
 // functions the two store backends wrap — directly against the unit of
 // work's own runner (the *baseUOW/base.tx.Runner() pattern
 // expected_revision_contract_test.go's expectedRevisionUOWMutateOutside and
 // commenter_contract_test.go's SeedCommentAt both use), NOT through the
-// domain issue repository: EpochFixture's six hooks are store-singleton/
+// domain issue repository: EpochFixture's seven hooks are store-singleton/
 // administrative operations with no natural correspondence to
 // IssueUseCase's per-issue CRUD/notification semantics, so unlike
 // CompareAndSetVersion there is no domain/use-case method to route through
@@ -88,6 +89,15 @@ func TestEpochContract(t *testing.T) {
 	t.Run("EpochBumpVoidsOnlyAddressesOfVersionsNoLongerServed", func(t *testing.T) {
 		conformance.RunEpochBumpVoidsOnlyAddressesOfVersionsNoLongerServed(t, ctx, fixture)
 	})
+	t.Run("TokenSchemeChangeCarriesLiveAddressesAndOnlyThose", func(t *testing.T) {
+		conformance.RunTokenSchemeChangeCarriesLiveAddressesAndOnlyThose(t, ctx, fixture)
+	})
+	t.Run("ACarriedAddressKeepsResolvingAcrossLaterBumps", func(t *testing.T) {
+		conformance.RunACarriedAddressKeepsResolvingAcrossLaterBumps(t, ctx, fixture)
+	})
+	t.Run("ALostAddressStaysGoneAcrossASchemeChange", func(t *testing.T) {
+		conformance.RunALostAddressStaysGoneAcrossASchemeChange(t, ctx, fixture)
+	})
 }
 
 // newUOWEpochFixture wires this leg's UnitOfWorkProvider into the R20 epoch
@@ -98,6 +108,7 @@ func TestEpochContract(t *testing.T) {
 func newUOWEpochFixture(t *testing.T, ctx context.Context, prefix string) conformance.EpochFixture {
 	t.Helper()
 	provider := newUOWRoleFixtureProvider(t, ctx, prefix)
+	prepareUOWSurvivalFixture(t, ctx, provider)
 	return conformance.EpochFixture{
 		IssuePrefix:       prefix,
 		CurrentEpoch:      epochUOWCurrentEpoch(provider),
@@ -106,12 +117,13 @@ func newUOWEpochFixture(t *testing.T, ctx context.Context, prefix string) confor
 		StillServes:       epochUOWStillServes(provider),
 		Resolve:           epochUOWResolve(provider),
 		CurrentAddressFor: epochUOWCurrentAddressFor(provider),
+		LoseVersion:       epochUOWLoseVersion(provider),
 	}
 }
 
 // epochUOWRunner recovers the *baseUOW a given attempt's UnitOfWork actually
 // is, the same type assertion expectedRevisionUOWMutateOutside makes: Tx.
-// Runner() is unexported outside this package and none of the six epoch
+// Runner() is unexported outside this package and none of the seven epoch
 // operations has a domain/use-case method to reach it through instead.
 func epochUOWRunner(uw UnitOfWork) (storeops.DBTX, error) {
 	base, ok := uw.(*baseUOW)
@@ -128,11 +140,16 @@ func epochUOWCurrentEpoch(provider UnitOfWorkProvider) func(ctx context.Context,
 			if err != nil {
 				return 0, err
 			}
-			return storeops.CurrentEpochInTx(ctx, runner, storeID)
+			return storeops.SurvivalCurrentEpochInTx(ctx, runner, storeID)
 		})
 	}
 }
 
+// epochUOWBumpEpoch chooses the bump by the typed trigger: only a
+// token-scheme-change bump carries live addresses to the new epoch, and the
+// other two triggers move the counter alone. The choice lives here, in the
+// contract-test translation layer, because the shared body has no switch on
+// the reason string.
 func epochUOWBumpEpoch(provider UnitOfWorkProvider) func(ctx context.Context, storeID string, trigger conformance.EpochBumpTrigger) (int, error) {
 	return func(ctx context.Context, storeID string, trigger conformance.EpochBumpTrigger) (int, error) {
 		return RunTxResult(ctx, provider, func(ctx context.Context, uw UnitOfWork) (int, string, error) {
@@ -140,7 +157,11 @@ func epochUOWBumpEpoch(provider UnitOfWorkProvider) func(ctx context.Context, st
 			if err != nil {
 				return 0, "", err
 			}
-			epoch, err := storeops.BumpEpochInTx(ctx, runner, storeID, trigger.String())
+			bump := storeops.SurvivalBumpEpochInTx
+			if trigger == conformance.EpochBumpTriggerTokenSchemeChange {
+				bump = storeops.SurvivalBumpEpochCarryingInTx
+			}
+			epoch, err := bump(ctx, runner, storeID, trigger.String())
 			if err != nil {
 				return 0, "", err
 			}
@@ -156,7 +177,7 @@ func epochUOWMintUnderEpoch(provider UnitOfWorkProvider) func(ctx context.Contex
 			if err != nil {
 				return "", "", err
 			}
-			address, err := storeops.MintUnderEpochInTx(ctx, runner, storeID, id)
+			address, err := storeops.SurvivalMintUnderEpochInTx(ctx, runner, storeID, id)
 			if err != nil {
 				return "", "", err
 			}
@@ -176,7 +197,7 @@ func epochUOWStillServes(provider UnitOfWorkProvider) func(ctx context.Context, 
 			if err != nil {
 				return false, err
 			}
-			return storeops.StillServesInTx(ctx, runner, storeID, string(address))
+			return storeops.SurvivalStillServesInTx(ctx, runner, storeID, string(address))
 		})
 	}
 }
@@ -188,7 +209,7 @@ func epochUOWResolve(provider UnitOfWorkProvider) func(ctx context.Context, stor
 			if err != nil {
 				return storeops.EpochResolveResult{}, err
 			}
-			return storeops.ResolveEpochInTx(ctx, runner, storeID, string(address))
+			return storeops.SurvivalResolveEpochInTx(ctx, runner, storeID, string(address))
 		})
 		if err != nil {
 			return conformance.RetentionAnswer{}, err
@@ -199,21 +220,32 @@ func epochUOWResolve(provider UnitOfWorkProvider) func(ctx context.Context, stor
 
 func epochUOWCurrentAddressFor(provider UnitOfWorkProvider) func(ctx context.Context, storeID string, oldAddress conformance.Address) (conformance.Address, error) {
 	return func(ctx context.Context, storeID string, oldAddress conformance.Address) (conformance.Address, error) {
-		address, err := RunTxResult(ctx, provider, func(ctx context.Context, uw UnitOfWork) (string, string, error) {
+		address, err := RunTxRead(ctx, provider, func(ctx context.Context, uw UnitOfWork) (string, error) {
 			runner, err := epochUOWRunner(uw)
 			if err != nil {
-				return "", "", err
+				return "", err
 			}
-			address, err := storeops.CurrentAddressForInTx(ctx, runner, storeID, string(oldAddress))
-			if err != nil {
-				return "", "", err
-			}
-			return address, fmt.Sprintf("bd: current address for %s (%s)", oldAddress, storeID), nil
+			return storeops.SurvivalCurrentAddressForInTx(ctx, runner, storeID, string(oldAddress))
 		})
 		if err != nil {
 			return "", err
 		}
 		return conformance.Address(address), nil
+	}
+}
+
+func epochUOWLoseVersion(provider UnitOfWorkProvider) func(ctx context.Context, storeID string, address conformance.Address) error {
+	return func(ctx context.Context, storeID string, address conformance.Address) error {
+		return RunTx(ctx, provider, func(ctx context.Context, uw UnitOfWork) (string, error) {
+			runner, err := epochUOWRunner(uw)
+			if err != nil {
+				return "", err
+			}
+			if err := storeops.SurvivalLoseVersionInTx(ctx, runner, storeID, string(address)); err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("bd: lose version %s for %s", address, storeID), nil
+		})
 	}
 }
 
@@ -237,5 +269,28 @@ func epochResolveResultToConformance(r storeops.EpochResolveResult) conformance.
 		Restriction:    epochRestrictionToConformance(r.Restriction),
 		ProducingStore: r.ProducingStore,
 		Epoch:          r.Epoch,
+	}
+}
+
+func prepareUOWSurvivalFixture(t *testing.T, ctx context.Context, provider UnitOfWorkProvider) {
+	t.Helper()
+	for {
+		wrapped, ok := provider.(ProviderUnwrapper)
+		if !ok {
+			break
+		}
+		provider = wrapped.Unwrap()
+	}
+	base, ok := provider.(*doltSQLProvider)
+	if !ok {
+		t.Fatalf("private survival fixture requires concrete SQL provider, got%T", provider)
+	}
+	conn, err := base.db.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	if err := epochfixture.Prepare(ctx, conn); err != nil {
+		t.Fatal(err)
 	}
 }

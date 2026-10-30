@@ -21,6 +21,7 @@ func TestStillServesInTxHonorsARetainedMapping(t *testing.T) {
 	t.Parallel()
 
 	_, mock, tx := beginMockTx(t)
+	expectReleasedEpochColumns(mock)
 	const storeID = "still-serves-store"
 	const oldAddress = "epch:still-serves-store:record-a:1"
 
@@ -53,6 +54,7 @@ func TestStillServesInTxReportsFalseWhenIDWasNotCarriedForward(t *testing.T) {
 	t.Parallel()
 
 	_, mock, tx := beginMockTx(t)
+	expectReleasedEpochColumns(mock)
 	const storeID = "still-serves-store"
 	const oldAddress = "epch:still-serves-store:record-b:1"
 
@@ -85,6 +87,7 @@ func TestResolveEpochInTxHonorsARetainedMapping(t *testing.T) {
 	t.Parallel()
 
 	_, mock, tx := beginMockTx(t)
+	expectReleasedEpochColumns(mock)
 	const storeID = "resolve-store"
 	const oldAddress = "epch:resolve-store:record-a:1"
 
@@ -132,6 +135,7 @@ func TestStillServesInTxReportsFalseForALapsedMappingEvenAfterALaterRemint(t *te
 	t.Parallel()
 
 	_, mock, tx := beginMockTx(t)
+	expectReleasedEpochColumns(mock)
 	const storeID = "gap-store"
 	const oldAddress = "epch:gap-store:record-a:1"
 
@@ -180,6 +184,7 @@ func TestStillServesInTxHonorsAContinuousMultiHopRetainedMapping(t *testing.T) {
 	t.Parallel()
 
 	_, mock, tx := beginMockTx(t)
+	expectReleasedEpochColumns(mock)
 	const storeID = "multihop-store"
 	const oldAddress = "epch:multihop-store:record-a:1"
 
