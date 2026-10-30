@@ -378,7 +378,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		}
 		return false, nil
 	}
-	if err := requireDoltBackend(cfg, dir); err != nil {
+	if err := requireGraphPreviewDoltBackend(cfg, dir); err != nil {
 		return true, graphFailure("graph_not_initialized", "graph_mode link: "+err.Error(), 5)
 	}
 	if cfg == nil || !graphPreviewGenerationSupported(marker) || !cfg.GraphReady || cfg.GraphSchemaVersion != graphstore.SchemaVersion || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {

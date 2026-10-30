@@ -914,6 +914,8 @@ func TestMigrateAppliesUnderContradictedCursor(t *testing.T) {
 	}
 	defer db.Close()
 
+	// Main lineage admission is independent of the ignored cursor sentinel.
+	expectCurrentEpochAdmission(t, mock)
 	// migrate() preamble: cursor-table bootstrap, content_hash presence check.
 	mock.ExpectExec(regexp.QuoteMeta("CREATE TABLE IF NOT EXISTS ignored_schema_migrations")).
 		WillReturnResult(sqlmock.NewResult(0, 0))
@@ -964,6 +966,8 @@ func TestMigrateStartsAboveTheFloorUnderColumnContradiction(t *testing.T) {
 	}
 	defer db.Close()
 
+	// Main lineage admission is independent of the ignored cursor sentinel.
+	expectCurrentEpochAdmission(t, mock)
 	// migrate() preamble: cursor-table bootstrap, content_hash presence check.
 	mock.ExpectExec(regexp.QuoteMeta("CREATE TABLE IF NOT EXISTS ignored_schema_migrations")).
 		WillReturnResult(sqlmock.NewResult(0, 0))

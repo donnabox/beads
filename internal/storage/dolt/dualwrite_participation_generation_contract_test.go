@@ -35,11 +35,44 @@ func TestParticipationGenerationFence(t *testing.T) {
 	t.Run("ProceedsForPromotedRecord", func(t *testing.T) {
 		conformance.RunParticipationGenerationProceedsForPromotedRecord(t, ctx, fixture)
 	})
+	t.Run("FlagOffSkipsUpdateOnParticipatingRecord", func(t *testing.T) {
+		conformance.RunParticipationGenerationFlagOffSkipsUpdateOnParticipatingRecord(t, ctx, fixture)
+	})
 	t.Run("WispPromotionBeginsHistory", func(t *testing.T) {
 		conformance.RunParticipationGenerationWispPromotionBeginsHistory(t, ctx, fixture)
 	})
 	t.Run("WispPersistenceMoveBeginsHistory", func(t *testing.T) {
 		conformance.RunParticipationGenerationWispPersistenceMoveBeginsHistory(t, ctx, fixture)
+	})
+	t.Run("DemotedLegacyRowStaysLegacyAcrossPromotion", func(t *testing.T) {
+		conformance.RunParticipationGenerationDemotedLegacyRowStaysLegacyAcrossPromotion(t, ctx, fixture)
+	})
+	t.Run("DemotedLegacyRowStaysLegacyAcrossPersistenceMove", func(t *testing.T) {
+		conformance.RunParticipationGenerationDemotedLegacyRowStaysLegacyAcrossPersistenceMove(t, ctx, fixture)
+	})
+	t.Run("DemotedParticipatingRowKeepsItsHistoryAcrossPromotion", func(t *testing.T) {
+		conformance.RunParticipationGenerationDemotedParticipatingRowKeepsItsHistoryAcrossPromotion(t, ctx, fixture)
+	})
+	t.Run("DemotedParticipatingRowKeepsItsHistoryAcrossPersistenceMove", func(t *testing.T) {
+		conformance.RunParticipationGenerationDemotedParticipatingRowKeepsItsHistoryAcrossPersistenceMove(t, ctx, fixture)
+	})
+	t.Run("WispFlagClearMintsNothing", func(t *testing.T) {
+		conformance.RunParticipationGenerationWispFlagClearMintsNothing(t, ctx, fixture)
+	})
+	t.Run("WispRootSquashMintsNothing", func(t *testing.T) {
+		conformance.RunParticipationGenerationWispRootSquashMintsNothing(t, ctx, fixture)
+	})
+	t.Run("UnflaggedWispCreateMintsNothing", func(t *testing.T) {
+		conformance.RunParticipationGenerationUnflaggedWispCreateMintsNothing(t, ctx, fixture)
+	})
+	t.Run("NoHistoryIssueCreateDeclaresParticipation", func(t *testing.T) {
+		conformance.RunParticipationGenerationNoHistoryIssueCreateDeclaresParticipation(t, ctx, fixture)
+	})
+	t.Run("LegacyNoHistoryIssueStaysLegacy", func(t *testing.T) {
+		conformance.RunParticipationGenerationLegacyNoHistoryIssueStaysLegacy(t, ctx, fixture)
+	})
+	t.Run("ReadReportsExactlyTheParticipatingRows", func(t *testing.T) {
+		conformance.RunParticipationGenerationReadReportsExactlyTheParticipatingRows(t, ctx, fixture)
 	})
 }
 
@@ -86,6 +119,21 @@ func TestParticipationGenerationFixtureKitIsWired(t *testing.T) {
 	if fixture.MovePersistent == nil {
 		t.Error("ParticipationGenerationFixture.MovePersistent is nil")
 	}
+	if fixture.MoveEphemeral == nil {
+		t.Error("ParticipationGenerationFixture.MoveEphemeral is nil")
+	}
+	if fixture.ClearWispFlag == nil {
+		t.Error("ParticipationGenerationFixture.ClearWispFlag is nil")
+	}
+	if fixture.SquashWispRoot == nil {
+		t.Error("ParticipationGenerationFixture.SquashWispRoot is nil")
+	}
+	if fixture.CreateUnflaggedWisp == nil {
+		t.Error("ParticipationGenerationFixture.CreateUnflaggedWisp is nil")
+	}
+	if fixture.CreateNoHistoryIssue == nil {
+		t.Error("ParticipationGenerationFixture.CreateNoHistoryIssue is nil")
+	}
 	if fixture.CurrentRevision == nil {
 		t.Error("ParticipationGenerationFixture.CurrentRevision is nil")
 	}
@@ -94,6 +142,12 @@ func TestParticipationGenerationFixtureKitIsWired(t *testing.T) {
 	}
 	if fixture.ParticipationGeneration == nil {
 		t.Error("ParticipationGenerationFixture.ParticipationGeneration is nil")
+	}
+	if fixture.InWispsTable == nil {
+		t.Error("ParticipationGenerationFixture.InWispsTable is nil")
+	}
+	if fixture.ParticipatingIssueIDs == nil {
+		t.Error("ParticipationGenerationFixture.ParticipatingIssueIDs is nil")
 	}
 }
 
@@ -180,6 +234,19 @@ func newDoltParticipationGenerationFixtureSerial(t *testing.T, prefix string) (c
 // factored out so the t.Parallel()-vs-t.Setenv split above does not fork the
 // fixture wiring itself into two copies that could drift.
 func buildParticipationGenerationFixture(store *DoltStore, configurer storage.VersionedHistoryConfigurer, prefix string) conformance.ParticipationGenerationFixture {
+	movePersistence := func(ctx context.Context, id string, mode publicops.PersistenceMode) error {
+		ops, err := NewIssueOperations(store)
+		if err != nil {
+			return err
+		}
+		result, err := ops.Update(ctx, publicops.UpdateRequest{Actor: "actor", IssueID: id, Patch: publicops.IssuePatch{
+			Persistence: publicops.Field[publicops.PersistenceMode]{Set: true, Value: mode},
+		}})
+		if err == nil && !result.Changed {
+			err = fmt.Errorf("persistence move of %s to %s reported no change", id, mode)
+		}
+		return err
+	}
 	return conformance.ParticipationGenerationFixture{
 		IssuePrefix: prefix,
 		SetFlag: func(ctx context.Context, enabled bool) error {
@@ -209,17 +276,54 @@ func buildParticipationGenerationFixture(store *DoltStore, configurer storage.Ve
 			// The guarded update bd update --persistent runs, so the move
 			// takes the update's one end-of-update mint rather than
 			// MoveIssuePersistenceInTx's own.
-			ops, err := NewIssueOperations(store)
-			if err != nil {
-				return err
-			}
-			result, err := ops.Update(ctx, publicops.UpdateRequest{Actor: "actor", IssueID: id, Patch: publicops.IssuePatch{
-				Persistence: publicops.Field[publicops.PersistenceMode]{Set: true, Value: publicops.PersistenceModePersistent},
-			}})
-			if err == nil && !result.Changed {
-				err = fmt.Errorf("persistence move of %s reported no change", id)
-			}
-			return err
+			return movePersistence(ctx, id, publicops.PersistenceModePersistent)
+		},
+		MoveEphemeral: func(ctx context.Context, id string) error {
+			// The guarded update bd update --ephemeral runs.
+			return movePersistence(ctx, id, publicops.PersistenceModeEphemeral)
+		},
+		ClearWispFlag: func(ctx context.Context, id string) error {
+			// The flag clear alone, in the journal-enabled transaction shape
+			// (withEventsJournal), so it reaches the mint on this leg. A bare
+			// store.UpdateIssue would go through updateWisp, whose transaction
+			// versioned history never scopes, and the case would pass whatever
+			// the fence did.
+			return withEventsJournal(store, func() error {
+				return store.RunInTransaction(ctx, "clear wisp flag "+id, func(tx storage.Transaction) error {
+					return tx.UpdateIssue(ctx, id, map[string]any{"wisp": false}, "actor")
+				})
+			})
+		},
+		SquashWispRoot: func(ctx context.Context, id string) error {
+			// bd mol squash's own shape: the root's close and its flag clear
+			// in the one transaction the squash commits, in the
+			// journal-enabled shape that reaches the mint (withEventsJournal).
+			return withEventsJournal(store, func() error {
+				return store.RunInTransaction(ctx, "squash "+id, func(tx storage.Transaction) error {
+					if err := tx.CloseIssue(ctx, id, "squashed", "actor", ""); err != nil {
+						return err
+					}
+					return tx.UpdateIssue(ctx, id, map[string]any{"wisp": false}, "actor")
+				})
+			})
+		},
+		CreateUnflaggedWisp: func(ctx context.Context, id string) error {
+			// Import's "wisp_plane" marker: the override, not the flags, puts
+			// the row in the wisps table.
+			wispPlane := true
+			return store.CreateIssuesWithFullOptions(ctx, []*types.Issue{{
+				ID: id, Title: "t-" + id, IssueType: types.TypeTask, Status: types.StatusOpen,
+				WispPlaneOverride: &wispPlane,
+			}}, "actor", storage.BatchCreateOptions{SkipPrefixValidation: true})
+		},
+		CreateNoHistoryIssue: func(ctx context.Context, id string) error {
+			// Import's promoted-no-history shape (bd-r9uce): the flag stays on
+			// the row, and the override pins it to the issues table.
+			durable := false
+			return store.CreateIssuesWithFullOptions(ctx, []*types.Issue{{
+				ID: id, Title: "t-" + id, IssueType: types.TypeTask, Status: types.StatusOpen,
+				NoHistory: true, WispPlaneOverride: &durable,
+			}}, "actor", storage.BatchCreateOptions{SkipPrefixValidation: true})
 		},
 		CurrentRevision: func(ctx context.Context, id string) (int64, error) {
 			var revision int64
@@ -244,5 +348,38 @@ func buildParticipationGenerationFixture(store *DoltStore, configurer storage.Ve
 			}
 			return &gen.Int64, nil
 		},
+		InWispsTable: func(ctx context.Context, id string) (bool, error) {
+			var rows int
+			if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM wisps WHERE id = ?`, id).
+				Scan(&rows); err != nil {
+				return false, err
+			}
+			return rows > 0, nil
+		},
+		// Through the capability assertion cmd/bd makes on the unwrapped store,
+		// never the concrete method set.
+		ParticipatingIssueIDs: func(ctx context.Context, ids []string) (map[string]struct{}, error) {
+			participation, ok := any(store).(storage.HistoryParticipation)
+			if !ok {
+				return nil, fmt.Errorf("%T does not implement storage.HistoryParticipation", store)
+			}
+			return participation.ParticipatingIssueIDs(ctx, ids)
+		},
 	}
+}
+
+// withEventsJournal runs fn with store's events journal on and then restores
+// whatever setting the store had before, rather than assuming it was off.
+//
+// With the journal off, RunInTransaction runs wisp writes on a separate
+// ignored-table transaction that versioned history never scopes, and a lone
+// store.UpdateIssue on a wisp (updateWisp) opens a transaction it never scopes
+// either, so neither reaches the mint the wisps-table cases pin. A
+// journal-enabled workspace pins both planes to the one regular, scoped
+// transaction, which is the shape that reaches it.
+func withEventsJournal(store *DoltStore, fn func() error) error {
+	previous := store.eventsJournalEnabled.Load()
+	store.SetEventsJournalEnabled(true)
+	defer store.SetEventsJournalEnabled(previous)
+	return fn()
 }

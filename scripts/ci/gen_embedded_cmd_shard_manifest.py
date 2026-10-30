@@ -2,7 +2,7 @@
 """Regenerate .github/scripts/embedded-cmd-test-shards.txt by cost-balancing.
 
 Discovery must stay in step with embedded-test-shard.sh: both select every
-top-level TestEmbedded* function from cmd/bd/*_embedded_test.go.
+top-level TestEmbedded* function in cmd/bd/*_test.go.
 
 Two cost models, selected by --weights (default: duration, matching
 gen_proxied_shard_manifest.py's convention — see that script's module
@@ -29,10 +29,11 @@ docstring for the full rationale this one shares):
     the default.
 
 This generator's --weights=duration path targets the Bazel-only shard total
-(the bazel-embedded job in .github/workflows/bazel.yml). The legacy,
-hand-assigned 20-shard block that PR Risk's and main.yml's retired fork/push
-jobs used to read has been deleted (those jobs no longer exist; see
-engdocs/TESTING.md): the manifest file now holds exactly the one live block.
+(the bazel-embedded job in .github/workflows/bazel.yml). This fork retains
+PR Risk's legacy20-shard jobs and their existing assignments alongside the
+Bazel block. Updating100 is incremental and preserves those legacy rows;
+new legacy tests use embedded-test-shard.sh's existing hash fallback.
+Remove an old name only when the selected source no longer declares it.
 
 --write is INCREMENTAL by default (see --repack to force a full rebalance);
 --check verifies exact-once NAME coverage only, not shard assignments. Both
@@ -70,7 +71,7 @@ func_re = re.compile(r'^func (TestEmbedded[A-Za-z0-9_]+)\(')
 def discover_inits_cost():
     """Return {test_name: subtest count}, floored at 1."""
     costs = {}
-    for path in glob.glob('cmd/bd/*_embedded_test.go'):
+    for path in glob.glob('cmd/bd/*_test.go'):
         with open(path) as fh:
             lines = fh.readlines()
         cur = None
@@ -94,7 +95,7 @@ def discover_serial():
     ones (a test that reaches t.Parallel only through a helper counts as
     serial, which overestimates its shard)."""
     serial = set()
-    for path in glob.glob('cmd/bd/*_embedded_test.go'):
+    for path in glob.glob('cmd/bd/*_test.go'):
         with open(path) as fh:
             lines = fh.readlines()
         cur, parallel = None, False
@@ -121,7 +122,7 @@ def duration_cost(inits):
     if stale:
         sys.stderr.write(
             f'warning: {durations_filename} has {len(stale)} capture(s) for '
-            'tests that no longer exist in cmd/bd/*_embedded_test.go (renamed, split or '
+            'tests that no longer exist in cmd/bd/*_test.go (renamed, split or '
             f'deleted since the last capture): {", ".join(stale)}\n')
     costs = {}
     for name, cost in inits.items():
@@ -145,7 +146,7 @@ def render(total, shards, weights):
     out.append(f'# t.Parallel) add up, parallel ones share -test.parallel={test_parallelism}.')
     out.append(f'# Regenerate with scripts/ci/gen_embedded_cmd_shard_manifest.py {total}')
     out.append('# --weights=duration --write after adding, splitting or removing')
-    out.append('# TestEmbedded* functions in cmd/bd/*_embedded_test.go. --write is')
+    out.append('# TestEmbedded* functions in cmd/bd/*_test.go. --write is')
     out.append('# incremental: it keeps every already-assigned test on its current shard')
     out.append('# and only places newly-discovered names, onto whichever shard is')
     out.append('# currently lightest, so two unrelated PRs that each add one test do not')

@@ -59,11 +59,11 @@ func TestRetentionContract(t *testing.T) {
 }
 
 // TestEpochContract runs the R20 epoch contract (gastownhall/beads#5898
-// revision 9, this slice: be-x5jqd.4 / #6136) against the server-backed
+// revision 9, #6136) against the server-backed
 // store, which reaches internal/storage/issueops's epoch Tx functions
 // through this leg's own retrying write transaction or read transaction
-// (DoltStore.BumpEpoch/MintUnderEpoch/CurrentAddressFor and
-// DoltStore.CurrentEpoch/StillServes/Resolve) — see
+// (DoltStore.BumpEpoch/BumpEpochCarrying/MintUnderEpoch/LoseVersion and
+// DoltStore.CurrentEpoch/StillServes/Resolve/CurrentAddressFor) — see
 // internal/storage/dolt/epoch_cas.go.
 //
 // All three legs run that one shared body, so this is not an independent
@@ -79,6 +79,15 @@ func TestEpochContract(t *testing.T) {
 	t.Run("EpochBumpVoidsOnlyAddressesOfVersionsNoLongerServed", func(t *testing.T) {
 		conformance.RunEpochBumpVoidsOnlyAddressesOfVersionsNoLongerServed(t, ctx, fixture)
 	})
+	t.Run("TokenSchemeChangeCarriesLiveAddressesAndOnlyThose", func(t *testing.T) {
+		conformance.RunTokenSchemeChangeCarriesLiveAddressesAndOnlyThose(t, ctx, fixture)
+	})
+	t.Run("ACarriedAddressKeepsResolvingAcrossLaterBumps", func(t *testing.T) {
+		conformance.RunACarriedAddressKeepsResolvingAcrossLaterBumps(t, ctx, fixture)
+	})
+	t.Run("ALostAddressStaysGoneAcrossASchemeChange", func(t *testing.T) {
+		conformance.RunALostAddressStaysGoneAcrossASchemeChange(t, ctx, fixture)
+	})
 }
 
 // newEpochDoltFixture wires this leg's *DoltStore into the R20 epoch
@@ -89,12 +98,15 @@ func TestEpochContract(t *testing.T) {
 // the kit would have set verbatim.
 func newEpochDoltFixture(t *testing.T, prefix string) (conformance.EpochFixture, context.Context, func()) {
 	t.Helper()
-	store, storeCleanup := setupTestStore(t)
+	skipIfNoServer(t)
+	// A database of its own, not setupTestStore's branch on the shared one. The
+	// shared database's schema-init lock has a five-second acquire timeout, and a
+	// setup that queues behind another parallel test's runs out of it under load.
+	// The context is built after the open, so the open cannot drain its deadline.
+	openCtx, cancelOpen := testContext(t)
+	store := newMultiConnectionEpochStore(t, openCtx, "epoch_contract")
+	cancelOpen()
 	ctx, cancel := testContext(t)
-	stop := func() {
-		cancel()
-		storeCleanup()
-	}
 	return conformance.EpochFixture{
 		IssuePrefix:       prefix,
 		CurrentEpoch:      epochDoltCurrentEpoch(store),
@@ -103,7 +115,8 @@ func newEpochDoltFixture(t *testing.T, prefix string) (conformance.EpochFixture,
 		StillServes:       epochDoltStillServes(store),
 		Resolve:           epochDoltResolve(store),
 		CurrentAddressFor: epochDoltCurrentAddressFor(store),
-	}, ctx, stop
+		LoseVersion:       epochDoltLoseVersion(store),
+	}, ctx, cancel
 }
 
 func epochDoltCurrentEpoch(store *DoltStore) func(ctx context.Context, storeID string) (int, error) {
@@ -112,8 +125,16 @@ func epochDoltCurrentEpoch(store *DoltStore) func(ctx context.Context, storeID s
 	}
 }
 
+// epochDoltBumpEpoch dispatches on the typed trigger: a token-scheme change is
+// the one bump that also carries every live address to the new epoch, and a
+// restore or destructive reinit advances only the counter. The dispatch lives
+// in this file, the translation boundary, because the shared body has no
+// switch on the reason string.
 func epochDoltBumpEpoch(store *DoltStore) func(ctx context.Context, storeID string, trigger conformance.EpochBumpTrigger) (int, error) {
 	return func(ctx context.Context, storeID string, trigger conformance.EpochBumpTrigger) (int, error) {
+		if trigger == conformance.EpochBumpTriggerTokenSchemeChange {
+			return store.BumpEpochCarrying(ctx, storeID, trigger.String())
+		}
 		return store.BumpEpoch(ctx, storeID, trigger.String())
 	}
 }
@@ -151,6 +172,12 @@ func epochDoltCurrentAddressFor(store *DoltStore) func(ctx context.Context, stor
 			return "", err
 		}
 		return conformance.Address(address), nil
+	}
+}
+
+func epochDoltLoseVersion(store *DoltStore) func(ctx context.Context, storeID string, address conformance.Address) error {
+	return func(ctx context.Context, storeID string, address conformance.Address) error {
+		return store.LoseVersion(ctx, storeID, string(address))
 	}
 }
 

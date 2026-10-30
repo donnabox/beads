@@ -97,12 +97,16 @@ type CreateIssueResult struct {
 	// Set only on the path that would otherwise have minted, so the batch
 	// mints for exactly the issues a singular create would have.
 	versionDeferred bool
-	// isNew mirrors InsertIssueIfNew's result: whether this create actually
-	// inserted a new row, as opposed to resolving to an already-existing one.
-	// The participation_generation write-fence (design §16.2b) needs this to
-	// choose RecordVersionForCreateInTx over RecordVersionInTx; the deferred
-	// batch path carries it here since the per-issue isNew local is out of
-	// scope by the time the batch mints.
+	// isNew is whether this create actually inserted a new row, as opposed
+	// to resolving to an already-existing one. On the per-row path
+	// (CreateIssueInTxWithResult) it is InsertIssueIfNew's result; a row
+	// written by deferredCreates' multi-row INSERT reaches
+	// finishCreateIssueInTx directly and is always new, since only an id
+	// absent from both planes is deferrable. The participation_generation
+	// write-fence (design §16.2b) needs this to choose
+	// RecordVersionForCreateInTx over RecordVersionInTx; a batch that defers
+	// its mint (BatchContext.DeferVersionMint) carries it here since the
+	// per-issue isNew local is out of scope by the time the batch mints.
 	isNew bool
 }
 
@@ -175,6 +179,10 @@ func prepareCreateIssueInTx(ctx context.Context, tx DBTX, bc *BatchContext, issu
 		if err := EnsureIssueIDAvailableInTx(ctx, tx, issue.ID); err != nil {
 			return "", "", false, err
 		}
+		// The guard has just read both planes in this transaction and found
+		// no row with this id, so the cross-plane collision check below would
+		// re-read the sibling plane only to find the same nothing.
+		return issueTable, eventTable, false, nil
 	}
 
 	skip, err = checkCrossTableIDCollisionCached(ctx, tx, issue.ID, issueTable, bc.Opts, bc.cache)
@@ -239,8 +247,9 @@ func finishCreateIssueInTx(ctx context.Context, tx DBTX, bc *BatchContext, issue
 	}
 	// Journal the create once, after labels and comments are in the row's
 	// transaction, so the snapshot is the complete bead. The early returns above
-	// (collision skip, stale reject) wrote nothing and journal nothing.
-	if err := RecordEventInTx(ctx, tx, EventCreate, issue.ID, actor); err != nil {
+	// (collision skip, stale reject) wrote nothing and journal nothing. The
+	// record hands the row's arrival_seq back onto issue, which callers keep.
+	if err := RecordCreateEventInTx(ctx, tx, issue, actor); err != nil {
 		return result, err
 	}
 	// The version row is the create's LAST durable-state write. A batch
@@ -333,9 +342,11 @@ func CreateIssuesInTxWithResult(ctx context.Context, tx DBTX, issues []*types.Is
 }
 
 // deferredVersion carries a create's issue id and whether it was a genuinely
-// new row from the per-issue loop in CreateIssuesInTxWithContext to that
-// function's own final mint pass, since the per-issue isNew local goes out of
-// scope once CreateIssueInTxWithResult returns.
+// new row (CreateIssueResult.isNew) from the per-issue loop in
+// CreateIssuesInTxWithContext to that function's own final mint pass. The
+// loop fills it from both of its write paths: a row CreateIssueInTxWithResult
+// wrote on its own, and a row deferredCreates wrote in a multi-row INSERT and
+// finished through finishCreateIssueInTx, which is always new.
 type deferredVersion struct {
 	id    string
 	isNew bool
@@ -468,7 +479,7 @@ func CreateIssuesInTxWithContext(ctx context.Context, tx DBTX, bc *BatchContext,
 	}
 	// The ids are this batch's rows, most of them fresh and edgeless: let the
 	// recompute skip the union statements for those (planRecomputeInTx).
-	recomputed, err := recomputeIsBlockedInTxWithResult(ctx, tx, issueIDs, wispIDs, true)
+	recomputed, err := recomputeIsBlockedInTxWithResult(ctx, tx, issueIDs, wispIDs, recomputeOptions{splitEdgeless: true})
 	if err != nil {
 		return CreateIssuesResult{}, err
 	}
@@ -717,6 +728,12 @@ func PrepareIssueForInsert(issue *types.Issue, customStatuses, customTypes []str
 	if issue.ContentHash == "" {
 		issue.ContentHash = issue.ComputeContentHash()
 	}
+	// arrival_seq is assigned by storage alone, at the journal's create seam
+	// (stampArrivalSeqInTx). A value carried in from a caller, an import, or a
+	// row being moved between planes is never stored, and the struct must not
+	// claim one the row does not have; the create record hands the row's own
+	// stamp back (RecordCreateEventInTx).
+	issue.ArrivalSeq = 0
 	return nil
 }
 
@@ -839,7 +856,9 @@ func InsertIssueIfNew(ctx context.Context, tx DBTX, issueTable string, issue *ty
 // cache when it covers the id, and recording the write in cache.
 func insertIssueIfNewCached(ctx context.Context, tx DBTX, issueTable string, issue *types.Issue, opts storage.BatchCreateOptions, cache *createBatchCache) (isNew bool, staleRejected bool, err error) {
 	var existingCount int
-	if issue.ID != "" {
+	// A create-only insert that does not skip conflicts never reads the
+	// count: the strict INSERT itself refuses a duplicate.
+	if issue.ID != "" && (!opts.CreateOnly || opts.ConflictSkip) {
 		existingCount, err = cache.rowCount(ctx, tx, issueTable, issue.ID)
 		if err != nil {
 			return false, false, fmt.Errorf("failed to check issue existence for %s: %w", issue.ID, err)

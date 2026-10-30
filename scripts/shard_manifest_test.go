@@ -26,9 +26,9 @@ import (
 // run here so a drifted block fails `go test ./scripts/...`
 // (//scripts:go_test_sources_test under Bazel) instead of only surfacing as
 // a test silently never running in any shard. The cmd file's legacy,
-// hand-assigned 20-shard block (frozen for PR Risk's and main.yml's retired
-// fork/push jobs) has been deleted; those jobs no longer exist (see
-// engdocs/TESTING.md). The storage file's legacy 5-shard block is still
+// hand-assigned20-shard block remains for this fork's retained PR Risk
+// jobs; extant assignments stay fixed and new names use the existing hash
+// fallback. The storage file's legacy5-shard block is also
 // frozen and deliberately excluded here: its header documents that (see
 // .github/scripts/embedded-storage-test-shards.txt and engdocs/TESTING.md),
 // so a --check against it is expected to report "missing" entries by design

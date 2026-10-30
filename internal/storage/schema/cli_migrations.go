@@ -18,17 +18,22 @@ package schema
 // this limitation does not apply.
 //
 // Dolt 2.3.0 fixed #11345, and that fix MASKS a missing override here rather
-// than removing the need for one: on 2.3.x the CLI executes the prepared
+// than removing the need for one: a 2.3.0-or-newer CLI executes the prepared
 // ALTER, so a bundle that forgot the direct statement still lands the right
-// schema and TestCLIBundleMatchesRuntimeCommittedSchema goes green against a
-// 2.2.0 sql-server. So every override below must be justified against the
-// pre-2.3 behavior, and the string assertions in
-// TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities — which need
-// no Dolt binary at all — are the guard that survives a CLI version bump.
+// schema. Run through a 2.3.x CLI, TestCLIBundleMatchesRuntimeCommittedSchema
+// went green that way against the then-pinned 2.2.0 sql-server, and with the
+// CLI now pinned at 2.6.0 it cannot catch a dropped override on any run
+// (probed 2026-10-21: a prepared ADD COLUMN vanishes on the 2.2.0 CLI and
+// lands on 2.5.1). So every override below must be justified against the
+// pre-2.3 behavior, and the guards that still work need no Dolt binary at
+// all: the string assertions in
+// TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities and
+// TestBundleMigrationsWithPreparedALTERAreOverriddenOrJustified
+// (cli_prepared_ddl.go).
 //
-// The measurement that check stands in for: run AllMigrationsSQL() through
+// The measurement those checks stand in for: run AllMigrationsSQL() through
 // each CLI and diff information_schema. On 2026-08-21, with 0060's and 0065's
-// overrides both in place, dolt 2.1.8, 2.2.0 (the pinned CLI) and 2.3.1 agree
+// overrides both in place, dolt 2.1.8, 2.2.0 (the CLI pinned then) and 2.3.1 agree
 // on all 504 snapshot lines including the wisp_ tables the parity oracle
 // excludes — so no prepared statement the bundle still carries changes its
 // committed schema. Before that, 2.3.1 landed three extra columns (0060's
@@ -122,7 +127,7 @@ func cliCompatibleMigrationSQL(name, sqlText string) string {
 		// upgraded databases, and the 2.2.x CLI no-ops the prepared ALTER
 		// (measured 2026-08-20: AllMigrationsSQL() through dolt 2.2.0 lands
 		// bd_events_journal WITHOUT actor; 2.3.1 — and 2.2.3, which already
-		// carries the #11345 fix — land it; CI pins 2.2.0). The table
+		// carries the #11345 fix — land it; CI pinned 2.2.0 then). The table
 		// itself is always present here: 0064's prepared RENAME executes on
 		// 2.2.0 (same measurement), so a fresh bundle always needs the column.
 		return cliMigration0066AddEventsJournalActor
@@ -177,6 +182,22 @@ func cliCompatibleMigrationSQL(name, sqlText string) string {
 		// substitute ALTERs wisps directly, the same as 0067's, so it
 		// belongs on cliSubstituteAssumesWispTables too.
 		return cliMigration0072AddParticipationGeneration
+	case "0073_add_arrival_seq.up.sql":
+		// Direct DDL for the same reason as 0067: the source migration's
+		// PREPARE guards (INFORMATION_SCHEMA probes) are what make the raw
+		// .up.sql idempotent when replayed onto an already-migrated store,
+		// and the 2.2.x CLI no-ops a prepared ADD COLUMN. Both planes always
+		// need the column here -- a fresh bundle runs the whole main series
+		// in order, so `issues` and `wisps` both exist and neither carries
+		// arrival_seq yet, nor wisps the unique index the source's third
+		// guarded block creates. Replays over a database that never synced
+		// the wisp tables must use the frozen source text instead -- see
+		// cliSubstituteAssumesWispTables.
+		return cliMigration0073AddArrivalSeq
+	case "0074_extend_epoch_survival.up.sql":
+		// Fresh bundle only: frozen0071 created the base table without these
+		// objects. This is not an adapter for existing or partial stores.
+		return cliMigration0074ExtendEpochSurvival
 	default:
 		return sqlText
 	}
@@ -217,6 +238,10 @@ func cliSubstituteAssumesWispTables(name string) bool {
 		// cliMigration0072AddParticipationGeneration drops the source's
 		// @wisps_pg_needs_add table-exists guard and ALTERs wisps directly,
 		// the same shape 0067's override already uses for current_revision.
+		return true
+	case "0073_add_arrival_seq.up.sql":
+		// cliMigration0073AddArrivalSeq drops the source's @has_wisps
+		// table-exists guard and ALTERs and indexes wisps directly.
 		return true
 	default:
 		return false
@@ -332,6 +357,12 @@ const cliMigration0070AddRemovedRestriction = `ALTER TABLE issue_versions ADD CO
 // cliSubstituteAssumesWispTables too.
 const cliMigration0072AddParticipationGeneration = `ALTER TABLE issues ADD COLUMN participation_generation BIGINT NULL;
 ALTER TABLE wisps ADD COLUMN participation_generation BIGINT NULL;`
+
+// cliMigration0073AddArrivalSeq is 0073 with its three guarded PREPARE blocks
+// replaced by the direct DDL they would run on a fresh database.
+const cliMigration0073AddArrivalSeq = `ALTER TABLE issues ADD COLUMN arrival_seq BIGINT;
+ALTER TABLE wisps ADD COLUMN arrival_seq BIGINT;
+CREATE UNIQUE INDEX uk_wisps_arrival_seq ON wisps (arrival_seq);`
 
 const cliMigration0041SplitDependenciesTarget = `DELETE FROM dolt_nonlocal_tables;
 CALL DOLT_COMMIT('-Am', 'disable nonlocal tables for fk migrations');
@@ -529,3 +560,10 @@ WHERE w.issue_type = 'rig';
 DELETE FROM wisps WHERE issue_type = 'rig';
 
 SET FOREIGN_KEY_CHECKS = 1;`
+
+// Fresh-only direct DDL; production in-place upgrades use guarded0074 after
+// read-only lineage/occupancy admission, never this bundle substitute.
+const cliMigration0074ExtendEpochSurvival = `ALTER TABLE epoch_minted_addresses ADD COLUMN carried_from VARCHAR(255) NULL;
+ALTER TABLE epoch_minted_addresses ADD COLUMN gone_at_epoch INT NULL;
+CREATE INDEX idx_epoch_minted_addresses_carried_from ON epoch_minted_addresses (carried_from);
+ALTER TABLE epoch_minted_addresses ADD CONSTRAINT ck_epoch_minted_addresses_gone_not_before_mint CHECK (gone_at_epoch IS NULL OR gone_at_epoch >= minted_epoch);`

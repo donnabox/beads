@@ -290,9 +290,9 @@ func graphPreviewInsertDependencyWithRoot(sourcePath, targetPath, sourceNativeID
 			SetLastTouchedID(result.Source.ID)
 			toID, toTitle := result.Target.Properties.ID, result.Target.Properties.Title
 			return map[string]string{
-					"status": "added", "issue_id": fromID, "depends_on_id": toID, "type": string(depType),
-				}, fmt.Sprintf("%s Linked: %s depends on %s (%s)",
-					ui.RenderPass("✓"), formatFeedbackIDParen(fromID, fromTitle), formatFeedbackIDParen(toID, toTitle), depType), nil
+				"status": "added", "issue_id": fromID, "depends_on_id": toID, "type": string(depType),
+			}, fmt.Sprintf("%s Linked: %s depends on %s (%s)",
+				ui.RenderPass("✓"), formatFeedbackIDParen(fromID, fromTitle), formatFeedbackIDParen(toID, toTitle), depType), nil
 		}
 		return result, graphHumanRow(store.ScopeURL(), result.Link), nil
 	}

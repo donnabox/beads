@@ -43,6 +43,9 @@ const (
 	// legacy test jobs of both retired tiers.
 	prRiskBuildEmbeddedJob = "build-embedded"
 	prRiskBuildEmbeddedID  = "BUILD_EMBEDDED"
+	// Actual repository-owner policy is distinct from PR head fork metadata.
+	bazelRemoteGateID  = "BAZEL_REMOTE"
+	bazelForkRepoValue = "${{ github.repository_owner != 'gastownhall' }}"
 )
 
 // retiredTier: one D2 step's legacy tier, the committed flag that retires
@@ -57,6 +60,9 @@ type retiredTier struct {
 	jobs       map[string]string // legacy job -> its workflow's gate id
 	bazelLanes []string          // bazel.yml jobs
 }
+
+// Only PR and merge-group events use the required receiving gate.
+var rbeGateEvents = []string{"pull_request", "merge_group"}
 
 var retiredTiers = []retiredTier{
 	{
@@ -110,12 +116,12 @@ func (r retiredTier) retiredValue() string { return "${{ env." + r.flag + " == '
 
 // The legacy test jobs' if: the existing risk tier, and not covered.
 func (r retiredTier) legacyIf() string {
-	return "needs.detect-ci-tier.outputs.full_embedded == 'true' && needs." + prRiskCoverageJobName + ".outputs." + r.output + " != 'true'"
+	return "${{ needs.scope.outputs.linux == 'true' && needs.scope.outputs.dolt-tiers == 'on' && (needs.detect-ci-tier.outputs.full_embedded == 'true' && needs." + prRiskCoverageJobName + ".outputs." + r.output + " != 'true') }}"
 }
 
 // build-embedded's if: the risk tier, and some consumer not covered.
-var prRiskBuildEmbeddedIf = "needs.detect-ci-tier.outputs.full_embedded == 'true' && (needs." + prRiskCoverageJobName + ".outputs.embedded != 'true' || needs." +
-	prRiskCoverageJobName + ".outputs.dolt_server != 'true')"
+var prRiskBuildEmbeddedIf = "${{ needs.scope.outputs.linux == 'true' && needs.scope.outputs.dolt-tiers == 'on' && (needs.detect-ci-tier.outputs.full_embedded == 'true' && (needs." + prRiskCoverageJobName + ".outputs.embedded != 'true' || needs." +
+	prRiskCoverageJobName + ".outputs.dolt_server != 'true')) }}"
 
 // retiredJobs: every retired pr-risk.yml legacy test job -> its tier.
 func retiredJobs() map[string]retiredTier {
@@ -157,11 +163,15 @@ type rbeFacts struct {
 	// What rbe-fork-mint's /v1/status answers this run (bazelTestMintEnv;
 	// "" = unreachable). Only fork and Dependabot pull_request runs ask.
 	mint string
+	// github.repository_owner is not gastownhall: the run is a fork
+	// repository's own CI (a push to the fork, a PR within it), never a
+	// fork PR into beads.
+	forkRepo bool
 }
 
 func (f rbeFacts) String() string {
-	return fmt.Sprintf("event=%s var=%q secret=%v fork=%v retired=%q dependabot=%v covers-forks=%q mint=%q",
-		f.event, f.rbeVar, f.secret != "", f.fork, f.retired, f.dependabot, f.coversForks, f.mint)
+	return fmt.Sprintf("event=%s var=%q secret=%v fork=%v retired=%q dependabot=%v covers-forks=%q mint=%q fork-repo=%v",
+		f.event, f.rbeVar, f.secret != "", f.fork, f.retired, f.dependabot, f.coversForks, f.mint, f.forkRepo)
 }
 
 // covers: whether a run with tier i's flag set is covered, the decision
@@ -221,7 +231,7 @@ func rbeFactsMatrix() []rbeFacts {
 								covers = []string{"false", "true"}
 							}
 							for _, c := range covers {
-								f := rbeFacts{event, v, secret, fork, retired, dependabot, c, ""}
+								f := rbeFacts{event: event, rbeVar: v, secret: secret, fork: fork, retired: retired, dependabot: dependabot, coversForks: c, mint: ""}
 								if !f.forkPR() {
 									out = append(out, f)
 									continue
@@ -236,6 +246,11 @@ func rbeFactsMatrix() []rbeFacts {
 				}
 			}
 		}
+	}
+	base := append([]rbeFacts(nil), out...)
+	for _, f := range base {
+		f.forkRepo = true
+		out = append(out, f)
 	}
 	return out
 }
@@ -283,6 +298,8 @@ func evalRBEExpr(t *testing.T, expr string, f rbeFacts, with map[string]string) 
 		return strconv.FormatBool(strings.EqualFold(input("rbe", "on"), "cache"))
 	case "${{ github.event.pull_request.head.repo.fork == true }}":
 		return strconv.FormatBool(f.fork)
+	case bazelForkRepoValue:
+		return strconv.FormatBool(f.forkRepo)
 	case bazelForkFarmValue:
 		return strconv.FormatBool(strings.EqualFold(input("fork-farm", "off"), "authorized") &&
 			f.event == "pull_request_target" && input("checkout-sha", "") != "")
@@ -339,8 +356,8 @@ func TestPRRiskBazelCoverageJob(t *testing.T) {
 	// F3: this job moved to Blacksmith for same-repo PRs (and merge_group);
 	// forks and Dependabot stay on ubuntu-latest (TestSameRepoBlacksmithRunners
 	// pins the same literal for pr.yml's copy).
-	if len(job.Needs) != 0 || job.If != "" || job.RunsOn != sameRepoBlacksmith2vcpu || len(job.Env) != 0 || job.ContinueOnError || job.TimeoutMinutes == 0 {
-		t.Errorf("%s: needs %v, if %q, runs-on %q, env %v, continue-on-error %v, timeout %d; want no needs, if, env or continue-on-error, on %q, a timeout",
+	if !reflect.DeepEqual([]string(job.Needs), []string{ciScopeJob}) || job.If != "${{ needs.scope.outputs.linux == 'true' }}" || job.RunsOn != sameRepoBlacksmith2vcpu || len(job.Env) != 0 || job.ContinueOnError || job.TimeoutMinutes == 0 {
+		t.Errorf("%s: needs %v, if %q, runs-on %q, env %v, continue-on-error %v, timeout %d; want only scope dependency/Linux condition, no env or continue-on-error, on %q, a timeout",
 			prRiskCoverageJobName, job.Needs, job.If, job.RunsOn, job.Env, job.ContinueOnError, job.TimeoutMinutes, sameRepoBlacksmith2vcpu)
 	}
 	wantOutputs := map[string]string{}
@@ -443,7 +460,14 @@ func TestPRRiskBazelCoverageJob(t *testing.T) {
 // prGateFor: pr.yml's ci-gate scenario for one run whose Bazel call took
 // this mode with every lane that runs in it passing, and whose bazel-coverage
 // job reported these outputs.
-func prGateFor(t *testing.T, lanes map[string]map[string]bool, event, mode string, covered map[string]string) bazelGateScenario {
+func prGateFor(t *testing.T, lanes map[string]map[string]bool, event, mode string, cover ...map[string]string) bazelGateScenario {
+	covered := coveredAll("false")
+	if len(cover) > 1 {
+		t.Fatal("prGateFor accepts at most one coverage decision")
+	}
+	if len(cover) == 1 {
+		covered = cover[0]
+	}
 	t.Helper()
 	outputs := map[string]string{}
 	for lane, modes := range lanes {
@@ -451,18 +475,10 @@ func prGateFor(t *testing.T, lanes map[string]map[string]bool, event, mode strin
 			outputs[lane] = "success"
 		}
 	}
-	// Mode remote executes the Dolt union jobs in place of their member
-	// jobs. The workflow_call outputs classify the union and report each
-	// member tier's result to the PR gate, even though those jobs skip.
-	if mode == "remote" {
-		for _, lane := range []string{bazelDoltJobName, bazelProxiedJobName, bazelServerJobName, bazelCmdDoltJobName} {
-			outputs[lane] = "success"
-		}
-	}
 	return bazelGateScenario{
 		name: fmt.Sprintf("%s mode %s covered %v", event, mode, covered), event: event,
 		mode: mode, enabled: bazelModeEnabled(mode), call: "success",
-		outputs: outputs, covered: covered,
+		outputs: outputs, covered: covered, callWith: prCallWithFor(t, event),
 	}
 }
 
@@ -475,20 +491,17 @@ func coveredAll(v string) map[string]string {
 	return out
 }
 
-// bazelPRCallLanes: the modes each bazel.yml lane runs in under pr.yml's call.
+// bazelPRCallLanes: the modes each bazel.yml lane runs in under a call with
+// these inputs (pr.yml's, the scope resolved: prCallWith).
 func bazelPRCallLanes(t *testing.T, with map[string]string) map[string]map[string]bool {
 	t.Helper()
 	lanes := map[string]map[string]bool{}
 	for name, job := range readCIWorkflow(t, bazelWorkflowName).Jobs {
-		if name == bazelRBEJobName {
+		if name == bazelRBEJobName || name == bazelDispatchCoverageJobName || name == "bazel-local-coverage" {
 			continue
 		}
 		if isBazelRRCJob(name) {
 			assertBazelRRCExcludedFromPR(t, name, job.If)
-			continue
-		}
-		if name == bazelDoltRaceJobName || name == bazelDoltIntJobName {
-			// Their classified workflow outputs stand in for member lanes.
 			continue
 		}
 		lanes[name] = bazelLaneRunModes(t, name, job.If, with)
@@ -516,7 +529,13 @@ func TestPRRiskDecisionMatchesBazelMode(t *testing.T) {
 	riskStep, prStep := prRiskCoverageStep(t), coverageStep(t, "pr.yml")
 	rbeStep := readCIWorkflow(t, bazelWorkflowName).job(t, bazelRBEJobName).Steps[0]
 	gateStep := pr.job(t, "ci-gate").step(t, "Evaluate CI gate")
-	lanes := bazelPRCallLanes(t, call.With)
+	// The call's lanes on each event: a merge group's scope turns the
+	// Dolt-tier lanes off (TestCIScopePRGate).
+	lanesFor := map[string]map[string]map[string]bool{}
+	for _, event := range rbeGateEvents {
+		lanesFor[event] = bazelPRCallLanesFor(t, event)
+	}
+	lanes := lanesFor["pull_request"]
 
 	// The Bazel lanes PR Risk defers to: remote-only, gated by pr.yml, and
 	// not skippable in mode remote.
@@ -643,6 +662,12 @@ func TestPRRiskDecisionMatchesBazelMode(t *testing.T) {
 	saw := map[string]bool{}
 	for _, f := range rbeFactsMatrix() {
 		d := decide(t, f)
+		if (f.event == "pull_request" || f.event == "merge_group") && d.mode == "cache" {
+			t.Errorf("%v selected implicit cache mode", f)
+		}
+		if f.forkRepo && d.mode != "local" {
+			t.Errorf("fork repository %v selected %s; must stay local", f, d.mode)
+		}
 		for i, r := range retiredTiers {
 			want := f.covers(i)
 			if d.covered[r.output] != strconv.FormatBool(want) || d.prCovered[r.output] != d.covered[r.output] {
@@ -667,7 +692,7 @@ func TestPRRiskDecisionMatchesBazelMode(t *testing.T) {
 		if pass, ok := gateMemo[key]; ok {
 			return pass
 		}
-		pass, _ := runPRGateStep(t, gateStep, prGateFor(t, lanes, event, mode, covered))
+		pass, _ := runPRGateStep(t, gateStep, prGateFor(t, lanesFor[event], event, mode, covered))
 		gateMemo[key] = pass
 		return pass
 	}
@@ -704,12 +729,11 @@ func TestPRRiskDecisionMatchesBazelMode(t *testing.T) {
 		}
 	}
 
-	// Named cases, for the record. Forks and Dependabot run in mode cache
-	// while rbe-fork is closed, which, like local, skips the remote-only
-	// lanes, or remotely in fork-ro/fork-rw; while BAZEL_COVERS_FORKS is
-	// "false" they keep the legacy tiers either way. While it is "true" they
-	// are covered: green only with their lanes run remotely, red in mode
-	// cache. reds: the retired ids a red gate must name.
+	// Named cases retain the retirement policy axes. Closed/unreachable mint
+	// and absent executor choose local, never an implicit cache service. These
+	// upstream scenarios provide no exact-fork full-local proof, so a local or
+	// skipped Bazel call remains red even if legacy jobs ran. reds records the
+	// additional retired-tier IDs that must also fail.
 	both, embOnly, dsOnly, prOnly, none := [3]string{"true", "true", "true"}, [3]string{"true", "false", "false"}, [3]string{"false", "true", "false"},
 		[3]string{"false", "false", "true"}, [3]string{"false", "false", "false"}
 	allRetired := []string{"BAZEL_EMBEDDED_RETIRED", "BAZEL_DOLT_SERVER_RETIRED", "BAZEL_PR_LANES_RETIRED"}
@@ -721,47 +745,47 @@ func TestPRRiskDecisionMatchesBazelMode(t *testing.T) {
 		prPasses bool
 		reds     []string
 	}{
-		{"same-repo PR, farm on", rbeFacts{"pull_request", "true", "x", false, both, false, "false", ""}, "remote", coveredAll("true"), true, nil},
-		{"same-repo PR, kill switch (var unset)", rbeFacts{"pull_request", "", "x", false, both, false, "false", ""}, "skip", coveredAll("true"), false, allRetired},
-		{"same-repo PR, executor secret missing", rbeFacts{"pull_request", "true", "", false, both, false, "false", ""}, "cache", coveredAll("true"), false, allRetired},
-		{"same-repo PR, only embedded retired, var unset", rbeFacts{"pull_request", "", "x", false, embOnly, false, "false", ""}, "skip", map[string]string{"embedded": "true", "dolt_server": "false", "pr_lanes": "false"}, false, []string{"BAZEL_EMBEDDED_RETIRED"}},
-		{"same-repo PR, only proxied/server retired, var unset", rbeFacts{"pull_request", "", "x", false, dsOnly, false, "false", ""}, "skip", map[string]string{"embedded": "false", "dolt_server": "true", "pr_lanes": "false"}, false, []string{"BAZEL_DOLT_SERVER_RETIRED"}},
-		{"same-repo PR, only pr.yml's jobs retired, var unset", rbeFacts{"pull_request", "", "x", false, prOnly, false, "false", ""}, "skip", map[string]string{"embedded": "false", "dolt_server": "false", "pr_lanes": "true"}, false, []string{"BAZEL_PR_LANES_RETIRED"}},
-		{"same-repo PR, only pr.yml's jobs retired, secret missing", rbeFacts{"pull_request", "true", "", false, prOnly, false, "false", ""}, "cache", map[string]string{"embedded": "false", "dolt_server": "false", "pr_lanes": "true"}, false, []string{"BAZEL_PR_LANES_RETIRED"}},
-		{"same-repo PR, only pr.yml's jobs retired, farm on", rbeFacts{"pull_request", "true", "x", false, prOnly, false, "false", ""}, "remote", map[string]string{"embedded": "false", "dolt_server": "false", "pr_lanes": "true"}, true, nil},
-		{"same-repo PR, flags reverted, var unset", rbeFacts{"pull_request", "", "x", false, none, false, "false", ""}, "skip", coveredAll("false"), true, nil},
-		{"same-repo PR, flags reverted, secret missing", rbeFacts{"pull_request", "true", "", false, none, false, "false", ""}, "cache", coveredAll("false"), true, nil},
-		{"fork PR", rbeFacts{"pull_request", "true", "", true, both, false, "false", ""}, "cache", coveredAll("false"), true, nil},
-		{"fork PR, var unset", rbeFacts{"pull_request", "", "", true, both, false, "false", ""}, "cache", coveredAll("false"), true, nil},
-		{"fork PR somehow with a secret", rbeFacts{"pull_request", "true", "x", true, both, false, "false", ""}, "cache", coveredAll("false"), true, nil},
-		{"Dependabot PR (no Actions secrets)", rbeFacts{"pull_request", "true", "", false, both, true, "false", ""}, "cache", coveredAll("false"), true, nil},
+		{"same-repo PR, farm on", rbeFacts{event: "pull_request", rbeVar: "true", secret: "x", fork: false, retired: both, dependabot: false, coversForks: "false", mint: ""}, "remote", coveredAll("true"), true, nil},
+		{"same-repo PR, kill switch (var unset)", rbeFacts{event: "pull_request", rbeVar: "", secret: "x", fork: false, retired: both, dependabot: false, coversForks: "false", mint: ""}, "skip", coveredAll("true"), false, allRetired},
+		{"same-repo PR, executor secret missing", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: false, retired: both, dependabot: false, coversForks: "false", mint: ""}, "local", coveredAll("true"), false, allRetired},
+		{"same-repo PR, only embedded retired, var unset", rbeFacts{event: "pull_request", rbeVar: "", secret: "x", fork: false, retired: embOnly, dependabot: false, coversForks: "false", mint: ""}, "skip", map[string]string{"embedded": "true", "dolt_server": "false", "pr_lanes": "false"}, false, []string{"BAZEL_EMBEDDED_RETIRED"}},
+		{"same-repo PR, only proxied/server retired, var unset", rbeFacts{event: "pull_request", rbeVar: "", secret: "x", fork: false, retired: dsOnly, dependabot: false, coversForks: "false", mint: ""}, "skip", map[string]string{"embedded": "false", "dolt_server": "true", "pr_lanes": "false"}, false, []string{"BAZEL_DOLT_SERVER_RETIRED"}},
+		{"same-repo PR, only pr.yml's jobs retired, var unset", rbeFacts{event: "pull_request", rbeVar: "", secret: "x", fork: false, retired: prOnly, dependabot: false, coversForks: "false", mint: ""}, "skip", map[string]string{"embedded": "false", "dolt_server": "false", "pr_lanes": "true"}, false, []string{"BAZEL_PR_LANES_RETIRED"}},
+		{"same-repo PR, only pr.yml's jobs retired, secret missing", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: false, retired: prOnly, dependabot: false, coversForks: "false", mint: ""}, "local", map[string]string{"embedded": "false", "dolt_server": "false", "pr_lanes": "true"}, false, []string{"BAZEL_PR_LANES_RETIRED"}},
+		{"same-repo PR, only pr.yml's jobs retired, farm on", rbeFacts{event: "pull_request", rbeVar: "true", secret: "x", fork: false, retired: prOnly, dependabot: false, coversForks: "false", mint: ""}, "remote", map[string]string{"embedded": "false", "dolt_server": "false", "pr_lanes": "true"}, true, nil},
+		{"same-repo PR, flags reverted, var unset", rbeFacts{event: "pull_request", rbeVar: "", secret: "x", fork: false, retired: none, dependabot: false, coversForks: "false", mint: ""}, "skip", coveredAll("false"), false, nil},
+		{"same-repo PR, flags reverted, secret missing", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: false, retired: none, dependabot: false, coversForks: "false", mint: ""}, "local", coveredAll("false"), false, nil},
+		{"fork PR", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: true, retired: both, dependabot: false, coversForks: "false", mint: ""}, "local", coveredAll("false"), false, nil},
+		{"fork PR, var unset", rbeFacts{event: "pull_request", rbeVar: "", secret: "", fork: true, retired: both, dependabot: false, coversForks: "false", mint: ""}, "local", coveredAll("false"), false, nil},
+		{"fork PR somehow with a secret", rbeFacts{event: "pull_request", rbeVar: "true", secret: "x", fork: true, retired: both, dependabot: false, coversForks: "false", mint: ""}, "local", coveredAll("false"), false, nil},
+		{"Dependabot PR (no Actions secrets)", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: false, retired: both, dependabot: true, coversForks: "false", mint: ""}, "local", coveredAll("false"), false, nil},
 		// rbe-fork decides for Dependabot like for forks (the mint, not the
-		// farm switch): unreachable here, so cache.
-		{"Dependabot PR, var unset", rbeFacts{"pull_request", "", "", false, both, true, "false", ""}, "cache", coveredAll("false"), true, nil},
-		{"fork PR, rbe-fork ro", rbeFacts{"pull_request", "true", "", true, both, false, "false", "ro"}, "fork-ro", coveredAll("false"), true, nil},
-		{"fork PR, rbe-fork rw", rbeFacts{"pull_request", "", "", true, both, false, "false", "rw"}, "fork-rw", coveredAll("false"), true, nil},
-		{"fork PR, rbe-fork closed", rbeFacts{"pull_request", "true", "", true, both, false, "false", "closed"}, "cache", coveredAll("false"), true, nil},
-		{"Dependabot PR, rbe-fork ro", rbeFacts{"pull_request", "true", "", false, both, true, "false", "ro"}, "fork-ro", coveredAll("false"), true, nil},
-		{"covered fork PR, rbe-fork ro", rbeFacts{"pull_request", "true", "", true, both, false, "true", "ro"}, "fork-ro", coveredAll("true"), true, nil},
-		{"covered fork PR, rbe-fork rw", rbeFacts{"pull_request", "", "", true, both, false, "true", "rw"}, "fork-rw", coveredAll("true"), true, nil},
-		{"covered fork PR, rbe-fork closed", rbeFacts{"pull_request", "true", "", true, both, false, "true", "closed"}, "cache", coveredAll("true"), false, allRetired},
-		{"covered fork PR, mint unreachable", rbeFacts{"pull_request", "true", "", true, both, false, "true", ""}, "cache", coveredAll("true"), false, allRetired},
-		{"covered Dependabot PR, rbe-fork ro", rbeFacts{"pull_request", "true", "", false, both, true, "true", "ro"}, "fork-ro", coveredAll("true"), true, nil},
-		{"covered Dependabot PR, rbe-fork closed", rbeFacts{"pull_request", "", "", false, both, true, "true", "closed"}, "cache", coveredAll("true"), false, allRetired},
-		{"covered fork PR, only pr.yml's jobs retired, rbe-fork closed", rbeFacts{"pull_request", "true", "", true, prOnly, false, "true", "closed"}, "cache", map[string]string{"embedded": "false", "dolt_server": "false", "pr_lanes": "true"}, false, []string{"BAZEL_PR_LANES_RETIRED"}},
+		// farm switch): unreachable here, so local.
+		{"Dependabot PR, var unset", rbeFacts{event: "pull_request", rbeVar: "", secret: "", fork: false, retired: both, dependabot: true, coversForks: "false", mint: ""}, "local", coveredAll("false"), false, nil},
+		{"fork PR, rbe-fork ro", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: true, retired: both, dependabot: false, coversForks: "false", mint: "ro"}, "fork-ro", coveredAll("false"), true, nil},
+		{"fork PR, rbe-fork rw", rbeFacts{event: "pull_request", rbeVar: "", secret: "", fork: true, retired: both, dependabot: false, coversForks: "false", mint: "rw"}, "fork-rw", coveredAll("false"), true, nil},
+		{"fork PR, rbe-fork closed", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: true, retired: both, dependabot: false, coversForks: "false", mint: "closed"}, "local", coveredAll("false"), false, nil},
+		{"Dependabot PR, rbe-fork ro", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: false, retired: both, dependabot: true, coversForks: "false", mint: "ro"}, "fork-ro", coveredAll("false"), true, nil},
+		{"covered fork PR, rbe-fork ro", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: true, retired: both, dependabot: false, coversForks: "true", mint: "ro"}, "fork-ro", coveredAll("true"), true, nil},
+		{"covered fork PR, rbe-fork rw", rbeFacts{event: "pull_request", rbeVar: "", secret: "", fork: true, retired: both, dependabot: false, coversForks: "true", mint: "rw"}, "fork-rw", coveredAll("true"), true, nil},
+		{"covered fork PR, rbe-fork closed", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: true, retired: both, dependabot: false, coversForks: "true", mint: "closed"}, "local", coveredAll("true"), false, allRetired},
+		{"covered fork PR, mint unreachable", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: true, retired: both, dependabot: false, coversForks: "true", mint: ""}, "local", coveredAll("true"), false, allRetired},
+		{"covered Dependabot PR, rbe-fork ro", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: false, retired: both, dependabot: true, coversForks: "true", mint: "ro"}, "fork-ro", coveredAll("true"), true, nil},
+		{"covered Dependabot PR, rbe-fork closed", rbeFacts{event: "pull_request", rbeVar: "", secret: "", fork: false, retired: both, dependabot: true, coversForks: "true", mint: "closed"}, "local", coveredAll("true"), false, allRetired},
+		{"covered fork PR, only pr.yml's jobs retired, rbe-fork closed", rbeFacts{event: "pull_request", rbeVar: "true", secret: "", fork: true, retired: prOnly, dependabot: false, coversForks: "true", mint: "closed"}, "local", map[string]string{"embedded": "false", "dolt_server": "false", "pr_lanes": "true"}, false, []string{"BAZEL_PR_LANES_RETIRED"}},
 		// Merge queue: covered like a same-repo PR (the legacy tiers stay
 		// retired), so the Bazel lanes must run remotely and pass.
-		{"merge_group", rbeFacts{"merge_group", "true", "x", false, both, false, "false", ""}, "remote", coveredAll("true"), true, nil},
-		{"merge_group, kill switch (var unset)", rbeFacts{"merge_group", "", "x", false, both, false, "false", ""}, "skip", coveredAll("true"), false, allRetired},
-		{"merge_group, executor secret missing", rbeFacts{"merge_group", "true", "", false, both, false, "false", ""}, "cache", coveredAll("true"), false, allRetired},
-		{"merge_group, flags reverted, var unset", rbeFacts{"merge_group", "", "x", false, none, false, "false", ""}, "skip", coveredAll("false"), true, nil},
-		{"merge_group, only embedded retired", rbeFacts{"merge_group", "true", "x", false, embOnly, false, "false", ""}, "remote", map[string]string{"embedded": "true", "dolt_server": "false", "pr_lanes": "false"}, true, nil},
+		{"merge_group", rbeFacts{event: "merge_group", rbeVar: "true", secret: "x", fork: false, retired: both, dependabot: false, coversForks: "false", mint: ""}, "remote", coveredAll("true"), true, nil},
+		{"merge_group, kill switch (var unset)", rbeFacts{event: "merge_group", rbeVar: "", secret: "x", fork: false, retired: both, dependabot: false, coversForks: "false", mint: ""}, "skip", coveredAll("true"), false, allRetired},
+		{"merge_group, executor secret missing", rbeFacts{event: "merge_group", rbeVar: "true", secret: "", fork: false, retired: both, dependabot: false, coversForks: "false", mint: ""}, "local", coveredAll("true"), false, allRetired},
+		{"merge_group, flags reverted, var unset", rbeFacts{event: "merge_group", rbeVar: "", secret: "x", fork: false, retired: none, dependabot: false, coversForks: "false", mint: ""}, "skip", coveredAll("false"), false, nil},
+		{"merge_group, only embedded retired", rbeFacts{event: "merge_group", rbeVar: "true", secret: "x", fork: false, retired: embOnly, dependabot: false, coversForks: "false", mint: ""}, "remote", map[string]string{"embedded": "true", "dolt_server": "false", "pr_lanes": "false"}, true, nil},
 	} {
 		d := decide(t, c.f)
 		if !reflect.DeepEqual(d.covered, c.covered) || d.mode != c.mode {
 			t.Errorf("%s: covered = %v, mode = %q; want %v, %s", c.name, d.covered, d.mode, c.covered, c.mode)
 		}
-		pass, out := runPRGateStep(t, gateStep, prGateFor(t, lanes, c.f.event, d.mode, d.prCovered))
+		pass, out := runPRGateStep(t, gateStep, prGateFor(t, lanesFor[c.f.event], c.f.event, d.mode, d.prCovered))
 		if pass != c.prPasses {
 			t.Errorf("%s: pr.yml gate pass = %v, want %v\n%s", c.name, pass, c.prPasses, out)
 		}
@@ -779,7 +803,11 @@ func TestPRRiskDecisionMatchesBazelMode(t *testing.T) {
 		for _, lane := range r.bazelLanes {
 			for _, res := range []string{"failure", "cancelled", ""} {
 				sc := prGateFor(t, lanes, "pull_request", "remote", coveredAll("true"))
-				sc.outputs[lane] = res
+				reporter := bazelLaneReporter(lanes, lane, "remote")
+				if reporter == "" {
+					t.Fatalf("no remote reporter for %s", lane)
+				}
+				sc.outputs[reporter] = res
 				if pass, out := runPRGateStep(t, gateStep, sc); pass || !strings.Contains(out, "::error::"+r.retiredID) {
 					t.Errorf("covered, %s lane %s %q: gate pass = %v, want red naming %s\n%s", r.output, lane, res, pass, r.retiredID, out)
 				}
@@ -886,7 +914,7 @@ func TestPRRiskLegacyTiersDeferToBazelLanes(t *testing.T) {
 		if job.If != r.legacyIf() {
 			t.Errorf("%s if = %q, want %q", name, job.If, r.legacyIf())
 		}
-		if want := []string{"detect-ci-tier", prRiskCoverageJobName, prRiskBuildEmbeddedJob}; !reflect.DeepEqual([]string(job.Needs), want) {
+		if want := []string{ciScopeJob, "detect-ci-tier", prRiskCoverageJobName, prRiskBuildEmbeddedJob}; !reflect.DeepEqual([]string(job.Needs), want) {
 			t.Errorf("%s needs = %v, want %v", name, job.Needs, want)
 		}
 	}
@@ -894,7 +922,7 @@ func TestPRRiskLegacyTiersDeferToBazelLanes(t *testing.T) {
 	if build.If != prRiskBuildEmbeddedIf {
 		t.Errorf("%s if = %q, want %q", prRiskBuildEmbeddedJob, build.If, prRiskBuildEmbeddedIf)
 	}
-	if want := []string{"detect-ci-tier", prRiskCoverageJobName}; !reflect.DeepEqual([]string(build.Needs), want) {
+	if want := []string{ciScopeJob, "detect-ci-tier", prRiskCoverageJobName}; !reflect.DeepEqual([]string(build.Needs), want) {
 		t.Errorf("%s needs = %v, want %v", prRiskBuildEmbeddedJob, build.Needs, want)
 	}
 	// build-embedded's artifact has no consumer but the retired jobs (so
@@ -984,7 +1012,7 @@ func TestPRRiskLegacyTiersDeferToBazelLanes(t *testing.T) {
 			r[prRiskBuildEmbeddedJob] = "skipped"
 		}
 		for name := range risk.Jobs {
-			if !contains(gate.Needs, name) || name == "detect-ci-tier" || name == prRiskCoverageJobName || name == "test-nix" || name == prRiskBuildEmbeddedJob {
+			if !contains(gate.Needs, name) || name == ciScopeJob || name == "detect-ci-tier" || name == prRiskCoverageJobName || name == "test-nix" || name == prRiskBuildEmbeddedJob {
 				continue
 			}
 			runs := full
@@ -999,6 +1027,9 @@ func TestPRRiskLegacyTiersDeferToBazelLanes(t *testing.T) {
 	}
 	outputs := func(full bool, cov map[string]string) map[string]string {
 		o := map[string]string{"detect-ci-tier.full_embedded": strconv.FormatBool(full)}
+		for key, value := range ciScopeRows["pull_request"] {
+			o[ciScopeJob+"."+key] = value
+		}
 		for _, r := range retiredTiers {
 			o[prRiskCoverageJobName+"."+r.output] = cov[r.output]
 		}
@@ -1723,6 +1754,11 @@ func TestBazelRetiredLanesCannotBeNarrowed(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			if filepath.ToSlash(rel) == offlineWrapper {
+				for _, e := range shWrapperUsers(t, root, offlineWrapper, offlineWrapperTargets, "offlineWrapperTargets") {
+					t.Error(e)
+				}
+			}
 			for i, line := range strings.Split(string(data), "\n") {
 				code := strings.TrimSpace(line)
 				if strings.HasPrefix(code, "#") {
@@ -1734,7 +1770,13 @@ func TestBazelRetiredLanesCannotBeNarrowed(t *testing.T) {
 						continue
 					}
 				}
-				if scriptNarrow.MatchString(code) {
+				narrow := scriptNarrow
+				if filepath.ToSlash(rel) == offlineWrapper {
+					// Exact manifest partition only; forwarded selectors are refused
+					// by the wrapper and its dedicated negative controls.
+					narrow = regexp.MustCompile(strings.Replace(scriptNarrow.String(), "short|run|skip|list|bench", "short|skip|list|bench", 1))
+				}
+				if narrow.MatchString(code) {
 					t.Errorf("%s:%d %q can select, skip or re-run the retired tiers' lanes' tests", rel, i+1, code)
 				}
 				for _, m := range regexp.MustCompile(`--config=([A-Za-z0-9_-]+)`).FindAllStringSubmatch(code, -1) {
@@ -1789,10 +1831,7 @@ func TestBazelRetiredLanesCannotBeNarrowed(t *testing.T) {
 			[]string{"--shard-offset=50", "--shard-total=100", "$(rootpath //:.github/scripts/embedded-test-shard.sh)", "BEADS_TEST_CMD_BINARY", "$(rootpath :bd_test)", "-test.timeout=19m"},
 			map[string]string{"BEADS_TEST_BD_BINARY": "$(rlocationpath :bd)", "BEADS_TEST_EMBEDDED_DOLT": "1", "BEADS_TEST_EMBEDDED_SCHEMA_TOOL": "$(rlocationpath //internal/storage/embeddeddolt/cmd:cmd_norace)", "BEADS_TEST_GOFMT": "$(rlocationpath @go_sdk//:bin/gofmt)", "GORACE": "atexit_sleep_ms=0"},
 		},
-		"//cmd/bd:bd_managed_local_test": {
-			[]string{"$(rootpath :bd_test)", "-test.run=^TestManagedLocalProxied", "-test.timeout=15m"},
-			map[string]string{"BEADS_TEST_BD_BINARY": "$(rlocationpath :bd_for_tests)", "BEADS_TEST_COMPACT_GC_FIXTURE": "$(rlocationpath :compact_gc_fixture)", "BEADS_TEST_DOLT_SERVER": "local", "BEADS_TEST_GOFMT": "$(rlocationpath @go_sdk//:bin/gofmt)", "BEADS_TEST_PREFLIGHT_GO": "$(rlocationpath :preflight_go_fixture)", "BEADS_TEST_PROXIED_LOCAL": "1", "BEADS_TEST_REQUIRE_DOLT_CONTAINER": "1", "BEADS_TEST_SKIP": "dolt"},
-		},
+
 		"//internal/storage/embeddeddolt:embeddeddolt_embedded_test": {
 			[]string{"$(rootpath //:.github/scripts/embedded-storage-test-shard.sh)", "BEADS_TEST_EMBEDDED_TEST_BINARY", "$(rootpath :embeddeddolt_test)", "-test.timeout=19m"},
 			map[string]string{"BEADS_TEST_EMBEDDED_DOLT": "1"},
@@ -1823,6 +1862,19 @@ func TestBazelRetiredLanesCannotBeNarrowed(t *testing.T) {
 				"BEADS_TEST_BD_BINARY": "$(rlocationpath :bd_for_tests)", "BEADS_TEST_DOLT_SERVER": "local", "BEADS_TEST_GIT_IDENTITY": "1",
 				"BEADS_TEST_GOFMT": "$(rlocationpath @go_sdk//:bin/gofmt)", "BEADS_TEST_PROXIED_SERVER": "1",
 				"BEADS_TEST_REQUIRE_DOLT_CONTAINER": "1", "BEADS_TEST_REQUIRE_SOCAT": "1", "GOMAXPROCS": "4",
+			},
+		},
+		// go_test_offline.sh runs exactly the manifest's tests, each in its
+		// shard (TestOfflineWrapperShardManifest), and the manifest lists
+		// exactly the TestManagedLocalProxied* tests bd_test compiles
+		// (TestManagedLocalShardManifest).
+		"//cmd/bd:bd_managed_local_test": {
+			[]string{"--shard-manifest=$(rootpath :managed_local_shards.txt)", "$(rootpath :bd_test)", "-test.timeout=15m"},
+			map[string]string{
+				"BEADS_TEST_BD_BINARY": "$(rlocationpath :bd_for_tests)", "BEADS_TEST_COMPACT_GC_FIXTURE": "$(rlocationpath :compact_gc_fixture)",
+				"BEADS_TEST_DOLT_SERVER": "local",
+				"BEADS_TEST_GOFMT":       "$(rlocationpath @go_sdk//:bin/gofmt)", "BEADS_TEST_PREFLIGHT_GO": "$(rlocationpath :preflight_go_fixture)",
+				"BEADS_TEST_PROXIED_LOCAL": "1", "BEADS_TEST_REQUIRE_DOLT_CONTAINER": "1", "BEADS_TEST_SKIP": "dolt",
 			},
 		},
 		"//internal/storage/dolt:dolt_server_conformance_test": {
