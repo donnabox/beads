@@ -361,7 +361,7 @@ func TestFamilyAuthorityEvenEmptyAndSkippedAndPinnedType(t *testing.T) {
 	assertIDs(t, execute(t, request(t, "query", "resources", filter(scan("beads"), "b", compare("eq", field(b, "type", "revision"), literal("definition-7")))), d), "A")
 	d.TypeKinds = map[string]graph.ResourceKind{base + "Note": graph.KindBead}
 	d.TypeFamilies = map[string][]string{base + "Note": {base + "Note"}}
-	assertIDs(t, execute(t, request(t, "query", "resources", filter(scan("beads"), "b", family)), d), "A")
+	assertFailure(t, request(t, "query", "resources", filter(scan("beads"), "b", family)), d, ErrUnsupported)
 }
 
 func TestFamilyMechanismVersusAuthorizedAuthority(t *testing.T) {
@@ -400,6 +400,132 @@ func TestFamilyPreloadDoesNotMultiplyRecordsByUses(t *testing.T) {
 	if got := response.Result.(CountResult).Count; got != 200 {
 		t.Fatalf("count = %d", got)
 	}
+}
+
+func exactTypeFixture(t *testing.T) Dataset {
+	t.Helper()
+	ref := func(name, revision string) Edition { return Edition{base + name, revision} }
+	oldType, newType := ref("T", "old"), ref("T", "new")
+	oldA, currentA, currentB := ref("AType", "old-a"), ref("AType", "new-a"), ref("BType", "b")
+	facts := []TypeEditionFact{
+		{Reference: oldType, Kind: graph.KindBead, Ancestors: []Edition{oldType, oldA}},
+		{Reference: newType, Kind: graph.KindBead, Current: true, Ancestors: []Edition{newType, currentB}},
+		{Reference: oldA, Kind: graph.KindBead, Ancestors: []Edition{oldA}},
+		{Reference: currentA, Kind: graph.KindBead, Current: true, Ancestors: []Edition{currentA}},
+		{Reference: currentB, Kind: graph.KindBead, Current: true, Ancestors: []Edition{currentB}},
+	}
+	pinned := func(id, revision string) Resource {
+		raw, err := json.Marshal(ast{"id": base + id, "revision": "r1", "type": ast{"uri": base + "T", "revision": revision}, "properties": ast{}})
+		if err != nil {
+			t.Fatal(err)
+		}
+		r, err := NewResource(graph.KindBead, raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return r
+	}
+	return Dataset{TypeEditions: facts, Resources: []Resource{pinned("Old", "old"), pinned("New", "new"), resource(t, graph.KindBead, "Unpinned", "T", "r1", ast{})}}
+}
+
+func TestExactTypeEditionFamilies(t *testing.T) {
+	d := exactTypeFixture(t)
+	family := func(name string) ast {
+		return ast{"op": "typeIs", "of": binding("b"), "type": base + name, "match": "family"}
+	}
+	for _, profile := range []string{"query", "list"} {
+		assertIDs(t, execute(t, request(t, profile, "resources", filter(scan("beads"), "b", family("AType"))), d), "Old")
+		assertIDs(t, execute(t, request(t, profile, "resources", filter(scan("beads"), "b", family("BType"))), d), "New", "Unpinned")
+	}
+	// Moving current evidence changes only unpinned affiliation interpretation.
+	d.TypeEditions[0].Current, d.TypeEditions[1].Current = true, false
+	assertIDs(t, execute(t, request(t, "query", "resources", filter(scan("beads"), "b", family("AType"))), d), "Old", "Unpinned")
+	assertIDs(t, execute(t, request(t, "query", "resources", filter(scan("beads"), "b", family("BType"))), d), "New")
+}
+
+func TestExactTypeAuthorityDoesNotRewriteNominalOrRawValues(t *testing.T) {
+	d := exactTypeFixture(t)
+	exact := ast{"op": "typeIs", "of": binding("b"), "type": base + "T", "match": "exact"}
+	assertIDs(t, execute(t, request(t, "query", "resources", filter(scan("beads"), "b", exact)), d), "New", "Old", "Unpinned")
+	exact["type"] = base + "unknown-local-definition"
+	assertIDs(t, execute(t, request(t, "query", "resources", filter(scan("beads"), "b", exact)), d))
+	pin := compare("eq", field(binding("b"), "type", "revision"), literal("old"))
+	assertIDs(t, execute(t, request(t, "query", "resources", filter(scan("beads"), "b", pin)), d), "Old")
+}
+
+func TestExactTypeAuthorityNeverFallsBack(t *testing.T) {
+	d := exactTypeFixture(t)
+	family := ast{"op": "typeIs", "of": binding("b"), "type": base + "AType", "match": "family"}
+	raw := request(t, "query", "count", filter(scan("beads"), "b", ast{"op": "or", "operands": []any{true, family}}))
+	d.TypeKinds = map[string]graph.ResourceKind{base + "AType": graph.KindBead, base + "T": graph.KindBead}
+	d.TypeFamilies = map[string][]string{base + "AType": {base + "AType"}, base + "T": {base + "T", base + "AType"}}
+	// A nonnil empty exact mechanism never borrows the old URI map.
+	d.TypeEditions = []TypeEditionFact{}
+	assertFailure(t, raw, d, ErrUnavailable)
+	d = exactTypeFixture(t)
+	d.TypeEditions = d.TypeEditions[1:]
+	assertFailure(t, raw, d, ErrDataset)
+	// Retained ancestry is not evidence that a selected Type is current.
+	d = exactTypeFixture(t)
+	d.TypeEditions[3].Current = false
+	d.Resources = nil
+	assertFailure(t, raw, d, ErrUnavailable)
+	d = exactTypeFixture(t)
+	d.TypeEditions[1].Current = false
+	assertFailure(t, raw, d, ErrDataset)
+	// Definition display identities are not aliases for raw AST selectors.
+	d = exactTypeFixture(t)
+	family["type"] = base + "unknown-local-definition"
+	assertFailure(t, request(t, "query", "count", filter(scan("beads"), "b", family)), d, ErrUnavailable)
+}
+
+func TestExactTypeAuthorityIntegrity(t *testing.T) {
+	family := ast{"op": "typeIs", "of": binding("b"), "type": base + "AType", "match": "family"}
+	raw := request(t, "query", "resources", filter(scan("beads"), "b", ast{"op": "or", "operands": []any{true, family}}))
+	for _, tc := range []struct {
+		name   string
+		change func(*Dataset)
+	}{
+		{"duplicate edition", func(d *Dataset) { d.TypeEditions = append(d.TypeEditions, d.TypeEditions[0]) }},
+		{"ambiguous current", func(d *Dataset) { d.TypeEditions[0].Current = true }},
+		{"missing reflexive edition", func(d *Dataset) { d.TypeEditions[0].Ancestors = d.TypeEditions[0].Ancestors[1:] }},
+		{"unknown ancestor edition", func(d *Dataset) { d.TypeEditions[0].Ancestors[1].Revision = "missing" }},
+		{"cross kind ancestry", func(d *Dataset) { d.TypeEditions[2].Kind = graph.KindLink }},
+		{"duplicate ancestor", func(d *Dataset) {
+			d.TypeEditions[0].Ancestors = append(d.TypeEditions[0].Ancestors, d.TypeEditions[0].Reference)
+		}},
+		{"incomplete transitive closure", func(d *Dataset) {
+			d.TypeEditions[2].Ancestors = append(d.TypeEditions[2].Ancestors, d.TypeEditions[4].Reference)
+		}},
+		{"invalid revision", func(d *Dataset) { d.TypeEditions[0].Reference.Revision = "" }},
+		{"invalid identity", func(d *Dataset) { d.TypeEditions[0].Reference.ID = "local/T" }},
+		{"invalid kind", func(d *Dataset) { d.TypeEditions[0].Kind = "invalid" }},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			d := exactTypeFixture(t)
+			tc.change(&d)
+			assertFailure(t, raw, d, ErrDataset)
+		})
+	}
+}
+
+func TestExactTypeAuthorityBoundsAndCancellation(t *testing.T) {
+	d := exactTypeFixture(t)
+	family := ast{"op": "typeIs", "of": binding("b"), "type": base + "AType", "match": "family"}
+	raw := request(t, "query", "count", filter(scan("beads"), "b", family))
+	l := DefaultLimits()
+	l.MaxWork = 5
+	if _, err := Execute(context.Background(), raw, d, l); !errors.Is(err, ErrLimit) {
+		t.Fatalf("exact authority work limit: %v", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := Execute(ctx, raw, d, Limits{}); !errors.Is(err, context.Canceled) {
+		t.Fatalf("exact authority cancellation: %v", err)
+	}
+	// Exact Type facts do not add exact Resource acquisition capability.
+	root := refset("beads", ast{"uri": base + "Old", "revision": "r1"})
+	assertFailure(t, request(t, "query", "resources", root), d, ErrUnsupported)
 }
 
 func TestFullResourcesCountGraphAndLimits(t *testing.T) {

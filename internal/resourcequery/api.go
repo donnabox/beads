@@ -62,12 +62,28 @@ type Resource struct {
 // all known Types, even abstract Types with no current instances.
 type Dataset struct {
 	Resources []Resource
+	// TypeEditions is exact captured authority for recorded Type affiliations.
+	// A nonnil slice selects this mechanism, including an empty inventory;
+	// TypeFamilies/TypeKinds are never used as a fallback in that mode.
+	TypeEditions []TypeEditionFact
 	// Nil authority maps mean the family mechanism is unavailable. Nonnil
 	// maps assert a complete authorized inventory, including an empty one.
 	// Missing queried Types are unavailable data; missing required ancestry
 	// for a known Type is an integrity failure in that asserted inventory.
 	TypeFamilies map[string][]string
 	TypeKinds    map[string]graph.ResourceKind
+}
+
+// TypeEditionFact describes one semantic Type edition in the same captured
+// context as Resources. Reference is the affiliation, not a local definition
+// alias. Ancestors is complete, exact and reflexive. Current requires captured
+// live-selection evidence; a retained edition does not imply it. These facts
+// do not provide historical Resource acquisition or authorize URI rewriting.
+type TypeEditionFact struct {
+	Reference Edition
+	Kind      graph.ResourceKind
+	Current   bool
+	Ancestors []Edition
 }
 
 // Request is immutable after Decode. Accessors expose only dispatch metadata.
