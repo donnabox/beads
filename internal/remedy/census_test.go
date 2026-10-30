@@ -1276,11 +1276,12 @@ func inBackticks(text string, pos int) bool {
 // is the ID a partial argument resolved to), and route it through
 // remedy.CommandArg.
 var storeIDHintAllowlist = map[string]string{
-	"cmd/bd/gate.go:renderGateCreated":           "bd gate resolve names the gate ID lifecycle.Create minted in this command; a minted ID is a plain word",
-	"cmd/bd/wisp.go:renderWispCreateResult":      "bd close/squash/burn name the wisp root ID CreateIssue minted in this command (#7868)",
-	"cmd/bd/delete.go:renderSingleDeletePreview": "bd delete <id> --force echoes the user's argument; bd delete refuses a partial ID, so the resolved ID equals what the user typed",
-	"cmd/bd/comments.go:commentsAddCmd":          "bd show <id> names the user's typed argument in the abbreviation refusal, before resolution assigns ResolvedID",
-	"cmd/bd/show.go:showNotFoundHint":            "bd history <id> echoes the user's argument, which resolved to no issue",
+	"cmd/bd/graph_preview_setup.go:graphClaudeHookAdmissionWarning": "prose: fixed bd claude-hook skipped names no command to execute; the interpolated value is the admission diagnostic after a colon, not a shell operand",
+	"cmd/bd/gate.go:renderGateCreated":                              "bd gate resolve names the gate ID lifecycle.Create minted in this command; a minted ID is a plain word",
+	"cmd/bd/wisp.go:renderWispCreateResult":                         "bd close/squash/burn name the wisp root ID CreateIssue minted in this command (#7868)",
+	"cmd/bd/delete.go:renderSingleDeletePreview":                    "bd delete <id> --force echoes the user's argument; bd delete refuses a partial ID, so the resolved ID equals what the user typed",
+	"cmd/bd/comments.go:commentsAddCmd":                             "bd show <id> names the user's typed argument in the abbreviation refusal, before resolution assigns ResolvedID",
+	"cmd/bd/show.go:showNotFoundHint":                               "bd history <id> echoes the user's argument, which resolved to no issue",
 }
 
 // configHintAllowlist excuses a site the config-value bd-command census

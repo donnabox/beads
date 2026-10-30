@@ -7,6 +7,7 @@ result: ok
 --- stdout
 Installing Claude hooks globally...
 ✓ Registered SessionStart hook
+✓ Registered Stop hook
 Installing Claude Code integration...
 ✓ Created new CLAUDE.md with beads integration
 
@@ -21,7 +22,7 @@ Restart Claude Code for changes to take effect.
 --- stderr
 (empty)
 --- files: created $ROOT/home/.claude/CLAUDE.md
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:52c58e00 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:61869efb -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal-user.md]
 <!-- END BEADS INTEGRATION -->
 --- files: created $ROOT/home/.claude/settings.json
@@ -32,6 +33,17 @@ Restart Claude Code for changes to take effect.
         "hooks": [
           {
             "command": "bd prime --hook-json",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "bd claude-hook stop",
             "type": "command"
           }
         ],
@@ -55,6 +67,7 @@ result: ok
 --- stdout
 Removing Claude hooks globally...
 ✓ Removed SessionStart hook
+✓ Removed Stop hook
 Removing Claude Code integration from $ROOT/home/.claude/CLAUDE.md...
 ✓ Removed beads section from CLAUDE.md
 ✓ Claude hooks removed

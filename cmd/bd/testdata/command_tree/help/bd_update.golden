@@ -16,6 +16,44 @@ Exit codes: 1 for general failures; 13 when every failure is a stale
 written — another actor won the race, so retrying the same guard is
 pointless).
 
+Graph preview workspaces:
+Use bd remember --update ID for selected Memory title/body
+edits. --properties JSON shallowly merges named top-level properties on an
+Issue, Memory, or informational Link, preserving omitted keys. The same flag
+initializes properties on bd create and bd remember. For example:
+  bd update policy --properties '{"body":"Revised text"}' --if-revision =TOKEN
+An empty merge object is a no-op. --replace-properties JSON replaces all
+writable properties, and --replace-metadata JSON replaces all metadata; {}
+clears the selected document where the Type allows it. The replacement flags
+cannot combine with merge, patch, or key edits for the same document, but
+property and metadata changes can be made atomically. --patch applies ordered add/replace/remove property
+operations, including on writable native Issue scalar properties.
+--metadata merges a JSON object's top-level keys; --set-metadata KEY=VALUE
+sets one typed JSON value and --unset-metadata KEY removes one key. Set and
+unset may combine (unset wins); --metadata cannot combine with either.
+Metadata may accompany a property or Issue scalar edit atomically, and a
+metadata-only update uses the same Resource and owning-source guards.
+Generic updates accept the current state when --if-revision is omitted.
+Informational Links owned by a Memory may also use --if-source-revision TOKEN;
+without it, the current source is
+accepted. --source-revision TOKEN and --target-revision TOKEN re-pin an
+informational Link without changing its ID or endpoint identities. Use current
+to resolve an exact pin inside the transaction or unpinned to float it; omission
+preserves the existing pin. Pins can combine atomically with properties and
+metadata. Owned-source pins remain unavailable. Native Dependency properties and metadata are not editable here. Issue scalar
+edits and standalone --claim are separate graph operations. Without an ID,
+interactive Issue update uses the last-touched Issue; scripts require an ID
+unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.
+Multiple Issue IDs accept the same scalar/property edit per ID in input order:
+successful edits remain committed after a sibling fails, and any failure exits
+nonzero. A single --if-revision cannot guard multiple IDs; update them
+separately. Multi-ID reparent, retype, claim and historical edits are unavailable.
+On a fresh graph workspace, bd update CHILD --parent PARENT replaces the
+native parent-child edge and its canonical Link in one checked write.
+Admitted scalar edits can accompany the move, and same-parent scalar edits
+preserve the Link identity. The parent must be a nonempty local Issue;
+detaching is unavailable.
+
 Usage:
   bd update [id...] [flags]
 
@@ -38,41 +76,34 @@ Flags:
   -e, --estimate int                 Time estimate in minutes (e.g., 60 for 1 hour)
       --external-ref string          External reference (e.g., 'gh-9', 'jira-ABC', Linear URL)
       --force                        Override refusals: let -a/--assignee overwrite another actor's live in_progress claim (use only for abandoned claims — crashed agent, expired lease; prefer bd reclaim), let -s/--status move the issue into closed (or a configured done status) despite open children or a live blocker (same as bd close --force), and let --notes overwrite existing non-empty notes (use --append-notes to preserve history instead)
+      --from-revision string         Use retained same-Resource revision N or =TOKEN as the Update base (graph mode only)
   -h, --help                         help for update
       --history                      Clear no-history flag (re-enable Dolt commit history)
       --if-assignee string           Apply the update only if the current assignee equals this value (--if-assignee '' requires unassigned); a mismatch writes nothing and exits 13 (vs 1 for other failures). Requires a field update; cannot combine with --claim
       --if-revision bd show --json   Apply the write only if the issue's current revision equals this value (the decimal int64 from bd show --json's "revision" field). One id only: refused before any write when combined with more than one issue id. A mismatch writes nothing and exits 13 (vs 1 for other failures). Composes with --if-assignee/--if-status: all guards present must hold.
+      --if-source-revision string    Require this observed source revision for an experimental owned Link
       --if-status string             Apply the update only if the current status equals this value; a mismatch writes nothing and exits 13 (vs 1 for other failures). Requires a field update; cannot combine with --claim
       --metadata string              Set custom metadata (JSON object, or @file.json to read from file)
       --no-history                   Mark issue as no-history (skip Dolt commits, not GC-eligible)
       --notes string                 Replace the notes field (requires --force over existing non-empty notes; --clear-notes clears; --append-notes appends instead)
       --parent string                New parent issue ID (reparents the issue, use empty string to remove parent)
+      --patch string                 Apply ordered Issue, Memory or informational Link property operations from JSON, @file, or @- (graph preview only)
       --persistent                   Mark issue as persistent (promote wisp to regular issue)
   -p, --priority string              Priority (0-4 or P0-P4, 0=highest)
+      --properties string            Shallowly merge named Issue, Memory or informational Link properties from JSON, @file, or @- (graph preview only)
       --remove-label strings         Remove labels (repeatable)
+      --replace-metadata string      Replace all Resource metadata with a JSON object or @file (graph preview only)
+      --replace-properties string    Replace all writable Issue, Memory or informational Link properties with a JSON object, @file, or @- (graph preview only)
       --session string               Claude Code session ID for status=closed (or set CLAUDE_SESSION_ID env var)
       --set-labels strings           Set labels, replacing all existing (repeatable)
       --set-metadata stringArray     Set metadata key=value (repeatable, e.g., --set-metadata team=platform)
+      --source-revision string       Re-pin an informational Link source to an exact token or current, or unpin with unpinned; owned source pins refuse
       --spec-id string               Link to specification document
   -s, --status string                New status
       --stdin                        Read description from stdin (alias for --body-file -)
+      --target-revision string       Re-pin an informational Link target to an exact token or current, or unpin with unpinned
       --title string                 New title
   -t, --type string                  New type (bug|feature|task|epic|chore|decision|spike|story|milestone); custom types require types.custom config; aliases: enhancement/feat→feature, dec/adr→decision
       --unset-metadata stringArray   Remove metadata key (repeatable, e.g., --unset-metadata team)
 
-Global Flags:
-      --actor string              Actor name for audit trail (default: $BEADS_ACTOR, git user.name, $USER)
-      --cpu-profile               Generate CPU profile for performance analysis
-      --database string           Run against a different server database for this invocation, without changing the project's configured database (proxied-server mode only)
-      --db string                 Database path (default: auto-discover .beads/*.db). In proxied-server mode, a value that isn't an existing path is treated as a database name override (see --database)
-  -C, --directory string          Change to this directory before running the command (like git -C)
-      --dolt-auto-commit string   Dolt auto-commit policy (off|on|batch). 'on': commit after each write. 'batch': defer commits to bd dolt commit; uncommitted changes persist in the working set until then (a live batch-mode bd process also flushes on SIGTERM/SIGHUP, except in proxied-server mode, where bd dolt commit is the only flush point). In proxied-server mode the deferral covers the writes the CLI makes on that route, including config and version metadata; explicit commit points (bd batch, bd mol bond/pour/squash, bd mol wisp create, and the wisp half of bd mol burn) still commit, and a bd serve process on the same database is unaffected. Default: on. Override via config key dolt.auto-commit
-      --global                    Use the global shared-server database (beads_global)
-      --ignore-schema-skew        Proceed despite forward schema drift (some queries may fail)
-      --json                      Output in JSON format
-      --mem-profile string        Write heap profile to FILE on exit (also respects BEADS_MEM_PROFILE)
-      --no-color                  Disable color output (also: NO_COLOR=1 or CLICOLOR=0)
-  -q, --quiet                     Suppress non-essential output (errors only)
-      --readonly                  Read-only mode: block write operations (for worker sandboxes)
-      --sandbox                   Sandbox mode: disables Dolt auto-push
-  -v, --verbose                   Enable verbose/debug output
+For global flags, run `bd --help`.

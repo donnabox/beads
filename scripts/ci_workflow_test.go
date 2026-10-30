@@ -4201,7 +4201,15 @@ func TestBazelWorkflowActionsArePinned(t *testing.T) {
 		}
 		for _, step := range list {
 			if strings.Contains(step.Run, "apt-get") {
-				t.Errorf("%s step %q runs apt-get; bound it (see ci_workflow_apt_get_timeout_test.go) or drop it", file, step.Name)
+				bounded := false
+				for _, budget := range aptStepBudgets() {
+					if file == budget.workflow+" "+budget.job && step.Name == budget.step {
+						bounded = true // Exact commands and caps are verified by the apt budget tests.
+					}
+				}
+				if !bounded {
+					t.Errorf("%s step %q runs apt-get; bound it (see ci_workflow_apt_get_timeout_test.go) or drop it", file, step.Name)
+				}
 			}
 		}
 	}

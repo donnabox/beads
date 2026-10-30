@@ -12,6 +12,7 @@ result: ok
 --- stdout
 Installing Claude hooks for this project...
 ✓ Registered SessionStart hook
+✓ Registered Stop hook
 Installing Claude Code integration...
 ✓ Added beads section to existing AGENTS.md
 
@@ -38,6 +39,17 @@ Restart Claude Code for changes to take effect.
         ],
         "matcher": ""
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "bd claude-hook stop",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
     ]
   }
 }
@@ -46,7 +58,7 @@ Restart Claude Code for changes to take effect.
 
 Shared by every agent.
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:6ffdf896 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:a5c58535 -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal.md]
 <!-- END BEADS INTEGRATION -->
 
@@ -64,6 +76,7 @@ result: ok
 --- stdout
 Removing Claude hooks from project...
 ✓ Removed SessionStart hook
+✓ Removed Stop hook
   Leaving shared beads section in AGENTS.md untouched (project-authoritative, not Claude-specific)
 ✓ Claude hooks removed
 --- stderr

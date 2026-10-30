@@ -21,6 +21,26 @@ assignee) stays open with a warning, and the step's close stands. Under
 refusal (molecule_auto_close_refusal). --continue claims the next ready step
 in the molecule for you; add --no-auto to only show it.
 
+Graph preview workspaces:
+Close one or more local Issues by ID or beads/ID. One --reason
+applies to all IDs; repeat it once per ID for positional reasons, or use
+--reason-file PATH for literal file content. The done alias accepts a trailing
+positional reason. A batch reports successful Issues on stdout and per-Issue
+failures on stderr, then exits nonzero if any failed. --force bypasses pinned,
+holder, blocker and open-child policy; --session (or CLAUDE_SESSION_ID) records
+the closing session. On one Issue, --if-revision =TOKEN from bd show --json
+rejects a stale close, including an already-closed retry. It cannot be used
+with multiple IDs, --suggest-next or --claim-next. Without it, close accepts
+the current revision. On one Issue, --suggest-next lists Issues that closing it
+newly unblocks, without claiming them. --claim-next atomically claims the
+highest-priority ready Issue when at least one close lands; an already-closed
+retry earns no new claim. A missing ID aborts a batch before any close or
+claim; other per-Issue policy refusals may keep successful closes and a claim.
+Without an ID, interactive close uses the
+last-touched Issue; scripts require an ID unless BD_LAST_TOUCHED_FALLBACK=1
+explicitly enables the fallback. Gate evaluation, --continue, molecule
+advancement and remote-routing forms remain unavailable.
+
 Usage:
   bd close [id...] [flags]
 
@@ -39,19 +59,4 @@ Flags:
       --session string               Claude Code session ID (or set CLAUDE_SESSION_ID env var)
       --suggest-next                 Show newly unblocked issues after closing
 
-Global Flags:
-      --actor string              Actor name for audit trail (default: $BEADS_ACTOR, git user.name, $USER)
-      --cpu-profile               Generate CPU profile for performance analysis
-      --database string           Run against a different server database for this invocation, without changing the project's configured database (proxied-server mode only)
-      --db string                 Database path (default: auto-discover .beads/*.db). In proxied-server mode, a value that isn't an existing path is treated as a database name override (see --database)
-  -C, --directory string          Change to this directory before running the command (like git -C)
-      --dolt-auto-commit string   Dolt auto-commit policy (off|on|batch). 'on': commit after each write. 'batch': defer commits to bd dolt commit; uncommitted changes persist in the working set until then (a live batch-mode bd process also flushes on SIGTERM/SIGHUP, except in proxied-server mode, where bd dolt commit is the only flush point). In proxied-server mode the deferral covers the writes the CLI makes on that route, including config and version metadata; explicit commit points (bd batch, bd mol bond/pour/squash, bd mol wisp create, and the wisp half of bd mol burn) still commit, and a bd serve process on the same database is unaffected. Default: on. Override via config key dolt.auto-commit
-      --global                    Use the global shared-server database (beads_global)
-      --ignore-schema-skew        Proceed despite forward schema drift (some queries may fail)
-      --json                      Output in JSON format
-      --mem-profile string        Write heap profile to FILE on exit (also respects BEADS_MEM_PROFILE)
-      --no-color                  Disable color output (also: NO_COLOR=1 or CLICOLOR=0)
-  -q, --quiet                     Suppress non-essential output (errors only)
-      --readonly                  Read-only mode: block write operations (for worker sandboxes)
-      --sandbox                   Sandbox mode: disables Dolt auto-push
-  -v, --verbose                   Enable verbose/debug output
+For global flags, run `bd --help`.

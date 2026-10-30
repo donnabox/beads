@@ -83,6 +83,13 @@ func TestEmbeddedFormatJSONAliasMatchesJSON(t *testing.T) {
 				t.Fatalf("bd %s did not print one JSON document naming %s:\n%s", strings.Join(wantArgs, " "), tc.mention, want)
 			}
 
+			if tc.name == "show" {
+				out, diagnostic, code := bdRunStreams(t, bd, dir, "show", id, "--format", "graph-json", "--json")
+				if code != 5 || !strings.Contains(out+diagnostic, "capability_unavailable") {
+					t.Fatalf("legacy graph-only format must still refuse: exit%d stdout%q stderr%q", code, out, diagnostic)
+				}
+			}
+
 			for _, args := range [][]string{
 				slices.Concat(tc.args, []string{"--format", "json"}),
 				slices.Concat(tc.args, []string{"--format=json"}),

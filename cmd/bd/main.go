@@ -887,6 +887,24 @@ func commandJSONFlagChanged(cmd *cobra.Command) bool {
 	return root != nil && root.PersistentFlags().Changed("json")
 }
 
+// commandOutputFormatChanged includes a local format flag that shadows the
+// root persistent alias. Explicit output selection must survive config refresh.
+func commandOutputFormatChanged(cmd *cobra.Command) bool {
+	if cmd == nil {
+		return false
+	}
+	return cmd.Flags().Changed("format") || cmd.Root().PersistentFlags().Changed("format")
+}
+
+func commandOutputFormat(cmd *cobra.Command) string {
+	if cmd.Flags().Changed("format") {
+		value, _ := cmd.Flags().GetString("format")
+		return value
+	}
+	value, _ := cmd.Root().PersistentFlags().GetString("format")
+	return value
+}
+
 // refreshBoundCommandConfig reapplies config-backed defaults after the command
 // context has been rebound to a resolved target beads directory. This keeps
 // explicit flags authoritative while letting rerouted/explicit-db commands use
@@ -899,7 +917,7 @@ func refreshBoundCommandConfig(cmd *cobra.Command) {
 	if root == nil {
 		root = cmd
 	}
-	if !commandJSONFlagChanged(cmd) && !root.PersistentFlags().Changed("format") {
+	if !commandJSONFlagChanged(cmd) && !commandOutputFormatChanged(cmd) {
 		jsonOutput = config.GetBool("json")
 	}
 	if !root.PersistentFlags().Changed("readonly") {
@@ -1333,20 +1351,17 @@ var rootCmd = &cobra.Command{
 		})
 
 		// Handle --format json alias (desire-path from GH#2612)
-		if cmd.Root().PersistentFlags().Changed("format") {
-			format, _ := cmd.Root().PersistentFlags().GetString("format")
+		if commandOutputFormatChanged(cmd) {
+			format := commandOutputFormat(cmd)
 			if strings.EqualFold(format, "json") {
 				jsonOutput = true
 			}
 		}
 		// If flag wasn't explicitly set, use viper value.
 		//
-		// SHADOWING HAZARD (GH#6278): this reads the ROOT persistent --format
-		// only, so a subcommand that registers its own local --format shadows
-		// it here and still gets `json: true` promoted over the format it was
-		// asked for. `bd list` compensates in gatherListInput; any new local
-		// --format registration needs the same treatment or this fires again.
-		if !commandJSONFlagChanged(cmd) && !cmd.Root().PersistentFlags().Changed("format") {
+		// A changed local format shadows the root alias and remains explicit
+		// across configuration refresh (GH#6278).
+		if !commandJSONFlagChanged(cmd) && !commandOutputFormatChanged(cmd) {
 			jsonOutput = config.GetBool("json")
 		} else {
 			flagOverrides["json"] = struct {

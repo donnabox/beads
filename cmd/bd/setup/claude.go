@@ -1154,7 +1154,7 @@ func removeLocalClaudeHooks(env claudeEnv, legacyPath string) bool {
 }
 
 // removeBdPrimeHooks removes every bd prime variant from the SessionStart and
-// PreCompact hooks, reporting each removal to w. It reports whether it
+// PreCompact hooks and the owned Stop hook, reporting each removal to w. It reports whether it
 // removed any.
 func removeBdPrimeHooks(w io.Writer, hooks map[string]interface{}) bool {
 	removed := false
@@ -1163,6 +1163,9 @@ func removeBdPrimeHooks(w io.Writer, hooks map[string]interface{}) bool {
 		removed = removeHookCommand(w, hooks, "SessionStart", v) || removed
 		removed = removeHookCommand(w, hooks, "PreCompact", v) || removed
 	}
+	// The graph preview owns this Stop hook too; removal must cover current,
+	// global and legacy settings while leaving unrelated user hooks intact.
+	removed = removeHookCommand(w, hooks, "Stop", claudeStopHookCommand) || removed
 	return removed
 }
 

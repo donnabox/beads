@@ -15,6 +15,17 @@
         ],
         "matcher": ""
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "bd claude-hook stop",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
     ]
   }
 }
@@ -67,7 +78,7 @@ cp -rf source dest          # NOT: cp -r source dest
 - `apt-get` - use `-y` flag
 - `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:cdcea925 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:cbf2fcf2 -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal-no-remote.md]
 <!-- END BEADS INTEGRATION -->
 
@@ -99,7 +110,7 @@ bd prime                # Refresh Beads context
 
 This file provides instructions and context for AI coding agents working on this project.
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:cdcea925 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:cbf2fcf2 -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal-no-remote.md]
 <!-- END BEADS INTEGRATION -->
 
@@ -136,6 +147,7 @@ exit: 0
 --- stdout
 Installing Claude hooks for this project...
 ✓ Hook already registered: SessionStart
+✓ Hook already registered: Stop
 Installing Claude Code integration...
 ✓ CLAUDE.md already has the current beads section
 
@@ -156,6 +168,7 @@ exit: 0
 --- stdout
 Removing Claude hooks from project...
 ✓ Removed SessionStart hook
+✓ Removed Stop hook
 Removing Claude Code integration from $PROJECT/CLAUDE.md...
 ✓ Removed beads section from CLAUDE.md
 ✓ Claude hooks removed
@@ -202,6 +215,7 @@ exit: 0
 --- stdout
 Installing Claude hooks for this project...
 ✓ Registered SessionStart hook
+✓ Registered Stop hook
 Installing Claude Code integration...
 ✓ Added beads section to existing CLAUDE.md
 
@@ -223,6 +237,17 @@ Restart Claude Code for changes to take effect.
         "hooks": [
           {
             "command": "bd prime --hook-json",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "bd claude-hook stop",
             "type": "command"
           }
         ],
@@ -254,7 +279,7 @@ _Add a brief overview of your project architecture_
 
 _Add your project-specific conventions here_
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:cdcea925 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:cbf2fcf2 -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal-no-remote.md]
 <!-- END BEADS INTEGRATION -->
 

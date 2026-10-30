@@ -61,9 +61,9 @@ func TestManagedSectionGolden(t *testing.T) {
 // hand.
 func TestManagedSectionHashes(t *testing.T) {
 	want := map[string]string{
-		"minimal":           "6ffdf896",
-		"minimal-no-remote": "cdcea925",
-		"minimal-user":      "52c58e00",
+		"minimal":           "a5c58535",
+		"minimal-no-remote": "cbf2fcf2",
+		"minimal-user":      "61869efb",
 		"full":              "bacef91e",
 		"full-no-remote":    "9c890b20",
 		"full-user":         "0d9cad1f",

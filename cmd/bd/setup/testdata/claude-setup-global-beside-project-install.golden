@@ -23,7 +23,7 @@ Answer tersely.
 --- seed: created $ROOT/project/CLAUDE.md
 # My Project
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:6ffdf896 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:a5c58535 -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal.md]
 <!-- END BEADS INTEGRATION -->
 
@@ -32,6 +32,7 @@ result: ok
 --- stdout
 Installing Claude hooks globally...
 ✓ Registered SessionStart hook
+✓ Registered Stop hook
 Installing Claude Code integration...
 ✓ Added beads section to existing CLAUDE.md
 
@@ -50,7 +51,7 @@ Restart Claude Code for changes to take effect.
 
 Answer tersely.
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:52c58e00 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:61869efb -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal-user.md]
 <!-- END BEADS INTEGRATION -->
 --- files: created $ROOT/home/.claude/settings.json
@@ -61,6 +62,17 @@ Answer tersely.
         "hooks": [
           {
             "command": "bd prime --hook-json",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "bd claude-hook stop",
             "type": "command"
           }
         ],
@@ -84,6 +96,7 @@ result: ok
 --- stdout
 Removing Claude hooks globally...
 ✓ Removed SessionStart hook
+✓ Removed Stop hook
 Removing Claude Code integration from $ROOT/home/.claude/CLAUDE.md...
 ✓ Removed beads section from CLAUDE.md
 ✓ Claude hooks removed

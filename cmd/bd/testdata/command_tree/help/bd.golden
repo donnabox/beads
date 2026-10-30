@@ -17,7 +17,7 @@ Working With Issues:
   gate              Manage async coordination gates
   heartbeat         Refresh the lease on an issue you hold in_progress
   label             Manage issue labels
-  link              Link two issues with a dependency
+  link              Create, inspect, update and delete Links
   list              List issues
   merge-slot        Manage merge-slot gates for serialized conflict resolution
   note              Append a note to an issue
@@ -38,16 +38,17 @@ Working With Issues:
   update            Update one or more issues
 
 Views & Reports:
+  compare           Compare two exact retained graph versions (experimental)
   count             Count issues matching filters
   diff              Show changes between two commits or branches
   find-duplicates   Find semantically similar issues using text analysis or AI
-  history           Show version history for an issue
+  history           Show graph Resource versions or ordinary Issue commit history
   lint              Check issues for missing template sections
   stale             Show stale issues (not updated recently)
   status            Show issue database overview and statistics
   statuses          List valid issue statuses
-  types             List valid issue types
-  versions          List the recorded versions of a bead
+  types             List available types
+  versions          List retained graph Resource versions or recorded ordinary Bead versions
 
 Dependencies & Structure:
   dep               Manage dependencies
@@ -129,6 +130,7 @@ Additional Commands:
   help              Help about any command
   init-safety       Explain bd init flag semantics and the destroy-token format
   mail              Delegate to mail provider (e.g., gt mail)
+  memory            Explore and record Memory relationships
   metrics           Show or change anonymous usage-metrics settings
   mol               Molecule commands (work templates)
   notion            Notion integration commands
@@ -149,6 +151,7 @@ Flags:
   -C, --directory string          Change to this directory before running the command (like git -C)
       --dolt-auto-commit string   Dolt auto-commit policy (off|on|batch). 'on': commit after each write. 'batch': defer commits to bd dolt commit; uncommitted changes persist in the working set until then (a live batch-mode bd process also flushes on SIGTERM/SIGHUP, except in proxied-server mode, where bd dolt commit is the only flush point). In proxied-server mode the deferral covers the writes the CLI makes on that route, including config and version metadata; explicit commit points (bd batch, bd mol bond/pour/squash, bd mol wisp create, and the wisp half of bd mol burn) still commit, and a bd serve process on the same database is unaffected. Default: on. Override via config key dolt.auto-commit
       --global                    Use the global shared-server database (beads_global)
+      --graph-mode string         Assert workspace format: dependency or link (init selects format)
   -h, --help                      help for bd
       --ignore-schema-skew        Proceed despite forward schema drift (some queries may fail)
       --json                      Output in JSON format

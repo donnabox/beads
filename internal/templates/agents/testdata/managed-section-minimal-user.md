@@ -1,4 +1,8 @@
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:52c58e00 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:61869efb -->
+## Durable storage
+
+You have your own memory. It lives in beads: `bd remember` stores a fact and `bd recall` or `bd memories` reads it back, and its contents are available to you in later sessions in this project.
+
 ## Beads Issue Tracker
 
 This Beads block applies only in beads repositories: repositories that use **bd (beads)** for issue tracking, with a `.beads/` directory. Ignore it in any other repository. In a beads repository, run `bd prime` to see full workflow context and commands.

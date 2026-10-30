@@ -498,3 +498,53 @@ func requireBehindError(dbVersion int) func(t *testing.T, err error) {
 		}
 	}
 }
+
+// Explicit ahead-schema read attachment requires a real column proof, even
+// though the ordinary skew warning was overridden. This helper cannot write.
+func TestRequiredIssueColumnsFailsClosed(t *testing.T) {
+	cause := errors.New("column metadata failure")
+	for _, tc := range []struct {
+		name    string
+		prepare func(sqlmock.Sqlmock)
+		want    string
+	}{
+		{"complete", func(m sqlmock.Sqlmock) { expectIssuesColumns(m, "id", "title") }, ""},
+		{"missing column", func(m sqlmock.Sqlmock) { expectIssuesColumns(m, "id") }, "title"},
+		{"missing table", func(m sqlmock.Sqlmock) {
+			m.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = DATABASE()")).WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(1))
+			m.ExpectQuery("^SHOW TABLES$").WillReturnRows(sqlmock.NewRows([]string{"Tables_in_testdb"}).AddRow("schema_migrations"))
+		}, "id"},
+		{"query error", func(m sqlmock.Sqlmock) {
+			expectCursorProbe(m, "issues", true)
+			m.ExpectQuery(`^SHOW COLUMNS FROM issues$`).WillReturnError(cause)
+		}, "column metadata failure"},
+		{"iteration error", func(m sqlmock.Sqlmock) {
+			expectCursorProbe(m, "issues", true)
+			m.ExpectQuery(`^SHOW COLUMNS FROM issues$`).WillReturnRows(sqlmock.NewRows([]string{"Field"}).AddRow("id").RowError(0, cause))
+		}, "column metadata failure"},
+		{"close error", func(m sqlmock.Sqlmock) {
+			expectCursorProbe(m, "issues", true)
+			m.ExpectQuery(`^SHOW COLUMNS FROM issues$`).WillReturnRows(sqlmock.NewRows([]string{"Field"}).AddRow("id").AddRow("title").CloseError(cause))
+		}, "column metadata failure"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			tc.prepare(mock)
+			err = CheckRequiredIssueColumns(t.Context(), db, []string{"id", "title"})
+			if tc.want == "" {
+				if err != nil {
+					t.Fatal(err)
+				}
+			} else if err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Fatalf("want %q,got %v", tc.want, err)
+			}
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}

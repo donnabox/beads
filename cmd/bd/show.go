@@ -39,7 +39,7 @@ var showCmd = &cobra.Command{
 		if graphPreviewActive {
 			return runGraphPreviewShow(cmd, args)
 		}
-		if cmd.Flags().Changed("format") {
+		if cmd.Flags().Changed("format") && !strings.EqualFold(commandOutputFormat(cmd), "json") {
 			return HandleErrorRespectJSON("--format is available only in a graph preview workspace")
 		}
 		evt := metrics.NewCommandEvent("show")
@@ -339,7 +339,7 @@ func init() {
 		"Without it the comments field is absent entirely, not truncated: an issue with comments carries "+
 		"comment_count and comments_omitted=true, so check those before reading an absent comments field as none.")
 	showCmd.Flags().Bool("brief-deps", false, "Reduce each dependency to its identity fields in JSON output (--json only; drops description, design, notes and acceptance criteria)")
-	showCmd.Flags().String("format", "", "Graph preview output format: graph-json preserves the experimental complete-record envelope")
+	showCmd.Flags().String("format", "", "Output format: json (alias for --json), or graph-json for the experimental complete-record envelope")
 	showCmd.Flags().Int("comments-tail", 0, "Render only the last N comments in text output, preceded by one elision line naming how many older ones were hidden (text output only; 0, the default, renders every comment unchanged; N must be >= 0)")
 	showCmd.ValidArgsFunction = issueIDCompletion
 	rootCmd.AddCommand(showCmd)

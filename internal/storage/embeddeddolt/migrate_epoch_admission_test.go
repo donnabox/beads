@@ -14,6 +14,7 @@ import (
 	"github.com/steveyegge/beads/internal/storage/embeddeddolt"
 	storeops "github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/storage/schema"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // These are new disposable embedded fixtures. They exercise the ordinary
@@ -240,5 +241,176 @@ func TestEmbeddedEpochReadOnlyRefusesSurvivalInterpretation(t *testing.T) {
 	}
 	if result, err := ro.Resolve(ctx, "store", address); !errors.Is(err, storeops.ErrEpochFormatNotReleased) {
 		t.Fatalf("released read-only resolve=%+v: %v", result, err)
+	}
+}
+
+// Capture exact migration/ignore/dirty metadata plus commit identity to prove
+// the explicit ahead-schema issue-read route performs no migration or repair.
+func aheadIssueReadState(t *testing.T, te *testEnv) string {
+	t.Helper()
+	ctx := t.Context()
+	db, cleanup, err := embeddeddolt.OpenSQL(ctx, te.dataDir, te.database, "main")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := cleanup(); err != nil {
+			t.Error(err)
+		}
+	}()
+	var state [][][]sql.NullString
+	for _, query := range []string{
+		"SELECT DOLT_HASHOF('HEAD')",
+		"SELECT version, content_hash FROM schema_migrations ORDER BY version",
+		"SELECT * FROM dolt_ignore ORDER BY pattern",
+		"SELECT * FROM dolt_status ORDER BY table_name",
+	} {
+		rows, err := db.QueryContext(ctx, query)
+		if err != nil {
+			t.Fatal(err)
+		}
+		cols, err := rows.Columns()
+		if err != nil {
+			t.Fatal(err)
+		}
+		var data [][]sql.NullString
+		for rows.Next() {
+			cells := make([]sql.NullString, len(cols))
+			dest := make([]any, len(cols))
+			for i := range cells {
+				dest[i] = &cells[i]
+			}
+			if err := rows.Scan(dest...); err != nil {
+				t.Fatal(err)
+			}
+			data = append(data, cells)
+		}
+		if err := rows.Err(); err != nil {
+			t.Fatal(err)
+		}
+		if err := rows.Close(); err != nil {
+			t.Fatal(err)
+		}
+		state = append(state, data)
+	}
+	encoded, err := json.Marshal(state)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(encoded)
+}
+
+func TestEmbeddedAheadIssueReadOverrideDoesNotMigrateOrPermitWrites(t *testing.T) {
+	requireEmbedded(t)
+	for _, survival := range []bool{false, true} {
+		name := "released epoch"
+		if survival {
+			name = "deferred survival epoch"
+		}
+		t.Run(name, func(t *testing.T) {
+			ctx := t.Context()
+			te := newTestEnv(t, "ahead")
+			if survival {
+				if err := embeddeddolt.PrepareSurvivalTestStore(ctx, te.store); err != nil {
+					t.Fatal(err)
+				}
+			}
+			issue := &types.Issue{ID: "ahead-1", Title: "readable ahead", Status: types.StatusOpen, Priority: 1, IssueType: types.TypeTask}
+			if err := te.store.CreateIssue(ctx, issue, "tester"); err != nil {
+				t.Fatal(err)
+			}
+			if err := te.store.Commit(ctx, "seed ahead issue fixture"); err != nil {
+				t.Fatal(err)
+			}
+			if err := te.store.Close(); err != nil {
+				t.Fatal(err)
+			}
+			te.exec(t, ctx, "INSERT INTO schema_migrations (version, content_hash) VALUES (?, ?)", schema.LatestVersion()+1, "unknown-future-fixture")
+			before := aheadIssueReadState(t, te)
+			t.Setenv("BD_IGNORE_SCHEMA_SKEW", "")
+			if store, err := embeddeddolt.OpenForReadOnlyCommand(ctx, filepath.Dir(te.dataDir), te.database, "main"); !schema.IsSchemaSkewError(err) {
+				if store != nil {
+					_ = store.Close()
+				}
+				t.Fatalf("default ahead read must refuse: %v", err)
+			}
+			t.Setenv("BD_IGNORE_SCHEMA_SKEW", "1")
+			ro, err := embeddeddolt.OpenForReadOnlyCommand(ctx, filepath.Dir(te.dataDir), te.database, "main")
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer func() {
+				if err := ro.Close(); err != nil {
+					t.Error(err)
+				}
+			}()
+			got, err := ro.GetIssue(ctx, issue.ID)
+			if err != nil || got == nil || got.Title != issue.Title {
+				t.Fatalf("issue read=%+v: %v", got, err)
+			}
+			for name, call := range map[string]func() error{
+				"config": func() error { return ro.SetConfig(ctx, "issue_prefix", "changed") },
+				"create": func() error {
+					return ro.CreateIssue(ctx, &types.Issue{ID: "ahead-2", Title: "must refuse", Status: types.StatusOpen, Priority: 1, IssueType: types.TypeTask}, "tester")
+				},
+				"commit":  func() error { return ro.Commit(ctx, "must refuse") },
+				"migrate": func() error { _, err := ro.ApplySchemaMigrations(ctx); return err },
+			} {
+				if err := call(); !errors.Is(err, embeddeddolt.ErrReadOnly) {
+					t.Fatalf("%s mutation must be read-only refused: %v", name, err)
+				}
+			}
+			if survival {
+				if live, err := ro.StillServes(ctx, "store", "address"); live || !errors.Is(err, storeops.ErrEpochFormatNotReleased) {
+					t.Fatalf("survival epoch still-serves=%v: %v", live, err)
+				}
+				if result, err := ro.Resolve(ctx, "store", "address"); !errors.Is(err, storeops.ErrEpochFormatNotReleased) {
+					t.Fatalf("survival epoch resolve=%+v: %v", result, err)
+				}
+			}
+			for name, open := range map[string]func() (*embeddeddolt.EmbeddedDoltStore, error){
+				"strict": func() (*embeddeddolt.EmbeddedDoltStore, error) {
+					return embeddeddolt.Open(ctx, filepath.Dir(te.dataDir), te.database, "main")
+				},
+				"reconcile": func() (*embeddeddolt.EmbeddedDoltStore, error) {
+					return embeddeddolt.OpenForWorkingSetReconcile(ctx, filepath.Dir(te.dataDir), te.database, "main")
+				},
+			} {
+				store, err := open()
+				if store != nil {
+					_ = store.Close()
+				}
+				var incompatible *schema.EpochMigrationCompatibilityError
+				if !errors.As(err, &incompatible) {
+					t.Fatalf("%s must retain migration admission refusal: %v", name, err)
+				}
+			}
+			if after := aheadIssueReadState(t, te); after != before {
+				t.Fatal("ahead issue read or refused mutation changed HEAD/cursor hashes/ignore/dirty metadata")
+			}
+		})
+	}
+}
+
+func TestEmbeddedAheadIssueReadOverrideRefusesMissingProjection(t *testing.T) {
+	requireEmbedded(t)
+	ctx := t.Context()
+	te := newTestEnv(t, "missing")
+	if err := te.store.Close(); err != nil {
+		t.Fatal(err)
+	}
+	te.exec(t, ctx, "ALTER TABLE issues DROP COLUMN title")
+	te.exec(t, ctx, "INSERT INTO schema_migrations (version, content_hash) VALUES (?, ?)", schema.LatestVersion()+1, "unknown-future-fixture")
+	before := aheadIssueReadState(t, te)
+	t.Setenv("BD_IGNORE_SCHEMA_SKEW", "1")
+	store, err := embeddeddolt.OpenForReadOnlyCommand(ctx, filepath.Dir(te.dataDir), te.database, "main")
+	if store != nil {
+		_ = store.Close()
+	}
+	if err == nil || !strings.Contains(err.Error(), "title") {
+		t.Fatalf("missing ahead projection must refuse: %v", err)
+	}
+	if after := aheadIssueReadState(t, te); after != before {
+		t.Fatal("missing projection refusal changed fixture")
 	}
 }

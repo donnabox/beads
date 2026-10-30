@@ -354,6 +354,19 @@ func CheckReadableDrift(ctx context.Context, db DBConn, table string, columns []
 	return behindDriftError(currentVersion)
 }
 
+// CheckRequiredIssueColumns proves that an already-selected issue read can
+// query its projection without migration. It grants no skew or write authority.
+func CheckRequiredIssueColumns(ctx context.Context, db DBConn, columns []string) error {
+	missing, err := missingColumns(ctx, db, "issues", columns)
+	if err != nil {
+		return fmt.Errorf("issue read compatibility: %w", err)
+	}
+	if len(missing) != 0 {
+		return fmt.Errorf("issue read compatibility: missing required columns: %s", strings.Join(missing, ", "))
+	}
+	return nil
+}
+
 // missingColumns returns the entries of columns that table lacks, all of them
 // when the table does not exist. Names compare case-insensitively, as MySQL
 // compares column names. It lists the one table with SHOW COLUMNS for
@@ -394,6 +407,9 @@ func missingColumns(ctx context.Context, db DBConn, table string, columns []stri
 			}
 		}
 		if err := rows.Err(); err != nil {
+			return nil, fmt.Errorf("listing %s columns: %w", table, err)
+		}
+		if err := rows.Close(); err != nil {
 			return nil, fmt.Errorf("listing %s columns: %w", table, err)
 		}
 	}

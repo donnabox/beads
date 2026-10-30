@@ -11,7 +11,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/templates/agents"
+	"github.com/steveyegge/beads/internal/testutil/bazeltest"
 )
 
 // TestEmbeddedInitAgentArtifactsGolden pins the Claude agent artifacts a real
@@ -88,10 +90,12 @@ func TestEmbeddedInitAgentArtifactsGolden(t *testing.T) {
 			if seeded {
 				seedEmbeddedSchema(t, dir, database)
 			}
+			requireAgentArtifactNoRemote(t, dir, home, "before init")
 			initArgs := append([]string{"init", "--quiet"}, sc.initArgs...)
 			if stdout, stderr, exitCode := runAgentArtifactCommand(t, bd, dir, home, initArgs...); exitCode != 0 {
 				t.Fatalf("bd %s: exit %d\nstdout:\n%s\nstderr:\n%s", strings.Join(initArgs, " "), exitCode, stdout, stderr)
 			}
+			requireAgentArtifactNoRemote(t, dir, home, "after init")
 			if seeded {
 				requireSeededEmbeddedInit(t, filepath.Join(dir, ".beads"), database)
 			}
@@ -112,7 +116,7 @@ func TestEmbeddedInitAgentArtifactsGolden(t *testing.T) {
 				writeAgentArtifactChanges(t, &transcript, dir, home, previous)
 			}
 
-			assertAgentArtifactGolden(t, filepath.Join("testdata", "agent_artifacts", sc.name+".golden"), transcript.String())
+			assertAgentArtifactGolden(t, filepath.Join(bazeltest.RepoRoot(t), "cmd", "bd", "testdata", "agent_artifacts", sc.name+".golden"), transcript.String())
 		})
 	}
 }
@@ -189,6 +193,25 @@ func runAgentArtifactCommand(t *testing.T, bd, dir, home string, args ...string)
 	return outBuf.String(), errBuf.String(), exitCode
 }
 
+// requireAgentArtifactNoRemote verifies the fixture premise with the same
+// environment used by the CLI, before accepting any no-remote transcript.
+func requireAgentArtifactNoRemote(t *testing.T, dir, home, phase string) {
+	t.Helper()
+	cmd := exec.Command("git", "config", "--get", "remote.origin.url")
+	cmd.Dir, cmd.Env = dir, agentArtifactEnv(dir, home)
+	out, err := cmd.Output()
+	var exitErr *exec.ExitError
+	if len(out) != 0 || !errors.As(err, &exitErr) || exitErr.ExitCode() != 1 {
+		t.Fatalf("%s: artifact fixture must have no Git origin (exit error %v)", phase, err)
+	}
+	for _, key := range []string{"sync.remote", "sync.git-remote"} {
+		if config.GetStringFromDir(filepath.Join(dir, ".beads"), key) != "" {
+			t.Fatalf("%s: artifact fixture unexpectedly selects %s", phase, key)
+		}
+	}
+	t.Logf("%s: fixture origin and both sync-remote config keys absent", phase)
+}
+
 // agentArtifactEnv is bdEnv(dir) with HOME at home and without the caller's
 // BD_OTEL_* and OTEL_* variables: bd warns on stderr about a legacy BD_OTEL_*
 // one whether or not telemetry is on, and the transcript pins stderr byte for
@@ -202,7 +225,13 @@ func agentArtifactEnv(dir, home string) []string {
 		}
 		env = append(env, e)
 	}
-	return append(env, "HOME="+home)
+	// bdEnv strips BEADS_* even when the canonical wrapper supplied discovery
+	// fences. Restore fixture-owned boundaries for both raw regeneration and
+	// Bazel so fresh init cannot inherit an ancestor checkout's sync config.
+	ceiling := filepath.Dir(dir) + string(os.PathListSeparator) + filepath.Dir(home)
+	return append(env, "HOME="+home,
+		"BEADS_TEST_IGNORE_REPO_CONFIG=1",
+		"BEADS_CEILING_DIRECTORIES="+ceiling)
 }
 
 // writeAgentArtifactChanges appends every artifact created, modified or

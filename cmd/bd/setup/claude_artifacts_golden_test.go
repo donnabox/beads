@@ -440,6 +440,7 @@ func TestClaudePluginManifestHookEvents(t *testing.T) {
 	want := []string{
 		`PreCompact matcher="" command: bd prime`,
 		`SessionStart matcher="" command: bd prime`,
+		`Stop matcher="" command: bd claude-hook stop`,
 	}
 	if strings.Join(got, "\n") != strings.Join(want, "\n") {
 		t.Errorf("Claude plugin hooks changed:\ngot:\n  %s\nwant:\n  %s", strings.Join(got, "\n  "), strings.Join(want, "\n  "))

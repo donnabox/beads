@@ -1,4 +1,30 @@
-Create a new issue (or batch from markdown/graph JSON)
+
+
+Graph preview workspaces:
+Create an Issue by default, with an optional --id ID.
+Without --id, the canonical beads/ path uses the Issue ID allocated by the
+ordinary writer, including this workspace's configured prefix and ID mode.
+An explicit --id ID keeps the entire spelling as the native Issue ID, even
+when it contains slashes, and maps it to beads/ID. It must match the
+workspace's configured Issue prefix unless --force overrides that shipping
+check. Use --graph-path beads/PATH to select only a graph path and generate
+the native Issue ID separately. --id and --graph-path cannot be combined.
+On a fresh graph workspace, --parent ID creates a dotted child ID
+and its parent-child Link in one transaction. The parent must be a local Issue;
+the child inherits its labels unless --no-inherit-labels is set. --parent and
+--id or --graph-path cannot be combined with --parent.
+--metadata accepts one JSON object on Issue or Memory creation; omitted
+metadata is {}. Metadata is separate from Type-validated properties.
+--properties JSON initializes the selected Type's writable fields, such as
+Issue description or Memory body. It may accompany shorthand flags only when
+they supply different fields; duplicate fields refuse.
+Use --type memory to create a Memory instead:
+  bd create --type memory --id policy-note --body 'Code flow policy'
+Use bd types to see Bead Types installed in this workspace. Use NAME
+or a full local Type URL for nominal Types. Bare names select Issue
+classifications (for example task or bug); the CLI selects that concrete Type for them. Memory creation
+accepts body/description/message and an optional title; unsupported Issue-only
+fields refuse. Fresh workspaces create task Issues by default.
 
 Usage:
   bd create [title] [flags]
@@ -30,8 +56,10 @@ Flags:
   -f, --file string               Create one issue per ## heading (### fields attach to that issue); for title plus description-from-file, use --body-file
       --force                     Force creation even if prefix doesn't match database prefix
       --graph string              Create a graph of issues with dependencies from JSON plan file
+      --graph-path string         Preview 3 only: explicit graph path for Issue creation (e.g., beads/PATH)
   -h, --help                      help for create
       --id string                 Explicit issue ID (e.g., 'bd-42' for partitioning)
+      --id-root string            Prefix for an automatically generated public ID (graph workspace)
   -l, --labels strings            Labels (comma-separated)
       --metadata string           Set custom metadata (JSON object, or @file.json to read from file)
       --mol-type string           Molecule type: swarm (multi-agent), patrol (recurring ops), work (default)
@@ -40,6 +68,7 @@ Flags:
       --notes string              Notes
       --parent string             Parent issue ID for hierarchical child (e.g., 'bd-a3f8e9')
   -p, --priority string           Priority (0-4 or P0-P4, 0=highest) (default "2")
+      --properties string         Initialize installed Bead Type properties from a JSON object, @file, or @- (graph preview only)
       --repo string               Target repository for issue (overrides auto-routing)
       --silent                    Output only the issue ID (for scripting)
       --skills string             Required skills for this issue
@@ -54,19 +83,4 @@ Flags:
       --waits-for-gate string     Gate type: all-children (wait for all) or any-children (wait for first) (default "all-children")
       --wisp-type string          Wisp type for TTL-based compaction: heartbeat, ping, patrol, gc_report, recovery, error, escalation
 
-Global Flags:
-      --actor string              Actor name for audit trail (default: $BEADS_ACTOR, git user.name, $USER)
-      --cpu-profile               Generate CPU profile for performance analysis
-      --database string           Run against a different server database for this invocation, without changing the project's configured database (proxied-server mode only)
-      --db string                 Database path (default: auto-discover .beads/*.db). In proxied-server mode, a value that isn't an existing path is treated as a database name override (see --database)
-  -C, --directory string          Change to this directory before running the command (like git -C)
-      --dolt-auto-commit string   Dolt auto-commit policy (off|on|batch). 'on': commit after each write. 'batch': defer commits to bd dolt commit; uncommitted changes persist in the working set until then (a live batch-mode bd process also flushes on SIGTERM/SIGHUP, except in proxied-server mode, where bd dolt commit is the only flush point). In proxied-server mode the deferral covers the writes the CLI makes on that route, including config and version metadata; explicit commit points (bd batch, bd mol bond/pour/squash, bd mol wisp create, and the wisp half of bd mol burn) still commit, and a bd serve process on the same database is unaffected. Default: on. Override via config key dolt.auto-commit
-      --global                    Use the global shared-server database (beads_global)
-      --ignore-schema-skew        Proceed despite forward schema drift (some queries may fail)
-      --json                      Output in JSON format
-      --mem-profile string        Write heap profile to FILE on exit (also respects BEADS_MEM_PROFILE)
-      --no-color                  Disable color output (also: NO_COLOR=1 or CLICOLOR=0)
-  -q, --quiet                     Suppress non-essential output (errors only)
-      --readonly                  Read-only mode: block write operations (for worker sandboxes)
-      --sandbox                   Sandbox mode: disables Dolt auto-push
-  -v, --verbose                   Enable verbose/debug output
+For global flags, run `bd --help`.

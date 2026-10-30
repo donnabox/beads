@@ -17,6 +17,7 @@ bd
   persistent-flag --dolt-auto-commit type=string default="" usage="Dolt auto-commit policy (off|on|batch). 'on': commit after each write. 'batch': defer commits to bd dolt commit; uncommitted changes persist in the working set until then (a live batch-mode bd process also flushes on SIGTERM/SIGHUP, except in proxied-server mode, where bd dolt commit is the only flush point). In proxied-server mode the deferral covers the writes the CLI makes on that route, including config and version metadata; explicit commit points (bd batch, bd mol bond/pour/squash, bd mol wisp create, and the wisp half of bd mol burn) still commit, and a bd serve process on the same database is unaffected. Default: on. Override via config key dolt.auto-commit"
   persistent-flag --format type=string default="" hidden usage="Output format (json). Alias for --json"
   persistent-flag --global type=bool default="false" usage="Use the global shared-server database (beads_global)"
+  persistent-flag --graph-mode type=string default="" usage="Assert workspace format: dependency or link (init selects format)"
   persistent-flag --ignore-schema-skew type=bool default="false" usage="Proceed despite forward schema drift (some queries may fail)"
   persistent-flag --json type=bool default="false" usage="Output in JSON format"
   persistent-flag --mem-profile type=string default="" usage="Write heap profile to FILE on exit (also respects BEADS_MEM_PROFILE)"
@@ -507,6 +508,12 @@ bd blocked
   short: "Show blocked issues"
   hidden: false
   runnable: true
+  long:
+    | Show dependency-blocked issues. In graph workspaces, parent and label filters are supported.
+    |
+    | Graph preview workspaces:
+    | Show current dependency-blocked Issues with canonical
+    | blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.
   flag --exclude-label type=stringSlice default="[]" usage="Exclude issues that have ANY of these labels"
   flag --flags type=bool default="false" usage="Print the blocked flag for each id read from stdin (one per line) instead of the listing; with --json, [{\"id\",\"is_blocked\"}]"
   flag --label -l type=stringSlice default="[]" usage="Filter by labels (AND: must have ALL). Can combine with --label-any"
@@ -591,6 +598,13 @@ bd children
     |   bd children hq-abc123 --pretty # Show children in tree format
   flag --pretty type=bool default="false" usage="Show children in tree format"
 
+bd claude-hook
+  use: "claude-hook <event>"
+  short: "Run an internal Claude Code lifecycle hook"
+  hidden: true
+  runnable: true
+  annotations: {bd:skip_store="1"}
+
 bd close
   use: "close [id...]"
   aliases: ["done"]
@@ -621,6 +635,26 @@ bd close
     | --json, the step's entry names the closed root (auto_closed_molecule) or the
     | refusal (molecule_auto_close_refusal). --continue claims the next ready step
     | in the molecule for you; add --no-auto to only show it.
+    |
+    | Graph preview workspaces:
+    | Close one or more local Issues by ID or beads/ID. One --reason
+    | applies to all IDs; repeat it once per ID for positional reasons, or use
+    | --reason-file PATH for literal file content. The done alias accepts a trailing
+    | positional reason. A batch reports successful Issues on stdout and per-Issue
+    | failures on stderr, then exits nonzero if any failed. --force bypasses pinned,
+    | holder, blocker and open-child policy; --session (or CLAUDE_SESSION_ID) records
+    | the closing session. On one Issue, --if-revision =TOKEN from bd show --json
+    | rejects a stale close, including an already-closed retry. It cannot be used
+    | with multiple IDs, --suggest-next or --claim-next. Without it, close accepts
+    | the current revision. On one Issue, --suggest-next lists Issues that closing it
+    | newly unblocks, without claiming them. --claim-next atomically claims the
+    | highest-priority ready Issue when at least one close lands; an already-closed
+    | retry earns no new claim. A missing ID aborts a batch before any close or
+    | claim; other per-Issue policy refusals may keep successful closes and a claim.
+    | Without an ID, interactive close uses the
+    | last-touched Issue; scripts require an ID unless BD_LAST_TOUCHED_FALLBACK=1
+    | explicitly enables the fallback. Gate evaluation, --continue, molecule
+    | advancement and remote-routing forms remain unavailable.
   flag --claim-next type=bool default="false" usage="Automatically claim the next highest priority available issue"
   flag --comment type=string default="" hidden usage="Alias for --reason"
   flag --continue type=bool default="false" usage="Auto-advance to next step in molecule"
@@ -683,6 +717,13 @@ bd comments
     |
     |   # Add a comment from a file
     |   bd comments add bd-123 -f notes.txt
+    |
+    | Graph preview workspaces:
+    | Use bd comments ID to read the native comment feed for a
+    | graph Issue. bd comment ID TEXT and bd comments add ID TEXT each append one
+    | comment; --json uses the ordinary comment or comment-array shape. bd unclaim
+    | --reason also appends there. Comments are outside the retained Issue snapshot
+    | and do not mint an Issue version.
   flag --local-time type=bool default="false" usage="Show timestamps in local time instead of UTC"
 
 bd comments add
@@ -747,6 +788,24 @@ bd compact
   flag --days type=int default="30" usage="Keep commits newer than N days"
   flag --dry-run type=bool default="false" usage="Preview without making changes"
   flag --force -f type=bool default="false" usage="Confirm commit squash"
+
+bd compare
+  use: "compare RESOURCE --from TOKEN --to TOKEN"
+  short: "Compare two exact retained graph versions (experimental)"
+  group: "views"
+  hidden: false
+  runnable: true
+  long:
+    | Compare complete retained preview properties and owned Links for one Resource.
+    | An unprefixed selector means a Bead under beads/; use links/PATH for a Link.
+    | The explicit from/to tokens select direction, not a chronology. Both versions must
+    | be available. Output is experimental JSON (indented for humans); common metadata,
+    | full Memory fields and public History are not implemented. Use bd diff for Dolt refs.
+  flag --from type=string default="" usage="Required exact retained source version token"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical output: default, detail or json (cannot combine with legacy --json or --format)"
+  flag --to type=string default="" usage="Required exact retained destination version token"
 
 bd completion
   use: "completion"
@@ -1299,6 +1358,18 @@ bd count
     |   bd count --include-infra          # Count issues + wisps tier (matches 'bd list --include-infra --all' cardinality)
     |   bd count --type task --include-ephemeral  # Count tasks in the durable AND wisps tiers
     |
+    |
+    | Graph preview workspaces:
+    | Count current durable graph Issues, including closed Issues by default.
+    | The ordinary scalar and --by-status/priority/type/assignee/label JSON shapes
+    | are preserved. Supported filters: --status, --priority, --assignee, --type,
+    | --label, --label-any, --title, --title-contains, --desc-contains,
+    | --notes-contains, date bounds, --empty-description, --no-assignee, --no-labels,
+    | --priority-min/max, --id, --parent, --no-parent, --exclude-type and
+    | --exclude-status. IDs and parents accept local graph Issue paths or bare IDs;
+    | an edge-less dotted child matches --parent by ID prefix and --no-parent as a
+    | top-level Issue. Excluded statuses are limited to built-in names. Ephemeral,
+    | infrastructure and metadata count filters are unavailable in graph preview.
   flag --assignee -a type=string default="" usage="Filter by assignee"
   flag --by-assignee type=bool default="false" usage="Group count by assignee"
   flag --by-label type=bool default="false" usage="Group count by label"
@@ -1311,6 +1382,7 @@ bd count
   flag --created-before type=string default="" usage="Filter issues created before date (YYYY-MM-DD or RFC3339)"
   flag --desc-contains type=string default="" usage="Filter by description substring"
   flag --empty-description type=bool default="false" usage="Filter issues with empty description"
+  flag --exact-type type=string default="" usage="Select only the exact declared Bead Type (graph preview only)"
   flag --exclude-status type=stringSlice default="[]" usage="Exclude statuses from the count (comma-separated or repeatable)"
   flag --exclude-type type=stringSlice default="[]" usage="Exclude issue types from the count (comma-separated or repeatable)"
   flag --has-metadata-key type=string default="" usage="Filter issues that have this metadata key set"
@@ -1342,6 +1414,34 @@ bd create
   group: "issues"
   hidden: false
   runnable: true
+  long:
+    |
+    |
+    | Graph preview workspaces:
+    | Create an Issue by default, with an optional --id ID.
+    | Without --id, the canonical beads/ path uses the Issue ID allocated by the
+    | ordinary writer, including this workspace's configured prefix and ID mode.
+    | An explicit --id ID keeps the entire spelling as the native Issue ID, even
+    | when it contains slashes, and maps it to beads/ID. It must match the
+    | workspace's configured Issue prefix unless --force overrides that shipping
+    | check. Use --graph-path beads/PATH to select only a graph path and generate
+    | the native Issue ID separately. --id and --graph-path cannot be combined.
+    | On a fresh graph workspace, --parent ID creates a dotted child ID
+    | and its parent-child Link in one transaction. The parent must be a local Issue;
+    | the child inherits its labels unless --no-inherit-labels is set. --parent and
+    | --id or --graph-path cannot be combined with --parent.
+    | --metadata accepts one JSON object on Issue or Memory creation; omitted
+    | metadata is {}. Metadata is separate from Type-validated properties.
+    | --properties JSON initializes the selected Type's writable fields, such as
+    | Issue description or Memory body. It may accompany shorthand flags only when
+    | they supply different fields; duplicate fields refuse.
+    | Use --type memory to create a Memory instead:
+    |   bd create --type memory --id policy-note --body 'Code flow policy'
+    | Use bd types to see Bead Types installed in this workspace. Use NAME
+    | or a full local Type URL for nominal Types. Bare names select Issue
+    | classifications (for example task or bug); the CLI selects that concrete Type for them. Memory creation
+    | accepts body/description/message and an optional title; unsupported Issue-only
+    | fields refuse. Fresh workspaces create task Issues by default.
   flag --acceptance type=string default="" usage="Acceptance criteria"
   flag --allow-empty-description type=bool default="false" usage="Allow empty description input from stdin or file"
   flag --append-notes type=string default="" usage="Append to existing notes (with newline separator)"
@@ -1367,7 +1467,9 @@ bd create
   flag --file -f type=string default="" usage="Create one issue per ## heading (### fields attach to that issue); for title plus description-from-file, use --body-file"
   flag --force type=bool default="false" usage="Force creation even if prefix doesn't match database prefix"
   flag --graph type=string default="" usage="Create a graph of issues with dependencies from JSON plan file"
+  flag --graph-path type=string default="" usage="Preview 3 only: explicit graph path for Issue creation (e.g., beads/PATH)"
   flag --id type=string default="" usage="Explicit issue ID (e.g., 'bd-42' for partitioning)"
+  flag --id-root type=string default="" usage="Prefix for an automatically generated public ID (graph workspace)"
   flag --label type=stringSlice default="[]" hidden usage="Alias for --labels"
   flag --labels -l type=stringSlice default="[]" usage="Labels (comma-separated)"
   flag --message -m type=string default="" hidden annotations={cobra_annotation_mutually_exclusive=["stdin message"]} usage="Alias for --description (git commit convention)"
@@ -1378,6 +1480,7 @@ bd create
   flag --notes type=string default="" usage="Notes"
   flag --parent type=string default="" usage="Parent issue ID for hierarchical child (e.g., 'bd-a3f8e9')"
   flag --priority -p type=string default="2" usage="Priority (0-4 or P0-P4, 0=highest)"
+  flag --properties type=string default="" usage="Initialize installed Bead Type properties from a JSON object, @file, or @- (graph preview only)"
   flag --repo type=string default="" usage="Target repository for issue (overrides auto-routing)"
   flag --silent type=bool default="false" usage="Output only the issue ID (for scripting)"
   flag --skills type=string default="" usage="Required skills for this issue"
@@ -1449,6 +1552,15 @@ bd defer
   hidden: false
   runnable: true
   long:
+    | Graph preview workspaces:
+    | Use bd defer ID... to defer one or more Issues. --until accepts ordinary bd
+    | date and relative-time forms; an undated defer stays deferred until restored.
+    | --reason appends to Issue notes. A later bd ready wakes due Issues, recording
+    | one native and graph version per changed Issue. A repeated dateless defer is a
+    | no-op when neither date nor notes change. Use --if-revision =TOKEN for a
+    | single-Issue stale-write check. Without it, the current revision is accepted.
+    |
+    | Ordinary Issue workspaces:
     | Defer issues to put them on ice for later.
     |
     | Deferred issues are deliberately set aside - not blocked by anything specific,
@@ -1468,6 +1580,7 @@ bd defer
     |   bd defer bd-abc --until=tomorrow # Snooze: auto-wakes once the date passes
     |   bd defer bd-abc --reason="waiting on API access"
     |   bd defer bd-abc bd-def           # Defer multiple issues
+  flag --if-revision type=string default="" usage="Graph mode: compare this observed Issue revision (one Issue only)"
   flag --reason type=string default="" usage="Record why this issue is being deferred (appended to notes)"
   flag --until type=string default="" usage="Defer until specific time (e.g., +1h, tomorrow, next monday)"
 
@@ -1505,6 +1618,23 @@ bd delete
     |
     | Force: Delete and orphan dependents
     |   bd delete bd-1 --force
+    |
+    | GRAPH PREVIEW:
+    | In a graph-mode link workspace, delete previews a Memory or a bounded set of
+    | Issues. --force applies deletion; --dry-run keeps any delete request read-only.
+    | --cascade includes dependent Issues, and --from-file adds Issue IDs from a file.
+    | Every named Issue must exist before a set is written. An unforced, non-cascade
+    | request refuses surviving dependents; --force orphans them. Identity and prior
+    | snapshots remain retained. Memory deletion remains single-ID and refuses live
+    | incident Links. Dotted native Issue IDs still refuse set deletion.
+    |
+    | Graph preview workspaces:
+    | bd delete ID previews a Memory or Issue without writing.
+    | Multiple Issue IDs and --from-file select a checked Issue set; --cascade
+    | includes dependent Issues. Apply with --force, or keep any delete request
+    | read-only with --dry-run. --if-revision =TOKEN optionally rejects stale
+    | single-Issue state. Referenced Memories refuse and remain single-ID;
+    | dotted native Issue IDs refuse set deletion pending citation qualification.
   flag --cascade type=bool default="false" usage="Recursively delete all dependent issues"
   flag --dry-run type=bool default="false" usage="Preview what would be deleted without making changes"
   flag --force -f type=bool default="false" usage="Actually delete (without this flag, shows preview)"
@@ -1529,6 +1659,11 @@ bd dep
     | Examples:
     |   bd dep bd-xyz --blocks bd-abc    # bd-xyz blocks bd-abc
     |   bd dep add bd-abc bd-xyz         # Same as above (bd-abc depends on bd-xyz)
+    |
+    | Graph preview workspaces:
+    | Use bd dep BLOCKER --blocks BLOCKED to create a blocking
+    | Dependency between two live Issues. Bare bd dep prints help; the ordinary
+    | --no-cycle-check option is unavailable in graph preview workspaces.
   flag --blocks -b type=string default="" usage="Issue ID that this issue blocks (shorthand for: bd dep add <blocked> <blocker>)"
   flag --no-cycle-check type=bool default="false" usage="Skip the post-add cycle warning (the per-edge cycle check still runs)"
 
@@ -1572,9 +1707,26 @@ bd dep add
     |   bd dep add gt-xyz external:beads:mol-run-assignee   # Cross-project dependency
     |   bd dep add bd-42 bd-41 --no-cycle-check             # Skip the post-add cycle warning
     |   bd dep add --file deps.jsonl                        # Bulk JSONL: {"from":"bd-42","to":"bd-41"}
+    |
+    | Graph preview workspaces:
+    | Use bd dep add issue blocker for a native
+    | Dependency between two live Issues, optionally with --id links/ID.
+    | --type KIND sets its dep_type property; the default is blocks. Any nonempty
+    | kind up to 32 bytes is accepted. Built-in blocks and parent-child retain
+    | their native scheduling or hierarchy behavior; unknown kinds do not block.
+    | The ordinary --blocked-by blocker and --depends-on blocker spellings replace
+    | the second positional argument. For a single edge, --no-cycle-check only
+    | suppresses a post-add warning; the domain writer still validates cycles.
+    | bd dep blocker --blocks issue is the same operation with reversed arguments.
+    | Memory endpoints, remote routing and bulk dependency flags are unavailable
+    | in this preview. Native dep operands retain literal Issue-ID semantics,
+    | including @; bd link parses the selected endpoint revision syntax, but exact
+    | pins and @current are supported for local informational Links. Native
+    | Dependency endpoints remain floating.
   flag --blocked-by type=string default="" usage="Issue ID that blocks the first issue (alternative to positional arg)"
   flag --depends-on type=string default="" usage="Issue ID that the first issue depends on (alias for --blocked-by)"
   flag --file type=string default="" usage="Read dependency edges from JSONL file, or '-' for stdin"
+  flag --id type=string default="" usage="Graph preview: explicit blocking Link ID or links/PATH"
   flag --no-cycle-check type=bool default="false" usage="On bulk --file adds, skip per-edge cycle checks and the post-add cycle warning (one final whole-graph check still runs before commit); on a single-edge add, skip only the post-add cycle warning"
   flag --type -t type=string default="blocks" usage="Dependency type (blocks|tracks|related|parent-child|discovered-from|until|caused-by|validates|relates-to|supersedes); 'blocked-by' and 'depends-on' are accepted as aliases for 'blocks'"
 
@@ -1632,6 +1784,18 @@ bd dep remove
   short: "Remove a dependency"
   hidden: false
   runnable: true
+  long:
+    |
+    |
+    | Graph preview workspaces:
+    | Use bd dep remove issue blocker (or bd dep rm) to
+    | remove one local blocking Dependency by its Issue pair. An absent pair is a
+    | successful no-op and reports status not_found with --json. A real removal
+    | records one native dependency_removed event and one source Issue version;
+    | the target Issue is unchanged. Bare native Issue IDs are accepted when their
+    | graph path is unambiguous; use explicit beads/PATH if a different Bead claims
+    | that bare name. These native pair operands retain literal Issue-ID semantics,
+    | including @. For Link-ID removal use bd link delete ID --force.
 
 bd dep tree
   use: "tree [issue-id]"
@@ -2708,6 +2872,17 @@ bd forget
     | Examples:
     |   bd forget dolt-phantoms
     |   bd forget auth-jwt
+    |
+    | In a graph-mode link workspace, forget immediately deletes one unreferenced
+    | Memory selected by canonical Bead ID, with --if-revision TOKEN or --unconditional.
+    | Its identity and prior snapshots remain retained; live incident Links refuse.
+    | Use delete without --force for a read-only graph deletion preview.
+    |
+    | Graph preview workspaces:
+    | Use bd forget ID to delete one unreferenced Memory now.
+    | Add --if-revision =TOKEN to reject stale state. Canonical IDs are retained and
+    | incident Links prevent deletion; no cascade is performed.
+  flag --if-revision type=string default="" usage="Require Memory revision N or =TOKEN (graph preview only)"
 
 bd formula
   use: "formula"
@@ -3275,13 +3450,43 @@ bd graph
     | first, then rejected if it's over cap. --all checks each status
     | (open/in_progress/blocked) independently, so up to 3x the cap can be loaded
     | in total before any individual status trips it.
+    |
+    | Graph preview workspaces:
+    | Use bd graph BEAD or bd graph --all in a link workspace.
+    | The default Link selector is Dependency, including its refinements, exactly
+    | as --link-type Dependency. Use --exact-link-type NAME for only the declared
+    | Type, or --link-type any for all Link Types. Repeat either Type flag for an
+    | OR union. Excluded Link Types cannot bridge the traversal. When the default
+    | Dependency selection omits other Types encountered at reached Beads, a notice
+    | is written to stderr; it does not inspect unrelated components.
+    | One --direction in|out|both (default both) and --depth (default 1000) apply
+    | to a named-root selection. --all refuses explicit --depth/--direction. Depth counts Link hops to select Beads; every matching
+    | Link between selected Beads is displayed, including parallels and cycles.
+    | A depth-limit explanation identifies where traversal stopped. Node/Link bounds refuse on
+    | exhaustion. Acquisition remains a complete bounded current inventory (at most
+    | 1000 Resources / 16 MiB; serialized output at most 16 MiB), not scalable or arbitrary historical traversal.
+    | Authored endpoint revision pins remain visible; adjacent Beads are current
+    | records and are not silently substituted for those pinned revisions.
+    | --all with only the Dependency-family selector retains open Issues, including
+    | isolates. Other selections, including --exact-link-type Dependency, show matching
+    | Link endpoints without unrelated isolates. A named root stays visible without matching Links. --open remains unavailable in link mode; dependency mode retains its existing view. --json carries complete canonical Beads/Links
+    | and separate traversal metadata; --dot, --html, --compact and --box also work.
+    | --view generic is optional/deprecated. bd graph check retains its existing
+    | blocking-dependency consistency report.
   flag --all type=bool default="false" usage="Show graph for all open issues"
   flag --box type=bool default="false" usage="ASCII boxes showing layers"
   flag --compact type=bool default="false" usage="Tree format, one line per issue, more scannable"
+  flag --depth type=int default="1000" usage="Link hop depth (0..1000); frontier reports depth truncation (link mode only)"
+  flag --direction type=string default="both" usage="Generic Link direction: in, out or both (graph_mode link workspaces only)"
   flag --dot type=bool default="false" usage="Output Graphviz DOT format (pipe to: dot -Tsvg > graph.svg)"
+  flag --exact-link-type type=stringArray default="[]" usage="Select exactly a Link Type, without refinements (repeatable OR union; link mode only)"
   flag --html type=bool default="false" usage="Output self-contained interactive HTML (redirect to file)"
+  flag --link-type type=stringArray default="[]" usage="Select a Link Type family, or any for all Types (repeatable OR union; default Dependency; link mode only)"
+  flag --max-links type=int default="1000" usage="Generic emitted Link bound (1..1000); exhaustion refuses (graph_mode link workspaces only)"
+  flag --max-nodes type=int default="1000" usage="Generic emitted Bead bound (1..1000); exhaustion refuses (graph_mode link workspaces only)"
   flag --max-rows type=int default="0" usage="Hard upper bound on rows fetched from storage. Returns a non-zero exit (code 2) and an error to stderr if exceeded. 0 disables (the default). Overrides BEADS_MAX_ROWS for this invocation. Useful in CI/agent rigs that want a circuit breaker against pathological queries. Not supported under --proxied-server: an explicit --max-rows or BEADS_MAX_ROWS cap errors out rather than silently going unenforced."
   flag --open type=bool default="false" usage="Show only open issues (filters out closed/deferred), forces compact layer format"
+  flag --view type=string default="" usage="Deprecated: generic is the ordinary graph view in link mode"
 
 bd graph check
   use: "check"
@@ -3338,11 +3543,19 @@ bd help
 
 bd history
   use: "history <id>"
-  short: "Show version history for an issue"
+  short: "Show graph Resource versions or ordinary Issue commit history"
   group: "views"
   hidden: false
   runnable: true
   long:
+    | Graph preview workspaces:
+    | bd history ID is an alias for bd versions ID. It lists retained Memory, Issue
+    | or Link versions newest first; bare ID means beads/ID and Link IDs use
+    | links/PATH. Use the opaque token for exact reads, not local_revision.
+    | --limit and --events are not supported by the graph alias. BDP HTTP History
+    | is not available.
+    |
+    | Ordinary Issue workspaces:
     | Show the complete version history of an issue, including all commits
     | where the issue was modified.
     |
@@ -3351,7 +3564,11 @@ bd history
     |   bd history bd-123 --limit 5 # Show last 5 changes
     |   bd history bd-123 --events  # Show database audit events
   flag --events type=bool default="false" usage="Show database audit events instead of commit snapshots"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
   flag --limit type=int default="0" usage="Limit number of history entries (0 = all)"
+  flag --long type=bool default="false" usage="Include exact revision tokens in the human graph timeline"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical output: default, table, detail, json or jsonl (cannot combine with legacy --json or --format)"
 
 bd hooks
   use: "hooks"
@@ -3533,6 +3750,31 @@ bd import
   long:
     | Import issues from a JSONL file (newline-delimited JSON) into the database.
     |
+    | In a graph workspace, import accepts the existing ordinary export format only,
+    | into an empty fresh workspace, in one atomic transaction. Admitted source IDs
+    | remain exact public identities; dependencies become Links preserving their native
+    | kind, comments remain a separate feed,
+    | and legacy key/value memories become Memory Beads. Unsupported records or
+    | relationships refuse the whole import. --dry-run validates through the same
+    | transaction and rolls it back. Repeat imports refuse an occupied workspace;
+    | --dedup and --allow-stale are unavailable. Source history is not in an ordinary
+    | export; each imported Bead starts new graph history. Graph data import is
+    | unavailable until graph export is implemented. See the graph import guide.
+    |
+    | Legacy JSONL omits source prefix configuration. Graph import infers one prefix
+    | across the Issue batch and reports it as source_issue_prefix. The effective
+    | workspace prefix is reported separately as issue_prefix. For ambiguous IDs, pass
+    | --source-prefix with the prefix configured in the original workspace. IDs are
+    | preserved; a prefix that does not match every Issue refuses the whole import.
+    |
+    | Graph import --id-root foo/bar mounts all new identities under that explicit
+    | Scope-relative root without changing future create defaults. Without a root,
+    | admitted source Issue IDs and Memory keys remain exact public IDs. Canonically
+    | incompatible keys and identity collisions refuse; no automatic encoding or rename.
+    | Memory values remain exact bodies, with independent titles from the shared body
+    | summary. Generated Link IDs reported by --dry-run are provisional and may differ
+    | on apply; rollback never reserves them. Source Issue/Memory mappings remain exact.
+    |
     | If no file is specified, imports from the configured import.path under .beads/
     | (default: issues.jsonl). Use "-" to read from stdin; redirecting stdin without
     | "-" or a file argument is an error, so a typo'd 'bd import < file' cannot
@@ -3615,7 +3857,9 @@ bd import
   flag --allow-stale type=bool default="false" usage="Import rows even when older than the local issue (required to restore an older snapshot)"
   flag --dedup type=bool default="false" usage="Skip lines whose title matches an existing open issue"
   flag --dry-run type=bool default="false" usage="Show what would be imported without importing"
+  flag --id-root type=string default="" usage="Place imported identities beneath this Scope-relative root (graph import only)"
   flag --input -i type=string default="" usage="Read JSONL from a specific file"
+  flag --source-prefix type=string default="" usage="Source Issue prefix from the original workspace configuration (graph import only)"
 
 bd info
   use: "info"
@@ -3683,6 +3927,12 @@ bd init
     |   • Auto-export left at default (disabled)
     |   • --contributor and --team flags are rejected (wizards require interaction)
     |   Also auto-detected when stdin is not a terminal or CI=true is set.
+    |
+    | Graph preview workspaces:
+    | Use bd init --graph-mode link --scope-url URL in a fresh workspace.
+    | The Scope URL names local identities; it does not start a web server.
+    | --server --external selects an ordinary shared Dolt server; otherwise storage
+    | is embedded. Existing .beads directories are never adopted or overwritten.
   flag --agents-file type=string default="" usage="Custom filename for agent instructions (default: AGENTS.md)"
   flag --agents-profile type=string default="" usage="AGENTS.md profile: 'minimal' (default, pointer to bd prime) or 'full' (complete command reference)"
   flag --agents-template type=string default="" usage="Path to custom AGENTS.md template (overrides embedded default)"
@@ -3723,6 +3973,7 @@ bd init
   flag --reinit-local type=bool default="false" usage="Re-initialize local .beads/ over existing local data. Does NOT authorize remote divergence (see --discard-remote) or recreating a missing server-mode database (see --recreate-missing)."
   flag --remote type=string default="" usage="Dolt remote URL to clone from and persist as sync.remote"
   flag --role type=string default="" usage="Set beads role without prompting: \"maintainer\" or \"contributor\""
+  flag --scope-url type=string default="" usage="Permanent operator-selected Scope URL for a fresh disposable graph preview"
   flag --server type=bool default="false" usage="Use external dolt sql-server instead of embedded engine"
   flag --server-host type=string default="" usage="Dolt server host (default: 127.0.0.1)"
   flag --server-port type=int default="0" usage="Dolt server port (default: 3307)"
@@ -3732,7 +3983,7 @@ bd init
   flag --setup-exclude type=bool default="false" usage="Configure .git/info/exclude to keep beads files local (for forks)"
   flag --shared-server type=bool default="false" usage="Enable shared Dolt server mode (all projects share one server at ~/.beads/shared-server/)"
   flag --skip-agents type=bool default="false" usage="Skip AGENTS.md and Claude/Codex/Cursor setup generation"
-  flag --skip-hooks type=bool default="false" usage="Skip git hooks installation"
+  flag --skip-hooks type=bool default="false" usage="Skip git hooks installation (and graph-preview Claude Stop hook)"
   flag --sqlite-path type=string default="" hidden usage="Legacy SQLite database file (removed backend compatibility only)"
   flag --stealth type=bool default="false" usage="Enable stealth mode: keep beads files out of git via .git/info/exclude (sets no-git-ops)"
   flag --team type=bool default="false" usage="Run team workflow setup wizard"
@@ -4290,21 +4541,176 @@ bd linear teams
 
 bd link
   use: "link <id1> <id2>"
-  short: "Link two issues with a dependency"
+  short: "Create, inspect, update and delete Links"
   group: "issues"
   hidden: false
   runnable: true
   long:
-    | Link two issues with a dependency.
+    | Use bd link create/list/show/update/delete/versions/compare/count for Links
+    | in a graph workspace. The graph two-ID form additionally accepts the selected
+    | endpoint revision syntax for informational Links. Exact local pins and
+    | @current are supported where the selected Link Type permits them; owned-source
+    | pins remain unavailable. Native Dependency endpoints remain floating, and
+    | bd dep add/remove retain literal Issue IDs.
     |
-    | Shorthand for 'bd dep add <id1> <id2>'. By default creates a "blocks"
+    | In ordinary Issue workspaces, shorthand for 'bd dep add <id1> <id2>'. By default creates a "blocks"
     | dependency (id2 blocks id1). Use --type to specify a different relationship.
     |
     | Examples:
     |   bd link bd-123 bd-456                    # bd-456 blocks bd-123
     |   bd link bd-123 bd-456 --type related     # bd-123 related to bd-456
     |   bd link bd-123 bd-456 --type parent-child
+    |
+    | Graph preview workspaces:
+    | The canonical graph Link namespace is bd link
+    | create/list/show/update/delete/versions/compare/count. Create requires
+    | --type and SOURCE TARGET (or SOURCE --to TARGET, or --from SOURCE --to TARGET); list and count query complete current
+    | Link collections within the preview's advertised bounds. Delete previews
+    | by default and --force applies the checked mutation.
+    |
+    | Without --type, bd link SOURCE TARGET creates the ordinary
+    | blocking Dependency between two live Issues. In graph workspaces this form
+    | also parses the selected revision syntax for informational Links; exact local
+    | pins and @current are supported, while native Dependency endpoints remain
+    | floating. bd dep add/remove keep literal Issue IDs, so the input
+    | syntaxes are not interchangeable. To create any native Dependency
+    | kind through the canonical namespace, use
+    |   bd link create --type blocks --from ISSUE --to ISSUE
+    | Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.
+    | For a Memory or Issue endpoint,
+    | choose an installed informational Type, for example on a fresh workspace:
+    |   bd link policy-note work --type references
+    | Use bd types to see Link Types installed in this workspace. --type
+    | accepts a built-in Dependency kind, NAME or a full local Type URL. An optional --id
+    | selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
+    | Memory-owned Links accept the current source by default, or use
+    | --if-source-revision TOKEN to reject a stale source. Endpoint @unpinned suffixes
+    | or --source-revision unpinned/--target-revision unpinned keep endpoints floating.
+    | Exact endpoint revisions persist on local informational Links; current resolves
+    | an exact pin inside the writer transaction. Owned-source pins remain unavailable.
+    | Native Dependency endpoints remain floating. Endpoint selectors are separate
+    | from --if-source-revision. --metadata JSON supplies
+    | an initial open metadata object for informational Links; native Dependencies
+    | do not accept it. The abstract Dependency family
+    | requires Issue endpoints. Add --if-source-revision TOKEN to reject a stale source.
+  flag --id type=string default="" usage="New informational Link ID or links/PATH (bare ID is shorthand for links/ID)"
+  flag --if-source-revision type=string default="" usage="Require this observed source revision for an experimental owned Link"
+  flag --metadata type=string default="" usage="Initial informational Link metadata as a JSON object or @file (graph preview only)"
+  flag --properties type=string default="" usage="Informational Link properties as JSON, @file, or @- (graph preview only)"
+  flag --source-revision type=string default="" usage="Source endpoint revision: exact token, current or unpinned; owned source pins refuse (distinct from --if-source-revision)"
+  flag --target-revision type=string default="" usage="Target endpoint revision: exact token, current or unpinned (informational Links only)"
   flag --type -t type=string default="blocks" usage="Dependency type (blocks|tracks|related|parent-child|discovered-from)"
+
+bd link compare
+  use: "compare LINK --from TOKEN --to TOKEN"
+  short: "Compare two retained Link versions"
+  hidden: false
+  runnable: true
+  flag --from type=string default="" usage="Exact retained source version token"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical output: default, detail or json (cannot combine with legacy --json or --format)"
+  flag --to type=string default="" usage="Exact retained destination version token"
+
+bd link count
+  use: "count [BEAD [OTHER]]"
+  short: "Count current Links matching the collection filters"
+  hidden: false
+  runnable: true
+  flag --all-revisions type=bool default="false" usage="Ignore endpoint-pin applicability while selecting current live Links"
+  flag --direction type=string default="both" usage="With one Bead or --incident-to: in, out, or both; with two Beads default is out"
+  flag --exact-type type=string default="" usage="Select only the exact declared Link Type"
+  flag --from type=string default="" usage="Select Links with this local source Bead"
+  flag --incident-to type=string default="" usage="Select Links incident to this local Bead"
+  flag --to type=string default="" usage="Select Links with this local target Bead"
+  flag --type type=string default="" usage="Installed Link Type or exact native Dependency kind"
+
+bd link create
+  use: "create [SOURCE TARGET]"
+  short: "Create a Link in a graph workspace"
+  hidden: false
+  runnable: true
+  flag --from type=string default="" usage="Local public Bead ID or canonical Scope URL"
+  flag --id type=string default="" usage="Optional local Link ID or links/PATH"
+  flag --id-root type=string default="" usage="Prefix for an automatically generated Link ID"
+  flag --if-source-revision type=string default="" usage="Require the owning Bead revision"
+  flag --metadata type=string default="" usage="Initial informational Link metadata as JSON or @file"
+  flag --properties type=string default="" usage="Initial informational Link properties as JSON, @file, or @-"
+  flag --source-revision type=string default="" usage="Source endpoint revision: exact token, current or unpinned; owned source pins refuse (distinct from --if-source-revision)"
+  flag --target-revision type=string default="" usage="Target endpoint revision: exact token, current or unpinned (informational Links only)"
+  flag --to type=string default="" usage="Local public Bead ID or canonical Scope URL"
+  flag --type type=string default="" usage="Installed Link Type or built-in Dependency type"
+
+bd link delete
+  use: "delete LINK"
+  short: "Preview or delete a Link by ID"
+  hidden: false
+  runnable: true
+  flag --force type=bool default="false" usage="Apply deletion after preview"
+  flag --if-revision type=string default="" usage="Require Link revision N or =TOKEN"
+  flag --if-source-revision type=string default="" usage="Require the owning Bead revision"
+
+bd link list
+  use: "list [BEAD [OTHER]]"
+  short: "List current Links in a graph workspace"
+  hidden: false
+  runnable: true
+  flag --all-revisions type=bool default="false" usage="Ignore endpoint-pin applicability while selecting current live Links"
+  flag --conforms-to type=string default="" annotations={canonical-output-only=["true"]} usage="Select a canonical absolute HTTP(S) Type URI and its conformance family; compatibility alias for --type"
+  flag --continue type=string default="" annotations={canonical-output-only=["true"]} usage="Resume a provider continuation (not available from the current local collection provider)"
+  flag --direction type=string default="both" usage="With one Bead or --incident-to: in, out, or both; with two Beads default is out"
+  flag --exact-type type=string default="" usage="Select only the exact declared Type; --type includes refinements"
+  flag --from type=string default="" usage="Select Links with this local source Bead"
+  flag --incident-to type=string default="" usage="Select Links incident to this local Bead"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --limit type=int default="0" annotations={canonical-output-only=["true"]} usage="Requested total delivery bound; 0 means unlimited; canonical local reads refuse larger selections without emitting a subset"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical collection output: default, table, detail, json or jsonl; cannot mix legacy --json/--format"
+  flag --page-size type=int default="50" annotations={canonical-output-only=["true"]} usage="Canonical page size; use --unpaged if the complete local selection exceeds this boundary"
+  flag --paged type=bool default="false" annotations={canonical-output-only=["true"]} usage="Return one page in canonical output; current local provider refuses truncation"
+  flag --to type=string default="" usage="Select Links with this local target Bead"
+  flag --type type=string default="" usage="Installed Link Type or exact native Dependency kind; includes refinements (use --exact-type for nominal selection)"
+  flag --unpaged type=bool default="false" annotations={canonical-output-only=["true"]} usage="Return the complete bounded current selection in canonical output"
+
+bd link show
+  use: "show LINK"
+  short: "Show a Link by ID"
+  hidden: false
+  runnable: true
+  flag --format type=string default="" usage="Use graph-json for the complete graph record"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --long type=bool default="false" usage="Include exact revision token and administrative details"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical output: default, detail or json (cannot combine with legacy --json or --format)"
+  flag --revision type=string default="" usage="Read retained Link revision N or =TOKEN"
+
+bd link update
+  use: "update LINK"
+  short: "Update a Link or recover it from a retained revision"
+  hidden: false
+  runnable: true
+  flag --from-revision type=string default="" usage="Compose Link content from retained live revision N or =TOKEN; recover a deleted Link with the same ID"
+  flag --if-revision type=string default="" usage="Require Link revision N or =TOKEN"
+  flag --if-source-revision type=string default="" usage="Require the owning Bead revision"
+  flag --metadata type=string default="" usage="Merge Link metadata from JSON or @file"
+  flag --patch type=string default="" usage="Apply ordered Link property operations from JSON, @file, or @-"
+  flag --properties type=string default="" usage="Merge named Link properties from JSON, @file, or @-"
+  flag --replace-metadata type=string default="" usage="Replace Link metadata from JSON or @file"
+  flag --replace-properties type=string default="" usage="Replace writable Link properties from JSON, @file, or @-"
+  flag --set-metadata type=stringArray default="[]" usage="Set a Link metadata key=value"
+  flag --source-revision type=string default="" usage="Re-pin the source to an exact token or current, or unpin with unpinned; owned source pins refuse"
+  flag --target-revision type=string default="" usage="Re-pin the target to an exact token or current, or unpin with unpinned"
+  flag --unset-metadata type=stringArray default="[]" usage="Unset a Link metadata key"
+
+bd link versions
+  use: "versions LINK"
+  short: "List a Link's retained versions"
+  hidden: false
+  runnable: true
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --long type=bool default="false" usage="Include exact revision tokens in the human graph timeline"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical output: default, table, detail, json or jsonl (cannot combine with legacy --json or --format)"
 
 bd lint
   use: "lint [issue-id...]"
@@ -4345,11 +4751,50 @@ bd list
   group: "issues"
   hidden: false
   runnable: true
-  flag --all type=bool default="false" usage="Show all issues including closed (overrides default filter)"
+  long:
+    |
+    |
+    | Graph preview workspaces:
+    | Without Issue filters, bd list reads one bounded snapshot of current Beads
+    | of all installed Bead Types and lists every Memory and every Issue the
+    | ordinary bd list would show, newest recorded change first. Closed and pinned
+    | Issues are hidden unless --all is given; --all also removes the row limit.
+    | Each human row shows the local ID and kind; an Issue row also shows its
+    | status and priority. Use --type NAME to narrow by Bead Type.
+    | --limit returns a prefix with hasMore, not a continuation cursor. A positive
+    | BEADS_MAX_ROWS refuses a page of more Beads than that.
+    | Issue-specific filters (--status, --type, --id, --title, --title-contains,
+    | --priority, --priority-min, --priority-max, --assignee, --no-assignee,
+    | --label, --label-any, --exclude-label, --pinned, --no-pinned, --parent, --no-parent, --ready, --due-before,
+    | --due-after, --overdue, --sort, --reverse, --long) or a matching configured
+    | directory label switch to the existing Issue query: Issues only, closed and
+    | pinned Issues omitted unless --all or a filter selects them, quoted rows
+    | with status and priority, and a line under the header saying Memories are
+    | not listed. --id accepts native Issue IDs and exact beads/PATH IDs as a
+    | comma-separated or repeated set, before the result limit. --parent ID
+    | accepts direct parent-child edges and edge-less dotted children by graph ID;
+    | use it with --flat, --json, or --format records-json for direct children.
+    | Without an output switch, --parent renders the complete bounded recursive tree. An Issue
+    | filter cannot be combined with a non-Issue --type;
+    | a configured directory label alone does not refuse one, it is simply not
+    | applied to Memories. --no-parent selects Issues without a parent-child edge,
+    | including edge-less dotted IDs.
+    | --ready uses the blocker-aware Issue query, defaults to open Issues, and
+    | refuses filters that query cannot honor. With --parent it selects transitive
+    | Issue descendants and prints a flat ready list, as ordinary bd list does.
+    | --sort accepts priority, created, updated, closed,
+    | title, status, type, id and assignee; id orders canonical local Bead IDs
+    | before the result limit. --tree=false selects
+    | the same flat output as --flat. --long uses the ordinary detailed Issue
+    | presentation. --json and --format json return the ordinary
+    | Issue-only array; use --format records-json for generic Bead records.
+  flag --all type=bool default="false" usage="Show all issues including closed (overrides default filter); unsupported with --output-format, whose selection has no Issue status default"
   flag --assignee -a type=string default="" usage="Filter by assignee"
   flag --brief type=bool default="false" usage="Omit the free-form text (description, design, acceptance criteria, notes, payload, waiters) from each row. Filters that read those fields, such as --desc-contains, still select on them. An omitted field is indistinguishable from an empty one in --json; fetch a whole issue with bd show."
   flag --closed-after type=string default="" usage="Filter issues closed after date (YYYY-MM-DD or RFC3339)"
   flag --closed-before type=string default="" usage="Filter issues closed before date (YYYY-MM-DD or RFC3339)"
+  flag --conforms-to type=string default="" annotations={canonical-output-only=["true"]} usage="Select a canonical absolute HTTP(S) Type URI and its conformance family; compatibility alias for --type"
+  flag --continue type=string default="" annotations={canonical-output-only=["true"]} usage="Resume a provider continuation (not available from the current local collection provider)"
   flag --created-after type=string default="" usage="Filter issues created after date (YYYY-MM-DD or RFC3339)"
   flag --created-before type=string default="" usage="Filter issues created before date (YYYY-MM-DD or RFC3339)"
   flag --defer-after type=string default="" usage="Filter issues deferred after date (supports relative: +6h, tomorrow)"
@@ -4360,6 +4805,7 @@ bd list
   flag --due-after type=string default="" usage="Filter issues due after date (supports relative: +6h, tomorrow)"
   flag --due-before type=string default="" usage="Filter issues due before date (supports relative: +6h, tomorrow)"
   flag --empty-description type=bool default="false" usage="Filter issues with empty or missing description"
+  flag --exact-type type=string default="" usage="Select only the exact declared Type; --type includes refinements"
   flag --exclude-label type=stringSlice default="[]" usage="Exclude issues that have ANY of these labels"
   flag --exclude-type type=stringSlice default="[]" usage="Exclude issue types from results (comma-separated or repeatable, e.g., --exclude-type=convoy,epic)"
   flag --external-contains type=string default="" usage="Filter by external ref substring (case-insensitive)"
@@ -4369,6 +4815,7 @@ bd list
   flag --format type=string default="" usage="Export the dependency graph of the listed issues: 'digraph' (edge list for golang.org/x/tools/cmd/digraph), 'dot' (Graphviz), or a Go template rendered once per edge over .IssueID, .DependsOnID, .Type, .Issue, .Dependency. 'json' is the exception and does not export the graph: it is equivalent to --json, which also wins when both flags are given. 'digraph' and templates print nothing when no listed issue depends on another; 'dot' still prints the nodes"
   flag --has-metadata-key type=string default="" usage="Filter issues that have this metadata key set"
   flag --id type=string default="" usage="Filter by specific issue IDs (comma-separated or repeated, e.g., bd-1,bd-5,bd-10)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
   flag --include-comments type=bool default="false" usage="Populate each row's comments field with full comment bodies in JSON output (--json only; costs one query per row that has comments). Without it, a row with comments carries comments_omitted=true, so an absent comments field is never mistaken for having none. Text output is unaffected either way."
   flag --include-ephemeral type=bool default="false" usage="Include ephemeral wisp-plane rows in output (normally hidden)"
   flag --include-gates type=bool default="false" usage="Include gate issues in output (normally hidden)"
@@ -4378,7 +4825,7 @@ bd list
   flag --label-any type=stringSlice default="[]" usage="Filter by labels (OR: must have AT LEAST ONE). Can combine with --label"
   flag --label-pattern type=string default="" usage="Filter by label glob pattern (e.g., 'tech-*' matches tech-debt, tech-legacy)"
   flag --label-regex type=string default="" usage="Filter by label regex pattern (e.g., 'tech-(debt|legacy)')"
-  flag --limit -n type=int default="50" usage="Limit results (an explicit --limit always wins, 0 meaning unlimited; otherwise --all is unlimited; otherwise a configured list.limit applies; otherwise unlimited when piped, else 20 in agent mode at a terminal, else 50)"
+  flag --limit -n type=int default="50" usage="Limit results (an explicit --limit always wins, 0 meaning unlimited; otherwise --all is unlimited; otherwise a configured list.limit applies; otherwise unlimited when piped, else 20 in agent mode at a terminal, else 50). With --output-format, requests a total delivery bound; the local provider refuses larger selections without emitting a subset"
   flag --long type=bool default="false" usage="Show detailed multi-line output for each issue"
   flag --max-rows type=int default="0" usage="Hard upper bound on rows returned. Returns a non-zero exit (code 2) and an error to stderr if exceeded. 0 disables (the default). Overrides BEADS_MAX_ROWS for this invocation. Useful in CI/agent rigs that want a circuit breaker against pathological queries. Honored on both the direct and the --proxied-server route."
   flag --metadata-field type=stringArray default="[]" usage="Filter by metadata field (key=value, repeatable)"
@@ -4390,7 +4837,11 @@ bd list
   flag --no-pinned type=bool default="false" usage="Exclude pinned issues"
   flag --notes-contains type=string default="" usage="Filter by notes substring (case-insensitive)"
   flag --offset type=int default="0" usage="Skip the first N matching results (0-based). Only supported under --proxied-server."
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical collection output: default, table, detail, json or jsonl; cannot mix legacy --json/--format"
   flag --overdue type=bool default="false" usage="Show only issues with due_at in the past (not closed)"
+  flag --page-size type=int default="50" annotations={canonical-output-only=["true"]} usage="Canonical page size; use --unpaged if the complete local selection exceeds this boundary"
+  flag --paged type=bool default="false" annotations={canonical-output-only=["true"]} usage="Return one page in canonical output; current local provider refuses truncation"
   flag --parent type=string default="" usage="Filter by parent issue ID (shows children of specified issue)"
   flag --pinned type=bool default="false" usage="Show only pinned issues"
   flag --pretty type=bool default="false" usage="Display issues in a tree format with status/priority symbols"
@@ -4407,7 +4858,8 @@ bd list
   flag --title type=string default="" usage="Filter by title text (case-insensitive substring match)"
   flag --title-contains type=string default="" usage="Filter by title substring (case-insensitive)"
   flag --tree type=bool default="true" usage="Hierarchical tree format (default: true; use --flat to disable)"
-  flag --type -t type=string default="" usage="Filter by type (bug, feature, task, epic, chore, decision, merge-request, molecule, gate, convoy). Aliases: mr→merge-request, feat→feature, mol→molecule, dec/adr→decision"
+  flag --type -t type=string default="" usage="Filter by type (bug, feature, task, epic, chore, decision, merge-request, molecule, gate, convoy). Aliases: mr→merge-request, feat→feature, mol→molecule, dec/adr→decision. With --output-format, requires a canonical absolute HTTP(S) Type URI; Issue classifications and Type aliases are not resolved"
+  flag --unpaged type=bool default="false" annotations={canonical-output-only=["true"]} usage="Return the complete bounded current selection in canonical output"
   flag --updated-after type=string default="" usage="Filter issues updated after date (YYYY-MM-DD or RFC3339)"
   flag --updated-before type=string default="" usage="Filter issues updated before date (YYYY-MM-DD or RFC3339)"
   flag --watch -w type=bool default="false" usage="Watch for changes and auto-update display (implies --pretty)"
@@ -4454,6 +4906,423 @@ bd memories
     |   bd memories              # list all memories
     |   bd memories dolt         # search for memories about dolt
     |   bd memories "race flag"  # search for a phrase
+    |
+    | Graph preview workspaces search title/body and show compact summaries.
+    | Default queries must match at most 50 Memories; narrow the query or use --all
+    | for complete bounded summaries. --details adds owned-Link counts, never neighboring bodies.
+    | Use --format records-json for experimental summaries, then recall a selected
+    | canonical ID with --revision TOKEN. Keys, pagination and full Memory JSON are
+    | unavailable. Reads admit at most 1000 live Resources and 16 MiB per workspace;
+    | output is capped at 1 MiB, search at 4096 UTF-8 bytes, excerpts at 160 code points.
+    | A matching body of at most 160 code points appears verbatim in its excerpt.
+    |
+    | Graph preview workspaces:
+    | Search Memory titles and bodies with bd memories [SEARCH].
+    | Use --all for a complete bounded result, --details for version/Link counts,
+    | or --format records-json for machine-readable summaries. --json is unavailable;
+    | use bd recall ID for the exact body.
+  flag --all type=bool default="false" usage="Return all matching graph Memory summaries within preview bounds"
+  flag --details type=bool default="false" usage="Include Memory versions, attribution and owned-Link counts"
+  flag --format type=string default="table" usage="Graph Memory summaries: table or records-json (preview only)"
+
+bd memory
+  use: "memory"
+  short: "Explore and record Memory relationships"
+  hidden: false
+  runnable: false
+  long:
+    | Use remember, recall, memories and forget with their existing top-level contracts, or explore Memory relationships in a graph-mode link workspace. Nested convenience spellings share the top-level handlers and output.
+
+bd memory constraints
+  use: "constraints ID..."
+  short: "Discover explicitly governing Constraints and their requirements"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory defined-by
+  use: "defined-by ID..."
+  short: "Show the input Constraint's defining parent"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --depth type=int default="1" usage="Maximum relationship hops for each input root (0..1000)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory defines
+  use: "defines [SOURCE TARGET]"
+  short: "Record an owned subordinate Constraint"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1"}
+  flag --body type=string default="" usage="Optional Link body property"
+  flag --from type=string default="" usage="Source Bead identity"
+  flag --id type=string default="" usage="Optional shared Link identity"
+  flag --if-source-revision type=string default="" usage="Require this current owner revision atomically"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --metadata type=string default="" usage="Informational metadata JSON object"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, detail or json; --json is shorthand for json"
+  flag --properties type=string default="" usage="Link properties JSON object, @file or @-; cannot duplicate named properties"
+  flag --source-revision type=string default="" usage="Explicit source endpoint revision selector"
+  flag --status type=string default="" usage="Optional Link status property"
+  flag --target-revision type=string default="" usage="Explicit target endpoint revision selector"
+  flag --title type=string default="" usage="Optional Link title property"
+  flag --to type=string default="" usage="Target Bead identity"
+
+bd memory definition
+  use: "definition ID..."
+  short: "Show the defining Constraint subtree"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --depth type=int default="1000" usage="Maximum relationship hops for each input root (0..1000)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory forget
+  use: "forget <key>"
+  short: "Remove a persistent memory"
+  hidden: false
+  runnable: true
+  long:
+    | Remove a memory by its key.
+    |
+    | Use 'bd memories' to see available keys.
+    |
+    | Examples:
+    |   bd forget dolt-phantoms
+    |   bd forget auth-jwt
+    |
+    | In a graph-mode link workspace, forget immediately deletes one unreferenced
+    | Memory selected by canonical Bead ID, with --if-revision TOKEN or --unconditional.
+    | Its identity and prior snapshots remain retained; live incident Links refuse.
+    | Use delete without --force for a read-only graph deletion preview.
+    |
+    | Graph preview workspaces:
+    | Use bd forget ID to delete one unreferenced Memory now.
+    | Add --if-revision =TOKEN to reject stale state. Canonical IDs are retained and
+    | incident Links prevent deletion; no cascade is performed.
+  flag --if-revision type=string default="" usage="Require Memory revision N or =TOKEN (graph preview only)"
+
+bd memory memories
+  use: "memories [search]"
+  short: "List or search persistent memories"
+  hidden: false
+  runnable: true
+  long:
+    | List all memories, or search by keyword.
+    |
+    | Examples:
+    |   bd memories              # list all memories
+    |   bd memories dolt         # search for memories about dolt
+    |   bd memories "race flag"  # search for a phrase
+    |
+    | Graph preview workspaces search title/body and show compact summaries.
+    | Default queries must match at most 50 Memories; narrow the query or use --all
+    | for complete bounded summaries. --details adds owned-Link counts, never neighboring bodies.
+    | Use --format records-json for experimental summaries, then recall a selected
+    | canonical ID with --revision TOKEN. Keys, pagination and full Memory JSON are
+    | unavailable. Reads admit at most 1000 live Resources and 16 MiB per workspace;
+    | output is capped at 1 MiB, search at 4096 UTF-8 bytes, excerpts at 160 code points.
+    | A matching body of at most 160 code points appears verbatim in its excerpt.
+    |
+    | Graph preview workspaces:
+    | Search Memory titles and bodies with bd memories [SEARCH].
+    | Use --all for a complete bounded result, --details for version/Link counts,
+    | or --format records-json for machine-readable summaries. --json is unavailable;
+    | use bd recall ID for the exact body.
+  flag --all type=bool default="false" usage="Return all matching graph Memory summaries within preview bounds"
+  flag --details type=bool default="false" usage="Include Memory versions, attribution and owned-Link counts"
+  flag --format type=string default="table" usage="Graph Memory summaries: table or records-json (preview only)"
+
+bd memory recall
+  use: "recall <key>"
+  short: "Retrieve a specific memory"
+  hidden: false
+  runnable: true
+  long:
+    | Retrieve the full content of a memory by its key.
+    |
+    | Examples:
+    |   bd recall dolt-phantoms
+    |   bd recall auth-jwt
+    |
+    | In graph preview workspaces, select one canonical Memory ID or Scope URL.
+    | Recall prints the body with one trailing newline, including empty
+    | content. --revision TOKEN selects a retained body; --quiet does not suppress it.
+    | Graph recall --json is unavailable; show --json returns the experimental record.
+    |
+    | Graph preview workspaces:
+    | Use bd recall ID for one exact Memory body. --revision =TOKEN
+    | selects a retained body; use bd show ID --json for the record. Graph
+    | recall does not accept legacy keys or --json.
+  flag --revision type=string default="" usage="Recall retained Memory revision N or =TOKEN (graph preview only)"
+
+bd memory reference
+  use: "reference [SOURCE TARGET]"
+  short: "Record a reference to another Bead"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1"}
+  flag --body type=string default="" usage="Optional Link body property"
+  flag --from type=string default="" usage="Source Bead identity"
+  flag --id type=string default="" usage="Optional shared Link identity"
+  flag --if-source-revision type=string default="" usage="Require this current owner revision atomically"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --metadata type=string default="" usage="Informational metadata JSON object"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, detail or json; --json is shorthand for json"
+  flag --properties type=string default="" usage="Link properties JSON object, @file or @-; cannot duplicate named properties"
+  flag --source-revision type=string default="" usage="Explicit source endpoint revision selector"
+  flag --status type=string default="" usage="Optional Link status property"
+  flag --target-revision type=string default="" usage="Explicit target endpoint revision selector"
+  flag --title type=string default="" usage="Optional Link title property"
+  flag --to type=string default="" usage="Target Bead identity"
+
+bd memory referenced-by
+  use: "referenced-by ID..."
+  short: "Show Beads that reference the input"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --depth type=int default="1" usage="Maximum relationship hops for each input root (0..1000)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory references
+  use: "references ID..."
+  short: "Show referenced knowledge, including refining Link Types"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --depth type=int default="1" usage="Maximum relationship hops for each input root (0..1000)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory remember
+  use: "remember \"<insight>\""
+  short: "Store a persistent memory"
+  hidden: false
+  runnable: true
+  long:
+    | Store a memory that persists across sessions and account rotations.
+    |
+    | Memories are injected at prime time (bd prime) so you have them
+    | in every session without manual loading.
+    |
+    | The positional arg is the memory CONTENT (the key is auto-generated from it
+    | unless --key is given). As a convenience, if the arg is a bare key naming an
+    | existing memory, it is RECALLED instead of stored (same as 'bd recall');
+    | a bare key naming nothing is refused. Use --key to store slug-like content.
+    |
+    | Corpus budget (opt-in, off by default): set the memories.budget-chars config
+    | key to a byte ceiling for the whole memory corpus (sum of len(key)+len(content)).
+    | A write that would cross it is refused, and --force overrides; a write that
+    | lands at or above 80% of the budget warns. With the key unset nothing changes.
+    | bd prime's --max-memory-chars also counts bytes, but of each memory as
+    | injected, formatting included, so a budget equal to that cap does not
+    | guarantee prime injects every memory; set the budget below it for that.
+    |
+    | Examples:
+    |   bd remember "always run tests with -race flag"
+    |   bd remember "Dolt phantom DBs hide in three places" --key dolt-phantoms
+    |   bd remember "auth module uses JWT not sessions" --key auth-jwt
+    |   bd remember dolt-phantoms        # bare existing key: reads it (= bd recall)
+    |
+    | Graph preview workspaces:
+    | Store a Memory with bd remember 'Policy text' [--id policy-note]
+    | [--title 'Policy'] [--metadata '{"team":"docs"}']. Alternatively,
+    | --properties '{"title":"Policy"}' initializes the typed Memory property;
+    | do not supply the same field with both --properties and a shorthand flag.
+    | bd memory remember is the same operation with the same flags and output.
+    | Metadata is a JSON object separate from Memory title/body properties. An
+    | omitted ID is generated; an omitted creation title summarizes the body. With --id, an unused ID creates and an existing Memory
+    | updates in place, as ordinary bd remember --key does. With Scope
+    | https://example.test/work/, policy-note selects
+    | https://example.test/work/policy-note. Graph Memories use canonical IDs,
+    | not legacy keys.
+    |
+    | To refuse any previously allocated ID, add --create-only with --id. With
+    | --create-only, --type NAME selects an installed Memory refinement;
+    | otherwise creation uses plain Memory. Existing retyping uses bd update.
+    | To require an existing Memory, keep using --update instead of --id:
+    |   bd remember 'Revised policy' --id policy-note
+    |   bd remember 'Revised policy' --update policy-note
+    |   bd remember --update policy-note --title 'New title'
+    | --update retains literal Memory-ID semantics, including raw @; it does not
+    | parse revision suffixes. The selected bd update targets refuse revision suffixes.
+    | Omitted fields remain unchanged on update. --body TEXT (including empty),
+    | --title TEXT, and --status TEXT update only the named Memory fields. Status
+    | must be nonblank. Use --body-file PATH or --stdin
+    | instead of positional body text. An existing-ID update accepts the current
+    | revision by default; add --if-revision =TOKEN to reject a stale update. Read
+    | the token with bd show policy-note --json. --replace-properties JSON replaces all
+    | Memory properties where the Type permits it, and --replace-metadata JSON
+    | replaces all metadata; {} clears the selected document.
+  flag --body type=string default="" usage="Explicit Memory body, including an empty body (graph preview only)"
+  flag --body-file type=string default="" usage="Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)"
+  flag --create-only type=bool default="false" usage="Require a new Memory at --id or --key; refuse an allocated ID (graph preview only)"
+  flag --force type=bool default="false" usage="Store even when the write would cross the memories.budget-chars corpus budget (no effect when the budget is unset)"
+  flag --id type=string default="" usage="Literal public Memory ID; creates or updates the same identity (--key is compatible; omitted ID derives from content in graph mode)"
+  flag --if-revision type=string default="" usage="Require Memory revision N or =TOKEN for an existing-ID update (graph preview only)"
+  flag --key type=string default="" usage="Explicit key for the memory (auto-generated from content if not set). If a memory with this key already exists, it will be updated in place"
+  flag --metadata type=string default="" usage="Merge a JSON object into an existing Memory, or set initial metadata on create (graph preview only)"
+  flag --properties type=string default="" usage="Initialize or merge named Memory properties from a JSON object, @file, or @- (graph preview only)"
+  flag --replace-metadata type=string default="" usage="Replace all Memory metadata with a JSON object on an existing-ID edit (graph preview only)"
+  flag --replace-properties type=string default="" usage="Replace all properties of an existing Memory selected by --id or --update (graph preview only)"
+  flag --set-metadata type=stringArray default="[]" usage="Set Memory metadata key=value (repeatable; graph preview only)"
+  flag --status type=string default="" usage="Nonblank Memory status property on create or update (graph preview only)"
+  flag --stdin type=bool default="false" usage="Read graph Memory body from stdin (preview: at most 1 MiB)"
+  flag --title type=string default="" usage="Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)"
+  flag --type type=string default="" usage="Installed Memory Type or refinement for --create-only (graph preview only)"
+  flag --unset-metadata type=stringArray default="[]" usage="Remove Memory metadata key (repeatable; graph preview only)"
+  flag --update type=string default="" usage="Existing canonical Memory selector to update (graph preview only)"
+
+bd memory required-by
+  use: "required-by ID..."
+  short: "Show Constraints that directly require the input"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --depth type=int default="1" usage="Maximum relationship hops for each input root (0..1000)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory requirements
+  use: "requirements ID..."
+  short: "Show necessary Constraints, including defining children"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --depth type=int default="1000" usage="Maximum relationship hops for each input root (0..1000)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory requires
+  use: "requires [SOURCE TARGET]"
+  short: "Record a necessary Constraint"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1"}
+  flag --body type=string default="" usage="Optional Link body property"
+  flag --from type=string default="" usage="Source Bead identity"
+  flag --id type=string default="" usage="Optional shared Link identity"
+  flag --if-source-revision type=string default="" usage="Require this current owner revision atomically"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --metadata type=string default="" usage="Informational metadata JSON object"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, detail or json; --json is shorthand for json"
+  flag --properties type=string default="" usage="Link properties JSON object, @file or @-; cannot duplicate named properties"
+  flag --source-revision type=string default="" usage="Explicit source endpoint revision selector"
+  flag --status type=string default="" usage="Optional Link status property"
+  flag --target-revision type=string default="" usage="Explicit target endpoint revision selector"
+  flag --title type=string default="" usage="Optional Link title property"
+  flag --to type=string default="" usage="Target Bead identity"
+
+bd memory subject-to
+  use: "subject-to [SOURCE TARGET]"
+  short: "Declare a Constraint governing a Bead"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1"}
+  flag --body type=string default="" usage="Optional Link body property"
+  flag --from type=string default="" usage="Source Bead identity"
+  flag --id type=string default="" usage="Optional shared Link identity"
+  flag --if-source-revision type=string default="" usage="Require this current owner revision atomically"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --metadata type=string default="" usage="Informational metadata JSON object"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, detail or json; --json is shorthand for json"
+  flag --properties type=string default="" usage="Link properties JSON object, @file or @-; cannot duplicate named properties"
+  flag --source-revision type=string default="" usage="Explicit source endpoint revision selector"
+  flag --status type=string default="" usage="Optional Link status property"
+  flag --target-revision type=string default="" usage="Explicit target endpoint revision selector"
+  flag --title type=string default="" usage="Optional Link title property"
+  flag --to type=string default="" usage="Target Bead identity"
+
+bd memory subjects
+  use: "subjects ID..."
+  short: "Show direct explicit subjects of a Constraint"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory successor
+  use: "successor ID..."
+  short: "Follow the replacement chain, retaining the starting Memory"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --depth type=int default="1000" usage="Maximum relationship hops for each input root (0..1000)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
+
+bd memory supersede
+  use: "supersede [SOURCE TARGET]"
+  short: "Retire an older Memory in favor of a successor"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1"}
+  flag --body type=string default="" usage="Optional Link body property"
+  flag --from type=string default="" usage="Source Bead identity"
+  flag --id type=string default="" usage="Optional shared Link identity"
+  flag --if-source-revision type=string default="" usage="Require this current owner revision atomically"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --metadata type=string default="" usage="Informational metadata JSON object"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, detail or json; --json is shorthand for json"
+  flag --properties type=string default="" usage="Link properties JSON object, @file or @-; cannot duplicate named properties"
+  flag --source-revision type=string default="" usage="Explicit source endpoint revision selector"
+  flag --status type=string default="" usage="Optional Link status property"
+  flag --target-revision type=string default="" usage="Explicit target endpoint revision selector"
+  flag --title type=string default="" usage="Optional Link title property"
+  flag --to type=string default="" usage="Target Bead identity"
+
+bd memory supersedes
+  use: "supersedes ID..."
+  short: "Show Memories directly replaced by the input"
+  hidden: false
+  runnable: true
+  annotations: {bd:canonical_output_default="1" bd:skip_store="1"}
+  flag --depth type=int default="1" usage="Maximum relationship hops for each input root (0..1000)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --max-links type=int default="200" usage="Maximum unique selected Links across roots (1..1000); excess refuses"
+  flag --max-nodes type=int default="100" usage="Maximum unique selected Beads across roots (1..1000); excess refuses"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Output: default, tree, detail or json; --json is shorthand for json"
 
 bd merge-slot
   use: "merge-slot"
@@ -5884,6 +6753,13 @@ bd q
   hidden: false
   runnable: true
   long:
+    | Graph preview workspaces:
+    | Use bd q TITLE to create one Issue and print only its Scope-relative ID.
+    | Pass -- before a title beginning with '-', for example bd q -- -follow-up.
+    | --parent is unavailable here; the graph parent-child journey
+    | is available through bd create on fresh graph workspaces.
+    |
+    | Ordinary Issue workspaces:
     | Quick capture creates an issue and outputs only the issue ID.
     | Designed for scripting and AI agent integration.
     |
@@ -5963,6 +6839,15 @@ bd query
     |   bd query "created>30d AND status!=closed"
     |   bd query "label=frontend OR label=backend"
     |   bd query "title=authentication AND priority=0"
+    |
+    | Graph preview workspaces:
+    | Query current durable graph Issues with ordinary field comparisons,
+    | AND, OR, NOT, dates and canonical local Bead IDs. Closed Issues are excluded
+    | unless --all or an explicit status comparison includes them. --json returns
+    | the ordinary counted Issue row array. --limit, --offset, --sort, --reverse,
+    | --long and --parse-only work. A parent=ID comparison works in an AND chain;
+    | OR and NOT parent forms follow native query refusals. mol_type and ephemeral
+    | predicates are unavailable in graph preview.
   flag --all -a type=bool default="false" usage="Include closed issues (default: exclude closed)"
   flag --limit -n type=int default="50" usage="Limit results (default: 50, 0 = unlimited)"
   flag --long type=bool default="false" usage="Show detailed multi-line output for each issue"
@@ -6003,6 +6888,21 @@ bd ready
     |   bd ready --claim --json
     |
     | This is useful for agents executing molecules to see which steps can run next.
+    |
+    | In graph workspaces, the current preview supports filters for limit, priority,
+    | assignee, unassigned, sort, label, label-any, exclude-label, label-pattern,
+    | label-regex, type, exclude-type, metadata-field, has-metadata-key,
+    | include-deferred, and read-only parent filtering. --claim atomically claims
+    | the first matching ready Issue; combining --claim with --parent awaits atomic
+    | parent resolution. Other ready modes require a later graph slice and currently
+    | refuse rather than silently ignoring flags.
+    |
+    | Graph preview workspaces:
+    | Show current ready Issues with admitted priority, type, label,
+    | assignee, sort and deferred-state filters. --claim atomically claims the first
+    | matching ready Issue. This graph preview refuses positive BEADS_MAX_ROWS
+    | instead of truncating; parent, molecule, ephemeral and metadata filters remain
+    | unfinished.
   flag --assignee -a type=string default="" usage="Filter by assignee"
   flag --brief type=bool default="false" usage="Omit the free-form text (description, design, acceptance criteria, notes, payload, waiters) from each row. Filters that read those fields still select on them. An omitted field is indistinguishable from an empty one; fetch a whole issue with bd show. Requires --json, and cannot be combined with --claim, --gated, --mol or --explain."
   flag --claim type=bool default="false" usage="Atomically claim the first ready issue matching the filters"
@@ -6044,6 +6944,17 @@ bd recall
     | Examples:
     |   bd recall dolt-phantoms
     |   bd recall auth-jwt
+    |
+    | In graph preview workspaces, select one canonical Memory ID or Scope URL.
+    | Recall prints the body with one trailing newline, including empty
+    | content. --revision TOKEN selects a retained body; --quiet does not suppress it.
+    | Graph recall --json is unavailable; show --json returns the experimental record.
+    |
+    | Graph preview workspaces:
+    | Use bd recall ID for one exact Memory body. --revision =TOKEN
+    | selects a retained body; use bd show ID --json for the record. Graph
+    | recall does not accept legacy keys or --json.
+  flag --revision type=string default="" usage="Recall retained Memory revision N or =TOKEN (graph preview only)"
 
 bd reclaim
   use: "reclaim"
@@ -6180,8 +7091,55 @@ bd remember
     |   bd remember "Dolt phantom DBs hide in three places" --key dolt-phantoms
     |   bd remember "auth module uses JWT not sessions" --key auth-jwt
     |   bd remember dolt-phantoms        # bare existing key: reads it (= bd recall)
+    |
+    | Graph preview workspaces:
+    | Store a Memory with bd remember 'Policy text' [--id policy-note]
+    | [--title 'Policy'] [--metadata '{"team":"docs"}']. Alternatively,
+    | --properties '{"title":"Policy"}' initializes the typed Memory property;
+    | do not supply the same field with both --properties and a shorthand flag.
+    | bd memory remember is the same operation with the same flags and output.
+    | Metadata is a JSON object separate from Memory title/body properties. An
+    | omitted ID is generated; an omitted creation title summarizes the body. With --id, an unused ID creates and an existing Memory
+    | updates in place, as ordinary bd remember --key does. With Scope
+    | https://example.test/work/, policy-note selects
+    | https://example.test/work/policy-note. Graph Memories use canonical IDs,
+    | not legacy keys.
+    |
+    | To refuse any previously allocated ID, add --create-only with --id. With
+    | --create-only, --type NAME selects an installed Memory refinement;
+    | otherwise creation uses plain Memory. Existing retyping uses bd update.
+    | To require an existing Memory, keep using --update instead of --id:
+    |   bd remember 'Revised policy' --id policy-note
+    |   bd remember 'Revised policy' --update policy-note
+    |   bd remember --update policy-note --title 'New title'
+    | --update retains literal Memory-ID semantics, including raw @; it does not
+    | parse revision suffixes. The selected bd update targets refuse revision suffixes.
+    | Omitted fields remain unchanged on update. --body TEXT (including empty),
+    | --title TEXT, and --status TEXT update only the named Memory fields. Status
+    | must be nonblank. Use --body-file PATH or --stdin
+    | instead of positional body text. An existing-ID update accepts the current
+    | revision by default; add --if-revision =TOKEN to reject a stale update. Read
+    | the token with bd show policy-note --json. --replace-properties JSON replaces all
+    | Memory properties where the Type permits it, and --replace-metadata JSON
+    | replaces all metadata; {} clears the selected document.
+  flag --body type=string default="" usage="Explicit Memory body, including an empty body (graph preview only)"
+  flag --body-file type=string default="" usage="Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)"
+  flag --create-only type=bool default="false" usage="Require a new Memory at --id or --key; refuse an allocated ID (graph preview only)"
   flag --force type=bool default="false" usage="Store even when the write would cross the memories.budget-chars corpus budget (no effect when the budget is unset)"
+  flag --id type=string default="" usage="Literal public Memory ID; creates or updates the same identity (--key is compatible; omitted ID derives from content in graph mode)"
+  flag --if-revision type=string default="" usage="Require Memory revision N or =TOKEN for an existing-ID update (graph preview only)"
   flag --key type=string default="" usage="Explicit key for the memory (auto-generated from content if not set). If a memory with this key already exists, it will be updated in place"
+  flag --metadata type=string default="" usage="Merge a JSON object into an existing Memory, or set initial metadata on create (graph preview only)"
+  flag --properties type=string default="" usage="Initialize or merge named Memory properties from a JSON object, @file, or @- (graph preview only)"
+  flag --replace-metadata type=string default="" usage="Replace all Memory metadata with a JSON object on an existing-ID edit (graph preview only)"
+  flag --replace-properties type=string default="" usage="Replace all properties of an existing Memory selected by --id or --update (graph preview only)"
+  flag --set-metadata type=stringArray default="[]" usage="Set Memory metadata key=value (repeatable; graph preview only)"
+  flag --status type=string default="" usage="Nonblank Memory status property on create or update (graph preview only)"
+  flag --stdin type=bool default="false" usage="Read graph Memory body from stdin (preview: at most 1 MiB)"
+  flag --title type=string default="" usage="Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)"
+  flag --type type=string default="" usage="Installed Memory Type or refinement for --create-only (graph preview only)"
+  flag --unset-metadata type=stringArray default="[]" usage="Remove Memory metadata key (repeatable; graph preview only)"
+  flag --update type=string default="" usage="Existing canonical Memory selector to update (graph preview only)"
 
 bd rename
   use: "rename <old-id> <new-id>"
@@ -6252,6 +7210,12 @@ bd reopen
     | Exit codes: 1 for general failures; 13 when the failure is a stale
     | --if-revision guard (the precondition no longer held, nothing was written —
     | another actor won the race, so retrying the same guard is pointless).
+    |
+    | Graph preview workspaces:
+    | Reopen one or more local closed Issues by ID or beads/ID,
+    | optionally with --reason. A batch reports changed Issues on stdout and
+    | per-Issue failures on stderr, then exits nonzero if any failed. Already-open
+    | Issues remain unchanged. Remote-routing forms remain unavailable.
   flag --if-revision type=string default="" usage="Apply the write only if the issue's current revision equals this value (the decimal int64 from `bd show --json`'s \"revision\" field). One id only: refused before any write when combined with more than one issue id. A mismatch writes nothing and exits 13 (vs 1 for other failures)."
   flag --reason -r type=string default="" usage="Reason for reopening"
 
@@ -6429,6 +7393,16 @@ bd search
     |   bd search "task" --sort created --reverse
     |   bd search "api" --desc-contains "endpoint"
     |   bd search "cleanup" --no-assignee --no-labels
+    |
+    | Graph preview workspaces:
+    | Search current graph Issues by title or canonical local Bead ID.
+    | Results include closed Issues unless --status narrows them. --json returns the
+    | ordinary counted Issue row array with Scope-relative IDs. Supported filters:
+    | --status, --assignee, --type, --label, --label-any, --priority-min,
+    | --priority-max, --desc-contains, --notes-contains, --external-contains,
+    | --empty-description, --no-assignee, --no-labels, created/updated/closed date
+    | bounds, --metadata-field, --has-metadata-key, --limit, --sort, --reverse, and
+    | --long. Only built-in status names are admitted here.
   flag --assignee -a type=string default="" usage="Filter by assignee"
   flag --closed-after type=string default="" usage="Filter issues closed after date (YYYY-MM-DD or RFC3339)"
   flag --closed-before type=string default="" usage="Filter issues closed before date (YYYY-MM-DD or RFC3339)"
@@ -6471,8 +7445,25 @@ bd serve
     | Serve the beads HTTP API — the same work surface the CLI answers, for
     | automation clients that would otherwise fork a bd subprocess per call.
     |
-    | The wire contract is described by an OpenAPI document (/v0); GET
-    | /v0/beads/context reports which operations this build actually implements.
+    | GRAPH WORKSPACE PREVIEW
+    |
+    |   In an initialized graph workspace backed by ordinary shared-server Dolt,
+    |   this command serves BDP Read at the persisted Scope URL path: discovery,
+    |   Resources, Types, properties, filtered inventories, incident Links and retained
+    |   pages. It accepts --readonly and publishes no HTTP write operations, History,
+    |   aliases, /healthz or legacy /v0 routes. Embedded graph serving is refused.
+    |   Use the authenticated Scope or bdp.json read for readiness. Every accepted
+    |   token can read the complete workspace; cursors expire after five minutes
+    |   and do not survive process restart. Stop serving before restoring storage.
+    |   Bind a stable address reachable through the initialized Scope URL. Host
+    |   aliases do not change canonical identities. See docs/reference/graph-preview.md.
+    |
+    | LEGACY ISSUE WORKSPACES
+    |
+    |   The following operation and probe descriptions apply to legacy Issue mode.
+    |   Its wire contract is described by an OpenAPI document (/v0); GET
+    |   /v0/beads/context reports which operations this build actually implements.
+    |   Deployment, token rotation and Host controls also apply to graph mode.
     |
     | DEPLOYMENT
     |
@@ -6664,17 +7655,54 @@ bd show
   group: "issues"
   hidden: false
   runnable: true
+  long:
+    |
+    |
+    | Graph preview workspaces:
+    | Use bd show ID or bd show --id ID (equivalent to beads/ID) for a current Memory or
+    | Issue; use bd show links/ID for a Link. Multiple positional/--id operands
+    | show current Issues in the supplied order, with ordinary Issue JSON or human
+    | details. Memory, Link, exact-version and graph-json reads remain single-ID.
+    | --refs shows incoming Issue references, grouped by relationship; --children
+    | shows only parent-child references. Both accept current Issue IDs and retain
+    | the familiar human view or Issue-ID-keyed JSON object.
+    | --watch follows one current Issue, redrawing its human detail view when that
+    | Issue changes; stop it with Ctrl+C.
+    | --current selects the actor's first in-progress Issue, then hooked Issue, then
+    | the last-touched Issue; it cannot combine with an explicit ID.
+    | ID@N selects the stable store-local revision number N. ID@=TOKEN or
+    | '[URL]@=TOKEN' selects one exact retained record; --revision N or
+    | --revision =TOKEN is an alternative (not both). @current reads current. Unwrapped URL forms containing :// are
+    | literal, including raw @; use the full canonical Scope URL to escape local
+    | @ shorthand. Colon-only forms such as plan:v1@=TOKEN use local syntax.
+    | Bracketed operands require canonical HTTP(S) Scope URLs, not opaque URIs.
+    | Suffixes are rejected on the selected update and deletion targets; use
+    | --if-revision for write comparison. The flag forms require a positive local
+    | ordinal N or =TOKEN; a bare token and current are not flag values.
+    | Endpoint pins remain unavailable. This is not an ordered history listing.
+    | A current Issue's
+    | --json uses the ordinary detail array with Scope-relative Bead IDs and its
+    | graph revision token. Memory, Link, and exact --revision reads use the
+    | experimental graph envelope; --format graph-json explicitly requests that
+    | envelope for a current Issue too. graph-json is not a BDP Resource format.
+    | Showing an Issue makes it the last-touched Issue for interactive update/close;
+    | showing a Memory or Link does not.
   flag --as-of type=string default="" usage="Show issue as it existed at a specific commit hash or branch (requires Dolt; commit hashes must be the full 32-character hash from 'bd history', not a prefix)"
   flag --brief-deps type=bool default="false" usage="Reduce each dependency to its identity fields in JSON output (--json only; drops description, design, notes and acceptance criteria)"
   flag --children type=bool default="false" usage="Show only the children of this issue"
   flag --comments-tail type=int default="0" usage="Render only the last N comments in text output, preceded by one elision line naming how many older ones were hidden (text output only; 0, the default, renders every comment unchanged; N must be >= 0)"
   flag --current type=bool default="false" usage="Show the currently active issue (in-progress, hooked, or last touched)"
+  flag --format type=string default="" usage="Output format: json (alias for --json), or graph-json for the experimental complete-record envelope"
   flag --id type=stringArray default="[]" usage="Issue ID (use for IDs that look like flags, e.g., --id=gt--xyz)"
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
   flag --include-comments type=bool default="false" usage="Stream full comment bodies in JSON output (--json only; may be slow on issues with many comments). Without it the comments field is absent entirely, not truncated: an issue with comments carries comment_count and comments_omitted=true, so check those before reading an absent comments field as none."
   flag --include-dependents type=bool default="false" usage="Stream full dependent issues in JSON output (--json only; may be slow on hub beads)"
   flag --local-time type=bool default="false" usage="Show timestamps in local time instead of UTC (date-only fields are always local)"
   flag --long type=bool default="false" usage="Show all available fields (extended metadata, agent identity, gate fields, etc.)"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical output: default, detail or json (cannot combine with legacy --json or --format)"
   flag --refs type=bool default="false" usage="Show issues that reference this issue (reverse lookup)"
+  flag --revision type=string default="" usage="Read retained revision N or =TOKEN (graph preview only)"
   flag --short type=bool default="false" usage="Show compact one-line output per issue"
   flag --thread type=bool default="false" usage="Show full conversation thread (for messages)"
   flag --watch -w type=bool default="false" usage="Watch for changes and auto-refresh display"
@@ -6799,8 +7827,13 @@ bd status
     |   bd status --json             # JSON format output
     |   bd status --assigned         # Show issues assigned to current user
     |   bd stats                     # Alias for bd status
+    |
+    | Graph preview workspaces:
+    | Use bd status for ordinary Issue statistics in this workspace.
+    | Use bd status --graph to inspect graph capabilities and limits.
   flag --all type=bool default="false" usage="Show all issues (default behavior)"
   flag --assigned type=bool default="false" usage="Show issues assigned to current user"
+  flag --graph type=bool default="false" usage="Report graph preview capabilities"
   flag --no-activity type=bool default="false" usage="Skip git activity summary (faster)"
   flag --no-blocked type=bool default="false" usage="Skip blocked-count computation (faster on large rigs; not supported in proxied-server mode)"
 
@@ -7044,6 +8077,17 @@ bd todo
   hidden: false
   runnable: true
   long:
+    | Graph preview workspaces:
+    | bd todo add TITLE creates an open task Issue at P2 by default, assigned to
+    | the current actor. bd todo and bd todo list show open task Issues;
+    | bd todo list --all includes completed task Issues. bd todo done ID... closes
+    | any Issue, as in ordinary workspaces, with reason Completed unless --reason
+    | is supplied. Each unguarded ID is attempted independently; failed targets
+    | are reported to stderr while successful closes are returned.
+    | For one Issue, --if-revision =TOKEN refuses a stale completion. List and add
+    | JSON keep the familiar Issue shape with canonical beads/PATH IDs.
+    |
+    | Ordinary Issue workspaces:
     | Manage TODO items as lightweight task issues.
     |
     | TODOs are regular task-type issues with convenient shortcuts:
@@ -7067,6 +8111,7 @@ bd todo done
   short: "Mark TODO(s) as done"
   hidden: false
   runnable: true
+  flag --if-revision type=string default="" usage="Require this observed Issue revision for a single graph TODO (graph preview only)"
   flag --reason type=string default="" usage="Reason for closing (default: Completed)"
 
 bd todo list
@@ -7078,7 +8123,7 @@ bd todo list
 
 bd types
   use: "types"
-  short: "List valid issue types"
+  short: "List available types"
   group: "views"
   hidden: false
   runnable: true
@@ -7096,6 +8141,16 @@ bd types
     |   bd types --sections   # List required sections for each type
     |   bd types --json       # Output as JSON
     |
+    |
+    | Graph preview workspaces:
+    | Use bd types to list the Bead and Link Types actually installed
+    | in this workspace, grouped by category. The displayed NAME IDs are
+    | accepted by --type on the matching command. Add --details to show each complete
+    | persisted Type descriptor. --json returns the full descriptors as structured
+    | data. Built-in Issue and Dependency values such as task and blocks also work
+    | with --type, and are separate installed concrete graph Types;
+    | --sections is unavailable in graph preview workspaces.
+  flag --details type=bool default="false" usage="Show full installed graph Type descriptors (graph preview only)"
   flag --sections type=bool default="false" usage="Show required sections for each issue type"
 
 bd unclaim
@@ -7132,6 +8187,16 @@ bd unclaim
     |   bd unclaim bd-123 --reason "Agent crashed"
     |   bd unclaim bd-123 bd-456
     |   bd unclaim bd-123 --if-assignee worker-7   # only if still held by worker-7
+    |
+    | Graph preview workspaces:
+    | Use bd unclaim ID... to release one or more assigned open or
+    | in-progress Issues. By default only the current holder may release a claim.
+    | --force bypasses holder authorization but still respects the native row CAS;
+    | --if-assignee HOLDER releases only while that holder remains assigned. The two
+    | flags cannot be combined. --reason TEXT adds a native Issue comment after a
+    | successful release; bd comments ID reads it. The release clears the assignee,
+    | lease and started time, returns the Issue to open, and records one Issue and
+    | graph version. A repeated release refuses without creating a version.
   flag --force type=bool default="false" annotations={cobra_annotation_mutually_exclusive=["force if-assignee"]} usage="Release the claim even if held by a different actor (admin/reaper use)"
   flag --if-assignee type=string default="" annotations={cobra_annotation_mutually_exclusive=["force if-assignee"]} usage="Only release if still assigned to this assignee (atomic compare-and-swap; exits nonzero without changing the issue when the holder differs)"
   flag --reason -r type=string default="" usage="Reason for unclaiming"
@@ -7142,6 +8207,13 @@ bd undefer
   hidden: false
   runnable: true
   long:
+    | Graph preview workspaces:
+    | Use bd undefer ID... to restore one or more deferred Issues to open. It also
+    | clears a stale defer date on a non-deferred Issue. A repeated undefer is a
+    | no-op if nothing changes. Use --if-revision =TOKEN for a single-Issue
+    | stale-write check. Without it, the current revision is accepted.
+    |
+    | Ordinary Issue workspaces:
     | Undefer issues to restore them to open status.
     |
     | This brings issues back from the icebox so they can be worked on again.
@@ -7154,6 +8226,7 @@ bd undefer
     | Examples:
     |   bd undefer bd-abc        # Undefer a single issue
     |   bd undefer bd-abc bd-def # Undefer multiple issues
+  flag --if-revision type=string default="" usage="Graph mode: compare this observed Issue revision (one Issue only)"
 
 bd update
   use: "update [id...]"
@@ -7179,6 +8252,44 @@ bd update
     | --if-assignee/--if-status guard (the precondition no longer held, nothing was
     | written — another actor won the race, so retrying the same guard is
     | pointless).
+    |
+    | Graph preview workspaces:
+    | Use bd remember --update ID for selected Memory title/body
+    | edits. --properties JSON shallowly merges named top-level properties on an
+    | Issue, Memory, or informational Link, preserving omitted keys. The same flag
+    | initializes properties on bd create and bd remember. For example:
+    |   bd update policy --properties '{"body":"Revised text"}' --if-revision =TOKEN
+    | An empty merge object is a no-op. --replace-properties JSON replaces all
+    | writable properties, and --replace-metadata JSON replaces all metadata; {}
+    | clears the selected document where the Type allows it. The replacement flags
+    | cannot combine with merge, patch, or key edits for the same document, but
+    | property and metadata changes can be made atomically. --patch applies ordered add/replace/remove property
+    | operations, including on writable native Issue scalar properties.
+    | --metadata merges a JSON object's top-level keys; --set-metadata KEY=VALUE
+    | sets one typed JSON value and --unset-metadata KEY removes one key. Set and
+    | unset may combine (unset wins); --metadata cannot combine with either.
+    | Metadata may accompany a property or Issue scalar edit atomically, and a
+    | metadata-only update uses the same Resource and owning-source guards.
+    | Generic updates accept the current state when --if-revision is omitted.
+    | Informational Links owned by a Memory may also use --if-source-revision TOKEN;
+    | without it, the current source is
+    | accepted. --source-revision TOKEN and --target-revision TOKEN re-pin an
+    | informational Link without changing its ID or endpoint identities. Use current
+    | to resolve an exact pin inside the transaction or unpinned to float it; omission
+    | preserves the existing pin. Pins can combine atomically with properties and
+    | metadata. Owned-source pins remain unavailable. Native Dependency properties and metadata are not editable here. Issue scalar
+    | edits and standalone --claim are separate graph operations. Without an ID,
+    | interactive Issue update uses the last-touched Issue; scripts require an ID
+    | unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.
+    | Multiple Issue IDs accept the same scalar/property edit per ID in input order:
+    | successful edits remain committed after a sibling fails, and any failure exits
+    | nonzero. A single --if-revision cannot guard multiple IDs; update them
+    | separately. Multi-ID reparent, retype, claim and historical edits are unavailable.
+    | On a fresh graph workspace, bd update CHILD --parent PARENT replaces the
+    | native parent-child edge and its canonical Link in one checked write.
+    | Admitted scalar edits can accompany the move, and same-parent scalar edits
+    | preserve the Link identity. The parent must be a nonempty local Issue;
+    | detaching is unavailable.
   flag --acceptance type=string default="" usage="Acceptance criteria"
   flag --acceptance-criteria type=string default="" hidden usage="DEPRECATED: use --acceptance"
   flag --add-label -l type=stringSlice default="[]" usage="Add labels (repeatable); -l matches bd create -l"
@@ -7200,24 +8311,32 @@ bd update
   flag --estimate -e type=int default="0" usage="Time estimate in minutes (e.g., 60 for 1 hour)"
   flag --external-ref type=string default="" usage="External reference (e.g., 'gh-9', 'jira-ABC', Linear URL)"
   flag --force type=bool default="false" usage="Override refusals: let -a/--assignee overwrite another actor's live in_progress claim (use only for abandoned claims — crashed agent, expired lease; prefer bd reclaim), let -s/--status move the issue into closed (or a configured done status) despite open children or a live blocker (same as bd close --force), and let --notes overwrite existing non-empty notes (use --append-notes to preserve history instead)"
+  flag --from-revision type=string default="" usage="Use retained same-Resource revision N or =TOKEN as the Update base (graph mode only)"
   flag --history type=bool default="false" usage="Clear no-history flag (re-enable Dolt commit history)"
   flag --if-assignee type=string default="" usage="Apply the update only if the current assignee equals this value (--if-assignee '' requires unassigned); a mismatch writes nothing and exits 13 (vs 1 for other failures). Requires a field update; cannot combine with --claim"
   flag --if-revision type=string default="" usage="Apply the write only if the issue's current revision equals this value (the decimal int64 from `bd show --json`'s \"revision\" field). One id only: refused before any write when combined with more than one issue id. A mismatch writes nothing and exits 13 (vs 1 for other failures). Composes with --if-assignee/--if-status: all guards present must hold."
+  flag --if-source-revision type=string default="" usage="Require this observed source revision for an experimental owned Link"
   flag --if-status type=string default="" usage="Apply the update only if the current status equals this value; a mismatch writes nothing and exits 13 (vs 1 for other failures). Requires a field update; cannot combine with --claim"
   flag --message -m type=string default="" hidden annotations={cobra_annotation_mutually_exclusive=["stdin message"]} usage="Alias for --description (git commit convention)"
   flag --metadata type=string default="" usage="Set custom metadata (JSON object, or @file.json to read from file)"
   flag --no-history type=bool default="false" usage="Mark issue as no-history (skip Dolt commits, not GC-eligible)"
   flag --notes type=string default="" annotations={cobra_annotation_mutually_exclusive=["clear-notes notes"]} usage="Replace the notes field (requires --force over existing non-empty notes; --clear-notes clears; --append-notes appends instead)"
   flag --parent type=string default="" usage="New parent issue ID (reparents the issue, use empty string to remove parent)"
+  flag --patch type=string default="" usage="Apply ordered Issue, Memory or informational Link property operations from JSON, @file, or @- (graph preview only)"
   flag --persistent type=bool default="false" usage="Mark issue as persistent (promote wisp to regular issue)"
   flag --priority -p type=string default="" usage="Priority (0-4 or P0-P4, 0=highest)"
+  flag --properties type=string default="" usage="Shallowly merge named Issue, Memory or informational Link properties from JSON, @file, or @- (graph preview only)"
   flag --remove-label type=stringSlice default="[]" usage="Remove labels (repeatable)"
+  flag --replace-metadata type=string default="" usage="Replace all Resource metadata with a JSON object or @file (graph preview only)"
+  flag --replace-properties type=string default="" usage="Replace all writable Issue, Memory or informational Link properties with a JSON object, @file, or @- (graph preview only)"
   flag --session type=string default="" usage="Claude Code session ID for status=closed (or set CLAUDE_SESSION_ID env var)"
   flag --set-labels type=stringSlice default="[]" usage="Set labels, replacing all existing (repeatable)"
   flag --set-metadata type=stringArray default="[]" usage="Set metadata key=value (repeatable, e.g., --set-metadata team=platform)"
+  flag --source-revision type=string default="" usage="Re-pin an informational Link source to an exact token or current, or unpin with unpinned; owned source pins refuse"
   flag --spec-id type=string default="" usage="Link to specification document"
   flag --status -s type=string default="" usage="New status"
   flag --stdin type=bool default="false" annotations={cobra_annotation_mutually_exclusive=["stdin body-file" "stdin description-file" "stdin description" "stdin body" "stdin message"]} usage="Read description from stdin (alias for --body-file -)"
+  flag --target-revision type=string default="" usage="Re-pin an informational Link target to an exact token or current, or unpin with unpinned"
   flag --title type=string default="" usage="New title"
   flag --type -t type=string default="" usage="New type (bug|feature|task|epic|chore|decision|spike|story|milestone); custom types require types.custom config; aliases: enhancement/feat→feature, dec/adr→decision"
   flag --unset-metadata type=stringArray default="[]" usage="Remove metadata key (repeatable, e.g., --unset-metadata team)"
@@ -7356,11 +8475,23 @@ bd version
 
 bd versions
   use: "versions <id>"
-  short: "List the recorded versions of a bead"
+  short: "List retained graph Resource versions or recorded ordinary Bead versions"
   group: "views"
   hidden: false
   runnable: true
   long:
+    | Graph preview workspaces:
+    | Use bd versions ID to list one Memory, Issue or Link's retained versions newest
+    | first. Bare ID means beads/ID; use links/PATH for a Link. Every new graph
+    | Resource has a creation version; do not enable ordinary versioned-history
+    | recording for this command. Cite the opaque version token with bd show ID
+    | --revision =TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
+    | local_revision only orders versions within this store. --json names that field
+    | local_revision, matching ordinary bd versions. BDP HTTP History is unavailable.
+    | The human SEQ timeline includes terminal deletion events, which are not live
+    | snapshots. --long includes exact tokens; ID@N selects a live snapshot locally.
+    |
+    | Ordinary Issue workspaces:
     | List the versions recorded for a bead by versioned history.
     |
     | Recording is off by default. Turn it on with:
@@ -7398,6 +8529,10 @@ bd versions
     | Examples:
     |   bd versions bd-123
     |   bd versions bd-123 --json
+  flag --include type=stringArray default="[]" usage="Include a JSON Pointer; repeat to union selections"
+  flag --long type=bool default="false" usage="Include exact revision tokens in the human graph timeline"
+  flag --omit type=stringArray default="[]" usage="Omit an optional JSON Pointer, or envelope for raw JSON; repeatable"
+  flag --output-format type=stringArray default="[]" usage="Canonical output: default, table, detail, json or jsonl (cannot combine with legacy --json or --format)"
 
 bd where
   use: "where"

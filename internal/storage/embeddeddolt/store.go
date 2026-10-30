@@ -643,6 +643,23 @@ func (s *EmbeddedDoltStore) initSchema(ctx context.Context) error {
 		return err
 	}
 
+	// The published skew override may admit an issue-read command, but never
+	// authorize migration of an unknown future lineage. Attach genuinely read-only
+	// after proving the required projection, before adoption or repair can write.
+	if s.intent == openReadOnlyCommand && os.Getenv("BD_IGNORE_SCHEMA_SKEW") == "1" {
+		current, err := schema.CurrentVersion(ctx, conn)
+		if err != nil {
+			return err
+		}
+		if current > schema.LatestVersion() {
+			if err := schema.CheckRequiredIssueColumns(ctx, conn, sqlbuild.ColumnNames(sqlbuild.IssueBaseColumns)); err != nil {
+				return err
+			}
+			s.readOnly = true
+			return nil
+		}
+	}
+
 	// #4259: refuse to silently apply pending migrations to a remote-backed,
 	// already-initialized database — independently migrating each clone forks the
 	// schema. Embedded mode (the mode the original report was filed against) syncs
@@ -676,8 +693,8 @@ func (s *EmbeddedDoltStore) initSchema(ctx context.Context) error {
 		// ReadOnly is deliberately left unset (false) here: this initSchema
 		// path is only ever reached via newStore (openStrict,
 		// openReadOnlyCommand, or openWorkingSetReconcile intents), all of
-		// which perform a writable open — s.readOnly is never true for any
-		// of them. The genuinely read-only embedded open, OpenReadOnly,
+		// which reach this gate as writable opens. The explicit ahead-schema
+		// issue-read attachment above becomes read-only and returns before it. The genuinely read-only embedded open, OpenReadOnly,
 		// skips initSchema (and this gate) entirely, so there is no
 		// read-only signal to plumb through at this injection site the way
 		// server mode's cfg.ReadOnly is (dolt/store.go initSchema). If that

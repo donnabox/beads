@@ -7,6 +7,7 @@ result: ok
 --- stdout
 Installing Claude hooks for this project...
 ✓ Registered SessionStart hook
+✓ Registered Stop hook
 Installing Claude Code integration...
 ✓ Created new CLAUDE.md with beads integration
 
@@ -33,6 +34,17 @@ Restart Claude Code for changes to take effect.
         ],
         "matcher": ""
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "bd claude-hook stop",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
     ]
   }
 }
@@ -41,7 +53,7 @@ Restart Claude Code for changes to take effect.
 
 This file provides instructions and context for AI coding agents working on this project.
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:6ffdf896 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:a5c58535 -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal.md]
 <!-- END BEADS INTEGRATION -->
 
@@ -78,6 +90,7 @@ result: ok
 --- stdout
 Installing Claude hooks for this project...
 ✓ Hook already registered: SessionStart
+✓ Hook already registered: Stop
 Installing Claude Code integration...
 ✓ CLAUDE.md already has the current beads section
 
@@ -98,6 +111,7 @@ result: ok
 --- stdout
 Removing Claude hooks from project...
 ✓ Removed SessionStart hook
+✓ Removed Stop hook
 Removing Claude Code integration from $ROOT/project/CLAUDE.md...
 ✓ Removed beads section from CLAUDE.md
 ✓ Claude hooks removed

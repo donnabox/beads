@@ -15,6 +15,17 @@
         ],
         "matcher": ""
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "command": "bd claude-hook stop",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
     ]
   }
 }
@@ -99,7 +110,7 @@ bd prime                # Refresh Beads context
 
 This file provides instructions and context for AI coding agents working on this project.
 
-<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:cdcea925 -->
+<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:cbf2fcf2 -->
 [managed section body: byte-identical to internal/templates/agents/testdata/managed-section-minimal-no-remote.md]
 <!-- END BEADS INTEGRATION -->
 
