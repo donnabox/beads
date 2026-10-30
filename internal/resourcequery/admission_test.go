@@ -253,3 +253,53 @@ func TestRequestFieldRootsAreCompleteAndDetached(t *testing.T) {
 		t.Fatal("nil request invented field roots")
 	}
 }
+
+// A List AST is a bounded candidate predicate, even when its syntax is shared
+// with Query. Prove each refused request is valid Query syntax first, so an
+// unrelated parser error cannot stand in for enforcement of the List profile.
+func TestListProfileRejectsGraphOperationsRecursively(t *testing.T) {
+	l := binding("l")
+	bead := binding("b")
+	dereference := compare("eq", field(endpoint(l, "target"), "properties", "status"), literal("active"))
+	for _, tc := range []struct {
+		name      string
+		selection ast
+	}{
+		{"walk root", walk(refset("beads", base+"A"), "outgoing", 1)},
+		{"endpoint collection", ast{"op": "endpoints", "input": scan("links"), "side": "target"}},
+		{"explicit reference set", refset("beads", base+"A")},
+		{"nested selection", filter(filter(scan("beads"), "a", true), "b", true)},
+		{"global any", filter(scan("beads"), "b", ast{"op": "any", "input": scan("links"), "bind": "l", "predicate": true})},
+		{"global all", filter(scan("beads"), "b", ast{"op": "all", "input": scan("links"), "bind": "l", "predicate": true})},
+		{"endpoint property", filter(scan("links"), "l", dereference)},
+		{"endpoint type", filter(scan("links"), "l", ast{"op": "typeIs", "of": endpoint(l, "target"), "type": base + "Memory", "match": "family"})},
+		{"endpoint identity", filter(scan("links"), "l", compare("eq", ast{"op": "id", "of": endpoint(l, "source")}, literal(base+"A")))},
+		{"skipped disjunction", filter(scan("links"), "l", ast{"op": "or", "operands": []any{true, dereference}})},
+		{"skipped conjunction", filter(scan("links"), "l", ast{"op": "and", "operands": []any{false, ast{"op": "not", "predicate": dereference}}})},
+		{"nested skipped any", filter(scan("beads"), "b", ast{"op": "or", "operands": []any{true, ast{"op": "not", "predicate": ast{"op": "any", "input": scan("links"), "bind": "l", "predicate": true}}}})},
+		{"field to field", filter(scan("beads"), "b", compare("eq", field(bead, "properties", "title"), field(bead, "properties", "body")))},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := Decode(request(t, "query", "resources", tc.selection)); err != nil {
+				t.Fatalf("fixture is not an admitted Query request: %v", err)
+			}
+			if _, err := Decode(request(t, "list", "resources", tc.selection)); !errors.Is(err, ErrInvalid) {
+				t.Fatalf("List admitted a nonlocal shape or returned the wrong failure: %v", err)
+			}
+		})
+	}
+}
+
+func TestListProfileKeepsStoredReferencesAndLiteralDataLocal(t *testing.T) {
+	l := binding("l")
+	for _, predicate := range []ast{
+		compare("eq", field(l, "source"), literal(base+"A")),
+		compare("eq", field(l, "target", "revision"), literal("r1")),
+		compare("eq", field(l, "metadata", "payload"), literal(ast{"op": "endpoint", "side": "target"})),
+		{"op": "typeIs", "of": l, "type": base + "References", "match": "family"},
+	} {
+		if _, err := Decode(request(t, "list", "resources", filter(scan("links"), "l", predicate))); err != nil {
+			t.Fatalf("candidate data or literal syntax was mistaken for graph evaluation: %v", err)
+		}
+	}
+}

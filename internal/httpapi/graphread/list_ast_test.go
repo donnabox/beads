@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -96,6 +97,106 @@ func publicListInventory(t *testing.T) (Inventory, resourcequery.Dataset) {
 		data.Resources = append(data.Resources, r)
 	}
 	return inventory, data
+}
+
+func TestLegacyListFieldsPreserveTextAndLiteralKeys(t *testing.T) {
+	records := []json.RawMessage{
+		json.RawMessage(`{"properties":{"status":"active"},"metadata":{"n":1,"marker":null,"gc.routed_to":"local","payload":{"a":1}}}`),
+		json.RawMessage(`{"properties":{"status":"active"},"metadata":{"n":"1","marker":"","gc":{"routed_to":"local"},"payload":{"a":1}}}`),
+		json.RawMessage(`{"properties":{"status":"draft"},"metadata":{"n":1.0,"marker":false,"gc.routed_to":"other"}}`),
+		json.RawMessage(`{"properties":{},"metadata":{}}`),
+	}
+	for _, tc := range []struct {
+		name   string
+		fields []LegacyListField
+		want   []int
+	}{
+		{"string and number", []LegacyListField{{Namespace: "metadata", Key: "n", Value: "1"}}, []int{0, 1, 2}},
+		{"numeric normalization", []LegacyListField{{Namespace: "metadata", Key: "n", Value: "1.0"}}, nil},
+		{"explicit null is present", []LegacyListField{{Namespace: "metadata", Key: "marker", Presence: true}}, []int{0, 1, 2}},
+		{"null is not empty string", []LegacyListField{{Namespace: "metadata", Key: "marker", Value: ""}}, []int{1}},
+		{"null text", []LegacyListField{{Namespace: "metadata", Key: "marker", Value: "null"}}, []int{0}},
+		{"boolean", []LegacyListField{{Namespace: "metadata", Key: "marker", Value: "false"}}, []int{2}},
+		{"literal dotted key", []LegacyListField{{Namespace: "metadata", Key: "gc.routed_to", Value: "local"}}, []int{0}},
+		{"namespace separation", []LegacyListField{{Namespace: "metadata", Key: "status", Value: "active"}}, nil},
+		{"AND across namespaces", []LegacyListField{{Namespace: "properties", Key: "status", Value: "active"}, {Namespace: "metadata", Key: "n", Value: "1"}}, []int{0, 1}},
+		{"conflicting repeat", []LegacyListField{{Namespace: "properties", Key: "status", Value: "active"}, {Namespace: "properties", Key: "status", Value: "draft"}}, nil},
+		{"SQL container spelling", []LegacyListField{{Namespace: "metadata", Key: "payload", Value: `{"a": 1}`}}, []int{0, 1}},
+		{"compact container spelling is different", []LegacyListField{{Namespace: "metadata", Key: "payload", Value: `{"a":1}`}}, nil},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			filter, err := CompileLegacyListFields(tc.fields)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := filter.Select(context.Background(), records)
+			if err != nil || len(got) != len(tc.want) {
+				t.Fatalf("selection = %s, %v; want indexes %v", got, err, tc.want)
+			}
+			for i, index := range tc.want {
+				if string(got[i]) != string(records[index]) {
+					t.Fatalf("selected record %d: %s", i, got[i])
+				}
+			}
+		})
+	}
+}
+
+func TestLegacyListFieldsAdmissionAndCancellation(t *testing.T) {
+	for _, fields := range [][]LegacyListField{
+		{{Namespace: "source", Key: "status", Value: "active"}},
+		{{Namespace: "metadata", Key: ""}},
+		make([]LegacyListField, 257),
+		{{Namespace: "metadata", Key: "key", Value: strings.Repeat("x", 16385)}},
+	} {
+		if _, err := CompileLegacyListFields(fields); err == nil {
+			t.Fatal("invalid or excessive field conditions admitted")
+		}
+	}
+	fields := []LegacyListField{{Namespace: "metadata", Key: "marker", Presence: true}}
+	filter, err := CompileLegacyListFields(fields)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fields[0].Namespace = "source"
+	records := []json.RawMessage{json.RawMessage(`{"metadata":{"marker":null}}`)}
+	if got, err := filter.Select(context.Background(), records); err != nil || len(got) != 1 {
+		t.Fatalf("caller mutated compiled fields: %s %v", got, err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if got, err := filter.Select(ctx, records); !errors.Is(err, context.Canceled) || got != nil {
+		t.Fatalf("canceled selection returned data: %s %v", got, err)
+	}
+	if got, err := filter.Select(context.Background(), []json.RawMessage{json.RawMessage(`{`)}); !errors.Is(err, resourcequery.ErrDataset) || got != nil {
+		t.Fatalf("corrupt candidate returned data: %s %v", got, err)
+	}
+}
+
+func TestLegacyListSQLTextRendering(t *testing.T) {
+	for _, tc := range []struct{ raw, want string }{
+		{`null`, "null"},
+		{`"null"`, "null"},
+		{`""`, ""},
+		{`true`, "true"},
+		{`1.0`, "1"},
+		{`1e21`, "1000000000000000000000"},
+		{`1e-7`, "0.0000001"},
+		{`[1,2]`, "[1, 2]"},
+		{`{"aa":1,"b":2}`, `{"b": 2, "aa": 1}`},
+		{`{"key":["a\nb","a\\b","a\"b",null]}`, "{\"key\": [\"a\nb\", \"a\\b\", \"a\"b\", null]}"},
+		{`["<>&","\u0001","雪"]`, "[\"<>&\", \"\x01\", \"雪\"]"},
+	} {
+		budget := 65536
+		got, err := legacyListSQLText(context.Background(), json.RawMessage(tc.raw), &budget)
+		if err != nil || got != tc.want {
+			t.Fatalf("SQL text for %s = %q,%v; want %q", tc.raw, got, err, tc.want)
+		}
+	}
+	budget := 2
+	if _, err := legacyListSQLText(context.Background(), json.RawMessage(`"abc"`), &budget); !errors.Is(err, resourcequery.ErrLimit) {
+		t.Fatalf("comparison byte budget: %v", err)
+	}
 }
 
 func TestPublicListMatchesFullEditionsAndRetainsEndpoints(t *testing.T) {
