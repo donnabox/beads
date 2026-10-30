@@ -40,7 +40,27 @@ type listInput struct {
 	repoOverrideSet bool
 }
 
+// listInputFailures separates pure parsing from the caller's failure renderer.
+// Legacy List retains the exact existing output policy; canonical aggregates
+// receive unrendered typed validation errors and render once at their boundary.
+type listInputFailures struct {
+	plain       func(string, ...interface{}) error
+	respectJSON func(string, ...interface{}) error
+	hint        func(string, string) error
+	skipLabels  func([]string) error
+}
+
 func gatherListInput(cmd *cobra.Command) (listInput, error) {
+	return gatherListInputWithFailures(cmd, listInputFailures{
+		plain: HandleError, respectJSON: HandleErrorRespectJSON, hint: HandleErrorWithHint,
+		skipLabels: func(conflicts []string) error {
+			fmt.Fprint(os.Stderr, formatSkipLabelsConflictError(conflicts))
+			return &exitError{Code: 2}
+		},
+	})
+}
+
+func gatherListInputWithFailures(cmd *cobra.Command, fail listInputFailures) (listInput, error) {
 	in := listInput{}
 
 	// The custom filter values persist across in-process Execute() calls;
@@ -110,8 +130,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 	if in.SkipLabels {
 		conflicts := skipLabelsConflicts(in.Labels, in.LabelsAny, in.LabelPattern, in.LabelRegex, in.ExcludeLabels, in.NoLabels)
 		if len(conflicts) > 0 {
-			fmt.Fprint(os.Stderr, formatSkipLabelsConflictError(conflicts))
-			return in, &exitError{Code: 2}
+			return in, fail.skipLabels(conflicts)
 		}
 	}
 
@@ -119,7 +138,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 		priorityStr, _ := cmd.Flags().GetString("priority")
 		p, err := validation.ValidatePriority(priorityStr)
 		if err != nil {
-			return in, HandleError("%v", err)
+			return in, fail.plain("%v", err)
 		}
 		in.Priority = &p
 	}
@@ -127,7 +146,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 		s, _ := cmd.Flags().GetString("priority-min")
 		p, err := validation.ValidatePriority(s)
 		if err != nil {
-			return in, HandleError("parsing --priority-min: %v", err)
+			return in, fail.plain("parsing --priority-min: %v", err)
 		}
 		in.PriorityMin = &p
 	}
@@ -135,7 +154,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 		s, _ := cmd.Flags().GetString("priority-max")
 		p, err := validation.ValidatePriority(s)
 		if err != nil {
-			return in, HandleError("parsing --priority-max: %v", err)
+			return in, fail.plain("parsing --priority-max: %v", err)
 		}
 		in.PriorityMax = &p
 	}
@@ -143,7 +162,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 	in.PinnedFlag, _ = cmd.Flags().GetBool("pinned")
 	in.NoPinnedFlag, _ = cmd.Flags().GetBool("no-pinned")
 	if in.PinnedFlag && in.NoPinnedFlag {
-		return in, HandleError("--pinned and --no-pinned are mutually exclusive")
+		return in, fail.plain("--pinned and --no-pinned are mutually exclusive")
 	}
 
 	in.IncludeTemplates, _ = cmd.Flags().GetBool("include-templates")
@@ -158,20 +177,20 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 	}
 	in.NoParent, _ = cmd.Flags().GetBool("no-parent")
 	if in.ParentID != "" && in.NoParent {
-		return in, HandleError("--parent and --no-parent are mutually exclusive")
+		return in, fail.plain("--parent and --no-parent are mutually exclusive")
 	}
 
 	if s, _ := cmd.Flags().GetString("mol-type"); s != "" {
 		mt := types.MolType(s)
 		if !mt.IsValid() {
-			return in, HandleError("invalid mol-type %q (must be %s)", s, types.ValidMolTypeNames())
+			return in, fail.plain("invalid mol-type %q (must be %s)", s, types.ValidMolTypeNames())
 		}
 		in.MolType = &mt
 	}
 	if s, _ := cmd.Flags().GetString("wisp-type"); s != "" {
 		wt := types.WispType(s)
 		if !wt.IsValid() {
-			return in, HandleError("invalid wisp-type %q (must be %s)", s, types.ValidWispTypeNames())
+			return in, fail.plain("invalid wisp-type %q (must be %s)", s, types.ValidWispTypeNames())
 		}
 		in.WispType = &wt
 
@@ -192,7 +211,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 		// without the workspace's infra vocabulary, which this layer does not
 		// load.
 		if !in.IncludeEphemeral && !in.IncludeInfra && in.IssueType == "" {
-			return in, HandleErrorWithHint(
+			return in, fail.hint(
 				fmt.Sprintf("--wisp-type %s cannot match anything here: it filters the wisp_type column, and this listing admits only durable rows, which never carry one", s),
 				"add --include-ephemeral to admit the ephemeral plane (or --include-infra, which admits it as part of a wider bundle)")
 		}
@@ -202,34 +221,34 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 	in.OverdueFlag, _ = cmd.Flags().GetBool("overdue")
 
 	var err error
-	if in.CreatedAfter, err = parseListTimeFlag(cmd, "created-after"); err != nil {
+	if in.CreatedAfter, err = parseListTimeFlagWithFailure(cmd, fail.plain, "created-after"); err != nil {
 		return in, err
 	}
-	if in.CreatedBefore, err = parseListTimeFlag(cmd, "created-before"); err != nil {
+	if in.CreatedBefore, err = parseListTimeFlagWithFailure(cmd, fail.plain, "created-before"); err != nil {
 		return in, err
 	}
-	if in.UpdatedAfter, err = parseListTimeFlag(cmd, "updated-after"); err != nil {
+	if in.UpdatedAfter, err = parseListTimeFlagWithFailure(cmd, fail.plain, "updated-after"); err != nil {
 		return in, err
 	}
-	if in.UpdatedBefore, err = parseListTimeFlag(cmd, "updated-before"); err != nil {
+	if in.UpdatedBefore, err = parseListTimeFlagWithFailure(cmd, fail.plain, "updated-before"); err != nil {
 		return in, err
 	}
-	if in.ClosedAfter, err = parseListTimeFlag(cmd, "closed-after"); err != nil {
+	if in.ClosedAfter, err = parseListTimeFlagWithFailure(cmd, fail.plain, "closed-after"); err != nil {
 		return in, err
 	}
-	if in.ClosedBefore, err = parseListTimeFlag(cmd, "closed-before"); err != nil {
+	if in.ClosedBefore, err = parseListTimeFlagWithFailure(cmd, fail.plain, "closed-before"); err != nil {
 		return in, err
 	}
-	if in.DeferAfter, err = parseListTimeFlag(cmd, "defer-after"); err != nil {
+	if in.DeferAfter, err = parseListTimeFlagWithFailure(cmd, fail.plain, "defer-after"); err != nil {
 		return in, err
 	}
-	if in.DeferBefore, err = parseListTimeFlag(cmd, "defer-before"); err != nil {
+	if in.DeferBefore, err = parseListTimeFlagWithFailure(cmd, fail.plain, "defer-before"); err != nil {
 		return in, err
 	}
-	if in.DueAfter, err = parseListTimeFlag(cmd, "due-after"); err != nil {
+	if in.DueAfter, err = parseListTimeFlagWithFailure(cmd, fail.plain, "due-after"); err != nil {
 		return in, err
 	}
-	if in.DueBefore, err = parseListTimeFlag(cmd, "due-before"); err != nil {
+	if in.DueBefore, err = parseListTimeFlagWithFailure(cmd, fail.plain, "due-before"); err != nil {
 		return in, err
 	}
 
@@ -239,17 +258,17 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 		for _, mf := range metadataFieldFlags {
 			k, v, ok := strings.Cut(mf, "=")
 			if !ok || k == "" {
-				return in, HandleErrorRespectJSON("invalid --metadata-field: expected key=value, got %q", mf)
+				return in, fail.respectJSON("invalid --metadata-field: expected key=value, got %q", mf)
 			}
 			if err := storage.ValidateMetadataKey(k); err != nil {
-				return in, HandleErrorRespectJSON("invalid --metadata-field key: %v", err)
+				return in, fail.respectJSON("invalid --metadata-field key: %v", err)
 			}
 			in.MetadataFields[k] = v
 		}
 	}
 	if k, _ := cmd.Flags().GetString("has-metadata-key"); k != "" {
 		if err := storage.ValidateMetadataKey(k); err != nil {
-			return in, HandleErrorRespectJSON("invalid --has-metadata-key: %v", err)
+			return in, fail.respectJSON("invalid --has-metadata-key: %v", err)
 		}
 		in.HasMetadataKey = k
 	}
@@ -268,7 +287,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 		// ahead of the route split, so the direct and proxied routes answer
 		// the same way.
 		if in.formatStr != "" {
-			return in, HandleError("--format cannot be combined with --watch; --watch always renders the pretty listing")
+			return in, fail.plain("--format cannot be combined with --watch; --watch always renders the pretty listing")
 		}
 		in.prettyFormat = true
 	}
@@ -295,18 +314,18 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 	if in.Brief {
 		switch {
 		case in.watchMode:
-			return in, HandleError("--watch cannot be combined with --brief")
+			return in, fail.plain("--watch cannot be combined with --brief")
 		case in.formatStr != "":
-			return in, HandleError("--format cannot be combined with --brief; a template can print a field --brief omits, with nothing to mark it")
+			return in, fail.plain("--format cannot be combined with --brief; a template can print a field --brief omits, with nothing to mark it")
 		case in.ParentID != "" && in.prettyFormat:
-			return in, HandleError("--parent with --pretty cannot be combined with --brief; the hierarchical walk is a different query")
+			return in, fail.plain("--parent with --pretty cannot be combined with --brief; the hierarchical walk is a different query")
 		}
 	}
 
 	in.depsMode, _ = cmd.Flags().GetString("deps")
 	if in.depsMode != "" {
 		if in.depsMode != "scheduling" && in.depsMode != "all" {
-			return in, HandleErrorRespectJSON("invalid --deps value %q (valid: scheduling, all)", in.depsMode)
+			return in, fail.respectJSON("invalid --deps value %q (valid: scheduling, all)", in.depsMode)
 		}
 		// --deps annotates and orders the parent-child tree, so it is meaningful
 		// only in the tree view. Reject the non-tree output modes rather than
@@ -314,13 +333,13 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 		// bare `--deps` renders as intended (mirrors --watch implying --pretty).
 		switch {
 		case in.jsonOutput:
-			return in, HandleErrorRespectJSON("--deps is not supported with --json output")
+			return in, fail.respectJSON("--deps is not supported with --json output")
 		case in.formatStr != "":
-			return in, HandleErrorRespectJSON("--deps is not supported with --format output")
+			return in, fail.respectJSON("--deps is not supported with --format output")
 		case in.flatFormat:
-			return in, HandleErrorRespectJSON("--deps requires the tree view and cannot be combined with --flat")
+			return in, fail.respectJSON("--deps requires the tree view and cannot be combined with --flat")
 		case in.watchMode:
-			return in, HandleErrorRespectJSON("--deps is not supported with --watch")
+			return in, fail.respectJSON("--deps is not supported with --watch")
 		}
 		in.prettyFormat = true
 	}
@@ -331,7 +350,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 			"status": true, "id": true, "title": true, "type": true, "assignee": true,
 		}
 		if !validSortFields[in.SortBy] {
-			return in, HandleError("invalid sort field %q (valid: priority, created, updated, closed, status, id, title, type, assignee)", in.SortBy)
+			return in, fail.plain("invalid sort field %q (valid: priority, created, updated, closed, status, id, title, type, assignee)", in.SortBy)
 		}
 	}
 
@@ -366,7 +385,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 	if cmd.Flags().Changed("offset") {
 		offset, _ := cmd.Flags().GetInt("offset")
 		if offset < 0 {
-			return in, HandleError("--offset must be >= 0")
+			return in, fail.plain("--offset must be >= 0")
 		}
 		// --offset only makes sense when pagination happens in SQL. Sorts
 		// that fall back to Go-side (currently --sort id) fetch everything
@@ -374,7 +393,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 		// caller would think they're paging when they're really pulling
 		// the whole result set.
 		if offset > 0 && workapi.SQLLimit(in.ListRequest) == 0 && in.SortBy == "id" {
-			return in, HandleError("--offset is not supported with --sort %s (sort requires fetching the full result set)", in.SortBy)
+			return in, fail.plain("--offset is not supported with --sort %s (sort requires fetching the full result set)", in.SortBy)
 		}
 		in.Offset = offset
 	}
@@ -385,7 +404,7 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 	// Resolving it HERE also means it is resolved exactly once per invocation.
 	// resolveMaxRowsEnvOnly warns on a malformed BEADS_MAX_ROWS every time it
 	// runs, so a second resolve downstream would warn twice.
-	maxRows, maxRowsSource, err := resolveMaxRows(cmd)
+	maxRows, maxRowsSource, err := resolveMaxRowsWithFailure(cmd, fail.respectJSON)
 	if err != nil {
 		return in, err
 	}
@@ -399,13 +418,17 @@ func gatherListInput(cmd *cobra.Command) (listInput, error) {
 }
 
 func parseListTimeFlag(cmd *cobra.Command, name string) (*time.Time, error) {
+	return parseListTimeFlagWithFailure(cmd, HandleError, name)
+}
+
+func parseListTimeFlagWithFailure(cmd *cobra.Command, fail func(string, ...interface{}) error, name string) (*time.Time, error) {
 	s, _ := cmd.Flags().GetString(name)
 	if s == "" {
 		return nil, nil
 	}
 	t, err := parseTimeFlag(s)
 	if err != nil {
-		return nil, HandleError("parsing --%s: %v", name, err)
+		return nil, fail("parsing --%s: %v", name, err)
 	}
 	return &t, nil
 }
