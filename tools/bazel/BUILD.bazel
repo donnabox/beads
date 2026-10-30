@@ -299,6 +299,7 @@ release_cross_build(
         "//internal/templates:templates",
         "//internal/testutil/bazeltest:bazeltest",
         "//internal/testutil/credentialcmd:credentialcmd",
+        "//internal/testutil/epochfixture:epochfixture",
         "//internal/testutil/fixtures:fixtures",
         "//internal/testutil/integration:integration",
         "//internal/testutil/legacyworkspace:legacyworkspace",

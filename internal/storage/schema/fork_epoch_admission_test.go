@@ -86,7 +86,7 @@ func TestEpochAdmissionRefusesAmbiguousLineageBeforeWrites(t *testing.T) {
 			guard := &admissionNoWrites{DB: db}
 			expectAdmissionTables(mock, true, false)
 			mock.ExpectQuery(regexp.QuoteMeta("SELECT COALESCE(MAX(version), 0) FROM schema_migrations")).WillReturnRows(sqlmock.NewRows([]string{"max"}).AddRow(test.version))
-			if test.version <= forkEpochExtensionVersion {
+			if test.version <= forkEpochLatestVersion {
 				columns := sqlmock.NewRows([]string{"Field", "Type", "Null", "Key", "Default", "Extra"})
 				if test.hashColumn {
 					columns.AddRow("content_hash", "char(64)", "YES", "", nil, "")
@@ -97,10 +97,10 @@ func TestEpochAdmissionRefusesAmbiguousLineageBeforeWrites(t *testing.T) {
 					if test.hasRow {
 						rows.AddRow(70, test.hash)
 					}
-					mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 75 ORDER BY version")).WillReturnRows(rows)
+					mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 74 ORDER BY version")).WillReturnRows(rows)
 				}
 			}
-			err = checkForkEpochAdmission(context.Background(), guard, forkEpochExtensionVersion)
+			err = checkForkEpochAdmission(context.Background(), guard, forkEpochLatestVersion)
 			var refused *EpochMigrationCompatibilityError
 			if !errors.As(err, &refused) {
 				t.Fatalf("want concrete compatibility refusal, got %v", err)
@@ -160,46 +160,30 @@ func expectSelectedEpochLineage(t *testing.T, mock sqlmock.Sqlmock, version int)
 		}
 		rows.AddRow(v, fmt.Sprintf("%x", sha256.Sum256(data)))
 	}
-	mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 75 ORDER BY version")).WillReturnRows(rows)
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 74 ORDER BY version")).WillReturnRows(rows)
 }
 
-func TestEpochAdmissionDistinguishesOldAndCompletedData(t *testing.T) {
-	for _, test := range []struct {
-		name                   string
-		version, target        int
-		full, occupied, refuse bool
-	}{
-		{"empty old table without writer fence", 72, 75, false, false, true},
-		{"occupied old table", 72, 75, false, true, true},
-		{"occupied pending extension", 73, 75, true, true, true},
-		{"empty pending extension without writer fence", 73, 75, true, false, true},
-		{"completed extension retains rows", 75, 75, true, true, false},
-		{"completed cursor with old shape", 75, 75, false, false, true},
-		{"default target refuses occupied old", 72, 0, false, true, true},
-	} {
-		t.Run(test.name, func(t *testing.T) {
+func TestEpochAdmissionPreservesReleasedEmptyAndOccupiedFormats(t *testing.T) {
+	for _, version := range []int{70, 71, 72, 73, 74} {
+		t.Run(fmt.Sprint(version), func(t *testing.T) {
 			db, mock, err := sqlmock.New()
 			if err != nil {
 				t.Fatal(err)
 			}
 			defer db.Close()
 			guard := &admissionNoWrites{DB: db}
-			expectAdmissionTables(mock, true, true)
-			expectSelectedEpochLineage(t, mock, test.version)
-			if test.version >= forkEpochExtensionVersion {
-				expectEpochMetadata(mock, test.full, false, "YES")
+			expectAdmissionTables(mock, true, version >= 71)
+			expectSelectedEpochLineage(t, mock, version)
+			if version >= 71 {
+				expectEpochMetadata(mock, false, false, "YES")
 			}
-			err = checkForkEpochAdmission(context.Background(), guard, test.target)
-			if test.refuse {
-				var refused *EpochMigrationCompatibilityError
-				if !errors.As(err, &refused) {
-					t.Fatalf("want compatibility refusal, got %v", err)
-				}
-			} else if err != nil {
-				t.Fatalf("recognized fixture refused: %v", err)
+			if err := checkForkEpochAdmission(context.Background(), guard, 74); err != nil {
+				t.Fatal(err)
 			}
+			// No occupancy probe or DDL occurs: both empty and occupied released
+			// tables remain on the same algorithm and saved-record meaning.
 			if guard.writes != 0 {
-				t.Fatalf("admission wrote %d times", guard.writes)
+				t.Fatalf("admission wrote%d times", guard.writes)
 			}
 			if err := mock.ExpectationsWereMet(); err != nil {
 				t.Fatal(err)
@@ -208,7 +192,7 @@ func TestEpochAdmissionDistinguishesOldAndCompletedData(t *testing.T) {
 	}
 }
 
-func TestEpochAdmissionRejectsChangedIndexOrDisabledCheck(t *testing.T) {
+func TestDeferredSurvivalShapeRejectsChangedIndexOrDisabledCheck(t *testing.T) {
 	for _, test := range []struct {
 		name     string
 		prefix   bool
@@ -224,13 +208,11 @@ func TestEpochAdmissionRejectsChangedIndexOrDisabledCheck(t *testing.T) {
 			}
 			defer db.Close()
 			guard := &admissionNoWrites{DB: db}
-			expectAdmissionTables(mock, true, true)
-			expectSelectedEpochLineage(t, mock, 75)
 			expectEpochMetadata(mock, true, test.prefix, test.enforced)
-			err = checkForkEpochAdmission(context.Background(), guard, 75)
+			complete, err := readForkEpochShape(context.Background(), guard)
 			var refused *EpochMigrationCompatibilityError
-			if !errors.As(err, &refused) {
-				t.Fatalf("unsafe metadata admitted: %v", err)
+			if complete || !errors.As(err, &refused) {
+				t.Fatalf("unsafe metadata admitted or typed refusal lost: complete=%v,error=%v", complete, err)
 			}
 			if guard.writes != 0 {
 				t.Fatalf("admission wrote %d times", guard.writes)
@@ -251,7 +233,7 @@ func TestEpochAdmissionTableDiscoveryFailureIsNotFresh(t *testing.T) {
 	guard := &admissionNoWrites{DB: db}
 	failed := errors.New("catalog unavailable")
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = DATABASE()")).WillReturnError(failed)
-	err = checkForkEpochAdmission(context.Background(), guard, 75)
+	err = checkForkEpochAdmission(context.Background(), guard, 74)
 	if !errors.Is(err, failed) {
 		t.Fatalf("catalog failure treated as fresh or lost: %v", err)
 	}
@@ -269,12 +251,12 @@ func expectCurrentEpochAdmission(t *testing.T, mock sqlmock.Sqlmock) {
 	t.Helper()
 	expectAdmissionTables(mock, true, true)
 	expectSelectedEpochLineage(t, mock, LatestVersion())
-	expectEpochMetadata(mock, true, false, "YES")
+	expectEpochMetadata(mock, false, false, "YES")
 }
 
 // Public migration consent and the schema-skew read escape hatch must not
 // become authority to reinterpret retained pre-extension addresses.
-func TestMigrationAuthorityDoesNotBypassOccupiedEpochRefusal(t *testing.T) {
+func TestMigrationAuthorityDoesNotBypassUnknownEpochLineage(t *testing.T) {
 	for _, route := range []struct {
 		name    string
 		grant   func()
@@ -282,7 +264,7 @@ func TestMigrationAuthorityDoesNotBypassOccupiedEpochRefusal(t *testing.T) {
 	}{
 		{"local consent", func() { SetLocalMigrateConsent(true) }, MigrateUp},
 		{"force consent", func() { SetForceAllowRemoteMigrate(true) }, MigrateUp},
-		{"historical API at latest", func() {}, func(ctx context.Context, db DBConn) (int, error) { return MigrateUpTo(ctx, db, 75) }},
+		{"historical API at latest", func() {}, func(ctx context.Context, db DBConn) (int, error) { return MigrateUpTo(ctx, db, 74) }},
 		{"bootstrap consent seam", func() {}, migrateUpConsented},
 	} {
 		t.Run(route.name, func(t *testing.T) {
@@ -296,7 +278,9 @@ func TestMigrationAuthorityDoesNotBypassOccupiedEpochRefusal(t *testing.T) {
 			defer db.Close()
 			guard := &admissionNoWrites{DB: db}
 			expectAdmissionTables(mock, true, true)
-			expectSelectedEpochLineage(t, mock, 72)
+			expectScalar(mock, "SELECT COALESCE(MAX(version), 0) FROM schema_migrations", "version", 72)
+			mock.ExpectQuery(regexp.QuoteMeta("SHOW COLUMNS FROM schema_migrations LIKE 'content_hash'")).WillReturnRows(sqlmock.NewRows([]string{"Field"}).AddRow("content_hash"))
+			mock.ExpectQuery(regexp.QuoteMeta("SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 74 ORDER BY version")).WillReturnRows(sqlmock.NewRows([]string{"version", "content_hash"}).AddRow(70, "foreign"))
 			applied, err := route.migrate(context.Background(), guard)
 			var refused *EpochMigrationCompatibilityError
 			if !errors.As(err, &refused) {
@@ -316,14 +300,48 @@ func TestMigrationAuthorityDoesNotBypassOccupiedEpochRefusal(t *testing.T) {
 // invent an epoch table before the migration that created it.
 func expectPreExtensionEpochAdmission(t *testing.T, mock sqlmock.Sqlmock, version int) {
 	t.Helper()
-	if version < 0 || version >= forkEpochExtensionVersion {
+	if version < 0 || version >= forkEpochLatestVersion {
 		t.Fatalf("not a pre-extension fixture: %d", version)
 	}
 	epoch := version >= 71
 	expectAdmissionTables(mock, true, epoch)
 	if version >= 70 {
 		expectSelectedEpochLineage(t, mock, version)
+		if epoch {
+			expectEpochMetadata(mock, false, false, "YES")
+		}
 	} else {
 		expectScalar(mock, "SELECT COALESCE(MAX(version), 0) FROM schema_migrations", "version", version)
+	}
+}
+
+func TestEpochAdmissionRefusesDeferredOrUnknownColumnsBeforeWrites(t *testing.T) {
+	for _, column := range []string{"carried_from", "gone_at_epoch", "future_contract"} {
+		t.Run(column, func(t *testing.T) {
+			db, mock, err := sqlmock.New()
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer db.Close()
+			guard := &admissionNoWrites{DB: db}
+			expectAdmissionTables(mock, true, true)
+			expectSelectedEpochLineage(t, mock, 74)
+			rows := sqlmock.NewRows([]string{"Field", "Type", "Null", "Key", "Default", "Extra"}).
+				AddRow("address", "varchar(255)", "NO", "PRI", nil, "").
+				AddRow("store_id", "varchar(255)", "NO", "", nil, "").
+				AddRow("minted_id", "varchar(255)", "NO", "", nil, "").
+				AddRow("minted_epoch", "int", "NO", "", nil, "").
+				AddRow("minted_at", "datetime", "NO", "", nil, "").
+				AddRow(column, "int", "YES", "", nil, "")
+			mock.ExpectQuery(regexp.QuoteMeta("SHOW COLUMNS FROM epoch_minted_addresses")).WillReturnRows(rows)
+			err = checkForkEpochAdmission(context.Background(), guard, 74)
+			var refused *EpochMigrationCompatibilityError
+			if !errors.As(err, &refused) || guard.writes != 0 {
+				t.Fatalf("deferred column %s,error%v,writes%d", column, err, guard.writes)
+			}
+			if err := mock.ExpectationsWereMet(); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }

@@ -41,7 +41,18 @@ fi
 # fetched tags.
 if ! git -C "$PROJECT_ROOT" rev-parse --verify --quiet "refs/tags/$PIN^{commit}" >/dev/null; then
     echo "docs pin: fetching tag $PIN from origin..." >&2
-    git -C "$PROJECT_ROOT" fetch --depth=1 origin "refs/tags/$PIN:refs/tags/$PIN" >&2
+    if ! git -C "$PROJECT_ROOT" fetch --depth=1 origin "refs/tags/$PIN:refs/tags/$PIN" >&2; then
+        # Forks need not mirror upstream release tags. Resolve an existing
+        # release pin from its canonical publisher without changing origin,
+        # the pin, or any existing local tag. Fork-specific pins fail closed.
+        if [[ ! "$PIN" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][A-Za-z0-9.-]+)?$ ]]; then
+            echo "docs pin: non-release tag $PIN is unavailable from origin" >&2
+            exit 1
+        fi
+        echo "docs pin: resolving release $PIN from gastownhall/beads..." >&2
+        git -C "$PROJECT_ROOT" fetch --depth=1 https://github.com/gastownhall/beads.git "refs/tags/$PIN:refs/tags/$PIN" >&2
+    fi
+    git -C "$PROJECT_ROOT" rev-parse --verify "refs/tags/$PIN^{commit}" >/dev/null
 fi
 
 echo "docs pin: building bd from tag $PIN (CGO_ENABLED=0 -tags gms_pure_go)..." >&2

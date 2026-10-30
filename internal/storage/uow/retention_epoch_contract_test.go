@@ -3,6 +3,7 @@ package uow
 import (
 	"context"
 	"fmt"
+	"github.com/steveyegge/beads/internal/testutil/epochfixture"
 	"testing"
 
 	"github.com/steveyegge/beads/backend/conformance"
@@ -107,6 +108,7 @@ func TestEpochContract(t *testing.T) {
 func newUOWEpochFixture(t *testing.T, ctx context.Context, prefix string) conformance.EpochFixture {
 	t.Helper()
 	provider := newUOWRoleFixtureProvider(t, ctx, prefix)
+	prepareUOWSurvivalFixture(t, ctx, provider)
 	return conformance.EpochFixture{
 		IssuePrefix:       prefix,
 		CurrentEpoch:      epochUOWCurrentEpoch(provider),
@@ -138,7 +140,7 @@ func epochUOWCurrentEpoch(provider UnitOfWorkProvider) func(ctx context.Context,
 			if err != nil {
 				return 0, err
 			}
-			return storeops.CurrentEpochInTx(ctx, runner, storeID)
+			return storeops.SurvivalCurrentEpochInTx(ctx, runner, storeID)
 		})
 	}
 }
@@ -155,9 +157,9 @@ func epochUOWBumpEpoch(provider UnitOfWorkProvider) func(ctx context.Context, st
 			if err != nil {
 				return 0, "", err
 			}
-			bump := storeops.BumpEpochInTx
+			bump := storeops.SurvivalBumpEpochInTx
 			if trigger == conformance.EpochBumpTriggerTokenSchemeChange {
-				bump = storeops.BumpEpochCarryingInTx
+				bump = storeops.SurvivalBumpEpochCarryingInTx
 			}
 			epoch, err := bump(ctx, runner, storeID, trigger.String())
 			if err != nil {
@@ -175,7 +177,7 @@ func epochUOWMintUnderEpoch(provider UnitOfWorkProvider) func(ctx context.Contex
 			if err != nil {
 				return "", "", err
 			}
-			address, err := storeops.MintUnderEpochInTx(ctx, runner, storeID, id)
+			address, err := storeops.SurvivalMintUnderEpochInTx(ctx, runner, storeID, id)
 			if err != nil {
 				return "", "", err
 			}
@@ -195,7 +197,7 @@ func epochUOWStillServes(provider UnitOfWorkProvider) func(ctx context.Context, 
 			if err != nil {
 				return false, err
 			}
-			return storeops.StillServesInTx(ctx, runner, storeID, string(address))
+			return storeops.SurvivalStillServesInTx(ctx, runner, storeID, string(address))
 		})
 	}
 }
@@ -207,7 +209,7 @@ func epochUOWResolve(provider UnitOfWorkProvider) func(ctx context.Context, stor
 			if err != nil {
 				return storeops.EpochResolveResult{}, err
 			}
-			return storeops.ResolveEpochInTx(ctx, runner, storeID, string(address))
+			return storeops.SurvivalResolveEpochInTx(ctx, runner, storeID, string(address))
 		})
 		if err != nil {
 			return conformance.RetentionAnswer{}, err
@@ -223,7 +225,7 @@ func epochUOWCurrentAddressFor(provider UnitOfWorkProvider) func(ctx context.Con
 			if err != nil {
 				return "", err
 			}
-			return storeops.CurrentAddressForInTx(ctx, runner, storeID, string(oldAddress))
+			return storeops.SurvivalCurrentAddressForInTx(ctx, runner, storeID, string(oldAddress))
 		})
 		if err != nil {
 			return "", err
@@ -239,7 +241,7 @@ func epochUOWLoseVersion(provider UnitOfWorkProvider) func(ctx context.Context, 
 			if err != nil {
 				return "", err
 			}
-			if err := storeops.LoseVersionInTx(ctx, runner, storeID, string(address)); err != nil {
+			if err := storeops.SurvivalLoseVersionInTx(ctx, runner, storeID, string(address)); err != nil {
 				return "", err
 			}
 			return fmt.Sprintf("bd: lose version %s for %s", address, storeID), nil
@@ -267,5 +269,28 @@ func epochResolveResultToConformance(r storeops.EpochResolveResult) conformance.
 		Restriction:    epochRestrictionToConformance(r.Restriction),
 		ProducingStore: r.ProducingStore,
 		Epoch:          r.Epoch,
+	}
+}
+
+func prepareUOWSurvivalFixture(t *testing.T, ctx context.Context, provider UnitOfWorkProvider) {
+	t.Helper()
+	for {
+		wrapped, ok := provider.(ProviderUnwrapper)
+		if !ok {
+			break
+		}
+		provider = wrapped.Unwrap()
+	}
+	base, ok := provider.(*doltSQLProvider)
+	if !ok {
+		t.Fatalf("private survival fixture requires concrete SQL provider, got%T", provider)
+	}
+	conn, err := base.db.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	if err := epochfixture.Prepare(ctx, conn); err != nil {
+		t.Fatal(err)
 	}
 }

@@ -184,9 +184,9 @@ func TestInitSchemaSharedStoreGate(t *testing.T) {
 			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(1))
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT COUNT(*) FROM dolt_status")).
 			WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(0))
-		// The gate on a database this init just created: no cursor table, so
-		// version 0, so allow — and MigrateUp proceeds to its first statement.
-		expectCursorProbe(mock, "schema_migrations", false)
+		// Fresh creation authorizes migration; admission still checks that no
+		// unrecorded epoch table exists before the first migration write.
+		expectPreEpochAdmission(mock, false)
 		mock.ExpectExec(regexp.QuoteMeta("INSERT IGNORE INTO dolt_ignore VALUES (?, true)")).
 			WithArgs(sqlmock.AnyArg()).
 			WillReturnError(errors.New("reached the first migration statement"))
@@ -213,6 +213,7 @@ func TestInitSchemaSharedStoreGate(t *testing.T) {
 
 		lockName := expectBehindDatabaseThroughPreparation(mock, "beads", 1)
 		expectSharedGateProbe(mock, 1, 0)
+		expectPreEpochAdmission(mock, true)
 		mock.ExpectExec(regexp.QuoteMeta("INSERT IGNORE INTO dolt_ignore VALUES (?, true)")).
 			WithArgs(sqlmock.AnyArg()).
 			WillReturnError(errors.New("reached the first migration statement"))

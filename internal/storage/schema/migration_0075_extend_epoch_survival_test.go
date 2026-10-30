@@ -2,6 +2,7 @@ package schema
 
 import (
 	"github.com/steveyegge/beads/internal/testutil"
+	"github.com/steveyegge/beads/internal/testutil/epochfixture"
 	"strings"
 	"testing"
 )
@@ -10,10 +11,7 @@ import (
 // forward extension. The signed-off fork0071 CREATE remains byte-for-byte
 // frozen; no premise that its old schema was never applied is used here.
 func TestMigration0075ExtendsSurvivalWithoutRewritingFrozenBase(t *testing.T) {
-	upSQL, err := MigrationSQL("0075_extend_epoch_survival.up.sql")
-	if err != nil {
-		t.Fatal(err)
-	}
+	upSQL := epochfixture.SQL
 	for _, want := range []string{
 		"ALTER TABLE epoch_minted_addresses ADD COLUMN carried_from VARCHAR(255) NULL",
 		"ALTER TABLE epoch_minted_addresses ADD COLUMN gone_at_epoch INT NULL",
@@ -45,15 +43,19 @@ func TestMigration0075ExtendsSurvivalWithoutRewritingFrozenBase(t *testing.T) {
 			t.Errorf("frozen base unexpectedly contains %s", name)
 		}
 	}
-	direct := cliCompatibleMigrationSQL("0075_extend_epoch_survival.up.sql", upSQL)
+	steps, err := epochfixture.Statements()
+	if err != nil {
+		t.Fatal(err)
+	}
+	direct := strings.Join(steps, ";\n")
 	if strings.Contains(strings.ToUpper(direct), "PREPARE") || direct == upSQL {
 		t.Error("fresh CLI bundle needs direct-DDL override")
 	}
 }
 
-func TestLatestVersionIncludesMigration0075(t *testing.T) {
-	if got := LatestVersion(); got != 75 {
-		t.Fatalf("LatestVersion=%d,want75 forward epoch survival extension", got)
+func TestProductionMigrationsDeferEpochSurvival(t *testing.T) {
+	if got := LatestVersion(); got != 74 {
+		t.Fatalf("LatestVersion=%d,want74 with survival deferred", got)
 	}
 }
 
@@ -69,6 +71,13 @@ func TestMigration0075RecordsSurvivalInTheAddressTableThroughDoltCLI(t *testing.
 	dir := t.TempDir()
 	runDoltCommand(t, dir, "init", "--name", "test", "--email", "test@example.com")
 	runDoltSQL(t, dir, AllMigrationsSQL())
+	steps, err := epochfixture.Statements()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, step := range steps {
+		runDoltSQL(t, dir, step)
+	}
 
 	requireDoltColumnShape(t, dir, "epoch_minted_addresses", "carried_from", "varchar(255)", "YES")
 	requireDoltDataType(t, dir, "epoch_minted_addresses", "gone_at_epoch", "int", "YES")

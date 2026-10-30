@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+	"github.com/steveyegge/beads/internal/testutil/epochfixture"
 	"slices"
 	"strings"
 	"sync/atomic"
@@ -44,7 +45,7 @@ func epochPublishAddress() string {
 	f := newEpochFake()
 	db := sql.OpenDB(f.connector)
 	defer func() { _ = db.Close() }()
-	address, err := (&DoltStore{db: db}).MintUnderEpoch(context.Background(), epochPublishStoreID, epochPublishMintedID)
+	address, err := (&DoltStore{db: db}).survivalMintUnderEpoch(context.Background(), epochPublishStoreID, epochPublishMintedID)
 	if err != nil {
 		panic(fmt.Sprintf("mint %s on a fresh epoch fake: %v", epochPublishMintedID, err))
 	}
@@ -84,6 +85,10 @@ func newEpochFake() *epochFake {
 	}
 	f.connector.rows = func(query string) (driver.Rows, bool) {
 		switch {
+		case strings.Contains(query, "FROM INFORMATION_SCHEMA.COLUMNS"):
+			return &valRows{cols: []string{"COLUMN_NAME", "COLUMN_TYPE", "IS_NULLABLE", "COLUMN_DEFAULT", "EXTRA"}, vals: [][]driver.Value{
+				{"address", "varchar(255)", "NO", nil, ""}, {"store_id", "varchar(255)", "NO", nil, ""}, {"minted_id", "varchar(255)", "NO", nil, ""}, {"minted_epoch", "int", "NO", nil, ""}, {"minted_at", "datetime", "NO", nil, ""},
+			}}, true
 		case strings.Contains(query, "FROM store_epoch"):
 			return &valRows{cols: []string{"epoch"}, vals: [][]driver.Value{{f.epoch.Load()}}}, true
 		case strings.Contains(query, "FROM epoch_minted_addresses WHERE address"):
@@ -146,7 +151,7 @@ func epochPublishCalls() []epochPublishCall {
 			name:   "BumpEpoch",
 			staged: []string{"store_epoch"},
 			call: func(ctx context.Context, s *DoltStore) error {
-				_, err := s.BumpEpoch(ctx, epochPublishStoreID, "restore")
+				_, err := s.survivalBumpEpoch(ctx, epochPublishStoreID, "restore")
 				return err
 			},
 		},
@@ -154,7 +159,7 @@ func epochPublishCalls() []epochPublishCall {
 			name:   "BumpEpochCarrying",
 			staged: []string{"epoch_minted_addresses", "store_epoch"},
 			call: func(ctx context.Context, s *DoltStore) error {
-				_, err := s.BumpEpochCarrying(ctx, epochPublishStoreID, "token-scheme-change")
+				_, err := s.survivalBumpEpochCarrying(ctx, epochPublishStoreID, "token-scheme-change")
 				return err
 			},
 		},
@@ -163,7 +168,7 @@ func epochPublishCalls() []epochPublishCall {
 			staged:             []string{"epoch_minted_addresses", "store_epoch"},
 			logsPublishFailure: true,
 			call: func(ctx context.Context, s *DoltStore) error {
-				_, err := s.MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
+				_, err := s.survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
 				return err
 			},
 		},
@@ -171,7 +176,7 @@ func epochPublishCalls() []epochPublishCall {
 			name:   "LoseVersion",
 			staged: []string{"epoch_minted_addresses"},
 			call: func(ctx context.Context, s *DoltStore) error {
-				return s.LoseVersion(ctx, epochPublishStoreID, epochPublishAddress())
+				return s.survivalLoseVersion(ctx, epochPublishStoreID, epochPublishAddress())
 			},
 		},
 	}
@@ -271,7 +276,7 @@ func TestBumpEpochSurfacesAPublicationFailureAfterTheSQLCommit(t *testing.T) {
 	db := sql.OpenDB(f.connector)
 	defer func() { _ = db.Close() }()
 
-	epoch, err := (&DoltStore{db: db}).BumpEpoch(context.Background(), epochPublishStoreID, "restore")
+	epoch, err := (&DoltStore{db: db}).survivalBumpEpoch(context.Background(), epochPublishStoreID, "restore")
 
 	requirePublicationFailureReported(t, "BumpEpoch", f, err, f.publishErr)
 	if epoch != 2 {
@@ -313,7 +318,7 @@ func TestBumpEpochCarryingSurfacesAPublicationFailureAfterTheSQLCommit(t *testin
 	db := sql.OpenDB(f.connector)
 	defer func() { _ = db.Close() }()
 
-	epoch, err := (&DoltStore{db: db}).BumpEpochCarrying(context.Background(), epochPublishStoreID, "token-scheme-change")
+	epoch, err := (&DoltStore{db: db}).survivalBumpEpochCarrying(context.Background(), epochPublishStoreID, "token-scheme-change")
 
 	requirePublicationFailureReported(t, "BumpEpochCarrying", f, err, f.publishErr)
 	if epoch != 2 {
@@ -331,7 +336,7 @@ func TestLoseVersionSurfacesAPublicationFailureAfterTheSQLCommit(t *testing.T) {
 	db := sql.OpenDB(f.connector)
 	defer func() { _ = db.Close() }()
 
-	err := (&DoltStore{db: db}).LoseVersion(context.Background(), epochPublishStoreID, epochPublishAddress())
+	err := (&DoltStore{db: db}).survivalLoseVersion(context.Background(), epochPublishStoreID, epochPublishAddress())
 
 	requirePublicationFailureReported(t, "LoseVersion", f, err, f.publishErr)
 }
@@ -389,7 +394,7 @@ func TestEpochWritesReturnWhatAnIndeterminateSQLCommitMayHaveApplied(t *testing.
 
 	t.Run("BumpEpoch", func(t *testing.T) {
 		s, f := open(t)
-		epoch, err := s.BumpEpoch(ctx, epochPublishStoreID, "restore")
+		epoch, err := s.survivalBumpEpoch(ctx, epochPublishStoreID, "restore")
 		requireIndeterminate(t, "BumpEpoch", f, err)
 		if epoch != 2 {
 			t.Errorf("BumpEpoch returned epoch %d with an indeterminate commit, want 2, the epoch it may have committed", epoch)
@@ -397,7 +402,7 @@ func TestEpochWritesReturnWhatAnIndeterminateSQLCommitMayHaveApplied(t *testing.
 	})
 	t.Run("BumpEpochCarrying", func(t *testing.T) {
 		s, f := open(t)
-		epoch, err := s.BumpEpochCarrying(ctx, epochPublishStoreID, "token-scheme-change")
+		epoch, err := s.survivalBumpEpochCarrying(ctx, epochPublishStoreID, "token-scheme-change")
 		requireIndeterminate(t, "BumpEpochCarrying", f, err)
 		if epoch != 2 {
 			t.Errorf("BumpEpochCarrying returned epoch %d with an indeterminate commit, want 2, the epoch it may have committed", epoch)
@@ -405,7 +410,7 @@ func TestEpochWritesReturnWhatAnIndeterminateSQLCommitMayHaveApplied(t *testing.
 	})
 	t.Run("MintUnderEpoch", func(t *testing.T) {
 		s, f := open(t)
-		address, err := s.MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
+		address, err := s.survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
 		requireIndeterminate(t, "MintUnderEpoch", f, err)
 		if want := epochPublishAddress(); address != want {
 			t.Errorf("MintUnderEpoch returned address %q with an indeterminate commit, want %s, the address it may have committed", address, want)
@@ -413,7 +418,7 @@ func TestEpochWritesReturnWhatAnIndeterminateSQLCommitMayHaveApplied(t *testing.
 	})
 	t.Run("LoseVersion", func(t *testing.T) {
 		s, f := open(t)
-		requireIndeterminate(t, "LoseVersion", f, s.LoseVersion(ctx, epochPublishStoreID, epochPublishAddress()))
+		requireIndeterminate(t, "LoseVersion", f, s.survivalLoseVersion(ctx, epochPublishStoreID, epochPublishAddress()))
 	})
 }
 
@@ -441,21 +446,21 @@ func TestEpochWritesReturnNothingWhenTheSQLCommitFailsDefinitely(t *testing.T) {
 	}
 
 	t.Run("BumpEpoch", func(t *testing.T) {
-		epoch, err := open(t).BumpEpoch(ctx, epochPublishStoreID, "restore")
+		epoch, err := open(t).survivalBumpEpoch(ctx, epochPublishStoreID, "restore")
 		requireDefinite(t, "BumpEpoch", err)
 		if epoch != 0 {
 			t.Errorf("BumpEpoch returned epoch %d with a refused commit, want 0: nothing applied", epoch)
 		}
 	})
 	t.Run("BumpEpochCarrying", func(t *testing.T) {
-		epoch, err := open(t).BumpEpochCarrying(ctx, epochPublishStoreID, "token-scheme-change")
+		epoch, err := open(t).survivalBumpEpochCarrying(ctx, epochPublishStoreID, "token-scheme-change")
 		requireDefinite(t, "BumpEpochCarrying", err)
 		if epoch != 0 {
 			t.Errorf("BumpEpochCarrying returned epoch %d with a refused commit, want 0: nothing applied", epoch)
 		}
 	})
 	t.Run("MintUnderEpoch", func(t *testing.T) {
-		address, err := open(t).MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
+		address, err := open(t).survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
 		requireDefinite(t, "MintUnderEpoch", err)
 		if address != "" {
 			t.Errorf("MintUnderEpoch returned address %q with a refused commit, want none: nothing applied", address)
@@ -504,7 +509,7 @@ func TestCurrentAddressForWritesAndPublishesNothing(t *testing.T) {
 	defer func() { _ = db.Close() }()
 
 	address := epochPublishAddress()
-	current, err := (&DoltStore{db: db}).CurrentAddressFor(context.Background(), epochPublishStoreID, address)
+	current, err := (&DoltStore{db: db}).survivalCurrentAddressFor(context.Background(), epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("CurrentAddressFor: %v", err)
 	}
@@ -545,9 +550,10 @@ func TestFirstMintLeavesTheEpochTablesCommitted(t *testing.T) {
 	defer cleanup()
 	ctx, cancel := testContext(t)
 	defer cancel()
+	prepareEpochSurvivalFixture(t, ctx, store)
 
 	// A fresh branch: store_epoch has no row, so this mint is what seeds it.
-	if _, err := store.MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID); err != nil {
+	if _, err := store.survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID); err != nil {
 		t.Fatalf("MintUnderEpoch on a fresh store: %v", err)
 	}
 
@@ -570,10 +576,10 @@ func TestBumpEpochCarryingLeavesTheEpochTablesCommitted(t *testing.T) {
 	defer cancel()
 	store := newMultiConnectionEpochStore(t, ctx, "epoch_carry_published")
 
-	if _, err := store.MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID); err != nil {
+	if _, err := store.survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID); err != nil {
 		t.Fatalf("MintUnderEpoch: %v", err)
 	}
-	newEpoch, err := store.BumpEpochCarrying(ctx, epochPublishStoreID, "token-scheme-change")
+	newEpoch, err := store.survivalBumpEpochCarrying(ctx, epochPublishStoreID, "token-scheme-change")
 	if err != nil {
 		t.Fatalf("BumpEpochCarrying: %v", err)
 	}
@@ -609,14 +615,14 @@ func TestLoseVersionLeavesTheEpochTablesCommitted(t *testing.T) {
 	defer cancel()
 	store := newMultiConnectionEpochStore(t, ctx, "epoch_loss_published")
 
-	address, err := store.MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
+	address, err := store.survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
 	if err != nil {
 		t.Fatalf("MintUnderEpoch: %v", err)
 	}
-	if err := store.LoseVersion(ctx, epochPublishStoreID, address); err != nil {
+	if err := store.survivalLoseVersion(ctx, epochPublishStoreID, address); err != nil {
 		t.Fatalf("LoseVersion: %v", err)
 	}
-	serves, err := store.StillServes(ctx, epochPublishStoreID, address)
+	serves, err := store.survivalStillServes(ctx, epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("StillServes: %v", err)
 	}
@@ -646,7 +652,7 @@ func TestCurrentAddressForLeavesAnAbsentStoreEpochRowAbsent(t *testing.T) {
 	defer cancel()
 	store := newMultiConnectionEpochStore(t, ctx, "epoch_lookup_absent_row")
 
-	address, err := store.MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
+	address, err := store.survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
 	if err != nil {
 		t.Fatalf("MintUnderEpoch: %v", err)
 	}
@@ -662,7 +668,7 @@ func TestCurrentAddressForLeavesAnAbsentStoreEpochRowAbsent(t *testing.T) {
 		t.Fatalf("CommitAll: %v", err)
 	}
 
-	current, err := store.CurrentAddressFor(ctx, epochPublishStoreID, address)
+	current, err := store.survivalCurrentAddressFor(ctx, epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("CurrentAddressFor: %v", err)
 	}
@@ -710,6 +716,7 @@ func newMultiConnectionEpochStore(t *testing.T, ctx context.Context, name string
 		t.Fatalf("create store: %v", err)
 	}
 	t.Cleanup(func() { _ = store.Close() })
+	prepareEpochSurvivalFixture(t, ctx, store)
 	return store
 }
 
@@ -748,7 +755,7 @@ func TestMintOverlappingABumpLeavesALiveSurvivor(t *testing.T) {
 	store := newMultiConnectionEpochStore(t, ctx, "epoch_overlap")
 
 	// Seed the singleton so the mint below only reads the epoch.
-	if _, err := store.MintUnderEpoch(ctx, epochPublishStoreID, "seed"); err != nil {
+	if _, err := store.survivalMintUnderEpoch(ctx, epochPublishStoreID, "seed"); err != nil {
 		t.Fatalf("seed mint: %v", err)
 	}
 
@@ -757,7 +764,7 @@ func TestMintOverlappingABumpLeavesALiveSurvivor(t *testing.T) {
 		t.Fatalf("begin mint transaction: %v", err)
 	}
 	defer func() { _ = mintTx.Rollback() }()
-	address, err := storeops.MintUnderEpochInTx(ctx, mintTx, epochPublishStoreID, epochPublishMintedID)
+	address, err := storeops.SurvivalMintUnderEpochInTx(ctx, mintTx, epochPublishStoreID, epochPublishMintedID)
 	if err != nil {
 		t.Fatalf("mint inside the open transaction: %v", err)
 	}
@@ -765,7 +772,7 @@ func TestMintOverlappingABumpLeavesALiveSurvivor(t *testing.T) {
 	// The bump runs on another connection while the mint transaction is open.
 	bumpCtx, cancelBump := context.WithTimeout(ctx, 10*time.Second)
 	defer cancelBump()
-	bumpedEpoch, err := store.BumpEpoch(bumpCtx, epochPublishStoreID, "restore")
+	bumpedEpoch, err := store.survivalBumpEpoch(bumpCtx, epochPublishStoreID, "restore")
 	if err != nil {
 		t.Fatalf("BumpEpoch beside an open mint transaction: %v: the engine now holds the bump back, so the overlap this test documents is prevented", err)
 	}
@@ -773,14 +780,14 @@ func TestMintOverlappingABumpLeavesALiveSurvivor(t *testing.T) {
 		t.Fatalf("mint commit after a concurrent bump: %v: the engine now conflicts the mint, so the overlap this test documents is prevented", err)
 	}
 
-	serves, err := store.StillServes(ctx, epochPublishStoreID, address)
+	serves, err := store.survivalStillServes(ctx, epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("StillServes: %v", err)
 	}
 	if !serves {
 		t.Errorf("address %s, minted before a bump that committed first, is no longer served: a restore or reinit bump writes no address rows, so the address must survive it", address)
 	}
-	answer, err := store.Resolve(ctx, epochPublishStoreID, address)
+	answer, err := store.survivalResolve(ctx, epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("Resolve: %v", err)
 	}
@@ -817,7 +824,7 @@ func TestAMintAfterAConcurrentLossNeverRevivesTheLostAddress(t *testing.T) {
 
 	store := newMultiConnectionEpochStore(t, ctx, "epoch_loss_overlap")
 
-	address, err := store.MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
+	address, err := store.survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID)
 	if err != nil {
 		t.Fatalf("seed mint: %v", err)
 	}
@@ -828,7 +835,7 @@ func TestAMintAfterAConcurrentLossNeverRevivesTheLostAddress(t *testing.T) {
 		t.Fatalf("begin the first transaction: %v", err)
 	}
 	defer func() { _ = mintTx.Rollback() }()
-	serves, err := storeops.StillServesInTx(ctx, mintTx, epochPublishStoreID, address)
+	serves, err := storeops.SurvivalStillServesInTx(ctx, mintTx, epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("StillServesInTx inside the first transaction: %v", err)
 	}
@@ -839,12 +846,12 @@ func TestAMintAfterAConcurrentLossNeverRevivesTheLostAddress(t *testing.T) {
 	// The loss commits on another connection while the first transaction is open.
 	lossCtx, cancelLoss := context.WithTimeout(ctx, 10*time.Second)
 	defer cancelLoss()
-	if err := store.LoseVersion(lossCtx, epochPublishStoreID, address); err != nil {
+	if err := store.survivalLoseVersion(lossCtx, epochPublishStoreID, address); err != nil {
 		t.Fatalf("LoseVersion beside an open transaction: %v (if the engine now holds the loss back, the interleaving this test choreographs is prevented)", err)
 	}
 
 	// The first transaction now mints the same id, which is the same address.
-	minted, err := storeops.MintUnderEpochInTx(ctx, mintTx, epochPublishStoreID, epochPublishMintedID)
+	minted, err := storeops.SurvivalMintUnderEpochInTx(ctx, mintTx, epochPublishStoreID, epochPublishMintedID)
 	if err != nil {
 		t.Fatalf("mint inside the first transaction after the loss committed: %v: the transaction should still read the address Live from its own snapshot, and if it now sees the loss this test no longer exercises the interleaving it choreographs", err)
 	}
@@ -855,14 +862,14 @@ func TestAMintAfterAConcurrentLossNeverRevivesTheLostAddress(t *testing.T) {
 		t.Fatalf("commit of the first transaction: %v: a mint must not write an existing row, so it has nothing to conflict with the loss", err)
 	}
 
-	serves, err = store.StillServes(ctx, epochPublishStoreID, address)
+	serves, err = store.survivalStillServes(ctx, epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("StillServes: %v", err)
 	}
 	if serves {
 		t.Errorf("address %s is served again after a mint overlapped its loss: no interleaving may revive a lost address", address)
 	}
-	answer, err := store.Resolve(ctx, epochPublishStoreID, address)
+	answer, err := store.survivalResolve(ctx, epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("Resolve: %v", err)
 	}
@@ -894,7 +901,7 @@ func TestAMintRacingTheMintAndLossOfItsAddressConflictsAtCommit(t *testing.T) {
 	store := newMultiConnectionEpochStore(t, ctx, "epoch_mint_race")
 
 	// Seed the singleton so the first transaction's mint only reads the epoch.
-	if _, err := store.MintUnderEpoch(ctx, epochPublishStoreID, "seed"); err != nil {
+	if _, err := store.survivalMintUnderEpoch(ctx, epochPublishStoreID, "seed"); err != nil {
 		t.Fatalf("seed mint: %v", err)
 	}
 
@@ -904,23 +911,23 @@ func TestAMintRacingTheMintAndLossOfItsAddressConflictsAtCommit(t *testing.T) {
 		t.Fatalf("begin the first transaction: %v", err)
 	}
 	defer func() { _ = mintTx.Rollback() }()
-	if _, err := storeops.CurrentEpochInTx(ctx, mintTx, epochPublishStoreID); err != nil {
+	if _, err := storeops.SurvivalCurrentEpochInTx(ctx, mintTx, epochPublishStoreID); err != nil {
 		t.Fatalf("CurrentEpochInTx inside the first transaction: %v", err)
 	}
 
 	// Another connection mints the address and loses it while the first is open.
 	otherCtx, cancelOther := context.WithTimeout(ctx, 10*time.Second)
 	defer cancelOther()
-	address, err := store.MintUnderEpoch(otherCtx, epochPublishStoreID, epochPublishMintedID)
+	address, err := store.survivalMintUnderEpoch(otherCtx, epochPublishStoreID, epochPublishMintedID)
 	if err != nil {
 		t.Fatalf("MintUnderEpoch beside an open transaction: %v", err)
 	}
-	if err := store.LoseVersion(otherCtx, epochPublishStoreID, address); err != nil {
+	if err := store.survivalLoseVersion(otherCtx, epochPublishStoreID, address); err != nil {
 		t.Fatalf("LoseVersion beside an open transaction: %v", err)
 	}
 
 	// The first transaction mints the same id, which is the same address.
-	minted, err := storeops.MintUnderEpochInTx(ctx, mintTx, epochPublishStoreID, epochPublishMintedID)
+	minted, err := storeops.SurvivalMintUnderEpochInTx(ctx, mintTx, epochPublishStoreID, epochPublishMintedID)
 	if err != nil {
 		t.Fatalf("mint inside the first transaction: %v: the INSERT now sees a row committed after the transaction's snapshot, so the duplicate-key re-read answers this race, not the commit", err)
 	}
@@ -936,14 +943,26 @@ func TestAMintRacingTheMintAndLossOfItsAddressConflictsAtCommit(t *testing.T) {
 	}
 
 	// Run again, as withRetryTx runs it, the mint reads the committed row.
-	if _, err := store.MintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID); !errors.Is(err, storeops.ErrEpochAddressNotServed) {
+	if _, err := store.survivalMintUnderEpoch(ctx, epochPublishStoreID, epochPublishMintedID); !errors.Is(err, storeops.ErrEpochAddressNotServed) {
 		t.Errorf("mint of %s run again after the conflict = %v, want ErrEpochAddressNotServed: the committed row is lost", epochPublishMintedID, err)
 	}
-	serves, err := store.StillServes(ctx, epochPublishStoreID, address)
+	serves, err := store.survivalStillServes(ctx, epochPublishStoreID, address)
 	if err != nil {
 		t.Fatalf("StillServes: %v", err)
 	}
 	if serves {
 		t.Errorf("address %s is served again after a mint raced its mint and loss: no interleaving may revive a lost address", address)
+	}
+}
+
+func prepareEpochSurvivalFixture(t *testing.T, ctx context.Context, store *DoltStore) {
+	t.Helper()
+	conn, err := store.db.Conn(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	if err := epochfixture.Prepare(ctx, conn); err != nil {
+		t.Fatal(err)
 	}
 }

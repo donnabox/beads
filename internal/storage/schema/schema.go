@@ -2334,17 +2334,6 @@ func runMigrations(ctx context.Context, db DBConn, src migrationSource, minVersi
 		); err != nil {
 			return count, fmt.Errorf("migration %s: %w", mf.name, err)
 		}
-		// Dolt DDL is independently durable. Never record extension success if
-		// a guarded statement failed to materialize its complete enforced shape.
-		if src.cursorTable == "schema_migrations" && mf.version == forkEpochExtensionVersion {
-			complete, err := readForkEpochShape(ctx, db)
-			if err != nil {
-				return count, fmt.Errorf("verifying epoch extension: %w", err)
-			}
-			if !complete {
-				return count, epochCompatibility("epoch extension did not materialize complete shape")
-			}
-		}
 		sum := sha256.Sum256(data)
 		contentHash := hex.EncodeToString(sum[:])
 		if _, err := db.ExecContext(ctx, "INSERT IGNORE INTO "+src.cursorTable+" (version, content_hash) VALUES (?, ?)", mf.version, contentHash); err != nil {

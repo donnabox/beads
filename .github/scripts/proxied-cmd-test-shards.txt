@@ -333,6 +333,7 @@
 15 2 TestProxiedServerIfRevisionCloseWarnsOnForcedOpenChildren
 15 2 TestProxiedServerListWatchCountsTheOffsetIntoMaxRows
 15 2 TestProxiedServerReady2
+15 2 TestProxiedServerRetainIDs
 15 2 TestProxiedServerSQL
 15 2 TestProxiedServerServeReadRevision
 15 2 TestProxiedServerServeRefusesAStaleCheckpointWithGone
@@ -348,6 +349,7 @@
 15 3 TestProxiedServerMolBurn
 15 3 TestProxiedServerMolStale
 15 3 TestProxiedServerMoleculeFrontDoorDirectServerProxyParity
+15 3 TestProxiedServerRetainedTypes
 15 3 TestProxiedServerSQLDatabaseFlag
 15 3 TestProxiedServerServeRelatedIssues
 15 3 TestProxiedServerTag
@@ -365,6 +367,7 @@
 15 4 TestProxiedServerServeRelease
 15 4 TestProxiedServerShow3B
 15 4 TestProxiedServerShowWatch
+15 4 TestProxiedServerTopologyCapabilityMatrix
 15 4 TestProxiedServerUpdate2
 15 4 TestProxiedServerUpdateHooks
 
@@ -394,6 +397,7 @@
 15 6 TestProxiedServerServeBatchClose
 15 6 TestProxiedServerServeRefusesTheJournalWhenItIsDisabled
 15 6 TestProxiedServerServeSettingsWrites
+15 6 TestProxiedServerVersionedHistorySwitchChecksTheLegacyProtosAPourCopies
 15 6 TestProxiedServerWispList
 
 15 7 TestProxiedServerAssign
@@ -412,6 +416,7 @@
 15 7 TestProxiedServerShow2B
 15 7 TestProxiedServerState
 15 7 TestProxiedServerUpdate2C
+15 7 TestServerModeReadRefusesASchemaItsReadsCannotQuery
 
 15 8 TestProxiedServerBatchParity
 15 8 TestProxiedServerConfigB
@@ -427,6 +432,7 @@
 15 8 TestProxiedServerReopenB
 15 8 TestProxiedServerServeClaimNext
 15 8 TestProxiedServerSetState
+15 8 TestServerModeServeIgnoresGraphModeDependency
 
 15 9 TestProxiedServerChildren
 15 9 TestProxiedServerCloseBeadGate
@@ -614,6 +620,7 @@
 30 5 TestProxiedServerServeAddComment
 30 5 TestProxiedServerUpdate3
 30 5 TestProxiedServerUpdateHooks
+30 5 TestServerModeReadRefusesASchemaItsReadsCannotQuery
 
 30 6 TestProxiedServerCloseB
 30 6 TestProxiedServerDeferAutoWake
@@ -628,6 +635,7 @@
 30 7 TestProxiedServerLabelC
 30 7 TestProxiedServerPathHelpers
 30 7 TestProxiedServerReopenConcurrent
+30 7 TestProxiedServerRetainIDs
 30 7 TestProxiedServerServeLifecycle
 30 7 TestProxiedServerStatuses
 30 7 TestProxiedServerTodo
@@ -722,6 +730,7 @@
 30 18 TestProxiedServerIfRevisionOutranksReassignFence
 30 18 TestProxiedServerReadyConcurrent
 30 18 TestProxiedServerReopenB
+30 18 TestProxiedServerRetainedTypes
 30 18 TestProxiedServerServeClaim
 
 30 19 TestProxiedServerCompactDolt
@@ -773,6 +782,7 @@
 30 24 TestProxiedServerIfRevisionGuardReopen
 30 24 TestProxiedServerList
 30 24 TestProxiedServerServeReadsTheJournalItJustWrote
+30 24 TestProxiedServerTopologyCapabilityMatrix
 30 24 TestProxiedServerVersionedHistoryServeActivatesTheProviderFromItsOwnRow
 30 24 TestServerModeServe
 
@@ -792,6 +802,7 @@
 30 26 TestProxiedServerMolStale
 30 26 TestProxiedServerServeCount
 30 26 TestProxiedServerShow3B
+30 26 TestProxiedServerVersionedHistorySwitchChecksTheLegacyProtosAPourCopies
 
 30 27 TestProxiedServerCreate2C
 30 27 TestProxiedServerEpic
@@ -826,3 +837,4 @@
 30 30 TestProxiedServerReadyC
 30 30 TestProxiedServerServeUpdate
 30 30 TestProxiedServerTypesAgreeWithCreate
+30 30 TestServerModeServeIgnoresGraphModeDependency

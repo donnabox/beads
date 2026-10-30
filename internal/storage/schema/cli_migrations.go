@@ -194,10 +194,6 @@ func cliCompatibleMigrationSQL(name, sqlText string) string {
 		// the wisp tables must use the frozen source text instead -- see
 		// cliSubstituteAssumesWispTables.
 		return cliMigration0073AddArrivalSeq
-	case "0075_extend_epoch_survival.up.sql":
-		// Fresh bundle only: frozen0071 created the base table without these
-		// objects. This is not an adapter for existing or partial stores.
-		return cliMigration0074ExtendEpochSurvival
 	default:
 		return sqlText
 	}
@@ -560,10 +556,3 @@ WHERE w.issue_type = 'rig';
 DELETE FROM wisps WHERE issue_type = 'rig';
 
 SET FOREIGN_KEY_CHECKS = 1;`
-
-// Fresh-only direct DDL; production in-place upgrades use guarded0074 after
-// read-only lineage/occupancy admission, never this bundle substitute.
-const cliMigration0074ExtendEpochSurvival = `ALTER TABLE epoch_minted_addresses ADD COLUMN carried_from VARCHAR(255) NULL;
-ALTER TABLE epoch_minted_addresses ADD COLUMN gone_at_epoch INT NULL;
-CREATE INDEX idx_epoch_minted_addresses_carried_from ON epoch_minted_addresses (carried_from);
-ALTER TABLE epoch_minted_addresses ADD CONSTRAINT ck_epoch_minted_addresses_gone_not_before_mint CHECK (gone_at_epoch IS NULL OR gone_at_epoch >= minted_epoch);`

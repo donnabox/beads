@@ -2022,17 +2022,17 @@ func TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities(t *testing.T)
 		"ALTER TABLE issues ADD COLUMN arrival_seq BIGINT;",
 		"ALTER TABLE wisps ADD COLUMN arrival_seq BIGINT;",
 		"CREATE UNIQUE INDEX uk_wisps_arrival_seq ON wisps (arrival_seq);",
-		// 0074: fresh-only extension of the frozen fork epoch table.
-		"ALTER TABLE epoch_minted_addresses ADD COLUMN carried_from VARCHAR(255) NULL;",
-		"ALTER TABLE epoch_minted_addresses ADD COLUMN gone_at_epoch INT NULL;",
-		"CREATE INDEX idx_epoch_minted_addresses_carried_from ON epoch_minted_addresses (carried_from);",
-		"ALTER TABLE epoch_minted_addresses ADD CONSTRAINT ck_epoch_minted_addresses_gone_not_before_mint CHECK (gone_at_epoch IS NULL OR gone_at_epoch >= minted_epoch);",
 	} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("AllMigrationsSQL missing direct CLI DDL %q", want)
 		}
 	}
 	for _, forbidden := range []string{
+		// Deferred survival DDL must not enter the ordinary fresh bundle.
+		"ALTER TABLE epoch_minted_addresses ADD COLUMN carried_from VARCHAR(255) NULL;",
+		"ALTER TABLE epoch_minted_addresses ADD COLUMN gone_at_epoch INT NULL;",
+		"CREATE INDEX idx_epoch_minted_addresses_carried_from ON epoch_minted_addresses (carried_from);",
+		"ALTER TABLE epoch_minted_addresses ADD CONSTRAINT ck_epoch_minted_addresses_gone_not_before_mint CHECK (gone_at_epoch IS NULL OR gone_at_epoch >= minted_epoch);",
 		"COLUMN_NAME = 'applied_at'",
 		"ALTER TABLE child_counters DROP FOREIGN KEY fk_counter_parent",
 		"@issues_cr_needs_fix",

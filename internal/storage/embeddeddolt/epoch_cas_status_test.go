@@ -44,11 +44,11 @@ func epochTablesInWorkingSet(status *storage.Status) []string {
 // unstaged=[{store_epoch modified}]) on the embedded leg.
 func TestFirstMintLeavesTheEpochTablesCommitted(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 
 	// A pristine store: store_epoch has no row, so this mint is what seeds it.
-	if _, err := te.store.MintUnderEpoch(ctx, "epoch-store", "record-a"); err != nil {
+	if _, err := survivalStore(te.store).MintUnderEpoch(ctx, "epoch-store", "record-a"); err != nil {
 		t.Fatalf("MintUnderEpoch on a fresh store: %v", err)
 	}
 
@@ -72,10 +72,10 @@ func TestFirstMintLeavesTheEpochTablesCommitted(t *testing.T) {
 // row.
 func TestCurrentAddressForNeverReseedsAnAbsentStoreEpochRow(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 
-	address, err := te.store.MintUnderEpoch(ctx, "epoch-store", "record-a")
+	address, err := survivalStore(te.store).MintUnderEpoch(ctx, "epoch-store", "record-a")
 	if err != nil {
 		t.Fatalf("MintUnderEpoch: %v", err)
 	}
@@ -89,7 +89,7 @@ func TestCurrentAddressForNeverReseedsAnAbsentStoreEpochRow(t *testing.T) {
 		t.Fatalf("CommitAll: %v", err)
 	}
 
-	got, err := te.store.CurrentAddressFor(ctx, "epoch-store", address)
+	got, err := survivalStore(te.store).CurrentAddressFor(ctx, "epoch-store", address)
 	if err != nil {
 		t.Fatalf("CurrentAddressFor: %v", err)
 	}
@@ -119,7 +119,7 @@ func TestCurrentAddressForNeverReseedsAnAbsentStoreEpochRow(t *testing.T) {
 // modified and uncommitted.
 func TestBumpEpochCarryingLeavesTheEpochTablesCommitted(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const store = "epoch-store"
 
@@ -144,17 +144,17 @@ func TestBumpEpochCarryingLeavesTheEpochTablesCommitted(t *testing.T) {
 // recorded must not be left modified and uncommitted.
 func TestLoseVersionLeavesTheEpochTablesCommitted(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const store = "epoch-store"
 
 	address := epochMint(t, ctx, te, store, "record-a")
-	if err := te.store.LoseVersion(ctx, store, address); err != nil {
+	if err := survivalStore(te.store).LoseVersion(ctx, store, address); err != nil {
 		t.Fatalf("LoseVersion: %v", err)
 	}
 
 	// The loss has to have been recorded for the check below to mean anything.
-	epoch, err := te.store.CurrentEpoch(ctx, store)
+	epoch, err := survivalStore(te.store).CurrentEpoch(ctx, store)
 	if err != nil {
 		t.Fatalf("CurrentEpoch: %v", err)
 	}
@@ -178,7 +178,7 @@ func TestLoseVersionLeavesTheEpochTablesCommitted(t *testing.T) {
 // stay flat, and every address of a lineage is one lookup from the newest.
 func TestBumpEpochCarryingWritesOneCarryRowPerLiveIDNamingTheLineageRoot(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const store = "epoch-store"
 
@@ -203,7 +203,7 @@ func TestBumpEpochCarryingWritesOneCarryRowPerLiveIDNamingTheLineageRoot(t *test
 		}
 	}
 	for _, c := range []struct{ old, carry string }{{rootA, carryA}, {rootB, carryB}} {
-		if got, err := te.store.CurrentAddressFor(ctx, store, c.old); err != nil || got != c.carry {
+		if got, err := survivalStore(te.store).CurrentAddressFor(ctx, store, c.old); err != nil || got != c.carry {
 			t.Errorf("CurrentAddressFor(%s) = %q, %v, want the carry address %s", c.old, got, err, c.carry)
 		}
 		epochRequireServed(t, ctx, te, store, c.old, "the old address keeps resolving through the carry")
@@ -217,7 +217,7 @@ func TestBumpEpochCarryingWritesOneCarryRowPerLiveIDNamingTheLineageRoot(t *test
 		t.Errorf("the second carry row of record-a names carried_from %v, want the first root %s: carried_from names the root, never the previous carry", carriedFrom, rootA)
 	}
 	for _, member := range []string{rootA, carryA} {
-		if got, err := te.store.CurrentAddressFor(ctx, store, member); err != nil || got != secondCarryA {
+		if got, err := survivalStore(te.store).CurrentAddressFor(ctx, store, member); err != nil || got != secondCarryA {
 			t.Errorf("CurrentAddressFor(%s) = %q, %v, want %s: every address of the lineage points straight at the newest one", member, got, err, secondCarryA)
 		}
 	}
@@ -232,7 +232,7 @@ func TestBumpEpochCarryingWritesOneCarryRowPerLiveIDNamingTheLineageRoot(t *test
 // the safe direction, reviving is not.
 func TestBumpEpochCarryingCarriesOnlyTheLineageHoldingTheNewestRow(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const store = "epoch-store"
 
@@ -258,10 +258,10 @@ func TestBumpEpochCarryingCarriesOnlyTheLineageHoldingTheNewestRow(t *testing.T)
 
 	epochRequireGone(t, ctx, te, store, first, newEpoch, "the lineage that lost the collision is no longer served")
 	epochRequireServed(t, ctx, te, store, second, "the lineage holding the newest row is still served")
-	if got, err := te.store.CurrentAddressFor(ctx, store, second); err != nil || got != carry {
+	if got, err := survivalStore(te.store).CurrentAddressFor(ctx, store, second); err != nil || got != carry {
 		t.Errorf("CurrentAddressFor(%s) = %q, %v, want the carry address %s", second, got, err, carry)
 	}
-	if got, err := te.store.CurrentAddressFor(ctx, store, first); err == nil {
+	if got, err := survivalStore(te.store).CurrentAddressFor(ctx, store, first); err == nil {
 		t.Errorf("CurrentAddressFor(the losing lineage's root) = %s with no error, want an error: a lost lineage has no current address", got)
 	}
 }
@@ -273,7 +273,7 @@ func TestBumpEpochCarryingCarriesOnlyTheLineageHoldingTheNewestRow(t *testing.T)
 // row beside it is what makes the check mean anything.
 func TestBumpEpochCarryingNeitherCarriesNorServesARowFromAFutureEpoch(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const store = "epoch-store"
 
@@ -305,12 +305,12 @@ func TestBumpEpochCarryingNeitherCarriesNorServesARowFromAFutureEpoch(t *testing
 // of the counter, rather than report a carry it did not make.
 func TestBumpEpochCarryingFailsAndRollsBackWhenARowAlreadyExistsAtTheNewEpoch(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const store = "epoch-store"
 
 	epochMint(t, ctx, te, store, "record-a")
-	startEpoch, err := te.store.CurrentEpoch(ctx, store)
+	startEpoch, err := survivalStore(te.store).CurrentEpoch(ctx, store)
 	if err != nil {
 		t.Fatalf("CurrentEpoch: %v", err)
 	}
@@ -318,10 +318,10 @@ func TestBumpEpochCarryingFailsAndRollsBackWhenARowAlreadyExistsAtTheNewEpoch(t 
 	epochMint(t, ctx, te, store, "record-a") // a row now exists at nextEpoch
 	te.exec(t, ctx, "UPDATE store_epoch SET epoch = ? WHERE id = 1", startEpoch)
 
-	if got, err := te.store.BumpEpochCarrying(ctx, store, "token-scheme-change"); err == nil {
+	if got, err := survivalStore(te.store).BumpEpochCarrying(ctx, store, "token-scheme-change"); err == nil {
 		t.Errorf("BumpEpochCarrying = epoch %d with no error although a row already exists at epoch %d: the counter rewound, so the carry must fail the bump", got, nextEpoch)
 	}
-	epoch, err := te.store.CurrentEpoch(ctx, store)
+	epoch, err := survivalStore(te.store).CurrentEpoch(ctx, store)
 	if err != nil {
 		t.Fatalf("CurrentEpoch: %v", err)
 	}
@@ -336,7 +336,7 @@ func TestBumpEpochCarryingFailsAndRollsBackWhenARowAlreadyExistsAtTheNewEpoch(t 
 // that asked would strand every other store's addresses at the scheme boundary.
 func TestBumpEpochCarryingCarriesTheLiveRowsOfEveryStoreInTheDatabase(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const first, second = "epoch-store-one", "epoch-store-two"
 
@@ -353,7 +353,7 @@ func TestBumpEpochCarryingCarriesTheLiveRowsOfEveryStoreInTheDatabase(t *testing
 		if carriedFrom := epochCarriedFrom(t, ctx, te, carry); !carriedFrom.Valid || carriedFrom.String != c.old {
 			t.Errorf("the carry row of %s in %s names carried_from %v, want its root %s", c.id, c.store, carriedFrom, c.old)
 		}
-		if got, err := te.store.CurrentAddressFor(ctx, c.store, c.old); err != nil || got != carry {
+		if got, err := survivalStore(te.store).CurrentAddressFor(ctx, c.store, c.old); err != nil || got != carry {
 			t.Errorf("CurrentAddressFor(%s) in %s = %q, %v, want the carry address %s", c.old, c.store, got, err, carry)
 		}
 		epochRequireServed(t, ctx, te, c.store, c.old, "the old address keeps resolving through the carry")
@@ -366,13 +366,13 @@ func TestBumpEpochCarryingCarriesTheLiveRowsOfEveryStoreInTheDatabase(t *testing
 // stays Gone, while the live lineage beside it is carried.
 func TestBumpEpochCarryingDoesNotCarryALostLineage(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const store = "epoch-store"
 
 	kept := epochMint(t, ctx, te, store, "record-kept")
 	lost := epochMint(t, ctx, te, store, "record-lost")
-	if err := te.store.LoseVersion(ctx, store, lost); err != nil {
+	if err := survivalStore(te.store).LoseVersion(ctx, store, lost); err != nil {
 		t.Fatalf("LoseVersion(%s): %v", lost, err)
 	}
 
@@ -386,7 +386,7 @@ func TestBumpEpochCarryingDoesNotCarryALostLineage(t *testing.T) {
 		t.Errorf("%d carry rows name the lost lineage's root, want 0: a lost lineage is not carried", rows)
 	}
 	epochRequireGone(t, ctx, te, store, lost, newEpoch, "the carry must not bring a lost lineage back")
-	if got, err := te.store.CurrentAddressFor(ctx, store, lost); err == nil {
+	if got, err := survivalStore(te.store).CurrentAddressFor(ctx, store, lost); err == nil {
 		t.Errorf("CurrentAddressFor(a lost address) = %s with no error, want an error", got)
 	}
 	epochRequireServed(t, ctx, te, store, kept, "the live lineage is served")
@@ -399,7 +399,7 @@ func TestBumpEpochCarryingDoesNotCarryALostLineage(t *testing.T) {
 // one database.
 func TestABumpUnderOneStoreIDMovesTheEpochSeenThroughEveryStoreID(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
-	te := newTestEnv(t, "epch")
+	te := newSurvivalTestEnv(t, "epch")
 	ctx := t.Context()
 	const one, two = "epoch-store-one", "epoch-store-two"
 
@@ -407,10 +407,10 @@ func TestABumpUnderOneStoreIDMovesTheEpochSeenThroughEveryStoreID(t *testing.T) 
 		name string
 		run  func() (int, error)
 	}{
-		{"BumpEpoch", func() (int, error) { return te.store.BumpEpoch(ctx, one, "restore") }},
-		{"BumpEpochCarrying", func() (int, error) { return te.store.BumpEpochCarrying(ctx, one, "token-scheme-change") }},
+		{"BumpEpoch", func() (int, error) { return survivalStore(te.store).BumpEpoch(ctx, one, "restore") }},
+		{"BumpEpochCarrying", func() (int, error) { return survivalStore(te.store).BumpEpochCarrying(ctx, one, "token-scheme-change") }},
 	} {
-		before, err := te.store.CurrentEpoch(ctx, two)
+		before, err := survivalStore(te.store).CurrentEpoch(ctx, two)
 		if err != nil {
 			t.Fatalf("CurrentEpoch(%s): %v", two, err)
 		}
@@ -418,7 +418,7 @@ func TestABumpUnderOneStoreIDMovesTheEpochSeenThroughEveryStoreID(t *testing.T) 
 		if err != nil {
 			t.Fatalf("%s(%s): %v", bump.name, one, err)
 		}
-		seen, err := te.store.CurrentEpoch(ctx, two)
+		seen, err := survivalStore(te.store).CurrentEpoch(ctx, two)
 		if err != nil {
 			t.Fatalf("CurrentEpoch(%s): %v", two, err)
 		}
@@ -431,7 +431,7 @@ func TestABumpUnderOneStoreIDMovesTheEpochSeenThroughEveryStoreID(t *testing.T) 
 // epochMint mints id under store, failing the test if the mint fails.
 func epochMint(t *testing.T, ctx context.Context, te *testEnv, store, id string) string {
 	t.Helper()
-	address, err := te.store.MintUnderEpoch(ctx, store, id)
+	address, err := survivalStore(te.store).MintUnderEpoch(ctx, store, id)
 	if err != nil {
 		t.Fatalf("MintUnderEpoch(%s, %s): %v", store, id, err)
 	}
@@ -442,7 +442,7 @@ func epochMint(t *testing.T, ctx context.Context, te *testEnv, store, id string)
 // writes no address rows) and returns the new epoch.
 func epochBump(t *testing.T, ctx context.Context, te *testEnv, store string) int {
 	t.Helper()
-	epoch, err := te.store.BumpEpoch(ctx, store, "restore")
+	epoch, err := survivalStore(te.store).BumpEpoch(ctx, store, "restore")
 	if err != nil {
 		t.Fatalf("BumpEpoch(%s): %v", store, err)
 	}
@@ -453,7 +453,7 @@ func epochBump(t *testing.T, ctx context.Context, te *testEnv, store string) int
 // address to the new epoch, and returns the new epoch.
 func epochCarry(t *testing.T, ctx context.Context, te *testEnv, store string) int {
 	t.Helper()
-	epoch, err := te.store.BumpEpochCarrying(ctx, store, "token-scheme-change")
+	epoch, err := survivalStore(te.store).BumpEpochCarrying(ctx, store, "token-scheme-change")
 	if err != nil {
 		t.Fatalf("BumpEpochCarrying(%s): %v", store, err)
 	}
@@ -520,14 +520,14 @@ func epochCarryRowsOf(t *testing.T, ctx context.Context, te *testEnv, root strin
 // and Resolve answers Live. why says what the assertion checks.
 func epochRequireServed(t *testing.T, ctx context.Context, te *testEnv, store, address, why string) {
 	t.Helper()
-	serves, err := te.store.StillServes(ctx, store, address)
+	serves, err := survivalStore(te.store).StillServes(ctx, store, address)
 	if err != nil {
 		t.Fatalf("StillServes(%s): %v", address, err)
 	}
 	if !serves {
 		t.Errorf("StillServes(%s) = false, want true: %s", address, why)
 	}
-	result, err := te.store.Resolve(ctx, store, address)
+	result, err := survivalStore(te.store).Resolve(ctx, store, address)
 	if err != nil {
 		t.Fatalf("Resolve(%s): %v", address, err)
 	}
@@ -540,14 +540,14 @@ func epochRequireServed(t *testing.T, ctx context.Context, te *testEnv, store, a
 // StillServes is false and Resolve answers GoneReorganization naming epoch.
 func epochRequireGone(t *testing.T, ctx context.Context, te *testEnv, store, address string, epoch int, why string) {
 	t.Helper()
-	serves, err := te.store.StillServes(ctx, store, address)
+	serves, err := survivalStore(te.store).StillServes(ctx, store, address)
 	if err != nil {
 		t.Fatalf("StillServes(%s): %v", address, err)
 	}
 	if serves {
 		t.Errorf("StillServes(%s) = true, want false: %s", address, why)
 	}
-	result, err := te.store.Resolve(ctx, store, address)
+	result, err := survivalStore(te.store).Resolve(ctx, store, address)
 	if err != nil {
 		t.Fatalf("Resolve(%s): %v", address, err)
 	}

@@ -9,7 +9,11 @@ import (
 	storeops "github.com/steveyegge/beads/internal/storage/issueops"
 )
 
-// CurrentEpoch, BumpEpoch, BumpEpochCarrying, MintUnderEpoch, LoseVersion,
+// Production keeps the released epoch algorithm. Carry/loss operations
+// return ErrEpochSemanticsDeferred before SQL; private Survival adapters
+// preserve the separately tested incoming contract.
+//
+// CurrentEpoch, BumpEpoch, MintUnderEpoch,
 // StillServes, Resolve and CurrentAddressFor give this leg R20's
 // epoch-transition enforcement
 // (gastownhall/beads#5898 revision 9, #6136),
@@ -134,20 +138,8 @@ func unpublishedBump(storeID string, epoch int, err error) error {
 //
 // CALLERS MUST HOLD THE WORKSPACE GATE (internal/workspacegate) EXCLUSIVELY FOR
 // THE BUMP, as a restore does: see storeops.BumpEpochCarryingInTx.
-func (s *DoltStore) BumpEpochCarrying(ctx context.Context, storeID, reason string) (int, error) {
-	var epoch int
-	if err := s.withRetryTx(ctx, func(tx *sql.Tx) error {
-		var err error
-		epoch, err = storeops.BumpEpochCarryingInTx(ctx, tx, storeID, reason)
-		return err
-	}); err != nil {
-		return failedBump(storeID, epoch, err)
-	}
-	if err := s.doltAddAndCommitPostTx(ctx, []string{"store_epoch", "epoch_minted_addresses"},
-		fmt.Sprintf("bd: carry addresses to epoch %d for %s (%s)", epoch, storeID, reason)); err != nil {
-		return epoch, unpublishedBump(storeID, epoch, err)
-	}
-	return epoch, nil
+func (s *DoltStore) BumpEpochCarrying(context.Context, string, string) (int, error) {
+	return 0, storeops.ErrEpochSemanticsDeferred
 }
 
 // MintUnderEpoch mints id's address under storeID's current epoch.
@@ -213,16 +205,22 @@ func (s *DoltStore) Resolve(ctx context.Context, storeID, address string) (store
 	return result, nil
 }
 
-// CurrentAddressFor reports the address oldAddress now resolves to: the newest
-// address of its lineage, or oldAddress itself when nothing carried it. It only
-// reads, so it runs on this leg's read path and publishes nothing.
+// CurrentAddressFor preserves released remint behavior and publishes both
+// epoch tables after SQL commit, with indeterminate results never replayed.
 func (s *DoltStore) CurrentAddressFor(ctx context.Context, storeID, oldAddress string) (string, error) {
 	var address string
-	if err := s.withReadTx(ctx, func(tx *sql.Tx) error {
+	if err := s.runIssueOperationTxWithMessage(ctx, func(tx *sql.Tx) (storeops.ChangedTables, string, error) {
 		var err error
 		address, err = storeops.CurrentAddressForInTx(ctx, tx, storeID, oldAddress)
-		return err
+		if err != nil {
+			return nil, "", err
+		}
+		return storeops.EpochMintDirtyTables(),
+			fmt.Sprintf("bd: current address for %s (%s)", oldAddress, storeID), nil
 	}); err != nil {
+		if errors.Is(err, ErrCommitIndeterminate) {
+			return address, err
+		}
 		return "", err
 	}
 	return address, nil
@@ -234,15 +232,6 @@ func (s *DoltStore) CurrentAddressFor(ctx context.Context, storeID, oldAddress s
 // loss its caller believes recorded must not be left unpublished. The loss has
 // applied in that case, and the error wraps ErrCommitIndeterminate like a
 // bump's, although replaying a loss is a no-op.
-func (s *DoltStore) LoseVersion(ctx context.Context, storeID, address string) error {
-	if err := s.withRetryTx(ctx, func(tx *sql.Tx) error {
-		return storeops.LoseVersionInTx(ctx, tx, storeID, address)
-	}); err != nil {
-		return err
-	}
-	if err := s.doltAddAndCommitPostTx(ctx, []string{"epoch_minted_addresses"},
-		fmt.Sprintf("bd: lose version %s for %s", address, storeID)); err != nil {
-		return fmt.Errorf("loss of %s for %s recorded but its Dolt commit failed: %w: %w", address, storeID, err, ErrCommitIndeterminate)
-	}
-	return nil
+func (s *DoltStore) LoseVersion(context.Context, string, string) error {
+	return storeops.ErrEpochSemanticsDeferred
 }

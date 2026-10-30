@@ -7,9 +7,12 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/storage/embeddeddolt"
+	storeops "github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/storage/schema"
 )
 
@@ -24,8 +27,8 @@ func TestEmbeddedPreEpochSelectedLineageMigrates(t *testing.T) {
 	if _, err := schema.MigrateUp(ctx, conn); err != nil {
 		t.Fatalf("pre-epoch selected upgrade: %v", err)
 	}
-	if got := currentMainVersion(t, ctx, conn); got != 75 {
-		t.Fatalf("cursor%d, want75", got)
+	if got := currentMainVersion(t, ctx, conn); got != 74 {
+		t.Fatalf("cursor%d, want74", got)
 	}
 	// A second ordinary pass must accept the completed actual engine metadata
 	// through the same enforced-shape guard and perform no numbered migration.
@@ -34,34 +37,26 @@ func TestEmbeddedPreEpochSelectedLineageMigrates(t *testing.T) {
 	}
 }
 
-func TestEmbeddedEpochEmptyOldLineageRefusesWithoutWrites(t *testing.T) {
+func TestEmbeddedEpochEmptyOldLineageUpgradesWithoutReinterpretation(t *testing.T) {
 	requireEmbedded(t)
 	ctx := t.Context()
-	dir := seedMainSchemaAt(t, ctx, 73)
+	dir := seedMainSchemaAt(t, ctx, 72)
 	conn, closeConn := openPinnedConn(t, ctx, dir)
 	defer closeConn()
+
 	before := epochFixtureState(t, ctx, conn)
-	head := scalarString(t, ctx, conn, "SELECT commit_hash FROM dolt_log LIMIT 1")
-	guarded := &epochRefusalConn{Conn: conn}
-	applied, err := schema.MigrateUp(ctx, guarded)
-	var refused *schema.EpochMigrationCompatibilityError
-	if !errors.As(err, &refused) || !strings.Contains(refused.Reason, "exclusive-writer") {
-		t.Fatalf("want old-writer compatibility refusal, got %v", err)
+	if _, err := schema.MigrateUp(ctx, conn); err != nil {
+		t.Fatalf("released epoch upgrade: %v", err)
 	}
-	if applied != 0 || guarded.writes != 0 {
-		t.Fatalf("refusal applied%d/write attempts%d", applied, guarded.writes)
+	if got := currentMainVersion(t, ctx, conn); got != 74 {
+		t.Fatalf("cursor%d,want74", got)
 	}
 	if after := epochFixtureState(t, ctx, conn); after != before {
-		t.Fatal("empty old epoch fixture changed")
+		t.Fatal("upgrade reinterpreted or rewrote released epoch rows/DDL")
 	}
-	if got := currentMainVersion(t, ctx, conn); got != 73 {
-		t.Fatalf("refused cursor%d, want73", got)
-	}
-	if got := scalarString(t, ctx, conn, "SELECT commit_hash FROM dolt_log LIMIT 1"); got != head {
-		t.Fatal("refusal changed HEAD")
-	}
-	if dirty := dirtyTableNames(t, ctx, conn); len(dirty) != 0 {
-		t.Fatalf("refusal dirtied fixture: %v", dirty)
+
+	if applied, err := schema.MigrateUp(ctx, conn); err != nil || applied != 0 {
+		t.Fatalf("ordinary reopen applied%d: %v", applied, err)
 	}
 }
 
@@ -130,41 +125,48 @@ func epochFixtureState(t *testing.T, ctx context.Context, conn *sql.Conn) string
 	return string(encoded)
 }
 
-func TestEmbeddedEpochOccupiedOldLineageRefusesWithoutWrites(t *testing.T) {
+func TestEmbeddedEpochOccupiedOldLineageUpgradesWithoutReinterpretation(t *testing.T) {
 	requireEmbedded(t)
 	ctx := t.Context()
-	dir := seedMainSchemaAt(t, ctx, 73)
+	dir := seedMainSchemaAt(t, ctx, 72)
 	conn, closeConn := openPinnedConn(t, ctx, dir)
 	defer closeConn()
-	execFrozenGuard(t, ctx, conn, `INSERT INTO epoch_minted_addresses (address,store_id,minted_id,minted_epoch,minted_at) VALUES ('caller/segmented/id','foreign-store','caller/segmented/id',7,'2026-10-27 00:00:00')`)
+
+	execFrozenGuard(t, ctx, conn, "INSERT INTO store_epoch (id,epoch) VALUES (1,2)")
+	for _, row := range []struct {
+		address, id string
+		epoch       int
+	}{{"live0", "live", 0}, {"live1", "live", 1}, {"live2", "live", 2}, {"lapsed0", "lapsed", 0}, {"lapsed2", "lapsed", 2}} {
+		if _, err := conn.ExecContext(ctx, "INSERT INTO epoch_minted_addresses (address,store_id,minted_id,minted_epoch,minted_at) VALUES (?,?,?,?,?)", row.address, "legacy-store", row.id, row.epoch, "2026-10-27 00:00:00"); err != nil {
+			t.Fatal(err)
+		}
+	}
 	mustDrain(t, ctx, conn, "CALL DOLT_ADD('-A')")
-	mustDrain(t, ctx, conn, "CALL DOLT_COMMIT('-m', 'test: retained old epoch identity')")
+	mustDrain(t, ctx, conn, "CALL DOLT_COMMIT('-m', 'test: released epoch records')")
+	checkAnswers := func() {
+		t.Helper()
+		for address, want := range map[string]bool{"live0": true, "lapsed0": false} {
+			got, err := storeops.StillServesInTx(ctx, conn, "legacy-store", address)
+			if err != nil || got != want {
+				t.Fatalf("%s served=%v,error%v,want%v", address, got, err, want)
+			}
+		}
+	}
+	checkAnswers()
+
 	before := epochFixtureState(t, ctx, conn)
-	head := scalarString(t, ctx, conn, "SELECT commit_hash FROM dolt_log LIMIT 1")
-	t.Setenv("BD_IGNORE_SCHEMA_SKEW", "1")
-	guarded := &epochRefusalConn{Conn: conn}
-	applied, err := schema.MigrateUp(ctx, guarded)
-	var refused *schema.EpochMigrationCompatibilityError
-	if !errors.As(err, &refused) {
-		t.Fatalf("want epoch compatibility refusal, got %v", err)
+	if _, err := schema.MigrateUp(ctx, conn); err != nil {
+		t.Fatalf("released epoch upgrade: %v", err)
 	}
-	if !strings.Contains(refused.Reason, "exclusive-writer") {
-		t.Fatalf("wrong compatibility refusal: %v", err)
-	}
-	if applied != 0 || guarded.writes != 0 {
-		t.Fatalf("refusal applied%d/write attempts%d", applied, guarded.writes)
+	if got := currentMainVersion(t, ctx, conn); got != 74 {
+		t.Fatalf("cursor%d,want74", got)
 	}
 	if after := epochFixtureState(t, ctx, conn); after != before {
-		t.Fatal("refused epoch fixture changed")
+		t.Fatal("upgrade reinterpreted or rewrote released epoch rows/DDL")
 	}
-	if got := currentMainVersion(t, ctx, conn); got != 73 {
-		t.Fatalf("refused cursor%d, want73", got)
-	}
-	if got := scalarString(t, ctx, conn, "SELECT commit_hash FROM dolt_log LIMIT 1"); got != head {
-		t.Fatal("refusal changed HEAD")
-	}
-	if dirty := dirtyTableNames(t, ctx, conn); len(dirty) != 0 {
-		t.Fatalf("refusal dirtied fixture: %v", dirty)
+	checkAnswers()
+	if applied, err := schema.MigrateUp(ctx, conn); err != nil || applied != 0 {
+		t.Fatalf("ordinary reopen applied%d: %v", applied, err)
 	}
 }
 
@@ -180,7 +182,7 @@ func TestEmbeddedEpochPartialDDLIsSafelyRefusedByOrdinaryMigration(t *testing.T)
 	before := epochFixtureState(t, ctx, conn)
 	applied, err := schema.MigrateUp(ctx, conn)
 	var refused *schema.EpochMigrationCompatibilityError
-	if !errors.As(err, &refused) || !strings.Contains(refused.Reason, "exclusive-writer") {
+	if !errors.As(err, &refused) || !strings.Contains(refused.Reason, "survival or unknown epoch columns") {
 		t.Fatalf("want compatibility refusal before partial DDL repair, got %v", err)
 	}
 	if applied != 0 {
@@ -198,5 +200,45 @@ func TestEmbeddedEpochPartialDDLIsSafelyRefusedByOrdinaryMigration(t *testing.T)
 	}
 	if !found {
 		t.Fatal("partial epoch debris was silently committed or removed")
+	}
+}
+
+// A nonmigrating read-only open may read unrelated data, but must not answer a
+// terminally lost survival-format row through the released epoch algorithm.
+func TestEmbeddedEpochReadOnlyRefusesSurvivalInterpretation(t *testing.T) {
+	requireEmbedded(t)
+	ctx := t.Context()
+	te := newSurvivalTestEnv(t, "epochro")
+	incoming := survivalStore(te.store)
+	address, err := incoming.MintUnderEpoch(ctx, "store", "retained")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := incoming.LoseVersion(ctx, "store", address); err != nil {
+		t.Fatal(err)
+	}
+	if live, err := incoming.StillServes(ctx, "store", address); err != nil || live {
+		t.Fatalf("private survival fixture live=%v: %v", live, err)
+	}
+	if err := te.store.Close(); err != nil {
+		t.Fatal(err)
+	}
+	ro, err := embeddeddolt.OpenReadOnly(ctx, filepath.Dir(te.dataDir), te.database, "main")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := ro.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+	if prefix, err := ro.GetConfig(ctx, "issue_prefix"); err != nil || prefix != "epochro" {
+		t.Fatalf("unrelated read prefix=%q: %v", prefix, err)
+	}
+	if live, err := ro.StillServes(ctx, "store", address); live || !errors.Is(err, storeops.ErrEpochFormatNotReleased) {
+		t.Fatalf("released read-only live=%v: %v", live, err)
+	}
+	if result, err := ro.Resolve(ctx, "store", address); !errors.Is(err, storeops.ErrEpochFormatNotReleased) {
+		t.Fatalf("released read-only resolve=%+v: %v", result, err)
 	}
 }

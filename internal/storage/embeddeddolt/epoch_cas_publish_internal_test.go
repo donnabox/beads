@@ -40,6 +40,9 @@ func TestEpochWritesReportAnUnpublishedCommitAsIndeterminate(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = store.Close() })
+	if err := PrepareSurvivalTestStore(ctx, store); err != nil {
+		t.Fatal(err)
+	}
 	const storeID = "epochpub-store"
 
 	requireUnpublished := func(t *testing.T, name string, err error) {
@@ -53,7 +56,7 @@ func TestEpochWritesReportAnUnpublishedCommitAsIndeterminate(t *testing.T) {
 	}
 	currentEpoch := func(t *testing.T) int {
 		t.Helper()
-		epoch, err := store.CurrentEpoch(ctx, storeID)
+		epoch, err := store.survivalCurrentEpoch(ctx, storeID)
 		if err != nil {
 			t.Fatalf("CurrentEpoch: %v", err)
 		}
@@ -61,7 +64,7 @@ func TestEpochWritesReportAnUnpublishedCommitAsIndeterminate(t *testing.T) {
 	}
 	stillServes := func(t *testing.T, address string) bool {
 		t.Helper()
-		serves, err := store.StillServes(ctx, storeID, address)
+		serves, err := store.survivalStillServes(ctx, storeID, address)
 		if err != nil {
 			t.Fatalf("StillServes(%s): %v", address, err)
 		}
@@ -72,8 +75,8 @@ func TestEpochWritesReportAnUnpublishedCommitAsIndeterminate(t *testing.T) {
 		name string
 		bump func(ctx context.Context, storeID, reason string) (int, error)
 	}{
-		{name: "BumpEpoch", bump: store.BumpEpoch},
-		{name: "BumpEpochCarrying", bump: store.BumpEpochCarrying},
+		{name: "BumpEpoch", bump: store.survivalBumpEpoch},
+		{name: "BumpEpochCarrying", bump: store.survivalBumpEpochCarrying},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			before := currentEpoch(t)
@@ -96,7 +99,7 @@ func TestEpochWritesReportAnUnpublishedCommitAsIndeterminate(t *testing.T) {
 		var address string
 		var err error
 		withFailedPublication(t, store, func() {
-			address, err = store.MintUnderEpoch(ctx, storeID, "record-a")
+			address, err = store.survivalMintUnderEpoch(ctx, storeID, "record-a")
 		})
 		requireUnpublished(t, "MintUnderEpoch", err)
 		if address == "" {
@@ -108,12 +111,12 @@ func TestEpochWritesReportAnUnpublishedCommitAsIndeterminate(t *testing.T) {
 	})
 
 	t.Run("LoseVersion", func(t *testing.T) {
-		address, err := store.MintUnderEpoch(ctx, storeID, "record-b")
+		address, err := store.survivalMintUnderEpoch(ctx, storeID, "record-b")
 		if err != nil {
 			t.Fatalf("MintUnderEpoch: %v", err)
 		}
 		withFailedPublication(t, store, func() {
-			err = store.LoseVersion(ctx, storeID, address)
+			err = store.survivalLoseVersion(ctx, storeID, address)
 		})
 		requireUnpublished(t, "LoseVersion", err)
 		if stillServes(t, address) {
@@ -126,7 +129,7 @@ func TestEpochWritesReportAnUnpublishedCommitAsIndeterminate(t *testing.T) {
 	t.Run("a bump refused before its SQL commit", func(t *testing.T) {
 		before := currentEpoch(t)
 		store.readOnly = true
-		epoch, err := store.BumpEpoch(ctx, storeID, "refused")
+		epoch, err := store.survivalBumpEpoch(ctx, storeID, "refused")
 		store.readOnly = false
 		if !errors.Is(err, ErrReadOnly) || errors.Is(err, storage.ErrCommitIndeterminate) {
 			t.Fatalf("BumpEpoch on a read-only store = %v, want ErrReadOnly, not marked storage.ErrCommitIndeterminate", err)

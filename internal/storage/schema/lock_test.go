@@ -378,7 +378,7 @@ func expectPendingEpochMigrations(t *testing.T, mock sqlmock.Sqlmock) {
 
 	latest := LatestVersion()
 	latestIgnored := LatestIgnoredVersion()
-	if latest != forkEpochExtensionVersion {
+	if latest != forkEpochLatestVersion {
 		t.Fatalf("update ordered last-migration fixture for latest%d", latest)
 	}
 	cursor := 70 // Last selected lineage without an epoch table.
@@ -432,9 +432,6 @@ func expectPendingEpochMigrations(t *testing.T, mock sqlmock.Sqlmock) {
 		// shape before recording its cursor. No old-epoch upgrade is implied.
 		expectDoltStatusRows(mock)
 		mock.ExpectExec("^" + regexp.QuoteMeta(strings.TrimSpace(string(body))) + "$").WillReturnResult(sqlmock.NewResult(0, 0))
-		if version == forkEpochExtensionVersion {
-			expectEpochMetadata(mock, true, false, "YES")
-		}
 		mock.ExpectExec(regexp.QuoteMeta("INSERT IGNORE INTO schema_migrations (version, content_hash) VALUES (?, ?)")).
 			WithArgs(version, fmt.Sprintf("%x", sha256.Sum256(body))).WillReturnResult(sqlmock.NewResult(0, 1))
 		expectDoltStatusRows(mock)

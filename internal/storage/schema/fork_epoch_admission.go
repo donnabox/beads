@@ -9,7 +9,7 @@ import (
 	"unicode"
 )
 
-const forkEpochExtensionVersion = 75
+const forkEpochLatestVersion = 74
 
 // EpochMigrationCompatibilityError refuses an unrecognized migration lineage
 // or an epoch format for which this binary has no loss-preserving adapter.
@@ -31,12 +31,11 @@ var forkEpochLineageFiles = map[int]string{
 	72: "0072_add_participation_generation.up.sql",
 	73: "0073_add_arrival_seq.up.sql",
 	74: "0074_create_id_tombstones.up.sql",
-	75: "0075_extend_epoch_survival.up.sql",
 }
 
 // checkForkEpochAdmission must run before bootstrap, ignored-state repair or
 // numbered migration writes. target is the requested MAIN migration target;
-// historical MigrateUpTo targets below74 may construct an old disposable store,
+// historical MigrateUpTo targets may construct an old disposable store,
 // but never bypass collision-range lineage validation. The caller owns the
 // existing exclusive migration interval; this read is not a writer lock.
 func checkForkEpochAdmission(ctx context.Context, db DBConn, target int) error {
@@ -64,7 +63,7 @@ func checkForkEpochAdmission(ctx context.Context, db DBConn, target int) error {
 	if rawMax < 0 {
 		return epochCompatibility("negative raw migration cursor")
 	}
-	if rawMax > forkEpochExtensionVersion {
+	if rawMax > forkEpochLatestVersion {
 		return epochCompatibility("raw migration cursor exceeds the selected epoch lineage")
 	}
 	if rawMax >= 70 {
@@ -75,7 +74,7 @@ func checkForkEpochAdmission(ctx context.Context, db DBConn, target int) error {
 		if !hasHash {
 			return epochCompatibility("collision-range cursor has no content_hash column")
 		}
-		rows, err := db.QueryContext(ctx, "SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 75 ORDER BY version")
+		rows, err := db.QueryContext(ctx, "SELECT version, content_hash FROM schema_migrations WHERE version BETWEEN 70 AND 74 ORDER BY version")
 		if err != nil {
 			return fmt.Errorf("reading collision-range lineage: %w", err)
 		}
@@ -101,7 +100,7 @@ func checkForkEpochAdmission(ctx context.Context, db DBConn, target int) error {
 		if closeErr != nil {
 			return closeErr
 		}
-		for version := 70; version <= rawMax && version <= forkEpochExtensionVersion; version++ {
+		for version := 70; version <= rawMax && version <= forkEpochLatestVersion; version++ {
 			hash, exists := hashes[version]
 			if !exists || !hash.Valid || hash.String == "" {
 				return epochCompatibility(fmt.Sprintf("migration%04d has missing or NULL lineage", version))
@@ -122,26 +121,13 @@ func checkForkEpochAdmission(ctx context.Context, db DBConn, target int) error {
 	if rawMax >= 71 && !epoch {
 		return epochCompatibility("recorded epoch migration has no epoch table")
 	}
-	if rawMax < forkEpochExtensionVersion && target < forkEpochExtensionVersion {
-		return nil
+	if epoch {
+		if _, err := readEpochShape(ctx, db, false); err != nil {
+			return err
+		}
 	}
-	if !epoch {
-		return nil
-	} // Successfully observed fresh/pre-epoch absence.
-	// GET_LOCK serializes migrators, but already-open old clients do not
-	// honor it. Even an empty table can receive an old-format row between
-	// this probe and the independently durable DDL. No existing epoch
-	// upgrade is safe until a separately qualified writer fence exists.
-	if rawMax < forkEpochExtensionVersion {
-		return epochCompatibility("existing old or partial epoch table requires a separately qualified exclusive-writer adapter")
-	}
-	complete, err := readForkEpochShape(ctx, db)
-	if err != nil {
-		return err
-	}
-	if !complete {
-		return epochCompatibility("completed epoch extension has incomplete shape")
-	}
+	// Released epoch rows retain their existing interpretation. Production
+	// migrations stop at74 and never add the deferred survival columns.
 	return nil
 }
 
@@ -151,6 +137,10 @@ type epochColumnShape struct{ typ, nullable, key string }
 // objects. Names alone do not prove the types, index columns or CHECK meaning.
 // It is called only after a successful table existence probe.
 func readForkEpochShape(ctx context.Context, db DBConn) (bool, error) {
+	return readEpochShape(ctx, db, true)
+}
+
+func readEpochShape(ctx context.Context, db DBConn, survival bool) (bool, error) {
 	rows, err := db.QueryContext(ctx, "SHOW COLUMNS FROM epoch_minted_addresses")
 	if err != nil {
 		return false, err
@@ -215,6 +205,9 @@ func readForkEpochShape(ctx context.Context, db DBConn) (bool, error) {
 		if !ok || got != want {
 			return false, epochCompatibility("unexpected base epoch column shape: " + name)
 		}
+	}
+	if !survival && len(shapes) != len(base) {
+		return false, epochCompatibility("deferred survival or unknown epoch columns cannot be opened with released semantics")
 	}
 	for name, got := range shapes {
 		if _, ok := base[name]; ok {
@@ -310,6 +303,9 @@ func readForkEpochShape(ctx context.Context, db DBConn) (bool, error) {
 	_, gone := shapes["gone_at_epoch"]
 	if check && !gone {
 		return false, epochCompatibility("loss constraint without loss column")
+	}
+	if !survival {
+		return true, nil
 	}
 	return carry && gone && carryIndex && check, nil
 }

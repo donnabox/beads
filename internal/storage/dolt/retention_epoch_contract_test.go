@@ -62,8 +62,8 @@ func TestRetentionContract(t *testing.T) {
 // revision 9, #6136) against the server-backed
 // store, which reaches internal/storage/issueops's epoch Tx functions
 // through this leg's own retrying write transaction or read transaction
-// (DoltStore.BumpEpoch/BumpEpochCarrying/MintUnderEpoch/LoseVersion and
-// DoltStore.CurrentEpoch/StillServes/Resolve/CurrentAddressFor) — see
+// (DoltStore.survivalBumpEpoch/BumpEpochCarrying/MintUnderEpoch/LoseVersion and
+// DoltStore.survivalCurrentEpoch/StillServes/Resolve/CurrentAddressFor) — see
 // internal/storage/dolt/epoch_cas.go.
 //
 // All three legs run that one shared body, so this is not an independent
@@ -121,7 +121,7 @@ func newEpochDoltFixture(t *testing.T, prefix string) (conformance.EpochFixture,
 
 func epochDoltCurrentEpoch(store *DoltStore) func(ctx context.Context, storeID string) (int, error) {
 	return func(ctx context.Context, storeID string) (int, error) {
-		return store.CurrentEpoch(ctx, storeID)
+		return store.survivalCurrentEpoch(ctx, storeID)
 	}
 }
 
@@ -133,15 +133,15 @@ func epochDoltCurrentEpoch(store *DoltStore) func(ctx context.Context, storeID s
 func epochDoltBumpEpoch(store *DoltStore) func(ctx context.Context, storeID string, trigger conformance.EpochBumpTrigger) (int, error) {
 	return func(ctx context.Context, storeID string, trigger conformance.EpochBumpTrigger) (int, error) {
 		if trigger == conformance.EpochBumpTriggerTokenSchemeChange {
-			return store.BumpEpochCarrying(ctx, storeID, trigger.String())
+			return store.survivalBumpEpochCarrying(ctx, storeID, trigger.String())
 		}
-		return store.BumpEpoch(ctx, storeID, trigger.String())
+		return store.survivalBumpEpoch(ctx, storeID, trigger.String())
 	}
 }
 
 func epochDoltMintUnderEpoch(store *DoltStore) func(ctx context.Context, storeID, id string) (conformance.Address, error) {
 	return func(ctx context.Context, storeID, id string) (conformance.Address, error) {
-		address, err := store.MintUnderEpoch(ctx, storeID, id)
+		address, err := store.survivalMintUnderEpoch(ctx, storeID, id)
 		if err != nil {
 			return "", err
 		}
@@ -151,13 +151,13 @@ func epochDoltMintUnderEpoch(store *DoltStore) func(ctx context.Context, storeID
 
 func epochDoltStillServes(store *DoltStore) func(ctx context.Context, storeID string, address conformance.Address) (bool, error) {
 	return func(ctx context.Context, storeID string, address conformance.Address) (bool, error) {
-		return store.StillServes(ctx, storeID, string(address))
+		return store.survivalStillServes(ctx, storeID, string(address))
 	}
 }
 
 func epochDoltResolve(store *DoltStore) func(ctx context.Context, storeID string, address conformance.Address) (conformance.RetentionAnswer, error) {
 	return func(ctx context.Context, storeID string, address conformance.Address) (conformance.RetentionAnswer, error) {
-		result, err := store.Resolve(ctx, storeID, string(address))
+		result, err := store.survivalResolve(ctx, storeID, string(address))
 		if err != nil {
 			return conformance.RetentionAnswer{}, err
 		}
@@ -167,7 +167,7 @@ func epochDoltResolve(store *DoltStore) func(ctx context.Context, storeID string
 
 func epochDoltCurrentAddressFor(store *DoltStore) func(ctx context.Context, storeID string, oldAddress conformance.Address) (conformance.Address, error) {
 	return func(ctx context.Context, storeID string, oldAddress conformance.Address) (conformance.Address, error) {
-		address, err := store.CurrentAddressFor(ctx, storeID, string(oldAddress))
+		address, err := store.survivalCurrentAddressFor(ctx, storeID, string(oldAddress))
 		if err != nil {
 			return "", err
 		}
@@ -177,7 +177,7 @@ func epochDoltCurrentAddressFor(store *DoltStore) func(ctx context.Context, stor
 
 func epochDoltLoseVersion(store *DoltStore) func(ctx context.Context, storeID string, address conformance.Address) error {
 	return func(ctx context.Context, storeID string, address conformance.Address) error {
-		return store.LoseVersion(ctx, storeID, string(address))
+		return store.survivalLoseVersion(ctx, storeID, string(address))
 	}
 }
 
