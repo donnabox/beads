@@ -161,7 +161,7 @@ func (e *evaluation) predicate(n *node, env bindings) (bool, error) {
 		if n.match == "exact" {
 			return r.typ == n.typ, nil
 		}
-		return e.families[r.typ][n.typ], nil
+		return r.family[n.typ], nil
 	case "present":
 		v, err := e.val(n.value, env)
 		return v.present, err
