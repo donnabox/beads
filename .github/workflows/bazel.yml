@@ -2435,11 +2435,9 @@ jobs:
   # max: this job runs there as before.
   bazel-server-storage-hosted:
     name: server-Dolt storage hosted ${{ matrix.part }}
-    # Remote execution only, like bazel-integration: locally the tagged race
-    # build of //... alone is most of the timeout. Plus mode remote
-    # (bazel-dolt-int's).
-    # This lane is the tier's only PR run (pr-risk.yml's legacy jobs are
-    # retired) and pr.yml's gate requires it to have run here and passed.
+    # Dedicated complete-local replacement only. Explicit manual targets
+    # partition the same manifest; the original remote union stays unchanged.
+    # The required aggregate verifies all five independent invocation proofs.
     needs: rbe
     runs-on: ${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     if: ${{ needs.rbe.outputs.local_full == 'true' }}
@@ -2463,15 +2461,6 @@ jobs:
           persist-credentials: false
           allow-unsafe-pr-checkout: ${{ inputs.fork-farm == 'authorized' && github.event_name == 'pull_request_target' }}
 
-      # The remote repo contents cache, read-only, as in bazel-test.
-      - name: Remote repo contents cache (read)
-        if: ${{ needs.rbe.outputs.mode == 'remote' && needs.rbe.outputs.rrc == 'on' }}
-        run: |
-          {
-            echo 'startup --experimental_remote_repo_contents_cache'
-            echo 'common --loading_phase_threads=64'
-          } >> .bazelrc.local
-
       - name: Set up Bazel
         id: bazel
         uses: ./.github/actions/setup-bazel
@@ -2482,7 +2471,6 @@ jobs:
           RBE_TLS_CA: ${{ needs.rbe.outputs.mode == 'remote' && secrets.RBE_TLS_CA || '' }}
           RBE_INSTANCE: ${{ needs.rbe.outputs.mode == 'remote' && 'oss' || '' }}
           BAZEL_FORK_CACHE: ${{ needs.rbe.outputs.mode == 'cache' && 'true' || '' }}
-          BAZEL_RRC_READ: 'true' # mode cache reads the repo contents cache through rbe-cache
           BAZEL_FORK_REMOTE: ${{ startsWith(needs.rbe.outputs.mode, 'fork-') && 'true' || '' }}
           RBE_FORK_TIER: ${{ needs.rbe.outputs.tier }}
           RBE_FORK_PR: ${{ github.event.pull_request.number }}
@@ -2492,8 +2480,10 @@ jobs:
       # asks Bazel itself, so a macro or a variable cannot hide one. Cheap:
       # loading only, with the repository cache the test step needs anyway.
       - name: No test target is marked flaky
+        env:
+          TARGET: ${{ matrix.target }}
         run: |
-          flaky="$(bazel query 'attr(flaky, 1, tests(//internal/storage/dolt:${{ matrix.target }}))')"
+          flaky="$(bazel query "attr(flaky, 1, tests(//internal/storage/dolt:$TARGET))")"
           if [ -n "$flaky" ]; then
             echo "::error::flaky = True on ${flaky//$'\n'/ }: the gated lanes run each test once"
             exit 1
@@ -2504,11 +2494,13 @@ jobs:
       - name: Test one hosted storage partition
         id: test
         timeout-minutes: 25
+        env:
+          TARGET: ${{ matrix.target }}
         run: |
           set -o pipefail
           start=$(date +%s)
           rc=0
-          bazel test "//internal/storage/dolt:${{ matrix.target }}" --config=doltserver-integration --nocache_test_results \
+          bazel test "//internal/storage/dolt:$TARGET" --config=doltserver-integration ${BAZEL_FRESH:+"$BAZEL_FRESH"} \
             --build_event_json_file="$RUNNER_TEMP/bazel-bep.json" \
             --execution_log_compact_file="$RUNNER_TEMP/bazel-exec.log.zst" \
             --profile="$RUNNER_TEMP/bazel-profile.json" \
@@ -2536,6 +2528,7 @@ jobs:
         if: ${{ always() && steps.test.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
+          overwrite: true # same part/run/attempt replaces its own upload only
           name: server-storage-hosted-${{ matrix.part }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/hosted-proof
           if-no-files-found: error

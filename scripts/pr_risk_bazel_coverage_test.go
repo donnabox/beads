@@ -2367,7 +2367,7 @@ func TestServerStorageHostedWorkflow(t *testing.T) {
 		}
 	}
 	flaky := parts.step(t, "No test target is marked flaky")
-	if !strings.Contains(flaky.Run, `bazel query 'attr(flaky, 1, tests(//internal/storage/dolt:${{ matrix.target }}))'`) {
+	if flaky.Env["TARGET"] != "${{ matrix.target }}" || !strings.Contains(flaky.Run, `bazel query "attr(flaky, 1, tests(//internal/storage/dolt:$TARGET))"`) {
 		t.Fatal("wildcard flaky query misses explicit manual partitions")
 	}
 	flakyIndex, testIndex := -1, -1
@@ -2383,12 +2383,12 @@ func TestServerStorageHostedWorkflow(t *testing.T) {
 		t.Fatal("explicit flaky admission must run before its test")
 	}
 	test := parts.step(t, "Test one hosted storage partition")
-	if test.TimeoutMinutes != 25 || test.If != "" || !strings.Contains(test.Run, `bazel test "//internal/storage/dolt:${{ matrix.target }}" --config=doltserver-integration --nocache_test_results`) || strings.Contains(test.Run, "bazel test //...") {
+	if test.TimeoutMinutes != 25 || test.If != "" || test.Env["TARGET"] != "${{ matrix.target }}" || !strings.Contains(test.Run, `bazel test "//internal/storage/dolt:$TARGET" --config=doltserver-integration ${BAZEL_FRESH:+"$BAZEL_FRESH"}`) || strings.Contains(test.Run, "bazel test //...") {
 		t.Fatal("hosted part changes the original profile/cap or also runs the canonical full target")
 	}
 	assertTestStepKeepsExitStatus(t, test)
 	upload := parts.step(t, "Upload independent hosted proof")
-	if upload.If != "${{ always() && steps.test.outcome != 'skipped' }}" || upload.With["if-no-files-found"] != "error" || upload.With["name"] != "server-storage-hosted-${{ matrix.part }}-${{ github.run_attempt }}" {
+	if upload.If != "${{ always() && steps.test.outcome != 'skipped' }}" || upload.With["if-no-files-found"] != "error" || upload.With["overwrite"] != "true" || upload.With["name"] != "server-storage-hosted-${{ matrix.part }}-${{ github.run_attempt }}" {
 		t.Fatal("missing unique retained proof per actual invocation")
 	}
 	aggregate := w.job(t, bazelServerJobName)

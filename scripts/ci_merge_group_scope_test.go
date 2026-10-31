@@ -1010,6 +1010,17 @@ func TestBazelDoltTiersInput(t *testing.T) {
 	for name, job := range workflow.Jobs {
 		dolt := slices.Contains(bazelDoltTierLanes, name)
 		ordinaryIf := job.If
+		if name == bazelServerJobName {
+			body, ok := strings.CutPrefix(ordinaryIf, "${{ always() && (")
+			if !ok {
+				t.Fatalf("storage aggregate lacks always wrapper: %s", ordinaryIf)
+			}
+			body, ok = strings.CutSuffix(body, ") }}")
+			if !ok {
+				t.Fatalf("malformed storage aggregate wrapper: %s", ordinaryIf)
+			}
+			ordinaryIf = "${{ " + body + " }}"
+		}
 		if body, ok := strings.CutPrefix(ordinaryIf, "${{ needs.rbe.outputs.local_full == 'true' || ("); ok {
 			if !slices.Contains([]string{bazelEmbedJobName, bazelIntegJobName, bazelDoltJobName, bazelProxiedJobName, bazelServerJobName, bazelCmdDoltJobName}, name) {
 				t.Fatalf("unexpected Q alternate: %s", name)

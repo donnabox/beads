@@ -14,14 +14,15 @@ import (
 // map in the checks below, instead of being pinned independently and
 // allowed to drift apart.
 var ciAnalyticsLaneJobs = map[string]string{
-	"bazel-test":           "test",
-	"bazel-pure":           "pure",
-	"bazel-embedded":       "embedded",
-	"bazel-integration":    "integration",
-	"bazel-doltserver":     "doltserver",
-	"bazel-proxied":        "proxied-server",
-	"bazel-server-storage": "server-storage",
-	"bazel-cmd-dolt":       "cmd-dolt",
+	"bazel-test":                  "test",
+	"bazel-pure":                  "pure",
+	"bazel-embedded":              "embedded",
+	"bazel-integration":           "integration",
+	"bazel-doltserver":            "doltserver",
+	"bazel-proxied":               "proxied-server",
+	"bazel-server-storage":        "server-storage",
+	"bazel-server-storage-hosted": "server-storage",
+	"bazel-cmd-dolt":              "cmd-dolt",
 	// The dolt-server + proxied union lane (item 5; mode remote): its
 	// own lane value, so the A/B queries can pair it with its members.
 	"bazel-dolt-race": "dolt-race",
@@ -239,6 +240,9 @@ func TestCIAnalyticsStepsAreSafeAndBounded(t *testing.T) {
 			t.Errorf("%s job %q: if %q does not require !cancelled()", jobName, upload.Name, upload.If)
 		}
 		wantUploadName := "ci-analytics-" + wantLane + "-${{ github.run_attempt }}"
+		if jobName == bazelServerHostedJobName {
+			wantUploadName = "ci-analytics-" + wantLane + "-${{ matrix.part }}-${{ github.run_attempt }}"
+		}
 		if upload.With["name"] != wantUploadName {
 			t.Errorf("%s job %q: upload name %q, want %q", jobName, upload.Name, upload.With["name"], wantUploadName)
 		}

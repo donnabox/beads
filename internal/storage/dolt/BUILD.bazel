@@ -622,6 +622,8 @@ sh_test(
 # Explicit hosted partitions retain the original manifest and binary. manual
 # keeps remote //... on the canonical16-shard rule above; the hosted matrix
 # selects exactly one partition or conformance and verifies the complete union.
+# dolt-server-integration: preserves the original server manifest and binary.
+# manual: selected explicitly by the hosted matrix, excluded from remote //... .
 sh_test(
     name = "dolt_server_hosted_part0_test",
     size = "large",
@@ -657,6 +659,8 @@ sh_test(
     ],
 )
 
+# dolt-server-integration: preserves the original server manifest and binary.
+# manual: selected explicitly by the hosted matrix, excluded from remote //... .
 sh_test(
     name = "dolt_server_hosted_part1_test",
     size = "large",
@@ -692,6 +696,8 @@ sh_test(
     ],
 )
 
+# dolt-server-integration: preserves the original server manifest and binary.
+# manual: selected explicitly by the hosted matrix, excluded from remote //... .
 sh_test(
     name = "dolt_server_hosted_part2_test",
     size = "large",
@@ -727,6 +733,8 @@ sh_test(
     ],
 )
 
+# dolt-server-integration: preserves the original server manifest and binary.
+# manual: selected explicitly by the hosted matrix, excluded from remote //... .
 sh_test(
     name = "dolt_server_hosted_part3_test",
     size = "large",

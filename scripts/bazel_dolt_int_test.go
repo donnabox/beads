@@ -550,6 +550,28 @@ const bazelDoltIntTestActions = 63
 // that budget, so all of them must fit at once or the slower tier's shards
 // queue behind the other's. Every rule tagged with one of the union's tags,
 // read from the BUILD files: its shard_count (1 when unsharded), summed.
+// Bazel wildcard suites exclude manual rules; explicit hosted partitions are
+// pinned separately by TestServerStorageHostedPartitions. Parse literal lists
+// across buildifier line wrapping without accepting expressions or extra tokens.
+var bazelDoltIntLiteralTags = regexp.MustCompile(`(?m)^    tags = (\[[^\]]*\]),(?:[ \t]*#.*)?$`)
+
+func bazelDoltIntRuleTags(t *testing.T, rule string) []string {
+	t.Helper()
+	m := bazelDoltIntLiteralTags.FindStringSubmatch(rule)
+	if m == nil {
+		return nil
+	}
+	residue := bazelQuotedStrRe.ReplaceAllString(m[1], "")
+	if strings.Trim(residue, "[], \t\n\r") != "" {
+		t.Fatalf("nonliteral union rule tags: %s", m[1])
+	}
+	var tags []string
+	for _, value := range bazelQuotedStrRe.FindAllStringSubmatch(m[1], -1) {
+		tags = append(tags, value[1])
+	}
+	return tags
+}
+
 func TestBazelDoltIntFitsTheJobsBudget(t *testing.T) {
 	root := bazelPolicyRoot(t)
 	rc := readPolicyFile(t, root, ".bazelrc")
@@ -566,10 +588,10 @@ func TestBazelDoltIntFitsTheJobsBudget(t *testing.T) {
 			continue
 		}
 		build := readPolicyFile(t, root, f)
-		for _, line := range strings.Split(build, "\n") {
+		for _, line := range strings.Split(bazelDoltIntLiteralTags.ReplaceAllString(build, ""), "\n") {
 			for _, tag := range tags {
-				if strings.Contains(line, tag) && !strings.HasPrefix(line, "    tags = [") {
-					t.Errorf("%s: %q outside a one-line tags list: %q", f, tag, line)
+				if strings.Contains(line, tag) {
+					t.Errorf("%s: %q outside a literal tags list: %q", f, tag, line)
 				}
 			}
 		}
@@ -579,12 +601,11 @@ func TestBazelDoltIntFitsTheJobsBudget(t *testing.T) {
 				continue
 			}
 			rule := build[loc[0] : loc[0]+end]
-			tagged := false
-			for _, line := range strings.Split(rule, "\n") {
-				if strings.HasPrefix(line, "    tags = [") && slices.ContainsFunc(tags, func(tag string) bool { return strings.Contains(line, tag) }) {
-					tagged = true
-				}
+			ruleTags := bazelDoltIntRuleTags(t, rule)
+			if slices.Contains(ruleTags, "manual") {
+				continue
 			}
+			tagged := slices.ContainsFunc(ruleTags, func(tag string) bool { return slices.Contains(tags, `"`+tag+`"`) })
 			if !tagged {
 				continue
 			}
@@ -640,13 +661,13 @@ func bazelDoltIntTaggedLabels(t *testing.T) map[string][]string {
 			if nm == nil {
 				continue
 			}
+			ruleTags := bazelDoltIntRuleTags(t, rule)
+			if slices.Contains(ruleTags, "manual") {
+				continue
+			}
 			for _, mem := range bazelDoltIntMembers {
-				tagLine := `"` + mem.tag + `"`
-				for _, line := range strings.Split(rule, "\n") {
-					if strings.HasPrefix(line, "    tags = [") && strings.Contains(line, tagLine) {
-						out[mem.tag] = append(out[mem.tag], "//"+pkg+":"+nm[1])
-						break
-					}
+				if slices.Contains(ruleTags, mem.tag) {
+					out[mem.tag] = append(out[mem.tag], "//"+pkg+":"+nm[1])
 				}
 			}
 		}

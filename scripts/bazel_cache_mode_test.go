@@ -246,8 +246,10 @@ func TestBazelCacheModeReachesTheRC(t *testing.T) {
 				// audience left for pre-warming in fork-ro or fork-rw (see
 				// bazel.yml's comment on the job).
 				// Nor does a union lane (bazelUnionLanes): mode remote only,
-				// its members run in the fork modes.
-				case strings.HasPrefix(mode, "fork-") && !runs && !bazelPackageJobs[name] && !(name == bazelRBEPrewarmJobName && strings.HasPrefix(mode, "fork-")) && bazelUnionLanes[name] == nil:
+				// its members run in the fork modes. The exact hosted storage
+				// replacement is local_full only, pinned separately by its
+				// workflow/partition policies; it must not duplicate remote work.
+				case strings.HasPrefix(mode, "fork-") && !runs && !bazelPackageJobs[name] && !(name == bazelRBEPrewarmJobName && strings.HasPrefix(mode, "fork-")) && bazelUnionLanes[name] == nil && name != bazelServerHostedJobName:
 					t.Errorf("%s does not run in mode %s (every lane runs remotely)", name, mode)
 				case mode == "cache" && (name == bazelIntegJobName || name == bazelCmdDoltJobName) && !runs:
 					t.Errorf("%s does not run in mode cache", name)
