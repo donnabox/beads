@@ -170,6 +170,10 @@ func freshToken() (string, error) {
 }
 
 func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) {
+	return installPreviewWithDDL(ctx, conn, o, nil)
+}
+
+func installPreviewWithDDL(ctx context.Context, conn *sql.Conn, o Options, additionalDDL []string) (err error) {
 	var intrinsicBudget *intrinsicMetadataBudget
 	prefix := o.IssuePrefix
 	if prefix == "" {
@@ -190,7 +194,11 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 			}
 		}
 	}
-
+	for _, ddl := range additionalDDL {
+		if _, err = conn.ExecContext(ctx, ddl); err != nil {
+			return err
+		}
+	}
 	token, err := freshToken()
 	if err != nil {
 		return err
@@ -309,6 +317,9 @@ func checkBindingWithIntrinsicBudget(ctx context.Context, tx *sql.Tx, o Options,
 		if err := rows.Close(); err != nil {
 			return err
 		}
+	}
+	if o.Binding.SchemaVersion == AtomicBatchSchemaVersion {
+		return checkAtomicBatchSchemaInTx(ctx, tx)
 	}
 	return nil
 }

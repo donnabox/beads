@@ -216,12 +216,26 @@ func AddDependencyInTx(ctx context.Context, tx *sql.Tx, dep *types.Dependency, a
 	return addDependencyInTx(ctx, tx, dep, actor, opts, nil, true)
 }
 
+// dependencyWritePolicy is private to the native final-row composite. Its
+// single mode defers graph checks, readiness, facts and versions together;
+// ordinary dependency entry points always use dependencyOrdinaryWrite.
+type dependencyWritePolicy uint8
+
+const (
+	dependencyOrdinaryWrite dependencyWritePolicy = iota
+	dependencyCanonicalFinalRows
+)
+
 // addDependencyInTx is the body of AddDependencyInTx. mintVersion controls
 // whether a new edge mints the source's version row here: the exported entry
 // point always does, while a parent patch (applyParentPatch) rewires several
 // edges for one caller-visible mutation and mints once after the last of them.
 func addDependencyInTx(ctx context.Context, tx *sql.Tx, dep *types.Dependency, actor string, opts AddDependencyOpts, recomputeResult *RecomputeIsBlockedResult, mintVersion bool) (bool, error) {
-	if strings.HasPrefix(dep.DependsOnID, "external:") && dep.Type == types.DepParentChild {
+	return addDependencyWithPolicyInTx(ctx, tx, dep, actor, opts, recomputeResult, mintVersion, dependencyOrdinaryWrite)
+}
+
+func addDependencyWithPolicyInTx(ctx context.Context, tx *sql.Tx, dep *types.Dependency, actor string, opts AddDependencyOpts, recomputeResult *RecomputeIsBlockedResult, mintVersion bool, policy dependencyWritePolicy) (bool, error) {
+	if strings.HasPrefix(dep.DependsOnID, "external:") && dep.Type == types.DepParentChild && policy != dependencyCanonicalFinalRows {
 		return false, fmt.Errorf("external capability dependencies cannot use parent-child edges")
 	}
 
@@ -285,13 +299,13 @@ func addDependencyInTx(ctx context.Context, tx *sql.Tx, dep *types.Dependency, a
 		}
 	}
 
-	if targetType != "" {
+	if targetType != "" && policy != dependencyCanonicalFinalRows {
 		if err := CheckBlockingHierarchyInTx(ctx, tx, dep, depTables); err != nil {
 			return false, err
 		}
 	}
 
-	if !opts.SkipCycleCheck {
+	if !opts.SkipCycleCheck && policy != dependencyCanonicalFinalRows {
 		if err := CheckDependencyCycleInTx(ctx, tx, dep, depTables); err != nil {
 			return false, err
 		}
@@ -336,6 +350,9 @@ func addDependencyInTx(ctx context.Context, tx *sql.Tx, dep *types.Dependency, a
 				metadata, thread, dep.IssueID, dep.DependsOnID); err != nil {
 				return false, fmt.Errorf("failed to update dependency metadata: %w", err)
 			}
+			if policy == dependencyCanonicalFinalRows {
+				return false, nil
+			}
 			// A same-type add refreshes the edge's metadata or thread. It is an
 			// observable graph mutation, so journal the replacement edge for
 			// replay even though no audit event is written. EventDep has no
@@ -378,6 +395,10 @@ func addDependencyInTx(ctx context.Context, tx *sql.Tx, dep *types.Dependency, a
 		if err := TouchDependencyCoordinationTableInTx(ctx, tx, dep.DependsOnID, writeTable); err != nil {
 			return false, err
 		}
+	}
+
+	if policy == dependencyCanonicalFinalRows {
+		return false, nil
 	}
 
 	srcIsWisp := writeTable == "wisp_dependencies"
@@ -1132,6 +1153,10 @@ func RemoveDependencyInTx(ctx context.Context, tx *sql.Tx, issueID, dependsOnID,
 // any write and mints nothing. mintVersion is addDependencyInTx's, for the
 // same reason.
 func removeDependencyInTx(ctx context.Context, tx *sql.Tx, issueID, dependsOnID, actor string, emitEvent bool, recomputeResult *RecomputeIsBlockedResult, mintVersion bool) (bool, error) {
+	return removeDependencyWithPolicyInTx(ctx, tx, issueID, dependsOnID, actor, emitEvent, recomputeResult, mintVersion, dependencyOrdinaryWrite)
+}
+
+func removeDependencyWithPolicyInTx(ctx context.Context, tx *sql.Tx, issueID, dependsOnID, actor string, emitEvent bool, recomputeResult *RecomputeIsBlockedResult, mintVersion bool, policy dependencyWritePolicy) (bool, error) {
 	isWisp := IsActiveWispInTx(ctx, tx, issueID)
 	_, _, eventTable, depTable := WispTableRouting(isWisp)
 
@@ -1152,6 +1177,15 @@ func removeDependencyInTx(ctx context.Context, tx *sql.Tx, issueID, dependsOnID,
 		`DELETE FROM %s WHERE issue_id = ? AND %s = ?`, depTable, DepTargetExpr),
 		issueID, dependsOnID); err != nil {
 		return false, fmt.Errorf("remove dependency: %w", err)
+	}
+
+	if policy == dependencyCanonicalFinalRows {
+		if types.DependencyType(depType) == types.DepParentChild {
+			if err := TouchDependencyCoordinationTableInTx(ctx, tx, dependsOnID, depTable); err != nil {
+				return false, err
+			}
+		}
+		return false, nil
 	}
 
 	// The lookup above returned early when no row matched, so reaching here means

@@ -311,23 +311,28 @@ func (e *evaluation) loadEditionFamilies(facts []TypeEditionFact) error {
 	return nil
 }
 func (e *evaluation) loadFamily(uri string, kind graph.ResourceKind, data Dataset) error {
-	if err := e.tick(); err != nil {
+	return loadFamilyAuthority(uri, kind, data.TypeKinds, data.TypeFamilies, e.families, e.tick)
+}
+
+// loadFamilyAuthority is shared by current Query and the staged local selector.
+func loadFamilyAuthority(uri string, kind graph.ResourceKind, kinds map[string]graph.ResourceKind, ancestry map[string][]string, families map[string]map[string]bool, tick func() error) error {
+	if err := tick(); err != nil {
 		return err
 	}
-	if _, loaded := e.families[uri]; loaded {
+	if _, loaded := families[uri]; loaded {
 		return nil
 	}
-	k, known := data.TypeKinds[uri]
-	ancestors, present := data.TypeFamilies[uri]
+	k, known := kinds[uri]
+	ancestors, present := ancestry[uri]
 	if !known || k != kind || !present {
 		return fail("invalid-family-authority", "", "complete Type authority lacks required ancestry", ErrDataset)
 	}
 	set := map[string]bool{}
 	for _, ancestor := range ancestors {
-		if err := e.tick(); err != nil {
+		if err := tick(); err != nil {
 			return err
 		}
-		if graph.ValidateTypeURL(ancestor) != nil || data.TypeKinds[ancestor] != kind || set[ancestor] {
+		if graph.ValidateTypeURL(ancestor) != nil || kinds[ancestor] != kind || set[ancestor] {
 			return fail("invalid-family-authority", "", "invalid Type ancestry authority", ErrDataset)
 		}
 		set[ancestor] = true
@@ -335,7 +340,7 @@ func (e *evaluation) loadFamily(uri string, kind graph.ResourceKind, data Datase
 	if !set[uri] {
 		return fail("invalid-family-authority", "", "Type ancestry must be reflexive", ErrDataset)
 	}
-	e.families[uri] = set
+	families[uri] = set
 	return nil
 }
 func (e *evaluation) tick() error {

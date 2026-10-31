@@ -5,11 +5,17 @@ import (
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/canonicaledit"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
 func graphPreviewMetadataCreate(cmd *cobra.Command) (json.RawMessage, error) {
+	for _, name := range []string{"replace-metadata", "patch-metadata", "set-metadata", "unset-metadata"} {
+		if cmd.Flags().Changed(name) {
+			return nil, graphFailure("invalid_properties", "creation accepts --metadata initialization only", 2)
+		}
+	}
 	patch, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return nil, err
@@ -30,6 +36,18 @@ func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, err
 	replace := cmd.Flags().Changed("replace-metadata")
 	set := cmd.Flags().Changed("set-metadata")
 	unset := cmd.Flags().Changed("unset-metadata")
+	operations := cmd.Flags().Changed("patch-metadata")
+	if operations && (merge || replace || set || unset) {
+		return patch, graphFailure("invalid_properties", "cannot combine --patch-metadata with another metadata edit mode", 2)
+	}
+	if operations {
+		value, _ := cmd.Flags().GetString("patch-metadata")
+		raw, err := graphPreviewMemoryPropertiesPatchInput(value, cmd.InOrStdin())
+		if err != nil {
+			return patch, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		patch.Operations = publicops.Field[json.RawMessage]{Set: true, Value: raw}
+	}
 	if replace && (merge || set || unset) {
 		return patch, graphFailure("invalid_properties", "cannot combine --replace-metadata with --metadata, --set-metadata or --unset-metadata", 2)
 	}
@@ -38,7 +56,7 @@ func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, err
 	}
 	if merge {
 		value, _ := cmd.Flags().GetString("metadata")
-		parsed, err := readMetadataFlag(value)
+		parsed, err := graphPreviewPropertiesJSON(value, cmd.InOrStdin())
 		if err != nil {
 			return patch, graphFailure("invalid_properties", err.Error(), 2)
 		}
@@ -53,7 +71,7 @@ func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, err
 	}
 	if replace {
 		value, _ := cmd.Flags().GetString("replace-metadata")
-		parsed, err := readMetadataFlag(value)
+		parsed, err := graphPreviewPropertiesJSON(value, cmd.InOrStdin())
 		if err != nil {
 			return patch, graphFailure("invalid_properties", err.Error(), 2)
 		}
@@ -68,7 +86,7 @@ func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, err
 	}
 	if set {
 		flags, _ := cmd.Flags().GetStringArray("set-metadata")
-		parsed, err := parseSetMetadataFlags(flags)
+		parsed, err := canonicaledit.KeyedValues(flags)
 		if err != nil {
 			return patch, graphFailure("invalid_properties", err.Error(), 2)
 		}
@@ -81,5 +99,5 @@ func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, err
 }
 
 func graphPreviewMetadataFlagsChanged(cmd *cobra.Command) bool {
-	return cmd.Flags().Changed("metadata") || cmd.Flags().Changed("replace-metadata") || cmd.Flags().Changed("set-metadata") || cmd.Flags().Changed("unset-metadata")
+	return cmd.Flags().Changed("patch-metadata") || cmd.Flags().Changed("metadata") || cmd.Flags().Changed("replace-metadata") || cmd.Flags().Changed("set-metadata") || cmd.Flags().Changed("unset-metadata")
 }

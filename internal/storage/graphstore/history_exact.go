@@ -357,21 +357,24 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 	if err != nil {
 		return err
 	}
-	previous := ""
+	// Local historical captures retain their producer's order, which may be
+	// based on private paths rather than public IDs. Validate membership without
+	// rewriting issued snapshots or imposing a different order on their bytes.
+	seen := make(map[string]struct{}, len(owned))
 	for _, raw := range owned {
 		var link LinkRecord
 		if json.Unmarshal(raw, &link) != nil {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
 		owned, err := catalog.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), ownerType, graph.KindBead, facts...)}, typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), link.Type, graph.KindLink, facts...)})
-		if err != nil || !owned || link.Source != source ||
-			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {
+		_, duplicate := seen[link.ID]
+		if err != nil || !owned || link.Source != source || duplicate {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
 		if err := s.validateVersionLink(ctx, tx, link, raw, link.Attribution.Actor); err != nil {
 			return err
 		}
-		previous = link.ID
+		seen[link.ID] = struct{}{}
 	}
 	return nil
 }

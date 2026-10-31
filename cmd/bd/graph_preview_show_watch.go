@@ -89,7 +89,7 @@ func runGraphPreviewShowWatch(cmd *cobra.Command, args []string, format string, 
 		fetch: func(ctx context.Context) (*types.Issue, error) {
 			readCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
 			defer cancel()
-			s, err := graphstore.OpenExisting(readCtx, graphOptions(graphPreviewConfig))
+			s, err := openSelectedGraphStore(readCtx, graphOptions(graphPreviewConfig))
 			if err != nil {
 				return nil, err
 			}

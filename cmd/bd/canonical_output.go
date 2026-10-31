@@ -267,7 +267,7 @@ func canonicalReadWithGraphStore(cmd *cobra.Command, renderer canonicalFailureRe
 	read func(context.Context, *graphstore.Store) (any, error), output func(any) error) error {
 	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
 	defer cancel()
-	store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+	store, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
 		return canonicalReadError(cmd, renderer, err, "graph_not_initialized")
 	}

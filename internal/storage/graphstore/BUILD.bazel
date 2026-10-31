@@ -4,6 +4,16 @@ go_library(
     name = "graphstore",
     srcs = [
         "assessment_availability.go",
+        "atomic_batch.go",
+        "atomic_batch_dependency_admission.go",
+        "atomic_batch_dependency_plan.go",
+        "atomic_batch_dependency_publish.go",
+        "atomic_batch_native.go",
+        "atomic_batch_native_admission.go",
+        "atomic_batch_profile.go",
+        "atomic_batch_publish.go",
+        "atomic_batch_retained.go",
+        "atomic_batch_selection.go",
         "backend.go",
         "bead_list.go",
         "bead_write_selector.go",
@@ -119,6 +129,8 @@ go_library(
     visibility = ["//:__subpackages__"],
     deps = [
         "//graphops",
+        "//internal/canonicalbatch",
+        "//internal/canonicalbatchstate",
         "//internal/graphpatch",
         "//internal/intrinsicmaterialization",
         "//internal/intrinsictypecatalog",
@@ -158,6 +170,15 @@ go_test(
     timeout = "eternal",
     srcs = [
         "assessment_availability_test.go",
+        "atomic_batch_concurrency_test.go",
+        "atomic_batch_dependency_plan_test.go",
+        "atomic_batch_dependency_test.go",
+        "atomic_batch_native_admission_test.go",
+        "atomic_batch_native_test.go",
+        "atomic_batch_recovery_integration_test.go",
+        "atomic_batch_retained_test.go",
+        "atomic_batch_selection_test.go",
+        "atomic_batch_test.go",
         "backend_transaction_policy_test.go",
         "bead_list_store_test.go",
         "bead_list_test.go",
@@ -290,6 +311,8 @@ go_test(
     shard_count = 32,
     deps = [
         "//graphops",
+        "//internal/canonicalbatch",
+        "//internal/canonicalbatchstate",
         "//internal/config",
         "//internal/graphpatch",
         "//internal/intrinsicmaterialization",
@@ -315,6 +338,7 @@ go_test(
 # Source files linked by the Preview 3 CLI parity root-cause map.
 exports_files(
     [
+        "atomic_batch.go",
         "backend.go",
         "issue_close_batch.go",
         "issue_create_batch.go",

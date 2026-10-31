@@ -85,7 +85,12 @@ func (s *Store) deletedMemoryStateInTx(ctx context.Context, tx *sql.Tx, path str
 	if err != nil {
 		return Record{}, nil, err
 	}
-	if len(memory.Owned) != 0 || (terminal != nil && terminal.Attribution.Inception != memory.Attribution.Inception) {
+	// The opt-in final-publication batch can delete an owner and all its Links
+	// in one decision. Its last-live baseline genuinely contains those Links;
+	// minting an intermediate empty owner would invent a published version.
+	// validDeletedMemoryAllocationInTx already proved that no final live
+	// payload or incident Link remains. Ordinary layout 11 keeps its old rule.
+	if (len(memory.Owned) != 0 && s.options.Binding.SchemaVersion != AtomicBatchSchemaVersion) || (terminal != nil && terminal.Attribution.Inception != memory.Attribution.Inception) {
 		return Record{}, nil, fmt.Errorf("%w: deleted Memory baseline differs from protected terminal facts", ErrInvalidStore)
 	}
 	return memory, terminal, nil

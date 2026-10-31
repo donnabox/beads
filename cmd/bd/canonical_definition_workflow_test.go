@@ -42,6 +42,8 @@ func TestIntrinsicInitRefusesBeforeEffects(t *testing.T) {
 		{"unknown-profile", []string{"--graph-mode", "link", "--graph-profile", "14"}, 2},
 		{"duplicate-profile", []string{"--graph-mode", "link", "--graph-profile", "types", "--graph-profile=types"}, 2},
 		{"conflicting-mode", []string{"--graph-mode", "dependency", "--graph-mode", "link", "--graph-profile", "types"}, 2},
+		{"conflicting-atomic-on-off", []string{"--graph-mode", "link", "--atomic-batch=true", "--atomic-batch=false"}, 2},
+		{"conflicting-atomic-off-on", []string{"--graph-mode", "link", "--atomic-batch=false", "--atomic-batch=true"}, 2},
 		{"readonly", []string{"--graph-mode", "link", "--graph-profile", "types", "--readonly"}, 5},
 		{"invalid-scope", []string{"--graph-mode", "link", "--graph-profile", "types", "--scope-url", "not-a-scope"}, 2},
 		{"server", []string{"--graph-mode", "link", "--graph-profile", "types", "--server", "--external"}, 5},

@@ -436,7 +436,7 @@ func (s *Store) prepareIssueUpdatePatch(request UpdateIssueRequest) (publicops.I
 	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return publicops.IssuePatch{}, 0, err
 	}
-	if request.Metadata.Replace.Set || request.Metadata.Merge.Set || len(request.Metadata.Set) > 0 || len(request.Metadata.Unset) > 0 {
+	if hasCommonMetadataPatch(request.Metadata) {
 		patch.Metadata = request.Metadata
 		count++
 	}

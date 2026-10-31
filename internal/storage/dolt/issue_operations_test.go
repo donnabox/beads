@@ -109,6 +109,7 @@ func TestHasNonCoordinationPatchNestedAndCoordinationCases(t *testing.T) {
 		{"metadata unset", issueops.IssuePatch{Metadata: issueops.MetadataPatch{Unset: []string{"k"}}}, true},
 		{"metadata replace", issueops.IssuePatch{Metadata: issueops.MetadataPatch{Replace: issueops.Field[json.RawMessage]{Set: true}}}, true},
 		{"metadata merge", issueops.IssuePatch{Metadata: issueops.MetadataPatch{Merge: issueops.Field[json.RawMessage]{Set: true}}}, true},
+		{"metadata operations", issueops.IssuePatch{Metadata: issueops.MetadataPatch{Operations: issueops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`[]`)}}}, true},
 		{"coordination plus title", issueops.IssuePatch{
 			Assignee: issueops.Field[string]{Set: true},
 			Status:   issueops.Field[issueops.Status]{Set: true},

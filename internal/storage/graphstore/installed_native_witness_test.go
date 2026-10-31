@@ -462,9 +462,9 @@ func installedWitnessWholeState(ctx context.Context, tx *sql.Tx, budget *intrins
 	sort.Strings(tables)
 	result := map[string]installedWitnessTable{}
 	// Reuse complete encoded cells across rows/tables, never discard a cell or row.
-	// The shared operation allowance debits every retained unique body/key and
+	// The shared operation allowance debits every retained unique body/index and
 	// every row/reference below; no separate allowance or credit is introduced.
-	cells := map[string]json.RawMessage{}
+	cells := map[[sha256.Size]byte][]json.RawMessage{}
 	for _, table := range tables {
 		if _, duplicate := result[table]; duplicate {
 			return nil, ErrInvalidStore
@@ -524,7 +524,7 @@ func installedWitnessWholeState(ctx context.Context, tx *sql.Tx, budget *intrins
 // encoding. Only byte-identical complete JSON cells share retained storage.
 // json.RawMessage cells marshal back to the same row JSON array, including
 // repeated/empty/null cells, base64 SQL []byte cells and row multiplicity.
-func installedWitnessInternRow(fields []any, cells map[string]json.RawMessage, budget *intrinsicMetadataBudget) ([]json.RawMessage, error) {
+func installedWitnessInternRow(fields []any, cells map[[sha256.Size]byte][]json.RawMessage, budget *intrinsicMetadataBudget) ([]json.RawMessage, error) {
 	// Retain the previous 256-byte row custody debit plus explicit slice slots.
 	if err := budget.chargeBody(256 + 32*len(fields)); err != nil {
 		return nil, err
@@ -535,17 +535,28 @@ func installedWitnessInternRow(fields []any, cells map[string]json.RawMessage, b
 		if err != nil {
 			return nil, err
 		}
-		if existing, present := cells[string(raw)]; present {
-			row[i] = existing
+		// The fixed-size digest is only a bucket index, never state evidence.
+		// Compare the complete retained bytes even inside a colliding bucket.
+		key := sha256.Sum256(raw)
+		reused := false
+		for _, existing := range cells[key] {
+			if bytes.Equal(existing, raw) {
+				row[i] = existing
+				reused = true
+				break
+			}
+		}
+		if reused {
 			continue
 		}
-		// Both the immutable map key and encoded cell bytes stay in custody;
-		// 256 additionally reserves the entry/slice bookkeeping. The driver's
-		// current cell/marshal scratch is not claimed as an engine heap ceiling.
-		if err = budget.chargeBody(2*len(raw) + 256); err != nil {
+		// Keep ONE complete encoded cell, not a second byte-for-byte string
+		// key. The unchanged 256-byte entry reservation covers the fixed32
+		// index, map/bucket/slice bookkeeping; all row refs remain charged.
+		// Driver/marshal scratch is not an engine peak-heap ceiling claim.
+		if err = budget.chargeBody(len(raw) + 256); err != nil {
 			return nil, err
 		}
-		cells[string(raw)] = raw
+		cells[key] = append(cells[key], raw)
 		row[i] = raw
 	}
 	return row, nil
@@ -611,7 +622,7 @@ func checkInstalledWitnessCellReuse(t *testing.T) {
 	}
 	var expanded []json.RawMessage
 	var interned [][]json.RawMessage
-	cells := map[string]json.RawMessage{}
+	cells := map[[sha256.Size]byte][]json.RawMessage{}
 	budget := newIntrinsicMetadataBudget()
 	encodedCells := map[string]bool{}
 	for _, fields := range rows {
@@ -637,14 +648,26 @@ func checkInstalledWitnessCellReuse(t *testing.T) {
 		}
 		interned = append(interned, row)
 	}
-	if len(cells) != len(encodedCells) {
+	retainedCells := 0
+	for _, bucket := range cells {
+		retainedCells += len(bucket)
+	}
+	if retainedCells != len(encodedCells) {
 		t.Fatal("unequal encoded cells merged or repeated cells not reused")
 	}
 	for _, row := range interned {
 		for _, cell := range row {
-			stored := cells[string(cell)]
-			if len(stored) == 0 || &stored[0] != &cell[0] {
-				t.Fatal("equal complete cell bytes were retained twice")
+			found := false
+			for _, stored := range cells[sha256.Sum256(cell)] {
+				if bytes.Equal(stored, cell) {
+					found = true
+					if len(stored) == 0 || &stored[0] != &cell[0] {
+						t.Fatal("equal complete cell bytes were retained twice")
+					}
+				}
+			}
+			if !found {
+				t.Fatal("complete retained cell absent from its bucket")
 			}
 		}
 	}
@@ -670,9 +693,10 @@ func checkInstalledWitnessCellReuse(t *testing.T) {
 	// The first cell is retained, the second refuses. Failure returns no row
 	// and cannot refund the already charged row and first unique-cell custody.
 	tiny := &intrinsicMetadataBudget{remaining: 600}
-	partial := map[string]json.RawMessage{}
+	partial := map[[sha256.Size]byte][]json.RawMessage{}
 	refused, err := installedWitnessInternRow([]any{"a", "b"}, partial, tiny)
-	if !errors.Is(err, ErrLimitExceeded) || refused != nil || tiny.remaining != 18 || tiny.metadata != 0 || len(partial) != 1 || string(partial[`"a"`]) != `"a"` {
+	kept := partial[sha256.Sum256([]byte(`"a"`))]
+	if !errors.Is(err, ErrLimitExceeded) || refused != nil || tiny.remaining != 21 || tiny.metadata != 0 || len(partial) != 1 || len(kept) != 1 || string(kept[0]) != `"a"` {
 		t.Fatalf("cell custody refusal returned partial row or refunded budget: %v %v %+v", refused, err, tiny)
 	}
 }
