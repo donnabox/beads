@@ -1702,14 +1702,6 @@ jobs:
           echo "bazel test --config=integration: exit $rc, $(( $(date +%s) - start ))s wall" | tee -a "$GITHUB_STEP_SUMMARY"
           exit "$rc"
 
-      # As in bazel-embedded. dolt_version_test and the repository guards in
-      # //scripts/repochecks are plain sh_tests (no Go testcases in their
-      # test.xml), which --config=integration's tag filter keeps, unlike the
-      # embedded one.
-      - name: Every target and shard ran tests
-        if: ${{ always() && steps.test.outcome != 'skipped' }}
-        run: python3 tools/bazel/check_testcases.py --bep "$RUNNER_TEMP/bazel-bep.json" --not-go //tools/bazel:dolt_version_test --not-go //scripts/repochecks:all
-
       # F5 S2 Variant A: the integration/doltserver-integration/doltserver-cmd
       # configuration (--config=integration plus race) has no full-lane nogo
       # owner (every lane above passes --norun_validations, .bazelrc). This
@@ -1738,8 +1730,26 @@ jobs:
           echo "nogo-integration: exit $rc, $(( $(date +%s) - start ))s wall${procs:+, $procs}" | tee -a "$GITHUB_STEP_SUMMARY"
           exit "$rc"
 
+      # The bounded nogo command above serializes through the same Bazel
+      # server before any failed/timed-out test outputs are interpreted.
+      # Diagnostic success never clears the original test-step failure.
+      - name: Final test results unavailable
+        if: ${{ always() && steps.test.outcome != 'skipped' && steps.test.outcome != 'success' && steps.nogo-integration.outcome != 'success' }}
+        timeout-minutes: 1
+        run: |
+          echo "::error::Bazel test completion settlement is not established; final XML and analytics are unavailable. Original test/nogo failures remain."
+          exit 1
+
+      # As in bazel-embedded. dolt_version_test and the repository guards in
+      # //scripts/repochecks are plain sh_tests (no Go testcases in their
+      # test.xml), which --config=integration's tag filter keeps, unlike the
+      # embedded one.
+      - name: Every target and shard ran tests
+        if: ${{ always() && steps.test.outcome != 'skipped' && (steps.test.outcome == 'success' || steps.nogo-integration.outcome == 'success') }}
+        run: python3 tools/bazel/check_testcases.py --bep "$RUNNER_TEMP/bazel-bep.json" --not-go //tools/bazel:dolt_version_test --not-go //scripts/repochecks:all
+
       - name: Upload test logs
-        if: ${{ failure() && steps.test.outcome != 'skipped' }}
+        if: ${{ failure() && steps.test.outcome != 'skipped' && (steps.test.outcome == 'success' || steps.nogo-integration.outcome == 'success') }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           overwrite: true # a job re-run is the same run: replace, not 409
@@ -1753,7 +1763,7 @@ jobs:
       # Same redacted summary as bazel-test's; see its comment.
       - name: CI analytics summary
         id: ci-analytics
-        if: "!cancelled() && steps.test.outcome != 'skipped'"
+        if: "!cancelled() && steps.test.outcome != 'skipped' && (steps.test.outcome == 'success' || steps.nogo-integration.outcome == 'success')"
         continue-on-error: true
         timeout-minutes: 3
         env:
