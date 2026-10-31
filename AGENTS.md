@@ -47,6 +47,11 @@ and not a substitute for the GitHub issue.
   scripts/pr-preflight.sh --search "<topic keywords>" --repo gastownhall/beads
   scripts/pr-preflight.sh <pr-number> --repo gastownhall/beads
   ```
+  The numbered preflight defaults to the strict merge action. For a deliberately
+  reviewed closure, use `scripts/pr-preflight.sh <pr-number> --repo owner/name --action close`.
+  Only the draft check changes: draft status alone is not a
+  closure reason. Passing close preflight does not authorize closing or replace
+  contributor preservation, ownership, review, or specific human holds.
   The preflight is the agent gate for PR handling; do not rely on
   auto-discovery of CONTRIBUTING.md.
 - Use `gh` for GitHub issues and PRs, not browser tools. Write PR, issue,

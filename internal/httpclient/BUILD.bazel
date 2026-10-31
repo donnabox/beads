@@ -89,12 +89,12 @@ go_library(
 
 go_test(
     name = "httpclient_test",
-    # Unsharded, this package took 137-228s on rbe-west under --config=ci
-    # (BEADS_TEST_SKIP=dolt, no BEADS_TEST_EMBEDDED_DOLT; 2026-10-09), the test lane's
-    # longest single action. Two shards (rules_go deals tests out round-robin) put
-    # ~68s of measured test time on each; the three heaviest tests (31s, 20s, 13s)
-    # land on different shards. size=large/timeout=long follows the same convention
-    # as //internal/storage/embeddeddolt's go_test.
+    # rules_go deals top-level tests out round-robin by declaration order.
+    # The 875 roots observed in the 2026-10-29 Linux integration/race run
+    # project to 292/292/291 roots over three shards (~126s/~220s/~147s of
+    # historical root time). This is an estimate, not measured three-shard
+    # runtime or deadline proof. size=large/timeout=long follows the same
+    # convention as //internal/storage/embeddeddolt's go_test.
     size = "large",
     timeout = "long",
     srcs = [
@@ -209,7 +209,7 @@ go_test(
     # `make bazel-sync` (the directive just says so).
     data = glob(["*.go"]),
     embed = [":httpclient"],
-    shard_count = 2,
+    shard_count = 3,
     deps = [
         "//:beads",
         "//backend/conformance",

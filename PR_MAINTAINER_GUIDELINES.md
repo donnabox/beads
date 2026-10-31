@@ -63,9 +63,11 @@ used it.
 
 Classify each PR into one of these groups:
 
-- **Easy win**: Targeted bug fixes, documentation updates, dependency bot upgrades, drafts to close, PRs from banned contributors, and other low-risk cases.
+- **Easy win**: Targeted bug fixes, documentation updates, dependency bot upgrades, drafts with a documented Retire disposition and passing `--action close` preflight, PRs from banned contributors, and other low-risk cases.
 - **Fix-merge candidate**: A PR that otherwise fits easy-win criteria but has a simple blocker, such as failed CI, a needed rebase, or a small implementation error.
 - **Needs review**: A PR that looks suspicious, complex, broad, risky, or otherwise requires deeper investigation.
+
+Draft status alone is never a reason to discard work. A passing close preflight does not replace contributor preservation, ownership, review, or specific human holds.
 
 Easy wins can be handled automatically during a PR review run and by recurring patrols. Fix-merge candidates can also be handled automatically when the maintainer determines the repair is simple enough to make locally.
 
