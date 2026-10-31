@@ -20,6 +20,8 @@ import (
 	"testing"
 	"time"
 
+	sqlmock "github.com/DATA-DOG/go-sqlmock"
+
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/resourceget"
@@ -68,8 +70,43 @@ type installedWitnessEndpoints struct {
 }
 
 type installedWitnessTable struct {
-	Columns []string            `json:"columns"`
-	Rows    [][]json.RawMessage `json:"rows"`
+	Columns []string                  `json:"columns"`
+	Rows    [][]*installedWitnessCell `json:"rows"`
+}
+
+// installedWitnessCell retains one lossless SQL value representation. Strings
+// and binary cells keep their exact underlying bytes, not a second retained
+// JSON-escaped/base64 expansion. Other values keep their original standard JSON.
+// The digest remains a bucket index ONLY; equality always compares complete JSON.
+// The existing256-byte entry reservation covers this private cell/header/index;
+// every row/reference keeps its existing debit. No budget/cap/credit is added.
+type installedWitnessCell struct {
+	kind   byte
+	raw    json.RawMessage
+	text   string
+	binary []byte
+}
+
+func (cell *installedWitnessCell) MarshalJSON() ([]byte, error) {
+	switch cell.kind {
+	case 1:
+		return json.Marshal(cell.text)
+	case 2:
+		return json.Marshal(cell.binary)
+	default:
+		return cell.raw, nil
+	}
+}
+
+// The only deferred encodings are string and []byte, for which encoding/json
+// cannot fail. All other cells were successfully encoded before retention.
+// Temporary encoding/comparator scratch is NOT an engine peak-heap guarantee.
+func installedWitnessCellJSON(cell *installedWitnessCell) []byte {
+	raw, err := cell.MarshalJSON()
+	if err != nil {
+		panic(err)
+	}
+	return raw
 }
 
 type installedWitnessAllocation struct {
@@ -464,7 +501,7 @@ func installedWitnessWholeState(ctx context.Context, tx *sql.Tx, budget *intrins
 	// Reuse complete encoded cells across rows/tables, never discard a cell or row.
 	// The shared operation allowance debits every retained unique body/index and
 	// every row/reference below; no separate allowance or credit is introduced.
-	cells := map[[sha256.Size]byte][]json.RawMessage{}
+	cells := map[[sha256.Size]byte][]*installedWitnessCell{}
 	for _, table := range tables {
 		if _, duplicate := result[table]; duplicate {
 			return nil, ErrInvalidStore
@@ -479,7 +516,7 @@ func installedWitnessWholeState(ctx context.Context, tx *sql.Tx, budget *intrins
 		if e != nil {
 			return nil, errors.Join(e, rows.Close())
 		}
-		state := installedWitnessTable{Columns: append([]string(nil), columns...), Rows: [][]json.RawMessage{}}
+		state := installedWitnessTable{Columns: append([]string(nil), columns...), Rows: [][]*installedWitnessCell{}}
 		for rows.Next() {
 			if len(state.Rows) >= 10000 {
 				err = ErrLimitExceeded
@@ -522,14 +559,14 @@ func installedWitnessWholeState(ctx context.Context, tx *sql.Tx, budget *intrins
 
 // installedWitnessInternRow preserves the exact json.Marshal(fields) cell
 // encoding. Only byte-identical complete JSON cells share retained storage.
-// json.RawMessage cells marshal back to the same row JSON array, including
+// Lossless owned SQL cells marshal back to the same row JSON array, including
 // repeated/empty/null cells, base64 SQL []byte cells and row multiplicity.
-func installedWitnessInternRow(fields []any, cells map[[sha256.Size]byte][]json.RawMessage, budget *intrinsicMetadataBudget) ([]json.RawMessage, error) {
+func installedWitnessInternRow(fields []any, cells map[[sha256.Size]byte][]*installedWitnessCell, budget *intrinsicMetadataBudget) ([]*installedWitnessCell, error) {
 	// Retain the previous 256-byte row custody debit plus explicit slice slots.
 	if err := budget.chargeBody(256 + 32*len(fields)); err != nil {
 		return nil, err
 	}
-	row := make([]json.RawMessage, len(fields))
+	row := make([]*installedWitnessCell, len(fields))
 	for i, field := range fields {
 		raw, err := json.Marshal(field)
 		if err != nil {
@@ -540,7 +577,7 @@ func installedWitnessInternRow(fields []any, cells map[[sha256.Size]byte][]json.
 		key := sha256.Sum256(raw)
 		reused := false
 		for _, existing := range cells[key] {
-			if bytes.Equal(existing, raw) {
+			if bytes.Equal(installedWitnessCellJSON(existing), raw) {
 				row[i] = existing
 				reused = true
 				break
@@ -549,15 +586,34 @@ func installedWitnessInternRow(fields []any, cells map[[sha256.Size]byte][]json.
 		if reused {
 			continue
 		}
-		// Keep ONE complete encoded cell, not a second byte-for-byte string
-		// key. The unchanged 256-byte entry reservation covers the fixed32
-		// index, map/bucket/slice bookkeeping; all row refs remain charged.
-		// Driver/marshal scratch is not an engine peak-heap ceiling claim.
-		if err = budget.chargeBody(len(raw) + 256); err != nil {
+		// Retain exactly ONE lossless body, debit its actual representation
+		// BEFORE copying. JSON expansion is transient and reproduced exactly
+		// by standard encoding/json at comparison/output; never a hash surrogate.
+		retained := len(raw)
+		switch value := field.(type) {
+		case string:
+			retained = len(value)
+		case []byte:
+			retained = len(value)
+		}
+		if err = budget.chargeBody(retained + 256); err != nil {
 			return nil, err
 		}
-		cells[key] = append(cells[key], raw)
-		row[i] = raw
+		stored := &installedWitnessCell{raw: raw}
+		switch value := field.(type) {
+		case string:
+			stored.kind, stored.raw, stored.text = 1, nil, strings.Clone(value)
+		case []byte:
+			stored.kind, stored.raw = 2, nil
+			// Preserve nil versus nonnil empty bytes. Never retain mutable driver
+			// scratch: the owned complete byte copy is made AFTER its debit.
+			if value != nil {
+				stored.binary = make([]byte, len(value))
+				copy(stored.binary, value)
+			}
+		}
+		cells[key] = append(cells[key], stored)
+		row[i] = stored
 	}
 	return row, nil
 }
@@ -565,9 +621,10 @@ func installedWitnessInternRow(fields []any, cells map[[sha256.Size]byte][]json.
 // Compare the exact virtual JSON row bytes without retaining another expanded
 // row for a sort key. This is the previous bytes.Compare(json.Marshal(fields))
 // ordering, including prefix cases inside numeric/structured cell encodings.
-func installedWitnessRowLess(a, b []json.RawMessage) bool {
-	next := func(row []json.RawMessage) func() (byte, bool) {
+func installedWitnessRowLess(a, b []*installedWitnessCell) bool {
+	next := func(row []*installedWitnessCell) func() (byte, bool) {
 		cell, offset := -1, 0
+		var encoded []byte
 		closed := false
 		return func() (byte, bool) {
 			if cell < 0 {
@@ -581,13 +638,17 @@ func installedWitnessRowLess(a, b []json.RawMessage) bool {
 				closed = true
 				return ']', true
 			}
-			if offset < len(row[cell]) {
-				value := row[cell][offset]
+			if encoded == nil {
+				encoded = installedWitnessCellJSON(row[cell])
+			}
+			if offset < len(encoded) {
+				value := encoded[offset]
 				offset++
 				return value, true
 			}
 			cell++
 			offset = 0
+			encoded = nil
 			if cell < len(row) {
 				return ',', true
 			}
@@ -621,8 +682,8 @@ func checkInstalledWitnessCellReuse(t *testing.T) {
 		{1, 10},
 	}
 	var expanded []json.RawMessage
-	var interned [][]json.RawMessage
-	cells := map[[sha256.Size]byte][]json.RawMessage{}
+	var interned [][]*installedWitnessCell
+	cells := map[[sha256.Size]byte][]*installedWitnessCell{}
 	budget := newIntrinsicMetadataBudget()
 	encodedCells := map[string]bool{}
 	for _, fields := range rows {
@@ -641,8 +702,8 @@ func checkInstalledWitnessCellReuse(t *testing.T) {
 		}
 		for i, field := range fields {
 			encoded, err := json.Marshal(field)
-			if err != nil || !bytes.Equal(encoded, row[i]) {
-				t.Fatalf("distinct/null/empty cell changed: %s %s %v", encoded, row[i], err)
+			if err != nil || !bytes.Equal(encoded, installedWitnessCellJSON(row[i])) {
+				t.Fatalf("distinct/null/empty cell changed: %s %s %v", encoded, installedWitnessCellJSON(row[i]), err)
 			}
 			encodedCells[string(encoded)] = true
 		}
@@ -658,10 +719,10 @@ func checkInstalledWitnessCellReuse(t *testing.T) {
 	for _, row := range interned {
 		for _, cell := range row {
 			found := false
-			for _, stored := range cells[sha256.Sum256(cell)] {
-				if bytes.Equal(stored, cell) {
+			for _, stored := range cells[sha256.Sum256(installedWitnessCellJSON(cell))] {
+				if bytes.Equal(installedWitnessCellJSON(stored), installedWitnessCellJSON(cell)) {
 					found = true
-					if len(stored) == 0 || &stored[0] != &cell[0] {
+					if stored != cell {
 						t.Fatal("equal complete cell bytes were retained twice")
 					}
 				}
@@ -693,11 +754,266 @@ func checkInstalledWitnessCellReuse(t *testing.T) {
 	// The first cell is retained, the second refuses. Failure returns no row
 	// and cannot refund the already charged row and first unique-cell custody.
 	tiny := &intrinsicMetadataBudget{remaining: 600}
-	partial := map[[sha256.Size]byte][]json.RawMessage{}
+	partial := map[[sha256.Size]byte][]*installedWitnessCell{}
 	refused, err := installedWitnessInternRow([]any{"a", "b"}, partial, tiny)
 	kept := partial[sha256.Sum256([]byte(`"a"`))]
-	if !errors.Is(err, ErrLimitExceeded) || refused != nil || tiny.remaining != 21 || tiny.metadata != 0 || len(partial) != 1 || len(kept) != 1 || string(kept[0]) != `"a"` {
+	if !errors.Is(err, ErrLimitExceeded) || refused != nil || tiny.remaining != 23 || tiny.metadata != 0 || len(partial) != 1 || len(kept) != 1 || string(installedWitnessCellJSON(kept[0])) != `"a"` {
 		t.Fatalf("cell custody refusal returned partial row or refunded budget: %v %v %+v", refused, err, tiny)
+	}
+}
+
+// Exercise the real full-table reader with a previously debited SAME allowance.
+// Standard JSON of the original SQL values is the independent complete-state
+// oracle; no table, column, duplicate row, byte or output encoding may disappear.
+func TestInstalledWitnessWholeStateRetainsSQLCellBytesWithinSharedBudget(t *testing.T) {
+	tables := []string{"issues", "dependencies", "events", "leases", "issue_versions", "graph_preview_scope", "graph_preview_catalog", "graph_preview_versions", "graph_preview_issue_versions", "graph_preview_intrinsic_contexts", "graph_preview_intrinsic_members", "graph_preview_types", "graph_preview_payloads", "future_user_state"}
+	sort.Strings(tables)
+	payload := bytes.Repeat([]byte{0xff}, 4096)
+	original := []any{"beads/a", payload, nil}
+	expectedRow, err := json.Marshal(original)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expectedRows, err := json.Marshal([]json.RawMessage{expectedRow, expectedRow})
+	if err != nil {
+		t.Fatal(err)
+	}
+	read := func(initial int) (map[string]installedWitnessTable, *intrinsicMetadataBudget, error) {
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		if err != nil {
+			t.Fatal(err)
+		}
+		mock.ExpectBegin()
+		tx, err := db.Begin()
+		if err != nil {
+			t.Fatal(err)
+		}
+		budget := &intrinsicMetadataBudget{remaining: initial}
+		// Retain an earlier witness-stage body, with its actual existing debit.
+		previousBody := bytes.Repeat([]byte{'p'}, 1024)
+		if err := budget.chargeBody(len(previousBody)); err != nil {
+			t.Fatal(err)
+		}
+		names := sqlmock.NewRows([]string{"Tables"})
+		for _, table := range tables {
+			names.AddRow(table)
+		}
+		mock.ExpectQuery("SHOW TABLES").WillReturnRows(names).RowsWillBeClosed()
+		for _, table := range tables {
+			rows := sqlmock.NewRows([]string{"path", "properties", "metadata"})
+			if table == "graph_preview_payloads" {
+				rows.AddRow("beads/a", payload, nil).AddRow("beads/a", payload, nil)
+			}
+			mock.ExpectQuery("SELECT * FROM `" + table + "` LIMIT 10001").WillReturnRows(rows).RowsWillBeClosed()
+			if initial < 7000 && table == "graph_preview_payloads" {
+				break
+			}
+		}
+		mock.ExpectRollback()
+		mock.ExpectClose()
+		result, readErr := installedWitnessWholeState(context.Background(), tx, budget)
+		if len(previousBody) != 1024 || previousBody[0] != 'p' {
+			t.Fatal("earlier retained body changed")
+		}
+		readErr = errors.Join(readErr, tx.Rollback(), db.Close())
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Fatal(err)
+		}
+		return result, budget, readErr
+	}
+	state, budget, err := read(7000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(state) != len(tables) {
+		t.Fatal("full user-table membership lost")
+	}
+	for _, table := range tables {
+		snapshot, ok := state[table]
+		if !ok || !reflect.DeepEqual(snapshot.Columns, []string{"path", "properties", "metadata"}) {
+			t.Fatal("table/column bytes changed", table)
+		}
+		if table != "graph_preview_payloads" && len(snapshot.Rows) != 0 {
+			t.Fatal("empty table changed", table)
+		}
+	}
+	got, err := json.Marshal(state["graph_preview_payloads"].Rows)
+	if err != nil || !bytes.Equal(got, expectedRows) {
+		t.Fatalf("full rows/SQL bytes/base64/null/multiplicity changed: %v", err)
+	}
+	// Caller/driver buffers must not remain authority over retained state.
+	payload[0] = 0
+	afterMutation, err := json.Marshal(state["graph_preview_payloads"].Rows)
+	if err != nil || !bytes.Equal(afterMutation, expectedRows) {
+		t.Fatal("retained table aliases mutable SQL bytes", err)
+	}
+	payload[0] = 0xff
+	// 7000 - earlier1024 - two row352 - path(7+256) - binary(4096+256)
+	// - null(4+256) =397. The second row reuses cells but still pays ALL slots.
+	if budget.remaining != 397 || budget.metadata != 0 {
+		t.Fatalf("cumulative retained custody changed: %+v", budget)
+	}
+	// One byte below the unchanged first row reservation: return ZERO state,
+	// close rows/transaction, preserve the previous-stage debit, and never refund.
+	refused, tiny, err := read(1024 + 351)
+	if !errors.Is(err, ErrLimitExceeded) || refused != nil || tiny.remaining != 351 || tiny.metadata != 0 {
+		t.Fatalf("partial state/refund on shared refusal: %v %v %+v", refused, err, tiny)
+	}
+}
+
+// Compare the COMPLETE witness evidence, not its private SQL cell carrier.
+// All non-state fields retain the original exact reflect.DeepEqual semantics.
+// The shallow struct copies below copy headers only and do not mutate inputs.
+// NativeState is compared in full, table by table / column by column / row by
+// row / cell by cell, with the same complete JSON equivalence as the old raw
+// cells. No whole-witness/state JSON copy or hash-only surrogate is created.
+func installedNativeWitnessEqual(a, b installedNativeWitness) bool {
+	left, right := a.NativeState, b.NativeState
+	a.NativeState, b.NativeState = nil, nil
+	if !reflect.DeepEqual(a, b) || (left == nil) != (right == nil) || len(left) != len(right) {
+		return false
+	}
+	for name, table := range left {
+		other, present := right[name]
+		if !present || !reflect.DeepEqual(table.Columns, other.Columns) || (table.Rows == nil) != (other.Rows == nil) || len(table.Rows) != len(other.Rows) {
+			return false
+		}
+		for i, row := range table.Rows {
+			next := other.Rows[i]
+			if (row == nil) != (next == nil) || len(row) != len(next) {
+				return false
+			}
+			for j, cell := range row {
+				candidate := next[j]
+				if (cell == nil) != (candidate == nil) {
+					return false
+				}
+				if cell != nil && !bytes.Equal(installedWitnessCellJSON(cell), installedWitnessCellJSON(candidate)) {
+					return false
+				}
+			}
+		}
+	}
+	return true
+}
+
+// The complete witness comparison must ignore the first SQL representative
+// of a complete JSON cell class, while retaining EVERY other witness/state fact.
+func TestInstalledNativeWitnessEqualityIgnoresCellRepresentation(t *testing.T) {
+	rows := [][]any{
+		{"", []byte{1}}, {"x", []byte{}},
+		{nil, "nil"}, {[]byte(nil), "typednil"},
+		{string([]byte{0xff}), "invalid-a"}, {string([]byte{0xfe}), "invalid-b"},
+	}
+	expected := make([]json.RawMessage, 0, len(rows))
+	for _, fields := range rows {
+		raw, err := json.Marshal(fields)
+		if err != nil {
+			t.Fatal(err)
+		}
+		expected = append(expected, raw)
+	}
+	sort.Slice(expected, func(i, j int) bool { return bytes.Compare(expected[i], expected[j]) < 0 })
+	want, err := json.Marshal(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	capture := func(reverse bool) installedNativeWitness {
+		cells := map[[sha256.Size]byte][]*installedWitnessCell{}
+		budget := newIntrinsicMetadataBudget()
+		state := installedWitnessTable{Columns: []string{"first", "second"}, Rows: [][]*installedWitnessCell{}}
+		for n := range rows {
+			i := n
+			if reverse {
+				i = len(rows) - 1 - n
+			}
+			row, err := installedWitnessInternRow(rows[i], cells, budget)
+			if err != nil {
+				t.Fatal(err)
+			}
+			state.Rows = append(state.Rows, row)
+		}
+		sort.Slice(state.Rows, func(i, j int) bool { return installedWitnessRowLess(state.Rows[i], state.Rows[j]) })
+		actual, err := json.Marshal(state.Rows)
+		if err != nil || !bytes.Equal(actual, want) {
+			t.Fatal("opposite scan changed complete sorted row JSON/multiplicity", err)
+		}
+		return installedNativeWitness{
+			Origin: "native-installed-and-domain-witness", Scope: "https://example.test/scope/",
+			Documents:              []installedWitnessDocument{{Kind: graph.KindBead, Body: json.RawMessage(`{"id":"whole-bead","revision":"exact"}`)}},
+			Types:                  []installedWitnessType{{Reference: resourceget.TypeReference{URI: "whole-type", Revision: "exact"}, Definition: resourceget.TypeReference{URI: "whole-definition", Revision: "exact"}, Describes: graph.KindBead, Current: true, Abstract: false, Ancestors: []resourceget.TypeReference{{URI: "whole-ancestor", Revision: "exact"}}}},
+			InstalledDefinitionIDs: []string{"whole-definition"},
+			QueryEndpointMappings:  []installedWitnessEndpoints{{Link: installedWitnessReference{"whole-link", "exact"}, Source: installedWitnessReference{"whole-source", "exact"}, Target: installedWitnessReference{"whole-target", "exact"}}},
+			NativeState:            map[string]installedWitnessTable{"all-state": state},
+			RetainedPredecessors:   []installedWitnessDocument{{Kind: graph.KindBead, Body: json.RawMessage(`{"revision":"previous"}`)}},
+			Bare333Lookup:          "not_found", SourceClosure: json.RawMessage(`{"source":"exact"}`),
+		}
+	}
+	left, right := capture(false), capture(true)
+	if reflect.DeepEqual(left.NativeState, right.NativeState) {
+		t.Fatal("fixture failed to choose different private equivalent-cell representatives")
+	}
+	if !installedNativeWitnessEqual(left, right) || !installedNativeWitnessEqual(right, left) {
+		t.Fatal("opposite-order JSON-equivalent witness falsely differs")
+	}
+	// Mutate every top-level field independently. NativeState remains present in
+	// the SAME comparison used for before/after/refused333 and normal reopen.
+	mutations := []func(*installedNativeWitness){
+		func(w *installedNativeWitness) { w.Origin = "changed" },
+		func(w *installedNativeWitness) { w.Scope = "changed" },
+		func(w *installedNativeWitness) { w.Documents = nil },
+		func(w *installedNativeWitness) { w.Types = nil },
+		func(w *installedNativeWitness) { w.InstalledDefinitionIDs = nil },
+		func(w *installedNativeWitness) { w.QueryEndpointMappings = nil },
+		func(w *installedNativeWitness) { w.NativeState = nil },
+		func(w *installedNativeWitness) { w.RetainedPredecessors = nil },
+		func(w *installedNativeWitness) { w.Bare333Lookup = "changed" },
+		func(w *installedNativeWitness) { w.SourceClosure = json.RawMessage(`{"source":"changed"}`) },
+	}
+	for i, mutate := range mutations {
+		changed := left
+		mutate(&changed)
+		if installedNativeWitnessEqual(left, changed) || installedNativeWitnessEqual(changed, left) {
+			t.Fatal("complete witness field omitted from equality", i)
+		}
+	}
+	// Table membership, columns, row order, multiplicity and complete cell bytes
+	// must independently refuse a difference; no normalization drops evidence.
+	state := left.NativeState["all-state"]
+	states := []map[string]installedWitnessTable{
+		{"other-state": state},
+		{"all-state": {Columns: []string{"changed", "second"}, Rows: state.Rows}},
+		{"all-state": {Columns: state.Columns, Rows: append(append([][]*installedWitnessCell(nil), state.Rows...), state.Rows[0])}},
+	}
+	swapped := append([][]*installedWitnessCell(nil), state.Rows...)
+	swapped[0], swapped[1] = swapped[1], swapped[0]
+	states = append(states, map[string]installedWitnessTable{"all-state": {Columns: state.Columns, Rows: swapped}})
+	changedRows := append([][]*installedWitnessCell(nil), state.Rows...)
+	changedRows[0] = append([]*installedWitnessCell(nil), changedRows[0]...)
+	changedRows[0][0] = &installedWitnessCell{kind: 1, text: "different complete cell"}
+	states = append(states, map[string]installedWitnessTable{"all-state": {Columns: state.Columns, Rows: changedRows}})
+	for i, changedState := range states {
+		changed := left
+		changed.NativeState = changedState
+		if installedNativeWitnessEqual(left, changed) || installedNativeWitnessEqual(changed, left) {
+			t.Fatal("complete table/column/row/cell evidence omitted", i)
+		}
+	}
+	// Preserve prior nil-versus-empty table-row/column structure semantics too.
+	nilRows := installedNativeWitness{NativeState: map[string]installedWitnessTable{"empty": {Columns: []string{}, Rows: nil}}}
+	emptyRows := installedNativeWitness{NativeState: map[string]installedWitnessTable{"empty": {Columns: []string{}, Rows: [][]*installedWitnessCell{}}}}
+	if installedNativeWitnessEqual(nilRows, emptyRows) {
+		t.Fatal("nil/empty row distinction lost")
+	}
+	nilColumns := emptyRows
+	nilColumns.NativeState = map[string]installedWitnessTable{"empty": {Columns: nil, Rows: [][]*installedWitnessCell{}}}
+	if installedNativeWitnessEqual(nilColumns, emptyRows) {
+		t.Fatal("nil/empty column distinction lost")
+	}
+	nilMap := installedNativeWitness{}
+	emptyMap := installedNativeWitness{NativeState: map[string]installedWitnessTable{}}
+	if installedNativeWitnessEqual(nilMap, emptyMap) {
+		t.Fatal("nil/empty NativeState distinction lost")
 	}
 }
 
@@ -847,7 +1163,7 @@ func TestInstalledNativeWitnessCensusStateAndReopen(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(before, after) {
+	if !installedNativeWitnessEqual(before, after) {
 		t.Fatal("refused333 changed whole workflow evidence or checked bodies")
 	}
 	if err = s.Close(); err != nil {
@@ -857,7 +1173,7 @@ func TestInstalledNativeWitnessCensusStateAndReopen(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(after, reopened) {
+	if !installedNativeWitnessEqual(after, reopened) {
 		t.Fatal("normal existing reopen changed complete witness")
 	}
 	if len(reopened.RetainedPredecessors) != 1 || !bytes.Equal(reopened.RetainedPredecessors[0].Body, predecessor.NativeJSON()) {
