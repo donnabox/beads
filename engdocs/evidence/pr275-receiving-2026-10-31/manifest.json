@@ -1,0 +1,48 @@
+{
+  "recordedAtUTC": "2026-10-31T09:45:55.533264+00:00",
+  "role": "claudia",
+  "executionMode": "dispatcher",
+  "workRepository": "donnabox/beads",
+  "scope": "Retain the receiving alongside the existing individual PR275 disposition; end the handoff chain.",
+  "handoff": "https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6541825733",
+  "sources": {
+    "janet-receiving.md.txt": "https://github.com/donnabox/agent-coordination/blob/589340a9e233a7603dd1134cb22732fa66bb4104/context/janet/upstream-and-recovery-20261027/overnight-20261029/BEADS-PR275-DISPOSITION-READONLY-0936.md",
+    "janet-facts.json": "https://github.com/donnabox/agent-coordination/blob/3b63d6ed009e2eb05425de864223fd197bd8ead9/context/janet/upstream-and-recovery-20261027/overnight-20261029/BEADS-PR275-DISPOSITION-READONLY-0936.json",
+    "handoff-comment.json": "https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6541825733"
+  },
+  "retainedDisposition": "INCORPORATED_WITH_TYPE_LITERAL_ADAPTATION_RETIREMENT_HELD",
+  "sourceObservationAtUTC": "2026-10-31T09:34:44.996141+00:00",
+  "priorDispositionPath": "/Users/dbox/Documents/Codex/2026-10-29/claudia-bdp-reference-and-go/outputs/beads275-preservation-disposition.md",
+  "priorArchiveAsReported": {
+    "path": "/Users/dbox/Documents/Codex/2026-10-29/claudia-bdp-reference-and-go/outputs/beads275-preservation-evidence.zip",
+    "bytes": 91749,
+    "sha256": "21bccf50ccaae615b7dee0a7e6326b10e2903805b688806259f93974a1863c69",
+    "members": 24,
+    "hashedManifestMembers": 23
+  },
+  "priorLocalArtifactRead": "Did not complete; terminated the owned read process. Prior disposition/archive were not freshly read, copied, or reverified by this worker.",
+  "freshProductSourceReview": false,
+  "freshPRMetadataOrDiscussionQuery": false,
+  "freshEngineOrCallerEnvelopeQualification": false,
+  "newOwnershipGrant": false,
+  "prMutationAuthorized": false,
+  "nextRole": "none",
+  "payloads": [
+    {
+      "path": "janet-receiving.md.txt",
+      "bytes": 5873,
+      "sha256": "2f3a4a7ac4c226d023694fd4b29435791990eb17c76de934a642665aa6a15401"
+    },
+    {
+      "path": "janet-facts.json",
+      "bytes": 6445,
+      "sha256": "354bbbb1c0a7a961c3f7145dc628a6eb5fdba386418bbe6c1ea2ade22ac82c74"
+    },
+    {
+      "path": "handoff-comment.json",
+      "bytes": 3726,
+      "sha256": "feec1d83ccf35be42876d255669fcb38e1a3fb81328966b1540ef9b255501594"
+    }
+  ],
+  "artifactBaseCommit": "6dd6a81f5c733a0b13f92f787e5e16c91affbb1d"
+}

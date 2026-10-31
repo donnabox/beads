@@ -1,0 +1,29 @@
+# PR275: Link traversal root taxonomy
+
+**Selected contribution is incorporated; retirement remains held.** [275](https://github.com/donnabox/beads/pull/275) is freshly OPEN/draft at `4663c16cfed17b8a75090337ed107aaf5b4f94bd`, base `0063a96c4cc3f8fd78c8f138f6a35ca98a43cd49`. Main is still `6dd6a81f5c733a0b13f92f787e5e16c91affbb1d`; merge/closed times and mergeCommit are null. One retained-claim-verified metadata batch queried no checks/actions. This receiving does not authorize ready/close/comment/merge.
+
+I reused [Claudia’s held preservation report](/Users/dbox/Documents/Codex/2026-10-29/claudia-bdp-reference-and-go/outputs/beads275-preservation-disposition.md) and its complete [24-member evidence archive](/Users/dbox/Documents/Codex/2026-10-29/claudia-bdp-reference-and-go/outputs/beads275-preservation-evidence.zip). All23 manifest payload hashes/sizes and ZIP CRC checks match. The original complete two-path patch is93 additions/2 deletions. All six saved base/head/main source bodies independently match fixed local Git objects. Both current-main files are also byte-identical at frozen371 `31e68fe91a14eaf7968b51380294be166fe046dc`; no dirty worktree overlay was read as that commit.
+
+## Complete selected behavior
+
+| Obligation | Source and assertion evidence |
+| --- | --- |
+| Caller-selected valid live Link is an input refusal | `ReadCurrentFamily` invokes private `current(..., true)` for roots; after checked identity and live revision validation a non-Bead returns `graph.ErrValidation` with “current family root must be a Bead.” Test explicitly rejects `ErrInvalidStore`. |
+| Wrong-Kind stored incidence stays corruption | Public/internal `Current` delegates with selectedRoot=false. A Link reached there returns `ErrInvalidStore`; the regression calls this path explicitly. No caller flag is propagated into traversal incidence. |
+| Validate before refusing caller kind | Allocated identity lookup checks backing/kind/state agreement, unique allocation and exact public ID. Invalid live state or revision remains `ErrInvalidStore`. Deleted Link remains `ErrGone`; absent ID remains `ErrNotFound`. All have explicit controls. |
+| Normal traversal still works | Same fixture’s Bead root returns2nodes/1Link before corruption controls. Both embedded and server branches remain authored in the taxonomy root. |
+| No partial successful output | `assertCurrentFamilyError` checks errors.Is and exact empty `CurrentFamilyRead`. The reader uses one rollback-only transaction and returns zero state on errors. This is source evidence, not a new engine run. The added regression does not independently compare entire database snapshots before/after normal reads. |
+
+The classification core is exactly preserved:2,106bytes, SHA `52ead1beead0241c944cf4161b54914eedf4c528c5f62ee347de7651e30fcf32`. The entire added `TestMemoryCurrentFamilyRootKindTaxonomy` body is equal after the sole `Scope+"types/references"`→`Scope+"references"` spelling adaptation. It retains malformed kind/state/revision controls, restores each deliberately changed catalog field, then deletes the Link through its resolved private locator and asserts Gone. No assertions were dropped.
+
+Whole files have later Type work: checked selected-descriptor facts, explicit Kind in native-family mapping, native concrete Type recognition with facts, and ownership projection against captured descriptors. Those changes are explicit in the complete archived head→main diff; they do not erase275’s selected taxonomy. Ordinary Type-definition Resources are still **Beads**, not traversal Links: this patch tests allocation Kind, not whether a Bead represents a Type. The separate Memory/current-family eligibility check still limits supported roots to its admitted Memory/native-Issue families and can return capability-unavailable for other Beads. No inference that every Type-definition Bead is eligible for every Memory family or general Graph route follows.
+
+The storage sentinel is `graph.ErrValidation`; this review does not promote it into a newly executed public error-envelope/status/retryable guarantee. The original body explicitly leaves caller rendering to separate verification. Missing/deleted/corrupt storage distinctions and both-engine runtime/hook claims remain historical rather than new qualification. No current371/fullTypes/Graph/engine conformance is inherited.
+
+## Ownership, dependent and disposition
+
+The original Donna Box commit message and Agent-Signature remain attributed. Archived evidence records275→277→capturedmain ancestry; semantic equality above supplies preservation beyond ancestry alone. The existing queue assigns **Janet harvest/owner receiving, historical implementation owner unverified**; Claudia authored the prior source receiving. A Janet branch prefix is not a new implementation or outward ownership grant, and no Cleo role is revived.
+
+Saved evidence identifies dependent277 OPEN/draft at `397f8a2bb0f6477e547e3e0813a3f178cec52db8`, based on275’s branch. This is historical dependency/discussion coverage, not a fresh277 query. Preserve its review surface and source branch;275 retirement does not resolve277. Current draft-close policy remains operative and372 remains proposed/unadopted.
+
+No selected source residual requiring another Link/Types implementation was found. Next finite action is individual coordinator receiving of this incorporated recommendation, then—only after accepted policy and fresh exact contributor/dependency/discussion/source/preflight checks—deliberate retirement with credit and branch retained. Human review/different-merger obligations remain applicable where landing is intended. No new feature campaign or bulk closure is indicated. No helper/parser/formatter/test/build/engine, source/index/ref/config/store/PR/tracker/launch change occurred; only these two report files were written.

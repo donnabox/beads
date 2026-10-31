@@ -1,0 +1,35 @@
+{
+  "recordedAtUTC": "2026-10-31T09:46:40.947809+00:00",
+  "payloadHashesAndSizes": {
+    "status": "PASS",
+    "count": 3
+  },
+  "jsonParsing": {
+    "status": "PASS",
+    "count": 4
+  },
+  "localReadmeLinks": {
+    "status": "PASS",
+    "targets": [
+      "janet-receiving.md.txt",
+      "janet-facts.json",
+      "handoff-comment.json",
+      "manifest.json",
+      "validation.json"
+    ]
+  },
+  "docsCheck": {
+    "command": "make check-docs",
+    "status": "BLOCKED_PREREQUISITE",
+    "exitCode": 2,
+    "reason": "bazel is not installed; no docsync, doc-freshness or CLI flag check ran",
+    "log": "docs-check.log.txt"
+  },
+  "productTestsRun": false,
+  "freshSourceOrArchiveReview": false,
+  "productCodeChanged": false,
+  "gitDiffCheck": {
+    "command": "git diff --cached --check",
+    "status": "PASS"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "atUTC": "2026-10-31T09:34:44.996141+00:00",
+  "claim": "2026-10-19T07:34:48Z-cf5c",
+  "worker": "/root/cli_human_render",
+  "classification": "INCORPORATED_WITH_TYPE_LITERAL_ADAPTATION_RETIREMENT_HELD",
+  "freshMetadata": {
+    "number": 275,
+    "state": "OPEN",
+    "draft": true,
+    "head": "4663c16cfed17b8a75090337ed107aaf5b4f94bd",
+    "base": "0063a96c4cc3f8fd78c8f138f6a35ca98a43cd49",
+    "headBranch": "codex/janet-memory-root-taxonomy-20261023",
+    "baseBranch": "codex/janet-feedback-graph-assembly-20261023",
+    "mergedAt": null,
+    "closedAt": null,
+    "mergeCommit": null,
+    "author": "donnabox",
+    "main": "6dd6a81f5c733a0b13f92f787e5e16c91affbb1d",
+    "sourceFiles": 2,
+    "hasNextPage": false
+  },
+  "metadataProvenance": "One cf5c-verified pinned gh2.93 GraphQL batch, natural0; no checks/actions. Observed tool output, not invented separately archived receipt.",
+  "archive": {
+    "path": "/Users/dbox/Documents/Codex/2026-10-29/claudia-bdp-reference-and-go/outputs/beads275-preservation-evidence.zip",
+    "bytes": 91749,
+    "sha256": "21bccf50ccaae615b7dee0a7e6326b10e2903805b688806259f93974a1863c69",
+    "members": 24,
+    "hashedManifestMembers": 23,
+    "allHashesAndSizesMatch": true,
+    "CRCerrors": null
+  },
+  "originalDelta": {
+    "paths": [
+      "internal/storage/graphstore/memory_family_read.go",
+      "internal/storage/graphstore/memory_family_read_test.go"
+    ],
+    "additions": 93,
+    "deletions": 2,
+    "patchSHA256": "300d5002e76c273be0867b64b1e6e0b9d81fdbea9e8dcbd60a2bbfe3dda90ccc"
+  },
+  "sourceFacts": [
+    {
+      "stage": "head",
+      "path": "internal/storage/graphstore/memory_family_read.go",
+      "blob": "bba000cb0399532bd2b144755e4427ca2edd3172",
+      "bytes": 14498,
+      "sha256": "3240c90e7dad5bb1d50d6a7007585dc9dfbc390307e1dcb045d3758d18fb3aec"
+    },
+    {
+      "stage": "head",
+      "path": "internal/storage/graphstore/memory_family_read_test.go",
+      "blob": "8135bd26fe7429bde542efb5d338196c159f0c86",
+      "bytes": 28634,
+      "sha256": "bf795170a9aac04c6970e0f3f03f992782678e0a01f1d1dd2f8546aae37551b7"
+    },
+    {
+      "stage": "base",
+      "path": "internal/storage/graphstore/memory_family_read.go",
+      "blob": "e85a80271417efd56377df2a15f0cd2fee63d87c",
+      "bytes": 13932,
+      "sha256": "3c6d90e240e04768a0604e01b3f62e31156a70f1f889c67be065f6b860c99c33"
+    },
+    {
+      "stage": "base",
+      "path": "internal/storage/graphstore/memory_family_read_test.go",
+      "blob": "b70ddf321c664c2cb99d02b0f93cb21bdc84531a",
+      "bytes": 25470,
+      "sha256": "9124bd37cc640564caba2e00b92893945e9fff549aa07b4edf7cd9519a817ebe"
+    },
+    {
+      "stage": "main",
+      "path": "internal/storage/graphstore/memory_family_read.go",
+      "blob": "e5410b85bcdfac0dc4e3de3a4003b33bcd2ff38a",
+      "bytes": 14730,
+      "sha256": "4acd0e902d61ac6a92f2232acf03f4c5f9535ee30009957062bd94639a920af2"
+    },
+    {
+      "stage": "main",
+      "path": "internal/storage/graphstore/memory_family_read_test.go",
+      "blob": "204175a902e78e26eed52e78db1984afbe012a8d",
+      "bytes": 28665,
+      "sha256": "a5968b2a98390cd2d333b4223e8d6c07cf4e1c6f6563357704cdd0ee7b5b9a6d"
+    }
+  ],
+  "independentChecks": {
+    "allSixBaseHeadMainSnapshotsEqualFixedLocalGitObjects": true,
+    "currentMainAndFrozen371TwoFileDiffEmpty": true,
+    "frozen371": "31e68fe91a14eaf7968b51380294be166fe046dc",
+    "classificationCore": {
+      "bytes": 2106,
+      "sha256": "52ead1beead0241c944cf4161b54914eedf4c528c5f62ee347de7651e30fcf32",
+      "headEqualsMain": true
+    },
+    "wholeTaxonomyRootEqualAfterOnlyScopeTypePrefixChange": true,
+    "errorOracleChecksErrorsIsAndWholeZeroCurrentFamilyRead": true
+  },
+  "behaviorAccounting": {
+    "callerLiveLink": "graph.ErrValidation after identity/backing/kind/state/revision validation; not ErrInvalidStore",
+    "internalWrongKind": "ErrInvalidStore via Current(selectedRoot=false)",
+    "missing": "ErrNotFound",
+    "deleted": "ErrGone",
+    "malformedKindStateRevision": "ErrInvalidStore, never hidden as graph.ErrValidation",
+    "normalBead": "positive2nodes1Link traversal retained",
+    "typeDefinitionBeads": "KindBead does not become Link merely because it represents a Type; restricted Memory/current-family eligibility remains separate and may return ErrCapabilityUnavailable. No broad Graph or Types admission change/claim.",
+    "zeroEffectsLimits": "Rollback-only read and zero-output oracle preserved; added root does not directly compare full database before/after or execute caller envelope checks."
+  },
+  "laterAdaptations": [
+    "Scope+types/references -> Scope+references in added test",
+    "selected descriptor facts acquired in checked transaction",
+    "native Type/Bead vs Link reference mapping receives kind+descriptor facts",
+    "ownedLinkTypes projection uses captured descriptors"
+  ],
+  "ancestry": "Existing archive records275 parent of277 and277 ancestry to capturedmain; no fresh ancestry command or ancestry-only preservation conclusion.",
+  "attribution": "Original Donna Box commit and Agent-Signature retained; no historical owner inferred from branch.",
+  "ownerEvidence": "Current bounded allocation names Janet as receiving coordinator. API author is donnabox and assignees empty; no role inferred from branch prefix.",
+  "owner": "Janet \u2014 harvest/owner receiving; historical implementation owner unverified",
+  "newOutwardOwnershipAssigned": false,
+  "dependencies": {
+    "277": "Saved OPEN/draft397f8a2bb0f6477e547e3e0813a3f178cec52db8 based on275 branch; no fresh277query or action",
+    "policy": "Current default draft-close blocker operative;372 proposed/unadopted"
+  },
+  "nextFiniteAction": "Coordinator receives individual source recommendation, preserves277/branch and contributor attribution, then only after accepted policy and fresh exact case/contributor/dependency/preflight receiving may consider ordinary retirement. No new implementation/campaign indicated by selected source.",
+  "limits": [
+    "Original both-engine/hooks proof historical, not replayed/currently qualified",
+    "Caller CLI error-envelope and retryable/output status not runtime-qualified",
+    "No new general Types/Graph admission or current371 qualification",
+    "Saved discussion/dependency map historical, no fresh exhaustive informal dependency proof"
+  ],
+  "runtimeExecuted": false,
+  "productGitPRMutations": false,
+  "writes": "Only new owned MD and JSON"
+}
