@@ -2711,7 +2711,7 @@ func TestSameRepoBlacksmithRunners(t *testing.T) {
 			// pr-lint-wrapper `venue` matrix seed their Blacksmith-selection
 			// GOCACHEs.
 			"scripts-go-checks": sameRepoBlacksmith4vcpu,
-			"pr-lint-wrapper":   sameRepoBlacksmith4vcpu,
+			"pr-lint-wrapper":   sameRepoBlacksmithNativeLint4vcpu,
 			// F7b: same-repo Blacksmith Windows (blacksmith-*vcpu-windows-2025,
 			// public beta). test-windows-liveness and worktree-remove-windows are
 			// sized at 4vcpu (a build plus a focused test run each);
@@ -4624,13 +4624,37 @@ func TestBazelIntegrationJob(t *testing.T) {
 	count := job.step(t, "Every target and shard ran tests")
 	const wantCount = `python3 tools/bazel/check_testcases.py --bep "$RUNNER_TEMP/bazel-bep.json" --not-go //tools/bazel:dolt_version_test --not-go //scripts/repochecks:all`
 	if strings.TrimSpace(count.Run) != wantCount ||
-		count.If != "${{ always() && steps.test.outcome != 'skipped' }}" ||
+		count.If != "${{ always() && steps.test.outcome != 'skipped' && (steps.test.outcome == 'success' || steps.nogo-integration.outcome == 'success') }}" ||
 		(count.ContinueOnError != nil && count.ContinueOnError != false) {
 		t.Errorf("test-count step: if=%q continue-on-error=%v run=%q; want run %q", count.If, count.ContinueOnError, count.Run, wantCount)
 	}
 	logs := job.step(t, "Upload test logs")
-	if logs.If != "${{ failure() && steps.test.outcome != 'skipped' }}" || logs.With["name"] != "bazel-integration-testlogs" {
+	if logs.If != "${{ failure() && steps.test.outcome != 'skipped' && (steps.test.outcome == 'success' || steps.nogo-integration.outcome == 'success') }}" || logs.With["name"] != "bazel-integration-testlogs" {
 		t.Errorf("test-log upload: if=%q name=%q", logs.If, logs.With["name"])
+	}
+	// A following successful serialized Bazel command finalizes test output;
+	// this is not a universal descendant-process cleanup claim.
+	testIndex, nogoIndex, countIndex := -1, -1, -1
+	for i, step := range job.Steps {
+		switch step.Name {
+		case "bazel test //... --config=integration":
+			testIndex = i
+		case "Nogo: integration library files":
+			nogoIndex = i
+		case "Every target and shard ran tests":
+			countIndex = i
+		}
+	}
+	if testIndex < 0 || nogoIndex <= testIndex || countIndex <= nogoIndex {
+		t.Fatalf("integration result consumption must follow test then nogo: %d/%d/%d", testIndex, nogoIndex, countIndex)
+	}
+	unavailable := job.step(t, "Final test results unavailable")
+	if unavailable.If != "${{ always() && steps.test.outcome != 'skipped' && steps.test.outcome != 'success' && steps.nogo-integration.outcome != 'success' }}" || unavailable.TimeoutMinutes != 1 || !strings.Contains(unavailable.Run, "exit 1") || unavailable.ContinueOnError == true {
+		t.Error("unsettled test outputs must stay explicitly unavailable and failed")
+	}
+	analytics := job.step(t, "CI analytics summary")
+	if analytics.If != "!cancelled() && steps.test.outcome != 'skipped' && (steps.test.outcome == 'success' || steps.nogo-integration.outcome == 'success')" {
+		t.Errorf("analytics may consume only settled test output: %q", analytics.If)
 	}
 	for name, j := range workflow.Jobs {
 		for _, step := range j.Steps {
@@ -6605,8 +6629,8 @@ func TestBazelAutofixWorkflowSecurity(t *testing.T) {
 				if want := appTokenActionSHA; sha != want {
 					t.Errorf("step %q uses %q; want actions/create-github-app-token@%s", step.Name, step.Uses, want)
 				}
-				if step.If != "github.event.workflow_run.head_repository.full_name == github.repository" {
-					t.Errorf("app-token step if = %q, want the same-repo check (no token we hold can push to a fork)", step.If)
+				if step.If != "steps.patch.outputs.found == 'true' && github.event.workflow_run.head_repository.full_name == github.repository" {
+					t.Errorf("app-token step if = %q, want an actual patch and the same-repo check (no token needed for no-op; no token we hold can push to a fork)", step.If)
 				}
 				want := map[string]string{
 					"app-id":              "${{ secrets.AUTOFIX_APP_ID }}",
@@ -6725,6 +6749,17 @@ func requireWorkflowProducesArtifact(t *testing.T, file, name, artifact string) 
 	}
 	if !found {
 		t.Errorf("%s never uploads %s (itself or through a called workflow); the workflow_run trigger on it would be dead", file, artifact)
+	}
+}
+
+func TestDocsAutofixRequiresPatchBeforeCredentials(t *testing.T) {
+	job := readCIWorkflow(t, "docs-autofix.yml").job(t, "autofix")
+	appToken := job.step(t, "Mint autofix app token")
+	if appToken.If != "steps.patch.outputs.found == 'true' && github.event.workflow_run.head_repository.full_name == github.repository" {
+		t.Errorf("app-token step if = %q, want an actual patch and the same-repo check", appToken.If)
+	}
+	if job.stepIndex(t, "Download docs freshness patch (if any)") >= job.stepIndex(t, appToken.Name) {
+		t.Error("docs patch discovery must precede credential minting")
 	}
 }
 
