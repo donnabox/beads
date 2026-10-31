@@ -1,0 +1,339 @@
+{
+  "status": "READ_ONLY_SOURCE_INTENT_DISPOSITION_NO_STATE_CHANGE",
+  "observedAt": "2026-10-31T02:26:16.578Z",
+  "repository": "donnabox/beads",
+  "worktree": "/Users/dbox/repos/wt/trish/trish-types-query-composed-validation-20261030",
+  "candidate": {
+    "head": "31e68fe91a14eaf7968b51380294be166fe046dc",
+    "tree": "b5fb071aecd419cd642a9f7d2ba52112e873459f",
+    "parents": [
+      "7998eb65e9857fc5fed877a755528d3ea68d0cf9"
+    ]
+  },
+  "lastVerifiedMain": "6dd6a81f5c733a0b13f92f787e5e16c91affbb1d",
+  "mainIsFreshRemoteAssertion": false,
+  "prs": [
+    {
+      "pr": 354,
+      "base": "18a1374a7ff9e8db3a2d90091f5c362673863101",
+      "original": "e40d9d3e0364503ae305eaf2d27bb8aec2742b56",
+      "published": "a60b3e8af58a54f0cfcdac5d1ecf914b021e8989",
+      "pathKey": "orig354",
+      "currentReadOnlyPR": {
+        "baseRefName": "codex/sybil-canonical-native-dependency-20261029",
+        "baseRefOid": "28c523bbed55ec8bbe3470612f898f4af4ccef2e",
+        "headRefName": "codex/sybil-canonical-recovery-storage-20261029",
+        "headRefOid": "a60b3e8af58a54f0cfcdac5d1ecf914b021e8989",
+        "isDraft": true,
+        "mergeCommit": null,
+        "mergedAt": null,
+        "number": 354,
+        "state": "OPEN",
+        "title": "fix(batch): validate retained outcomes without rewriting historical carriers",
+        "url": "https://github.com/donnabox/beads/pull/354"
+      },
+      "paths": [
+        {
+          "path": "internal/storage/graphstore/BUILD.bazel",
+          "originalChange": "M",
+          "original": {
+            "mode": "100644",
+            "blob": "41b2ffa85b94994ad7ec0d79de2eeee03fe52f26"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "41b2ffa85b94994ad7ec0d79de2eeee03fe52f26"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "c0124534f4aaad375345746956c873fc768416e1"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": false,
+          "candidateDisposition": "ORIGINAL_ENTRIES_RETAINED_LATER_ADDITIONS_ONLY",
+          "lastVerifiedMain": {
+            "mode": "100644",
+            "blob": "0bc7b51b91262a6b257fdeaeb07bf225fe8db73f"
+          }
+        },
+        {
+          "path": "internal/storage/graphstore/atomic_batch.go",
+          "originalChange": "M",
+          "original": {
+            "mode": "100644",
+            "blob": "cb8a03833fed75de61c345ca1fac4ea1efbfc794"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "cb8a03833fed75de61c345ca1fac4ea1efbfc794"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "cb8a03833fed75de61c345ca1fac4ea1efbfc794"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "internal/storage/graphstore/atomic_batch_concurrency_test.go",
+          "originalChange": "A",
+          "original": {
+            "mode": "100644",
+            "blob": "388a5fc6daa0f451a61f958ff3076c9fa33aa166"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "388a5fc6daa0f451a61f958ff3076c9fa33aa166"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "388a5fc6daa0f451a61f958ff3076c9fa33aa166"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "internal/storage/graphstore/atomic_batch_recovery_integration_test.go",
+          "originalChange": "A",
+          "original": {
+            "mode": "100644",
+            "blob": "ef02ad97b480d1d52922d1165d73ea9e7cc2c958"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "ef02ad97b480d1d52922d1165d73ea9e7cc2c958"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "ef02ad97b480d1d52922d1165d73ea9e7cc2c958"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "internal/storage/graphstore/atomic_batch_retained.go",
+          "originalChange": "A",
+          "original": {
+            "mode": "100644",
+            "blob": "af12c9530e177959d8e30349e8766c591b04db2c"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "af12c9530e177959d8e30349e8766c591b04db2c"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "af12c9530e177959d8e30349e8766c591b04db2c"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "internal/storage/graphstore/atomic_batch_retained_test.go",
+          "originalChange": "A",
+          "original": {
+            "mode": "100644",
+            "blob": "0fe27953e7c4b4768b885c22b73d7455dde44827"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "0fe27953e7c4b4768b885c22b73d7455dde44827"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "0fe27953e7c4b4768b885c22b73d7455dde44827"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "internal/storage/graphstore/history_exact.go",
+          "originalChange": "M",
+          "original": {
+            "mode": "100644",
+            "blob": "fcd8a80f783af98606b277d4f28fcd9cd4898ddd"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "fcd8a80f783af98606b277d4f28fcd9cd4898ddd"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "2bd0225d68646369a9842e2a2ba626788dd78c14"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": false,
+          "candidateDisposition": "ORIGINAL_OWNED_MEMBERSHIP_FIX_PRESERVED_THREE_CONTEXT_BRIDGE_CALLS",
+          "lastVerifiedMain": {
+            "mode": "100644",
+            "blob": "47c0686b89def706b17e60976b5b90dd5af602ed"
+          }
+        }
+      ]
+    },
+    {
+      "pr": 355,
+      "base": "4cae8f790f60c1b99e76194cba96410398987c03",
+      "original": "f4b2b3b062f08862320f700f499efc6c7bb0e667",
+      "published": "128c5d54bc3f7fb72d4bebb271e853f7fbff1ead",
+      "pathKey": "orig355",
+      "currentReadOnlyPR": {
+        "baseRefName": "codex/sybil-canonical-recovery-storage-20261029",
+        "baseRefOid": "a60b3e8af58a54f0cfcdac5d1ecf914b021e8989",
+        "headRefName": "codex/sybil-canonical-recovery-cli-20261029",
+        "headRefOid": "128c5d54bc3f7fb72d4bebb271e853f7fbff1ead",
+        "isDraft": true,
+        "mergeCommit": null,
+        "mergedAt": null,
+        "number": 355,
+        "state": "OPEN",
+        "title": "fix(cli): preserve recoverability of HTML-rich batch invocations",
+        "url": "https://github.com/donnabox/beads/pull/355"
+      },
+      "paths": [
+        {
+          "path": "cmd/bd/BUILD.bazel",
+          "originalChange": "M",
+          "original": {
+            "mode": "100644",
+            "blob": "0f771442e19dd77517992cd746fb272085c35586"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "0f771442e19dd77517992cd746fb272085c35586"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "68ac84ca08a1561525629c4247466ebd53958f71"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": false,
+          "candidateDisposition": "ORIGINAL_ENTRIES_RETAINED_LATER_ADDITIONS_ONLY",
+          "lastVerifiedMain": {
+            "mode": "100644",
+            "blob": "933d9d16b5e86c7ab63db9de3c6fc58a67b5c4fa"
+          }
+        },
+        {
+          "path": "cmd/bd/canonical_batch_cli.go",
+          "originalChange": "M",
+          "original": {
+            "mode": "100644",
+            "blob": "8f77d34e4810682292b0d262cdabaca9d87746bf"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "8f77d34e4810682292b0d262cdabaca9d87746bf"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "8f77d34e4810682292b0d262cdabaca9d87746bf"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "cmd/bd/canonical_batch_execute.go",
+          "originalChange": "M",
+          "original": {
+            "mode": "100644",
+            "blob": "78f8d09acab2ba8c550239d91d6f0065f387f632"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "78f8d09acab2ba8c550239d91d6f0065f387f632"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "78f8d09acab2ba8c550239d91d6f0065f387f632"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "cmd/bd/canonical_batch_recovery_test.go",
+          "originalChange": "A",
+          "original": {
+            "mode": "100644",
+            "blob": "055b7d927d30e0bcbb836cdb9ec190cbeadae1ab"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "055b7d927d30e0bcbb836cdb9ec190cbeadae1ab"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "055b7d927d30e0bcbb836cdb9ec190cbeadae1ab"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "cmd/bd/canonical_batch_workflow_test.go",
+          "originalChange": "M",
+          "original": {
+            "mode": "100644",
+            "blob": "cbaba73d91b8243d76577926776d3b822f3afe19"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "cbaba73d91b8243d76577926776d3b822f3afe19"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "cbaba73d91b8243d76577926776d3b822f3afe19"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        },
+        {
+          "path": "engdocs/design/canonical-batch-candidate.md",
+          "originalChange": "M",
+          "original": {
+            "mode": "100644",
+            "blob": "86c66ea96c96565db2d696cb1f846197944509b3"
+          },
+          "published": {
+            "mode": "100644",
+            "blob": "86c66ea96c96565db2d696cb1f846197944509b3"
+          },
+          "candidate": {
+            "mode": "100644",
+            "blob": "86c66ea96c96565db2d696cb1f846197944509b3"
+          },
+          "publishedMatchesOriginal": true,
+          "candidateExactOriginal": true,
+          "candidateDisposition": "EXACT_ORIGINAL_POSTIMAGE",
+          "lastVerifiedMain": null
+        }
+      ]
+    }
+  ],
+  "behavior": "No validation run or qualification of candidate31e68fe claimed. Earlier published-body evidence stays pinned to128c5d54/other exact historic subjects.",
+  "scopeLimits": [
+    "success-only local layout15 encoder2",
+    "no retained failed key/shared singleton principal owner",
+    "no full public BDP Write/provider/transport promise",
+    "large HTML dry-run emission limitation retained",
+    "no restart/power-loss proof",
+    "no closure/label/owner post/branch/index/API write"
+  ]
+}
