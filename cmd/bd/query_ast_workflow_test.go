@@ -90,13 +90,16 @@ func queryASTWorkflowIDs(t *testing.T, items []json.RawMessage) []string {
 // Three semantic cases share one normally authored fixture per engine. Every
 // query is a fresh process, so successful results also exercise store reopen.
 func TestQueryASTInstalledWorkflow(t *testing.T) {
-	if testing.Short() {
-		t.Skip("requires reserved embedded/shared-server Query workflow qualification")
+	if os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" && os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT") == "" {
+		t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 or BEADS_GRAPH_TEST_SERVER_PORT for Query workflow qualification")
 	}
 	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
+			if engine == "embedded" && os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" {
+				t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 for embedded Query workflow qualification")
+			}
 			const scope = "https://example.invalid/query-ast/"
 			work, home := graphListWorkspace(t, bd, engine, scope, "qast")
 			call := func(t *testing.T, args ...string) string {
@@ -300,8 +303,8 @@ func TestQueryASTInstalledWorkflow(t *testing.T) {
 
 // This control deliberately uses normal init rather than bdInit's schema seed.
 func TestQueryASTDependencyModeLegacyWorkflow(t *testing.T) {
-	if testing.Short() {
-		t.Skip("requires reserved normal embedded CLI qualification")
+	if os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" {
+		t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 for embedded dependency-mode Query qualification")
 	}
 	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)

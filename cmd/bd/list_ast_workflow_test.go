@@ -13,13 +13,16 @@ import (
 )
 
 func TestListASTInstalledWorkflow(t *testing.T) {
-	if testing.Short() {
-		t.Skip("requires reserved embedded/shared-server List AST qualification")
+	if os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" && os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT") == "" {
+		t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 or BEADS_GRAPH_TEST_SERVER_PORT for List AST qualification")
 	}
 	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
 		t.Run(engine, func(t *testing.T) {
+			if engine == "embedded" && os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" {
+				t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 for embedded List AST qualification")
+			}
 			const scope = "https://example.invalid/list-ast/"
 			work, home := graphListWorkspace(t, bd, engine, scope, "last")
 			call := func(args ...string) string {

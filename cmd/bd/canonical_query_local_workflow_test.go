@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -22,8 +23,8 @@ import (
 // binary/environment, then the actual checked Reader. This is not a new engine
 // harness, HTTP activation, discovery/ownership proof or concurrent-write test.
 func TestCanonicalQueryAndGraphCheckedLocalWorkflow(t *testing.T) {
-	if testing.Short() {
-		t.Skip("requires reserved normal embedded Query/Graph local qualification")
+	if os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" {
+		t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 for embedded Query/Graph local qualification")
 	}
 	isolateBeadsDirForTest(t)
 	bd := buildBDUnderTest(t)
