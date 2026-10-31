@@ -46,7 +46,7 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 			if !bytes.Equal(createdWithSet.Metadata, []byte(`{"priority":2}`)) {
 				t.Fatalf("Memory set-on-create metadata = %s", createdWithSet.Metadata)
 			}
-			createOnly := graphMixedResult[graphstore.Record](t, call("remember", "Third body", "--id", "one-shot", "--create-only", "--set-metadata", "source=manual"))
+			createOnly := graphMixedResult[graphstore.Record](t, call("remember", "Third body", "--id", "one-shot", "--create-only", "--metadata", `{"source":"manual"}`))
 			if !bytes.Equal(createOnly.Metadata, []byte(`{"source":"manual"}`)) {
 				t.Fatalf("Memory create-only metadata = %s", createOnly.Metadata)
 			}

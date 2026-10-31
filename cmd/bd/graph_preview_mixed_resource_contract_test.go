@@ -132,7 +132,9 @@ func TestMixedCanonicalResourceShowAndListPreserveEveryCompleteBody(t *testing.T
 		if err != nil {
 			t.Fatal(err)
 		}
-		out, err := renderer.Render(payload, clioutput.Completion{Returned: len(rows)})
+		// SelectResources enumerates the entire captured collection.
+		exhausted := true
+		out, err := renderer.Render(payload, clioutput.Completion{Returned: len(rows), Exhausted: &exhausted, StopReason: "exhausted"})
 		if err != nil {
 			t.Fatal(err)
 		}

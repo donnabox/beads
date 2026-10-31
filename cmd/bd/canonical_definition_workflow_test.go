@@ -366,7 +366,7 @@ func testIntrinsicFooDefinitionIsOrdinaryStoredBead(t *testing.T, demoVariable s
 				t.Fatalf("public setup Show differs from persistence: %s %v %v", id, err, expectedErr)
 			}
 		}
-		out := call(t, 0, "list", "--type", "link-type", "--json", "--unpaged", "--limit", "0")
+		out := call(t, 0, "list", "--type", "link-type", "--output-format", "json", "--unpaged", "--limit", "0")
 		var envelope struct {
 			Data struct {
 				Items []json.RawMessage `json:"items"`
@@ -418,7 +418,7 @@ func testIntrinsicFooDefinitionIsOrdinaryStoredBead(t *testing.T, demoVariable s
 		family string
 		count  int
 	}{{"type", len(expected) + 1}, {"bead-type", len(intrinsicDefinitionFamilyIDs(t, expected, "bead-type")) + 1}} {
-		out := call(t, 0, "list", "--type", tc.family, "--json", "--unpaged", "--limit", "0")
+		out := call(t, 0, "list", "--type", tc.family, "--output-format", "json", "--unpaged", "--limit", "0")
 		var page struct {
 			Items []json.RawMessage `json:"items"`
 		}

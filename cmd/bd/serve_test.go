@@ -357,6 +357,8 @@ func useStorageModeGlobals(t *testing.T) {
 //     binds, answers every read, and nil-dereferences on the first claim;
 //     Listen refuses it, and so does this, one layer earlier;
 //   - both arms exist, so the test cannot pass because one was deleted;
+//   - a graph source refuses non-server mode before the shared opener selects
+//     the persisted ordinary or atomic layout; neither branch initializes;
 //   - a roles-bearing Config is built only inside a function that consults
 //     serveDatabaseSource and names serveSourceStore. That is the gate holding
 //     the embedded refusal, so an edit that reaches for the roles anywhere else
@@ -369,6 +371,11 @@ func TestServeNamesOneDatabaseSourcePerServerItBuilds(t *testing.T) {
 	}
 
 	fset := token.NewFileSet()
+	openerFile, err := parser.ParseFile(fset, filepath.Join(dir, "canonical_batch_profile.go"), nil, 0)
+	if err != nil {
+		t.Fatalf("parse persisted graph opener: %v", err)
+	}
+	opener := serveSourceFunction(openerFile, "openSelectedGraphStore")
 	var providerBacked, rolesBacked, graphBacked int
 	for _, entry := range entries {
 		name := entry.Name()
@@ -412,8 +419,8 @@ func TestServeNamesOneDatabaseSourcePerServerItBuilds(t *testing.T) {
 						fset.Position(lit.Pos()))
 				case graph:
 					graphBacked++
-					if !functionMentions(fn, "DoltModeServer") || !functionMentions(fn, "OpenExisting") {
-						t.Errorf("%s: graph source must explicitly gate ordinary-server mode and open existing storage", fset.Position(lit.Pos()))
+					if !serveGraphSourceUsesExistingStore(fn, opener) {
+						t.Errorf("%s: graph source must refuse non-server mode before opening the persisted ordinary or atomic layout without initialization", fset.Position(lit.Pos()))
 					}
 				case provider:
 					providerBacked++
@@ -495,6 +502,158 @@ func functionMentions(fn *ast.FuncDecl, name string) bool {
 		return !found
 	})
 	return found
+}
+
+// Follow the actual shared opener rather than allowing its name as a proxy for
+// safety. The accepted source shape returns OpenAtomicBatch only for the stored
+// atomic layout, and OpenExisting otherwise, forwarding the same ctx/options.
+// Neither branch may initialize, fall back, or acquire a second store.
+func serveGraphSourceUsesExistingStore(fn, opener *ast.FuncDecl) bool {
+	if fn == nil || fn.Body == nil || opener == nil || opener.Body == nil || len(opener.Body.List) != 2 {
+		return false
+	}
+	branch, ok := opener.Body.List[0].(*ast.IfStmt)
+	if !ok || branch.Init != nil || branch.Else != nil ||
+		!serveSourceComparison(branch.Cond, token.EQL, "options.Binding.SchemaVersion", "graphstore.AtomicBatchSchemaVersion") ||
+		!serveSourceReturnsOpen(branch.Body, "graphstore.OpenAtomicBatch") ||
+		!serveSourceReturnsOpen(&ast.BlockStmt{List: opener.Body.List[1:]}, "graphstore.OpenExisting") {
+		return false
+	}
+	guard, opened, calls := -1, -1, 0
+	ast.Inspect(fn.Body, func(n ast.Node) bool {
+		if call, ok := n.(*ast.CallExpr); ok && serveSourcePath(call.Fun) == "openSelectedGraphStore" {
+			calls++
+		}
+		return true
+	})
+	for i, stmt := range fn.Body.List {
+		if serveSourceRefusesNonServer(stmt) {
+			guard = i
+		}
+		assignment, ok := stmt.(*ast.AssignStmt)
+		if !ok || len(assignment.Lhs) != 2 || len(assignment.Rhs) != 1 ||
+			serveSourcePath(assignment.Lhs[0]) != "store" || serveSourcePath(assignment.Lhs[1]) != "err" {
+			continue
+		}
+		call, ok := assignment.Rhs[0].(*ast.CallExpr)
+		if !ok || serveSourcePath(call.Fun) != "openSelectedGraphStore" || len(call.Args) != 2 || serveSourcePath(call.Args[0]) != "ctx" {
+			continue
+		}
+		options, ok := call.Args[1].(*ast.CallExpr)
+		if ok && serveSourcePath(options.Fun) == "graphOptions" && len(options.Args) == 1 && serveSourcePath(options.Args[0]) == "graphPreviewConfig" {
+			opened = i
+		}
+	}
+	return calls == 1 && guard >= 0 && opened > guard
+}
+
+func serveSourceRefusesNonServer(stmt ast.Stmt) bool {
+	gate, ok := stmt.(*ast.IfStmt)
+	if !ok || gate.Init != nil || gate.Else != nil || len(gate.Body.List) != 1 {
+		return false
+	}
+	condition, ok := gate.Cond.(*ast.BinaryExpr)
+	if !ok || condition.Op != token.LOR ||
+		!serveSourceComparison(condition.X, token.EQL, "graphPreviewConfig", "nil") ||
+		!serveSourceComparison(condition.Y, token.NEQ, "graphPreviewConfig.DoltMode", "configfile.DoltModeServer") {
+		return false
+	}
+	result, ok := gate.Body.List[0].(*ast.ReturnStmt)
+	if !ok || len(result.Results) != 1 {
+		return false
+	}
+	call, ok := result.Results[0].(*ast.CallExpr)
+	if !ok || serveSourcePath(call.Fun) != "graphFailure" || len(call.Args) != 3 {
+		return false
+	}
+	code, codeOK := call.Args[0].(*ast.BasicLit)
+	status, statusOK := call.Args[2].(*ast.BasicLit)
+	return codeOK && code.Kind == token.STRING && code.Value == `"capability_unavailable"` && statusOK && status.Kind == token.INT && status.Value == "5"
+}
+
+func serveSourceReturnsOpen(body *ast.BlockStmt, name string) bool {
+	if body == nil || len(body.List) != 1 {
+		return false
+	}
+	result, ok := body.List[0].(*ast.ReturnStmt)
+	if !ok || len(result.Results) != 1 {
+		return false
+	}
+	call, ok := result.Results[0].(*ast.CallExpr)
+	return ok && serveSourcePath(call.Fun) == name && len(call.Args) == 2 &&
+		serveSourcePath(call.Args[0]) == "ctx" && serveSourcePath(call.Args[1]) == "options"
+}
+
+func serveSourceComparison(expr ast.Expr, op token.Token, left, right string) bool {
+	comparison, ok := expr.(*ast.BinaryExpr)
+	return ok && comparison.Op == op && serveSourcePath(comparison.X) == left && serveSourcePath(comparison.Y) == right
+}
+
+func serveSourcePath(expr ast.Expr) string {
+	switch expr := expr.(type) {
+	case *ast.Ident:
+		return expr.Name
+	case *ast.SelectorExpr:
+		return serveSourcePath(expr.X) + "." + expr.Sel.Name
+	default:
+		return ""
+	}
+}
+
+func serveSourceFunction(file *ast.File, name string) *ast.FuncDecl {
+	for _, decl := range file.Decls {
+		if fn, ok := decl.(*ast.FuncDecl); ok && fn.Name.Name == name {
+			return fn
+		}
+	}
+	return nil
+}
+
+func TestServeGraphSourceGuardFollowsBothPersistedLayouts(t *testing.T) {
+	const source = `package main
+func runGraphServe() {
+	if graphPreviewConfig == nil || graphPreviewConfig.DoltMode != configfile.DoltModeServer {
+		return graphFailure("capability_unavailable", "server required", 5)
+	}
+	store, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
+}
+func openSelectedGraphStore() {
+	if options.Binding.SchemaVersion == graphstore.AtomicBatchSchemaVersion {
+		return graphstore.OpenAtomicBatch(ctx, options)
+	}
+	return graphstore.OpenExisting(ctx, options)
+}`
+	for _, tc := range []struct {
+		name, old, replacement string
+		want                   bool
+	}{
+		{"both existing layouts", "", "", true},
+		{"ordinary gate absent", "graphPreviewConfig == nil || graphPreviewConfig.DoltMode != configfile.DoltModeServer", "true", false},
+		{"ordinary gate inverted", "DoltMode !=", "DoltMode ==", false},
+		{"gate does not return", `return graphFailure("capability_unavailable", "server required", 5)`, `graphFailure("capability_unavailable", "server required", 5)`, false},
+		{"wrong layout selected", "graphstore.AtomicBatchSchemaVersion", "graphstore.TypesFreshSchemaVersion", false},
+		{"atomic layout initialized", "graphstore.OpenAtomicBatch", "graphstore.InitAtomicBatch", false},
+		{"ordinary layout initialized", "graphstore.OpenExisting", "graphstore.Init", false},
+		{"ordinary route retargeted", "graphstore.OpenExisting(ctx, options)", "graphstore.OpenExisting(ctx, other)", false},
+		{"different caller binding", "graphOptions(graphPreviewConfig)", "graphOptions(other)", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			text := source
+			if tc.old != "" {
+				if !strings.Contains(text, tc.old) {
+					t.Fatal("mutation did not match the source fixture")
+				}
+				text = strings.Replace(text, tc.old, tc.replacement, 1)
+			}
+			file, err := parser.ParseFile(token.NewFileSet(), "graph-serve.go", text, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := serveGraphSourceUsesExistingStore(serveSourceFunction(file, "runGraphServe"), serveSourceFunction(file, "openSelectedGraphStore")); got != tc.want {
+				t.Fatalf("source guard = %t, want %t", got, tc.want)
+			}
+		})
+	}
 }
 
 // packageDir is this test file's own directory, resolved from the compiled-in

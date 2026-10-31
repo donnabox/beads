@@ -442,7 +442,11 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			early("invalid_selector", memory.ID, "--if-revision", "")
 			early("invalid_selector", memory.ID, "--if-revision", "="+string([]byte{255}))
 			early("invalid_selector", "beads/")
-			early("capability_unavailable", memory.ID, "--properties", "{}")
+			// Two edit modes are a grammar error before either input is read.
+			early("invalid_properties", memory.ID, "--properties", "{}")
+			// A single patch mode with an unsupported Issue flag still reaches
+			// capability refusal before reading the missing file or open pipe.
+			early("capability_unavailable", memory.ID, "--description", "unsupported with patch")
 			early("invalid_selector", link.ID, "--if-source-revision", "")
 			early("permission_denied", memory.ID, "--readonly")
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))

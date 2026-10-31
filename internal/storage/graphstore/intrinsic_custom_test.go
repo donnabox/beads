@@ -457,39 +457,151 @@ func TestCustomDefinitionPersistedCorruption(t *testing.T) {
 func TestIntrinsicMaterializationFinalCensusRollback(t *testing.T) {
 	ctx, o, s := intrinsicHardeningStore(t)
 	before := intrinsicHardeningState(t, ctx, s)
+	// The complete initialized population now includes ordinary Type Beads and
+	// their Refines Links; only the immutable intrinsic-member context stays six.
+	// Retain every column/cell/row in each table that bootstrap can mutate,
+	// independently of the protected-intrinsic observer above.
+	tables := []struct{ name, order string }{
+		{"graph_preview_scope", "singleton"},
+		{"graph_preview_catalog", "path"},
+		{"graph_preview_payloads", "path"},
+		{"graph_preview_versions", "path,version"},
+		{"graph_preview_intrinsic_contexts", "context_id"},
+		{"graph_preview_intrinsic_members", "path,revision"},
+	}
+	committedRows := func() map[string][]string {
+		t.Helper()
+		state := make(map[string][]string, len(tables))
+		retained := 0
+		for _, table := range tables {
+			rows, err := s.db.QueryContext(ctx, "SELECT * FROM "+table.name+" ORDER BY "+table.order)
+			if err != nil {
+				t.Fatal(err)
+			}
+			columns, err := rows.Columns()
+			if err != nil {
+				_ = rows.Close()
+				t.Fatal(err)
+			}
+			appendRow := func(value any) {
+				t.Helper()
+				encoded, err := json.Marshal(value)
+				if err != nil || len(encoded) > PreviewCurrentReadByteLimit-retained {
+					_ = rows.Close()
+					t.Fatalf("bounded complete bootstrap row oracle: %v", err)
+				}
+				retained += len(encoded)
+				state[table.name] = append(state[table.name], string(encoded))
+			}
+			appendRow(columns)
+			for rows.Next() {
+				values := make([]any, len(columns))
+				pointers := make([]any, len(columns))
+				for i := range values {
+					pointers[i] = &values[i]
+				}
+				if err = rows.Scan(pointers...); err != nil {
+					break
+				}
+				appendRow(values)
+			}
+			if err = errors.Join(err, rows.Err(), rows.Close()); err != nil {
+				t.Fatal(err)
+			}
+		}
+		return state
+	}
+	baseline := committedRows()
+	if len(baseline["graph_preview_intrinsic_members"])-1 != 6 || len(baseline["graph_preview_intrinsic_contexts"])-1 != 1 || len(baseline["graph_preview_catalog"])-1 <= 6 || len(baseline["graph_preview_payloads"])-1 == 0 {
+		t.Fatal("expected six intrinsic members plus complete ordinary Type bootstrap population")
+	}
+	clearStaged := func(tx *sql.Tx) {
+		t.Helper()
+		// Payloads are ordinary-Type backing state too. These deletes are staged
+		// only in the caller-owned transaction, never reset/commit the fixture.
+		for _, q := range []string{`DELETE FROM graph_preview_payloads`, `DELETE FROM graph_preview_versions`, `DELETE FROM graph_preview_intrinsic_members`, `DELETE FROM graph_preview_intrinsic_contexts`, `DELETE FROM graph_preview_catalog`} {
+			if _, err := tx.ExecContext(ctx, q); err != nil {
+				_ = tx.Rollback()
+				t.Fatal(err)
+			}
+		}
+	}
+	assertStagedPopulation := func(tx *sql.Tx) {
+		t.Helper()
+		for _, table := range tables[1:] {
+			var n int
+			want := len(baseline[table.name]) - 1 // first entry is the full column list
+			if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table.name).Scan(&n); err != nil || n != want {
+				_ = tx.Rollback()
+				t.Fatalf("incomplete staged bootstrap %s: %d want %d: %v", table.name, n, want, err)
+			}
+		}
+	}
+	assertRestored := func(label string) {
+		t.Helper()
+		if after := committedRows(); !reflect.DeepEqual(baseline, after) {
+			t.Fatalf("%s changed committed bootstrap table cells/rows/fence", label)
+		}
+		if after := intrinsicHardeningState(t, ctx, s); !reflect.DeepEqual(before, after) {
+			t.Fatal("failed materialization changed committed intrinsic state")
+		}
+	}
+	// Calibrate using the actual successful production materializer and an
+	// independent exact final-context acquisition. Both use the normal cap,
+	// inside this SAME original90 fixture; the caller rolls calibration back.
+	// Fixed-length native tokens keep equivalent fresh bootstrap debit sizes.
+	preCensus := func() int {
+		tx, err := s.db.BeginTx(ctx, nil)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			if err := tx.Rollback(); err != nil {
+				t.Fatal(err)
+			}
+		}()
+		clearStaged(tx)
+		full := newIntrinsicMetadataBudget()
+		if err := installIntrinsicMembers(ctx, tx, o, full); err != nil {
+			t.Fatalf("normal-cap materialization calibration: %v", err)
+		}
+		assertStagedPopulation(tx)
+		var contextID string
+		if err := tx.QueryRowContext(ctx, `SELECT context_id FROM graph_preview_intrinsic_contexts`).Scan(&contextID); err != nil {
+			t.Fatal(err)
+		}
+		census := newIntrinsicMetadataBudget()
+		if _, err := loadIntrinsicContextInTx(ctx, tx, o, contextID, census); err != nil {
+			t.Fatalf("independent final-context calibration: %v", err)
+		}
+		spent := PreviewCurrentReadByteLimit - full.remaining
+		finalDebit := PreviewCurrentReadByteLimit - census.remaining
+		beforeFinal := spent - finalDebit
+		initial := 4*intrinsictypecatalog.CurrentSource().Bytes + 2*intrinsicmaterialization.MaxContextBytes
+		if finalDebit <= 0 || beforeFinal <= initial+4*intrinsicmaterialization.MaxContextBytes || beforeFinal >= PreviewCurrentReadByteLimit {
+			t.Fatalf("invalid bounded final-census calibration: total=%d final=%d before=%d", spent, finalDebit, beforeFinal)
+		}
+		return beforeFinal
+	}()
+	assertRestored("successful calibration rollback")
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	// These staged deletes make the already-correct physical schema empty for
-	// the production bootstrap function; no deleted bytes are ever committed.
-	for _, q := range []string{`DELETE FROM graph_preview_versions`, `DELETE FROM graph_preview_intrinsic_members`, `DELETE FROM graph_preview_intrinsic_contexts`, `DELETE FROM graph_preview_catalog`} {
-		if _, err := tx.ExecContext(ctx, q); err != nil {
-			_ = tx.Rollback()
-			t.Fatal(err)
-		}
-	}
-	// Exactly its initial source/copy reservation: all six INSERTs are staged,
-	// then the independent final integrity-census acquisition must refuse.
-	budget := &intrinsicMetadataBudget{remaining: 4*intrinsictypecatalog.CurrentSource().Bytes + 2*intrinsicmaterialization.MaxContextBytes}
+	clearStaged(tx)
+	// Exactly the measured source/planning/write/readback debit, including ALL
+	// installed Types. No allowance remains for the real final integrity census.
+	budget := &intrinsicMetadataBudget{remaining: preCensus}
 	err = installIntrinsicMembers(ctx, tx, o, budget)
-	if !errors.Is(err, ErrInvalidStore) || !strings.Contains(err.Error(), ErrLimitExceeded.Error()) {
+	if !errors.Is(err, ErrInvalidStore) || !strings.Contains(err.Error(), ErrLimitExceeded.Error()) || !strings.Contains(err.Error(), "final intrinsic census:") {
 		_ = tx.Rollback()
 		t.Fatalf("final census did not refuse: %v", err)
 	}
-	for _, q := range []string{`SELECT COUNT(*) FROM graph_preview_catalog`, `SELECT COUNT(*) FROM graph_preview_intrinsic_members`, `SELECT COUNT(*) FROM graph_preview_versions`} {
-		var n int
-		if err := tx.QueryRowContext(ctx, q).Scan(&n); err != nil || n != 6 {
-			_ = tx.Rollback()
-			t.Fatalf("expected six staged members: %d %v", n, err)
-		}
-	}
+	assertStagedPopulation(tx)
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
-	if after := intrinsicHardeningState(t, ctx, s); !reflect.DeepEqual(before, after) {
-		t.Fatal("failed materialization changed committed intrinsic state")
-	}
+	assertRestored("final-census refusal rollback")
 }
 
 // Independent public-API oracle comparisons, not the observer compared to itself.

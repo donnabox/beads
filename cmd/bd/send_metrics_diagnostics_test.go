@@ -195,21 +195,53 @@ func TestSendMetricsHonorsMemDiagnostics(t *testing.T) {
 
 	t.Run("diagnostics still run and exit code is preserved when RunSendMetrics fails", func(t *testing.T) {
 		statsPath := filepath.Join(t.TempDir(), "stats.txt")
-		cmd := exec.Command(bdBin, metrics.SendMetricsSubcommand)
-		// Deliberately no HOME: DataDir()'s os.UserHomeDir() fails
-		// deterministically and offline, so RunSendMetrics() returns 1 before
-		// ever reaching the enabled/network checks.
-		cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "BEADS_MEM_STATS=" + statsPath}
+		// An explicit accepted profile skips the saved-profile config read,
+		// which otherwise refuses the missing home before the handler runs.
+		cmd := exec.Command(bdBin, "--cli-profile=compat", metrics.SendMetricsSubcommand)
+		cmd.Dir = t.TempDir()
+		// Deliberately no home/config environment: DataDir()'s os.UserHomeDir()
+		// fails offline, so RunSendMetrics() returns 1 before its network checks.
+		cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "BD_DISABLE_METRICS=1", "BEADS_MEM_STATS=" + statsPath}
 		out, err := cmd.CombinedOutput()
 		exitErr, ok := err.(*exec.ExitError)
 		if !ok {
 			t.Fatalf("bd send-metrics: want a non-zero *exec.ExitError, got %v (%T)\noutput: %s", err, err, out)
 		}
 		if code := exitErr.ExitCode(); code != 1 {
-			t.Fatalf("bd send-metrics exit code = %d, want 1 (RunSendMetrics's own failure code, preserved through the fix)", code)
+			t.Fatalf("bd send-metrics exit code = %d, want 1 (RunSendMetrics's own failure code, preserved through the fix)\noutput: %s", code, out)
 		}
-		if _, statErr := os.Stat(statsPath); statErr != nil {
-			t.Fatalf("BEADS_MEM_STATS file was not written even though the command failed: %v", statErr)
+		if !regexp.MustCompile(`(?m)^send-metrics: `).Match(out) {
+			t.Fatalf("bd send-metrics did not report its handler failure\noutput: %s", out)
+		}
+		data, readErr := os.ReadFile(statsPath)
+		if readErr != nil {
+			t.Fatalf("BEADS_MEM_STATS file was not written even though the command failed: %v\noutput: %s", readErr, out)
+		}
+		if !memStatsLine.Match(data) {
+			t.Fatalf("failed command BEADS_MEM_STATS content = %q, want match of %s\noutput: %s", data, memStatsLine, out)
+		}
+	})
+
+	// This is the complementary bootstrap boundary: without an explicit
+	// profile, an unresolvable user-global config must refuse before Run.
+	t.Run("missing home without a profile refuses before the metrics handler", func(t *testing.T) {
+		statsPath := filepath.Join(t.TempDir(), "stats.txt")
+		cmd := exec.Command(bdBin, metrics.SendMetricsSubcommand)
+		cmd.Dir = t.TempDir()
+		cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "BD_DISABLE_METRICS=1", "BEADS_MEM_STATS=" + statsPath}
+		out, err := cmd.CombinedOutput()
+		exitErr, ok := err.(*exec.ExitError)
+		if !ok {
+			t.Fatalf("bd send-metrics: want a non-zero *exec.ExitError, got %v (%T)\noutput: %s", err, err, out)
+		}
+		if code := exitErr.ExitCode(); code != 2 {
+			t.Fatalf("bd send-metrics without a profile exit code = %d, want 2 (strict user-global profile refusal)\noutput: %s", code, out)
+		}
+		if !regexp.MustCompile(`resolve user config\.yaml:`).Match(out) || regexp.MustCompile(`(?m)^send-metrics: `).Match(out) {
+			t.Fatalf("bd send-metrics must report profile bootstrap refusal, not handler failure\noutput: %s", out)
+		}
+		if _, statErr := os.Stat(statsPath); !os.IsNotExist(statErr) {
+			t.Fatalf("profile bootstrap refusal must not write handler diagnostics: stat error = %v\noutput: %s", statErr, out)
 		}
 	})
 }

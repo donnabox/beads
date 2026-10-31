@@ -523,7 +523,8 @@ func TestCommonResourceCollectionPreservesExactContextAndMasks(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	emitted, err := renderer.Render(payload, clioutput.Completion{Returned: len(records)})
+	exhausted := true
+	emitted, err := renderer.Render(payload, clioutput.Completion{Returned: len(records), Exhausted: &exhausted, StopReason: "exhausted"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -552,7 +553,7 @@ func TestCommonResourceCollectionPreservesExactContextAndMasks(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := masked.Render(payload, clioutput.Completion{Returned: len(records)}); !errors.Is(err, clioutput.ErrInvalidProjection) {
+		if _, err := masked.Render(payload, clioutput.Completion{Returned: len(records), Exhausted: &exhausted, StopReason: "exhausted"}); !errors.Is(err, clioutput.ErrInvalidProjection) {
 			t.Fatalf("removed exact captured context %s: %v", pointer, err)
 		}
 	}

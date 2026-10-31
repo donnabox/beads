@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -175,6 +176,21 @@ func TestCanonicalBatchDiscoveredGraphRefusesConflictingFileFlags(t *testing.T) 
 		config.ResetForTesting()
 	})
 	cfg := canonicalRecoveryConfiguredWorkspace(t, "https://example.invalid/lazy-batch/")
+	// This offline fixture deliberately does not use the live route exported by
+	// the server-tier TestMain. Assert its own persisted port and clear unrelated
+	// selectors; t.Setenv restores the harness route after the test. The absent
+	// socket remains authoritative, so reaching a provider would still fail.
+	for _, name := range []string{
+		"BEADS_DB", "BD_DB", "BEADS_DOLT_DATA_DIR", "BEADS_DOLT_PROXIED_SERVER",
+		"BEADS_DOLT_CREDENTIAL_COMMAND", "BEADS_DOLT_SERVER_HOST",
+		"BEADS_DOLT_SERVER_SOCKET", "BEADS_DOLT_SERVER_DATABASE", "BEADS_DOLT_SERVER_TLS",
+	} {
+		t.Setenv(name, "")
+	}
+	t.Setenv("BEADS_DOLT_SERVER_PORT", strconv.Itoa(cfg.DoltServerPort))
+	t.Setenv("BEADS_DOLT_PORT", strconv.Itoa(cfg.DoltServerPort))
+	t.Setenv("BEADS_DOLT_SHARED_SERVER", "0")
+	t.Setenv("BD_DOLT_SHARED_SERVER", "false")
 	t.Chdir(filepath.Dir(cfg.GraphWorkspace))
 	t.Setenv("BEADS_DIR", cfg.GraphWorkspace)
 	t.Setenv("BD_SCOPE", "")
@@ -202,15 +218,16 @@ func TestCanonicalBatchDiscoveredGraphRefusesConflictingFileFlags(t *testing.T) 
 			if handled, err := admitCanonicalAuthoring(cmd); handled || err != nil {
 				t.Fatalf("pre-discovery admission intercepted legacy-shaped flags: handled=%t err=%v", handled, err)
 			}
+			diagnostics := graphFailureOutput.(*bytes.Buffer)
+			diagnostics.Reset()
 			if handled, err := admitCanonicalGraphPreview(cmd); !handled || err != nil || !graphPreviewActive || graphPreviewDir != cfg.GraphWorkspace {
-				t.Fatalf("actual graph discovery: handled=%t active=%t dir=%q err=%v", handled, graphPreviewActive, graphPreviewDir, err)
+				t.Fatalf("actual graph discovery: handled=%t active=%t dir=%q err=%v diagnostics=%q", handled, graphPreviewActive, graphPreviewDir, err, diagnostics.String())
 			}
 			input := strings.NewReader(`{"operation":"createBead","id":"must-not-land","type":"memory","properties":{"title":"Unconsumed"}}`)
 			inputSize := input.Len()
 			var output bytes.Buffer
 			cmd.SetIn(input)
 			cmd.SetOut(&output)
-			diagnostics := graphFailureOutput.(*bytes.Buffer)
 			diagnostics.Reset()
 			err := cmd.RunE(cmd, nil)
 			status, ok := err.(*exitError)
