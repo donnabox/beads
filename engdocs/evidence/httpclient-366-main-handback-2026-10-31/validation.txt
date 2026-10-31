@@ -1,0 +1,41 @@
+Validation of the evidence-only handback
+
+PASS: Git object/ref and metadata verification.
+- GitHub reports PR366 MERGED at 2026-10-31T17:58:49Z.
+- GitHub main ref and fetched origin/main match 751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453.
+- Ordered parents are ef907c023b323c52a7153f99502d4e182b8c02ec and 5a08d8cf3dc8fa9c951b223465a3a69e57eb9b73.
+- Landed tree is 19a18e3731b002af4b7a8b2dfc39a0e098177e08, matching the recorded prospective tree.
+- Complete diff from first parent is only internal/httpclient/BUILD.bazel, +7/-7.
+- Landed BUILD blob is 06f490806873aad578e084e66e4761fe86d2b5a7, identical to approved head.
+- Original source branch remains at approved head; approved head is merge second parent.
+- Formal reviews and review threads are empty; approval/delegation records are preserved in receipt.json.
+- PR head metadata: 114 SUCCESS, 11 SKIPPED; no failed or pending checks.
+- Actual main metadata: 2 success, 20 skipped. No fresh test execution inferred.
+
+UNAVAILABLE: make check-docs (exit 2).
+bazel test  //test/docsync:docsync_test //scripts/repochecks:doc_freshness_test --config=ci
+make: bazel: No such file or directory
+make: *** [check-docs] Error 1
+
+Bazel is not installed on this dispatcher host. Neither Bazel documentation test nor
+CLI flag validation ran. This host/tooling failure is not evidence of a main code failure.
+
+PASS: focused inner-loop documentation link check (not the canonical Bazel gate).
+Command: go test -tags=gms_pure_go ./test/docsync -run '^TestEngdocsAndRootMarkdownLinks$' -count=1 -timeout=2m -v
+=== RUN   TestEngdocsAndRootMarkdownLinks
+--- PASS: TestEngdocsAndRootMarkdownLinks (0.04s)
+PASS
+ok  	github.com/steveyegge/beads/test/docsync	0.301s
+
+PASS: git diff --cached --check after staging the four evidence files.
+PASS: receipt.json parses and all three local README links resolve.
+
+Historical post-merge preflight:
+- No open PR matched the topic search 'httpclient shard'.
+- PR366 preflight exited 1: merge state UNKNOWN on the already merged PR.
+- It retained old main Bazel Autofix, Docs Autofix and Nightly warnings.
+- It found no failed or pending PR status checks.
+- This was not used as a new passing merge gate. No merge or PR mutation was performed.
+
+No broad source suite, installed CLI proof, engine test, CI rerun or watcher ran.
+No hook was bypassed. No test-owned services remain.

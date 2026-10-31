@@ -1,0 +1,1194 @@
+{
+  "observed_at_utc": "2026-10-31T18:01:21.001180+00:00",
+  "worker": "claudia",
+  "execution_mode": "dispatcher",
+  "handoff": "https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6547097088",
+  "repository": "donnabox/beads",
+  "pull_request": {
+    "number": 366,
+    "url": "https://github.com/donnabox/beads/pull/366",
+    "title": "test(httpclient): distribute regular tests across three shards",
+    "state": "MERGED",
+    "headRefName": "codex/iris-httpclient-three-shard-20261030",
+    "headRefOid": "5a08d8cf3dc8fa9c951b223465a3a69e57eb9b73",
+    "baseRefName": "main",
+    "baseRefOid": "6dd6a81f5c733a0b13f92f787e5e16c91affbb1d",
+    "mergedAt": "2026-10-31T17:58:49Z",
+    "mergedBy": {
+      "id": "MDQ6VXNlcjUyMDI3NQ==",
+      "is_bot": false,
+      "login": "donnabox",
+      "name": "Donna Box"
+    },
+    "mergeCommit": {
+      "oid": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+    },
+    "isDraft": false,
+    "reviewDecision": ""
+  },
+  "source_verification": {
+    "actual_main": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453",
+    "landed_tree": "19a18e3731b002af4b7a8b2dfc39a0e098177e08",
+    "parents": [
+      "ef907c023b323c52a7153f99502d4e182b8c02ec",
+      "5a08d8cf3dc8fa9c951b223465a3a69e57eb9b73"
+    ],
+    "changed_paths": [
+      "internal/httpclient/BUILD.bazel"
+    ],
+    "numstat": {
+      "additions": 7,
+      "deletions": 7
+    },
+    "approved_and_landed_blob": "06f490806873aad578e084e66e4761fe86d2b5a7",
+    "preserved_source_branch": {
+      "ref": "refs/heads/codex/iris-httpclient-three-shard-20261030",
+      "node_id": "REF_kwDOULUrl9oANXJlZnMvaGVhZHMvY29kZXgvaXJpcy1odHRwY2xpZW50LXRocmVlLXNoYXJkLTIwMjYxMDMw",
+      "url": "https://api.github.com/repos/donnabox/beads/git/refs/heads/codex/iris-httpclient-three-shard-20261030",
+      "object": {
+        "sha": "5a08d8cf3dc8fa9c951b223465a3a69e57eb9b73",
+        "type": "commit",
+        "url": "https://api.github.com/repos/donnabox/beads/git/commits/5a08d8cf3dc8fa9c951b223465a3a69e57eb9b73"
+      }
+    },
+    "exact_approved_head_is_ancestor": true,
+    "matches_prelanding_recorded_tree": true
+  },
+  "recorded_disposition": {
+    "qualification": "Existing PR comments record Donna approval, delegated independent Claudia landing and cause-specific baseline/profile receiving. This receipt does not create a new approval or reconstruct an unavailable formal review.",
+    "comments": [
+      {
+        "url": "https://github.com/donnabox/beads/pull/366#issuecomment-6546819333",
+        "createdAt": "2026-10-31T17:34:34Z",
+        "author": "donnabox",
+        "body": "Donna's substantive approval of exact `5a08d8cf3dc8fa9c951b223465a3a69e57eb9b73` remains in force, as explicitly retained by the coordinator's current handoff. No new human approval is requested. This agent comment records that decision and the delegated ready disposition; it is not an agent approval substituted for human review.\n\nClaudia now owns the sole outward #366 landing lane under Donna's distributed authorization. I did not author this source change. The refreshed full patch remains one file, `internal/httpclient/BUILD.bazel`: regular HTTP test `shard_count = 2` becomes `3`, with six historical-estimate comment lines. Test sources, assertions, served target, selection, size and deadlines remain unchanged. Extra concurrency can increase peak fixture/CPU demand; no causal speedup is claimed.\n\nThe current PR body correctly separates the 447 skipped HTTP roots into 394 embedded opt-in and 53 KNOWN DIVERGENCE skips. Existing attempt02 proof retains 875 roots exactly once across 292/292/291, 223 target passes and 282 shard results. Its reused integration action, earlier failures, nonexecuted conditionals and exact old base/synthetic-merge applicability remain explicit; no new execution or actual-main inheritance is claimed.\n\nFresh receiving finds the approved head unchanged, OPEN/draft and MERGEABLE/CLEAN, with no reviews, threads or standing objections. The operative preflight's only blocker is draft status. The accountable human-review and delegated ready-disposition conditions are now received, so the PR may leave draft in the normal way.\n\n**Merge remains held on unresolved base-health/qualification receiving.** Preflight still reports red main Bazel Autofix, Docs Autofix and Nightly histories. A finite exact-main `ef907c02` metadata receipt shows two successful checks and 20 skips; it does not establish broad main qualification or repair of every red-base cause. This ready disposition does not waive that gate, authorize a bypass or relabel the older #366 result as current-main proof. Existing shared custody must receive the concrete remaining base/current-composition evidence before deliberate landing.\n\n#362's changed-source gates and #356's holds remain separate. This patch supplies no importer, restorable archive, complete export or installed/native transfer guarantee. #372's human-policy question and #211's close-policy hold are unchanged. No source, head, profile, assertion, timeout or protection setting is changed by this ready disposition.\n\n_codex-unknown-model-unknown-reasoning on behalf of Donna Box_\n"
+      },
+      {
+        "url": "https://github.com/donnabox/beads/pull/366#issuecomment-6547094690",
+        "createdAt": "2026-10-31T17:58:03Z",
+        "author": "donnabox",
+        "body": "### Cause-specific baseline receiving\n\nThe earlier blanket base-health hold is resolved for this approved, scoped landing. No historical failure is erased and no policy, profile or protection flag is changed.\n\nAll three red runs reported by preflight identify old main `6dd6a81f5c733a0b13f92f787e5e16c91affbb1d`, before #364 landed. Bazel/Docs Autofix failed at the token-mint step; actual main now contains #364's reviewed patch-before-token guards. The old Nightly failure is the independent RBE worker-environment comparison/issue-publication job; its test lanes were skipped, not failed HTTP executions.\n\nThe remote-worker pin is still out of step and remains a separate infrastructure alert. It is not claimed fixed or green here. The existing immutable #366 attempt02 archive verifies the applicable profile: `BAZEL_RBE_MODE: cache`, `BAZEL_RBE_ENABLED: false`, all three `BAZEL_COVERS_*` outputs false, and the selected test log states \u201cread-only remote cache (rbe-cache); executing locally.\u201d The unchanged fork policy keeps the legacy required lanes (`BAZEL_COVERS_FORKS: false`). Thus no remote-worker qualification is substituted for, or required by, that received local/cache result. Any future remote execution must still satisfy its own worker-environment guard.\n\nThis is bounded receiving of the [already published custody proof](https://github.com/donnabox/agent-coordination/blob/9a8f63d67216e9b19385e7800641ef2f24fcd7a4/context/iris/current-public-export-20261028/hosted-main366-attempt02-terminal-raw-proof.tar.gz), whose full SHA256 matches the accepted `abb960b2\u2026` artifact. Only its gate/test profile lines were additionally inspected; no new test, blanket replay, watcher or changed selection was used. Original skip categories, reused integration action and source/profile limits remain as stated in the PR body.\n\nThe current prospective merge `3f366053110953e1cb27f6c3af811540fff716bc`, tree `19a18e3731b002af4b7a8b2dfc39a0e098177e08`, has exact parents actual main `ef907c02` and approved head `5a08d8cf`. Complete comparison with main has only `internal/httpclient/BUILD.bazel`, approved blob `06f490806873aad578e084e66e4761fe86d2b5a7`, +7/\u22127; all other main postimages are preserved. Normal preflight passes and current head metadata has 114 successful checks / 11 nonexecuted skips / zero failed or pending. Skips receive no execution credit. This does not claim a fresh combined execution, full conformance, installed behavior, universal main green or repair of the separate RBE alert.\n\nDonna's exact-head approval, independent merger and normal fresh source/review/objection guards remain in force. No additional selected-profile qualification gap is identified. Proceed with ordinary exact-head landing if those final guards remain unchanged; preserve the branch and original history.\n\n_codex-unknown-model-unknown-reasoning on behalf of Donna Box_\n"
+      }
+    ],
+    "formal_reviews": [],
+    "review_thread_total": 0,
+    "merge_commit_message": "Merge pull request #366 from donnabox/codex/iris-httpclient-three-shard-20261030\n\nOrdinarily land the approved one-file HTTP test sharding patch at exact 5a08d8cf3dc8fa9c951b223465a3a69e57eb9b73.\n\nDonna approval and cause-specific baseline/profile receiving are recorded in PR366 comments6546819333 and6547094690. Independent agent source reviewer Claudia performs this delegated landing. Preserve the original Iris/Donna history and branch. The separate remote-worker environment alert remains unresolved; no remote, fresh-combined, installed or full-main qualification is claimed.\n\nAgent-Signature: codex-unknown-model-unknown-reasoning on behalf of Donna Box"
+  },
+  "head_checks": {
+    "counts": {
+      "SKIPPED": 11,
+      "SUCCESS": 114
+    },
+    "checks": [
+      {
+        "workflow": "Bazel Farm (trusted forks)",
+        "name": "authorize",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276694/job/123892347298"
+      },
+      {
+        "workflow": "Auto-label new issues and PRs",
+        "name": "add-triage-label",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276713/job/123892345201"
+      },
+      {
+        "workflow": "Auto-label new issues and PRs",
+        "name": "add-triage-label",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41225229822/job/124607877154"
+      },
+      {
+        "workflow": "PR",
+        "name": "Fast checks (build tags, versions, migrations, beads diff, fmt)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922765797"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Detect CI tier",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123892345232"
+      },
+      {
+        "workflow": "Regression Tests",
+        "name": "Differential Regression (v0.49.6 baseline)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276448/job/123892343271"
+      },
+      {
+        "workflow": "Bazel Farm (trusted forks)",
+        "name": "Bazel Farm",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276694/job/123892348130"
+      },
+      {
+        "workflow": "PR",
+        "name": "Check release target cross-compilation (unix)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922748205"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Bazel tier coverage",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123892345143"
+      },
+      {
+        "workflow": "PR",
+        "name": "Check release target cross-compilation (desktop)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922722189"
+      },
+      {
+        "workflow": "PR",
+        "name": "Test (Windows) cmd/bd liveness regression",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922721071"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test Nix Flake",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123892344981"
+      },
+      {
+        "workflow": "PR",
+        "name": "Test (Windows) small packages (doltversion, dbproxy server)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922760810"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Build (Embedded Dolt)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123892471288"
+      },
+      {
+        "workflow": "PR",
+        "name": "Worktree remove boundary (Windows)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922770352"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 1/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184166"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 2/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184109"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 3/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184046"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 4/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184038"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 5/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184063"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 6/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184099"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 7/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184078"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 8/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184025"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 9/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184068"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 10/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184149"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 11/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184156"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 12/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184123"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 13/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184163"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 14/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184049"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Proxied Dolt Cmd 15/15)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184175"
+      },
+      {
+        "workflow": "PR",
+        "name": "Build Windows test binaries (cross-compile)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922771314"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Storage 1/5)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896183950"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Storage 2/5)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184030"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Storage 3/5)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896183891"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Storage 4/5)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184241"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Storage 5/5)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896183972"
+      },
+      {
+        "workflow": "PR",
+        "name": "Check doc flags freshness",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922751090"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Conformance - core)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896183901"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Conformance - audit)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896183826"
+      },
+      {
+        "workflow": "PR",
+        "name": "Check doc freshness (ubuntu-latest)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922748990"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Conformance)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896183852"
+      },
+      {
+        "workflow": "PR",
+        "name": "Check doc freshness (macos-latest)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922760056"
+      },
+      {
+        "workflow": "PR",
+        "name": "Check doc freshness (windows-latest)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922771018"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR preflight process (ubuntu-latest)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922760357"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 1/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184067"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR preflight process (macos-latest)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922770422"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 2/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184160"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR preflight process (windows-latest)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922762739"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 3/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184273"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 4/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184232"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 5/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184192"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 6/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184223"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 7/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184189"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 8/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184208"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 9/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184161"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 10/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184204"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 11/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184264"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 12/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184250"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 13/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184311"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 14/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184298"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 15/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184351"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Server Dolt Full Suite 16/16)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184304"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR Policy (wrapper timing)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922763416"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 1/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184303"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 2/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184299"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 3/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184329"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 4/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184348"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 5/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184331"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 6/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184281"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 7/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184257"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 8/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184338"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 9/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184333"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 10/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184356"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 11/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184307"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 12/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184326"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 13/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184292"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 14/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184301"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 15/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184315"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 16/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184297"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 17/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184324"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 18/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184550"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 19/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184330"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "Test (Embedded Dolt Cmd 20/20)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123896184287"
+      },
+      {
+        "workflow": "PR",
+        "name": "Go checks (scripts-test)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922758443"
+      },
+      {
+        "workflow": "PR Risk",
+        "name": "PR Risk Gate / Required",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003276759/job/123900704087"
+      },
+      {
+        "workflow": "PR",
+        "name": "Go checks (vet)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922722227"
+      },
+      {
+        "workflow": "PR",
+        "name": "Go checks (allowlisted)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922765940"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR Lint (native)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922756276"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR Lint (windows)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922761100"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR Lint (darwin)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922758726"
+      },
+      {
+        "workflow": "PR",
+        "name": "Advisory reports (examples build, complexity)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922748821"
+      },
+      {
+        "workflow": "PR",
+        "name": "Test (Dolt server fingerprint)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922721590"
+      },
+      {
+        "workflow": "PR",
+        "name": "Windows Make shell (native, msys2, cygwin)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922748417"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / execution mode",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922722902"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / pre-warm rbe-west pool",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723641"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / test",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922721468"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / pure-Go and js/wasm",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723468"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / release cross-compile",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723540"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / embedded Dolt tier",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723320"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / integration",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723790"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / dolt-server lane",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723415"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / proxied-server tier",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723593"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / dolt-race",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723490"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / server-Dolt storage tier",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723394"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / cmd/bd Dolt-server tier",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723527"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / dolt-int",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723470"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / Package Gate (MCP)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723408"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / Package Gate (npm)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723603"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / repo contents cache seed",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723465"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / repo contents cache verify",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723474"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel / dispatch command coverage",
+        "status": "COMPLETED",
+        "conclusion": "SKIPPED",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723887"
+      },
+      {
+        "workflow": "PR",
+        "name": "Bazel tier coverage",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922751058"
+      },
+      {
+        "workflow": "PR",
+        "name": "Test (Windows, prebuilt) cmd/bd liveness regression",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723021"
+      },
+      {
+        "workflow": "PR",
+        "name": "Worktree remove boundary (Windows, prebuilt)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922722966"
+      },
+      {
+        "workflow": "PR",
+        "name": "Build Artifacts",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723481"
+      },
+      {
+        "workflow": "PR",
+        "name": "Check pure-Go and js/wasm boundaries (CGO_ENABLED=0)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723401"
+      },
+      {
+        "workflow": "PR",
+        "name": "Contract corpus (golden + determinism + conformance)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922722998"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR Core race (graphstore-odd)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723800"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR Core race (graphstore-even)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723554"
+      },
+      {
+        "workflow": "PR",
+        "name": "PR Core race (remaining)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922724568"
+      },
+      {
+        "workflow": "PR",
+        "name": "Test (storage domain + uow)",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723501"
+      },
+      {
+        "workflow": "PR",
+        "name": "Graph core / storage",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922723441"
+      },
+      {
+        "workflow": "PR",
+        "name": "Graph core / cli-http",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922724116"
+      },
+      {
+        "workflow": "PR",
+        "name": "Graph core / real engines, installed CLI and BDP",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123922724495"
+      },
+      {
+        "workflow": "PR",
+        "name": "CI Gate / Required",
+        "status": "COMPLETED",
+        "conclusion": "SUCCESS",
+        "url": "https://github.com/donnabox/beads/actions/runs/41003278866/job/123962562516"
+      }
+    ]
+  },
+  "actual_main_checks": {
+    "counts": {
+      "skipped": 20,
+      "success": 2
+    },
+    "checks": [
+      {
+        "id": 124613525916,
+        "name": "repo contents cache verify",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525916",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525911,
+        "name": "repo contents cache seed",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525911",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525858,
+        "name": "dispatch command coverage",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:59Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525858",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525848,
+        "name": "Package Gate (npm)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525848",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525732,
+        "name": "pure-Go and js/wasm",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525732",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525722,
+        "name": "proxied-server tier",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525722",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525713,
+        "name": "test",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525713",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525709,
+        "name": "integration",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525709",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525570,
+        "name": "embedded Dolt tier",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525570",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525551,
+        "name": "cmd/bd Dolt-server tier",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525551",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525515,
+        "name": "dolt-race",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525515",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525514,
+        "name": "pre-warm rbe-west pool",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525514",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525433,
+        "name": "Package Gate (MCP)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525433",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525407,
+        "name": "dolt-server lane",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525407",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525385,
+        "name": "server-Dolt storage tier",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525385",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525349,
+        "name": "dolt-int",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525349",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613525331,
+        "name": "release cross-compile",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:59Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613525331",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613523053,
+        "name": "Warm macOS Go build cache",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:58Z",
+        "completed_at": "2026-10-31T17:58:52Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124475/job/124613523053",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613501617,
+        "name": "Test (macOS)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:52Z",
+        "completed_at": "2026-10-31T17:58:52Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124475/job/124613501617",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613501227,
+        "name": "Test (Windows - smoke)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "started_at": "2026-10-31T17:58:52Z",
+        "completed_at": "2026-10-31T17:58:52Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124475/job/124613501227",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613500843,
+        "name": "execution mode",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-31T17:58:54Z",
+        "completed_at": "2026-10-31T17:58:58Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124471/job/124613500843",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      },
+      {
+        "id": 124613500425,
+        "name": "Differential Regression (v0.49.6 baseline)",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-10-31T17:58:54Z",
+        "completed_at": "2026-10-31T17:59:45Z",
+        "html_url": "https://github.com/donnabox/beads/actions/runs/41227124476/job/124613500425",
+        "head_sha": "751d311e4cbf6cca8c604a1ca6f0d4ee0cc05453"
+      }
+    ]
+  },
+  "limitations": [
+    "No product source change or product test execution; documentation validation is recorded separately. No CI rerun, watcher, Beads service or database.",
+    "No fresh combined execution or full-main qualification is inferred from head checks or main skip metadata.",
+    "#362 existing integration/required-gate failures and #356 acceptance obligations remain unwaived.",
+    "Separate remote-worker environment alert remains unresolved."
+  ]
+}
