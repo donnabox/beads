@@ -2,14 +2,20 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "clirevision",
-    srcs = ["selector.go"],
+    srcs = [
+        "locator.go",
+        "selector.go",
+    ],
     importpath = "github.com/steveyegge/beads/internal/clirevision",
     visibility = ["//:__subpackages__"],
 )
 
 go_test(
     name = "clirevision_test",
-    srcs = ["selector_test.go"],
+    srcs = [
+        "locator_test.go",
+        "selector_test.go",
+    ],
     embed = [":clirevision"],
 )
 

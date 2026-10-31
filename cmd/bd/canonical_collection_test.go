@@ -8,10 +8,12 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
@@ -497,6 +499,61 @@ func TestCanonicalCollectionTypeGrammarDiagnostics(t *testing.T) {
 			if _, err := canonicalCollectionRequest(cmd, links, options); err == nil || !strings.Contains(err.Error(), "--conforms-to requires a canonical absolute HTTP(S) Type URI") {
 				t.Fatalf("alias spelling guard: %v", err)
 			}
+		}
+	}
+}
+
+func TestCommonResourceCollectionPreservesExactContextAndMasks(t *testing.T) {
+	capture := commonGraphCapture(t)
+	records := []json.RawMessage{}
+	for _, document := range capture.Documents {
+		if document.Kind() == graph.KindBead {
+			records = append(records, document.NativeJSON())
+		}
+	}
+	descriptor := canonicalResourceCollectionDescriptor(false, records)
+	if descriptor.Item.BDPSpec != intrinsicDefinitionContract {
+		t.Fatal("common records mislabeled as the legacy URI-only DTO")
+	}
+	renderer, err := clioutput.NewCollection(descriptor, clioutput.Options{Formats: []string{"json"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	payload, err := json.Marshal(graphread.Page{Items: records})
+	if err != nil {
+		t.Fatal(err)
+	}
+	emitted, err := renderer.Render(payload, clioutput.Completion{Returned: len(records)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var envelope struct {
+		Data struct {
+			Items []json.RawMessage `json:"items"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(emitted, &envelope); err != nil {
+		t.Fatal(err)
+	}
+	if len(envelope.Data.Items) != len(records) {
+		t.Fatal("incomplete common collection")
+	}
+	for i, raw := range envelope.Data.Items {
+		var got, want any
+		if json.Unmarshal(raw, &got) != nil || json.Unmarshal(records[i], &want) != nil || !reflect.DeepEqual(got, want) {
+			t.Fatalf("complete record changed: %s", raw)
+		}
+	}
+	for _, pointer := range []string{"/type/revision", "/ownedLinks/https:~1~1example.test~1graph~1edge-kind/0/source/revision"} {
+		masked, err := clioutput.NewCollection(descriptor, clioutput.Options{Formats: []string{"json"}, Omit: []string{pointer}})
+		if errors.Is(err, clioutput.ErrInvalidProjection) {
+			continue
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := masked.Render(payload, clioutput.Completion{Returned: len(records)}); !errors.Is(err, clioutput.ErrInvalidProjection) {
+			t.Fatalf("removed exact captured context %s: %v", pointer, err)
 		}
 	}
 }

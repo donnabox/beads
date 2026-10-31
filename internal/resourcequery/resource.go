@@ -101,6 +101,7 @@ type evaluation struct {
 	limits                        Limits
 	work                          int
 	byID                          map[string]*record
+	currentEditions               map[Edition]graph.ResourceKind
 	beads, links                  []*record
 	incoming, outgoing, connected map[string][]*record
 	families                      map[string]map[string]bool
@@ -151,6 +152,9 @@ func newEvaluation(ctx context.Context, r *Request, data Dataset, l Limits) (*ev
 			return nil, err
 		}
 	} else if err := e.loadNominalFamilies(data); err != nil {
+		return nil, err
+	}
+	if err := e.loadCurrentEditions(data.CurrentEditions); err != nil {
 		return nil, err
 	}
 	for _, refs := range r.references {
@@ -351,9 +355,10 @@ func (e *evaluation) bounded(n int) error {
 	return nil
 }
 func (e *evaluation) resolve(ref reference, kind graph.ResourceKind) (*record, error) {
-	// Pin syntax and a locally matching current token do not establish an
-	// exact-acquisition/History capability. Refuse before identity lookup.
-	if ref.pin != "" {
+	// A matching body token alone never establishes exact acquisition. Only the
+	// explicitly supplied complete-current authority can discharge this pin;
+	// absent/noncurrent/missing editions refuse before Resource identity lookup.
+	if ref.pin != "" && e.currentEditions[Edition{ID: ref.uri, Revision: ref.pin}] != kind {
 		return nil, fail("exact-acquisition-unsupported", "", "exact Resource acquisition is not supported", ErrUnsupported)
 	}
 	if err := e.tick(); err != nil {

@@ -6,6 +6,7 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/resourcequery"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 // QueryResourceByteLimit bounds the mapped evaluator input before validation
@@ -36,6 +37,13 @@ func (r *Reader) ExecuteResourceQuery(ctx context.Context, raw []byte) (resource
 	limits := resourcequery.DefaultLimits()
 	if err := resourcequery.Admit(request, limits); err != nil {
 		return resourcequery.Response{}, err
+	}
+	if r != nil && r.store != nil && r.store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+		_, data, err := r.resourceQueryCapture(ctx)
+		if err != nil {
+			return resourcequery.Response{}, err
+		}
+		return resourcequery.Execute(ctx, raw, data, limits)
 	}
 	_, data, err := r.queryInventory(ctx)
 	if err != nil {

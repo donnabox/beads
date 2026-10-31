@@ -64,7 +64,7 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 	}
 	patch.ParentID = publicops.Field[string]{Set: true}
 	var result IssueReparentResult
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeIssueMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -244,7 +244,7 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 			if err != nil {
 				return err
 			}
-			if err := insertPreviewVersionInTx(ctx, tx, link.path, revision, snapshot, request.Actor); err != nil {
+			if err := s.retainResourceVersionInTx(ctx, tx, link.path, revision, snapshot, request.Actor); err != nil {
 				return err
 			}
 			result.Removed = append(result.Removed, tombstone)
@@ -300,7 +300,7 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		if err != nil {
 			return err
 		}
-		if err := insertPreviewVersionInTx(ctx, tx, linkPath, linkRevision, snapshot, request.Actor); err != nil {
+		if err := s.retainResourceVersionInTx(ctx, tx, linkPath, linkRevision, snapshot, request.Actor); err != nil {
 			return err
 		}
 		if err := s.afterStage("reparent-link-retained"); err != nil {
@@ -320,6 +320,9 @@ func (s *Store) ReparentIssue(ctx context.Context, request IssueReparentRequest)
 		}
 		current, err := s.showIssueInTx(ctx, tx, childPath)
 		if err != nil {
+			return err
+		}
+		if err := s.captureAppliedNativeResultInTx(ctx, tx, linkPath, &added); err != nil {
 			return err
 		}
 		result.Issue, result.Added, result.Changed = current, &added, true

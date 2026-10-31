@@ -65,14 +65,18 @@ func graphCountDiscoveryRows(filter types.IssueFilter, selectors []graphstore.Is
 	var paths []string
 	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var err error
-		paths, err = s.ResolveIssuePaths(ctx, selectors)
-		if err != nil {
-			return nil, "", err
-		}
-		rows, err = s.SearchIssueRows(ctx, "", filter)
+		// Selectors and native Issue rows must come from the same checked
+		// transaction; separate lookups can mix two catalog/type snapshots.
+		rows, paths, err = s.SearchIssueRowsWithSelectors(ctx, "", filter, selectors)
 		return nil, "", err
 	}, func(any, string) error { return nil })
-	return rows, paths, err
+	if err != nil {
+		return nil, nil, err
+	}
+	if len(paths) != len(selectors) {
+		return nil, nil, graphFailure("invalid_store", "count selector result does not match the request", 5)
+	}
+	return rows, paths, nil
 }
 
 func graphDiscoveryJSON(w io.Writer, value any) error {
@@ -653,6 +657,13 @@ func runGraphPreviewBeadCount(cmd *cobra.Command, exact, family string) error {
 		return err
 	}
 	return withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		if store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+			page, err := graphPreviewReadBeadDocuments(ctx, store, graphstore.BeadListRequest{TypeURL: exact, ConformsTo: family, All: true, Limit: 0, MaxRows: graphstore.PreviewSnapshotLimit})
+			if err != nil {
+				return nil, "", err
+			}
+			return int64(len(page.Items)), "", nil
+		}
 		page, err := store.ListBeads(ctx, graphstore.BeadListRequest{TypeURL: exact, ConformsTo: family, All: true, MaxRows: graphstore.PreviewSnapshotLimit})
 		return int64(len(page.Items)), "", err
 	}, func(value any, _ string) error {

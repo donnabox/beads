@@ -177,7 +177,7 @@ func (s *Store) issueTerminalInTx(ctx context.Context, tx *sql.Tx, path, version
 	if size > PreviewCurrentReadByteLimit {
 		return nil, generation, fmt.Errorf("%w: native terminal exceeds acquisition budget", ErrLimitExceeded)
 	}
-	raw, actor, err := readVersionBytes(ctx, tx, path, version, version)
+	raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, version, version)
 	if err != nil {
 		return nil, generation, err
 	}

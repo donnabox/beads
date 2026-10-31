@@ -57,7 +57,7 @@ func (s *Store) deletedMemoryStateInTx(ctx context.Context, tx *sql.Tx, path str
 	if err := checkDeletedMemoryReadBytes(ctx, tx, path, revision, ""); err != nil {
 		return Record{}, nil, err
 	}
-	raw, actor, err := readVersionBytes(ctx, tx, path, revision, revision)
+	raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, revision, revision)
 	if err != nil {
 		return Record{}, nil, err
 	}
@@ -76,7 +76,7 @@ func (s *Store) deletedMemoryStateInTx(ctx context.Context, tx *sql.Tx, path str
 		}
 		terminal = &decoded
 		baselineRevision = decoded.PreviousVersion
-		raw, actor, err = readVersionBytes(ctx, tx, path, baselineRevision, baselineRevision)
+		raw, actor, err = s.readVersionDomainBytes(ctx, tx, path, baselineRevision, baselineRevision)
 		if err != nil {
 			return Record{}, nil, err
 		}
@@ -170,7 +170,7 @@ func (s *Store) resourceTerminalDescriptorInTx(ctx context.Context, tx *sql.Tx, 
 	if used > PreviewCurrentReadByteLimit || size > PreviewCurrentReadByteLimit-used {
 		return nil, fmt.Errorf("%w: History metadata and terminal descriptor exceed acquisition budget", ErrLimitExceeded)
 	}
-	raw, actor, err := readVersionBytes(ctx, tx, path, head, head)
+	raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, head, head)
 	if err != nil {
 		return nil, err
 	}

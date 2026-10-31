@@ -61,6 +61,33 @@ func TestGraphPreviewAgentInstructionsFileRouting(t *testing.T) {
 	}
 }
 
+func TestGraphTypesGuidancePreservesUserText(t *testing.T) {
+	work := t.TempDir()
+	path := filepath.Join(work, "AGENTS.md")
+	before := "User instructions before.\n" + agents.RenderSection(agents.ProfileMinimal) + "User instructions after.\n"
+	if err := os.WriteFile(path, []byte(before), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	plan, err := prepareGraphPreviewAgentInstructionsForProfile(work, "AGENTS.md", false, "", agents.ProfileGraphTypes)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := plan.install(); err != nil {
+		t.Fatal(err)
+	}
+	after, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasPrefix(string(after), "User instructions before.\n") || !strings.HasSuffix(string(after), "User instructions after.\n") || !strings.Contains(string(after), "profile:graph-types") || strings.Contains(string(after), "bd prime") {
+		t.Fatalf("Types setup lost user content or installed unsupported guidance: %s", after)
+	}
+	current, err := prepareGraphPreviewAgentInstructionsForProfile(work, "AGENTS.md", false, "", agents.ProfileGraphTypes)
+	if err != nil || !bytes.Equal(current.before, current.after) {
+		t.Fatalf("Types guidance is not idempotent: %v", err)
+	}
+}
+
 func TestGraphPreviewAgentInstructionsRefuseUnsafeFiles(t *testing.T) {
 	minimal := agents.RenderSection(agents.ProfileMinimal)
 	cases := map[string]string{

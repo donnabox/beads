@@ -107,6 +107,41 @@ def verify_tests(events, expected):
     return len(roots)
 
 
+def selected_test_sources(metadata, files):
+    """Use Go's actual build selection; keep every offered file accounted for."""
+    require(isinstance(metadata, dict), "invalid source selection metadata")
+    require(metadata.get("Incomplete", False) is False and not metadata.get("Error"),
+            "incomplete source selection metadata")
+    directory = metadata.get("Dir")
+    require(isinstance(directory, str) and Path(directory).is_absolute(), "invalid source package directory")
+    directory = Path(directory).resolve()
+    sets = []
+    for field in ("TestGoFiles", "XTestGoFiles", "IgnoredGoFiles"):
+        names = metadata.get(field, [])
+        require(isinstance(names, list) and all(isinstance(name, str) and name
+                and Path(name).name == name and name.endswith(".go") for name in names),
+                "invalid source file selection: " + field)
+        require(len(names) == len(set(names)), "duplicate source file selection: " + field)
+        if field != "IgnoredGoFiles":
+            require(all(name.endswith("_test.go") for name in names), "non-test selected source")
+        sets.append(set(names))
+    require(not (sets[0] & sets[1] or (sets[0] | sets[1]) & sets[2]),
+            "overlapping source file selections")
+    selected, ignored, seen = [], [], set()
+    for path in files:
+        path = Path(path)
+        require(path.is_file() and path.parent.resolve() == directory and path.name.endswith("_test.go"),
+                "offered source outside selected package")
+        require(path.name not in seen, "duplicate offered source file")
+        seen.add(path.name)
+        if path.name in sets[0] | sets[1]:
+            selected.append(path)
+        else:
+            require(path.name in sets[2], "offered source absent from Go selection: " + path.name)
+            ignored.append(path)
+    return selected, ignored
+
+
 def partition_required_tests(names, groups):
     require(names and len(names) == len(set(names)), "empty or duplicate required test roots")
     require(type(groups) is int and 1 < groups <= len(names), "required groups must be nonempty")
@@ -503,7 +538,7 @@ class Qualification:
                         BEADS_DOLT_AUTO_START="0", NO_COLOR="1",
                         BEADS_TEST_BD_BINARY=str(self.bd), BEADS_TEST_IGNORE_REPO_CONFIG="1")
 
-    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0, owned_groups=None, roots=None):
+    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0, owned_groups=None, roots=None, env=None):
         print(f"C0 {label}: {args}", flush=True)
         started = time.monotonic()
 
@@ -511,7 +546,7 @@ class Qualification:
             return dict(elapsedSeconds=round(time.monotonic() - started, 3), **({} if roots is None else dict(roots=roots)))
 
         process = subprocess.Popen([str(a) for a in args], cwd=cwd or self.root,
-                                   env=self.env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                   env=self.env if env is None else env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, start_new_session=True)
         self.children.add(process.pid)
         try:
@@ -651,11 +686,44 @@ class Qualification:
                     f"server cleanup failed: exit={code}, forced={forced}, groupGone={group_gone}, portClosed={port_closed}")
 
     def tests(self, package, selector, files, label, required_subtests=(), groups=1):
-        # Source discovery also sees accidentally build-excluded added tests.
+        # Go evaluates build constraints, platform suffixes and the inherited
+        # environment under exactly the same tags as compiled discovery below.
+        files = list(files)
+        selection = json.loads(self.run(
+            ["go", "list", "-tags", "gms_pure_go",
+             "-json=Dir,TestGoFiles,XTestGoFiles,IgnoredGoFiles,Incomplete,Error", package],
+            label + "-source-discovery", timeout=600))
+        selected, ignored = selected_test_sources(selection, files)
+        mode = self.env.get("CGO_ENABLED")
+        require(mode in ("0", "1"), "explicit source discovery CGO mode required")
+        other_mode = "0" if mode == "1" else "1"
+        other_selection = json.loads(self.run(
+            ["go", "list", "-tags", "gms_pure_go",
+             "-json=Dir,TestGoFiles,XTestGoFiles,IgnoredGoFiles,Incomplete,Error", package],
+            label + "-source-discovery-cgo" + other_mode, timeout=600,
+            env={**self.env, "CGO_ENABLED": other_mode}))
+        other_selected, _ = selected_test_sources(other_selection, files)
+        # A legitimate cgo/!cgo split is accounted for in the alternate mode.
+        # A never-enabled tag or unsupported platform exclusion still refuses.
+        unaccounted = set(files) - set(selected) - set(other_selected)
         source_names = []
-        for path in files:
+        for path in selected:
             names = re.findall(r"^func (Test\w+)\(t \*testing.T\)", path.read_text(), re.MULTILINE)
             source_names.extend(name for name in names if re.search(selector, name))
+        # Build-excluded files are visible evidence, never counted as test PASS.
+        (self.output / (label + "-source-selection.json")).write_text(json.dumps(dict(
+            CGO_ENABLED=mode, metadata=selection,
+            alternateMode=dict(CGO_ENABLED=other_mode, metadata=other_selection,
+                               selectedFiles=sorted(str(path) for path in other_selected),
+                               status="METADATA ONLY; not runtime PASS"), offeredFiles=sorted(str(path) for path in files),
+            selectedFiles=sorted(str(path) for path in selected),
+            unaccountedFiles=sorted(str(path) for path in unaccounted),
+            selectedRoots=sorted(source_names),
+            ignoredFiles=[dict(path=str(path), status="NOT COMPILED",
+                               roots=re.findall(r"^func (Test\w+)\(t \*testing.T\)",
+                                                path.read_text(), re.MULTILINE))
+                          for path in sorted(ignored)]), indent=2) + "\n")
+        require(not unaccounted, "source excluded from both CGO modes")
         expected = set(source_names)
         require(len(source_names) == len(expected), f"{label}: duplicate source test roots")
         listing = self.run(["go", "test", "-tags", "gms_pure_go", "-list", selector, package],

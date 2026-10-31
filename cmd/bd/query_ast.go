@@ -123,22 +123,24 @@ func runQueryAST(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	request, err := resourcequery.Decode(raw)
-	if err == nil {
-		err = resourcequery.Admit(request, resourcequery.DefaultLimits())
-	}
+	invocation, err := admitCanonicalQueryInvocation(raw)
 	if err != nil {
 		if errors.Is(err, resourcequery.ErrUnsupported) || errors.Is(err, resourcequery.ErrLimit) {
 			return canonicalFailure(cmd, renderer, "capability_unavailable", err.Error(), 5)
 		}
 		return canonicalFailure(cmd, renderer, "invalid_selector", err.Error(), 2)
 	}
-	renderer, err = queryASTRenderer(cmd, request.ResultForm())
+	renderer, err = queryASTRenderer(cmd, invocation.ResultForm())
 	if err != nil {
 		return canonicalFailure(cmd, nil, "invalid_selector", err.Error(), 2)
 	}
 	return canonicalReadWithGraphStore(cmd, renderer, func(ctx context.Context, store *graphstore.Store) (any, error) {
-		result, err := graphread.New(store).ExecuteResourceQuery(ctx, raw)
+		reader := graphread.New(store)
+		adapter, err := newCanonicalLocalQueryAdapter(reader)
+		var result canonicalLocalQueryResult
+		if err == nil {
+			result, err = invokeCanonicalQueryLocal(ctx, reader.ScopeURL(), invocation, adapter)
+		}
 		switch {
 		case errors.Is(err, resourcequery.ErrUnavailable):
 			err = errors.Join(graphstore.ErrNotFound, err)
@@ -147,7 +149,7 @@ func runQueryAST(cmd *cobra.Command, args []string) error {
 		case errors.Is(err, resourcequery.ErrDataset):
 			err = errors.Join(graphstore.ErrInvalidStore, err)
 		}
-		return result, err
+		return result.Value(), err
 	}, func(value any) error {
 		return renderCanonicalResult(cmd, renderer, value)
 	})

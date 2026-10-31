@@ -107,7 +107,7 @@ func allocatedResourceIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (s
 	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog
 		WHERE (
 			(backing='issue' AND backing_key=?) OR
-			(backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)
+			(backing IN ('generic','dependency','informational','intrinsic','intrinsic-link','type-definition','installed-type','installed-type-link') AND COALESCE(public_id,path)=?)
 		) LIMIT 1`, id, id).Scan(&exists)
 	if errors.Is(err, sql.ErrNoRows) {
 		return "", nil
@@ -147,7 +147,7 @@ func (s *Store) resolveAllocatedResourcePath(ctx context.Context, id string, all
 		}
 		rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE
 			(backing='issue' AND backing_key=?) OR
-			(backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?) LIMIT 2`, id, id)
+			(backing IN ('generic','dependency','informational','intrinsic','intrinsic-link','type-definition') AND COALESCE(public_id,path)=?) LIMIT 2`, id, id)
 		if err != nil {
 			return err
 		}

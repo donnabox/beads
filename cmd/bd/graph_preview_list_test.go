@@ -5,15 +5,138 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/resourceget"
 )
+
+func TestCommonResourceListRefusesDroppedEnrichmentAndExactPredicates(t *testing.T) {
+	const scope = "https://example.test/ordinary/"
+	taskType, err := graphstore.NativeIssueTypeURL(scope, "task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name                 string
+		comments, issueQuery bool
+		exact                string
+		refuses              bool
+	}{
+		{"json comments without Issue filter", true, false, "", true},
+		{"json comments with Issue filter", true, true, "", true},
+		{"exact abstract Issue plus status", false, true, graphstore.IssueTypeURL(scope), true},
+		{"family Issue plus status", false, true, "", false},
+		{"exact native task plus status", false, true, taskType, false},
+		{"exact abstract without Issue filter", false, false, graphstore.IssueTypeURL(scope), false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			in := listInput{}
+			in.IncludeComments = tc.comments
+			err := graphResourceListCapabilities(in, scope, tc.exact, tc.issueQuery)
+			if (err != nil) != tc.refuses {
+				t.Fatalf("refusal %v; want %t", err, tc.refuses)
+			}
+		})
+	}
+}
+
+func TestCommonResourceLongListEscapesTerminalControlsWithoutChangingJSON(t *testing.T) {
+	const scope = "https://example.test/ordinary/"
+	text := "visible\u202e\u007f\u0085"
+	body := map[string]any{"id": scope + "type", "revision": "r1", "type": map[string]any{"uri": scope + "bead-type", "revision": "t1"}, "properties": map[string]any{"description": text}, "metadata": map[string]any{"note": text}, "ownedLinks": map[string]any{}}
+	raw, err := json.Marshal(body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	document, err := resourceget.NewResourceDocument(scope, graph.KindBead, raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	page := graphstore.BeadDocumentPage{Items: []resourceget.ResourceDocument{document}}
+	human, err := renderGraphResourceList(page, scope, true, "", false, false, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, control := range []string{"\u202e", "\u007f", "\u0085"} {
+		if strings.Contains(human, control) {
+			t.Fatalf("raw terminal control %q", control)
+		}
+	}
+	for _, visible := range []string{`\u202E`, `\u007F`, `\u0085`, "\nProperties\n{\n", "\nMetadata\n{\n"} {
+		if !strings.Contains(human, visible) {
+			t.Fatalf("missing visible control/structure %q: %s", visible, human)
+		}
+	}
+	machine, err := renderGraphResourceList(page, scope, true, "", true, false, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var envelope struct {
+		Result struct {
+			Items []map[string]any `json:"items"`
+		} `json:"result"`
+	}
+	if err := json.Unmarshal([]byte(machine), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	if len(envelope.Result.Items) != 1 || envelope.Result.Items[0]["properties"].(map[string]any)["description"] != text || envelope.Result.Items[0]["metadata"].(map[string]any)["note"] != text {
+		t.Fatal("human escaping leaked into machine values")
+	}
+	if string(document.NativeJSON()) == "" {
+		t.Fatal("lost native record")
+	}
+}
+
+func TestCommonResourceListRendersDefinitionsAndNativeInstancesTogether(t *testing.T) {
+	capture := commonGraphCapture(t)
+	page := graphstore.BeadDocumentPage{}
+	for _, document := range capture.Documents {
+		if document.Kind() == graph.KindBead {
+			page.Items = append(page.Items, document)
+		}
+	}
+	human, err := renderGraphResourceList(page, genericTestScope, true, "", false, false, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Count(human, "\n") != 5 || !strings.Contains(human, "isolated-type [bead-type]") || !strings.Contains(human, `333 [task] open "Hello world"`) || strings.Contains(human, "Metatype") {
+		t.Fatalf("ordinary one-row list lost a definition or instance: %s", human)
+	}
+	machine, err := renderGraphResourceList(page, genericTestScope, true, "", true, false, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var envelope struct {
+		Result struct {
+			Items   []json.RawMessage `json:"items"`
+			HasMore bool              `json:"hasMore"`
+		} `json:"result"`
+	}
+	if err := json.Unmarshal([]byte(machine), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	if len(envelope.Result.Items) != len(page.Items) || envelope.Result.HasMore {
+		t.Fatal("machine list is incomplete")
+	}
+	for i, raw := range envelope.Result.Items {
+		var got, want any
+		if json.Unmarshal(raw, &got) != nil || json.Unmarshal(page.Items[i].NativeJSON(), &want) != nil || !reflect.DeepEqual(got, want) {
+			t.Fatalf("list changed complete record, affiliation or owned capture: %s", raw)
+		}
+	}
+	long, err := renderGraphResourceList(page, genericTestScope, true, "", false, false, true)
+	if err != nil || !strings.Contains(long, "Exact Type revision\ntask-old") || !strings.Contains(long, "Owned Links (selected revision)") {
+		t.Fatalf("long list lost stored context: %s %v", long, err)
+	}
+}
 
 func graphListTestCommand(t *testing.T, args []string) *cobra.Command {
 	t.Helper()

@@ -68,3 +68,22 @@ func TestGraphPreviewGuidanceManagedReplacement(t *testing.T) {
 		t.Fatalf("current graph block must be idempotent: changed=%t err=%v", changed, err)
 	}
 }
+
+func TestGraphTypesGuidanceMatchesClosedCapabilities(t *testing.T) {
+	section := RenderSection(ProfileGraphTypes)
+	for _, required := range []string{"bd show type-for-bead-type", "bd list --type type", "bd type create --id foo", "unsaved prototype", "does not allocate or save", "No automatic reminder hook"} {
+		if !strings.Contains(section, required) {
+			t.Errorf("missing Types guidance %q", required)
+		}
+	}
+	for _, unsupported := range []string{"bd prime", "bd remember", "bd memories", "bd setup", "bd hooks", "bd status"} {
+		if strings.Contains(section, unsupported) {
+			t.Errorf("Types guidance advertises unavailable command %q", unsupported)
+		}
+	}
+	marker := strings.SplitN(section, "\n", 2)[0]
+	meta := ParseMarker(marker)
+	if meta == nil || meta.Profile != ProfileGraphTypes || meta.Hash != CurrentHash(ProfileGraphTypes) {
+		t.Fatalf("incorrect Types marker: %+v", meta)
+	}
+}

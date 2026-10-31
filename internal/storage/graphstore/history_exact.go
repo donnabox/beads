@@ -160,7 +160,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 			return nil, err
 		}
 	}
-	raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
+	raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, version, head)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +198,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 }
 
 func (s *Store) readMemoryVersionInTx(ctx context.Context, tx *sql.Tx, path, typ, version, head string) (Record, error) {
-	raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
+	raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, version, head)
 	if err != nil {
 		return Record{}, err
 	}
@@ -434,7 +434,7 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 	}
 	result := IssueRecord{ID: publicURL, Type: issueType, Revision: version, Version: version,
 		Attribution: Attribution{Actor: actor.String, Status: status.String, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}
-	result.Attribution, err = applyIssueRevisionContext(result.Attribution, revisionContext)
+	result.Attribution, err = s.applyNativeIssueRevisionContext(result.Attribution, revisionContext)
 	if err != nil {
 		return IssueRecord{}, err
 	}

@@ -20,6 +20,7 @@ import (
 	"github.com/steveyegge/beads/internal/resourcequery"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 func init() {
@@ -31,6 +32,9 @@ func init() {
 				return clioutput.New(canonicalCollectionCountDescriptor(), canonicalCollectionCountOptions(options))
 			}
 			descriptor, err := canonicalCollectionDescriptor(links, nil)
+			if graphPreviewConfig != nil && graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion {
+				descriptor = canonicalResourceCollectionDescriptor(links, nil)
+			}
 			if err != nil {
 				return nil, err
 			}
@@ -83,14 +87,17 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 // cursor authority. Do not construct an ephemeral pager and publish dead cursors,
 // or set native next:null after discarding undisplayed rows.
 type canonicalCollectionPlan struct {
-	selection   *graphread.Selection
-	linkRequest graphstore.LinkCollectionRequest
-	options     clioutput.Options
-	paging      clioutput.Paging
-	links       bool
-	jsonl       bool
-	fields      *graphread.LegacyListFields
-	countOnly   bool
+	selection           *graphread.Selection
+	linkRequest         graphstore.LinkCollectionRequest
+	options             clioutput.Options
+	paging              clioutput.Paging
+	links               bool
+	jsonl               bool
+	fields              *graphread.LegacyListFields
+	countOnly           bool
+	resourceScope       string
+	definitionScope     string
+	definitionDocuments []resourceget.DefinitionDocument
 }
 
 type canonicalCollectionFailure struct {
@@ -137,6 +144,25 @@ func canonicalCollectionDescriptor(links bool, records []json.RawMessage) (cliou
 		item.Protection.Members = map[string]*clioutput.Protection{"ownedLinks": {Members: groups}}
 	}
 	return clioutput.CollectionDescriptor{Item: item, ResultKind: "resource_collection", ItemsMember: "items"}, nil
+}
+
+func canonicalResourceCollectionDescriptor(links bool, records []json.RawMessage) clioutput.CollectionDescriptor {
+	item := canonicalTypedResourceDescriptor(links, nil)
+	if !links {
+		groups := make(map[string]*clioutput.Protection)
+		for _, raw := range records {
+			var body struct {
+				OwnedLinks map[string]json.RawMessage `json:"ownedLinks"`
+			}
+			if json.Unmarshal(raw, &body) == nil {
+				for typ := range body.OwnedLinks {
+					groups[typ] = &clioutput.Protection{Items: canonicalLinkProtection()}
+				}
+			}
+		}
+		item.Protection.Members = map[string]*clioutput.Protection{"ownedLinks": {Members: groups}}
+	}
+	return clioutput.CollectionDescriptor{Item: item, ResultKind: "resource_collection", ItemsMember: "items"}
 }
 
 func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutput.Options) (canonicalCollectionPlan, error) {
@@ -282,6 +308,9 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
 	descriptor, err := canonicalCollectionDescriptor(links, nil)
+	if graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion {
+		descriptor = canonicalResourceCollectionDescriptor(links, nil)
+	}
 	if err != nil {
 		return err
 	}
@@ -339,24 +368,41 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		return canonicalCollectionRequestFailure(cmd, failure, err)
 	}
 	reader := graphread.New(store)
-	var inventory graphread.Inventory
-	if raw != nil {
-		kind := graph.KindBead
-		if links {
-			kind = graph.KindLink
+	var records []json.RawMessage
+	if store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+		plan.resourceScope = store.ScopeURL()
+		var inventory graphstore.ResourceSnapshot
+		if raw != nil {
+			kind := graph.KindBead
+			if links {
+				kind = graph.KindLink
+			}
+			inventory, err = reader.ResourceInventoryMatchingList(ctx, raw, kind)
+		} else {
+			inventory, err = reader.ResourceInventory(ctx)
 		}
-		inventory, err = reader.InventoryMatchingList(ctx, raw, kind)
+		if err == nil {
+			records, err = selectCanonicalResourceCollection(plan, inventory)
+		}
 	} else {
-		inventory, err = reader.Inventory(ctx)
+		var inventory graphread.Inventory
+		if raw != nil {
+			kind := graph.KindBead
+			if links {
+				kind = graph.KindLink
+			}
+			inventory, err = reader.InventoryMatchingList(ctx, raw, kind)
+		} else {
+			inventory, err = reader.Inventory(ctx)
+		}
+		if err == nil {
+			records, err = selectCanonicalCollection(plan, inventory)
+		}
 	}
 	if err != nil {
 		if raw != nil {
 			err = canonicalCollectionEvaluationError(err)
 		}
-		return canonicalReadError(cmd, failure, err, "route_unavailable")
-	}
-	records, err := selectCanonicalCollection(plan, inventory)
-	if err != nil {
 		return canonicalReadError(cmd, failure, err, "route_unavailable")
 	}
 	records, err = plan.fields.Select(ctx, records)
@@ -414,6 +460,18 @@ func collectionFieldArguments(cmd *cobra.Command, name string) ([]string, error)
 }
 
 func collectionFieldConditions(cmd *cobra.Command) (*graphread.LegacyListFields, error) {
+	// SQL-text equality is a compat adapter, not a canonical predicate. Keep
+	// canonical output presentation independent from the semantic CLI profile.
+	// This pure preflight runs before AST input and graph acquisition, including
+	// for count-only and Link List. Presence keeps its existing candidate-local
+	// behavior; its portable AST lowering remains a separate receiving task.
+	if canonicalCLIProfileSelected(cmd) {
+		for _, name := range []string{"property-field", "metadata-field"} {
+			if cmd.Flags().Lookup(name) != nil && cmd.Flags().Changed(name) {
+				return nil, fmt.Errorf("%w: --%s uses compat SQL-text equality; canonical List requires a typed --ast predicate until fixed equality flags have a portable lowering", graphstore.ErrCapabilityUnavailable, name)
+			}
+		}
+	}
 	var fields []graphread.LegacyListField
 	for _, namespace := range []string{"properties", "metadata"} {
 		flag := "property-field"
@@ -527,6 +585,38 @@ func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread
 			}
 		}
 	}
+	return filterCanonicalCollectionLinks(plan.linkRequest, records, current)
+}
+
+func selectCanonicalResourceCollection(plan canonicalCollectionPlan, inventory graphstore.ResourceSnapshot) ([]json.RawMessage, error) {
+	// Product --type/--exact-type flags select installed definitions. This
+	// explicit CLI lookup is separate from raw Read's nominal URI predicate.
+	selection, err := plan.selection.ResolveInstalledTypeSelectors(inventory)
+	if err != nil {
+		return nil, err
+	}
+	records, err := selection.SelectResources(inventory)
+	if err != nil || !plan.links {
+		return records, err
+	}
+	current := make(map[string]string)
+	request := plan.linkRequest
+	for _, document := range inventory.Documents {
+		if document.Kind() != graph.KindBead {
+			continue
+		}
+		for _, selected := range []struct{ path, url string }{
+			{request.SourcePath, request.SourceURL}, {request.TargetPath, request.TargetURL}, {request.IncidentPath, request.IncidentURL},
+		} {
+			if selected.path != "" && document.ID() == selected.url {
+				current[selected.path] = document.Revision()
+			}
+		}
+	}
+	return filterCanonicalCollectionLinks(request, records, current)
+}
+
+func filterCanonicalCollectionLinks(request graphstore.LinkCollectionRequest, records []json.RawMessage, current map[string]string) ([]json.RawMessage, error) {
 	for _, path := range []string{request.SourcePath, request.TargetPath, request.IncidentPath} {
 		if path != "" && current[path] == "" {
 			return nil, graphstore.ErrNotFound
@@ -534,8 +624,8 @@ func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread
 	}
 	filtered := make([]json.RawMessage, 0, len(records))
 	for _, raw := range records {
-		var link bdpwire.LinkRecord
-		if err := bdpwire.Unmarshal(raw, &link); err != nil {
+		var link struct{ Source, Target bdpwire.Reference }
+		if err := json.Unmarshal(raw, &link); err != nil {
 			return nil, fmt.Errorf("%w: current Link collection item: %v", graphstore.ErrInvalidStore, err)
 		}
 		captured := graphstore.LinkRecord{Source: link.Source.URI, Target: link.Target.URI,
@@ -580,7 +670,14 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 		}
 		return canonicalFailure(cmd, failure, "capability_unavailable", fmt.Sprintf("complete selection of %d items exceeds the %s; local collection reads cannot satisfy this bound with a safe continuation, so no items were emitted; use --unpaged --limit 0 or a narrower selection", len(records), bound), 5)
 	}
-	descriptor, err := canonicalCollectionDescriptor(plan.links, records)
+	var descriptor clioutput.CollectionDescriptor
+	if plan.resourceScope != "" {
+		descriptor = canonicalResourceCollectionDescriptor(plan.links, records)
+	} else if plan.definitionScope != "" {
+		descriptor, err = intrinsicDefinitionCollectionDescriptor(plan.definitionScope, records)
+	} else {
+		descriptor, err = canonicalCollectionDescriptor(plan.links, records)
+	}
 	if err != nil {
 		return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
 	}
@@ -590,7 +687,15 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 	}
 	// Qualify the same current public DTOs used by BDP Read before projecting.
 	for _, record := range records {
-		if plan.links {
+		if plan.resourceScope != "" {
+			kind := graph.KindBead
+			if plan.links {
+				kind = graph.KindLink
+			}
+			_, err = resourceget.NewResourceDocument(plan.resourceScope, kind, record)
+		} else if plan.definitionScope != "" {
+			_, err = resourceget.NewDefinitionDocument(plan.definitionScope, resourceget.DefinitionBead, record)
+		} else if plan.links {
 			var link bdpwire.LinkRecord
 			err = bdpwire.Unmarshal(record, &link)
 		} else {
@@ -600,6 +705,24 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 		if err != nil {
 			return canonicalFailure(cmd, failure, "output_error", fmt.Sprintf("BDP collection item: %v", err), 1)
 		}
+	}
+	if plan.definitionDocuments != nil && definitionHumanView(plan.options) {
+		if len(plan.definitionDocuments) != len(records) {
+			return canonicalFailure(cmd, failure, "output_error", "definition display correspondence is incomplete", 1)
+		}
+		for i, doc := range plan.definitionDocuments {
+			if string(doc.NativeJSON()) != string(records[i]) {
+				return canonicalFailure(cmd, failure, "output_error", "definition display correspondence does not match selected record", 1)
+			}
+		}
+		data, err := renderDefinitionHumanCollection(plan.definitionScope, plan.definitionDocuments)
+		if err != nil {
+			return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
+		}
+		if err := writeCanonicalDocument(cmd.OutOrStdout(), data); err != nil {
+			return canonicalCollectionWriteError(cmd, err)
+		}
+		return nil
 	}
 	if plan.jsonl {
 		stream, err := renderer.NewJSONL(cmd.OutOrStdout())

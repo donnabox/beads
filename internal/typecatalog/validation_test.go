@@ -224,3 +224,135 @@ func TestCatalogStandardDialectRetrievalControls(t *testing.T) {
 		t.Fatal("ordinary retained schema constraint was lost")
 	}
 }
+
+func TestCatalogOmittedLocalSchemaComposition(t *testing.T) {
+	parent := bead("parent")
+	parent.PropertiesSchema = json.RawMessage(`{"required":["name"],"properties":{"name":{"type":"string"},"suggested":{"default":"not-injected"}}}`)
+	other := bead("other")
+	other.PropertiesSchema = json.RawMessage(`{"required":["code"],"properties":{"code":{"type":"integer"}}}`)
+	omitted := bead("omitted", "parent", "other")
+	omitted.PropertiesSchema, omitted.SchemaBase = nil, ""
+	added := bead("added", "omitted")
+	added.PropertiesSchema = json.RawMessage(`{"required":["approved"],"properties":{"approved":{"const":true}}}`)
+	neutral := bead("neutral")
+	neutral.PropertiesSchema, neutral.SchemaBase = nil, ""
+	c := mustCatalog(t, parent, other, omitted, added, neutral)
+	for _, tc := range []struct {
+		name, typ, raw string
+		valid          bool
+	}{
+		{"standalone", "neutral", `{}`, true},
+		{"object-only", "neutral", `null`, false},
+		{"both-parents", "omitted", `{"name":"N","code":1}`, true},
+		{"missing-first", "omitted", `{"code":1}`, false},
+		{"missing-second", "omitted", `{"name":"N"}`, false},
+		{"parent-type", "omitted", `{"name":3,"code":1}`, false},
+		{"child-adds", "added", `{"name":"N","code":1,"approved":true}`, true},
+		{"child-required", "added", `{"name":"N","code":1}`, false},
+		{"child-does-not-relax", "added", `{"code":1,"approved":true}`, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			raw := json.RawMessage(tc.raw)
+			if err := c.ValidateProperties(ref(tc.typ), raw); (err == nil) != tc.valid {
+				t.Fatalf("validation: %v", err)
+			}
+			if string(raw) != tc.raw {
+				t.Fatal("validation injected or rewrote values")
+			}
+		})
+	}
+	got, _ := c.Definition(ref("omitted").URI)
+	if len(got.PropertiesSchema) != 0 || got.SchemaBase != "" {
+		t.Fatal("manufactured local schema/base")
+	}
+	for _, schema := range []string{`true`, `{}`, `false`} {
+		d := bead("explicit")
+		d.PropertiesSchema = json.RawMessage(schema)
+		c := mustCatalog(t, d)
+		if err := c.ValidateProperties(ref("explicit"), json.RawMessage(`{}`)); (err == nil) != (schema != "false") {
+			t.Fatalf("boolean/object %s: %v", schema, err)
+		}
+	}
+	// Omission must not turn a native domain into a schema-only validator.
+	native := bead("native")
+	native.NominalOnly, native.PropertiesSchema, native.SchemaBase = true, nil, ""
+	child := bead("native-child", "native")
+	child.PropertiesSchema, child.SchemaBase = nil, ""
+	if err := mustCatalog(t, native, child).ValidateProperties(ref("native-child"), json.RawMessage(`{}`)); err == nil {
+		t.Fatal("native ancestor bypassed")
+	}
+}
+
+func TestCatalogOmittedRootStillChecksResources(t *testing.T) {
+	for _, raw := range []string{`null`, `[]`, `{"$schema":"http://json-schema.org/draft-07/schema#"}`, `{"format":"unknown-format"}`, `{"$ref":"https://schemas.example/missing"}`} {
+		t.Run(raw, func(t *testing.T) {
+			d := bead("a")
+			d.PropertiesSchema, d.SchemaBase = nil, ""
+			d.SchemaResources = map[string]json.RawMessage{"https://schemas.example/retained": json.RawMessage(raw)}
+			if _, err := New([]Definition{d}); err == nil {
+				t.Fatal("unused invalid resource admitted without local root")
+			}
+		})
+	}
+	d := bead("a")
+	d.PropertiesSchema, d.SchemaBase = nil, ""
+	d.SchemaResources = map[string]json.RawMessage{"https://schemas.example/retained": json.RawMessage(`{"type":"object"}`)}
+	c := mustCatalog(t, d)
+	if err := c.ValidateProperties(ref("a"), json.RawMessage(`{}`)); err != nil {
+		t.Fatal(err)
+	}
+	for _, raw := range []string{`null`, `[]`, `"schema"`, `12`, ` `} {
+		d.PropertiesSchema = json.RawMessage(raw)
+		d.SchemaBase = "https://schemas.example/a"
+		if _, err := New([]Definition{d}); err == nil {
+			t.Fatalf("present malformed root admitted: %q", raw)
+		}
+	}
+}
+
+func TestCatalogSchemaOmissionSurvivesContractJSON(t *testing.T) {
+	parent := bead("codec-parent")
+	parent.PropertiesSchema = json.RawMessage(`{"type":"object","required":["name"],"properties":{"name":{"type":"string"},"suggested":{"default":"not-injected"}}}`)
+	child := bead("codec-child", "codec-parent")
+	child.PropertiesSchema, child.SchemaBase = nil, ""
+	raw, err := json.Marshal([]Definition{parent, child})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var restored []Definition
+	if err := json.Unmarshal(raw, &restored); err != nil {
+		t.Fatal(err)
+	}
+	if string(restored[0].PropertiesSchema) != string(parent.PropertiesSchema) || restored[0].SchemaBase != parent.SchemaBase {
+		t.Fatal("nonempty parent schema bytes/base changed")
+	}
+	if len(restored[1].PropertiesSchema) != 0 || restored[1].SchemaBase != "" {
+		t.Fatal("absent local schema became supplied null or invented root")
+	}
+	c := mustCatalog(t, restored...)
+	if err := c.ValidateProperties(ref("codec-child"), json.RawMessage(`{}`)); err == nil {
+		t.Fatal("omission removed inherited required property")
+	}
+	properties := json.RawMessage(`{"name":"kept"}`)
+	if err := c.ValidateProperties(ref("codec-child"), properties); err != nil {
+		t.Fatal(err)
+	}
+	if string(properties) != `{"name":"kept"}` {
+		t.Fatal("schema default injected a value")
+	}
+	restored[1].PropertiesSchema = json.RawMessage(`null`)
+	restored[1].SchemaBase = "https://schemas.example/codec-child"
+	raw, err = json.Marshal(restored)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(raw, &restored); err != nil {
+		t.Fatal(err)
+	}
+	if string(restored[1].PropertiesSchema) != "null" {
+		t.Fatal("explicit null normalized into omission")
+	}
+	if _, err := New(restored); err == nil {
+		t.Fatal("explicit null admitted")
+	}
+}

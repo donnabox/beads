@@ -73,7 +73,7 @@ func (s *Store) deletedLinkStateInTx(ctx context.Context, tx *sql.Tx, path strin
 	if _, err := historicalLinkReadBytes(ctx, tx, path, revision, "", true); err != nil {
 		return LinkRecord{}, nil, err
 	}
-	raw, actor, err := readVersionBytes(ctx, tx, path, revision, revision)
+	raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, revision, revision)
 	if err != nil {
 		return LinkRecord{}, nil, err
 	}
@@ -81,7 +81,7 @@ func (s *Store) deletedLinkStateInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkRecord{}, nil, err
 	}
-	raw, actor, err = readVersionBytes(ctx, tx, path, terminal.PreviousVersion, terminal.PreviousVersion)
+	raw, actor, err = s.readVersionDomainBytes(ctx, tx, path, terminal.PreviousVersion, terminal.PreviousVersion)
 	if err != nil {
 		return LinkRecord{}, nil, err
 	}

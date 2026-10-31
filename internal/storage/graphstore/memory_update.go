@@ -149,7 +149,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		return MemoryMutationResult{}, fmt.Errorf("%w: Memory title, body and actor must be UTF-8; supplied status must be nonblank UTF-8", storage.ErrValidation)
 	}
 	var result MemoryMutationResult
-	err := s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeMemoryMutation, true, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -227,7 +227,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 			}
 			base.Properties = retained.Properties
 			base.Metadata = retained.Metadata
-			catalog, err := s.selectedTypes()
+			catalog, err := s.selectedTypesInTx(ctx, tx)
 			if err != nil {
 				return err
 			}
@@ -286,7 +286,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if err != nil {
 			return err
 		}
-		catalog, err := s.selectedTypes()
+		catalog, err := s.selectedTypesInTx(ctx, tx)
 		if err != nil {
 			return err
 		}
@@ -427,13 +427,13 @@ func (s *Store) preserveRetainedEvaluationGroup(ctx context.Context, tx *sql.Tx,
 	if size > PreviewCurrentReadByteLimit {
 		return fmt.Errorf("%w: Evaluation binding history exceeds acquisition budget", ErrLimitExceeded)
 	}
-	catalog, err := s.selectedTypes()
+	catalog, err := s.selectedTypesInTx(ctx, tx)
 	if err != nil {
 		return err
 	}
 	for i := len(versions) - 1; i >= 0; i-- {
 		version := versions[i].Version
-		raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
+		raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, version, head)
 		if err != nil {
 			return err
 		}

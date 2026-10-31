@@ -93,7 +93,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 	}
 	var result IssueMutationResult
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeIssueMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}

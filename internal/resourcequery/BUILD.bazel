@@ -10,6 +10,7 @@ go_library(
     srcs = [
         "admit.go",
         "api.go",
+        "current_edition.go",
         "decode.go",
         "evaluate.go",
         "resource.go",
@@ -25,6 +26,7 @@ go_test(
     name = "resourcequery_test",
     srcs = [
         "admission_test.go",
+        "current_edition_test.go",
         "query_test.go",
     ],
     embed = [":resourcequery"],

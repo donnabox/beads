@@ -112,7 +112,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		return LinkMutationResult{}, err
 	}
 	var result LinkMutationResult
-	err = s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeLinkMutation, true, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -271,7 +271,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		return LinkMutationResult{}, err
 	}
 	var result LinkMutationResult
-	err := s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeLinkMutation, true, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -425,7 +425,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 				return err
 			}
 		}
-		catalog, err := s.selectedTypes()
+		catalog, err := s.selectedTypesInTx(ctx, tx)
 		if err != nil {
 			return err
 		}
@@ -441,6 +441,9 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 			return err
 		}
 		if terminal == nil && bytes.Equal(before, nextProperties) && bytes.Equal(link.Metadata, metadata) && !pinsChanged {
+			if err := s.captureAppliedNativeResultInTx(ctx, tx, request.Path, &link); err != nil {
+				return err
+			}
 			result = LinkMutationResult{Link: link, Source: source}
 			return nil
 		}
@@ -516,7 +519,7 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
-	if err := insertPreviewVersionInTx(ctx, tx, path, link.Version, snapshot, actor); err != nil {
+	if err := s.retainResourceVersionInTx(ctx, tx, path, link.Version, snapshot, actor); err != nil {
 		return LinkMutationResult{}, err
 	}
 	if err := s.afterStage("link-retained"); err != nil {
@@ -530,6 +533,9 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 		source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, actor, source)
 	}
 	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	if err := s.captureAppliedNativeResultInTx(ctx, tx, path, &link); err != nil {
 		return LinkMutationResult{}, err
 	}
 	return LinkMutationResult{Link: link, Source: source, Changed: true}, nil
@@ -576,7 +582,7 @@ func (s *Store) recordOwnedMemoryWithContextInTx(ctx context.Context, tx *sql.Tx
 		if err != nil {
 			return nil, err
 		}
-		if err := insertPreviewVersionInTx(ctx, tx, sourcePath, memory.Version, snapshot, actor); err != nil {
+		if err := s.retainResourceVersionInTx(ctx, tx, sourcePath, memory.Version, snapshot, actor); err != nil {
 			return nil, err
 		}
 		if err := s.afterStage("source-retained"); err != nil {
@@ -661,7 +667,7 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 	if err != nil || !bytes.Equal(p, properties) {
 		return LinkRecord{}, fmt.Errorf("%w: invalid informational properties", ErrInvalidStore)
 	}
-	catalog, err := s.selectedTypes()
+	catalog, err := s.selectedTypesInTx(ctx, tx)
 	if err != nil {
 		return LinkRecord{}, err
 	}

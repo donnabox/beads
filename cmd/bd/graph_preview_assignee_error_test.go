@@ -248,6 +248,7 @@ func TestGraphPreviewOutcomeUnknownPrecedence(t *testing.T) {
 	}{
 		{"limit", graphstore.ErrLimitExceeded},
 		{"capability", graphstore.ErrCapabilityUnavailable},
+		{"prefix-mismatch", storage.ErrPrefixMismatch},
 		{"ambiguous", &graphstore.ErrAmbiguousLink{CandidateIDs: candidateIDs}},
 		// Defensive composition: current transaction constructors do not return
 		// exitError, but the shared mapper must not erase a supplied uncertainty.
@@ -300,6 +301,7 @@ func TestGraphPreviewDefiniteErrorShortcuts(t *testing.T) {
 			{"reported", reported, "", 2},
 			{"ambiguous", &graphstore.ErrAmbiguousLink{CandidateIDs: candidateIDs}, "ambiguous_link", 4},
 			{"validation", storage.ErrValidation, "invalid_properties", 2},
+			{"prefix-mismatch", storage.ErrPrefixMismatch, "invalid_selector", 2},
 			{"invalid-store", graphstore.ErrInvalidStore, "invalid_store", 5},
 		} {
 			t.Run(mapper.name+"/"+test.name, func(t *testing.T) {

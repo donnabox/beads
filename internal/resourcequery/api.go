@@ -62,6 +62,13 @@ type Resource struct {
 // all known Types, even abstract Types with no current instances.
 type Dataset struct {
 	Resources []Resource
+	// CurrentEditions opts into dynamic body acquisition through stored endpoint
+	// pins proven CURRENT by the same trusted complete capture. Nil preserves
+	// the ordinary refusal even when a Resource's revision string matches.
+	// Decode/Admit still refuse explicit pinned refs before inspecting Dataset,
+	// including skipped static branches. No admission/profile rule changes.
+	// This is independent of TypeEditions and never supplies retained records.
+	CurrentEditions *CurrentEditionAuthority
 	// TypeEditions is exact captured authority for recorded Type affiliations.
 	// A nonnil slice selects this mechanism, including an empty inventory;
 	// TypeFamilies/TypeKinds are never used as a fallback in that mode.

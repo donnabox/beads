@@ -18,12 +18,14 @@ import (
 	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/validation"
 	publicops "github.com/steveyegge/beads/issueops"
+	"github.com/steveyegge/beads/resourceget"
 )
 
-// This disposable adapter preserves the Issue writer and classification rules.
+// This adapter preserves the Issue writer and classification rules.
 // --id always names the native Issue ID, including when it contains slashes.
 // --graph-path separately chooses a graph path with a generated native ID.
-// No production nominal-Type contract is established here.
+// Type admission and exact applied-result capture belong to the checked native
+// transaction, not to a CLI-side Type registry or an unsaved preview.
 func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
@@ -270,7 +272,11 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		}
 		touchedURL = record.ID
 		createdID = graphPreviewDisplayLocalURL(record.ID)
-		return record, graphHumanRow(store.ScopeURL(), record), nil
+		output, err := graphPreviewNativeWriteResult(store.LayoutVersion(), record)
+		if err != nil {
+			return nil, "", err
+		}
+		return output, graphHumanRow(store.ScopeURL(), output), nil
 	}, func(result any, human string) error {
 		if silent && !jsonOutput {
 			// Shipping create prints the ID even when --quiet is also set.
@@ -282,6 +288,31 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		SetLastTouchedID(touchedURL)
 	}
 	return err
+}
+
+// A Types-aware native writer captures its complete result in the SAME checked
+// transaction before commit. Rendering must not fetch mutable latest state or
+// reconstruct an affiliation from a legacy URI-only record after the write.
+// Legacy-layout results keep their existing representation unchanged.
+func graphPreviewNativeWriteResult(layout int, value any) (any, error) {
+	if layout != graphstore.TypesFreshSchemaVersion {
+		return value, nil
+	}
+	captured, ok := value.(interface {
+		ResourceDocument() (resourceget.ResourceDocument, bool)
+	})
+	if ok {
+		if document, present := captured.ResourceDocument(); present && document.ID() != "" {
+			return document, nil
+		}
+	}
+	// The native operation returned success; a missing applied-result carrier
+	// must never be reported as a safe pre-write rejection or trigger a reread.
+	identity := "the requested identity"
+	if id, _ := graphHumanRecordIdentity(value); id != "" {
+		identity = fmt.Sprintf("Resource %q", id)
+	}
+	return nil, fmt.Errorf("%w: native write returned no checked complete Resource result; inspect %s before any retry", graphstore.ErrOutcomeUnknown, identity)
 }
 
 // Initial assignment is an open Issue property, not a claim. Keep optional
@@ -514,14 +545,20 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		if err := graphPreviewRequireInstalledType(ctx, store, typeURL, graph.KindBead, true); err != nil {
-			return nil, "", err
+		if store.LayoutVersion() != graphstore.TypesFreshSchemaVersion {
+			if err := graphPreviewRequireInstalledType(ctx, store, typeURL, graph.KindBead, true); err != nil {
+				return nil, "", err
+			}
 		}
 		record, err := store.Create(ctx, graphstore.CreateRequest{PublicID: publicID, IDRoot: idRoot, TypeURL: typeURL, PropertiesJSON: properties, Actor: getActorWithGit(), Metadata: metadata})
 		if err != nil {
 			return nil, "", err
 		}
-		return record, graphHumanRow(store.ScopeURL(), record), nil
+		output, err := graphPreviewNativeWriteResult(store.LayoutVersion(), record)
+		if err != nil {
+			return nil, "", err
+		}
+		return output, graphHumanRow(store.ScopeURL(), output), nil
 	})
 }
 

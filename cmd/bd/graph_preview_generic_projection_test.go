@@ -10,9 +10,140 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 const genericTestScope = "https://example.test/graph/"
+
+// A projection-only captured input: native installation/constraint enforcement
+// is tested below cmd/bd. No row or Type registration is performed here.
+func commonGraphCapture(t *testing.T) graphstore.ResourceSnapshot {
+	t.Helper()
+	ref := func(name, revision string) resourceget.TypeReference {
+		return resourceget.TypeReference{URI: genericTestScope + name, Revision: revision}
+	}
+	meta, issue, dependency := ref("bead-type", "meta-1"), ref("issue", "issue-1"), ref("dependency", "dependency-1")
+	taskOld, taskCurrent := ref("task", "task-old"), ref("task", "task-current")
+	edgeOld, edgeCurrent, other := ref("edge-kind", "edge-old"), ref("edge-kind", "edge-current"), ref("other-relation", "other-1")
+	fact := func(r resourceget.TypeReference, kind graph.ResourceKind, current bool, ancestors ...resourceget.TypeReference) graphstore.ResourceTypeFact {
+		return graphstore.ResourceTypeFact{Reference: r, Definition: r, Describes: kind, Current: current, Ancestors: append([]resourceget.TypeReference{r}, ancestors...)}
+	}
+	snapshot := graphstore.ResourceSnapshot{Types: []graphstore.ResourceTypeFact{
+		fact(meta, graph.KindBead, true), fact(issue, graph.KindBead, true), fact(dependency, graph.KindLink, true),
+		fact(taskOld, graph.KindBead, false, issue), fact(taskCurrent, graph.KindBead, true, issue),
+		fact(edgeOld, graph.KindLink, false, dependency), fact(edgeCurrent, graph.KindLink, true, other), fact(other, graph.KindLink, true),
+	}}
+	link := map[string]any{"id": genericTestScope + "edge", "revision": "link-1", "type": edgeOld,
+		"source": ref("type-child", "child-1"), "target": ref("type-base", "base-1"), "properties": map[string]any{"note": "exact stored Link"}}
+	add := func(kind graph.ResourceKind, body map[string]any) {
+		t.Helper()
+		raw, err := json.Marshal(body)
+		if err != nil {
+			t.Fatal(err)
+		}
+		doc, err := resourceget.NewResourceDocument(genericTestScope, kind, raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+		snapshot.Documents = append(snapshot.Documents, doc)
+	}
+	for _, value := range []struct{ id, revision string }{{"type-child", "child-1"}, {"type-base", "base-1"}, {"isolated-type", "isolated-1"}} {
+		owned := map[string]any{}
+		if value.id == "type-child" {
+			owned[edgeOld.URI] = []any{link}
+		}
+		add(graph.KindBead, map[string]any{"id": genericTestScope + value.id, "revision": value.revision, "type": meta,
+			"properties": map[string]any{"description": "stored definition"}, "ownedLinks": owned})
+	}
+	add(graph.KindBead, map[string]any{"id": genericTestScope + "333", "revision": "task-bead-1", "type": taskOld,
+		"properties": map[string]any{"title": "Hello world", "status": "open"}, "ownedLinks": map[string]any{}})
+	add(graph.KindLink, link)
+	return snapshot
+}
+
+func TestCommonResourceGraphUsesStoredPopulationAndCompleteRecords(t *testing.T) {
+	snapshot := commonGraphCapture(t)
+	in := graphGenericInput{All: true, AllLinkTypes: true, Direction: "both", Depth: 10, MaxNodes: 10, MaxLinks: 10}
+	result, err := projectResourceGraphGeneric(snapshot, genericTestScope, in)
+	if err != nil || len(result.Nodes) != 4 || len(result.Links) != 1 || !result.Complete {
+		t.Fatalf("stored definitions, ordinary Task or isolate omitted: %+v %v", result, err)
+	}
+	selected, err := graphSelectedResourceRecords(result, snapshot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	oldJSON, oldQuiet := jsonOutput, quietFlag
+	t.Cleanup(func() { jsonOutput, quietFlag = oldJSON, oldQuiet })
+	jsonOutput, quietFlag = true, true
+	output, err := renderResourceGraphSelected(genericPreviewCommand(t), result, snapshot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var envelope struct {
+		Result struct{ Beads, Links []json.RawMessage } `json:"result"`
+	}
+	if err := json.Unmarshal([]byte(output), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	wanted := map[string][]byte{}
+	for _, doc := range snapshot.Documents {
+		wanted[doc.ID()] = doc.NativeJSON()
+	}
+	for _, raw := range append(envelope.Result.Beads, envelope.Result.Links...) {
+		var identity struct {
+			ID string `json:"id"`
+		}
+		if err := json.Unmarshal(raw, &identity); err != nil {
+			t.Fatal(err)
+		}
+		want, ok := wanted[identity.ID]
+		if !ok {
+			t.Fatalf("unexpected/duplicate selected Resource %s", identity.ID)
+		}
+		var a, b any
+		if json.Unmarshal(raw, &a) != nil || json.Unmarshal(want, &b) != nil || !reflect.DeepEqual(a, b) {
+			t.Fatalf("complete affiliation, owned capture or endpoint lost: %s", raw)
+		}
+		delete(wanted, identity.ID)
+	}
+	if len(wanted) != 0 || len(selected.Beads) != 4 || len(selected.Links) != 1 {
+		t.Fatal("incomplete selected graph")
+	}
+	broken := snapshot
+	broken.Documents = snapshot.Documents[1:]
+	if partial, err := graphSelectedResourceRecords(result, broken); err == nil || !reflect.DeepEqual(partial, graphSelectedOutput{}) {
+		t.Fatalf("missing captured record emitted a partial graph: %+v %v", partial, err)
+	}
+}
+
+func TestCommonResourceGraphUsesCapturedAncestryWithoutCurrentSubstitution(t *testing.T) {
+	snapshot := commonGraphCapture(t)
+	in := graphGenericInput{Root: genericTestScope + "type-child", LinkTypes: []string{graphstore.DependencyTypeURL(genericTestScope)}, Direction: "out", Depth: 1, MaxNodes: 10, MaxLinks: 10}
+	result, err := projectResourceGraphGeneric(snapshot, genericTestScope, in)
+	if err != nil || len(result.Nodes) != 2 || len(result.Links) != 1 {
+		t.Fatalf("retained affiliation ancestry replaced: %+v %v", result, err)
+	}
+	in.LinkTypes = []string{genericTestScope + "other-relation"}
+	result, err = projectResourceGraphGeneric(snapshot, genericTestScope, in)
+	if err != nil || len(result.Nodes) != 1 || len(result.Links) != 0 {
+		t.Fatalf("current Type ancestry substituted into old record: %+v %v", result, err)
+	}
+	in.LinkTypes, in.ExactLinkTypes = nil, []string{genericTestScope + "edge-kind"}
+	result, err = projectResourceGraphGeneric(snapshot, genericTestScope, in)
+	if err != nil || len(result.Links) != 1 {
+		t.Fatalf("nominal selection invented a revision restriction: %+v %v", result, err)
+	}
+	broken := snapshot
+	broken.Types = nil
+	for _, fact := range snapshot.Types {
+		if fact.Reference.Revision != "edge-old" {
+			broken.Types = append(broken.Types, fact)
+		}
+	}
+	if partial, err := projectResourceGraphGeneric(broken, genericTestScope, in); !errors.Is(err, graphstore.ErrInvalidStore) || !reflect.DeepEqual(partial, graphGenericResult{}) {
+		t.Fatalf("missing exact affiliation was treated as nonmatching: %+v %v", partial, err)
+	}
+}
 
 type genericTestEdge struct{ id, source, target string }
 
@@ -343,5 +474,103 @@ func TestGraphPreviewGenericProjectsOneNativeDependencyType(t *testing.T) {
 	snapshot.Records[2] = blocking
 	if _, err := projectGraphGeneric(snapshot, scope, graphGenericInput{Root: source.ID, Direction: "out", Depth: 1, MaxNodes: 2, MaxLinks: 1}); !errors.Is(err, graphstore.ErrInvalidStore) {
 		t.Fatalf("projection accepted uninstalled nominal kind Type: %v", err)
+	}
+}
+
+// A product selector may name a local definition, while the stored Link keeps
+// its semantic affiliation and exact retained ancestry. The two are distinct.
+func TestCommonResourceGraphResolvesCapturedDefinitionSelectors(t *testing.T) {
+	snapshot := commonGraphCapture(t)
+	for i := range snapshot.Types {
+		if snapshot.Types[i].Current {
+			snapshot.Types[i].Definition.URI = genericTestScope + "definitions/" + strings.TrimPrefix(snapshot.Types[i].Reference.URI, genericTestScope)
+		}
+	}
+	beforeFacts, err := json.Marshal(snapshot.Types)
+	if err != nil {
+		t.Fatal(err)
+	}
+	beforeDocuments := make([]string, len(snapshot.Documents))
+	for i, doc := range snapshot.Documents {
+		beforeDocuments[i] = string(doc.NativeJSON())
+	}
+	for _, tc := range []struct {
+		name          string
+		family, exact []string
+		links         int
+	}{
+		{"retained-family", []string{genericTestScope + "definitions/dependency"}, nil, 1},
+		{"nominal-old-edition", nil, []string{genericTestScope + "definitions/edge-kind"}, 1},
+		{"exact-base-does-not-include-derived", nil, []string{genericTestScope + "definitions/dependency"}, 0},
+		{"current-ancestry-does-not-replace-retained", []string{genericTestScope + "definitions/other-relation"}, nil, 0},
+		{"family-exact-union", []string{genericTestScope + "definitions/other-relation"}, []string{genericTestScope + "definitions/edge-kind"}, 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			in := graphGenericInput{Root: genericTestScope + "type-child", LinkTypes: tc.family, ExactLinkTypes: tc.exact,
+				Direction: "out", Depth: 1, MaxNodes: 10, MaxLinks: 10}
+			beforeInput, err := json.Marshal(in)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := projectResourceGraphGeneric(snapshot, genericTestScope, in)
+			if err != nil || len(got.Links) != tc.links || len(got.Nodes) != tc.links+1 || !got.Complete {
+				t.Fatalf("captured definition selection lost retained meaning: %+v %v", got, err)
+			}
+			if !reflect.DeepEqual(got.LinkTypes, append([]string{}, tc.family...)) || !reflect.DeepEqual(got.ExactLinkTypes, append([]string{}, tc.exact...)) {
+				t.Fatal("output replaced the caller's selector spelling")
+			}
+			if tc.links == 1 && (got.Links[0].Type != genericTestScope+"edge-kind" || got.Links[0].Version != "link-1" || got.Links[0].SourceRevision != "child-1" || got.Links[0].TargetRevision != "base-1") {
+				t.Fatal("selection changed stored Link identity or endpoint pins")
+			}
+			afterInput, err := json.Marshal(in)
+			if err != nil || string(beforeInput) != string(afterInput) {
+				t.Fatal("projection mutated caller selectors")
+			}
+		})
+	}
+	afterFacts, err := json.Marshal(snapshot.Types)
+	if err != nil || string(beforeFacts) != string(afterFacts) {
+		t.Fatal("projection mutated captured Type facts")
+	}
+	for i, doc := range snapshot.Documents {
+		if string(doc.NativeJSON()) != beforeDocuments[i] {
+			t.Fatal("projection mutated captured Resource bytes")
+		}
+	}
+}
+
+func TestCommonResourceGraphRefusesInvalidDefinitionSelectors(t *testing.T) {
+	for _, tc := range []struct {
+		name, selector string
+		ambiguous      bool
+		want           error
+	}{
+		{"unknown", genericTestScope + "definitions/missing", false, graphstore.ErrCapabilityUnavailable},
+		{"bead-kind", genericTestScope + "definitions/bead-type", false, graph.ErrValidation},
+		{"ambiguous", genericTestScope + "definitions/dependency", true, graphstore.ErrInvalidStore},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			snapshot := commonGraphCapture(t)
+			for i := range snapshot.Types {
+				if snapshot.Types[i].Current {
+					snapshot.Types[i].Definition.URI = genericTestScope + "definitions/" + strings.TrimPrefix(snapshot.Types[i].Reference.URI, genericTestScope)
+					if tc.ambiguous && snapshot.Types[i].Reference.URI == genericTestScope+"other-relation" {
+						snapshot.Types[i].Definition.URI = tc.selector
+					}
+				}
+			}
+			for _, exact := range []bool{false, true} {
+				in := graphGenericInput{Root: genericTestScope + "type-child", Direction: "out", Depth: 1, MaxNodes: 10, MaxLinks: 10}
+				if exact {
+					in.ExactLinkTypes = []string{tc.selector}
+				} else {
+					in.LinkTypes = []string{tc.selector}
+				}
+				got, err := projectResourceGraphGeneric(snapshot, genericTestScope, in)
+				if !errors.Is(err, tc.want) || !reflect.DeepEqual(got, graphGenericResult{}) {
+					t.Fatalf("invalid selection leaked a partial graph: %+v %v", got, err)
+				}
+			}
+		})
 	}
 }

@@ -172,6 +172,13 @@ func (r *Reader) Select(ctx context.Context, q *Selection) ([]json.RawMessage, e
 	if q == nil || q.scope != r.store.ScopeURL() || q.cursor != "" {
 		return nil, &ParameterError{Name: "selection"}
 	}
+	if r.store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+		inventory, err := r.ResourceInventory(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return q.SelectResources(inventory)
+	}
 	inventory, err := r.Inventory(ctx)
 	if err != nil {
 		return nil, err
@@ -268,12 +275,129 @@ func (q *Selection) Select(inventory Inventory) ([]json.RawMessage, error) {
 
 func (q *Selection) matchesEndpoints(link bdpwire.LinkRecord) bool {
 	source, target := link.Source.URI, link.Target.URI
+	return q.matchesEndpointURIs(source, target)
+}
+
+func (q *Selection) matchesEndpointURIs(source, target string) bool {
 	if q.bead != "" {
 		id := q.scope + q.bead
 		return (q.direction != "inbound" && source == id) || (q.direction != "outbound" && target == id)
 	}
 	return (q.source == "" || source == q.source) && (q.target == "" || target == q.target) &&
 		(q.endpoint == "" || source == q.endpoint || target == q.endpoint)
+}
+
+// SelectResources applies ordinary Bead/Link collection predicates to one
+// complete, authorized capture. Affiliation and refinement use the exact facts
+// captured beside each Resource, including retained Type editions. Original
+// record bytes, owned captures and pins survive selection unchanged.
+func (q *Selection) SelectResources(inventory graphstore.ResourceSnapshot) ([]json.RawMessage, error) {
+	if q == nil || q.cursor != "" {
+		return nil, &ParameterError{Name: "cursor"}
+	}
+	if q.collection != "beads" && q.collection != "links" {
+		return nil, fmt.Errorf("%w: complete Resource selection requires a Bead or Link collection", graphstore.ErrCapabilityUnavailable)
+	}
+	type item struct {
+		id  string
+		raw json.RawMessage
+	}
+	selected := []item{}
+	seen := make(map[string]bool, len(inventory.Documents))
+	foundIncident := q.bead == ""
+	for _, document := range inventory.Documents {
+		if document.ScopeURL() != q.scope || document.ID() == "" || seen[document.ID()] {
+			return nil, fmt.Errorf("%w: invalid or duplicate captured Resource identity", graphstore.ErrInvalidStore)
+		}
+		seen[document.ID()] = true
+		kind := document.Kind()
+		if kind != graph.KindBead && kind != graph.KindLink {
+			return nil, fmt.Errorf("%w: invalid captured Resource kind", graphstore.ErrInvalidStore)
+		}
+		if _, err := inventory.MatchesType(document.Type(), "", true); err != nil {
+			return nil, err
+		}
+		family := q.conformsTo == ""
+		for _, fact := range inventory.Types {
+			if fact.Reference != document.Type() {
+				continue
+			}
+			if fact.Describes != kind {
+				return nil, fmt.Errorf("%w: captured Resource/Type kind mismatch", graphstore.ErrInvalidStore)
+			}
+			// Structural Read compares the literal semantic URI with this
+			// exact affiliation's captured ancestry. Product definition lookup
+			// occurs only in ResolveInstalledTypeSelectors, before this method.
+			family = family || fact.Reference.URI == q.conformsTo
+			for _, ancestor := range fact.Ancestors {
+				family = family || ancestor.URI == q.conformsTo
+			}
+		}
+		if kind == graph.KindBead && document.ID() == q.scope+q.bead {
+			foundIncident = true
+		}
+		if (q.collection == "beads") != (kind == graph.KindBead) {
+			continue
+		}
+		// Raw structural type is nominal URI equality, ignoring the pin. It
+		// needs neither a current selector edition nor a local/global rewrite.
+		exact := q.typ == "" || document.Type().URI == q.typ
+		if !exact || !family {
+			continue
+		}
+		raw := document.NativeJSON()
+		if kind == graph.KindLink {
+			var endpoints struct{ Source, Target bdpwire.Reference }
+			if err := json.Unmarshal(raw, &endpoints); err != nil {
+				return nil, fmt.Errorf("%w: captured Link endpoint encoding: %v", graphstore.ErrInvalidStore, err)
+			}
+			if !q.matchesEndpointURIs(endpoints.Source.URI, endpoints.Target.URI) {
+				continue
+			}
+		}
+		if q.selector != nil {
+			var candidate map[string]any
+			if err := json.Unmarshal(raw, &candidate); err != nil {
+				return nil, fmt.Errorf("%w: captured Selector candidate: %v", graphstore.ErrInvalidStore, err)
+			}
+			if !q.selector.Matches(candidate) {
+				continue
+			}
+		}
+		selected = append(selected, item{document.ID(), raw})
+	}
+	if !foundIncident {
+		return nil, graphstore.ErrNotFound
+	}
+	sort.Slice(selected, func(i, j int) bool { return graph.CompareCodeUnits(selected[i].id, selected[j].id) < 0 })
+	result := make([]json.RawMessage, 0, len(selected))
+	for _, item := range selected {
+		result = append(result, item.raw)
+	}
+	return result, nil
+}
+
+// ResolveInstalledTypeSelectors is an explicit product-adapter lookup over the
+// same capture, for CLI flags that name installed Types (including checked
+// intrinsic local-definition/semantic correspondence). Raw Read/AST selection
+// must not invoke it: unknown nominal URIs are nonmatches, not lookup failures.
+// The immutable selection and complete Resource bytes remain unchanged.
+func (q *Selection) ResolveInstalledTypeSelectors(inventory graphstore.ResourceSnapshot) (*Selection, error) {
+	if q == nil || q.cursor != "" {
+		return nil, &ParameterError{Name: "selection"}
+	}
+	resolved := *q
+	for _, target := range []*string{&resolved.typ, &resolved.conformsTo} {
+		if *target == "" {
+			continue
+		}
+		identity, err := inventory.ResolveType(*target)
+		if err != nil {
+			return nil, err
+		}
+		*target = identity.URI
+	}
+	return &resolved, nil
 }
 
 // All parents must be captured, never fetched during selection. The current
