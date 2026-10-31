@@ -701,6 +701,10 @@ func checkInstalledWitnessCellReuse(t *testing.T) {
 	}
 }
 
+func TestInstalledWitnessCellReuse(t *testing.T) {
+	checkInstalledWitnessCellReuse(t)
+}
+
 func TestInstalledNativeWitnessCensusStateAndReopen(t *testing.T) {
 	requestPath, requestPresent := os.LookupEnv(installedWitnessRequestEnv)
 	requestSHA, shaPresent := os.LookupEnv(installedWitnessRequestSHAEnv)
