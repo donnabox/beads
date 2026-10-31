@@ -1382,9 +1382,12 @@ jobs:
   # PRs/merge_group, falling back to ubuntu-latest for forks/Dependabot.
   # main.yml's pr-lint-wrapper `venue` matrix seeds this leg's golangci-lint
   # and lint-native GOCACHEs.
+  # Native lint uses the pinned LLVM Linux runtime; keep its hosted fallback
+  # on Ubuntu 24.04, matching the declared sysroot and Blacksmith host. The
+  # windows/darwin cross-lint legs keep their existing ubuntu-latest fallback.
   pr-lint-wrapper:
     name: PR Lint (${{ matrix.target }})
-    runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}
+    runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || (matrix.target == 'native' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 20
     permissions:
       contents: read
