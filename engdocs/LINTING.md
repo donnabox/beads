@@ -8,6 +8,14 @@ Freshness source: `.golangci.yml`, `tools/nogo/`, `scripts/ci/pr-lint.sh`,
 
 This document explains the required Go lint and vet gate for this codebase.
 
+The PR native-lint job pins its GitHub-hosted fallback to Ubuntu 24.04,
+matching the declared LLVM Linux host/sysroot family. The trusted upstream
+Blacksmith path stays on 24.04; the windows/darwin cross-lint fallback stays
+on ubuntu-latest. This changes the host for native tooling, not the lint
+selection, tool versions, required status, or timeout. The exact composed
+source still needs a successful hosted native lint run; a runner pin alone
+does not prove that all dynamic linker dependencies are available.
+
 ## Current Status
 
 Lint and vet run as **nogo** (`//tools/nogo`) inside the Bazel build. rules_go

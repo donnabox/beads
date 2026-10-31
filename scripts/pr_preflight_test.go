@@ -42,7 +42,10 @@ const (
             ;;
         esac
       done
-      printf '%s\n' "{\"number\":${PR_NUMBER},\"title\":\"Compatibility fixture\",\"author\":{\"login\":\"contributor\"},\"url\":\"${PR_URL}\",\"baseRefName\":\"main\",\"headRefName\":\"fix/preflight\",\"headRepositoryOwner\":{\"login\":\"contributor\"},\"isCrossRepository\":true,\"isDraft\":false,\"maintainerCanModify\":true,\"mergeStateStatus\":\"CLEAN\",\"mergeable\":\"MERGEABLE\",\"reviewDecision\":\"APPROVED\",\"changedFiles\":1,\"additions\":1,\"deletions\":0,\"files\":[{\"path\":\"README.md\"}],\"statusCheckRollup\":${PR_ROLLUP:-[]},\"latestReviews\":[]}"
+      printf '%s\n' "{\"number\":${PR_NUMBER},\"title\":\"Compatibility fixture\",\"author\":{\"login\":\"contributor\"},\"url\":\"${PR_URL}\",\"baseRefName\":\"main\",\"headRefName\":\"fix/preflight\",\"headRepositoryOwner\":{\"login\":\"contributor\"},\"isCrossRepository\":true,\"isDraft\":${PR_DRAFT},\"maintainerCanModify\":true,\"mergeStateStatus\":\"${PR_MERGE_STATE}\",\"mergeable\":\"${PR_MERGEABLE}\",\"reviewDecision\":\"${PR_REVIEW_DECISION}\",\"changedFiles\":1,\"additions\":1,\"deletions\":0,\"files\":[{\"path\":\"${PR_CHANGED_FILE}\"}],\"statusCheckRollup\":${PR_ROLLUP:-[]},\"latestReviews\":[]}"
+      ;;
+    "pr list")
+      printf '%s\n' '[]'
       ;;
     "run list")
       is_pr_gate_call=0
@@ -76,6 +79,12 @@ const (
 )
 
 type preflightFixture struct {
+	args            []string
+	draft           bool
+	reviewDecision  string
+	mergeState      string
+	mergeable       string
+	changedFile     string
 	prArg           string
 	returnedNumber  string
 	canonicalURL    string
@@ -91,6 +100,145 @@ type preflightRun struct {
 	output string
 	calls  [][]string
 	err    error
+}
+
+func TestPRPreflightDraftAction(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		action     string
+		draft      bool
+		wantExit   int
+		wantAction string
+	}{
+		{"default draft", "", true, 1, "merge"},
+		{"merge draft", "merge", true, 1, "merge"},
+		{"close draft", "close", true, 0, "close"},
+		{"default ready", "", false, 0, "merge"},
+		{"merge ready", "merge", false, 0, "merge"},
+		{"close ready", "close", false, 0, "close"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			args := []string{"7", "--repo", "default/repo"}
+			if tc.action != "" {
+				args = append(args, "--action", tc.action)
+			}
+			run := runPRPreflightWithFakeGH(t, preflightFixture{args: args, draft: tc.draft})
+			requirePreflightExit(t, run, tc.wantExit)
+			if !strings.Contains(run.output, "Action: "+tc.wantAction) {
+				t.Fatalf("missing selected action: %s", run.output)
+			}
+			if tc.draft && tc.wantAction == "merge" && !strings.Contains(run.output, "[block] PR is draft.") {
+				t.Fatalf("merge lost the draft gate: %s", run.output)
+			}
+			if tc.draft && tc.wantAction == "close" && (!strings.Contains(run.output, "[warn] PR is draft;") || strings.Contains(run.output, "[block] PR is draft.")) {
+				t.Fatalf("close must change only draft severity: %s", run.output)
+			}
+			if tc.wantAction == "close" && !strings.Contains(run.output, "Passing close preflight does not establish obsolescence, preservation, ownership, or permission to close.") {
+				t.Fatalf("close success oversells its authority: %s", run.output)
+			}
+			if !strings.Contains(run.output, "[warn] External contributor PR. Do not rewrite, close, or supersede silently.") ||
+				!strings.Contains(run.output, "Preserve contributor tests unless they are wrong.") ||
+				!strings.Contains(run.output, "Preserve attribution with existing commits or Co-authored-by trailers.") {
+				t.Fatalf("contributor obligations disappeared: %s", run.output)
+			}
+			requirePreflightReadOnly(t, run.calls)
+		})
+	}
+}
+
+func TestPRPreflightClosePreservesOtherBlockers(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		fixture preflightFixture
+		want    string
+	}{
+		{"requested changes", preflightFixture{reviewDecision: "CHANGES_REQUESTED"}, "Review decision is CHANGES_REQUESTED."},
+		{"dirty merge state", preflightFixture{mergeState: "DIRTY"}, "Merge state is DIRTY."},
+		{"unknown merge state", preflightFixture{mergeState: "UNKNOWN"}, "Merge state is UNKNOWN."},
+		{"conflicting merge", preflightFixture{mergeable: "CONFLICTING"}, "GitHub reports merge conflicts."},
+		{"failed check", preflightFixture{rollup: `[{"name":"fixture","status":"COMPLETED","conclusion":"FAILURE"}]`}, "1 status check(s) failed or require action."},
+		{"pending check", preflightFixture{rollup: `[{"name":"fixture","status":"IN_PROGRESS"}]`}, "1 status check(s) are still pending."},
+		{"protected data", preflightFixture{changedFile: ".beads/planning.json"}, "PR changes .beads/ data;"},
+		{"configured red base", preflightFixture{blockRedBase: "1", baseRunList: `[{"conclusion":"failure","workflowName":"CI","createdAt":"2026-07-28T12:00:00Z","url":"https://github.com/o/r/actions/base-1"}]`}, "Base branch main CI is RED:"},
+	} {
+		for _, action := range []string{"merge", "close"} {
+			t.Run(tc.name+"/"+action, func(t *testing.T) {
+				t.Parallel()
+				fixture := tc.fixture
+				fixture.args = []string{"7", "--repo", "default/repo", "--action", action}
+				fixture.draft = true
+				run := runPRPreflightWithFakeGH(t, fixture)
+				requirePreflightExit(t, run, 1)
+				if !strings.Contains(run.output, "[block] "+tc.want) || !strings.Contains(run.output, "Result: BLOCKED for autonomous "+action) {
+					t.Fatalf("%s lost blocker %q: %s", action, tc.want, run.output)
+				}
+				requirePreflightReadOnly(t, run.calls)
+			})
+		}
+	}
+}
+
+func TestPRPreflightActionArguments(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+		want string
+	}{
+		{"unknown", []string{"--action", "replace"}, "--action must be merge or close"},
+		{"empty", []string{"--action", ""}, "--action must be merge or close"},
+		{"missing", []string{"--action"}, "--action requires merge or close"},
+		{"next option is not a value", []string{"--action", "--repo", "default/repo"}, "--action must be merge or close"},
+		{"duplicate", []string{"--action", "merge", "--action", "close"}, "--action may only be supplied once"},
+		{"close with search", []string{"--search", "fixture", "--action", "close"}, "--action cannot be combined with --search"},
+		{"merge with search", []string{"--action", "merge", "--search", "fixture"}, "--action cannot be combined with --search"},
+		{"close then empty search", []string{"7", "--repo", "default/repo", "--action", "close", "--search", ""}, "--action cannot be combined with --search"},
+		{"empty search then close", []string{"7", "--repo", "default/repo", "--search", "", "--action", "close"}, "--action cannot be combined with --search"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			run := runPRPreflightWithFakeGH(t, preflightFixture{args: tc.args})
+			requirePreflightExit(t, run, 2)
+			if !strings.Contains(run.output, "error: "+tc.want) || len(run.calls) != 0 {
+				t.Fatalf("invalid action must refuse before gh: calls=%q output=%s", run.calls, run.output)
+			}
+		})
+	}
+	t.Run("search without action", func(t *testing.T) {
+		t.Parallel()
+		run := runPRPreflightWithFakeGH(t, preflightFixture{args: []string{"--search", "fixture", "--repo", "default/repo"}})
+		requirePreflightExit(t, run, 0)
+		if !strings.Contains(run.output, "[pass] No open PRs matched this search.") || len(run.calls) != 1 {
+			t.Fatalf("search changed: calls=%q output=%s", run.calls, run.output)
+		}
+		requireGHCall(t, run.calls, "pr", "list")
+		requirePreflightReadOnly(t, run.calls)
+	})
+}
+
+func requirePreflightExit(t *testing.T, run preflightRun, want int) {
+	t.Helper()
+	got := 0
+	if run.err != nil {
+		failure, ok := run.err.(*exec.ExitError)
+		if !ok {
+			t.Fatalf("preflight did not reach a process exit: %v\n%s", run.err, run.output)
+		}
+		got = failure.ExitCode()
+	}
+	if got != want {
+		t.Fatalf("preflight exit=%d, want %d: %v\n%s", got, want, run.err, run.output)
+	}
+}
+
+func requirePreflightReadOnly(t *testing.T, calls [][]string) {
+	t.Helper()
+	for _, call := range calls {
+		if len(call) < 2 || !((call[0] == "pr" && (call[1] == "view" || call[1] == "list")) ||
+			(call[0] == "run" && call[1] == "list") || (call[0] == "api" && call[1] == "graphql")) {
+			t.Fatalf("preflight attempted a non-read invocation: %q", call)
+		}
+	}
 }
 
 func TestPRPreflightSupportsGitHubCLIWithoutClosingIssuesReferences(t *testing.T) {
@@ -597,6 +745,18 @@ func runPRPreflightWithFakeGH(t *testing.T, fixture preflightFixture) preflightR
 	if fixture.blockRedBase == "" {
 		fixture.blockRedBase = "0"
 	}
+	if fixture.reviewDecision == "" {
+		fixture.reviewDecision = "APPROVED"
+	}
+	if fixture.mergeState == "" {
+		fixture.mergeState = "CLEAN"
+	}
+	if fixture.mergeable == "" {
+		fixture.mergeable = "MERGEABLE"
+	}
+	if fixture.changedFile == "" {
+		fixture.changedFile = "README.md"
+	}
 
 	bash, path := prPreflightProcessTools(t)
 
@@ -611,13 +771,16 @@ func runPRPreflightWithFakeGH(t *testing.T, fixture preflightFixture) preflightR
 	}
 
 	root := sourceRepoRoot(t)
-	cmd := exec.Command(
-		bash,
+	args := fixture.args
+	if args == nil {
+		args = []string{fixture.prArg, "--repo", "default/repo"}
+	}
+	commandArgs := append([]string{
 		"--noprofile",
 		"--norc",
 		msysPath(filepath.Join(root, "scripts", "pr-preflight.sh")),
-		fixture.prArg, "--repo", "default/repo",
-	)
+	}, args...)
+	cmd := exec.Command(bash, commandArgs...)
 	cmd.Dir = runDir
 	cmd.Env = append(prPreflightWindowsRuntimeEnv(),
 		"PATH="+path,
@@ -637,6 +800,11 @@ func runPRPreflightWithFakeGH(t *testing.T, fixture preflightFixture) preflightR
 		"GRAPHQL_EXIT="+fixture.graphQLExit,
 		"GRAPHQL_RESPONSE="+fixture.graphQLResponse,
 		"PR_NUMBER="+fixture.returnedNumber,
+		"PR_DRAFT="+strconv.FormatBool(fixture.draft),
+		"PR_REVIEW_DECISION="+fixture.reviewDecision,
+		"PR_MERGE_STATE="+fixture.mergeState,
+		"PR_MERGEABLE="+fixture.mergeable,
+		"PR_CHANGED_FILE="+fixture.changedFile,
 		"PR_URL="+fixture.canonicalURL,
 		"PR_ROLLUP="+fixture.rollup,
 		"BASE_RUN_LIST="+fixture.baseRunList,

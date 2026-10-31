@@ -9,11 +9,14 @@ set -euo pipefail
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/pr-preflight.sh <pr-number-or-url> [--repo owner/name]
+  scripts/pr-preflight.sh <pr-number-or-url> [--repo owner/name] [--action merge|close]
   scripts/pr-preflight.sh --search "<topic keywords>" [--repo owner/name]
 
-Before changing or merging an existing PR:
+Before changing or merging an existing PR (default action: merge):
   scripts/pr-preflight.sh 123 --repo gastownhall/beads
+
+Before a reviewed closure (does not authorize closing):
+  scripts/pr-preflight.sh 123 --repo gastownhall/beads --action close
 
 Before implementing a feature/fix or opening a replacement PR:
   scripts/pr-preflight.sh --search "dependency cycle detection" --repo gastownhall/beads
@@ -28,7 +31,9 @@ What this checks:
   - risky diff signals: .beads data, missing tests for code changes, large diffs
   - contributor-protection next steps and attribution reminders
 
-The script does not replace code review or local validation.
+Only the draft check changes for --action close; all other gates stay in force.
+The script is read-only and does not replace code review, local validation,
+contributor preservation, ownership, or specific human holds.
 EOF
 }
 
@@ -120,6 +125,9 @@ closing_issue_count() {
 repo=""
 pr=""
 search=""
+search_explicit=false
+action="merge"
+action_explicit=false
 
 while (($#)); do
   case "$1" in
@@ -128,9 +136,20 @@ while (($#)); do
       repo="$2"
       shift 2
       ;;
+    --action)
+      [[ $# -ge 2 ]] || die "--action requires merge or close"
+      [[ "$action_explicit" == false ]] || die "--action may only be supplied once"
+      case "$2" in
+        merge|close) action="$2" ;;
+        *) die "--action must be merge or close" ;;
+      esac
+      action_explicit=true
+      shift 2
+      ;;
     --search)
       [[ $# -ge 2 ]] || die "--search requires keywords"
       search="$2"
+      search_explicit=true
       shift 2
       ;;
     -h|--help)
@@ -147,6 +166,10 @@ while (($#)); do
       ;;
   esac
 done
+
+if [[ "$search_explicit" == true && "$action_explicit" == true ]]; then
+  die "--action cannot be combined with --search"
+fi
 
 need gh
 need git
@@ -216,6 +239,7 @@ pass() {
 }
 
 printf 'PR preflight for %s#%s\n' "$repo" "$number"
+printf 'Action: %s\n' "$action"
 printf 'Title: %s\n' "$title"
 printf 'Author: %s\n' "$author"
 printf 'URL: %s\n' "$url"
@@ -234,7 +258,11 @@ else
 fi
 
 if [[ "$draft" == "true" ]]; then
-  block "PR is draft."
+  if [[ "$action" == "close" ]]; then
+    warn "PR is draft; draft status alone does not block close. A documented disposition is still required."
+  else
+    block "PR is draft."
+  fi
 fi
 
 case "$review" in
@@ -422,9 +450,12 @@ printf '  - If a rewrite is unavoidable, explain why on PR #%s and credit design
 printf '  - Run local validation before merge, normally: make test\n'
 
 if [[ "$status" -ne 0 ]]; then
-  printf '\nResult: BLOCKED for autonomous merge/close/replacement until addressed.\n'
+  printf '\nResult: BLOCKED for autonomous %s until addressed.\n' "$action"
 else
-  printf '\nResult: preflight passed. Continue with code review and local validation.\n'
+  printf '\nResult: %s preflight passed. Continue with required review and validation.\n' "$action"
+  if [[ "$action" == "close" ]]; then
+    printf 'Passing close preflight does not establish obsolescence, preservation, ownership, or permission to close.\n'
+  fi
 fi
 
 exit "$status"
