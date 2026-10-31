@@ -2711,7 +2711,7 @@ func TestSameRepoBlacksmithRunners(t *testing.T) {
 			// pr-lint-wrapper `venue` matrix seed their Blacksmith-selection
 			// GOCACHEs.
 			"scripts-go-checks": sameRepoBlacksmith4vcpu,
-			"pr-lint-wrapper":   sameRepoBlacksmith4vcpu,
+			"pr-lint-wrapper":   sameRepoBlacksmithNativeLint4vcpu,
 			// F7b: same-repo Blacksmith Windows (blacksmith-*vcpu-windows-2025,
 			// public beta). test-windows-liveness and worktree-remove-windows are
 			// sized at 4vcpu (a build plus a focused test run each);
