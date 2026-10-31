@@ -86,10 +86,15 @@ type LabelPatch struct {
 }
 
 // MetadataPatch describes metadata replacement or ordered incremental edits.
-// Replace is mutually exclusive with Merge, Set, and Unset. Without Replace,
+// Operations is mutually exclusive with every other mode. Replace is mutually
+// exclusive with Merge, Set, and Unset. Without Replace or Operations,
 // operations apply Merge, then Set keys in deterministic order, then Unset, so
 // unsetting a key wins over setting or merging that key.
 type MetadataPatch struct {
+	// Operations applies an ordered strict object patch against the checked
+	// predecessor in the write transaction. It is exclusive with other modes;
+	// Set distinguishes an explicitly empty patch from omission.
+	Operations Field[json.RawMessage]
 	// Replace replaces the complete metadata document when Set is true. A nil or
 	// empty Value clears metadata; a nonempty Value must be valid JSON.
 	//

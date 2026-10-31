@@ -17,6 +17,9 @@ func TestCanonicalScalarOccurrences(t *testing.T) {
 		{"hex same", []string{"list", "--limit=0x10", "--limit=16"}, false},
 		{"octal same", []string{"list", "--limit=010", "--limit=8"}, false},
 		{"bool same", []string{"list", "--paged=true", "--paged=1"}, false},
+		{"atomic same", []string{"init", "--atomic-batch=true", "--atomic-batch=1"}, false},
+		{"atomic disabled same", []string{"init", "--atomic-batch=false", "--atomic-batch=0"}, false},
+		{"atomic differs", []string{"init", "--atomic-batch=true", "--atomic-batch=false"}, true},
 		{"bool differs", []string{"list", "--paged=true", "--paged=false"}, true},
 		{"after separator", []string{"show", "--revision=a", "--", "--revision=b"}, false},
 	} {
@@ -25,7 +28,8 @@ func TestCanonicalScalarOccurrences(t *testing.T) {
 			cmd.Flags().String("revision", "", "")
 			cmd.Flags().Int("limit", 0, "")
 			cmd.Flags().Bool("paged", false, "")
-			err := canonicalScalarOccurrences(cmd, test.args, "revision", "limit", "paged")
+			cmd.Flags().Bool("atomic-batch", false, "")
+			err := canonicalScalarOccurrences(cmd, test.args, "revision", "limit", "paged", "atomic-batch")
 			if (err != nil) != test.bad {
 				t.Fatalf("args=%v err=%v want refusal=%v", test.args, err, test.bad)
 			}

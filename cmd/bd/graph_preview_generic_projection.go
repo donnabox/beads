@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"sort"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 const graphGenericBound = 1000
@@ -145,6 +147,7 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 	nodes := map[string]graphGenericNode{}
 	links := map[string]graphGenericLink{}
 	openIssues := map[string]bool{}
+	issues := map[string]bool{}
 	for _, value := range snapshot.Records {
 		var node graphGenericNode
 		switch record := value.(type) {
@@ -160,6 +163,7 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 			node = graphGenericNode{ID: record.ID, Type: record.Type, Title: record.Properties.Title, Version: record.Version, Attribution: record.Attribution}
 		case graphstore.IssueRecord:
+			issues[record.ID] = true
 			if record.Properties == nil {
 				return invalid("incomplete Issue")
 			}
@@ -203,10 +207,38 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 		}
 		nodes[node.ID] = node
 	}
+	population := graphGenericPopulation{Nodes: nodes, Links: links, Issues: issues, OpenIssues: openIssues,
+		MatchingLinks: map[string]bool{}, DependencyLinks: map[string]bool{}}
+	for id, link := range links {
+		population.MatchingLinks[id] = matches(link.Type)
+		population.DependencyLinks[id] = graphPreviewTypeRefines(snapshot.Types, link.Type, graphstore.DependencyTypeURL(scope)) || link.Type == graphstore.DependencyTypeURL(scope)
+	}
+	return selectGraphGenericPopulation(scope, in, population)
+}
+
+// The legacy adapter and complete Resource adapter share traversal, induced
+// edge selection and bounds. Acquisition supplies checked per-Link membership;
+// the traversal does not reinterpret a descriptor or fetch mutable state.
+type graphGenericPopulation struct {
+	Nodes           map[string]graphGenericNode
+	Links           map[string]graphGenericLink
+	Issues          map[string]bool
+	OpenIssues      map[string]bool
+	MatchingLinks   map[string]bool
+	DependencyLinks map[string]bool
+	IncludeIsolated bool
+}
+
+func selectGraphGenericPopulation(scope string, in graphGenericInput, population graphGenericPopulation) (graphGenericResult, error) {
+	zero := graphGenericResult{}
+	invalid := func(message string) (graphGenericResult, error) {
+		return zero, fmt.Errorf("%w: %s", graphstore.ErrInvalidStore, message)
+	}
+	nodes, links, openIssues := population.Nodes, population.Links, population.OpenIssues
 	adjacency := map[string][]graphGenericLink{}
 	excludedIncidence := map[string][]string{}
 	eligible := func(link graphGenericLink) bool {
-		return matches(link.Type) && (!in.OpenIssuesOnly || (openIssues[link.Source] && openIssues[link.Target]))
+		return population.MatchingLinks[link.ID] && (!in.OpenIssuesOnly || (openIssues[link.Source] && openIssues[link.Target]))
 	}
 	for _, link := range links {
 		if _, ok := nodes[link.Source]; !ok {
@@ -215,7 +247,7 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 		if _, ok := nodes[link.Target]; !ok {
 			return invalid("unsupported or missing Link target")
 		}
-		if in.ImplicitDependency && !graphPreviewTypeRefines(snapshot.Types, link.Type, graphstore.DependencyTypeURL(scope)) && link.Type != graphstore.DependencyTypeURL(scope) {
+		if in.ImplicitDependency && !population.DependencyLinks[link.ID] {
 			// This evidence comes only from the already-authorized snapshot.
 			// Consult it only for reached nodes, never unrelated components.
 			excludedIncidence[link.Source] = append(excludedIncidence[link.Source], link.Type)
@@ -244,6 +276,11 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 	distance := map[string]int{}
 	queue := []string{}
 	if in.All {
+		if population.IncludeIsolated {
+			for id := range nodes {
+				distance[id] = 0
+			}
+		}
 		for _, link := range links {
 			if eligible(link) {
 				distance[link.Source] = 0
@@ -251,9 +288,9 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 		}
 		if !in.AllLinkTypes && len(in.ExactLinkTypes) == 0 && len(in.LinkTypes) == 1 && in.LinkTypes[0] == graphstore.DependencyTypeURL(scope) {
-			for _, raw := range snapshot.Records {
-				if issue, ok := raw.(graphstore.IssueRecord); ok && (!in.OpenIssuesOnly || openIssues[issue.ID]) {
-					distance[issue.ID] = 0
+			for id := range population.Issues {
+				if !in.OpenIssuesOnly || openIssues[id] {
+					distance[id] = 0
 				}
 			}
 		}
@@ -328,4 +365,142 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 	sort.Slice(result.Frontier, func(i, j int) bool { return graph.CompareCodeUnits(result.Frontier[i], result.Frontier[j]) < 0 })
 	result.Complete = len(result.Frontier) == 0
 	return result, nil
+}
+
+// Complete Resources use the same traversal as legacy native projections.
+// Type membership comes only from facts captured with those exact records;
+// a partial inventory descriptor or a current re-read cannot supply ancestry.
+func projectResourceGraphGeneric(snapshot graphstore.ResourceSnapshot, scope string, in graphGenericInput) (graphGenericResult, error) {
+	zero := graphGenericResult{}
+	invalid := func(message string) (graphGenericResult, error) {
+		return zero, fmt.Errorf("%w: %s", graphstore.ErrInvalidStore, message)
+	}
+	if err := validateGraphGenericBounds(in); err != nil {
+		return zero, fmt.Errorf("%w: %v", graph.ErrValidation, err)
+	}
+	if err := graph.ValidateScopeURL(scope); err != nil {
+		return invalid("invalid snapshot Scope")
+	}
+	if len(snapshot.Documents) > graphstore.PreviewSnapshotLimit {
+		return zero, fmt.Errorf("%w: current inventory exceeds %d Resources", graphstore.ErrLimitExceeded, graphstore.PreviewSnapshotLimit)
+	}
+	facts := make(map[resourceget.TypeReference]graphstore.ResourceTypeFact, len(snapshot.Types))
+	for _, fact := range snapshot.Types {
+		if fact.Reference.URI == "" || fact.Reference.Revision == "" || fact.Definition.URI == "" || fact.Definition.Revision == "" {
+			return invalid("incomplete captured Type fact")
+		}
+		if _, duplicate := facts[fact.Reference]; duplicate {
+			return invalid("duplicate exact captured Type fact")
+		}
+		facts[fact.Reference] = fact
+	}
+	// Resolve product selectors on this capture without changing the request or
+	// the literal semantic predicates used for retained affiliation matching.
+	resolvedSelectors := make([]string, 0, len(in.LinkTypes)+len(in.ExactLinkTypes))
+	for _, selector := range append(append([]string{}, in.LinkTypes...), in.ExactLinkTypes...) {
+		selected, err := snapshot.ResolveType(selector)
+		if err != nil {
+			return zero, err
+		}
+		if facts[selected].Describes != graph.KindLink {
+			return zero, fmt.Errorf("%w: graph Link selection requires a Link Type", graph.ErrValidation)
+		}
+		resolvedSelectors = append(resolvedSelectors, selected.URI)
+	}
+	linkTypes, exactLinkTypes := resolvedSelectors[:len(in.LinkTypes)], resolvedSelectors[len(in.LinkTypes):]
+	population := graphGenericPopulation{Nodes: map[string]graphGenericNode{}, Links: map[string]graphGenericLink{},
+		Issues: map[string]bool{}, OpenIssues: map[string]bool{}, MatchingLinks: map[string]bool{}, DependencyLinks: map[string]bool{},
+		IncludeIsolated: in.All && in.AllLinkTypes}
+	seen := map[string]bool{}
+	endpoint := func(raw json.RawMessage) (resourceget.TypeReference, error) {
+		var ref resourceget.TypeReference
+		if len(raw) != 0 && raw[0] == '"' {
+			if err := json.Unmarshal(raw, &ref.URI); err != nil {
+				return ref, err
+			}
+		} else if err := json.Unmarshal(raw, &ref); err != nil {
+			return ref, err
+		}
+		if ref.URI == "" {
+			return ref, fmt.Errorf("%w: incomplete captured endpoint", graphstore.ErrInvalidStore)
+		}
+		return ref, nil
+	}
+	for _, doc := range snapshot.Documents {
+		if doc.ScopeURL() != scope || doc.ID() == "" || doc.Revision() == "" || seen[doc.ID()] {
+			return invalid("invalid or duplicate captured Resource")
+		}
+		seen[doc.ID()] = true
+		fact, ok := facts[doc.Type()]
+		if !ok || fact.Describes != doc.Kind() {
+			return invalid("Resource affiliation differs from its captured Type kind")
+		}
+		if _, err := snapshot.MatchesType(doc.Type(), "", false); err != nil {
+			return zero, err
+		}
+		var body struct {
+			Properties map[string]json.RawMessage `json:"properties"`
+			Source     json.RawMessage            `json:"source"`
+			Target     json.RawMessage            `json:"target"`
+		}
+		if err := json.Unmarshal(doc.NativeJSON(), &body); err != nil || body.Properties == nil {
+			return invalid("incomplete captured Resource body")
+		}
+		// These are optional human-summary strings, not a validation schema.
+		// A legal nonstring user property is retained in complete JSON output.
+		var title, status string
+		_ = json.Unmarshal(body.Properties["title"], &title)
+		_ = json.Unmarshal(body.Properties["status"], &status)
+		switch doc.Kind() {
+		case graph.KindBead:
+			population.Nodes[doc.ID()] = graphGenericNode{ID: doc.ID(), Type: doc.Type().URI, Title: title, Version: doc.Revision(), Status: status}
+			issue, err := snapshot.MatchesType(doc.Type(), graphstore.IssueTypeURL(scope), false)
+			if err != nil {
+				return zero, err
+			}
+			if issue {
+				population.Issues[doc.ID()] = true
+				population.OpenIssues[doc.ID()] = status == "open" || status == "in_progress" || status == "blocked"
+			}
+		case graph.KindLink:
+			source, err := endpoint(body.Source)
+			if err != nil {
+				return zero, err
+			}
+			target, err := endpoint(body.Target)
+			if err != nil {
+				return zero, err
+			}
+			if _, err := graph.ScopeLocalPublicResourceID(scope, source.URI); err != nil {
+				return zero, fmt.Errorf("%w: this local graph view cannot traverse a foreign endpoint", graphstore.ErrCapabilityUnavailable)
+			}
+			if _, err := graph.ScopeLocalPublicResourceID(scope, target.URI); err != nil {
+				return zero, fmt.Errorf("%w: this local graph view cannot traverse a foreign endpoint", graphstore.ErrCapabilityUnavailable)
+			}
+			population.Links[doc.ID()] = graphGenericLink{ID: doc.ID(), Type: doc.Type().URI, Source: source.URI, Target: target.URI,
+				Version: doc.Revision(), SourceRevision: source.Revision, TargetRevision: target.Revision}
+			match := in.AllLinkTypes || len(in.LinkTypes) == 0 && len(in.ExactLinkTypes) == 0
+			for _, selection := range []struct {
+				values []string
+				exact  bool
+			}{{linkTypes, false}, {exactLinkTypes, true}} {
+				for _, selector := range selection.values {
+					matched, err := snapshot.MatchesType(doc.Type(), selector, selection.exact)
+					if err != nil {
+						return zero, err
+					}
+					match = match || matched
+				}
+			}
+			population.MatchingLinks[doc.ID()] = match
+			dependency, err := snapshot.MatchesType(doc.Type(), graphstore.DependencyTypeURL(scope), false)
+			if err != nil {
+				return zero, err
+			}
+			population.DependencyLinks[doc.ID()] = dependency
+		default:
+			return invalid("unsupported captured Resource kind")
+		}
+	}
+	return selectGraphGenericPopulation(scope, in, population)
 }

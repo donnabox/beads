@@ -54,7 +54,7 @@ func graphPreviewRevisionAtPath(path string, ordinal int64) (revision string, er
 	}()
 	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
 	defer cancel()
-	store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+	store, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
 		return "", err
 	}

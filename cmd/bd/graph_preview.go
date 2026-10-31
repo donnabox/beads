@@ -26,10 +26,13 @@ import (
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/graphpatch"
+	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/memoryapi"
 	"github.com/steveyegge/beads/internal/migration"
+	"github.com/steveyegge/beads/internal/resourcequery"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/templates/agents"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/workapi"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -74,6 +77,7 @@ func graphPreviewBlockingTypeURL(scope string) string {
 func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
+	initCmd.Flags().String("graph-profile", "", "Fresh graph workspace profile: types (definition-only preview; requires --graph-mode link)")
 	rememberCmd.Flags().String("id", "", "Literal public Memory ID; creates or updates the same identity (--key is compatible; omitted ID derives from content in graph mode)")
 	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)")
 	rememberCmd.Flags().String("body", "", "Explicit Memory body, including an empty body (graph preview only)")
@@ -122,6 +126,9 @@ func init() {
 // workspace must never resolve to an unrelated store. Existing legacy discovery
 // is unchanged when this gate does not find a graph workspace.
 func graphCandidateDir(cmd *cobra.Command) (string, error) {
+	if cmd == batchCmd && canonicalBatchRetry != nil {
+		return canonicalBatchRetry.Workspace, nil
+	}
 	if cmd.Root().PersistentFlags().Changed("db") || os.Getenv("BEADS_DB") != "" || os.Getenv("BD_DB") != "" {
 		return selectedNoDBBeadsDir(cmd), nil
 	}
@@ -257,6 +264,17 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if requested != "" && requested != "link" && requested != "dependency" {
 		return true, graphFailure("invalid_selector", "unknown graph_mode; expected dependency or link", 2)
 	}
+	if cmd == initCmd && (cmd.Flags().Changed("graph-profile") || cmd.Flags().Changed("atomic-batch")) {
+		if _, err := selectedGraphPreviewInitSchemaVersion(cmd, requested); err != nil {
+			return true, graphFailure("invalid_selector", err.Error(), 2)
+		}
+		if err := canonicalExactOccurrences(cmd, os.Args[1:], "graph-profile"); err != nil {
+			return true, graphFailure("invalid_selector", err.Error(), 2)
+		}
+		if err := canonicalScalarOccurrences(cmd, os.Args[1:], "graph-mode", "atomic-batch"); err != nil {
+			return true, graphFailure("invalid_selector", err.Error(), 2)
+		}
+	}
 
 	// Root only displays help or --version. Informational commands use the
 	// root hook's ordinary no-store path. Keep
@@ -284,7 +302,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 			// command's corrupt-metadata refusal and its diagnostic context.
 			// A damaged graph workspace must still fail before legacy opening.
 			if !markerPresent && requested != "link" {
-				if (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root"))) {
+				if (cmd == queryCmd && cmd.Flags().Changed("ast")) || (cmd == graphCmd && graphGenericFlagsChanged(cmd)) || (cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root"))) {
 					return true, graphFailure("graph_not_initialized", err.Error(), 5)
 				}
 				return false, nil
@@ -317,6 +335,15 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
+		if cmd == queryCmd && cmd.Flags().Changed("ast") {
+			return true, graphFailure("capability_unavailable", "JSON Query AST execution requires an existing graph-mode link workspace", 5)
+		}
+		if cmd == batchCmd && canonicalBatchSelected(cmd) {
+			return true, graphFailure("capability_unavailable", "canonical batch requires a graph workspace; legacy batch cannot accept canonical inputs", 5)
+		}
+		if canonicalCRUDFlagsChanged(cmd) {
+			return true, graphFailure("capability_unavailable", "canonical object edit flags require a workspace initialized with graph_mode link", 5)
+		}
 		if cmd.Flags().Lookup("exact-type") != nil && cmd.Flags().Changed("exact-type") {
 			return true, graphFailure("capability_unavailable", "--exact-type requires a workspace initialized with graph_mode link", 5)
 		}
@@ -381,8 +408,14 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err := requireDoltBackend(cfg, dir); err != nil {
 		return true, graphFailure("graph_not_initialized", "graph_mode link: "+err.Error(), 5)
 	}
-	if cfg == nil || !graphPreviewGenerationSupported(marker) || !cfg.GraphReady || cfg.GraphSchemaVersion != graphstore.SchemaVersion || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
+	if cfg == nil || !graphPreviewGenerationSupported(marker) || !cfg.GraphReady || !canonicalGraphSchemaSupported(cfg.GraphSchemaVersion) || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
 		return true, graphFailure("graph_not_initialized", "graph_mode link metadata is missing, incomplete, or unsupported; no database was opened", 5)
+	}
+	// Additional reads use the common stored Resource receivers. This closed
+	// command boundary does not grant another writer/import/export operation;
+	// storage still checks each selected transaction purpose independently.
+	if cfg.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion && !graphPreviewTypesCommandSupported(cmd) {
+		return true, graphFailure("capability_unavailable", "this fresh Types profile supports show, list, link list, count, graph, query, type create and native create; other command routes are not yet admitted", 5)
 	}
 	real, err := filepath.EvalSymlinks(dir)
 	if err != nil || real != cfg.GraphWorkspace {
@@ -398,7 +431,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	case supersedeCmd:
 		return true, graphFailure("capability_unavailable", "graph supersede requires one atomic supersedes edge and native close reason; this graph CLI does not provide that journey yet", 5)
 	}
-	if !graphPreviewMemoryNamespaceCommand(cmd) && !graphPreviewLinkNamespaceCommand(cmd) && graphPreviewMemoryTopCommand(cmd) == nil && cmd != importCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != labelListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != tagCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
+	if !graphPreviewMemoryNamespaceCommand(cmd) && !graphPreviewLinkNamespaceCommand(cmd) && graphPreviewMemoryTopCommand(cmd) == nil && cmd != intrinsicTypeCreateCmd && cmd != importCmd && cmd != batchCmd && cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != epicStatusCmd && cmd != closeEligibleEpicsCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != labelListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != tagCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
 		// runGraphPreviewVersions. Admission suppresses legacy store opening,
@@ -426,6 +459,12 @@ func graphPreviewFlags(cmd *cobra.Command, allowed ...string) error {
 	}
 	var bad string
 	cmd.Flags().Visit(func(f *pflag.Flag) {
+		// pflag.Visit retains consumed canonical aliases in its actual map.
+		// Only these three lowered property spellings are exempt; every other
+		// command-specific refusal remains based on explicit flag presence.
+		if canonicalCRUDConsumedPropertyAlias(cmd, f) {
+			return
+		}
 		if !set[f.Name] && bad == "" {
 			bad = f.Name
 		}
@@ -457,8 +496,12 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "scope-url", "prefix", "server", "external", "server-host", "server-port", "server-user", "server-socket", "server-tls", "database", "skip-hooks", "skip-agents", "non-interactive"); err != nil {
+	if err := graphPreviewFlags(cmd, "scope-url", "graph-profile", "prefix", "server", "external", "server-host", "server-port", "server-user", "server-socket", "server-tls", "database", "skip-hooks", "skip-agents", "non-interactive", "atomic-batch"); err != nil {
 		return err
+	}
+	schemaVersion, err := selectedGraphPreviewInitSchemaVersion(cmd, "link")
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	scope, _ := cmd.Flags().GetString("scope-url")
 	normalized, err := graph.NormalizeScopeURL(scope)
@@ -475,6 +518,9 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 
 	server, _ := cmd.Flags().GetBool("server")
 	external, _ := cmd.Flags().GetBool("external")
+	if schemaVersion == graphstore.TypesFreshSchemaVersion && (server || external) {
+		return graphFailure("capability_unavailable", "the Types definition profile currently supports embedded initialization only", 5)
+	}
 	if server != external {
 		return graphFailure("capability_unavailable", "shared-server preview requires --server --external; embedded uses neither", 5)
 	}
@@ -490,7 +536,7 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 		return err
 	}
 	id := hex.EncodeToString(token)
-	cfg := &configfile.Config{Backend: "dolt", GraphMode: "link", GraphScopeURL: scope, GraphAuthorityID: id, GraphSchemaVersion: graphstore.SchemaVersion, DoltMode: "embedded", DoltDatabase: "beads_graph_" + id, ProjectID: id}
+	cfg := &configfile.Config{Backend: "dolt", GraphMode: "link", GraphScopeURL: scope, GraphAuthorityID: id, GraphSchemaVersion: schemaVersion, DoltMode: "embedded", DoltDatabase: "beads_graph_" + id, ProjectID: id}
 	if server {
 		cfg.DoltMode = "server"
 		cfg.DoltServerHost, _ = cmd.Flags().GetString("server-host")
@@ -520,11 +566,16 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	skipAgents, _ := cmd.Flags().GetBool("skip-agents")
 	skipHooks, _ := cmd.Flags().GetBool("skip-hooks")
 	workspace := filepath.Dir(graphPreviewDir)
-	guidance, err := prepareGraphPreviewAgentInstructions(workspace, config.SafeAgentsFile(), skipAgents, graphPreviewInitAgentsRemedy)
+	profile := agents.ProfileGraphPreview
+	if schemaVersion == graphstore.TypesFreshSchemaVersion {
+		profile = agents.ProfileGraphTypes
+	}
+	guidance, err := prepareGraphPreviewAgentInstructionsForProfile(workspace, config.SafeAgentsFile(), skipAgents, graphPreviewInitAgentsRemedy, profile)
 	if err != nil {
 		return graphFailure("graph_not_initialized", "agent guidance was not installed; no graph database was initialized: "+err.Error(), 5)
 	}
-	if !skipAgents && !skipHooks {
+	installStopHook := schemaVersion != graphstore.TypesFreshSchemaVersion && !skipAgents && !skipHooks
+	if installStopHook {
 		if err := setup.PreflightGraphClaudeStop(workspace); err != nil {
 			return graphFailure("graph_not_initialized", "Claude Stop hook preflight failed; no graph database was initialized: "+err.Error(), 5)
 		}
@@ -557,13 +608,13 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 		prefix = filepath.Base(filepath.Dir(real))
 	}
 	options.IssuePrefix = normalizeIssuePrefix(prefix)
-	if err := graphstore.Init(ctx, options); err != nil {
+	if err := initSelectedGraphStore(ctx, options); err != nil {
 		return graphStorageError(err)
 	}
 	if err := guidance.install(); err != nil {
 		return graphFailure("graph_not_initialized", "database initialized but agent guidance installation failed; workspace remains incomplete: "+err.Error(), 5)
 	}
-	if !skipAgents && !skipHooks {
+	if installStopHook {
 		if err := setup.InstallGraphClaudeStopOnInit(workspace); err != nil {
 			// Storage and guidance already exist. Refusing here would leave a
 			// fenced workspace that neither init nor setup can repair, so treat
@@ -577,6 +628,9 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	}
 	graphPreviewConfig = cfg
 	quiet, _ := cmd.Flags().GetBool("quiet")
+	if schemaVersion == graphstore.TypesFreshSchemaVersion {
+		return graphPrint(map[string]any{"scope": scope, "backend": cfg.DoltMode, "preview": true, "graphProfile": "types", "instanceCreation": "native-persisted"}, "Initialized fresh Types workspace. Installed Type definitions and supported native instances are persisted. Custom instance creation is not yet supported.", quiet)
+	}
 	return graphPrint(map[string]any{"scope": scope, "backend": cfg.DoltMode, "preview": true, "memoryComplete": false}, "Initialized disposable mixed graph preview. Use status --graph for supported commands; no migration or recovery compatibility is promised.", quiet)
 }
 
@@ -617,7 +671,7 @@ func withGraphStoreErrorMapper(budget time.Duration, fn func(context.Context, *g
 func withGraphStoreStageErrorMappers(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error, mapOpenError, mapOperationError func(error) error) error {
 	ctx, cancel := context.WithTimeout(getRootContext(), budget)
 	defer cancel()
-	s, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+	s, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
 		return mapOpenError(err)
 	}
@@ -733,7 +787,7 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 }
 
 func runGraphPreviewShowKind(cmd *cobra.Command, args []string, linkOnly bool) error {
-	if canonicalOutputSelected(cmd) {
+	if canonicalOutputSelected(cmd) || (graphPreviewConfig != nil && graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion) {
 		return runCanonicalShow(cmd, args, linkOnly)
 	}
 	if err := graphPreviewFlags(cmd, "id", "current", "refs", "children", "watch", "revision", "format", "include-dependents", "include-comments", "brief-deps", "short", "long", "local-time", "comments-tail"); err != nil {
@@ -918,8 +972,12 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 		return runGraphPreviewIssueStatus()
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
+		queryLimits := resourcequery.DefaultLimits()
 		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true,
 				"limits": map[string]int{"issueListOutputBytes": graphIssueListOutputLimit, "beadListOutputBytes": graphIssueListOutputLimit,
+					"queryAllocatedResources": graphstore.QueryMaxResources, "queryDatasetBytes": graphread.QueryResourceByteLimit,
+					"queryRequestBytes": queryLimits.RequestBytes, "queryASTNodes": queryLimits.Nodes, "queryASTDepth": queryLimits.Nesting,
+					"queryWork": queryLimits.MaxWork, "queryResults": queryLimits.MaxResults,
 					"beadListInventoryResources": graphstore.PreviewSnapshotLimit,
 					"issueBlockedOutputBytes":    graphIssueBlockedOutputLimit, "issueBlockedInventoryResources": graphstore.PreviewSnapshotLimit,
 					"genericTraversalOutputBytes": graphGenericOutputLimit, "genericTraversalDepth": graphGenericBound,
@@ -945,6 +1003,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"memoryDiscoveryDefaultMatches": graphMemoryDiscoveryDefaultLimit, "memoryDiscoveryOutputBytes": graphMemoryDiscoveryOutputLimit,
 					"memoryDiscoveryQueryBytes": graphMemoryDiscoveryQueryLimit, "memoryDiscoveryExcerptCodePoints": graphMemoryDiscoveryExcerptLimit},
 				"capabilities": map[string]bool{
+					"queryAST":     true,
 					"legacyImport": true, "graphImport": false, "graphExport": false,
 					"memoryCreate": true, "memoryRead": true, "memoryBodyRecall": true, "memoryJSONRecall": false,
 					"memoryDiscovery": true, "memoryDiscoveryPagination": false, "memoryBodyFileInput": true, "memoryBodyStdinInput": true,
@@ -1009,7 +1068,7 @@ func graphStorageErrorWithFallback(err error, fallback string) error {
 		return graphFailure("ambiguous_link", err.Error()+": "+strings.Join(ambiguous.CandidateIDs, ", "), 4)
 	}
 	switch {
-	case errors.Is(err, errGraphListSelector):
+	case errors.Is(err, errGraphListSelector), errors.Is(err, storage.ErrPrefixMismatch):
 		return graphFailure("invalid_selector", err.Error(), 2)
 	case errors.Is(err, graphstore.ErrVersionUnknown):
 		return graphFailure("revision_unknown", err.Error(), 3)
@@ -1039,5 +1098,17 @@ func graphStorageErrorWithFallback(err error, fallback string) error {
 		return graphFailure("not_found", err.Error(), 3)
 	default:
 		return graphFailure(fallback, err.Error(), 5)
+	}
+}
+
+// graphPreviewTypesCommandSupported selects actual command receivers, not names
+// or a generic write flag. Legacy expression Query remains Issue-only; generic
+// AST Query requires its separately composed checked acquisition/evaluator.
+func graphPreviewTypesCommandSupported(cmd *cobra.Command) bool {
+	switch cmd {
+	case showCmd, listCmd, linkListCmd, countCmd, graphCmd, queryCmd, intrinsicTypeCreateCmd, createCmd:
+		return true
+	default:
+		return false
 	}
 }

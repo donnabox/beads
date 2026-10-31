@@ -58,7 +58,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 	}
 	create.Issue.DeferUntil = deferUntil
 	var result IssueChildCreateResult
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeIssueChildCreate, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -211,7 +211,7 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		if err != nil {
 			return err
 		}
-		if err := insertPreviewVersionInTx(ctx, tx, linkPath, linkRevision, linkBytes, create.Actor); err != nil {
+		if err := s.retainResourceVersionInTx(ctx, tx, linkPath, linkRevision, linkBytes, create.Actor); err != nil {
 			return err
 		}
 		if err := s.afterStage("child-link-retained"); err != nil {
@@ -244,6 +244,9 @@ func (s *Store) CreateChildIssue(ctx context.Context, request IssueChildCreateRe
 		}
 		if len(child.Owned) != forward+1 || !foundParent {
 			return fmt.Errorf("%w: child has no exact owned parent Link", ErrInvalidStore)
+		}
+		if err := s.captureAppliedNativeResultInTx(ctx, tx, linkPath, &link); err != nil {
+			return err
 		}
 		result = IssueChildCreateResult{Child: child, Link: link}
 		return nil

@@ -16,6 +16,9 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if err := canonicalCRUDNormalizeUpdate(cmd); err != nil {
+		return err
+	}
 	if cmd.Flags().Changed("replace-properties") && (cmd.Flags().Changed("properties") || cmd.Flags().Changed("patch") || graphPreviewIssueEditFlagsChanged(cmd)) {
 		return graphFailure("invalid_properties", "--replace-properties cannot combine with --properties, --patch or Issue property flags", 2)
 	}
@@ -49,7 +52,7 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	// Preserve the C0 refusal boundary: unsupported patch flags and guards
 	// fail before opening the selected workspace or consuming patch input.
 	if !cmd.Flags().Changed("from-revision") && (cmd.Flags().Changed("patch") || cmd.Flags().Changed("replace-properties")) {
-		allowed := []string{"type", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force", "source-revision", "target-revision", "if-source-revision"}
+		allowed := []string{"type", "patch", "replace-properties", "metadata", "replace-metadata", "patch-metadata", "set-metadata", "unset-metadata", "if-revision", "force", "source-revision", "target-revision", "if-source-revision"}
 
 		if err := graphPreviewFlags(cmd, allowed...); err != nil {
 			return err
@@ -173,7 +176,7 @@ func graphPreviewMemoryProperties(properties map[string]any) (*string, *string, 
 }
 
 func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "type", "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "properties", "metadata", "replace-metadata", "patch-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return err
 	}
 	if !cmd.Flags().Changed("properties") && !cmd.Flags().Changed("type") {

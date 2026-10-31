@@ -730,6 +730,15 @@ func TestUpdateSpecLowersPersistenceMode(t *testing.T) {
 		t.Fatalf("updateSpec().Persistence = %v, want ephemeral", spec.Persistence)
 	}
 }
+
+func TestUpdateSpecRefusesUnsupportedOrderedMetadata(t *testing.T) {
+	_, err := updateSpec(issueops.UpdateRequest{Patch: issueops.IssuePatch{Metadata: issueops.MetadataPatch{
+		Operations: issueops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`[]`)},
+	}}})
+	if !errors.Is(err, issueops.ErrValidation) {
+		t.Fatalf("ordered metadata silently dropped: %v", err)
+	}
+}
 func (s createIssueUseCaseStub) CreateIssue(ctx context.Context, params domain.CreateIssueParams, actor string) (domain.CreateIssueResult, error) {
 	return s.create(ctx, params, actor)
 }

@@ -318,7 +318,7 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		}
 	}
 	var result LinkDeleteResult
-	err := s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeLinkMutation, true, func(ctx context.Context, tx *sql.Tx) error {
 		var err error
 		if request.Path == "" {
 			request.SourcePath, err = s.resolveLiveBeadWriteSelectorInTx(ctx, tx, request.SourcePath, request.SourceLocalID)
@@ -422,7 +422,7 @@ func (s *Store) unlinkInTx(ctx context.Context, tx *sql.Tx, request LinkDeleteRe
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	if err := insertPreviewVersionInTx(ctx, tx, path, deletionRevision, snapshot, request.Actor); err != nil {
+	if err := s.retainResourceVersionInTx(ctx, tx, path, deletionRevision, snapshot, request.Actor); err != nil {
 		return LinkDeleteResult{}, err
 	}
 	if err := s.afterStage("link-retained"); err != nil {
@@ -539,10 +539,21 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 		return err
 	}
 
-	for _, query := range []string{
-		`SELECT COUNT(*) FROM graph_preview_catalog c LEFT JOIN graph_preview_links l ON l.path=c.path LEFT JOIN dependencies d ON d.id=c.backing_key
+	linkAuthorityQuery := `SELECT COUNT(*) FROM graph_preview_catalog c LEFT JOIN graph_preview_links l ON l.path=c.path LEFT JOIN dependencies d ON d.id=c.backing_key
    WHERE c.resource_kind='link' AND c.allocation_state='live' AND
-   ((c.backing='informational' AND l.path IS NULL) OR (c.backing='dependency' AND d.id IS NULL) OR c.backing NOT IN ('informational','dependency'))`,
+   ((c.backing='informational' AND l.path IS NULL) OR (c.backing='dependency' AND d.id IS NULL) OR c.backing NOT IN ('informational','dependency'))`
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		if !actualCheckedOperationBinding(ctx, tx, s.options, nil) {
+			return ErrInvalidStore
+		}
+		// These two additional backings were fully read and checked against
+		// their complete recorded Type context before this same-Tx proof.
+		linkAuthorityQuery = `SELECT COUNT(*) FROM graph_preview_catalog c LEFT JOIN graph_preview_links l ON l.path=c.path LEFT JOIN dependencies d ON d.id=c.backing_key
+   WHERE c.resource_kind='link' AND c.allocation_state='live' AND
+   ((c.backing='informational' AND l.path IS NULL) OR (c.backing='dependency' AND d.id IS NULL) OR c.backing NOT IN ('informational','dependency','intrinsic-link','installed-type-link'))`
+	}
+	for _, query := range []string{
+		linkAuthorityQuery,
 		`SELECT COUNT(*) FROM graph_preview_links l LEFT JOIN graph_preview_catalog c ON c.path=l.path
    LEFT JOIN graph_preview_catalog src ON src.path=l.source_path LEFT JOIN graph_preview_catalog dst ON dst.path=l.target_path
    WHERE c.path IS NULL OR c.resource_kind<>'link' OR c.allocation_state<>'live' OR c.backing<>'informational'
@@ -580,7 +591,7 @@ func (s *Store) validateRetainedInformational(ctx context.Context, tx *sql.Tx, l
 	if err != nil {
 		return fmt.Errorf("%w: invalid retained Link properties", ErrInvalidStore)
 	}
-	catalog, err := s.selectedTypes()
+	catalog, err := s.selectedTypesInTx(ctx, tx)
 	if err != nil {
 		return err
 	}

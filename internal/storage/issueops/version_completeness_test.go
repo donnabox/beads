@@ -162,6 +162,14 @@ var versionedEntryPoints = []string{
 // the function itself writes, and versionNeverMints below pins the ones that
 // must not reach the seam at all.
 var versionExemptions = map[string]string{
+	"ApplyCanonicalDependencyFinalRowsInTx":  "private final-row constituent; graphstore must publish final native owners once after settlement",
+	"SettleCanonicalDependencyReadinessInTx": "derived readiness only; no direct or cache-only neighbor history",
+	"EmitCanonicalDependencyFinalFactsInTx":  "final audit/journal emission after caller publishes final Links and owners",
+	// Final-only batch constituents: graphstore.finishNativeIssue mints once
+	// after ALL row/Link edits. Native batch tests assert that count and rollback.
+	"ApplyCanonicalIssueContentInTx":       "deferred final row constituent; graphstore.finishNativeIssue owns the one final mint",
+	"ApplyCanonicalDependencyMetadataInTx": "deferred final edge constituent; graphstore.finishNativeIssue owns the one final source mint",
+	"EmitCanonicalFinalFactsInTx":          "final audit/journal emission only, after the owner's native and canonical versions exist",
 	// comments — a separate table, not part of durable_state (GetIssueInTx
 	// hydrates labels, not comments), so a comment write versions nothing.
 	"AddIssueCommentInTx":    "comments are not in durable_state",
@@ -245,24 +253,30 @@ var versionExemptions = map[string]string{
 // keepalives or bootstrap. (Migrations live in the schema package and are out
 // of this scan's reach; they are out of contract by design.)
 var versionNeverMints = map[string]string{
-	"AddIssueCommentInTx":              "comments are not in durable_state",
-	"ImportIssueCommentInTx":           "comments are not in durable_state",
-	"ExecuteAddComment":                "comments are not in durable_state",
-	"RecomputeIsBlockedInTx":           "is_blocked is derived state",
-	"RecomputeIsBlockedInTxWithResult": "is_blocked is derived state",
-	"RecomputeIsBlockedForIDsInTx":     "is_blocked is derived state",
-	"RecomputeIsBlockedForWispIDsInTx": "is_blocked is derived state",
-	"RecomputeIsBlockedAfterMergeInTx": "is_blocked is derived state",
-	"RecomputeAllIsBlockedInTx":        "is_blocked is derived state",
-	"MarkIsBlockedInTx":                "is_blocked is derived state",
-	"DeleteIssueInTx":                  "delete family (Phase 3)",
-	"DeleteIssuesInTx":                 "delete family (Phase 3)",
-	"DeleteResolvedSetInTx":            "delete family (Phase 3)",
-	"DeleteIssuesBySourceRepoInTx":     "bulk delete (Phase 3)",
-	"UpdateIssueIDInTx":                "rename: out of contract by design",
-	"ApplyCompactionInTx":              "compaction bookkeeping: out of contract by design",
-	"RestoreFromSnapshotInTx":          "restore: Phase 3",
-	"BootstrapInTx":                    "bootstrap: config and metadata tables only, no issue-plane row",
+	"ApplyCanonicalDependencyFinalRowsInTx":  "deferred graph row application cannot mint intermediate native history",
+	"SettleCanonicalDependencyReadinessInTx": "readiness changes never mint native or Resource history",
+	"EmitCanonicalDependencyFinalFactsInTx":  "final facts cannot mint a second owner version",
+	"ApplyCanonicalIssueContentInTx":         "deferred final row constituent; caller mints only after all final Links",
+	"ApplyCanonicalDependencyMetadataInTx":   "deferred final edge constituent; caller mints the final source once",
+	"EmitCanonicalFinalFactsInTx":            "publishes final audit/journal facts without a second native version",
+	"AddIssueCommentInTx":                    "comments are not in durable_state",
+	"ImportIssueCommentInTx":                 "comments are not in durable_state",
+	"ExecuteAddComment":                      "comments are not in durable_state",
+	"RecomputeIsBlockedInTx":                 "is_blocked is derived state",
+	"RecomputeIsBlockedInTxWithResult":       "is_blocked is derived state",
+	"RecomputeIsBlockedForIDsInTx":           "is_blocked is derived state",
+	"RecomputeIsBlockedForWispIDsInTx":       "is_blocked is derived state",
+	"RecomputeIsBlockedAfterMergeInTx":       "is_blocked is derived state",
+	"RecomputeAllIsBlockedInTx":              "is_blocked is derived state",
+	"MarkIsBlockedInTx":                      "is_blocked is derived state",
+	"DeleteIssueInTx":                        "delete family (Phase 3)",
+	"DeleteIssuesInTx":                       "delete family (Phase 3)",
+	"DeleteResolvedSetInTx":                  "delete family (Phase 3)",
+	"DeleteIssuesBySourceRepoInTx":           "bulk delete (Phase 3)",
+	"UpdateIssueIDInTx":                      "rename: out of contract by design",
+	"ApplyCompactionInTx":                    "compaction bookkeeping: out of contract by design",
+	"RestoreFromSnapshotInTx":                "restore: Phase 3",
+	"BootstrapInTx":                          "bootstrap: config and metadata tables only, no issue-plane row",
 }
 
 func versionMints(t *testing.T) (map[string]*journalscan.FuncInfo, map[string]bool) {

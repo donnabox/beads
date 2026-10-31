@@ -72,7 +72,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		return DependencyResult{}, err
 	}
 	var result DependencyResult
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeLinkMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -199,7 +199,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if err != nil {
 			return err
 		}
-		if err := insertPreviewVersionInTx(ctx, tx, path, revision, snapshot, request.Actor); err != nil {
+		if err := s.retainResourceVersionInTx(ctx, tx, path, revision, snapshot, request.Actor); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-retained"); err != nil {
@@ -210,6 +210,9 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		}
 		changed, err := s.showIssueInTx(ctx, tx, sourcePath)
 		if err != nil {
+			return err
+		}
+		if err := s.captureAppliedNativeResultInTx(ctx, tx, path, &link); err != nil {
 			return err
 		}
 		result = DependencyResult{Link: link, Source: changed, Target: target, Changed: true}
@@ -393,12 +396,19 @@ func (s *Store) showLinkInTx(ctx context.Context, tx *sql.Tx, path string) (Link
 	if err := tx.QueryRowContext(ctx, `SELECT snapshot,actor FROM graph_preview_versions WHERE path=? AND version=?`, path, link.Version).Scan(&retained, &actor); err != nil {
 		return LinkRecord{}, fmt.Errorf("%w: missing Link retained state: %v", ErrInvalidStore, err)
 	}
+	retained, err = s.nativeDomainSnapshot(retained)
+	if err != nil {
+		return LinkRecord{}, err
+	}
 	canonical, err := canonicalJSON(link)
 	if err != nil {
 		return LinkRecord{}, err
 	}
 	if !bytes.Equal(canonical, retained) || actor != link.Attribution.Actor {
 		return LinkRecord{}, fmt.Errorf("%w: current and retained Link state differ", ErrInvalidStore)
+	}
+	if err := s.captureNativeReadbackResultInTx(ctx, tx, path, &link); err != nil {
+		return LinkRecord{}, err
 	}
 	return link, nil
 }
@@ -480,7 +490,7 @@ func (s *Store) recordIssueMappingInTx(ctx context.Context, tx *sql.Tx, path, is
 }
 
 func (s *Store) recordIssueMappingWithContextInTx(ctx context.Context, tx *sql.Tx, path, issueID string, historical *HistoricalUpdateContext) error {
-	previous, err := currentIssueRevisionContextInTx(ctx, tx, path)
+	previous, err := s.currentNativeIssueRevisionContextInTx(ctx, tx, path)
 	if err != nil {
 		return err
 	}
@@ -530,6 +540,16 @@ func (s *Store) recordIssueMappingSnapshotInTx(ctx context.Context, tx *sql.Tx, 
 	contextJSON, err := encodeIssueRevisionContext(previous)
 	if err != nil {
 		return err
+	}
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		state, e := s.nativeOperationInContext(ctx, tx)
+		if e != nil {
+			return e
+		}
+		contextJSON, err = s.issueTypeContextForWriteInTx(ctx, tx, path, issueID, ordinal, previous, state.budget)
+		if err != nil {
+			return err
+		}
 	}
 	// Bind absent context as SQL NULL, not a typed nil byte slice that may
 	// become an empty blob. Empty bytes are malformed context, not absence.

@@ -72,7 +72,7 @@ func TestPropertyChangeSemantics(t *testing.T) {
 
 func TestPropertyChangeAdmission(t *testing.T) {
 	cases := map[string]string{
-		"empty-list": `[]`, "object": `{}`, "null": `null`, "entry-null": `[null]`,
+		"object": `{}`, "null": `null`, "entry-null": `[null]`,
 		"move": `[{"op":"move","path":"/x","from":"/y"}]`, "copy": `[{"op":"copy","path":"/x","from":"/y"}]`, "test": `[{"op":"test","path":"/x","value":1}]`,
 		"missing-value": `[{"op":"add","path":"/x"}]`, "remove-value": `[{"op":"remove","path":"/x","value":1}]`, "extra-member": `[{"op":"add","path":"/x","value":1,"extra":true}]`,
 		"missing-path": `[{"op":"add","value":1}]`, "null-path": `[{"op":"add","path":null,"value":1}]`, "no-leading-slash": `[{"op":"remove","path":"x"}]`, "bad-escape": `[{"op":"remove","path":"/~2"}]`, "trailing-tilde": `[{"op":"remove","path":"/~"}]`,
@@ -315,5 +315,20 @@ func TestPropertyChangeResultGrowthBoundary(t *testing.T) {
 				t.Fatal("predecessor changed")
 			}
 		})
+	}
+}
+
+func TestEmptyOrdinaryPatchIsInitializedNoop(t *testing.T) {
+	p, err := Parse([]byte(`[]`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	before, err := graphops.NewProperties([]byte(`{"x":1}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	after, err := p.Apply(before)
+	if err != nil || string(after.Bytes()) != string(before.Bytes()) {
+		t.Fatalf("empty patch: %s %v", after.Bytes(), err)
 	}
 }

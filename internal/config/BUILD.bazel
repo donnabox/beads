@@ -37,6 +37,7 @@ go_test(
     name = "config_test",
     srcs = [
         "agents_file_test.go",
+        "cli_profile_test.go",
         "config_test.go",
         "git_routing_test.go",
         "permissions_linux_test.go",

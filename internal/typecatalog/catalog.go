@@ -39,8 +39,8 @@ type Definition struct {
 	Abstract         bool // forbids direct instances; refinements remain independently concrete
 	NominalOnly      bool // native domain owns payload validation; no substitute schema
 	Parents          []Reference
-	PropertiesSchema json.RawMessage
-	SchemaBase       string // explicit retrieval URI; this module chooses no anonymous-schema base
+	PropertiesSchema json.RawMessage `json:",omitempty"` // absent means no local constraint; JSON null is invalid
+	SchemaBase       string          // required for a present root; omission never invents one
 	SchemaResources  map[string]json.RawMessage
 	OwnsOutgoing     []Selector
 	EndpointPairs    []EndpointPair // Link Types only; union locally, intersection through parents

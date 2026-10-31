@@ -25,7 +25,7 @@ func (s *Store) ClaimReadyIssue(ctx context.Context, actor string, filter types.
 	}
 	s.wakeExpiredDefersAdvisory(ctx)
 	var result IssueMutationResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeIssueMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -84,7 +84,7 @@ func (s *Store) ClaimIssue(ctx context.Context, path, actor string) (IssueMutati
 		return IssueMutationResult{}, fmt.Errorf("%w: %w", storage.ErrValidation, err)
 	}
 	var result IssueMutationResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeIssueMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}

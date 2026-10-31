@@ -107,10 +107,24 @@ func allocatedResourceIDOwnerInTx(ctx context.Context, tx *sql.Tx, id string) (s
 	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog
 		WHERE (
 			(backing='issue' AND backing_key=?) OR
-			(backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)
+			(backing IN ('generic','dependency','informational','intrinsic','intrinsic-link','type-definition','installed-type','installed-type-link') AND COALESCE(public_id,path)=?)
 		) LIMIT 1`, id, id).Scan(&exists)
 	if errors.Is(err, sql.ErrNoRows) {
-		return "", nil
+		var version int
+		if err := tx.QueryRowContext(ctx, `SELECT schema_version FROM graph_preview_scope WHERE singleton=1`).Scan(&version); err != nil {
+			return "", err
+		}
+		if version != AtomicBatchSchemaVersion {
+			return "", nil
+		}
+		err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_batch_allocations WHERE public_id=?`, id).Scan(&exists)
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil
+		}
+		if err != nil {
+			return "", err
+		}
+		return "a committed batch identity allocation", nil
 	}
 	if err != nil {
 		return "", err
@@ -147,7 +161,7 @@ func (s *Store) resolveAllocatedResourcePath(ctx context.Context, id string, all
 		}
 		rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE
 			(backing='issue' AND backing_key=?) OR
-			(backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?) LIMIT 2`, id, id)
+			(backing IN ('generic','dependency','informational','intrinsic','intrinsic-link','type-definition') AND COALESCE(public_id,path)=?) LIMIT 2`, id, id)
 		if err != nil {
 			return err
 		}

@@ -1037,8 +1037,9 @@ func encodeIssuePatch(patch issueops.IssuePatch) (map[string]any, error) {
 // metadata document.
 //
 // It is a PROJECTION rather than a translation: apigen.ApplyMetadataPatch
-// publishes replace, merge, set and unset, the role's MetadataPatch carries
-// exactly those four, and the algebra over them — merge, then set in key order,
+// publishes replace, merge, set and unset. The role's strict Operations mode
+// has no wire member and refuses before encoding, including an explicit empty
+// operation list. The algebra over the supported modes — merge, then set in key order,
 // then unset, with replace replacing the whole document and refusing beside the
 // other three — is the ROLE's and is applied server-side by the same body a
 // local workspace runs. Nothing here re-decides any of it, which is why the
@@ -1060,6 +1061,9 @@ func encodeIssuePatch(patch issueops.IssuePatch) (map[string]any, error) {
 //   - a blob that is not JSON refuses as ErrValidation, the way the create's
 //     does, rather than failing inside the marshaler as a transport fault.
 func encodeMetadataPatch(patch issueops.MetadataPatch) (map[string]any, error) {
+	if err := refuseMetadataOperations(patch, encode.OpUpdateIssue); err != nil {
+		return nil, err
+	}
 	out := map[string]any{}
 	if patch.Replace.Set {
 		replacement := append(json.RawMessage(nil), patch.Replace.Value...)
@@ -1114,7 +1118,14 @@ func refuseExcludedPatchMembers(patch issueops.IssuePatch) error {
 }
 
 func metadataPatched(m issueops.MetadataPatch) bool {
-	return m.Replace.Set || m.Merge.Set || len(m.Set) > 0 || len(m.Unset) > 0
+	return m.Operations.Set || m.Replace.Set || m.Merge.Set || len(m.Set) > 0 || len(m.Unset) > 0
+}
+
+func refuseMetadataOperations(m issueops.MetadataPatch, op encode.Op) error {
+	if m.Operations.Set {
+		return refuse(op, "W-MetadataPatch.Operations")
+	}
+	return nil
 }
 
 func setString(out map[string]any, member string, field issueops.Field[string]) {

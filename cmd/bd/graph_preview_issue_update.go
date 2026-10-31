@@ -50,7 +50,7 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string, identity ...s
 
 func graphPreviewIssueEditRequestWithParent(cmd *cobra.Command, path string, allowParent bool, identity ...string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"type", "if-revision", "if-status", "if-assignee", "force", "session", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"type", "if-revision", "if-status", "if-assignee", "force", "session", "metadata", "replace-metadata", "patch-metadata", "set-metadata", "unset-metadata", "properties", "allow-empty-description"}, graphPreviewIssueEditFlags...)
 	if allowParent {
 		allowed = append(allowed, "parent")
 	}

@@ -260,3 +260,224 @@ func TestGraphIssueCreateBatchCanLinkEarlierExplicitItem(t *testing.T) {
 		})
 	}
 }
+
+// These selected14 fixtures complement the existing11 adapter roots. They
+// retain the real native writers, one original90 context per family, complete
+// applied facets and source-owned state; no CLI/backend admission is changed.
+func TestNativeCompositeCreateFamiliesKeepExactTypes(t *testing.T) {
+	for _, family := range []string{"dependencies", "rooted", "child", "batch", "graph-plan"} {
+		t.Run(family, func(t *testing.T) {
+			ctx, _, s := intrinsicHardeningStore(t)
+			checkIssue := func(record IssueRecord) {
+				t.Helper()
+				applied, present := record.ResourceDocument()
+				if !present || applied.ID() != record.ID || applied.Revision() != record.Revision || applied.Type().URI != record.Type || applied.Type().Revision == "" {
+					t.Fatalf("native create lost same-Tx applied identity/edition: %+v", record)
+				}
+				shown, err := s.GetResourceDocument(ctx, record.ID, record.Revision)
+				if err != nil || !reflect.DeepEqual(shown.NativeJSON(), applied.NativeJSON()) {
+					t.Fatalf("committed native exact body/pin differs: %v", err)
+				}
+			}
+			checkLink := func(record LinkRecord) {
+				t.Helper()
+				applied, present := record.ResourceDocument()
+				if !present || applied.ID() != record.ID || applied.Revision() != record.Revision || applied.Type().URI != record.Type || applied.Type().Revision == "" {
+					t.Fatalf("native Link lost same-Tx applied edition: %+v", record)
+				}
+				shown, err := s.GetResourceDocument(ctx, record.ID, record.Revision)
+				if err != nil || !reflect.DeepEqual(shown.NativeJSON(), applied.NativeJSON()) {
+					t.Fatalf("committed Link endpoint/capture/pin differs: %v", err)
+				}
+			}
+			switch family {
+			case "dependencies":
+				bug := plainIssue("Prerequisite bug")
+				bug.Issue.IssueType = types.TypeBug
+				prereq, err := s.CreateIssue(ctx, "beads/prereq", bug)
+				if err != nil {
+					t.Fatal(err)
+				}
+				consumer, err := s.CreateIssue(ctx, "beads/consumer", plainIssue("Consumer"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				oldConsumer, present := consumer.ResourceDocument()
+				if !present {
+					t.Fatal("missing initial consumer exact pin")
+				}
+				deps := []IssueCreateDependency{
+					{Target: IssueSelector{Path: "beads/prereq", Exact: true}, Type: types.DepBlocks},
+					{Target: IssueSelector{Path: "beads/consumer", Exact: true}, Type: types.DepBlocks, Reverse: true},
+				}
+				before := workflowState(t, ctx, s)
+				fault := errors.New("dependency create retained fault")
+				s.afterWrite = func(stage string) error {
+					if stage == "create-dependency-retained" {
+						return fault
+					}
+					return nil
+				}
+				failed, err := s.CreateIssueWithDependencies(ctx, "beads/new", plainIssue("New"), deps)
+				s.afterWrite = nil
+				if !errors.Is(err, fault) || !reflect.ValueOf(failed).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("dependency create escaped rollback: %+v %v", failed, err)
+				}
+				created, err := s.CreateIssueWithDependencies(ctx, "beads/new", plainIssue("New"), deps)
+				if err != nil {
+					t.Fatal(err)
+				}
+				checkIssue(created)
+				checkIssue(prereq)
+				changed, err := s.GetResourceDocument(ctx, consumer.ID, "")
+				if err != nil || changed.Revision() == oldConsumer.Revision() || changed.Type() != oldConsumer.Type() {
+					t.Fatalf("reverse source lost successor or preserved Type pin: %v", err)
+				}
+			case "rooted":
+				one, err := s.CreateIssueWithIDRoot(ctx, "work", plainIssue("Rooted"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				two, err := s.CreateIssueWithIDRootAndDependencies(ctx, "work", plainIssue("Rooted dependent"), []IssueCreateDependency{{Target: IssueSelector{Path: "beads/" + one.Properties.ID, NativeID: one.Properties.ID, Exact: true}, Type: types.DepBlocks}})
+				if err != nil {
+					t.Fatal(err)
+				}
+				for _, record := range []IssueRecord{one, two} {
+					id := record.Properties.ID
+					if len(id) <= len("work/") || id[:len("work/")] != "work/" || record.ID != s.ScopeURL()+id {
+						t.Fatalf("rooted native identity changed: %+v", record)
+					}
+					checkIssue(record)
+				}
+			case "child":
+				parent, err := s.CreateIssue(ctx, "beads/parent", plainIssue("Parent"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, err = s.CreateIssue(ctx, "beads/prereq", plainIssue("Prerequisite")); err != nil {
+					t.Fatal(err)
+				}
+				request := IssueChildCreateRequest{ParentPath: "beads/parent", ExpectedParentRevision: parent.Revision, InheritLabels: true, Create: plainIssue("Child"), Dependencies: []IssueCreateDependency{{Target: IssueSelector{Path: "beads/prereq", Exact: true}, Type: types.DepBlocks}}}
+				before := workflowState(t, ctx, s)
+				fault := errors.New("child Link retention fault")
+				s.afterWrite = func(stage string) error {
+					if stage == "child-link-retained" {
+						return fault
+					}
+					return nil
+				}
+				failed, err := s.CreateChildIssue(ctx, request)
+				s.afterWrite = nil
+				if !errors.Is(err, fault) || !reflect.ValueOf(failed).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("child create escaped rollback: %+v %v", failed, err)
+				}
+				created, err := s.CreateChildIssue(ctx, request)
+				if err != nil {
+					t.Fatal(err)
+				}
+				checkIssue(created.Child)
+				checkLink(created.Link)
+				if created.Child.Properties.ID == parent.Properties.ID || created.Link.Source != created.Child.ID || created.Link.Target != parent.ID {
+					t.Fatal("child allocation or native parent direction changed")
+				}
+			case "batch":
+				first := plainIssue("First").Issue
+				first.ID = "bd-batch-first"
+				second := plainIssue("Second bug").Issue
+				second.ID = "bd-batch-second"
+				second.IssueType = types.TypeBug
+				request := publicops.CreateBatchRequest{Actor: "test-author", Items: []publicops.BatchCreateItem{
+					{Issue: first},
+					{Issue: second, Dependencies: []publicops.CreateDependency{{TargetID: first.ID, Type: types.DepBlocks}}},
+				}}
+				before := workflowState(t, ctx, s)
+				fault := errors.New("batch Link retention fault")
+				s.afterWrite = func(stage string) error {
+					if stage == "create-dependency-retained" {
+						return fault
+					}
+					return nil
+				}
+				failed, err := s.CreateIssueBatch(ctx, request)
+				s.afterWrite = nil
+				if !errors.Is(err, fault) || failed != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("batch create escaped rollback: %+v %v", failed, err)
+				}
+				created, err := s.CreateIssueBatch(ctx, request)
+				if err != nil || len(created) != 2 {
+					t.Fatalf("batch result: %+v %v", created, err)
+				}
+				for _, record := range created {
+					checkIssue(record)
+				}
+			case "graph-plan":
+				existing, err := s.CreateIssue(ctx, "beads/existing-source", plainIssue("Existing source"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				oldSource, present := existing.ResourceDocument()
+				if !present {
+					t.Fatal("missing existing source pin")
+				}
+				request := publicops.ApplyBatchRequest{Actor: "test-author", Items: []publicops.ApplyItem{
+					{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "first", Issue: plainIssue("First").Issue}},
+					{Kind: publicops.ItemCreate, Create: &publicops.CreateItem{Key: "second", Issue: plainIssue("Second").Issue}},
+					{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{Key: "first"}, Target: publicops.Ref{Key: "second"}, Type: types.DepBlocks}},
+					{Kind: publicops.ItemDepAdd, DepAdd: &publicops.DepAddItem{Source: publicops.Ref{ID: existing.Properties.ID}, Target: publicops.Ref{Key: "second"}, Type: types.DepBlocks}},
+					{Kind: publicops.ItemUpdate, Update: &publicops.UpdateItem{Target: publicops.Ref{Key: "first"}, Patch: publicops.IssuePatch{Assignee: publicops.Field[string]{Set: true, Value: "agent"}}}},
+				}}
+				before := workflowState(t, ctx, s)
+				fault := errors.New("graph-plan Link retention fault")
+				s.afterWrite = func(stage string) error {
+					if stage == "create-dependency-retained" {
+						return fault
+					}
+					return nil
+				}
+				failed, err := s.ApplyNewIssueGraph(ctx, request)
+				s.afterWrite = nil
+				if !errors.Is(err, fault) || failed != nil || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+					t.Fatalf("graph plan escaped rollback: %+v %v", failed, err)
+				}
+				created, err := s.ApplyNewIssueGraph(ctx, request)
+				if err != nil || len(created) != 2 {
+					t.Fatalf("graph plan result: %+v %v", created, err)
+				}
+				for _, record := range created {
+					checkIssue(record)
+				}
+				if created["first"].Properties.Assignee != "agent" {
+					t.Fatal("supported deferred assignment was lost")
+				}
+				changed, err := s.GetResourceDocument(ctx, existing.ID, "")
+				if err != nil || changed.Revision() == oldSource.Revision() || changed.Type() != oldSource.Type() {
+					t.Fatalf("existing graph source lost successor or pin: %v", err)
+				}
+			}
+		})
+	}
+}
+
+func TestNativeMemoryCompleteRootedConstructorKeepsExactType(t *testing.T) {
+	ctx, _, s := intrinsicHardeningStore(t)
+	created, err := s.Create(ctx, CreateRequest{IDRoot: "notes/team", TypeURL: MemoryTypeURL(s.ScopeURL()), PropertiesJSON: []byte(`{"title":"Complete native Memory","body":"Body"}`), Actor: "test-author"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	applied, present := created.ResourceDocument()
+	if !present || applied.Type().URI != MemoryTypeURL(s.ScopeURL()) || applied.Type().Revision == "" || applied.ID() != created.ID || applied.Revision() != created.Revision {
+		t.Fatal("complete native constructor lost exact applied Type")
+	}
+	if len(created.PublicID) <= len("notes/team/") || created.PublicID[:len("notes/team/")] != "notes/team/" {
+		t.Fatal("Memory root was changed")
+	}
+	shown, err := s.GetResourceDocument(ctx, created.ID, created.Revision)
+	if err != nil || !reflect.DeepEqual(shown.NativeJSON(), applied.NativeJSON()) {
+		t.Fatalf("complete Memory committed different body/pin: %v", err)
+	}
+	before := workflowState(t, ctx, s)
+	failed, err := s.Create(ctx, CreateRequest{PublicID: "invalid-complete", Title: "Ambiguous", PropertiesJSON: []byte(`{"title":"Other","body":"Body"}`), Actor: "test-author"})
+	if err == nil || !reflect.ValueOf(failed).IsZero() || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+		t.Fatalf("mixed Memory constructor left state: %+v %v", failed, err)
+	}
+}

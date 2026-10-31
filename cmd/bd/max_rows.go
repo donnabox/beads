@@ -100,13 +100,19 @@ func rejectResolvedMaxRowsUnderProxiedServer(maxRows int) error {
 // This is intentional: ops shells with a global env can run a known-unbounded
 // query without unsetting the env first.
 func resolveMaxRows(cmd *cobra.Command) (int, string, error) {
+	return resolveMaxRowsWithFailure(cmd, HandleErrorRespectJSON)
+}
+
+// Keep cap precedence and the malformed-environment advisory unchanged while
+// allowing a canonical caller to obtain an unrendered validation error.
+func resolveMaxRowsWithFailure(cmd *cobra.Command, fail func(string, ...interface{}) error) (int, string, error) {
 	if cmd != nil && cmd.Flags().Changed(maxRowsFlagName) {
 		n, err := cmd.Flags().GetInt(maxRowsFlagName)
 		if err != nil {
-			return 0, "", HandleErrorRespectJSON("--max-rows: %v", err)
+			return 0, "", fail("--max-rows: %v", err)
 		}
 		if n < 0 {
-			return 0, "", HandleErrorRespectJSON("--max-rows must be non-negative; got %d", n)
+			return 0, "", fail("--max-rows must be non-negative; got %d", n)
 		}
 		return n, "--" + maxRowsFlagName, nil
 	}

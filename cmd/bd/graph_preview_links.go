@@ -292,7 +292,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "source-revision", "target-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "source-revision", "target-revision", "metadata", "replace-metadata", "patch-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 1 {

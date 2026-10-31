@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -140,6 +142,14 @@ func ValidateUpdateRequest(request publicops.UpdateRequest) error {
 
 // ValidateMetadataPatch checks mutually exclusive metadata edits.
 func ValidateMetadataPatch(patch publicops.MetadataPatch) error {
+	if patch.Operations.Set {
+		if patch.Replace.Set || patch.Merge.Set || len(patch.Set) > 0 || len(patch.Unset) > 0 {
+			return fmt.Errorf("%w: cannot combine ordered metadata operations with another edit mode", storage.ErrValidation)
+		}
+		if _, err := graphpatch.Parse(patch.Operations.Value); err != nil {
+			return fmt.Errorf("%w: metadata operations: %v", storage.ErrValidation, err)
+		}
+	}
 	if patch.Replace.Set && (patch.Merge.Set || len(patch.Set) > 0 || len(patch.Unset) > 0) {
 		return fmt.Errorf("%w: cannot combine metadata replacement with incremental metadata edits", storage.ErrValidation)
 	}
@@ -284,6 +294,12 @@ func AuthorizeTemplateUpdate(before *types.Issue, request publicops.UpdateReques
 
 // ApplyMetadataPatch returns the canonical metadata value and whether it changes.
 func ApplyMetadataPatch(current json.RawMessage, patch publicops.MetadataPatch) (json.RawMessage, bool, error) {
+	if err := ValidateMetadataPatch(patch); err != nil {
+		return nil, false, err
+	}
+	if patch.Operations.Set {
+		return applyOrderedMetadataPatch(current, patch.Operations.Value)
+	}
 	if !patch.Replace.Set && !patch.Merge.Set && len(patch.Set) == 0 && len(patch.Unset) == 0 {
 		return current, false, nil
 	}
@@ -357,6 +373,33 @@ func ApplyMetadataPatch(current json.RawMessage, patch publicops.MetadataPatch) 
 		return nil, false, fmt.Errorf("%w: compare metadata: %v", storage.ErrValidation, err)
 	}
 	return next, changed, nil
+}
+
+func applyOrderedMetadataPatch(current, operations json.RawMessage) (json.RawMessage, bool, error) {
+	if len(current) == 0 || string(current) == "null" {
+		current = json.RawMessage(`{}`)
+	}
+	before, err := graphops.NewProperties(current)
+	if err != nil {
+		return nil, false, fmt.Errorf("%w: metadata predecessor: %v", storage.ErrValidation, err)
+	}
+	patch, err := graphpatch.Parse(operations)
+	if err != nil {
+		return nil, false, fmt.Errorf("%w: metadata operations: %v", storage.ErrValidation, err)
+	}
+	after, err := patch.Apply(before)
+	if err != nil {
+		return nil, false, fmt.Errorf("%w: metadata operations: %v", storage.ErrValidation, err)
+	}
+	next := after.Bytes()
+	if err := ValidateMetadataIfConfigured(next); err != nil {
+		return nil, false, err
+	}
+	canonicalBefore, err := graphops.CanonicalizeJSON(current)
+	if err != nil {
+		return nil, false, fmt.Errorf("%w: metadata predecessor: %v", storage.ErrValidation, err)
+	}
+	return next, string(canonicalBefore) != string(next), nil
 }
 
 func metadataChanged(current, next json.RawMessage) (bool, error) {

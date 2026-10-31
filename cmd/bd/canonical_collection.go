@@ -8,14 +8,19 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
+	"github.com/steveyegge/beads/internal/resourcequery"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 func init() {
@@ -23,7 +28,13 @@ func init() {
 		registerCanonicalCollectionFlags(cmd)
 		links := cmd == linkListCmd
 		canonicalFailureFactories[cmd] = func(options clioutput.Options) (canonicalFailureRenderer, error) {
+			if collectionCountSelected(cmd) {
+				return clioutput.New(canonicalCollectionCountDescriptor(), canonicalCollectionCountOptions(options))
+			}
 			descriptor, err := canonicalCollectionDescriptor(links, nil)
+			if graphPreviewConfig != nil && graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion {
+				descriptor = canonicalResourceCollectionDescriptor(links, nil)
+			}
 			if err != nil {
 				return nil, err
 			}
@@ -53,6 +64,16 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 	cmd.Flags().Lookup("output-format").Usage = "Canonical collection output: default, table, detail, json or jsonl; cannot mix legacy --json/--format"
 	cmd.Flags().String("exact-type", "", "Select only the exact declared Type; --type includes refinements")
 	cmd.Flags().String("conforms-to", "", "Select a canonical absolute HTTP(S) Type URI and its conformance family; compatibility alias for --type")
+	cmd.Flags().StringArray("ast", nil, "Apply one candidate-local List JSON AST; use @FILE or - for stdin (graph mode only)")
+	cmd.Flags().StringArray("property-field", nil, "Filter by literal property key=value; repeat to AND conditions (graph mode only)")
+	cmd.Flags().StringArray("has-property-key", nil, "Require a literal property key, including an explicit null; repeat to AND conditions (graph mode only)")
+	// Ordinary List retains its existing metadata flags and dependency-mode
+	// parser. Link List and isolated command fixtures need the same spellings.
+	if cmd != listCmd {
+		cmd.Flags().StringArray("metadata-field", nil, "Filter by literal metadata key=value; repeat to AND conditions")
+		cmd.Flags().String("has-metadata-key", "", "Require a literal metadata key, including an explicit null")
+	}
+	cmd.Flags().Bool("count-only", false, "Return the exact count before paging; dependency mode currently supports untyped flat List selections")
 	cmd.Flags().Bool("paged", false, "Return one page in canonical output; current local provider refuses truncation")
 	cmd.Flags().Bool("unpaged", false, "Return the complete bounded current selection in canonical output")
 	cmd.Flags().Int("page-size", 50, "Canonical page size; use --unpaged if the complete local selection exceeds this boundary")
@@ -66,12 +87,17 @@ func registerCanonicalCollectionFlags(cmd *cobra.Command) {
 // cursor authority. Do not construct an ephemeral pager and publish dead cursors,
 // or set native next:null after discarding undisplayed rows.
 type canonicalCollectionPlan struct {
-	selection   *graphread.Selection
-	linkRequest graphstore.LinkCollectionRequest
-	options     clioutput.Options
-	paging      clioutput.Paging
-	links       bool
-	jsonl       bool
+	selection           *graphread.Selection
+	linkRequest         graphstore.LinkCollectionRequest
+	options             clioutput.Options
+	paging              clioutput.Paging
+	links               bool
+	jsonl               bool
+	fields              *graphread.LegacyListFields
+	countOnly           bool
+	resourceScope       string
+	definitionScope     string
+	definitionDocuments []resourceget.DefinitionDocument
 }
 
 type canonicalCollectionFailure struct {
@@ -118,6 +144,25 @@ func canonicalCollectionDescriptor(links bool, records []json.RawMessage) (cliou
 		item.Protection.Members = map[string]*clioutput.Protection{"ownedLinks": {Members: groups}}
 	}
 	return clioutput.CollectionDescriptor{Item: item, ResultKind: "resource_collection", ItemsMember: "items"}, nil
+}
+
+func canonicalResourceCollectionDescriptor(links bool, records []json.RawMessage) clioutput.CollectionDescriptor {
+	item := canonicalTypedResourceDescriptor(links, nil)
+	if !links {
+		groups := make(map[string]*clioutput.Protection)
+		for _, raw := range records {
+			var body struct {
+				OwnedLinks map[string]json.RawMessage `json:"ownedLinks"`
+			}
+			if json.Unmarshal(raw, &body) == nil {
+				for typ := range body.OwnedLinks {
+					groups[typ] = &clioutput.Protection{Items: canonicalLinkProtection()}
+				}
+			}
+		}
+		item.Protection.Members = map[string]*clioutput.Protection{"ownedLinks": {Members: groups}}
+	}
+	return clioutput.CollectionDescriptor{Item: item, ResultKind: "resource_collection", ItemsMember: "items"}
 }
 
 func canonicalCollectionRequest(cmd *cobra.Command, links bool, options clioutput.Options) (canonicalCollectionPlan, error) {
@@ -184,6 +229,12 @@ func canonicalCollectionRequestIn(cmd *cobra.Command, links bool, options cliout
 // Endpoint allocation and pin checks stay inside the canonical read owner.
 func canonicalCollectionPureRequest(cmd *cobra.Command, links bool, options clioutput.Options) (canonicalCollectionPlan, string, string, error) {
 	plan := canonicalCollectionPlan{options: options, links: links}
+	plan.countOnly = collectionCountSelected(cmd)
+	var err error
+	plan.fields, err = collectionFieldConditions(cmd)
+	if err != nil {
+		return plan, "", "", err
+	}
 	format := "default"
 	if len(options.Formats) != 0 {
 		format = options.Formats[0]
@@ -207,7 +258,10 @@ func canonicalCollectionPureRequest(cmd *cobra.Command, links bool, options clio
 	if cmd.Flags().Changed("continue") {
 		return plan, "", "", fmt.Errorf("%w: local collection reads cannot resume retained continuations; use a complete --unpaged selection", graphstore.ErrCapabilityUnavailable)
 	}
-	exact, family, err := graphPreviewCollectionTypes(cmd, graphPreviewConfig.GraphScopeURL, links)
+	// The product compat adapter defaults to the Issue family. Canonical
+	// List's typed request must leave the all-current population unrestricted;
+	// representation selection alone does not change this semantic default.
+	exact, family, err := graphPreviewCollectionTypesWithDefault(cmd, graphPreviewConfig.GraphScopeURL, links, !canonicalCLIProfileSelected(cmd))
 	return plan, exact, family, err
 }
 
@@ -230,7 +284,8 @@ func canonicalCollectionPreflight(cmd *cobra.Command, links bool, options cliout
 	return err
 }
 
-func canonicalCollectionRequestFailure(cmd *cobra.Command, failure canonicalCollectionFailure, err error) error {
+func canonicalCollectionRequestFailure(cmd *cobra.Command, failure canonicalFailureRenderer, err error) error {
+	err = canonicalCollectionEvaluationError(err)
 	var endpoint *canonicalCollectionEndpointReadError
 	if errors.As(err, &endpoint) {
 		if errors.Is(endpoint.error, graph.ErrValidation) {
@@ -253,6 +308,9 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
 	descriptor, err := canonicalCollectionDescriptor(links, nil)
+	if graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion {
+		descriptor = canonicalResourceCollectionDescriptor(links, nil)
+	}
 	if err != nil {
 		return err
 	}
@@ -264,26 +322,38 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	if len(options.Formats) > 0 {
 		format = options.Formats[0]
 	}
-	failure := canonicalCollectionFailure{renderer: renderer, jsonl: format == "jsonl"}
+	var failure canonicalFailureRenderer = canonicalCollectionFailure{renderer: renderer, jsonl: format == "jsonl"}
+	if collectionCountSelected(cmd) {
+		countRenderer, countErr := clioutput.New(canonicalCollectionCountDescriptor(), canonicalCollectionCountOptions(options))
+		if countErr != nil {
+			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", countErr.Error(), 2)
+		}
+		failure = countRenderer
+	}
 	if len(cmd.Flags().Args()) != 0 && !links {
 		return canonicalFailure(cmd, failure, "invalid_selector", "canonical collection listing does not accept positional arguments; use selection flags", 2)
 	}
 	allowed := []string{"type", "exact-type", "conforms-to", "paged", "unpaged", "page-size", "limit", "continue"}
+	allowed = append(allowed, "ast", "property-field", "has-property-key", "metadata-field", "has-metadata-key", "count-only")
 	if links {
 		allowed = append(allowed, "from", "to", "incident-to", "direction", "all-revisions")
 	}
 	if err := canonicalGraphFlags(cmd, failure, allowed...); err != nil {
 		return err
 	}
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "all-revisions", "paged", "unpaged", "page-size", "limit", "continue"); err != nil {
+	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "type", "exact-type", "conforms-to", "from", "to", "incident-to", "direction", "all-revisions", "paged", "unpaged", "page-size", "limit", "continue", "has-metadata-key", "count-only"); err != nil {
 		return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
 	}
 	if err := canonicalCollectionPreflight(cmd, links, options); err != nil {
 		return canonicalCollectionRequestFailure(cmd, failure, err)
 	}
+	raw, err := readCollectionAST(cmd, links)
+	if err != nil {
+		return canonicalCollectionRequestFailure(cmd, failure, err)
+	}
 	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
 	defer cancel()
-	store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+	store, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
 		return canonicalReadError(cmd, failure, err, "graph_not_initialized")
 	}
@@ -297,13 +367,47 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 	if err != nil {
 		return canonicalCollectionRequestFailure(cmd, failure, err)
 	}
-	inventory, err := graphread.New(store).Inventory(ctx)
+	reader := graphread.New(store)
+	var records []json.RawMessage
+	if store.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+		plan.resourceScope = store.ScopeURL()
+		var inventory graphstore.ResourceSnapshot
+		if raw != nil {
+			kind := graph.KindBead
+			if links {
+				kind = graph.KindLink
+			}
+			inventory, err = reader.ResourceInventoryMatchingList(ctx, raw, kind)
+		} else {
+			inventory, err = reader.ResourceInventory(ctx)
+		}
+		if err == nil {
+			records, err = selectCanonicalResourceCollection(plan, inventory)
+		}
+	} else {
+		var inventory graphread.Inventory
+		if raw != nil {
+			kind := graph.KindBead
+			if links {
+				kind = graph.KindLink
+			}
+			inventory, err = reader.InventoryMatchingList(ctx, raw, kind)
+		} else {
+			inventory, err = reader.Inventory(ctx)
+		}
+		if err == nil {
+			records, err = selectCanonicalCollection(plan, inventory)
+		}
+	}
 	if err != nil {
+		if raw != nil {
+			err = canonicalCollectionEvaluationError(err)
+		}
 		return canonicalReadError(cmd, failure, err, "route_unavailable")
 	}
-	records, err := selectCanonicalCollection(plan, inventory)
+	records, err = plan.fields.Select(ctx, records)
 	if err != nil {
-		return canonicalReadError(cmd, failure, err, "route_unavailable")
+		return canonicalReadError(cmd, failure, canonicalCollectionEvaluationError(err), "route_unavailable")
 	}
 	closeErr := store.Close()
 	closed = true
@@ -311,6 +415,158 @@ func runCanonicalCollection(cmd *cobra.Command, links bool) error {
 		return canonicalReadError(cmd, failure, closeErr, "route_unavailable")
 	}
 	return renderCanonicalCollection(cmd, plan, records, failure)
+}
+
+// The AST adds a predicate to the existing population/endpoint selectors. It
+// does not change List's result shape, count semantics or delivery controls.
+func collectionASTSelected(cmd *cobra.Command) bool {
+	return cmd.Name() == "list" && cmd.Flags().Lookup("ast") != nil && cmd.Flags().Changed("ast")
+}
+
+func collectionCountSelected(cmd *cobra.Command) bool {
+	if cmd.Name() != "list" || cmd.Flags().Lookup("count-only") == nil {
+		return false
+	}
+	count, _ := cmd.Flags().GetBool("count-only")
+	return count
+}
+
+// New flags opt into the additive graph path. Existing metadata flags retain
+// their old dependency-mode parser and output when that mode is selected.
+func collectionFieldFlagsSelected(cmd *cobra.Command) bool {
+	if cmd.Name() != "list" {
+		return false
+	}
+	for _, name := range []string{"property-field", "has-property-key", "count-only"} {
+		if cmd.Flags().Lookup(name) != nil && cmd.Flags().Changed(name) {
+			return true
+		}
+	}
+	return graphPreviewActive && (cmd.Flags().Changed("metadata-field") || cmd.Flags().Changed("has-metadata-key"))
+}
+
+// Read the stored arguments directly: GetStringArray's CSV round trip turns a
+// sole explicit empty argument into an empty slice, hiding invalid field keys.
+func collectionFieldArguments(cmd *cobra.Command, name string) ([]string, error) {
+	flag := cmd.Flags().Lookup(name)
+	if flag == nil || flag.Value.Type() != "stringArray" {
+		return nil, fmt.Errorf("--%s must be a string-array flag", name)
+	}
+	value, ok := flag.Value.(pflag.SliceValue)
+	if !ok {
+		return nil, fmt.Errorf("--%s does not expose its arguments", name)
+	}
+	return value.GetSlice(), nil
+}
+
+func collectionFieldConditions(cmd *cobra.Command) (*graphread.LegacyListFields, error) {
+	// SQL-text equality is a compat adapter, not a canonical predicate. Keep
+	// canonical output presentation independent from the semantic CLI profile.
+	// This pure preflight runs before AST input and graph acquisition, including
+	// for count-only and Link List. Presence keeps its existing candidate-local
+	// behavior; its portable AST lowering remains a separate receiving task.
+	if canonicalCLIProfileSelected(cmd) {
+		for _, name := range []string{"property-field", "metadata-field"} {
+			if cmd.Flags().Lookup(name) != nil && cmd.Flags().Changed(name) {
+				return nil, fmt.Errorf("%w: --%s uses compat SQL-text equality; canonical List requires a typed --ast predicate until fixed equality flags have a portable lowering", graphstore.ErrCapabilityUnavailable, name)
+			}
+		}
+	}
+	var fields []graphread.LegacyListField
+	for _, namespace := range []string{"properties", "metadata"} {
+		flag := "property-field"
+		presence := "has-property-key"
+		if namespace == "metadata" {
+			flag, presence = "metadata-field", "has-metadata-key"
+		}
+		values, err := collectionFieldArguments(cmd, flag)
+		if err != nil {
+			return nil, err
+		}
+		for _, value := range values {
+			key, text, ok := strings.Cut(value, "=")
+			if !ok {
+				return nil, fmt.Errorf("--%s requires KEY=VALUE", flag)
+			}
+			if err := storage.ValidateMetadataKey(key); err != nil {
+				return nil, fmt.Errorf("--%s: %w", flag, err)
+			}
+			fields = append(fields, graphread.LegacyListField{Namespace: namespace, Key: key, Value: text})
+		}
+		var keys []string
+		if namespace == "metadata" {
+			if cmd.Flags().Changed(presence) {
+				key, _ := cmd.Flags().GetString(presence)
+				keys = append(keys, key)
+			}
+		} else {
+			keys, err = collectionFieldArguments(cmd, presence)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for _, key := range keys {
+			if err := storage.ValidateMetadataKey(key); err != nil {
+				return nil, fmt.Errorf("--%s: %w", presence, err)
+			}
+			fields = append(fields, graphread.LegacyListField{Namespace: namespace, Key: key, Presence: true})
+		}
+	}
+	return graphread.CompileLegacyListFields(fields)
+}
+
+func canonicalCollectionCountDescriptor() clioutput.Descriptor {
+	return clioutput.Descriptor{BDPSpec: bdpwire.Pin, ResultKind: "aggregate", Protection: &clioutput.Protection{Required: []string{"count"}}}
+}
+
+func canonicalCollectionEvaluationError(err error) error {
+	switch {
+	case errors.Is(err, resourcequery.ErrUnsupported), errors.Is(err, resourcequery.ErrLimit), errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
+		return errors.Join(graphstore.ErrCapabilityUnavailable, err)
+	case errors.Is(err, resourcequery.ErrUnavailable):
+		return errors.Join(graphstore.ErrNotFound, err)
+	case errors.Is(err, resourcequery.ErrDataset):
+		return errors.Join(graphstore.ErrInvalidStore, err)
+	default:
+		return err
+	}
+}
+
+// Resource field masks have already been validated by the collection renderer.
+// They cannot change an aggregate; only envelope delivery applies to its result.
+func canonicalCollectionCountOptions(options clioutput.Options) clioutput.Options {
+	options.Include = nil
+	var omit []string
+	for _, path := range options.Omit {
+		if path == "envelope" {
+			omit = append(omit, path)
+		}
+	}
+	options.Omit = omit
+	return options
+}
+
+func readCollectionAST(cmd *cobra.Command, links bool) ([]byte, error) {
+	if !collectionASTSelected(cmd) {
+		return nil, nil
+	}
+	// Link List's positional endpoint conveniences are admitted independently;
+	// the JSON input is still exactly one bounded document, never an expression.
+	raw, err := readQueryAST(cmd, nil)
+	if err != nil {
+		return nil, err
+	}
+	kind := graph.KindBead
+	if links {
+		kind = graph.KindLink
+	}
+	if err := graphread.AdmitResourceList(raw, kind); err != nil {
+		if errors.Is(err, resourcequery.ErrUnsupported) || errors.Is(err, resourcequery.ErrLimit) {
+			return nil, errors.Join(graphstore.ErrCapabilityUnavailable, err)
+		}
+		return nil, err
+	}
+	return raw, nil
 }
 
 func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread.Inventory) ([]json.RawMessage, error) {
@@ -329,6 +585,38 @@ func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread
 			}
 		}
 	}
+	return filterCanonicalCollectionLinks(plan.linkRequest, records, current)
+}
+
+func selectCanonicalResourceCollection(plan canonicalCollectionPlan, inventory graphstore.ResourceSnapshot) ([]json.RawMessage, error) {
+	// Product --type/--exact-type flags select installed definitions. This
+	// explicit CLI lookup is separate from raw Read's nominal URI predicate.
+	selection, err := plan.selection.ResolveInstalledTypeSelectors(inventory)
+	if err != nil {
+		return nil, err
+	}
+	records, err := selection.SelectResources(inventory)
+	if err != nil || !plan.links {
+		return records, err
+	}
+	current := make(map[string]string)
+	request := plan.linkRequest
+	for _, document := range inventory.Documents {
+		if document.Kind() != graph.KindBead {
+			continue
+		}
+		for _, selected := range []struct{ path, url string }{
+			{request.SourcePath, request.SourceURL}, {request.TargetPath, request.TargetURL}, {request.IncidentPath, request.IncidentURL},
+		} {
+			if selected.path != "" && document.ID() == selected.url {
+				current[selected.path] = document.Revision()
+			}
+		}
+	}
+	return filterCanonicalCollectionLinks(request, records, current)
+}
+
+func filterCanonicalCollectionLinks(request graphstore.LinkCollectionRequest, records []json.RawMessage, current map[string]string) ([]json.RawMessage, error) {
 	for _, path := range []string{request.SourcePath, request.TargetPath, request.IncidentPath} {
 		if path != "" && current[path] == "" {
 			return nil, graphstore.ErrNotFound
@@ -336,8 +624,8 @@ func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread
 	}
 	filtered := make([]json.RawMessage, 0, len(records))
 	for _, raw := range records {
-		var link bdpwire.LinkRecord
-		if err := bdpwire.Unmarshal(raw, &link); err != nil {
+		var link struct{ Source, Target bdpwire.Reference }
+		if err := json.Unmarshal(raw, &link); err != nil {
 			return nil, fmt.Errorf("%w: current Link collection item: %v", graphstore.ErrInvalidStore, err)
 		}
 		captured := graphstore.LinkRecord{Source: link.Source.URI, Target: link.Target.URI,
@@ -349,7 +637,16 @@ func selectCanonicalCollection(plan canonicalCollectionPlan, inventory graphread
 	return filtered, nil
 }
 
-func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan, records []json.RawMessage, failure canonicalCollectionFailure) error {
+func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan, records []json.RawMessage, failure canonicalFailureRenderer) error {
+	if plan.countOnly {
+		renderer, err := clioutput.New(canonicalCollectionCountDescriptor(), canonicalCollectionCountOptions(plan.options))
+		if err != nil {
+			return canonicalFailure(cmd, failure, "invalid_selector", err.Error(), 2)
+		}
+		return renderCanonicalResult(cmd, renderer, struct {
+			Count int `json:"count"`
+		}{Count: len(records)})
+	}
 	if records == nil {
 		records = []json.RawMessage{}
 	}
@@ -373,7 +670,14 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 		}
 		return canonicalFailure(cmd, failure, "capability_unavailable", fmt.Sprintf("complete selection of %d items exceeds the %s; local collection reads cannot satisfy this bound with a safe continuation, so no items were emitted; use --unpaged --limit 0 or a narrower selection", len(records), bound), 5)
 	}
-	descriptor, err := canonicalCollectionDescriptor(plan.links, records)
+	var descriptor clioutput.CollectionDescriptor
+	if plan.resourceScope != "" {
+		descriptor = canonicalResourceCollectionDescriptor(plan.links, records)
+	} else if plan.definitionScope != "" {
+		descriptor, err = intrinsicDefinitionCollectionDescriptor(plan.definitionScope, records)
+	} else {
+		descriptor, err = canonicalCollectionDescriptor(plan.links, records)
+	}
 	if err != nil {
 		return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
 	}
@@ -383,7 +687,15 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 	}
 	// Qualify the same current public DTOs used by BDP Read before projecting.
 	for _, record := range records {
-		if plan.links {
+		if plan.resourceScope != "" {
+			kind := graph.KindBead
+			if plan.links {
+				kind = graph.KindLink
+			}
+			_, err = resourceget.NewResourceDocument(plan.resourceScope, kind, record)
+		} else if plan.definitionScope != "" {
+			_, err = resourceget.NewDefinitionDocument(plan.definitionScope, resourceget.DefinitionBead, record)
+		} else if plan.links {
 			var link bdpwire.LinkRecord
 			err = bdpwire.Unmarshal(record, &link)
 		} else {
@@ -393,6 +705,24 @@ func renderCanonicalCollection(cmd *cobra.Command, plan canonicalCollectionPlan,
 		if err != nil {
 			return canonicalFailure(cmd, failure, "output_error", fmt.Sprintf("BDP collection item: %v", err), 1)
 		}
+	}
+	if plan.definitionDocuments != nil && definitionHumanView(plan.options) {
+		if len(plan.definitionDocuments) != len(records) {
+			return canonicalFailure(cmd, failure, "output_error", "definition display correspondence is incomplete", 1)
+		}
+		for i, doc := range plan.definitionDocuments {
+			if string(doc.NativeJSON()) != string(records[i]) {
+				return canonicalFailure(cmd, failure, "output_error", "definition display correspondence does not match selected record", 1)
+			}
+		}
+		data, err := renderDefinitionHumanCollection(plan.definitionScope, plan.definitionDocuments)
+		if err != nil {
+			return canonicalFailure(cmd, failure, "output_error", err.Error(), 1)
+		}
+		if err := writeCanonicalDocument(cmd.OutOrStdout(), data); err != nil {
+			return canonicalCollectionWriteError(cmd, err)
+		}
+		return nil
 	}
 	if plan.jsonl {
 		stream, err := renderer.NewJSONL(cmd.OutOrStdout())

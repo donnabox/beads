@@ -8,16 +8,18 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 // Selection metadata is separate from complete canonical records. This is a
 // CLI result, not a new BDP record or historical graph snapshot contract.
 type graphSelectedOutput struct {
-	Scope     string                  `json:"scope"`
-	Beads     []any                   `json:"beads"`
-	Links     []graphstore.LinkRecord `json:"links"`
-	Traversal graphSelectedTraversal  `json:"traversal"`
+	Scope     string                 `json:"scope"`
+	Beads     []any                  `json:"beads"`
+	Links     []any                  `json:"links"`
+	Traversal graphSelectedTraversal `json:"traversal"`
 }
 type graphSelectedTraversal struct {
 	Root           string   `json:"root,omitempty"`
@@ -34,7 +36,6 @@ type graphSelectedTraversal struct {
 }
 
 func graphSelectedRecords(result graphGenericResult, snapshot graphstore.Snapshot) (graphSelectedOutput, error) {
-	out := graphSelectedOutput{Scope: result.Scope, Beads: []any{}, Links: []graphstore.LinkRecord{}, Traversal: graphSelectedTraversal{Root: result.Root, All: result.All, Direction: result.Direction, Depth: result.Depth, MaxNodes: result.MaxNodes, MaxLinks: result.MaxLinks, LinkTypes: result.LinkTypes, ExactLinkTypes: result.ExactLinkTypes, AllLinkTypes: result.AllLinkTypes, Complete: result.Complete, Frontier: result.Frontier}}
 	records := map[string]any{}
 	for _, raw := range snapshot.Records {
 		switch r := raw.(type) {
@@ -46,21 +47,52 @@ func graphSelectedRecords(result graphGenericResult, snapshot graphstore.Snapsho
 			records[r.ID] = r
 		}
 	}
+	return selectGraphRecordValues(result, records)
+}
+
+func graphSelectedResourceRecords(result graphGenericResult, snapshot graphstore.ResourceSnapshot) (graphSelectedOutput, error) {
+	records := make(map[string]any, len(snapshot.Documents))
+	for _, doc := range snapshot.Documents {
+		if doc.ID() == "" || doc.ScopeURL() != result.Scope {
+			return graphSelectedOutput{}, fmt.Errorf("%w: invalid captured graph Resource", graphstore.ErrInvalidStore)
+		}
+		if _, duplicate := records[doc.ID()]; duplicate {
+			return graphSelectedOutput{}, fmt.Errorf("%w: duplicate captured graph Resource", graphstore.ErrInvalidStore)
+		}
+		records[doc.ID()] = doc
+	}
+	return selectGraphRecordValues(result, records)
+}
+
+func selectedGraphRecordKind(record any) graph.ResourceKind {
+	switch r := record.(type) {
+	case graphstore.Record, graphstore.IssueRecord:
+		return graph.KindBead
+	case graphstore.LinkRecord:
+		return graph.KindLink
+	case resourceget.ResourceDocument:
+		return r.Kind()
+	}
+	return ""
+}
+
+// Both acquisition adapters select complete records from the capture used for
+// traversal. No selected Resource is reconstructed from its human summary.
+func selectGraphRecordValues(result graphGenericResult, records map[string]any) (graphSelectedOutput, error) {
+	out := graphSelectedOutput{Scope: result.Scope, Beads: []any{}, Links: []any{}, Traversal: graphSelectedTraversal{Root: result.Root, All: result.All, Direction: result.Direction, Depth: result.Depth, MaxNodes: result.MaxNodes, MaxLinks: result.MaxLinks, LinkTypes: result.LinkTypes, ExactLinkTypes: result.ExactLinkTypes, AllLinkTypes: result.AllLinkTypes, Complete: result.Complete, Frontier: result.Frontier}}
 	for _, n := range result.Nodes {
 		record, ok := records[n.ID]
 		if !ok {
 			return graphSelectedOutput{}, fmt.Errorf("%w: selected Bead is absent", graphstore.ErrInvalidStore)
 		}
-		switch record.(type) {
-		case graphstore.Record, graphstore.IssueRecord:
-		default:
+		if selectedGraphRecordKind(record) != graph.KindBead {
 			return graphSelectedOutput{}, fmt.Errorf("%w: selected Bead kind mismatch", graphstore.ErrInvalidStore)
 		}
 		out.Beads = append(out.Beads, record)
 	}
 	for _, l := range result.Links {
-		record, ok := records[l.ID].(graphstore.LinkRecord)
-		if !ok {
+		record, ok := records[l.ID]
+		if !ok || selectedGraphRecordKind(record) != graph.KindLink {
 			return graphSelectedOutput{}, fmt.Errorf("%w: selected Link is absent or has wrong kind", graphstore.ErrInvalidStore)
 		}
 		out.Links = append(out.Links, record)
@@ -72,12 +104,32 @@ func graphSelectedRecords(result graphGenericResult, snapshot graphstore.Snapsho
 // renderers are left untouched: their readiness, priority and reversed blocker
 // arrows do not describe a generic Memory Link.
 func renderGraphSelected(cmd *cobra.Command, result graphGenericResult, snapshot graphstore.Snapshot) (string, error) {
-	var output bytes.Buffer
+	var records graphSelectedOutput
 	if jsonOutput {
-		records, err := graphSelectedRecords(result, snapshot)
+		var err error
+		records, err = graphSelectedRecords(result, snapshot)
 		if err != nil {
 			return "", err
 		}
+	}
+	return renderGraphSelection(cmd, result, records)
+}
+
+func renderResourceGraphSelected(cmd *cobra.Command, result graphGenericResult, snapshot graphstore.ResourceSnapshot) (string, error) {
+	var records graphSelectedOutput
+	if jsonOutput {
+		var err error
+		records, err = graphSelectedResourceRecords(result, snapshot)
+		if err != nil {
+			return "", err
+		}
+	}
+	return renderGraphSelection(cmd, result, records)
+}
+
+func renderGraphSelection(cmd *cobra.Command, result graphGenericResult, records graphSelectedOutput) (string, error) {
+	var output bytes.Buffer
+	if jsonOutput {
 		if err := graphPrintTo(&output, records, "", quietFlag, true); err != nil {
 			return "", err
 		}

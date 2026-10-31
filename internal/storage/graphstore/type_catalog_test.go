@@ -10,6 +10,8 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/memorycatalog"
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/typecatalog"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 func TestSelectedTypeInventoryMatchesCompleteCatalog(t *testing.T) {
@@ -137,5 +139,87 @@ func TestSelectedReferencePropertiesUseSharedURISyntax(t *testing.T) {
 		if err := catalog.validateProperties(scope+"policy", raw, graph.KindBead); !errors.Is(err, storage.ErrValidation) {
 			t.Fatalf("invalid authority admitted: %v", err)
 		}
+	}
+}
+
+// Exercise the actual initializer source/closure and private stored-contract
+// roundtrip, not a fabricated replacement properties schema.
+func TestInstalledTypeContractCodecPreservesSelectedSchemas(t *testing.T) {
+	const scope = "https://example.test/installed-codec/"
+	sources, err := selectedInstalledTypeSources(scope)
+	if err != nil {
+		t.Fatal(err)
+	}
+	refs := map[string]resourceget.TypeReference{}
+	for _, source := range sources {
+		refs[source.Descriptor.ID()] = resourceget.TypeReference{URI: source.Descriptor.ID(), Revision: "selected-edition"}
+	}
+	var stored []typecatalog.Definition
+	nominal := 0
+	for _, source := range sources {
+		contract, err := bindInstalledTypeContract(source.Contract, refs)
+		if err != nil {
+			t.Fatalf("%s closure: %v", source.Name, err)
+		}
+		if !bytes.Equal(contract.PropertiesSchema, source.Contract.PropertiesSchema) || contract.SchemaBase != source.Contract.SchemaBase {
+			t.Fatalf("%s closure changed local schema presence/bytes/base", source.Name)
+		}
+		properties, err := installedTypeProperties(source, contract)
+		if err != nil {
+			t.Fatalf("%s properties: %v", source.Name, err)
+		}
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(properties, &fields); err != nil {
+			t.Fatal(err)
+		}
+		schema, present := fields["propertiesSchema"]
+		if source.Contract.NominalOnly {
+			nominal++
+			if present || len(contract.PropertiesSchema) != 0 || contract.SchemaBase != "" || len(contract.SchemaResources) != 0 {
+				t.Fatalf("%s native validator replaced by schema", source.Name)
+			}
+		} else {
+			if !present {
+				t.Fatalf("%s authored schema lost", source.Name)
+			}
+			contract.PropertiesSchema = schema
+		}
+		raw, err := canonicalJSON(installedTypeRecordContext{Codec: "installed-type-v1", Contract: contract})
+		if err != nil {
+			t.Fatal(err)
+		}
+		var decoded installedTypeRecordContext
+		if err := json.Unmarshal(raw, &decoded); err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(decoded.Contract.PropertiesSchema, contract.PropertiesSchema) || decoded.Contract.SchemaBase != contract.SchemaBase || decoded.Contract.Identity != contract.Identity {
+			t.Fatalf("%s persisted roundtrip changed presence/schema/base/exact identity", source.Name)
+		}
+		stored = append(stored, decoded.Contract)
+	}
+	if len(sources) != len(previewTypeDefinitions()) || nominal == 0 {
+		t.Fatal("actual selected source coverage missing")
+	}
+	if _, err := typecatalog.New(stored); err != nil {
+		t.Fatalf("actual stored contract compiler: %v", err)
+	}
+}
+
+func TestInstalledTypeContractCodecKeepsExplicitInvalidSchema(t *testing.T) {
+	const uri = "https://example.test/installed-codec/native"
+	for _, raw := range []string{`null`, `[]`, `true`} {
+		t.Run(raw, func(t *testing.T) {
+			input := typecatalog.Definition{Identity: typecatalog.Reference{URI: uri}, Name: "native", Kind: graph.KindBead, NominalOnly: true, PropertiesSchema: json.RawMessage(raw)}
+			contract, err := bindInstalledTypeContract(input, map[string]resourceget.TypeReference{uri: {URI: uri, Revision: "selected-edition"}})
+			if err != nil || !bytes.Equal(contract.PropertiesSchema, []byte(raw)) {
+				t.Fatalf("explicit schema erased: %s, %v", contract.PropertiesSchema, err)
+			}
+			if properties, err := installedTypeProperties(installedTypeSource{}, contract); !errors.Is(err, ErrInvalidStore) || len(properties) != 0 {
+				t.Fatalf("invalid selected schema accepted: %s, %v", properties, err)
+			}
+			if _, err := typecatalog.New([]typecatalog.Definition{contract}); err == nil {
+				t.Fatal("nominal-only schema supplied to compiler")
+			}
+		})
 	}
 }

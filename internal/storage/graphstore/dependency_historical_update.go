@@ -160,6 +160,9 @@ func (s *Store) writeNativeLinkPropertiesInTx(ctx context.Context, tx *sql.Tx, r
 		return LinkMutationResult{}, err
 	}
 	if terminal == nil && bytes.Equal(before, next) && bytes.Equal(current.Metadata, metadata) {
+		if err := s.captureAppliedNativeResultInTx(ctx, tx, request.Path, &current); err != nil {
+			return LinkMutationResult{}, err
+		}
 		return LinkMutationResult{Link: current, Source: source}, nil
 	}
 	if err := s.touchCoordination(ctx, tx); err != nil {
@@ -206,7 +209,7 @@ func (s *Store) writeNativeLinkPropertiesInTx(ctx context.Context, tx *sql.Tx, r
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
-	if err := insertPreviewVersionInTx(ctx, tx, request.Path, revision, snapshot, request.Actor); err != nil {
+	if err := s.retainResourceVersionInTx(ctx, tx, request.Path, revision, snapshot, request.Actor); err != nil {
 		return LinkMutationResult{}, err
 	}
 	contextJSON, err := canonicalJSON(attribution)
@@ -230,6 +233,9 @@ func (s *Store) writeNativeLinkPropertiesInTx(ctx context.Context, tx *sql.Tx, r
 		return LinkMutationResult{}, err
 	}
 	if err := s.validateVersionLink(ctx, tx, link, snapshot, request.Actor); err != nil {
+		return LinkMutationResult{}, err
+	}
+	if err := s.captureAppliedNativeResultInTx(ctx, tx, request.Path, &link); err != nil {
 		return LinkMutationResult{}, err
 	}
 	return LinkMutationResult{Link: link, Source: updated, Changed: true, ReplacedSource: replacedMemory(source, request.UnconditionalSource)}, nil

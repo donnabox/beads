@@ -34,6 +34,13 @@ func (r *Reader) Inventory(ctx context.Context) (Inventory, error) {
 	return projectInventory(snapshot)
 }
 
+// ResourceInventory captures complete pinned Resource documents and their exact
+// Type facts in one checked storage transaction. It does not round-trip them
+// through the legacy URI-only DTOs or reacquire current Type interpretations.
+func (r *Reader) ResourceInventory(ctx context.Context) (graphstore.ResourceSnapshot, error) {
+	return r.store.CurrentResourceDocuments(ctx)
+}
+
 func projectInventory(snapshot graphstore.Snapshot) (Inventory, error) {
 	result := Inventory{WriterToken: snapshot.WriterToken,
 		Beads: []bdpwire.BeadRecord{}, Links: []bdpwire.LinkRecord{}, Types: []bdpwire.TypeDescriptor{}}

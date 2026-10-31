@@ -36,6 +36,9 @@ import (
 // rejected identically for both backends, and before any invocation that is
 // guaranteed to fail wastes a store open/migration.
 func validateCreateArgs(cmd *cobra.Command, args []string) error {
+	if intrinsicCreatePreviewInvocation(cmd) {
+		return nil
+	}
 	// Typed graph creation validates its own title/body after fail-closed admission.
 	selector, _ := cmd.Flags().GetString("type")
 	if (cmd.Flags().Changed("type") && graphPreviewNominalSelector(selector)) || cmd.Flags().Changed("properties") {

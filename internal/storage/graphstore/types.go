@@ -9,10 +9,15 @@ import (
 
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
 const SchemaVersion = 11
+
+// TypesFreshSchemaVersion is reserved for the explicitly selected Types-only
+// fresh profile. It is not admitted by Options, OpenExisting or Init.
+const TypesFreshSchemaVersion = 14
 
 // TypeGeneration identifies the selected fresh graph contract, including its
 // Type installation and public identity semantics. It never migrates stores.
@@ -83,6 +88,7 @@ type Properties struct {
 // Record is a complete preview Memory record, including its outgoing owned Links.
 // Version identifies retained state; it is not a local ordinal or timestamp.
 type Record struct {
+	resourceDocument *resourceget.ResourceDocument
 	// PublicID is checked allocation data for local CLI projection, not BDP wire.
 	PublicID    string            `json:"-"`
 	ID          string            `json:"id"`
@@ -116,14 +122,15 @@ type Attribution struct {
 // Scope-local concrete declaration derived from its native issue_type column.
 // Exact retained records use their retained classification, never the current one.
 type IssueRecord struct {
-	ID          string            `json:"id"`
-	Type        string            `json:"type"`
-	Revision    string            `json:"revision"`
-	Version     string            `json:"version"`
-	Properties  *publicops.Issue  `json:"properties"`
-	Metadata    json.RawMessage   `json:"metadata"`
-	Owned       []json.RawMessage `json:"owned"`
-	Attribution Attribution       `json:"attribution"`
+	resourceDocument *resourceget.ResourceDocument
+	ID               string            `json:"id"`
+	Type             string            `json:"type"`
+	Revision         string            `json:"revision"`
+	Version          string            `json:"version"`
+	Properties       *publicops.Issue  `json:"properties"`
+	Metadata         json.RawMessage   `json:"metadata"`
+	Owned            []json.RawMessage `json:"owned"`
+	Attribution      Attribution       `json:"attribution"`
 }
 
 var (
@@ -162,17 +169,18 @@ type DependencyRequest struct {
 // Endpoint identity remains URI-based; optional revision pins are carried
 // separately and encoded as structured References in JSON.
 type LinkRecord struct {
-	ID             string          `json:"id"`
-	Type           string          `json:"type"`
-	Revision       string          `json:"revision"`
-	Version        string          `json:"version"`
-	Source         string          `json:"source"`
-	Target         string          `json:"target"`
-	SourceRevision string          `json:"-"`
-	TargetRevision string          `json:"-"`
-	Properties     map[string]any  `json:"properties"`
-	Metadata       json.RawMessage `json:"metadata"`
-	Attribution    Attribution     `json:"attribution"`
+	resourceDocument *resourceget.ResourceDocument
+	ID               string          `json:"id"`
+	Type             string          `json:"type"`
+	Revision         string          `json:"revision"`
+	Version          string          `json:"version"`
+	Source           string          `json:"source"`
+	Target           string          `json:"target"`
+	SourceRevision   string          `json:"-"`
+	TargetRevision   string          `json:"-"`
+	Properties       map[string]any  `json:"properties"`
+	Metadata         json.RawMessage `json:"metadata"`
+	Attribution      Attribution     `json:"attribution"`
 }
 
 type DependencyResult struct {

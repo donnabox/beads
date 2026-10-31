@@ -27,6 +27,28 @@ type graphPreviewReference struct {
 // Colon-only spellings remain local shorthand, even when they resemble opaque
 // URIs. A canonical Scope URL with a revision uses [URL]@N or [URL]@=TOKEN.
 func graphPreviewParseReference(input string) (graphPreviewReference, error) {
+	return graphPreviewParseReferenceWithLocatorPolicy(input, graphPreviewReferenceCompatLocator)
+}
+
+// Locator policy changes only classification of an unwrapped locator. The
+// existing suffix grammar, bracket handling and all compat callers stay here.
+type graphPreviewReferenceLocatorPolicy uint8
+
+const (
+	graphPreviewReferenceCompatLocator graphPreviewReferenceLocatorPolicy = iota
+	graphPreviewReferenceCanonicalReadLocator
+)
+
+func graphPreviewParseReferenceWithLocatorPolicy(input string, policy graphPreviewReferenceLocatorPolicy) (graphPreviewReference, error) {
+	var literalLocator bool
+	switch policy {
+	case graphPreviewReferenceCompatLocator:
+		literalLocator = strings.Contains(input, "://")
+	case graphPreviewReferenceCanonicalReadLocator:
+		literalLocator = clirevision.HasLeadingLocator(input)
+	default:
+		return graphPreviewReference{}, fmt.Errorf("unknown reference locator policy")
+	}
 	if input == "" || !utf8.ValidString(input) {
 		return graphPreviewReference{}, fmt.Errorf("reference must be nonempty UTF-8")
 	}
@@ -66,7 +88,7 @@ func graphPreviewParseReference(input string) (graphPreviewReference, error) {
 		}
 		return graphPreviewReferenceSuffix(graphPreviewReference{Identity: identity, Explicit: true, Wrapped: true}, suffix[1:])
 	}
-	if strings.Contains(input, "://") {
+	if literalLocator {
 		parsed, err := url.Parse(input)
 		if err != nil || parsed.Scheme == "" {
 			return graphPreviewReference{}, fmt.Errorf("invalid absolute URL reference")

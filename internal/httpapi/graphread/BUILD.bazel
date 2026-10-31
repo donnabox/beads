@@ -5,8 +5,14 @@ go_library(
     srcs = [
         "http_support.go",
         "inventory.go",
+        "list_ast.go",
+        "list_resource_snapshot.go",
         "pagination.go",
         "projection.go",
+        "query.go",
+        "query_representation.go",
+        "query_representation_time.go",
+        "query_resource_snapshot.go",
         "reader.go",
         "selection.go",
         "selector.go",
@@ -18,7 +24,9 @@ go_library(
     deps = [
         "//graphops",
         "//internal/httpapi/bdpwire",
+        "//internal/resourcequery",
         "//internal/storage/graphstore",
+        "//resourceget",
     ],
 )
 
@@ -27,10 +35,18 @@ go_test(
     srcs = [
         "attribution_basis_test.go",
         "inventory_test.go",
+        "list_ast_test.go",
+        "list_resource_selection_test.go",
+        "list_resource_snapshot_test.go",
         "memory_delete_test.go",
         "metadata_projection_test.go",
         "native_types_test.go",
         "pagination_test.go",
+        "query_current_native_test.go",
+        "query_representation_test.go",
+        "query_representation_time_test.go",
+        "query_resource_snapshot_test.go",
+        "query_test.go",
         "reader_test.go",
         "selection_integration_test.go",
         "selection_test.go",
@@ -40,8 +56,10 @@ go_test(
     deps = [
         "//graphops",
         "//internal/httpapi/bdpwire",
+        "//internal/resourcequery",
         "//internal/storage/graphstore",
         "//issueops",
+        "//resourceget",
     ],
 )
 

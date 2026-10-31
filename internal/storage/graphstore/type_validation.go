@@ -74,7 +74,7 @@ func (s *Store) validateTypeStateInTx(ctx context.Context, tx *sql.Tx) error {
 	if err := s.checkLinkMappingsInTx(ctx, tx); err != nil {
 		return err
 	}
-	c, err := s.selectedTypes()
+	c, err := s.selectedTypesInTx(ctx, tx)
 	if err != nil {
 		return err
 	}
@@ -254,6 +254,17 @@ func checkTypeValidationBytes(ctx context.Context, tx *sql.Tx) error {
 		}
 		used += size
 	}
+	// Reuse the writer's operation allowance before hydrating the bounded
+	// validation population. Legacy11 has no native frame and retains its exact
+	// existing independent bound; fourteen never gets a fresh helper allowance.
+	if state, ok := ctx.Value(nativeOperationKey{}).(*nativeOperationContext); ok && state != nil {
+		if !state.active || state.tx != tx || state.budget == nil {
+			return ErrInvalidStore
+		}
+		if err := state.budget.chargeBody(8 * int(used)); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -340,7 +351,7 @@ func (s *Store) checkRetainedSubjectReference(ctx context.Context, tx *sql.Tx, p
 }
 
 func (s *Store) informationalOwnedPathsInTx(ctx context.Context, tx *sql.Tx, sourcePath string) ([]string, error) {
-	c, err := s.selectedTypes()
+	c, err := s.selectedTypesInTx(ctx, tx)
 	if err != nil {
 		return nil, err
 	}
