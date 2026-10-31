@@ -10,12 +10,14 @@ package main
 
 import (
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/steveyegge/beads/internal/routing"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/dolt"
 	"github.com/steveyegge/beads/internal/types"
 )
@@ -95,12 +97,15 @@ func TestContributorRoutingTracer(t *testing.T) {
 			t.Fatalf("failed to create planning .beads dir: %v", err)
 		}
 
-		// Initialize project database
+		// Fixture initialization has its own testStoreOpenTimeout. Start the
+		// routing-operation budget only after both isolated stores are ready.
 		projectDBPath := filepath.Join(projectBeadsDir, "beads.db")
+		projectStore := newTestStoreIsolatedDB(t, projectDBPath, "test")
+		planningDBPath := filepath.Join(planningBeadsDir, "beads.db")
+		planningStore := newTestStoreIsolatedDB(t, planningDBPath, "plan-")
+
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
-
-		projectStore := newTestStoreIsolatedDB(t, projectDBPath, "test")
 
 		// Set routing config in project store (canonical keys)
 		if err := projectStore.SetConfig(ctx, "routing.mode", "auto"); err != nil {
@@ -145,11 +150,7 @@ func TestContributorRoutingTracer(t *testing.T) {
 			t.Errorf("DetermineTargetRepo() for maintainer = %q, want %q", targetRepo, ".")
 		}
 
-		// Initialize planning database and verify we can create issues there
-		planningDBPath := filepath.Join(planningBeadsDir, "beads.db")
-		planningStore := newTestStoreIsolatedDB(t, planningDBPath, "plan-")
-
-		// Create a test issue in planning store (simulating what Phase 2 will do)
+		// Create a test issue in the isolated planning store (simulating Phase 2).
 		issue := &types.Issue{
 			Title:     "Test contributor issue",
 			IssueType: types.TypeTask,
@@ -171,9 +172,12 @@ func TestContributorRoutingTracer(t *testing.T) {
 		}
 
 		// Verify issue does NOT exist in project store (isolation check)
-		projectIssue, _ := projectStore.GetIssue(ctx, issue.ID)
+		projectIssue, err := projectStore.GetIssue(ctx, issue.ID)
 		if projectIssue != nil {
-			t.Error("issue should NOT exist in project store (isolation failure)")
+			t.Fatalf("issue should NOT exist in project store (isolation failure): %q", issue.ID)
+		}
+		if !errors.Is(err, storage.ErrNotFound) {
+			t.Fatalf("project store GetIssue(%q) = (nil, %v), want wrapped storage.ErrNotFound", issue.ID, err)
 		}
 	})
 }
@@ -189,10 +193,10 @@ func TestBackwardCompatContributorConfig(t *testing.T) {
 
 	// Initialize database
 	dbPath := filepath.Join(beadsDir, "beads.db")
+	store := newTestStoreIsolatedDB(t, dbPath, "test")
+
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-
-	store := newTestStoreIsolatedDB(t, dbPath, "test")
 
 	// Set LEGACY contributor.* keys (what old versions of bd init --contributor would set)
 	if err := store.SetConfig(ctx, "contributor.auto_route", "true"); err != nil {
