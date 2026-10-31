@@ -1,0 +1,49 @@
+{
+  "retainedAtUTC": "2026-10-31T09:56:27.883305+00:00",
+  "handoffComment": 6541911326,
+  "role": "claudia",
+  "mode": "dispatcher-worker",
+  "workRepository": "donnabox/beads",
+  "purpose": "Retain Janet receiving alongside the existing individual PR277 disposition; no new disposition or PR action.",
+  "sources": [
+    {
+      "path": "BEADS-PR277-DISPOSITION-READONLY-0950.md",
+      "source": "https://github.com/donnabox/agent-coordination/blob/06f26d22e5d7e7ca6ab33607fc9b885658fe4dec/context/janet/upstream-and-recovery-20261027/overnight-20261029/BEADS-PR277-DISPOSITION-READONLY-0950.md",
+      "bytes": 6343,
+      "sha256": "c129d0537be75f5fa81fed43cd3eec287121f165426d31bbb5cbd944b434722d"
+    },
+    {
+      "path": "BEADS-PR277-DISPOSITION-READONLY-0950.json",
+      "source": "https://github.com/donnabox/agent-coordination/blob/a931d678f24b935a9d364ae2e46e7d0e3bbd9ddb/context/janet/upstream-and-recovery-20261027/overnight-20261029/BEADS-PR277-DISPOSITION-READONLY-0950.json",
+      "bytes": 12206,
+      "sha256": "ee6411447f3e1c9f4efe12cd463d7e2a61398f3d1580e2536367feff8b44d04c"
+    },
+    {
+      "path": "handoff-6541911326.json",
+      "source": "https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6541911326",
+      "bytes": 3913,
+      "sha256": "f257d8dbc35fd1684c08f2555d86fcfeb28987d705a83550cdaeeea2ae78e1c8"
+    }
+  ],
+  "archive": {
+    "path": "janet-pr277-receiving.zip",
+    "bytes": 10268,
+    "sha256": "bebd33545da8b24c1a89ab060048ebbd9974ff7defc4951ed73c0d15abcb4882"
+  },
+  "priorDispositionLocator": "/Users/dbox/Documents/Codex/2026-10-29/claudia-bdp-reference-and-go/outputs/beads277-preservation-disposition.md",
+  "priorDispositionReopened": false,
+  "priorDispositionReadLimit": "Linked local path did not return within about one minute; read process terminated, original left unchanged.",
+  "currentRuntimeQualification": false,
+  "futurePROutwardOwner": "Janet",
+  "retirementHeld": true,
+  "validation": {
+    "archiveCRCs": "passed",
+    "sourceSHA256AndSizes": "passed for all three retained sources",
+    "jsonParsing": "passed",
+    "selectedFactCorrespondence": "passed",
+    "handoffIdentity": "passed",
+    "relativeLinks": "passed",
+    "makeCheckDocs": "could not start: bazel executable absent; documentation gate unverified",
+    "applicationRuntime": "not run"
+  }
+}
