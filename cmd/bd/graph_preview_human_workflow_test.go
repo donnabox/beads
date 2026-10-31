@@ -68,8 +68,18 @@ func TestGraphHumanInstalledWorkflow(t *testing.T) {
 			native := graphMixedResult[graphstore.IssueRecord](t, call("create", "Commented", "--id-root", "current", "--json"))
 			peer := graphMixedResult[graphstore.IssueRecord](t, call("create", "Peer", "--id-root", "current", "--json"))
 			many := call("show", native.Properties.ID, peer.Properties.ID)
-			if strings.Count(many, "Revision: @1 (current)") != 2 || strings.Contains(many, native.Revision) || strings.Contains(many, peer.Revision) {
+			documents := strings.Split(strings.TrimSpace(many), "\n\n"+strings.Repeat("─", 60)+"\n\n")
+			if len(documents) != 2 {
 				t.Fatal(many)
+			}
+			for i, expected := range []graphstore.IssueRecord{native, peer} {
+				row := strings.TrimPrefix(expected.ID, scope) + ` [task] open P2 "` + expected.Properties.Title + `"`
+				properties := "\n\nProperties\n{\n  \"issue_type\": \"task\",\n  \"priority\": 2,\n  \"status\": \"open\"\n}"
+				ordinal := row + "\nRevision: @1 (current)" + properties
+				exact := row + "\nRevision: @=" + expected.Revision + " (current)" + properties
+				if documents[i] != ordinal && documents[i] != exact {
+					t.Fatalf("subject %s: unexpected complete document: %s", expected.ID, documents[i])
+				}
 			}
 			call("comments", "add", native.Properties.ID, "First comment")
 			call("comments", "add", native.Properties.ID, "Second comment")

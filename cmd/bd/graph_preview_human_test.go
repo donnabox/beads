@@ -153,3 +153,46 @@ func TestGraphHumanMultiDocumentAliasBudgetCannotLoseCapturedContent(t *testing.
 		t.Fatalf("captured=%d lookups=%d parent=%v last=%s", len(lines), lookups, ctx.Err(), lines[len(lines)-1])
 	}
 }
+
+func TestGraphHumanMultiDocumentOrdinalsUseCapturedBindings(t *testing.T) {
+	const scope = "https://example.invalid/scope/"
+	views := []graphHumanIssueView{
+		{record: graphstore.IssueRecord{ID: scope + "first", Revision: "first-token", Properties: &types.Issue{Title: "First"}}},
+		{record: graphstore.IssueRecord{ID: scope + "second", Revision: "second-token", Properties: &types.Issue{Title: "Second"}}},
+	}
+	var lookedUp []string
+	lines := graphHumanIssueDocuments(context.Background(), scope, views, graphIssueDetailOptions{}, func(_ context.Context, id, token string) string {
+		lookedUp = append(lookedUp, id+"@="+token)
+		return "@1"
+	})
+	if len(lines) != 2 || len(lookedUp) != 2 || lookedUp[0] != scope+"first@=first-token" || lookedUp[1] != scope+"second@=second-token" {
+		t.Fatalf("captured bindings: %v, documents: %v", lookedUp, lines)
+	}
+	for i, title := range []string{"First", "Second"} {
+		if !strings.Contains(lines[i], "Revision: @1 (current)") || !strings.Contains(lines[i], title) || strings.Contains(lines[i], "first-token") || strings.Contains(lines[i], "second-token") {
+			t.Fatal(lines[i])
+		}
+	}
+}
+
+func TestGraphHumanMultiDocumentFallbackKeepsOwnToken(t *testing.T) {
+	const scope = "https://example.invalid/scope/"
+	views := []graphHumanIssueView{
+		{record: graphstore.IssueRecord{ID: scope + "first", Revision: "first-token", Properties: &types.Issue{Title: "First"}}},
+		{record: graphstore.IssueRecord{ID: scope + "second", Revision: "second-token", Properties: &types.Issue{Title: "Second"}}},
+	}
+	var lookedUp []string
+	lines := graphHumanIssueDocuments(context.Background(), scope, views, graphIssueDetailOptions{}, func(_ context.Context, id, token string) string {
+		lookedUp = append(lookedUp, id+"@="+token)
+		if id == scope+"first" && token == "first-token" {
+			return "@1"
+		}
+		return ""
+	})
+	if len(lines) != 2 || len(lookedUp) != 2 || lookedUp[0] != scope+"first@=first-token" || lookedUp[1] != scope+"second@=second-token" {
+		t.Fatalf("captured bindings: %v, documents: %v", lookedUp, lines)
+	}
+	if !strings.Contains(lines[0], "Revision: @1 (current)") || !strings.Contains(lines[0], "First") || strings.Contains(lines[0], "second-token") || !strings.Contains(lines[1], "Revision: @=second-token (current)") || !strings.Contains(lines[1], "Second") || strings.Contains(lines[1], "first-token") {
+		t.Fatalf("mixed aliases changed captured content: %v", lines)
+	}
+}
