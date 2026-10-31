@@ -115,7 +115,6 @@ func TestListIDsRevisionedQueryParity(t *testing.T) {
 		{"ordinary property revision", compare("eq", f("revision"), literal("property-r")), []string{"c"}},
 		{"raw type pin", compare("eq", field(b, "type", "revision"), literal("actual-type-r")), []string{"c"}},
 		{"exact type", ast{"op": "typeIs", "of": b, "type": base + "Note", "match": "exact"}, []string{"a", "b", "c"}},
-		{"family type", ast{"op": "typeIs", "of": b, "type": base + "Root", "match": "family"}, []string{"a", "b", "c"}},
 		{"not and or", ast{"op": "and", "operands": []any{ast{"op": "not", "predicate": false}, ast{"op": "or", "operands": []any{false, compare("eq", f("n"), literal(1))}}}}, []string{"a"}},
 	}
 	for _, tt := range cases {
@@ -143,6 +142,62 @@ func TestListIDsRevisionedQueryParity(t *testing.T) {
 				t.Fatalf("selector %v != Query %v", got, oldIDs)
 			}
 		})
+	}
+}
+
+// Nominal family parity requires unpinned affiliations. A pinned affiliation
+// needs exact captured ancestry, which ListInventory deliberately cannot carry.
+func TestListIDsNominalFamilyQueryParity(t *testing.T) {
+	records := []Resource{
+		resource(t, graph.KindBead, "a", "Note", "real-a", ast{}),
+		resource(t, graph.KindBead, "b", "Root", "real-b", ast{}),
+	}
+	input := listInventory()
+	for _, r := range records {
+		var body ast
+		if err := json.Unmarshal(r.Data, &body); err != nil {
+			t.Fatal(err)
+		}
+		delete(body, "revision")
+		input.Candidates = append(input.Candidates, ListCandidate{Data: selectionBytes(t, body)})
+	}
+	selection := filter(scan("beads"), "x", ast{"op": "typeIs", "of": binding("x"), "type": base + "Root", "match": "family"})
+	assertIDs(t, execute(t, request(t, "list", "resources", selection), Dataset{Resources: records, TypeKinds: input.TypeKinds, TypeFamilies: input.TypeFamilies}), "a", "b")
+	listIDs(t, listSelector(t, selection, Limits{}), input, base+"a", base+"b")
+}
+
+func TestListIDsPinnedFamilyNeverBorrowsNominalAuthority(t *testing.T) {
+	body := ast{"id": base + "a", "type": ast{"uri": base + "Note", "revision": "retained-type"}, "properties": ast{}}
+	input := listInventory(ListCandidate{Data: selectionBytes(t, body)})
+	body["revision"] = "real-a"
+	r, err := NewResource(graph.KindBead, selectionBytes(t, body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	data := Dataset{Resources: []Resource{r}, TypeKinds: input.TypeKinds, TypeFamilies: input.TypeFamilies}
+	family := ast{"op": "typeIs", "of": binding("x"), "type": base + "Root", "match": "family"}
+	for _, tc := range []struct {
+		name      string
+		predicate any
+	}{
+		{"direct", family},
+		{"or short circuit", ast{"op": "or", "operands": []any{true, family}}},
+		{"and short circuit", ast{"op": "and", "operands": []any{false, family}}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			selection := filter(scan("beads"), "x", tc.predicate)
+			assertFailure(t, request(t, "list", "resources", selection), data, ErrUnsupported)
+			listFailure(t, listSelector(t, selection, Limits{}), input, ErrUnsupported)
+		})
+	}
+	// Exact identity and raw pin inspection do not require family evidence.
+	for _, predicate := range []any{
+		ast{"op": "typeIs", "of": binding("x"), "type": base + "Note", "match": "exact"},
+		compare("eq", field(binding("x"), "type", "revision"), literal("retained-type")),
+	} {
+		selection := filter(scan("beads"), "x", predicate)
+		assertIDs(t, execute(t, request(t, "list", "resources", selection), data), "a")
+		listIDs(t, listSelector(t, selection, Limits{}), input, base+"a")
 	}
 }
 

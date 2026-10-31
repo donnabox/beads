@@ -110,8 +110,8 @@ func stagedUnsupported(n *node) error {
 }
 
 type listView struct {
-	id, typ string
-	body    map[string]any
+	id, typ, typePin string
+	body             map[string]any
 }
 
 // readListView parses and copies the candidate independently of readRecord.
@@ -148,7 +148,7 @@ func readListView(raw []byte) (listView, error) {
 			return bad()
 		}
 	}
-	return listView{id: id, typ: typ.uri, body: m}, nil
+	return listView{id: id, typ: typ.uri, typePin: typ.pin, body: m}, nil
 }
 
 // Select returns sorted distinct actual identities, or nil IDs on any failure.
@@ -204,6 +204,11 @@ func (s *ListIDSelector) Select(ctx context.Context, input ListInventory) ([]str
 		seen[view.id] = true
 		if kind, ok := input.TypeKinds[view.typ]; input.TypeKinds != nil && (!ok || kind != input.Kind) {
 			return nil, fail("invalid-family-authority", "", "candidate Type lacks kind-correct authority", ErrDataset)
+		}
+		// The staged inventory carries nominal ancestry only. A retained Type
+		// pin cannot borrow current ancestry, even in a short-circuited branch.
+		if len(s.request.families) != 0 && view.typePin != "" {
+			return nil, fail("exact-family-authority-unsupported", "", "pinned Type affiliation requires exact captured ancestry", ErrUnsupported)
 		}
 		views = append(views, view)
 	}
