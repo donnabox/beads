@@ -40,6 +40,9 @@ const sameRepoBlacksmith2vcpu = "${{ github.repository_owner == 'gastownhall' &&
 const sameRepoBlacksmith4vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 const sameRepoBlacksmith8vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 
+// Only native lint needs the declared Linux LLVM host runtime.
+const sameRepoBlacksmithNativeLint4vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || (matrix.target == 'native' && 'ubuntu-24.04' || 'ubuntu-latest') }}"
+
 // F7b: same-repo Blacksmith Windows (blacksmith-*vcpu-windows-2025, public
 // beta) and macOS (blacksmith-*vcpu-macos-26) labels, same ternary shape
 // as the Linux consts above - forks/Dependabot keep the current GitHub-hosted
@@ -587,6 +590,48 @@ func TestSameRepoPlatformsMatrixMarkerRunsOnExpressionSemantics(t *testing.T) {
 				want := mustEvalGHRunsOn(t, m.flat, ctx)
 				if got != want {
 					t.Errorf("marker %s under %s: runs-on = %q, flat const resolves to %q", m.marker, e.name, got, want)
+				}
+			})
+		}
+	}
+}
+
+// Read the actual job expression so a lost native-only condition cannot hide
+// behind an updated expected literal. Other matrix legs retain their hosts.
+func TestNativeLintHostedFallbackMatchesLLVMHost(t *testing.T) {
+	expr := readCIWorkflow(t, "pr.yml").job(t, "pr-lint-wrapper").RunsOn
+	const ownRepo = "gastownhall/beads"
+	cases := []struct {
+		name, owner, event, head, actor string
+		trusted                         bool
+	}{
+		{"upstream same repo", "gastownhall", "pull_request", ownRepo, "alice", true},
+		{"upstream merge group", "gastownhall", "merge_group", "", "alice", true},
+		{"fork head", "gastownhall", "pull_request", "other/beads", "alice", false},
+		{"dependabot", "gastownhall", "pull_request", ownRepo, "dependabot[bot]", false},
+		{"missing head", "gastownhall", "pull_request", "", "alice", false},
+		{"fork owner", "donnabox", "pull_request", "donnabox/beads", "alice", false},
+	}
+	for _, c := range cases {
+		for _, target := range []string{"native", "windows", "darwin"} {
+			t.Run(c.name+"/"+target, func(t *testing.T) {
+				ctx := map[string]string{
+					"github.repository_owner":                       c.owner,
+					"github.repository":                             ownRepo,
+					"github.event_name":                             c.event,
+					"github.event.pull_request.head.repo.full_name": c.head,
+					"github.actor":                                  c.actor,
+					"matrix.target":                                 target,
+				}
+				want := "ubuntu-latest"
+				if target == "native" {
+					want = "ubuntu-24.04"
+				}
+				if c.trusted {
+					want = "blacksmith-4vcpu-ubuntu-2404"
+				}
+				if got := mustEvalGHRunsOn(t, expr, ctx); got != want {
+					t.Errorf("actual lint runner = %q, want %q", got, want)
 				}
 			})
 		}
