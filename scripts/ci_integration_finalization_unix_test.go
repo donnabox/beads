@@ -710,3 +710,160 @@ esac
 		"BAZEL_SOLE_RUN=", "BAZEL_FRESH=", "TIER=local", "DETAILS=", "LANE=test", "MODE=local", "CHECK_RUN_ID=1", "PR_HINT=363", "BASH_ENV=", "ENV="}
 	return fx
 }
+
+// Stand-ins exercise the complete selected workflow shell body. This does not
+// create host namespaces or establish the cause of a hosted policy refusal.
+func TestHostedNamespacePreflightDiagnostics(t *testing.T) {
+	job := readCIWorkflow(t, bazelWorkflowName).job(t, "bazel-proxied")
+	var body string
+	for _, step := range job.Steps {
+		if step.Name == "Hosted offline namespace preflight" {
+			if body != "" {
+				t.Fatal("duplicate hosted namespace preflight")
+			}
+			body = step.Run
+			if step.If != "${{ needs.rbe.outputs.local_full == 'true' }}" {
+				t.Fatalf("changed admission clause: %q", step.If)
+			}
+		}
+	}
+	if body == "" {
+		t.Fatal("missing hosted namespace preflight")
+	}
+	const isolation = `unshare --user --map-root-user --net -- true
+unshare --user --map-root-user --net -- bash -euc '
+  ip link set lo up
+  if timeout 3 bash -c "exec 3<>/dev/tcp/1.1.1.1/443" 2>/dev/null; then
+    echo "::error::outbound network is reachable inside the test namespace"
+    exit 1
+  fi
+'
+`
+	if !strings.HasSuffix(body, isolation) {
+		t.Fatal("original namespace/loopback/probe body changed")
+	}
+	for _, mode := range []string{"first-refusal", "positive", "outbound-refusal", "unavailable", "read-failure"} {
+		t.Run(mode, func(t *testing.T) {
+			fx := newNamespacePreflightFixture(t, body, mode)
+			run := fx.start(t)
+			run.finish(t, mode != "first-refusal" && mode != "outbound-refusal")
+			status, complete, err := run.workflowExit()
+			if err != nil || !complete {
+				t.Fatalf("missing actual exit: %d %v %v", status, complete, err)
+			}
+			wantStatus := 0
+			wantEvents := "first\nsecond\nloopback\nprobe\n"
+			if mode == "first-refusal" {
+				wantStatus, wantEvents = 1, "first\n"
+			}
+			if mode == "outbound-refusal" {
+				wantStatus = 1
+			}
+			if status != wantStatus || fx.events(t) != wantEvents {
+				t.Fatalf("exit/events: %d %q; want %d %q", status, fx.events(t), wantStatus, wantEvents)
+			}
+			out := run.output()
+			if mode == "first-refusal" && !strings.Contains(out, "unshare: write failed /proc/self/uid_map: Operation not permitted") {
+				t.Fatalf("lost original refusal: %s", out)
+			}
+			if mode == "outbound-refusal" && !strings.Contains(out, "outbound network is reachable inside the test namespace") {
+				t.Fatalf("lost original outbound refusal: %s", out)
+			}
+			if strings.Contains(out, "SECRET_STATUS") || strings.Contains(out, "SECRET_ENV") || strings.Contains(out, strings.Repeat("V", 513)) {
+				t.Fatalf("unbounded/unselected diagnostic output: %s", out)
+			}
+			switch mode {
+			case "unavailable":
+				if !strings.Contains(out, "unavailable") || !strings.Contains(out, "uid unavailable") {
+					t.Fatalf("missing unavailable diagnostics: %s", out)
+				}
+			case "read-failure":
+				if !strings.Contains(out, "namespace-policy "+filepath.Join(fx.root, "read-error")+"=\n") || strings.Contains(out, strings.Repeat("V", 512)) {
+					t.Fatalf("diagnostic read failure not exercised: %s", out)
+				}
+			default:
+				if !strings.Contains(out, "CapEff:") || !strings.Contains(out, strings.Repeat("V", 512)) {
+					t.Fatalf("selected bounded diagnostics not exercised: %s", out)
+				}
+			}
+		})
+	}
+}
+
+func newNamespacePreflightFixture(t *testing.T, body, mode string) *integrationFinalizationFixture {
+	t.Helper()
+	fx := &integrationFinalizationFixture{root: t.TempDir(), bash: requireHostTool(t, "bash")}
+	fx.state = filepath.Join(fx.root, "state")
+	bin := filepath.Join(fx.root, "bin")
+	for _, dir := range []string{fx.state, bin} {
+		if err := os.Mkdir(dir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.Symlink(requireHostTool(t, "sleep"), filepath.Join(bin, "sleep")); err != nil {
+		t.Fatal(err)
+	}
+	write := func(path, text string) {
+		t.Helper()
+		if err := os.WriteFile(path, []byte(text), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	standin := func(name, text string) { write(filepath.Join(bin, name), "#!"+fx.bash+"\nset -eu\n"+text) }
+	standin("id", `if [[ "$BD_STANDIN_TEST" == unavailable ]]; then exit 42; fi
+case "$1" in -u|-g) printf '1001\n' ;; *) exit 70 ;; esac
+`)
+	standin("unshare", `[[ "$1 $2 $3 $4" == '--user --map-root-user --net --' ]] || exit 71
+shift 4
+if [[ "$1" == true && $# == 1 ]]; then
+  printf 'first\n' >> "$BD_STANDIN_STATE/events"
+  if [[ "$BD_STANDIN_TEST" == first-refusal ]]; then
+    printf 'unshare: write failed /proc/self/uid_map: Operation not permitted\n' >&2
+    exit 1
+  fi
+  exit 0
+fi
+[[ "$1" == bash && "$2" == -euc && $# == 3 ]] || exit 72
+printf 'second\n' >> "$BD_STANDIN_STATE/events"
+shift
+exec "$BD_STANDIN_BASH" "$@"
+`)
+	standin("ip", `[[ "$*" == 'link set lo up' ]] || exit 73
+printf 'loopback\n' >> "$BD_STANDIN_STATE/events"
+`)
+	standin("timeout", `[[ "$*" == '3 bash -c exec 3<>/dev/tcp/1.1.1.1/443' ]] || exit 74
+printf 'probe\n' >> "$BD_STANDIN_STATE/events"
+[[ "$BD_STANDIN_TEST" == outbound-refusal ]]
+`)
+	// Only copied-body proc paths are substituted; production has no test
+	// override. No host proc/security state or real unshare/ip/network is used.
+	status := filepath.Join(fx.root, "status")
+	scalar := filepath.Join(fx.root, "scalar")
+	write(status, "Name:\tSECRET_STATUS\nUid:\t1001 1001 1001 1001\nCapEff:\t0000000000000000\nSeccomp:\t2\n")
+	write(scalar, strings.Repeat("V", 700)+"\n")
+	if mode == "unavailable" {
+		status, scalar = filepath.Join(fx.root, "missing-status"), filepath.Join(fx.root, "missing-scalar")
+	}
+	if mode == "read-failure" {
+		// A readable directory deterministically fails bash read, including
+		// for elevated test users; chmod000 would not prove that branch.
+		scalar = filepath.Join(fx.root, "read-error")
+		if err := os.Mkdir(scalar, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	body = strings.ReplaceAll(body, "/proc/$$/status", integrationFinalizationQuote(status))
+	for _, path := range []string{"/proc/sys/user/max_user_namespaces", "/proc/sys/user/max_net_namespaces", "/proc/sys/kernel/unprivileged_userns_clone", "/proc/sys/kernel/apparmor_restrict_unprivileged_userns", "/proc/sys/kernel/apparmor_restrict_unprivileged_unconfined", "/proc/$$/attr/current"} {
+		if !strings.Contains(body, path) {
+			t.Fatalf("missing selected diagnostic path %s", path)
+		}
+		body = strings.ReplaceAll(body, path, integrationFinalizationQuote(scalar))
+	}
+	if strings.Contains(body, "/proc/") {
+		t.Fatal("unreceived host proc read in copied preflight")
+	}
+	fx.script = filepath.Join(fx.root, "preflight.sh")
+	write(fx.script, body)
+	fx.env = []string{"PATH=" + bin, "HOME=" + fx.root, "BD_STANDIN_BASH=" + fx.bash, "BD_STANDIN_STATE=" + fx.state, "BD_STANDIN_TEST=" + mode, "UNRELATED_SECRET=SECRET_ENV", "BASH_ENV=", "ENV="}
+	return fx
+}

@@ -1540,7 +1540,7 @@ jobs:
     # The runs-on expression is the shared one: Blacksmith in modes remote
     # and cache, GitHub-hosted in the fork modes (a client only).
     needs: rbe
-    runs-on: ${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}
+    runs-on: ${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-24.04' }}
     if: ${{ needs.rbe.outputs.local_full == 'true' || (needs.rbe.outputs.enabled == 'true' && inputs.dolt-tiers != 'off') }}
     timeout-minutes: 60
     outputs:
@@ -2119,6 +2119,33 @@ jobs:
         timeout-minutes: 1
         run: |
           set -euo pipefail
+          # Read-only context; original namespace admission remains authoritative.
+          printf 'namespace-policy numeric UID/GID:\n'
+          if ! id -u; then printf 'uid unavailable\n'; fi
+          if ! id -g; then printf 'gid unavailable\n'; fi
+          if [[ -r /proc/$$/status ]]; then
+            while IFS= read -r line; do
+              case "$line" in
+                Uid:*|Gid:*|CapInh:*|CapPrm:*|CapEff:*|CapBnd:*|CapAmb:*|NoNewPrivs:*|Seccomp:*|Seccomp_filters:*)
+                  printf '%.512s\n' "$line" ;;
+              esac
+            done < /proc/$$/status
+          else
+            printf 'process status unavailable\n'
+          fi
+          for path in /proc/sys/user/max_user_namespaces /proc/sys/user/max_net_namespaces \
+            /proc/sys/kernel/unprivileged_userns_clone \
+            /proc/sys/kernel/apparmor_restrict_unprivileged_userns \
+            /proc/sys/kernel/apparmor_restrict_unprivileged_unconfined \
+            /proc/$$/attr/current; do
+            value=
+            if [[ -r "$path" ]]; then
+              IFS= read -r -n 513 value 2>/dev/null < "$path" || :
+              printf 'namespace-policy %s=%.512s\n' "$path" "$value"
+            else
+              printf 'namespace-policy %s unavailable\n' "$path"
+            fi
+          done
           unshare --user --map-root-user --net -- true
           unshare --user --map-root-user --net -- bash -euc '
             ip link set lo up

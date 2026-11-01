@@ -704,7 +704,7 @@ func TestBlacksmithBazelRunnerSizes(t *testing.T) {
 				continue
 			}
 			want := "ubuntu-latest"
-			if isBazelRRCCacheReader(name) || name == bazelServerHostedJobName {
+			if isBazelRRCCacheReader(name) || name == bazelServerHostedJobName || name == bazelEmbedJobName {
 				want = "ubuntu-24.04"
 			}
 			if bazelBlacksmithModes[mode] {

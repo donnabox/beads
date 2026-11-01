@@ -2612,7 +2612,7 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 		switch name {
 		case bazelJobName:
 			wantJobRunsOn = bazelRRCCacheReaderRunsOn("blacksmith-8vcpu-ubuntu-2404")
-		case bazelPureJobName, bazelIntegJobName, bazelCmdDoltJobName, bazelDoltJobName:
+		case bazelPureJobName, bazelIntegJobName, bazelCmdDoltJobName, bazelDoltJobName, bazelEmbedJobName:
 			wantJobRunsOn = wantRunsOnUbuntu24
 		case bazelPackageMCPJobName:
 			wantJobRunsOn = bazelPackageRunsOn[name]
@@ -5206,6 +5206,24 @@ var bazelEmbeddedRCLines = []string{
 
 func TestBazelEmbeddedJobMirrorsEmbeddedTier(t *testing.T) {
 	job := readCIWorkflow(t, bazelWorkflowName).job(t, bazelEmbedJobName)
+	// The host-runtime pin preserves owner/mode selection and hosted forks.
+	for _, owner := range []string{"gastownhall", "donnabox"} {
+		for _, mode := range []string{"remote", "cache", "local", "fork-ro", "fork-rw", "skip"} {
+			t.Run("host/"+owner+"/"+mode, func(t *testing.T) {
+				ctx := map[string]string{
+					"github.repository_owner": owner,
+					"needs.rbe.outputs.mode":  mode,
+				}
+				want := "ubuntu-24.04"
+				if owner == "gastownhall" && (mode == "remote" || mode == "cache") {
+					want = "blacksmith-4vcpu-ubuntu-2404"
+				}
+				if got := mustEvalGHRunsOn(t, job.RunsOn, ctx); got != want {
+					t.Errorf("embedded runner = %q, want %q", got, want)
+				}
+			})
+		}
+	}
 	test := job.step(t, "bazel test //... --config=embedded")
 	if !strings.Contains(test.Run, "bazel test //... --config=embedded") || !strings.Contains(test.Run, "set -o pipefail") {
 		t.Errorf("embedded step does not run --config=embedded over //...:\n%s", test.Run)
