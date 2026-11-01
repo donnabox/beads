@@ -1024,6 +1024,16 @@ jobs:
           echo >> "$GITHUB_STEP_SUMMARY"
           exit "$rc"
 
+      # A failed/timed-out test step is not proof that the Bazel server has
+      # settled. Preserve raw evidence below, but do not interpret outputs
+      # while a prior writer may still be active. The original failure stays.
+      - name: Final test diagnostics unavailable
+        if: ${{ always() && steps.test.outcome != 'skipped' && steps.test.outcome != 'success' }}
+        timeout-minutes: 1
+        run: |
+          echo "::error::Bazel test completion settlement is not established; packaging, profile, equivalence, BUILD sync and analytics are unavailable. Original test failure remains."
+          exit 1
+
       # pr.yml's retired build-artifacts job, built by Bazel: the same
       # artifact name and layout (bd-linux-gms-pure, SHA256SUMS,
       # build-manifest.txt). F3: the package gates build
@@ -1032,7 +1042,7 @@ jobs:
       # which binary and how it differs from `go build`'s.
       - name: Package bd (ci-build-artifacts layout)
         id: bd-artifact
-        if: ${{ always() && steps.test.outcome != 'skipped' }}
+        if: ${{ always() && steps.test.outcome == 'success' }}
         run: ./scripts/ci/package-bazel-bd.sh "$RUNNER_TEMP/bd-artifacts"
 
       - name: Upload build artifacts
@@ -1046,7 +1056,7 @@ jobs:
           if-no-files-found: error
 
       - name: Critical-path report
-        if: ${{ always() && steps.test.outcome != 'skipped' }}
+        if: ${{ always() && steps.test.outcome == 'success' }}
         env:
           TIER: ${{ steps.tier.outputs.tier }}
         run: |
@@ -1062,7 +1072,7 @@ jobs:
       # both lanes, run each lane's equivalence right after its own
       # `bazel test`, before the other lane overwrites the logs.
       - name: Go test equivalence
-        if: ${{ always() && steps.test.outcome != 'skipped' }}
+        if: ${{ always() && steps.test.outcome == 'success' }}
         timeout-minutes: 15
         env:
           DETAILS: ${{ inputs.details && '--details' || '' }}
@@ -1079,7 +1089,7 @@ jobs:
       # same-repo PR branches (or turns into an apply recipe for forks).
       - name: BUILD files in sync (gazelle, go_srcs, MODULE.bazel)
         id: sync
-        if: ${{ always() && steps.bazel.outcome == 'success' }}
+        if: ${{ always() && steps.bazel.outcome == 'success' && steps.test.outcome == 'success' }}
         timeout-minutes: 15
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -1161,7 +1171,7 @@ jobs:
       # module docstring. Mirrors gascity's ci/analytics-extractor lane step.
       - name: CI analytics summary
         id: ci-analytics
-        if: "!cancelled() && steps.test.outcome != 'skipped'"
+        if: "!cancelled() && steps.test.outcome == 'success'"
         continue-on-error: true
         timeout-minutes: 3
         env:

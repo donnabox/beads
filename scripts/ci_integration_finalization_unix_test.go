@@ -512,3 +512,201 @@ func (fx *integrationFinalizationFixture) assertOrder(t *testing.T, events ...st
 		at = next
 	}
 }
+
+// This executes literal workflow bodies and clauses with private stand-ins.
+// It proves scheduling/status only, not Actions signaling or Bazel settlement.
+func TestBazelUnitResultFinalization(t *testing.T) {
+	job := readCIWorkflow(t, bazelWorkflowName).job(t, bazelJobName)
+	for _, mode := range []string{"success", "failure", "timeout", "skipped"} {
+		t.Run(mode, func(t *testing.T) {
+			fx := newUnitFinalizationFixture(t, job, mode)
+			run := fx.start(t)
+			run.finish(t, mode == "success" || mode == "skipped")
+			switch mode {
+			case "success":
+				fx.assertOrder(t, "test-complete", "package", "profile", "equivalence", "sync-check", "sync", "raw-upload", "analytics", "result:success")
+				fx.assertAbsent(t, "unavailable")
+			case "failure", "timeout":
+				fx.assertOrder(t, "test-enter", "unavailable", "unavailable:failure", "raw-upload", "result:failure")
+				fx.assertAbsent(t, "package", "profile", "equivalence", "sync-check", "sync", "analytics", "result:success")
+				if mode == "failure" {
+					// Even a settled natural failure is conservatively unavailable:
+					// step outcome alone does not distinguish it from a timeout.
+					fx.assertOrder(t, "test-complete", "unavailable")
+				} else {
+					fx.assertAbsent(t, "test-complete")
+				}
+				if !strings.Contains(run.output(), "Bazel test completion settlement is not established") {
+					t.Fatalf("missing explicit unavailable diagnostic:\n%s", run.output())
+				}
+			case "skipped":
+				fx.assertAbsent(t, "test-enter", "unavailable", "package", "profile", "equivalence", "sync-check", "sync", "analytics", "raw-upload")
+				fx.assertOrder(t, "result:success")
+			}
+		})
+	}
+	t.Run("cancel", func(t *testing.T) {
+		fx := newUnitFinalizationFixture(t, job, "cancel")
+		run := fx.start(t)
+		run.await(t, "test-enter")
+		run.cancel(t)
+		run.finishCancelled(t)
+		fx.assertAbsent(t, "test-complete", "package", "profile", "equivalence", "sync-check", "sync", "analytics", "raw-upload", "result:success", "result:failure")
+	})
+}
+
+func unitFinalizationCondition(t *testing.T, expression string) string {
+	t.Helper()
+	expression = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(expression, "${{"), "}}"))
+	switch expression {
+	case "always() && steps.test.outcome == 'success'":
+		return "[[ $test_outcome == 'success' ]]"
+	case "always() && steps.test.outcome != 'skipped' && steps.test.outcome != 'success'":
+		return "[[ $test_outcome != 'skipped' && $test_outcome != 'success' ]]"
+	case "always() && steps.test.outcome != '' && steps.test.outcome != 'skipped'":
+		return "[[ -n $test_outcome && $test_outcome != 'skipped' ]]"
+	case "always() && steps.bazel.outcome == 'success' && steps.test.outcome == 'success'":
+		return "[[ $bazel_outcome == 'success' && $test_outcome == 'success' ]]"
+	case "!cancelled() && steps.test.outcome == 'success'":
+		return "[[ $cancelled != 1 && $test_outcome == 'success' ]]"
+	default:
+		return integrationFinalizationCondition(t, expression)
+	}
+}
+
+func newUnitFinalizationFixture(t *testing.T, job ciWorkflowJob, mode string) *integrationFinalizationFixture {
+	t.Helper()
+	// Reuse the existing process-group owner/deadline/private outputs and
+	// single-final-signal/Wait implementation. No new supervisor is introduced.
+	fx := &integrationFinalizationFixture{root: t.TempDir(), bash: requireHostTool(t, "bash")}
+	fx.state = filepath.Join(fx.root, "state")
+	bin, tmp := filepath.Join(fx.root, "bin"), filepath.Join(fx.root, "tmp")
+	for _, dir := range []string{fx.state, bin, tmp, filepath.Join(tmp, "ci-analytics"), filepath.Join(fx.root, "scripts", "ci")} {
+		if err := os.MkdirAll(dir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, name := range []string{"date", "tee", "sleep"} {
+		if err := os.Symlink(requireHostTool(t, name), filepath.Join(bin, name)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write := func(path, body string) {
+		t.Helper()
+		if err := os.WriteFile(path, []byte("#!"+fx.bash+"\nset -eu\n"+body), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write(filepath.Join(bin, "bazel"), `
+[[ "$1" == test ]] || exit 70
+printf '{}\n' > "$RUNNER_TEMP/bazel-bep.json"
+printf 'test-enter\n' >> "$BD_STANDIN_STATE/events"
+case "$BD_STANDIN_TEST" in
+  cancel) while :; do sleep 1; done ;;
+  timeout) exit 124 ;;
+  success|failure)
+    printf 'complete\n' > "$BD_STANDIN_STATE/xml-ready"
+    printf 'test-complete\n' >> "$BD_STANDIN_STATE/events"
+    [[ "$BD_STANDIN_TEST" == success ]] || exit 3 ;;
+  *) exit 71 ;;
+esac
+`)
+	write(filepath.Join(fx.root, "scripts", "ci", "package-bazel-bd.sh"), `
+printf 'package\n' >> "$BD_STANDIN_STATE/events"
+[[ -f "$BD_STANDIN_STATE/xml-ready" ]] || exit 72
+`)
+	write(filepath.Join(bin, "python3"), `
+case "$1" in
+  tools/bazel/critpath.py) printf 'profile\n' >> "$BD_STANDIN_STATE/events" ;;
+  tools/bazel/equivalence.py) printf 'equivalence\n' >> "$BD_STANDIN_STATE/events" ;;
+  tools/bazel/ci_analytics_extract.py) printf 'analytics\n' >> "$BD_STANDIN_STATE/events" ;;
+  *) exit 74 ;;
+esac
+[[ -f "$BD_STANDIN_STATE/xml-ready" ]] || exit 73
+`)
+	write(filepath.Join(bin, "zstd"), "exit 0\n")
+	write(filepath.Join(bin, "make"), `
+case "$1" in
+  bazel-sync-check) printf 'sync-check\n' >> "$BD_STANDIN_STATE/events" ;;
+  bazel-sync) printf 'sync\n' >> "$BD_STANDIN_STATE/events" ;;
+  *) exit 76 ;;
+esac
+[[ -f "$BD_STANDIN_STATE/xml-ready" ]] || exit 75
+`)
+	write(filepath.Join(bin, "git"), `
+[[ "$*" == 'status --porcelain --untracked-files=all' ]] || exit 77
+`)
+	selected := map[string]string{
+		"bazel test //... --config=ci":                         "test",
+		"Final test diagnostics unavailable":                   "unavailable",
+		"Package bd (ci-build-artifacts layout)":               "package",
+		"Critical-path report":                                 "profile",
+		"Go test equivalence":                                  "equivalence",
+		"BUILD files in sync (gazelle, go_srcs, MODULE.bazel)": "sync",
+		"Upload test logs":                                     "raw-upload",
+		"CI analytics summary":                                 "analytics",
+		"Record job result":                                    "result",
+	}
+	seen := map[string]bool{}
+	var driver strings.Builder
+	driver.WriteString("set -eu\njob_failed=0\ncancelled=0\nbazel_outcome=success\ntest_outcome=skipped\nnogo_outcome=skipped\n")
+	for i, step := range job.Steps {
+		role, wanted := selected[step.Name]
+		if !wanted {
+			continue
+		}
+		if seen[role] {
+			t.Fatalf("duplicate selected unit workflow step: %s", role)
+		}
+		seen[role] = true
+		if role == "test" && mode == "skipped" {
+			continue // The scheduler skipped this step: execute no shell body.
+		}
+		fmt.Fprintf(&driver, "if %s; then\n", unitFinalizationCondition(t, step.If))
+		if role == "raw-upload" {
+			// An action has no Run body. Test its actual clause/order only;
+			// record admission rather than pretending to upload anything.
+			driver.WriteString("printf 'raw-upload\\n' >> \"$BD_STANDIN_STATE/events\"\nfi\n")
+			continue
+		}
+		if step.Run == "" {
+			t.Fatalf("selected unit workflow shell body is empty: %s", role)
+		}
+		path := filepath.Join(fx.root, fmt.Sprintf("unit-step-%d.sh", i))
+		if err := os.WriteFile(path, []byte(step.Run), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if role == "result" {
+			driver.WriteString("if [[ $job_failed == 1 ]]; then export JOB_STATUS=failure; else export JOB_STATUS=success; fi\n")
+		}
+		if role == "unavailable" {
+			driver.WriteString("printf 'unavailable\\n' >> \"$BD_STANDIN_STATE/events\"\n")
+		}
+		fmt.Fprintf(&driver, "if \"$BD_STANDIN_BASH\" -e -- %s; then step_outcome=success; else step_outcome=failure; job_failed=1; fi\n", integrationFinalizationQuote(path))
+		if role == "test" {
+			driver.WriteString("test_outcome=$step_outcome\n")
+		}
+		if role == "unavailable" {
+			driver.WriteString("printf 'unavailable:%s\\n' \"$step_outcome\" >> \"$BD_STANDIN_STATE/events\"\n")
+		}
+		if role == "result" {
+			driver.WriteString("printf 'result:%s\\n' \"$JOB_STATUS\" >> \"$BD_STANDIN_STATE/events\"\n")
+		}
+		driver.WriteString("fi\n")
+	}
+	for _, role := range selected {
+		if !seen[role] {
+			t.Fatalf("missing selected unit workflow step: %s", role)
+		}
+	}
+	driver.WriteString("if [[ $job_failed == 1 ]]; then exit 1; fi\n")
+	fx.script = filepath.Join(fx.root, "drive.sh")
+	if err := os.WriteFile(fx.script, []byte(driver.String()), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fx.env = []string{"PATH=" + bin, "HOME=" + fx.root, "RUNNER_TEMP=" + tmp,
+		"GITHUB_STEP_SUMMARY=" + filepath.Join(fx.root, "summary"), "GITHUB_OUTPUT=" + filepath.Join(fx.root, "output"),
+		"BD_STANDIN_STATE=" + fx.state, "BD_STANDIN_TEST=" + mode, "BD_STANDIN_BASH=" + fx.bash,
+		"BAZEL_SOLE_RUN=", "BAZEL_FRESH=", "TIER=local", "DETAILS=", "LANE=test", "MODE=local", "CHECK_RUN_ID=1", "PR_HINT=363", "BASH_ENV=", "ENV="}
+	return fx
+}
