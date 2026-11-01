@@ -73,7 +73,7 @@ func canonicalRetainedPrivateDirectory(root string, create bool) error {
 }
 
 func canonicalRetainedSyncDirectory(path string) error {
-	directory, err := os.Open(path)
+	directory, err := os.Open(path) // #nosec G304 -- only a journal directory or its parent selected by the checked private-directory/save path is synced.
 	if err != nil {
 		return err
 	}
@@ -121,7 +121,7 @@ func saveCanonicalRetainedInvocation(root string, record canonicalRetainedJourna
 	}
 	digest := sha256.Sum256(raw)
 	path := filepath.Join(root, hex.EncodeToString(digest[:])+".json")
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600) // #nosec G304 -- digest-only filename under the checked private root; exclusive create never overwrites existing custody.
 	if os.IsExist(err) {
 		saved, loadErr := loadCanonicalRetainedInvocation(root, path)
 		if loadErr != nil {
@@ -132,7 +132,7 @@ func saveCanonicalRetainedInvocation(root string, record canonicalRetainedJourna
 		}
 		// A previous save may have stopped after file publication but before either
 		// sync completed. Re-establish both barriers before admitting submission.
-		existing, openErr := os.Open(path)
+		existing, openErr := os.Open(path) // #nosec G304 -- same internally generated digest path; load above checked confinement, private mode, identity and exact bytes before durability barriers.
 		if openErr != nil {
 			return canonicalRetainedSaved{}, openErr
 		}
@@ -180,7 +180,7 @@ func loadCanonicalRetainedInvocation(root, path string) (canonicalRetainedSaved,
 	if !info.Mode().IsRegular() || info.Mode().Perm()&0077 != 0 || info.Size() > canonicalRetainedJournalLimit {
 		return canonicalRetainedSaved{}, fmt.Errorf("unsafe retained recovery file")
 	}
-	file, err := os.Open(path)
+	file, err := os.Open(path) // #nosec G304 -- clean absolute path confined to the checked private root; Lstat/Stat identity, private mode, bound and digest are checked before recovery admission.
 	if err != nil {
 		return canonicalRetainedSaved{}, err
 	}

@@ -373,12 +373,11 @@ func runCanonicalRetained(cmd *cobra.Command, args []string) error {
 	ctx, cancel := context.WithDeadline(cmd.Context(), bindings.Deadline)
 	defer cancel()
 	if op == retainedPointRead {
-		request := canonicalRetainedPrepared{Contract: canonicalRetainedContract, Operation: op, Method: http.MethodGet, Target: subject}
 		// readResource verifies explicit owning service-desc/contract/kind; Core-only
 		// discovery is sufficient and no Write directory/defaultScope is requested.
 		binding := canonicalRetainedReadBinding{options: bindings}
 		reply := binding.readResource(ctx, subject)
-		return completeCanonicalRetainedRead(cmd, opts, reply, request)
+		return completeCanonicalRetainedRead(cmd, opts, reply)
 	}
 	binding, err := discoverCanonicalRetainedWrite(ctx, scope, bindings)
 	if err != nil {
@@ -611,7 +610,7 @@ func canonicalRetainedKey(key string) bool {
 	return true
 }
 
-func completeCanonicalRetainedRead(cmd *cobra.Command, opts clioutput.Options, reply canonicalRetainedReply, request canonicalRetainedPrepared) error {
+func completeCanonicalRetainedRead(cmd *cobra.Command, opts clioutput.Options, reply canonicalRetainedReply) error {
 	result := canonicalMutationOutputResult{Value: reply, OperationErr: reply.OperationErr, ExchangeErr: reply.ExchangeErr, ReadErr: reply.ReadErr, LimitErr: reply.LimitErr, CloseErr: reply.CloseErr, PayloadErr: reply.ParseErr, Disposition: canonicalMutationOutputReturned}
 	descriptor := canonicalResourceDescriptor()
 	descriptor.BDPSpec = canonicalRetainedContract

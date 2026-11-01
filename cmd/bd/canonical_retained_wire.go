@@ -149,11 +149,19 @@ func canonicalRetainedAuthorize(ctx context.Context, req *http.Request) (string,
 	return provider.Source(), nil
 }
 
-func (o canonicalRetainedBindings) exchange(ctx context.Context, request *http.Request) canonicalRetainedReply {
+func (o canonicalRetainedBindings) exchange(request *http.Request) canonicalRetainedReply {
 	// GetBody=nil prevents net/http's replay door even when the transport sees a
 	// keyed request. A fresh transport is used by the normal root constructor.
+	// The request already owns the caller/signal/deadline context created by
+	// get/request. Do not replace it with a second context or clone its body.
+	if request == nil || request.URL == nil {
+		return canonicalRetainedReply{OperationErr: fmt.Errorf("retained exchange requires a validated target")}
+	}
+	if _, err := canonicalRetainedURL(request.URL.String()); err != nil {
+		return canonicalRetainedReply{OperationErr: err}
+	}
 	request.GetBody = nil
-	response, err := o.Client.Do(request)
+	response, err := o.Client.Do(request) // #nosec G704 -- explicit CLI HTTP(S) target validated above; destination-scoped credentials and redirect refusal are bound before exchange.
 	reply := canonicalRetainedReply{Sent: true, ExchangeErr: err}
 	if response == nil {
 		return reply
@@ -184,14 +192,14 @@ func (o canonicalRetainedBindings) get(ctx context.Context, target string) canon
 	if _, err := canonicalRetainedAuthorize(ctx, request); err != nil {
 		return canonicalRetainedReply{OperationErr: err}
 	}
-	return o.exchange(ctx, request)
+	return o.exchange(request)
 }
 
-func canonicalRetainedJSON(reply canonicalRetainedReply, expected int) error {
+func canonicalRetainedJSON(reply canonicalRetainedReply) error {
 	if reply.OperationErr != nil || reply.acquisitionFailed() {
 		return reply.Err()
 	}
-	if reply.Status != expected {
+	if reply.Status != http.StatusOK {
 		return errors.Join(fmt.Errorf("retained HTTP status %d", reply.Status), reply.CloseErr)
 	}
 	media, _, err := mime.ParseMediaType(reply.Headers.Get("Content-Type"))
@@ -285,7 +293,7 @@ type canonicalRetainedDiscovery struct {
 
 func (o canonicalRetainedBindings) description(ctx context.Context, target string) (canonicalRetainedDiscovery, error) {
 	reply := o.get(ctx, target)
-	if err := canonicalRetainedJSON(reply, http.StatusOK); err != nil {
+	if err := canonicalRetainedJSON(reply); err != nil {
 		return canonicalRetainedDiscovery{}, err
 	}
 	return parseCanonicalRetainedDiscovery(reply.NativeBody)
@@ -308,7 +316,7 @@ func discoverCanonicalRetainedWrite(ctx context.Context, scope string, options c
 		return canonicalRetainedWriteBinding{}, fmt.Errorf("selected Scope has no retained Write binding")
 	}
 	directory := options.get(ctx, desc.Operations)
-	if err := canonicalRetainedJSON(directory, http.StatusOK); err != nil {
+	if err := canonicalRetainedJSON(directory); err != nil {
 		return canonicalRetainedWriteBinding{}, err
 	}
 	var targets map[string]string
@@ -350,7 +358,7 @@ func (b canonicalRetainedReadBinding) readResource(ctx context.Context, target s
 	// known even if its own Close failed. Discovery errors become ParseErr.
 	check := reply
 	check.CloseErr = nil
-	if err := canonicalRetainedJSON(check, http.StatusOK); err != nil {
+	if err := canonicalRetainedJSON(check); err != nil {
 		reply.ParseErr = err
 		return reply
 	}
@@ -405,7 +413,7 @@ func (b canonicalRetainedWriteBinding) apply(ctx context.Context, prepared canon
 	if err != nil {
 		return canonicalRetainedReply{OperationErr: err}, ""
 	}
-	return b.submitSaved(ctx, canonicalRetainedSubmission{saved: saved, request: request, provider: provider}), saved.path
+	return b.submitSaved(canonicalRetainedSubmission{saved: saved, request: request, provider: provider}), saved.path
 }
 func (b canonicalRetainedWriteBinding) request(ctx context.Context, prepared canonicalRetainedPrepared) (*http.Request, string, error) {
 	if len(prepared.Body) > 65536 || !canonicalRetainedKey(prepared.Key) {
@@ -425,14 +433,14 @@ func (b canonicalRetainedWriteBinding) request(ctx context.Context, prepared can
 	provider, err := canonicalRetainedAuthorize(ctx, request)
 	return request, provider, err
 }
-func (b canonicalRetainedWriteBinding) submitSaved(ctx context.Context, submission canonicalRetainedSubmission) canonicalRetainedReply {
+func (b canonicalRetainedWriteBinding) submitSaved(submission canonicalRetainedSubmission) canonicalRetainedReply {
 	saved, request, provider := submission.saved, submission.request, submission.provider
 	if saved.path == "" || request == nil || saved.record.Owner != b.options.Owner || saved.record.Provider != provider {
 		return canonicalRetainedReply{OperationErr: fmt.Errorf("retained recovery credential owner/provider context changed")}
 	}
 	// Request was authorized before durable save. Its body/key/target are created
 	// from that very prepared value, and no provider is refreshed after save.
-	reply := b.options.exchange(ctx, request)
+	reply := b.options.exchange(request)
 	if saved.record.Request.Operation == retainedAtomicBatch {
 		reply.validateBatch(saved.record.Request.Body, saved.record.Request.Scope)
 	} else {
@@ -460,7 +468,7 @@ func (b canonicalRetainedWriteBinding) retry(ctx context.Context, path string, o
 	}
 	// Retry is explicit and sends the original key and meaning once. It never
 	// substitutes fresh operands, current defaults or a newly generated key.
-	return b.submitSaved(ctx, canonicalRetainedSubmission{saved: saved, request: request, provider: provider}), path
+	return b.submitSaved(canonicalRetainedSubmission{saved: saved, request: request, provider: provider}), path
 }
 
 // Token admission preserves numeric spelling in the original RawMessages. The
@@ -713,7 +721,7 @@ func (r *canonicalRetainedReply) validateMutation(op canonicalRetainedOperation)
 	}
 	check := *r
 	check.CloseErr = nil
-	if err := canonicalRetainedJSON(check, http.StatusOK); err != nil {
+	if err := canonicalRetainedJSON(check); err != nil {
 		r.ParseErr = err
 		return
 	}

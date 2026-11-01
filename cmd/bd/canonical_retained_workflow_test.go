@@ -181,7 +181,7 @@ func TestCanonicalRetainedOriginalSuccessCloseAndOutputIndependent(t *testing.T)
 		return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": []string{canonicalRetainedMedia}}, Body: body}, nil
 	})})
 	request, _ := http.NewRequestWithContext(context.Background(), "POST", "https://commands.test/update", strings.NewReader(`{}`))
-	reply := options.exchange(context.Background(), request)
+	reply := options.exchange(request)
 	reply.validateMutation(retainedUpdateBead)
 	writer := &canonicalRetainedFailWriter{err: outputFailure}
 	output, err := newCanonicalMutationOutput(canonicalMutationOutputRetained, clioutput.MutationDescriptor{BDPSpec: canonicalRetainedContract, Required: []string{"outcome", "changed"}}, clioutput.Options{Formats: []string{"json"}}, writer)
@@ -206,7 +206,7 @@ func TestCanonicalRetainedBoundedReadPreservesOverflowAndClose(t *testing.T) {
 		return &http.Response{StatusCode: 200, Header: http.Header{}, Body: body}, nil
 	})})
 	request, _ := http.NewRequestWithContext(context.Background(), "GET", "https://data.test/a", nil)
-	reply := options.exchange(context.Background(), request)
+	reply := options.exchange(request)
 	if reply.OperationErr != nil || reply.ExchangeErr != nil || reply.ReadErr != nil || reply.LimitErr == nil || !errors.Is(reply.CloseErr, closeFailure) || int64(len(reply.NativeBody)) != canonicalRetainedResponseLimit+1 || body.closes != 1 || calls != 1 {
 		t.Fatal("overflow lost original bounded bytes/Close or retried")
 	}
@@ -277,7 +277,7 @@ func TestCanonicalRetainedCancellationNoAutomaticRetry(t *testing.T) {
 	attempts := 0
 	options := canonicalRetainedTestBindings(&http.Client{Transport: canonicalRetainedRoundTrip(func(r *http.Request) (*http.Response, error) { attempts++; return nil, r.Context().Err() })})
 	request, _ := http.NewRequestWithContext(ctx, "POST", "https://commands.test/mutate", strings.NewReader(`{}`))
-	reply := options.exchange(ctx, request)
+	reply := options.exchange(request)
 	if !errors.Is(reply.ExchangeErr, context.Canceled) || reply.OperationErr != nil || reply.ReadErr != nil || attempts != 1 || !reply.Sent {
 		t.Fatalf("cancellation was retried or hidden: %#v attempts=%d", reply, attempts)
 	}
@@ -357,7 +357,7 @@ func TestCanonicalRetainedExchangeReadLimitCloseCompletionChannels(t *testing.T)
 		return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": []string{canonicalRetainedMedia}}, Body: body}, nil
 	})})
 	request, _ := http.NewRequestWithContext(context.Background(), "POST", "https://commands.test/one", strings.NewReader(`{}`))
-	reply := options.exchange(context.Background(), request)
+	reply := options.exchange(request)
 	if reply.OperationErr != nil || reply.ExchangeErr != nil || reply.ReadErr != readFailure || reply.CloseErr != closeFailure || reply.LimitErr != nil || body.closes != 1 {
 		t.Fatalf("read failure channel identity changed: %#v", reply)
 	}
@@ -583,5 +583,156 @@ func TestCanonicalRetainedDirectReadSelectsProblemFamily(t *testing.T) {
 				t.Fatalf("mutation family admission writeValid=%v: %#v", test.writeValid, mutation)
 			}
 		})
+	}
+}
+
+func TestCanonicalRetainedExchangeRefusesInvalidTargetsBeforeTransport(t *testing.T) {
+	calls := 0
+	options := canonicalRetainedTestBindings(&http.Client{Transport: canonicalRetainedRoundTrip(func(*http.Request) (*http.Response, error) {
+		calls++
+		return nil, errors.New("invalid target reached transport")
+	})})
+	for _, target := range []string{"/relative", "ftp://data.test/a", "https://user:secret@data.test/a", "https://data.test/a#fragment"} {
+		request, err := http.NewRequestWithContext(context.Background(), "GET", target, nil)
+		if err != nil {
+			t.Fatalf("control request construction: %v", err)
+		}
+		reply := options.exchange(request)
+		if reply.OperationErr == nil || reply.Sent || reply.ExchangeErr != nil || calls != 0 {
+			t.Fatalf("invalid target was exchanged or misclassified: %#v", reply)
+		}
+	}
+	for _, request := range []*http.Request{nil, &http.Request{}} {
+		reply := options.exchange(request)
+		if reply.OperationErr == nil || reply.Sent || calls != 0 {
+			t.Fatal("missing request target was submitted")
+		}
+	}
+}
+
+func TestCanonicalRetainedExchangePreservesRequestContextAndOneBody(t *testing.T) {
+	type key struct{}
+	caller, cancel := context.WithDeadline(context.WithValue(context.Background(), key{}, "original-value"), time.Now().Add(time.Minute))
+	defer cancel()
+	request, err := http.NewRequestWithContext(caller, "POST", "https://service.test/exact?opaque=1", strings.NewReader(`{"n":9007199254740993}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	originalBody := request.Body
+	calls := 0
+	options := canonicalRetainedTestBindings(&http.Client{Transport: canonicalRetainedRoundTrip(func(actual *http.Request) (*http.Response, error) {
+		calls++
+		if actual.Context() != caller || actual.Context().Value(key{}) != "original-value" || actual.Body != originalBody || actual.GetBody != nil || actual.URL.String() != "https://service.test/exact?opaque=1" {
+			t.Error("exchange replaced caller context/body/target or enabled replay")
+		}
+		data, err := io.ReadAll(actual.Body)
+		if err != nil {
+			t.Error(err)
+		}
+		if string(data) != `{"n":9007199254740993}` {
+			t.Error("exchange changed original number token/body")
+		}
+		return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": []string{canonicalRetainedMedia}}, Body: io.NopCloser(strings.NewReader(`{"original":true}`))}, nil
+	})})
+	reply := options.exchange(request)
+	if calls != 1 || reply.OperationErr != nil || reply.ExchangeErr != nil || reply.ReadErr != nil || reply.CloseErr != nil || string(reply.NativeBody) != `{"original":true}` {
+		t.Fatalf("one original exchange failed: %#v", reply)
+	}
+}
+
+func TestCanonicalRetainedJSONRequiresHTTP200WithIndependentClose(t *testing.T) {
+	closed := errors.New("response Close")
+	original := canonicalRetainedReply{Status: 200, Headers: http.Header{"Content-Type": []string{canonicalRetainedMedia}}, NativeBody: []byte(`{"n":9007199254740993}`), CloseErr: closed}
+	if err := canonicalRetainedJSON(original); !errors.Is(err, closed) {
+		t.Fatal("HTTP200 lost independent Close")
+	}
+	valid := original
+	valid.CloseErr = nil
+	if err := canonicalRetainedJSON(valid); err != nil {
+		t.Fatalf("valid HTTP200 refused: %v", err)
+	}
+	wrong := valid
+	wrong.Status = 204
+	if err := canonicalRetainedJSON(wrong); err == nil || !strings.Contains(err.Error(), "retained HTTP status 204") {
+		t.Fatal("successful navigation status replaced required native HTTP200")
+	}
+	wrong.CloseErr = closed
+	if err := canonicalRetainedJSON(wrong); err == nil || !strings.Contains(err.Error(), "retained HTTP status 204") || !errors.Is(err, closed) {
+		t.Fatal("status refusal or independent Close was lost")
+	}
+	if string(original.NativeBody) != `{"n":9007199254740993}` {
+		t.Fatal("JSON admission changed original bytes")
+	}
+}
+
+func TestCanonicalRetainedJournalConfinesExactDigestRecovery(t *testing.T) {
+	parent, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := filepath.Join(parent, "private-journal")
+	record := canonicalRetainedJournalRecord{Version: 1, Owner: "local-owner", Provider: "fixture", Request: canonicalRetainedPrepared{Scope: "https://data.test/s/", Contract: canonicalRetainedContract, Operation: retainedUpdateBead, Method: "POST", Target: "https://data.test/s/update", Key: "original_key", Body: []byte(`{"bead":"https://data.test/s/a","properties":{"n":9007199254740993}}`)}}
+	saved, err := saveCanonicalRetainedInvocation(root, record)
+	if err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(saved.path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	loaded, err := loadCanonicalRetainedInvocation(root, saved.path)
+	if err != nil || !bytes.Equal(loaded.bytes, raw) {
+		t.Fatalf("positive exact recovery failed: %v", err)
+	}
+	// Keep valid bytes, private mode and confinement; change only the digest name.
+	wrongName := filepath.Base(saved.path)
+	if wrongName[0] == '0' {
+		wrongName = "1" + wrongName[1:]
+	} else {
+		wrongName = "0" + wrongName[1:]
+	}
+	wrongDigest := filepath.Join(root, wrongName)
+	if err := os.WriteFile(wrongDigest, raw, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := loadCanonicalRetainedInvocation(root, wrongDigest); err == nil || err.Error() != "retained recovery digest mismatch" {
+		t.Fatalf("wrong digest did not independently refuse: %v", err)
+	}
+	wrongAfter, err := os.ReadFile(wrongDigest)
+	if err != nil || !bytes.Equal(wrongAfter, raw) {
+		t.Fatal("digest refusal modified wrong-name custody")
+	}
+	originalAfter, err := os.ReadFile(saved.path)
+	if err != nil || !bytes.Equal(originalAfter, raw) {
+		t.Fatal("digest refusal modified original custody")
+	}
+	// This is otherwise-valid saved custody at a different location. If path
+	// confinement disappeared, all digest/bytes/mode checks could still pass.
+	outside := filepath.Join(parent, filepath.Base(saved.path))
+	if err := os.WriteFile(outside, raw, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := loadCanonicalRetainedInvocation(root, outside); err == nil {
+		t.Fatal("outside-root exact custody admitted")
+	}
+	if err := os.Chmod(saved.path, 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := loadCanonicalRetainedInvocation(root, saved.path); err == nil {
+		t.Fatal("public recovery file admitted")
+	}
+	if err := os.Chmod(saved.path, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := saveCanonicalRetainedInvocation(root, record); err != nil {
+		t.Fatalf("existing exact custody durability path refused: %v", err)
+	}
+	after, err := os.ReadFile(outside)
+	if err != nil || !bytes.Equal(after, raw) {
+		t.Fatal("refusal modified outside custody")
+	}
+	after, err = os.ReadFile(saved.path)
+	if err != nil || !bytes.Equal(after, raw) {
+		t.Fatal("refusal/resave overwrote original custody")
 	}
 }

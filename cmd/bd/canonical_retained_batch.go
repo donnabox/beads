@@ -132,7 +132,7 @@ func runCanonicalRetainedBatch(cmd *cobra.Command, args []string) error {
 		if requestErr != nil {
 			reply = canonicalRetainedReply{OperationErr: requestErr}
 		} else {
-			reply = binding.submitSaved(ctx, canonicalRetainedSubmission{saved: saved, request: request, provider: provider})
+			reply = binding.submitSaved(canonicalRetainedSubmission{saved: saved, request: request, provider: provider})
 		}
 		recovery = retry
 	} else {
@@ -509,7 +509,7 @@ func (r *canonicalRetainedReply) validateBatch(request []byte, scope string) {
 	}
 	check := *r
 	check.CloseErr = nil
-	if err := canonicalRetainedJSON(check, http.StatusOK); err != nil {
+	if err := canonicalRetainedJSON(check); err != nil {
 		r.ParseErr = err
 		return
 	}

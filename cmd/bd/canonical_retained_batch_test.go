@@ -123,7 +123,7 @@ func TestCanonicalRetainedBatchOriginalCloseOutputCauses(t *testing.T) {
 		return &http.Response{StatusCode: 200, Header: http.Header{"Content-Type": []string{canonicalRetainedMedia}}, Body: body}, nil
 	})})
 	request, _ := http.NewRequestWithContext(context.Background(), "POST", "https://data.test/s/batch", strings.NewReader(retainedBatchNoopInput))
-	reply := options.exchange(context.Background(), request)
+	reply := options.exchange(request)
 	reply.validateBatch([]byte(retainedBatchNoopInput), "https://data.test/s/")
 	writer := &canonicalRetainedFailWriter{err: outputFailure}
 	output, err := newCanonicalMutationOutput(canonicalMutationOutputRetainedBatch, clioutput.MutationDescriptor{BDPSpec: canonicalRetainedContract, Required: []string{"capabilityVersion", "changed", "results", "resources"}}, clioutput.Options{Formats: []string{"json"}}, writer)
@@ -463,7 +463,7 @@ func TestCanonicalRetainedBatchFailureExceedsSuccessBudgetPreservesCauses(t *tes
 		return &http.Response{StatusCode: 422, Header: http.Header{"Content-Type": []string{"application/problem+json"}}, Body: body}, nil
 	})})
 	request, _ := http.NewRequestWithContext(context.Background(), "POST", "https://data.test/s/batch", strings.NewReader(retainedBatchNoopInput))
-	reply := options.exchange(context.Background(), request)
+	reply := options.exchange(request)
 	reply.validateBatch([]byte(retainedBatchNoopInput), "https://data.test/s/")
 	canonicalRetainedBatchResultBound(&reply, big.NewRat(1024, 1))
 	writer := &canonicalRetainedFailWriter{err: outputFailure}
