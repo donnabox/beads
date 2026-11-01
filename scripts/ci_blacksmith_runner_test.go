@@ -704,7 +704,7 @@ func TestBlacksmithBazelRunnerSizes(t *testing.T) {
 				continue
 			}
 			want := "ubuntu-latest"
-			if isBazelRRCCacheReader(name) {
+			if isBazelRRCCacheReader(name) || name == bazelServerHostedJobName {
 				want = "ubuntu-24.04"
 			}
 			if bazelBlacksmithModes[mode] {
@@ -784,6 +784,32 @@ func TestNativeLintHostedFallbackMatchesLLVMHost(t *testing.T) {
 				}
 				if got := mustEvalGHRunsOn(t, expr, ctx); got != want {
 					t.Errorf("actual lint runner = %q, want %q", got, want)
+				}
+			})
+		}
+	}
+}
+
+// Evaluate the actual hosted-storage expression under both owners and every
+// execution mode; the host ABI pin does not make this local-only job an RRC reader.
+func TestHostedStorageFallbackMatchesLLVMHost(t *testing.T) {
+	expr := readCIWorkflow(t, bazelWorkflowName).job(t, bazelServerHostedJobName).RunsOn
+	if isBazelRRCCacheReader(bazelServerHostedJobName) {
+		t.Fatal("hosted storage must not become a trusted RRC reader")
+	}
+	for _, owner := range []string{"gastownhall", "donnabox"} {
+		for _, mode := range []string{"remote", "cache", "local", "fork-ro", "fork-rw", "skip"} {
+			t.Run(owner+"/"+mode, func(t *testing.T) {
+				ctx := map[string]string{
+					"github.repository_owner": owner,
+					"needs.rbe.outputs.mode":  mode,
+				}
+				want := "ubuntu-24.04"
+				if owner == "gastownhall" && (mode == "remote" || mode == "cache") {
+					want = "blacksmith-4vcpu-ubuntu-2404"
+				}
+				if got := mustEvalGHRunsOn(t, expr, ctx); got != want {
+					t.Errorf("hosted storage runner = %q, want %q", got, want)
 				}
 			})
 		}

@@ -2449,7 +2449,8 @@ jobs:
     # partition the same manifest; the original remote union stays unchanged.
     # The required aggregate verifies all five independent invocation proofs.
     needs: rbe
-    runs-on: ${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}
+    # Align the hosted fallback with the pinned LLVM host runtime (libxml2.so.2).
+    runs-on: ${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-24.04' }}
     if: ${{ needs.rbe.outputs.local_full == 'true' }}
     timeout-minutes: 30
     strategy:

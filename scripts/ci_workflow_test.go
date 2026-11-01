@@ -2620,6 +2620,8 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 			wantJobRunsOn = bazelPrewarmRunsOn
 		}
 		if name == bazelServerHostedJobName {
+			// Host LLVM compatibility is separate from RRC reader eligibility.
+			wantJobRunsOn = wantRunsOnUbuntu24
 			// This five-part replacement runs only in mode local; it is not
 			// one of the trusted RRC readers pinned by bazelRRCReadLanes.
 			wantJobSetupEnv = copyMap(wantSetupEnv)
