@@ -2619,6 +2619,12 @@ func TestBazelWorkflowJobsAndExecutionMode(t *testing.T) {
 		case bazelRBEPrewarmJobName:
 			wantJobRunsOn = bazelPrewarmRunsOn
 		}
+		if name == bazelServerHostedJobName {
+			// This five-part replacement runs only in mode local; it is not
+			// one of the trusted RRC readers pinned by bazelRRCReadLanes.
+			wantJobSetupEnv = copyMap(wantSetupEnv)
+			delete(wantJobSetupEnv, "BAZEL_RRC_READ")
+		}
 		if name == bazelReleaseCrossJobName {
 			// Cross-compilation does not read repository contents during tests;
 			// the RRC read opt-in is for the test lanes only.
