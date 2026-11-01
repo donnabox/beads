@@ -242,3 +242,34 @@ func transactionPolicyConnection(t *testing.T) (*Store, sqlmock.Sqlmock) {
 	})
 	return &Store{db: db}, mock
 }
+
+func TestEmbeddedCommitErrorClassification(t *testing.T) {
+	for _, tc := range []struct {
+		name, backend string
+		input         error
+		conflict      bool
+	}{
+		{"embedded-state-omitted", "embedded", &mysql.MySQLError{Number: 1213}, true},
+		{"wrapped-embedded-state-omitted", "embedded", errors.Join(errors.New("retained wrapper"), &mysql.MySQLError{Number: 1213}), true},
+		{"embedded-confirmed-state", "embedded", &mysql.MySQLError{Number: 1213, SQLState: [5]byte{'4', '0', '0', '0', '1'}}, true},
+		{"server-confirmed-state", "server", &mysql.MySQLError{Number: 1213, SQLState: [5]byte{'4', '0', '0', '0', '1'}}, true},
+		{"server-state-omitted", "server", &mysql.MySQLError{Number: 1213}, false},
+		{"default-state-omitted", "", &mysql.MySQLError{Number: 1213}, false},
+		{"unknown-backend-state-omitted", "unrecognized", &mysql.MySQLError{Number: 1213}, false},
+		{"embedded-wrong-state", "embedded", &mysql.MySQLError{Number: 1213, SQLState: [5]byte{'H', 'Y', '0', '0', '0'}}, false},
+		{"server-wrong-state", "server", &mysql.MySQLError{Number: 1213, SQLState: [5]byte{'H', 'Y', '0', '0', '0'}}, false},
+		{"lock-timeout", "embedded", &mysql.MySQLError{Number: 1205}, false},
+		{"same-message-wrong-number", "embedded", &mysql.MySQLError{Number: 1105, Message: "Error 1213 serialization failure"}, false},
+		{"text-is-not-typed", "embedded", errors.New("Error 1213 serialization failure 40001"), false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			err := classifyCommitErrorForBackend(tc.input, tc.backend)
+			if !errors.Is(err, tc.input) || errors.Is(err, ErrConflict) != tc.conflict || errors.Is(err, ErrOutcomeUnknown) == tc.conflict {
+				t.Fatalf("wrong backend/cause classification: %v", err)
+			}
+		})
+	}
+	if err := classifyCommitErrorForBackend(nil, "embedded"); err != nil {
+		t.Fatal(err)
+	}
+}

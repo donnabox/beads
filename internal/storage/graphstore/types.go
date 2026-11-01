@@ -14,6 +14,10 @@ import (
 // SchemaVersion identifies this explicitly experimental storage layout.
 const SchemaVersion = 11
 
+// TypesFreshSchemaVersion is reserved for the explicitly selected Types-only
+// fresh profile. It is not admitted by Options, OpenExisting or Init.
+const TypesFreshSchemaVersion = 14
+
 // TypeGeneration identifies the selected fresh graph contract, including its
 // Type installation and public identity semantics. It never migrates stores.
 const TypeGeneration = 13

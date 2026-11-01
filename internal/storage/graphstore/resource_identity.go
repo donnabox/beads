@@ -28,8 +28,8 @@ func (s *Store) ResolveAllocatedResourceIdentity(ctx context.Context, id string)
 	if err := validatePublicID(id); err != nil {
 		return AllocatedResourceIdentity{}, err
 	}
-	return s.readAllocatedResourceIdentity(ctx, func(tx *sql.Tx) (AllocatedResourceIdentity, error) {
-		return resolveAllocatedResourceIdentityInTx(ctx, tx, id)
+	return s.readAllocatedResourceIdentity(ctx, func(tx *sql.Tx, budget *intrinsicMetadataBudget) (AllocatedResourceIdentity, error) {
+		return resolveAllocatedResourceIdentityInTx(ctx, tx, id, budget)
 	})
 }
 
@@ -40,21 +40,30 @@ func (s *Store) AllocatedResourceIdentityForPath(ctx context.Context, path strin
 	if validatePath(path) != nil && validateLinkPath(path) != nil {
 		return AllocatedResourceIdentity{}, fmt.Errorf("%w: invalid private allocation locator", graph.ErrValidation)
 	}
-	return s.readAllocatedResourceIdentity(ctx, func(tx *sql.Tx) (AllocatedResourceIdentity, error) {
-		return allocatedResourceIdentityForPathInTx(ctx, tx, path)
+	return s.readAllocatedResourceIdentity(ctx, func(tx *sql.Tx, budget *intrinsicMetadataBudget) (AllocatedResourceIdentity, error) {
+		return allocatedResourceIdentityForPathInTx(ctx, tx, path, budget)
 	})
 }
 
-func (s *Store) readAllocatedResourceIdentity(ctx context.Context, lookup func(*sql.Tx) (AllocatedResourceIdentity, error)) (AllocatedResourceIdentity, error) {
+func (s *Store) readAllocatedResourceIdentity(ctx context.Context, lookup func(*sql.Tx, *intrinsicMetadataBudget) (AllocatedResourceIdentity, error)) (AllocatedResourceIdentity, error) {
 	var identity AllocatedResourceIdentity
-	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
-		if err := checkBinding(ctx, tx, s.options); err != nil {
-			return err
-		}
-		var err error
-		identity, err = lookup(tx)
-		return err
-	})
+	var err error
+	if s.options.Binding.SchemaVersion == TypesFreshSchemaVersion {
+		err = s.withDefinitionReadTx(ctx, txDefinitionRead, func(tx *sql.Tx, budget *intrinsicMetadataBudget) error {
+			var e error
+			identity, e = lookup(tx, budget)
+			return e
+		})
+	} else {
+		err = s.withTx(ctx, false, func(tx *sql.Tx) error {
+			if e := checkBinding(ctx, tx, s.options); e != nil {
+				return e
+			}
+			var e error
+			identity, e = lookup(tx, nil)
+			return e
+		})
+	}
 	if err != nil {
 		return AllocatedResourceIdentity{}, err
 	}
@@ -105,6 +114,10 @@ func (s *Store) publicResourcePathInTx(ctx context.Context, tx *sql.Tx, uri stri
 // In particular, a scoped Memory question must not scan unrelated lifetime
 // identities or inherit a whole-Scope retained-history acquisition gate.
 func checkAllocatedIdentityReadBytes(ctx context.Context, tx *sql.Tx, predicate string, args ...any) error {
+	return checkAllocatedIdentityBytesInBudget(ctx, tx, nil, predicate, args...)
+}
+
+func checkAllocatedIdentityBytesInBudget(ctx context.Context, tx *sql.Tx, budget *intrinsicMetadataBudget, predicate string, args ...any) error {
 	var size uint64
 	query := `SELECT CAST(LEAST(COALESCE(SUM(
  4*(256+OCTET_LENGTH(path)+COALESCE(OCTET_LENGTH(backing_key),0)+COALESCE(OCTET_LENGTH(public_id),0))
@@ -116,6 +129,9 @@ func checkAllocatedIdentityReadBytes(ctx context.Context, tx *sql.Tx, predicate 
 	}
 	if size > PreviewCurrentReadByteLimit {
 		return fmt.Errorf("%w: allocation identities exceed acquisition budget", ErrLimitExceeded)
+	}
+	if budget != nil {
+		return budget.chargeBody(int(size) + 256)
 	}
 	return nil
 }
@@ -149,10 +165,17 @@ func (s *Store) resolveResourceReadAddressInTx(ctx context.Context, tx *sql.Tx, 
 // These transaction helpers require the caller's usual binding and acquisition
 // checks. They do not allocate, rewrite identities, or choose URI encodings.
 const allocatedPublicIdentityPredicate = `(backing='issue' AND backing_key=?) OR
- (backing IN ('generic','dependency','informational') AND COALESCE(public_id,path)=?)`
+ (backing IN ('generic','dependency','informational','intrinsic','intrinsic-link','type-definition') AND COALESCE(public_id,path)=?)`
 
-func resolveAllocatedResourceIdentityInTx(ctx context.Context, tx *sql.Tx, id string) (AllocatedResourceIdentity, error) {
-	if err := checkAllocatedIdentityReadBytes(ctx, tx, allocatedPublicIdentityPredicate, id, id); err != nil {
+func resolveAllocatedResourceIdentityInTx(ctx context.Context, tx *sql.Tx, id string, budgets ...*intrinsicMetadataBudget) (AllocatedResourceIdentity, error) {
+	var budget *intrinsicMetadataBudget
+	if len(budgets) > 1 {
+		return AllocatedResourceIdentity{}, ErrInvalidStore
+	}
+	if len(budgets) == 1 {
+		budget = budgets[0]
+	}
+	if err := checkAllocatedIdentityBytesInBudget(ctx, tx, budget, allocatedPublicIdentityPredicate, id, id); err != nil {
 		return AllocatedResourceIdentity{}, err
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT `+allocatedIdentityColumns+` FROM graph_preview_catalog
@@ -167,8 +190,15 @@ func resolveAllocatedResourceIdentityInTx(ctx context.Context, tx *sql.Tx, id st
 	return identity, err
 }
 
-func allocatedResourceIdentityForPathInTx(ctx context.Context, tx *sql.Tx, path string) (AllocatedResourceIdentity, error) {
-	if err := checkAllocatedIdentityReadBytes(ctx, tx, "path=?", path); err != nil {
+func allocatedResourceIdentityForPathInTx(ctx context.Context, tx *sql.Tx, path string, budgets ...*intrinsicMetadataBudget) (AllocatedResourceIdentity, error) {
+	var budget *intrinsicMetadataBudget
+	if len(budgets) > 1 {
+		return AllocatedResourceIdentity{}, ErrInvalidStore
+	}
+	if len(budgets) == 1 {
+		budget = budgets[0]
+	}
+	if err := checkAllocatedIdentityBytesInBudget(ctx, tx, budget, "path=?", path); err != nil {
 		return AllocatedResourceIdentity{}, err
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT `+allocatedIdentityColumns+` FROM graph_preview_catalog WHERE path=? LIMIT 2`, path)
@@ -197,8 +227,8 @@ func readAllocatedIdentityRows(rows *sql.Rows) (AllocatedResourceIdentity, error
 		}
 		expectedKind := graph.KindBead
 		switch backing {
-		case "issue", "generic":
-		case "dependency", "informational":
+		case "issue", "generic", "intrinsic", "type-definition":
+		case "dependency", "informational", "intrinsic-link":
 			expectedKind = graph.KindLink
 		default:
 			_ = rows.Close()
