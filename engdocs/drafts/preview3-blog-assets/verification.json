@@ -1,0 +1,565 @@
+{
+  "scope": "Bounded editorial verification, not release qualification",
+  "build_source": "0fcca128f388edbbc09780b73f572cde4a8e3730",
+  "build_tree": "9716bc78ef45e2b3d1fbb0b04629704a1075405a",
+  "binary_sha256": "15c4fba904eec859c90868de19ce537c1b23379ef107771cba309e138507bcdc",
+  "runtime_bdp_read_pin": "bad780f19761e5714873aa3a85adeb75bc885928",
+  "sources": {
+    "frozen_memory_cli_frontmatter_sha256": "5ed85b70bacae138ef3a5367a5b5a3e18d65927adafc40f107dcb1cd6a5a3850",
+    "live_cli_at_capture_sha256": "556894a575ace9beae668840f0919c14afbbd4ae62c5b738b089105626fef355",
+    "selected_runbook_sha256": "f87194c1046682ac9562d97c3ebcc374ad6c0c3d2350b0c9e1e780f6ced23ded",
+    "proposal_body_sha256": "efd69929dae04427e86c64dc88053f932ddf3e5151a7cc61fa631c1e56eeee83"
+  },
+  "post_sha256": "f0863264a4269cd66bf3109cd008fe042970c2c58bc5294b7da9cedce156b16e",
+  "assertions": [
+    {
+      "assertion": "One Specification plus 32 Requirements and 16 Scenarios stored",
+      "status": "PASS"
+    },
+    {
+      "assertion": "All full stored child titles and Markdown bodies match the extracted literal source",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Defines and Requires-family reads both reach 49 Beads and 48 Links",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Defines labels stay Defines in the broader Requires read",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Every defining child is directly linked from the Specification",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Three-Memory cycle and cycle through Issue are both retained",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Dry-run visible inventory unchanged",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Real ordinary producer exports and graph-imports two Issues, one Memory, one Dependency and one comment",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Legacy source IDs and Memory identity preserved",
+      "status": "PASS"
+    },
+    {
+      "assertion": "All 70 main-path article command observations complete successfully",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Alternative typed Memory creation separately succeeds",
+      "status": "PASS"
+    },
+    {
+      "assertion": "Donna live Memory CLI buffer remains byte-identical to frozen capture",
+      "status": "PASS"
+    }
+  ],
+  "article_commands": [
+    {
+      "block": 1,
+      "shell": "bd version",
+      "exit": 0,
+      "stdout_sha256": "e64146498fe37fec674b14ab299f45e040d269823b8a7f592c6384e4c06c6f17",
+      "stderr_sha256": "dda5b8044ed14a296cdf8bae59705f34989f7ac8f2d90d227c1a45111766620b"
+    },
+    {
+      "block": 1,
+      "shell": "bd export --include-memories --output /tmp/preview3-export.jsonl",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0b0a8b12201301cea8edc3cee166fae784f5d295732fbf1159ade6f481521c89"
+    },
+    {
+      "block": 2,
+      "shell": "bd version",
+      "exit": 0,
+      "stdout_sha256": "7f09052098b29a3d322da30d50c2fe3434883cd404c39111514a6d08292a38d6",
+      "stderr_sha256": "dda5b8044ed14a296cdf8bae59705f34989f7ac8f2d90d227c1a45111766620b"
+    },
+    {
+      "block": 2,
+      "shell": "mkdir beads-preview3-trial",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 2,
+      "shell": "cd beads-preview3-trial",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 2,
+      "shell": "git init -q",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 2,
+      "shell": "bd init --graph-mode link --scope-url 'https://example.invalid/preview3-trial/'",
+      "exit": 0,
+      "stdout_sha256": "4ec23056cb06025dd82f12158a1fb57e329009244bce6fa6d696526ef456f865",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 2,
+      "shell": "bd list --type any --all --format records-json > before-import.json",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 2,
+      "shell": "bd import /tmp/preview3-export.jsonl --dry-run --json > import-preview.json",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 2,
+      "shell": "jq '.result | {dry_run, issues, memories, dependencies, comments, history}' import-preview.json",
+      "exit": 0,
+      "stdout_sha256": "a762d6ca6426353c16e645c0de73d33a8c3539ec65718b56bb50bb9bc19ac49b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 2,
+      "shell": "bd list --type any --all --format records-json > after-preview.json",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 2,
+      "shell": "cmp before-import.json after-preview.json",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 3,
+      "shell": "bd import /tmp/preview3-export.jsonl --json > import-result.json",
+      "exit": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 3,
+      "shell": "jq '.result | {issues, memories, dependencies, comments, ids, memory_ids, dependency_ids}' import-result.json",
+      "exit": 0,
+      "stdout_sha256": "c6b4364e6a21050432bb201241ec208d48442e0b67a1dcf49a0a886adff1e475",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 3,
+      "shell": "bd list --type any --all",
+      "exit": 0,
+      "stdout_sha256": "9e40361da53a57dd2b36ecf85c9ace933d3e2cdc3b3a6c6086acaad683be3e8b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 3,
+      "shell": "bd memories",
+      "exit": 0,
+      "stdout_sha256": "c5af13c294f800b61e2bae238ad02769e7f623961eb4a70296d2caa362879c03",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 4,
+      "shell": "bd remember 'Export the selected rows as CSV.'    --key csv-design --title 'CSV export design' --create-only",
+      "exit": 0,
+      "stdout_sha256": "32ed70978ffdfdecab70d3e5d32af316ccf3eb528a4e6c9ac38ed5b113d743d3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 4,
+      "shell": "bd remember 'Use UTF-8.'    --key csv-encoding --title 'CSV encoding' --create-only",
+      "exit": 0,
+      "stdout_sha256": "55dcd6a7ae71967484b1d61641caba660e5ea7f7f544c0a877976e796c7b4582",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 4,
+      "shell": "bd remember 'Test the exported UTF-8 file in spreadsheet tools; keep the results with the implementation work.'    --key csv-interop --title 'CSV interoperability checks' --create-only",
+      "exit": 0,
+      "stdout_sha256": "316236c05c124dd43d24fcc7f2b1e79d4b64ed8eda5416b54ae6659f267da51c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 6,
+      "shell": "bd create 'Add CSV export' --id export-work --type task --force    --description 'Implement CSV export for the selected rows.'",
+      "exit": 0,
+      "stdout_sha256": "5c1d322de2347930d8595c0e6d02d7882d99eb78922be8ebc24ef955d8f22001",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 6,
+      "shell": "bd create 'Review CSV export' --id review-work --type task --force    --description 'Review the completed CSV export feature.'",
+      "exit": 0,
+      "stdout_sha256": "81700b49471b8be0ecc9b75dd4a80a4d36c1833df524391d24370c94a2dfac00",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 6,
+      "shell": "bd recall csv-design",
+      "exit": 0,
+      "stdout_sha256": "80d2af6fa7488948fcb220fb5aa486502f352c8fffd94d3bae75124f81c0efb6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 6,
+      "shell": "bd memories CSV",
+      "exit": 0,
+      "stdout_sha256": "e1e3900aba6ded183edb42d29913ae19828d40e23ef58c3aa8dfe7fd88bc3030",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 6,
+      "shell": "bd show csv-design",
+      "exit": 0,
+      "stdout_sha256": "e6492fb87d96777e12f0829e689f85e33346b50b77c2352a79b13dbc1136cc25",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 7,
+      "shell": "bd memory reference csv-design csv-encoding --id encoding-context    --title 'Uses this encoding' --body 'Text encoding for exported files'",
+      "exit": 0,
+      "stdout_sha256": "c56b6ce1ef47740b9b88114d546b75735969005d5c0a25343ea008b8ca89b1ab",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 7,
+      "shell": "bd memory reference csv-encoding csv-interop --id encoding-checks    --title 'Interoperability checks for this encoding'",
+      "exit": 0,
+      "stdout_sha256": "9b6cbe7be6f4879fea0dbea7efa4d76143aa1a42f0e83c2d5618578cdcafc2db",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 7,
+      "shell": "bd memory reference csv-interop csv-design --id checks-design    --title 'Design these checks validate'",
+      "exit": 0,
+      "stdout_sha256": "0a132b4f3f6951a041a4155b3cb120c3a3db2b2798f54a628591c7f644c82ee9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 7,
+      "shell": "bd memory reference csv-interop export-work --id checks-work    --title 'Implementation and verification work'",
+      "exit": 0,
+      "stdout_sha256": "bf1a5416ac96d80b8d7bcb4d4407dfcf1f942046fd8022f2dba22bda7ee48bac",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 7,
+      "shell": "bd memory reference export-work csv-design --id design-context    --title 'Implementation context'",
+      "exit": 0,
+      "stdout_sha256": "6b67a5408331045671122c9498b9e369d9e9d1c2fce7df829d42746c6b110073",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 7,
+      "shell": "bd link create review-work export-work --type blocks --id review-after-export",
+      "exit": 0,
+      "stdout_sha256": "be30ad22fb5c02c99e4cd51b58163e1e54f10a0afe225528f7d3eaecab343ede",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 8,
+      "shell": "bd memory references csv-design",
+      "exit": 0,
+      "stdout_sha256": "83843ec96645c7c193cdbc37ea59ef971709690ab6322a9bded7b57fc336ec72",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 8,
+      "shell": "bd memory referenced-by csv-design",
+      "exit": 0,
+      "stdout_sha256": "8ef74d50a57c7abbe5477fdc1079c28dca114f7d9da5f392329294ce5186c110",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 8,
+      "shell": "bd graph csv-design --link-type types/references --direction out --depth 4",
+      "exit": 0,
+      "stdout_sha256": "06a98633888c481c2cfcb4853901d5608265a8c57a3b432b508ce04693e20034",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 9,
+      "shell": "bd update csv-encoding --properties '{\"body\":\"Use UTF-8 without a byte-order mark.\"}'",
+      "exit": 0,
+      "stdout_sha256": "5bcd4e8cbd369f85261efcf9ab1f88e54c541ac78087f4eb715295fc4431c7f3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 9,
+      "shell": "bd update csv-encoding --properties '{\"title\":\"CSV text encoding\",\"status\":\"reviewed\"}'",
+      "exit": 0,
+      "stdout_sha256": "fe604a6e777e511db75de434703a2d9e2f3552198fe589bba7ddd7368df9f60b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 9,
+      "shell": "bd versions csv-encoding",
+      "exit": 0,
+      "stdout_sha256": "ef0e31532eb2b5119764d42cc222f477028e34076b7eccdc8e097b66ead4f70d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 9,
+      "shell": "bd show csv-encoding@2",
+      "exit": 0,
+      "stdout_sha256": "7644923d06de546ed939bffc91eb04f2ea44e0625a3ccf354009e6efa8eea814",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 9,
+      "shell": "bd recall csv-encoding@2",
+      "exit": 0,
+      "stdout_sha256": "91146b2f9dd16d5f9b51f36bafcae9ae12c9ba29895d99fc4e4b479d19914603",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 10,
+      "shell": "bd remember 'Encoding, headings and spreadsheet examples.'    --key csv-guide --title 'CSV interoperability guide' --create-only",
+      "exit": 0,
+      "stdout_sha256": "81390b22cd5f8124dedd13ee88c6159b9c21135e07e6c57b02b549cb477ccd9b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 10,
+      "shell": "bd memory supersede csv-encoding csv-guide --id encoding-replacement",
+      "exit": 0,
+      "stdout_sha256": "96fc4ba1cd23143bd6c8ddca67a6ecfd7e97331fe0da9c47c12ab60a51158bf1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 10,
+      "shell": "bd memory successor csv-encoding",
+      "exit": 0,
+      "stdout_sha256": "d501e0cf82bcf3abf3054e245f03c4ef87ae4b0aed52f31a83bf58391594742b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 10,
+      "shell": "bd memory supersedes csv-guide",
+      "exit": 0,
+      "stdout_sha256": "6b7375ef04b415a785b3a875cb794cba4ced57a0fb482243a4589f01762b64a7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 11,
+      "shell": "bd create 'CSV export format' --id csv-format --type types/specification    --body 'Export selected rows and follow the rules linked below.'",
+      "exit": 0,
+      "stdout_sha256": "b016b551217f74f68f0d940dc47706c6ecaed53d24af9561ceda4698a2544b84",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 11,
+      "shell": "bd create 'Export every selected row' --id selected-rows --type types/requirement    --body 'Every selected row appears exactly once.'",
+      "exit": 0,
+      "stdout_sha256": "0e17b02ac96d40f663160f435270d96056b34c2c5c85d390777977face106bcf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 11,
+      "shell": "bd create 'Export an empty selection' --id empty-export --type types/scenario    --body 'Produce headings and no data rows.'",
+      "exit": 0,
+      "stdout_sha256": "8aa2c565a30e265792dcea3ad0c039d2c10354c11211d8f607a2d0c6cc167534",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 11,
+      "shell": "bd create 'Protect customer data' --id customer-data --type types/policy    --body 'Keep personal information out of logs and shared sample exports.'",
+      "exit": 0,
+      "stdout_sha256": "ab649c5cf808a89ffbcb6929e618a25ed988fb4d4b8396fef028e1aacfdcc084",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 11,
+      "shell": "bd create 'Redact application logs' --id redact-logs --type types/policy    --body 'Remove personal information before writing log entries.'",
+      "exit": 0,
+      "stdout_sha256": "033c22ae48d6b395ea692d10620af97f995b0ebc59daea7225a55dc1e83edd41",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 11,
+      "shell": "bd create 'Use anonymized sample exports' --id sample-exports --type types/policy    --body 'Use anonymized records in shared sample exports.'",
+      "exit": 0,
+      "stdout_sha256": "832bfa3aff7f92743a6555d1f1570298f17bbdd48b6873c9d2b7e7a8f59b2b8f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 12,
+      "shell": "bd memory defines csv-format selected-rows --id defines-rows",
+      "exit": 0,
+      "stdout_sha256": "d23262fc41d3e33d1ada8a367af3ae52a0550b87882ba19325ca736181fbeecc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 12,
+      "shell": "bd memory defines csv-format empty-export --id defines-empty",
+      "exit": 0,
+      "stdout_sha256": "e0586008354268fd74e0c18d4ed877944a343e4173adabbdb55f74d2eb63a1b3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 12,
+      "shell": "bd memory defines customer-data redact-logs --id defines-logs",
+      "exit": 0,
+      "stdout_sha256": "1afe3645d31301f1535af7ef8a1164231517b45c94a9d0647c2a0ef901c25f7e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 12,
+      "shell": "bd memory defines customer-data sample-exports --id defines-samples",
+      "exit": 0,
+      "stdout_sha256": "e9920386fe8ce415f7e92a1b562f0ddd7ec977f17d84ca1778b0dc30033ac4a1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 12,
+      "shell": "bd memory requires csv-format customer-data --id requires-policy",
+      "exit": 0,
+      "stdout_sha256": "9c15e835e29e13bf276bbd59ab44f79c765c69975460da72b5a4f1ae4a7be088",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 12,
+      "shell": "bd memory requires selected-rows redact-logs --id requires-log-policy",
+      "exit": 0,
+      "stdout_sha256": "8f576e72c047fb8514f749ba4f604bf727ae7f8a9ac66557348c99986c2778bf",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 13,
+      "shell": "bd memory definition csv-format",
+      "exit": 0,
+      "stdout_sha256": "63d3c8a4fb6a403c50cbcb5f14038a60f842aa4a27dd0a7e4fc12b080bbe2004",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 13,
+      "shell": "bd memory requirements csv-format",
+      "exit": 0,
+      "stdout_sha256": "30f8c354bce0c39ba6a351497b0887fd2787efe421ae7b4d9e93c66fc76711b6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 13,
+      "shell": "bd memory defined-by selected-rows",
+      "exit": 0,
+      "stdout_sha256": "c86f9598df83ec55a0a243bf7865dfd13f5a1c5f24ed731570bee93f199f085e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 13,
+      "shell": "bd memory required-by redact-logs",
+      "exit": 0,
+      "stdout_sha256": "d030d0e36827c0c64280ec862f983b3e70dd70735898c9e32f87ec754e7b7a48",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 14,
+      "shell": "bd remember 'The CSV preview build is ready for review.'    --key csv-preview --title 'CSV preview build' --create-only",
+      "exit": 0,
+      "stdout_sha256": "5ac427c9fe647287d169267a80ba00c15b6195888cbcdc0d9e1df6b887656b42",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 14,
+      "shell": "bd memory subject-to export-work csv-format --id work-obligation",
+      "exit": 0,
+      "stdout_sha256": "16a3a87674d6c8b3cfe6cb841bf7f953944de5eabeba4ef13e0b030a9fc6af99",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 14,
+      "shell": "bd memory subject-to csv-preview csv-format --id build-obligation",
+      "exit": 0,
+      "stdout_sha256": "c8262e1dfb6deb23014586fc88564107272a6910aa4acd7a6e5a7c2c542decee",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 14,
+      "shell": "bd memory constraints export-work csv-preview",
+      "exit": 0,
+      "stdout_sha256": "dbff28bddc9fb47426e047e2a6c7b28bf25d7a78ae032870f578da3028da385c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 14,
+      "shell": "bd memory subjects csv-format",
+      "exit": 0,
+      "stdout_sha256": "e4bd3f1b4f263554bf532de4d97aa8dc2a415c13cf17a002ab11887e5061b985",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 15,
+      "shell": "bd show memory-proposal",
+      "exit": 0,
+      "stdout_sha256": "6db6f51a2c5ac79c9459843f9e08904854c6d0c6aa1a35ef8f17eaf07f2b0a66",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 16,
+      "shell": "bd list --type requirement",
+      "exit": 0,
+      "stdout_sha256": "678f5e2f0e7e1f86e93983de6c8dafe2f5b92b3e4e02e2a110d713482bccaeb5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 17,
+      "shell": "bd list --type scenario",
+      "exit": 0,
+      "stdout_sha256": "58e0d708f06bc5d73300b122176c013b02b4909ef87784171bafe68503b951e0",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 18,
+      "shell": "bd memory definition memory-proposal",
+      "exit": 0,
+      "stdout_sha256": "683499894a76f0449d825247f730bab017ade01b84e94b716717e5cf0d0d5bd9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 19,
+      "shell": "bd memory requirements memory-proposal",
+      "exit": 0,
+      "stdout_sha256": "683499894a76f0449d825247f730bab017ade01b84e94b716717e5cf0d0d5bd9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 20,
+      "shell": "bd show memory-r1",
+      "exit": 0,
+      "stdout_sha256": "f7a13fe5a6a23b7a31b4b107a54c61390dd543234fe6d3f60b3817c8c89a08b6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "block": 20,
+      "shell": "bd recall memory-s1",
+      "exit": 0,
+      "stdout_sha256": "1714004ef482c1df3c10a02f2d62691d922d610eb62d8d7f4ec1d7dd9cd54ba3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "qualification_limits": [
+    "Embedded disposable producer, import destination and proposal Scope only; no user store opened. No server/HTTP or two-engine release sweep.",
+    "Command 20 initially refused the unprefixed fixed Issue ID after import. That refusal is retained in the local raw evidence. The article adds --force for the two practice Issue IDs; the corrected continuation completed commands 20\u201370 without rerunning or relabeling the initial 19 observations.",
+    "One alternative creation block was executed independently to avoid recreating an existing identity.",
+    "An earlier discovery probe assumed an unguarded update would refuse; it succeeded, making that probe\u2019s following guard stale. The original probe is retained and is not called a passing journey.",
+    "Illustrative compact proposal displays are authored, not copied terminal output. Full stored data was checked separately.",
+    "make check-docs could not start its Bazel gate because bazel is unavailable. Plain-Go docsync and direct freshness checks passed; they are not relabeled as Bazel qualification."
+  ],
+  "release_question": "Does the final Preview 3 cut include bd memory remember/recall/memories/forget and typed remember creation from the newer CLI design? The selected binary does not expose nested content verbs (memory recall returns group help); the draft uses working top-level content commands and generic typed creation."
+}
