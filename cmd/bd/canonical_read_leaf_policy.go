@@ -41,7 +41,7 @@ func lookupCanonicalReadLeaf(path []string) (canonicalReadLeafDescriptor, bool) 
 		flags := []string{"ast", "output-format", "omit"}
 		result = canonicalReadLeafDescriptor{Operation: canonicalReadLeafQuery, Path: []string{"query"}, Flags: append(flags, common...), RequiresAST: true}
 	default:
-		return canonicalReadLeafDescriptor{}, false
+		return lookupCanonicalRetainedLeaf(path)
 	}
 	return result, true
 }
@@ -100,7 +100,7 @@ func admitCanonicalReadLeaf(input canonicalReadLeafInvocation) (canonicalReadLea
 	}
 	descriptor, covered := lookupCanonicalReadLeaf(input.Path)
 	if !covered {
-		return refuse("capability_unavailable", 5, "canonical operation is outside the initial List/Link List/Query coverage")
+		return refuse("capability_unavailable", 5, "canonical operation is outside the selected finite surface")
 	}
 	if input.AliasUsed {
 		return refuse("invalid_selector", 2, "use the canonical command path rather than a compatibility alias")

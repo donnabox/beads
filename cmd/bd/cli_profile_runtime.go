@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -222,6 +223,13 @@ func executeCLIProfileRootWith(root *cobra.Command, argv []string,
 		}
 		return executed, err
 	}
+	savedRootContext := root.Context()
+	baseContext := savedRootContext
+	if baseContext == nil {
+		baseContext = context.Background()
+	}
+	root.SetContext(context.WithValue(baseContext, canonicalRetainedArgvKey, append([]string(nil), prefix.ExecutionArgs...)))
+	defer root.SetContext(savedRootContext)
 	decoration, err := prepareCanonicalReadLeaf(root, selection.Profile, prefix.ExecutionArgs)
 	if err != nil {
 		return root, cliProfileRuntimeRefusal(root, err)
@@ -231,6 +239,13 @@ func executeCLIProfileRootWith(root *cobra.Command, argv []string,
 	if command == nil {
 		return root, cliProfileUnavailable(root, "canonical command admission did not resolve a covered operation")
 	}
+	savedCommandContext := command.Context()
+	commandBaseContext := savedCommandContext
+	if commandBaseContext == nil {
+		commandBaseContext = root.Context()
+	}
+	command.SetContext(context.WithValue(commandBaseContext, canonicalRetainedArgvKey, append([]string(nil), prefix.ExecutionArgs...)))
+	defer command.SetContext(savedCommandContext)
 	argsPassed := false
 	originalArgs := command.Args
 	command.Args = func(actual *cobra.Command, args []string) error {

@@ -231,7 +231,6 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return graphFailure("invalid_selector", "--deps target "+spec.TargetID+": "+err.Error(), 2)
 		}
-		selector.Exact = true
 		createDependencies = append(createDependencies, graphstore.IssueCreateDependency{Target: selector, Type: spec.Type, Reverse: spec.SwapDirection})
 	}
 	silent, _ := cmd.Flags().GetBool("silent")

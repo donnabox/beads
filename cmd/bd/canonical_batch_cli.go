@@ -44,7 +44,7 @@ func init() {
 		}
 	}
 	batchCmd.Flags().String("input-format", "", "Canonical batch input: jsonl or native json; omitted retains the legacy command-text runner outside graph mode")
-	batchCmd.Flags().String("batch-version", "", "Explicit canonical JSONL encoder version (currently experimental 2)")
+	batchCmd.Flags().String("batch-version", "", "Explicit encoder version: selected native JSON 1 or experimental JSONL 2")
 	batchCmd.Flags().StringArray("batch-arg", nil, "Supply an external canonical batch Reference argument NAME=VALUE")
 	batchCmd.Flags().String("scope", "", "Scope for canonical authoring; defaults to BD_SCOPE or the selected graph workspace")
 	batchCmd.Flags().String("dry-run-mode", "", "Emit the compiled canonical batch request without executing it")
@@ -68,6 +68,10 @@ func canonicalBatchSelected(cmd *cobra.Command) bool {
 // Offline authoring exits the root provider gate before any database is opened.
 // A successful emission is an unexecuted request, never a mutation result.
 func admitCanonicalAuthoring(cmd *cobra.Command) (bool, error) {
+	// The retained caller owns live singleton Scope/provenance admission.
+	if canonicalRetainedSelected(cmd) {
+		return admitCanonicalRetained(cmd)
+	}
 	canonicalBatchRetry = nil
 	if canonicalBatchSelected(cmd) {
 		if err := canonicalBatchScalars(cmd); err != nil {

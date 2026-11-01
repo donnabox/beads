@@ -84,6 +84,9 @@ func canonicalDefinitionForDisplay(record any) (resourceget.DefinitionDocument, 
 }
 
 func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
+	if canonicalRetainedSelected(cmd) && !linkOnly {
+		return runCanonicalRetained(cmd, args)
+	}
 	opts, selected, err := canonicalOutputOptions(cmd)
 	definitionWorkspace := graphPreviewConfig != nil && graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion
 	// This fresh layout adopts canonical Show as its ordinary read. Preserve the

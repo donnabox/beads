@@ -1226,6 +1226,9 @@ var rootCmd = &cobra.Command{
 		_ = cmd.Help() // Help() always returns nil for cobra commands
 	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) (retErr error) {
+		if err := validateCanonicalRetainedSyntax(cmd); err != nil {
+			return err
+		}
 		if err := validateCanonicalOutputInvocation(cmd); err != nil {
 			return err
 		}
@@ -1258,6 +1261,7 @@ var rootCmd = &cobra.Command{
 		// backfilled. A bare assignment leaves those commands reading a nil
 		// per-command context and losing Ctrl-C entirely.
 		setRootContext(setupGracefulShutdown())
+		bindCanonicalRetainedRootSignal(cmd, getRootContext())
 
 		// Initialize OTel. Telemetry is opt-in — initTelemetry is a noop
 		// unless BD_OTEL_ENABLED=true or a legacy BD_OTEL_* selector is set.
@@ -1300,6 +1304,9 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Admit persisted graph format before legacy store discovery or maintenance.
+		if handled, err := admitCanonicalRetained(cmd); handled || err != nil {
+			return err
+		}
 		if handled, err := admitCanonicalAuthoring(cmd); handled || err != nil {
 			return err
 		}

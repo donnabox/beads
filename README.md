@@ -359,3 +359,104 @@ The [BDP Python example](examples/bdp-read/) reads and enumerates its records ov
 * [Documentation site](https://beads.gascity.com/) | [Installing](docs/getting-started/installation.md) | [Sync Concepts](docs/core-concepts/sync-concepts.md) | [Agent Setup](docs/getting-started/ide-setup.md) | [Copilot CLI Setup](docs/integrations/copilot-cli.md) | [Copilot VS Code MCP](docs/integrations/github-copilot.md) | [Articles](ARTICLES.md) | [Sync Branch Mode](docs/reference/protected-branches.md) | [Troubleshooting](docs/reference/troubleshooting.md) | [FAQ](docs/reference/faq.md)
 * Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) (Bazel builds and tests beads: install [Bazelisk](https://github.com/bazelbuild/bazelisk), then `make test`) | [Roadmap](ROADMAP.md) | [Contributor agent instructions](AGENTS.md)
 * [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gastownhall/beads)
+
+## Canonical retained HTTP caller
+
+The bounded `--cli-profile canonical` HTTP route supports an absolute point
+`show` and six singleton operations: `create`, `update`, `delete`, `link create`,
+`link update` and `link delete`, plus explicitly selected native JSON batch1. It uses the selected retained BDP 0.1 media and
+contract. This route does not establish complete Write-profile conformance.
+
+```sh
+bd --cli-profile canonical show https://service.example/scope/beads/one
+bd --cli-profile canonical create --scope https://service.example/scope/ \
+  --type https://types.example/task --properties '{"title":"Investigate"}' \
+  --dry-run-mode bdp
+```
+
+An absolute `show` uses that whole URL and verifies its owning machine discovery.
+It needs no default Scope, Write operations directory or mutation journal. A
+Core-only service can satisfy it. Historical/pinned point reads and alias redirects
+are outside this bounded route.
+
+Mutations select Scope from `--scope`, then `BDP_SCOPE_URL`, then the user-global
+`scope.url` configuration. Explicit empty or malformed selections refuse. Mutation
+setup validates strict user configuration even with an explicit Scope. The caller
+discovers each operation URL; it never constructs one from a path suffix.
+Creation requires `--type`; deletion requires `--force`. Mutation subjects are
+unpinned; supply an exact opaque guard as `--if-revision '=TOKEN'`. A pinned Type
+or Link endpoint uses the existing `[https://example/resource]@=TOKEN` spelling.
+Property and metadata inputs accept inline JSON, `@FILE`, or one `@-` stdin input.
+Replacement and Change modes cannot be combined for the same plane.
+
+`--dry-run-mode bdp` emits the discovered singleton request without a POST, local
+invocation save or generated/reserved idempotency key. Credential resolution may
+be needed for discovery; credentials are never included in the preview.
+`--dry-run-mode batch` remains the separate experimental local member format.
+This caller neither converts that format to service atomic batch nor executes a
+loop of singleton requests as an atomic batch.
+
+Native batch1 consumes a complete selected request, with no experimental2/JSONL
+conversion or external `--batch-arg` substitution:
+
+```sh
+bd --cli-profile canonical batch --scope https://service.example/scope/ \
+  --input-format json --batch-version 1 --file request.json --dry-run-mode bdp
+```
+
+The file (or `--file -` for stdin) must contain exactly `capabilityVersion:"1"`
+and a nonempty `operations` array. Only the six ordinary CRUD discriminators
+are accepted. Optional create names bind prior kind-correct `@NAME` subject or
+endpoint slots; property strings, whole pins, guards and number tokens stay
+literal. Insignificant JSON whitespace is compacted before the first save/POST.
+The caller requires explicit atomic-batch1 advertisement, follows its separate
+operation URL, checks the advertised subset/bounds and submits the whole group
+once. It does not add a ninth ordinary operations-directory member. Remove
+`--dry-run-mode bdp` to submit. The service owns atomic commit and durable outcome;
+a request preview or HTTP fixture does not prove those obligations.
+
+Live retained submission saves the exact contract, Scope, destination, native
+body and key before its one POST. Use `--idempotency-key` for an explicit
+case-sensitive ASCII key of 1-256 letters, digits, underscores or hyphens; otherwise
+the caller generates a key. Recovery files live in the private
+`retained-invocations` directory alongside the selected user-global config file.
+The directory requires mode 0700 and files mode 0600. Existing recovery records
+are never overwritten. A reported recovery path identifies the original invocation:
+
+```sh
+bd --cli-profile canonical create --scope https://service.example/scope/ \
+  --retry-file /absolute/user/config/bd/retained-invocations/DIGEST.json
+```
+
+Explicit recovery accepts no fresh operands, key or input fields. It preserves
+the original operation and refuses changed Scope or local credential owner/provider
+context. Singleton recovery also verifies current navigation. Batch recovery
+verifies the original Scope/contract and posts the frozen target/body/key even
+when fresh batch support, operation subsets or bounds are withdrawn. Use
+`bd --cli-profile canonical batch --scope URL --retry-file /absolute/DIGEST.json`
+without fresh version/input/key flags. It never invents a replacement destination. Local provenance is not a server principal assertion;
+the service authenticates the request and owns its retained-key namespace. A
+checked native failure keeps its original Problem and retry advice. A lost or
+unverifiable reply does not prove that the mutation failed or rolled back.
+There is no automatic retry, credential refresh, redirect or result reread.
+A human-readable successful Scope landing is allowed when it supplies the selected
+machine service-desc navigation. First-signal cancellation and the caller's
+existing shorter deadline both bound HTTP and credential work.
+
+Credentials use the existing host-scoped `BEADS_HTTP_TOKEN`,
+`BEADS_HTTP_TOKEN_COMMAND` and credentials-file ladder for each destination.
+Configured credential errors refuse. TLS verification remains enabled; bearer
+credentials to non-loopback plaintext targets require the existing explicit
+`BEADS_HTTP_ALLOW_INSECURE=1` opt-in. Request bodies are bounded to 65,536 bytes
+and discovery/result bodies to 262,144 bytes. Ordinary reads have a 30-second
+budget and mutations two minutes, bounded further by an inherited deadline.
+
+Current full Resource reads require metadata, including nested current Links.
+Retained mutation results use their own metadata-optional contract. Native results
+retain their original Resource or mutation result, including Link owner revisions. A response Close or output failure reports a failing exit while
+preserving the known operation result. List/Query, History, aliases, Types
+capabilities remain separate. Batch1 returns its own ordered member mappings and
+unique final Resource rows, including no-op and allocation-only outcomes; it never
+converts them into singleton results. The selected
+private service's remaining gaps and the real installed CLI-to-SQLite journey
+still require their own acceptance evidence.

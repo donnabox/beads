@@ -21,14 +21,16 @@ import (
 type canonicalMutationOutputShape string
 
 const (
-	canonicalMutationOutputBead       canonicalMutationOutputShape = "bead-resource"
-	canonicalMutationOutputLink       canonicalMutationOutputShape = "link-resource"
-	canonicalMutationOutputMemory     canonicalMutationOutputShape = "memory-mutation"
-	canonicalMutationOutputIssue      canonicalMutationOutputShape = "issue-mutation"
-	canonicalMutationOutputLinkChange canonicalMutationOutputShape = "link-mutation"
-	canonicalMutationOutputDependency canonicalMutationOutputShape = "dependency-mutation"
-	canonicalMutationOutputMemoryEnd  canonicalMutationOutputShape = "memory-delete"
-	canonicalMutationOutputIssueEnd   canonicalMutationOutputShape = "issue-delete"
+	canonicalMutationOutputRetained      canonicalMutationOutputShape = "retained-singleton"
+	canonicalMutationOutputRetainedBatch canonicalMutationOutputShape = "retained-batch1"
+	canonicalMutationOutputBead          canonicalMutationOutputShape = "bead-resource"
+	canonicalMutationOutputLink          canonicalMutationOutputShape = "link-resource"
+	canonicalMutationOutputMemory        canonicalMutationOutputShape = "memory-mutation"
+	canonicalMutationOutputIssue         canonicalMutationOutputShape = "issue-mutation"
+	canonicalMutationOutputLinkChange    canonicalMutationOutputShape = "link-mutation"
+	canonicalMutationOutputDependency    canonicalMutationOutputShape = "dependency-mutation"
+	canonicalMutationOutputMemoryEnd     canonicalMutationOutputShape = "memory-delete"
+	canonicalMutationOutputIssueEnd      canonicalMutationOutputShape = "issue-delete"
 )
 
 var errCanonicalMutationOutputConsumed = errors.New("mutation output completion already consumed")
@@ -48,6 +50,9 @@ type canonicalMutationOutputResult struct {
 	Value        any
 	Human        string
 	OperationErr error
+	ExchangeErr  error
+	ReadErr      error
+	LimitErr     error
 	CloseErr     error
 	PayloadErr   error
 	RenderErr    error
@@ -58,7 +63,7 @@ type canonicalMutationOutputResult struct {
 // Err retains independent causes. Root classification must inspect OperationErr
 // separately: a Close, payload or output error cannot change its known outcome.
 func (r canonicalMutationOutputResult) Err() error {
-	return errors.Join(r.OperationErr, r.CloseErr, r.PayloadErr, r.RenderErr, r.OutputErr)
+	return errors.Join(r.OperationErr, r.ExchangeErr, r.ReadErr, r.LimitErr, r.CloseErr, r.PayloadErr, r.RenderErr, r.OutputErr)
 }
 
 type canonicalMutationOutput struct {
@@ -100,6 +105,10 @@ func newCanonicalMutationOutput(shape canonicalMutationOutputShape, descriptor c
 
 func canonicalMutationOutputMembers(shape canonicalMutationOutputShape) ([]string, bool) {
 	switch shape {
+	case canonicalMutationOutputRetainedBatch:
+		return []string{"capabilityVersion", "changed", "results", "resources"}, true
+	case canonicalMutationOutputRetained:
+		return []string{"outcome", "changed"}, true
 	case canonicalMutationOutputBead, canonicalMutationOutputLink:
 		return []string{"id", "type", "revision"}, true
 	case canonicalMutationOutputMemory:
@@ -133,7 +142,9 @@ func (o *canonicalMutationOutput) Complete(value any, human string, operationErr
 	o.used = true
 	result := canonicalMutationOutputResult{Value: value, Human: human, OperationErr: operationErr, CloseErr: closeErr}
 	var document []byte
-	if errors.Is(operationErr, graphstore.ErrOutcomeUnknown) {
+	if o.shape == canonicalMutationOutputRetained || o.shape == canonicalMutationOutputRetainedBatch {
+		document, result = o.completeRetained(value, human, operationErr, closeErr)
+	} else if errors.Is(operationErr, graphstore.ErrOutcomeUnknown) {
 		result.Disposition = canonicalMutationOutputUnknown
 		document, result.RenderErr = o.renderer.RenderUnknown("cli", canonicalMutationOutputProblem("outcome_unknown", "operation outcome is unknown; do not execute it again"))
 	} else {
@@ -325,4 +336,47 @@ func canonicalMutationCapturedDocument(kind graph.ResourceKind, id, revision, ty
 		return nil, fmt.Errorf("%w: captured native bytes are unavailable", errCanonicalMutationOutputCapture)
 	}
 	return json.RawMessage(native), nil
+}
+
+// Retained HTTP completion keeps original status/body/Problem and independent
+// exchange, parse, Close, render and Write causes in the first result. It never
+// changes a known operation into unknown because cleanup or output failed.
+func (o *canonicalMutationOutput) completeRetained(value any, human string, operationErr, closeErr error) ([]byte, canonicalMutationOutputResult) {
+	result := canonicalMutationOutputResult{Value: value, Human: human, OperationErr: operationErr, CloseErr: closeErr}
+	reply, ok := value.(canonicalRetainedReply)
+	if !ok {
+		result.PayloadErr = errCanonicalMutationOutputCapture
+		result.Disposition = canonicalMutationOutputFailed
+		raw, err := o.renderer.RenderFailure("cli", canonicalMutationOutputProblem("output_unavailable", "missing original retained response"))
+		result.RenderErr = err
+		return raw, result
+	}
+	result.ExchangeErr, result.ReadErr, result.LimitErr = reply.ExchangeErr, reply.ReadErr, reply.LimitErr
+	result.PayloadErr = reply.ParseErr
+	var raw []byte
+	switch {
+	case len(reply.Mutation) != 0 && reply.Checked:
+		result.Disposition = canonicalMutationOutputReturned
+		if closeErr != nil {
+			raw, result.RenderErr = o.renderer.RenderFailureWithResult("cli", canonicalMutationOutputProblem("cleanup_error", "retained operation returned successfully but response cleanup failed"), reply.Mutation)
+		} else {
+			raw, result.RenderErr = o.renderer.RenderSuccess(reply.Mutation)
+		}
+	case len(reply.Problem) != 0:
+		result.Disposition = canonicalMutationOutputFailed
+		// The original native Problem carries its own retry advice. Do not assert
+		// durable key retention, pre-admission refusal or rollback from HTTP alone.
+		raw, result.RenderErr = o.renderer.RenderFailure("bdp", reply.Problem)
+	case reply.Sent:
+		result.Disposition = canonicalMutationOutputUnknown
+		raw, result.RenderErr = o.renderer.RenderUnknown("cli", canonicalMutationOutputProblem("outcome_unknown", "no checked retained outcome; recover only with the saved same invocation"))
+	default:
+		result.Disposition = canonicalMutationOutputFailed
+		message := "retained request refused before submission"
+		if operationErr != nil {
+			message = operationErr.Error()
+		}
+		raw, result.RenderErr = o.renderer.RenderFailure("cli", canonicalMutationOutputProblem("request_refused", message))
+	}
+	return raw, result
 }

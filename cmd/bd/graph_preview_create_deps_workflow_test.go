@@ -74,6 +74,97 @@ func TestGraphPreviewCreateLocalDependenciesWorkflow(t *testing.T) {
 			if !found[parent.ID+"|parent-child"] || !found[prereq.ID+"|blocks"] {
 				t.Fatalf("child lacks parent and prerequisite Links: %+v", child.Owned)
 			}
+
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			selected := graphMixedResult[graphstore.IssueRecord](t, call("create", "Abbreviation target", "--id", "dep-a3f8e9"))
+			for _, tc := range []struct {
+				name, operand string
+			}{
+				{"bare", "a3f8"},
+				{"configured-prefix", "dep-a3f8"},
+				{"canonical-url", selected.ID},
+			} {
+				got := graphMixedResult[graphstore.IssueRecord](t, call("create", tc.name, "--id", "dep-selected-"+tc.name, "--deps", "blocked-by:"+tc.operand))
+				if len(got.Owned) != 1 || got.Attribution.Inception != "create" {
+					t.Fatalf("%s did not atomically create its owned Link: %+v", tc.name, got)
+				}
+				var link graphstore.LinkRecord
+				if err := json.Unmarshal(got.Owned[0], &link); err != nil {
+					t.Fatal(err)
+				}
+				if link.Source != got.ID || link.Target != selected.ID || link.Properties["dep_type"] != string(types.DepBlocks) {
+					t.Fatalf("%s resolved the wrong target or direction: %+v", tc.name, link)
+				}
+			}
+			abbreviatedChild := graphMixedResult[graphstore.IssueRecord](t, call("create", "Abbreviated child", "--parent", "dep-parent", "--deps", "blocked-by:a3f8"))
+			if len(abbreviatedChild.Owned) != 2 {
+				t.Fatalf("abbreviated child lost its parent/dependency Link: %+v", abbreviatedChild)
+			}
+			childTargets := map[string]bool{}
+			for _, raw := range abbreviatedChild.Owned {
+				var link graphstore.LinkRecord
+				if err := json.Unmarshal(raw, &link); err != nil {
+					t.Fatal(err)
+				}
+				if link.Source != abbreviatedChild.ID {
+					t.Fatalf("abbreviated child Link has wrong source: %+v", link)
+				}
+				childTargets[link.Target+"|"+link.Properties["dep_type"].(string)] = true
+			}
+			if !childTargets[parent.ID+"|parent-child"] || !childTargets[selected.ID+"|blocks"] {
+				t.Fatalf("abbreviated child selected wrong parent/target: %+v", abbreviatedChild.Owned)
+			}
+			refuse := func(name, operand, code string) {
+				t.Helper()
+				beforeOwner := call("show", prereq.ID, "--format", "graph-json")
+				beforeTarget := call("show", selected.ID, "--format", "graph-json")
+				beforeLinks := call("link", "list")
+				id := "dep-refused-" + name
+				// The valid reverse dependency must not publish an existing
+				// owner's revision or Link when the next target refuses.
+				graphPolicyCLI(t, bd, work, home, nil, code, "create", name, "--id", id, "--deps", "blocks:dep-prereq,blocked-by:"+operand, "--json")
+				graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", id, "--json")
+				if after := call("show", prereq.ID, "--format", "graph-json"); after != beforeOwner {
+					t.Fatalf("%s refusal changed the preceding dependency owner", name)
+				}
+				if after := call("show", selected.ID, "--format", "graph-json"); after != beforeTarget {
+					t.Fatalf("%s refusal changed the abbreviation target", name)
+				}
+				if after := call("link", "list"); after != beforeLinks {
+					t.Fatalf("%s refusal changed the Link inventory", name)
+				}
+			}
+			refuse("exact-short-url", "https://example.invalid/create-deps/a3f8", "not_found")
+			call("create", "Ambiguous target", "--id", "dep-a3f8e1")
+			refuse("ambiguous", "a3f8", "invalid_properties")
+			exact := graphMixedResult[graphstore.IssueRecord](t, call("create", "Exact target", "--id", "dep-a3f8"))
+			exactCreated := graphMixedResult[graphstore.IssueRecord](t, call("create", "Exact precedence", "--id", "dep-exact-source", "--deps", "blocked-by:dep-a3f8"))
+			if len(exactCreated.Owned) != 1 {
+				t.Fatalf("exact ID lost its dependency: %+v", exactCreated)
+			}
+			var exactLink graphstore.LinkRecord
+			if err := json.Unmarshal(exactCreated.Owned[0], &exactLink); err != nil {
+				t.Fatal(err)
+			}
+			if exactLink.Source != exactCreated.ID || exactLink.Target != exact.ID {
+				t.Fatalf("exact ID fell through to a longer Issue: %+v", exactLink)
+			}
+			memory := graphMixedResult[graphstore.Record](t, call("remember", "Exact Memory", "--id", "a3f8", "--create-only"))
+			refuse("memory", "a3f8", "invalid_properties")
+			call("create", "Link decoy", "--id", "dep-b7c4d2")
+			call("link", "create", "--type", "references", "--id", "b7c4", "--from", memory.ID, "--to", prereq.ID, "--if-source-revision", memory.Revision)
+			refuse("link", "b7c4", "invalid_properties")
+			dead := graphMixedResult[graphstore.IssueRecord](t, call("create", "Deleted exact target", "--id", "dep-d3ad"))
+			call("create", "Deleted target decoy", "--id", "dep-d3adbeef")
+			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "--force", dead.ID, "--if-revision", "="+dead.Revision))
+			if !deleted.Deleted || deleted.Terminal == nil {
+				t.Fatalf("tombstone fixture did not delete its exact Issue: %+v", deleted)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", dead.ID, "--json")
+			refuse("tombstone", "dep-d3ad", "gone")
 		})
 	}
 }

@@ -51,7 +51,11 @@ func canonicalFailureRendererFor(cmd *cobra.Command) canonicalFailureRenderer {
 		}
 		return r
 	}
-	r, err := clioutput.New(canonicalResourceDescriptor(), opts)
+	descriptor := canonicalResourceDescriptor()
+	if canonicalRetainedSelected(cmd) {
+		descriptor.BDPSpec = canonicalRetainedContract
+	}
+	r, err := clioutput.New(descriptor, opts)
 	if err != nil {
 		return nil
 	}

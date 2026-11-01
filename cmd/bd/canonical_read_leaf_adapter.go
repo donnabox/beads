@@ -170,7 +170,7 @@ func prepareCanonicalReadLeaf(root *cobra.Command, profile cliSurfaceProfile, ar
 			}
 			return err
 		}
-		if originalArgs != nil {
+		if originalArgs != nil && descriptor.Operation != canonicalReadLeafOperation("retained-singleton") {
 			return originalArgs(actual, args)
 		}
 		return nil
