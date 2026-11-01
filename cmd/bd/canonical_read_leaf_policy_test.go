@@ -95,14 +95,26 @@ func TestCanonicalReadLeafAliasesAndPositionalsAreExplicit(t *testing.T) {
 }
 
 func TestCanonicalReadLeafUnknownCoverageAndProfileNeverFallBack(t *testing.T) {
-	for _, input := range []canonicalReadLeafInvocation{
-		{Profile: cliSurfaceCanonical, Path: []string{"show"}},
-		{Profile: cliSurfaceCanonical, Path: []string{"ready"}},
-		{Profile: cliSurfaceCanonical, Path: []string{"memory", "references"}},
-		{Profile: cliSurfaceProfile("invalid"), Path: []string{"list"}},
+	// The composed surface retains point reads through show. Its nested paths
+	// remain uncovered; admitting show must not turn them into a fallback.
+	show, err := admitCanonicalReadLeaf(canonicalReadLeafInvocation{Profile: cliSurfaceCanonical, Path: []string{"show"}})
+	if err != nil || !show.Canonical || show.Descriptor.Operation != canonicalReadLeafOperation("retained-singleton") || !reflect.DeepEqual(show.Descriptor.Path, []string{"show"}) {
+		t.Fatalf("retained show surface unavailable: %#v %v", show, err)
+	}
+	for _, tc := range []struct {
+		input canonicalReadLeafInvocation
+		code  string
+		exit  int
+	}{
+		{canonicalReadLeafInvocation{Profile: cliSurfaceCanonical, Path: []string{"show", "nested"}}, "capability_unavailable", 5},
+		{canonicalReadLeafInvocation{Profile: cliSurfaceCanonical, Path: []string{"ready"}}, "capability_unavailable", 5},
+		{canonicalReadLeafInvocation{Profile: cliSurfaceCanonical, Path: []string{"memory", "references"}}, "capability_unavailable", 5},
+		{canonicalReadLeafInvocation{Profile: cliSurfaceProfile("invalid"), Path: []string{"list"}}, "invalid_selector", 2},
 	} {
-		if result, err := admitCanonicalReadLeaf(input); err == nil || result.Canonical {
-			t.Fatalf("unknown surface/profile fell back: %#v %#v %v", input, result, err)
+		result, err := admitCanonicalReadLeaf(tc.input)
+		var refusal *canonicalReadLeafRefusal
+		if !errors.As(err, &refusal) || refusal.Code != tc.code || refusal.ExitCode != tc.exit || result.Canonical || result.Descriptor.Operation != "" {
+			t.Fatalf("unknown surface/profile fell back: %#v %#v %v", tc.input, result, err)
 		}
 	}
 }

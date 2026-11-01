@@ -45,6 +45,15 @@ func TestCanonicalRetainedNativeSingletonBodies(t *testing.T) {
 				t.Fatalf("singleton body members: %s", body)
 			}
 			for name, expected := range want {
+				if name == "expectedRevision" {
+					raw, present := got[name]
+					raw = bytes.TrimSpace(raw)
+					var actualRevision, expectedRevision string
+					if !present || len(raw) == 0 || raw[0] != '"' || json.Unmarshal(raw, &actualRevision) != nil || json.Unmarshal(expected, &expectedRevision) != nil || actualRevision != expectedRevision {
+						t.Fatalf("member %s: %s want exact JSON string %s", name, got[name], expected)
+					}
+					continue
+				}
 				var left, right bytes.Buffer
 				if json.Compact(&left, got[name]) != nil || json.Compact(&right, expected) != nil || left.String() != right.String() {
 					t.Fatalf("member %s: %s want %s", name, got[name], expected)
