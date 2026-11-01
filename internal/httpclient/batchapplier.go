@@ -85,6 +85,15 @@ func (b *httpBatchApplier) ApplyBatch(ctx context.Context, req issueops.ApplyBat
 		return issueops.ApplyBatchResult{}, invalid(
 			"a batch apply carries %d items; the limit is %d per request", len(req.Items), issueops.MaxApplyBatchItems)
 	}
+	// Refuse an unrepresentable metadata edit before even the lineage
+	// capability lookup: no other item may cause a dial for this plan.
+	for i, item := range req.Items {
+		if item.Kind == issueops.ItemUpdate && item.Update != nil {
+			if err := refuseMetadataOperations(item.Update.Patch.Metadata, encode.OpApplyBatch); err != nil {
+				return issueops.ApplyBatchResult{}, fmt.Errorf("items[%d].update.patch.metadata: %w", i, err)
+			}
+		}
+	}
 	if err := b.refuseUnservedDepAddLineage(ctx, req); err != nil {
 		return issueops.ApplyBatchResult{}, err
 	}
@@ -567,6 +576,9 @@ var applyPatchExcludedMembers = []struct {
 // reading the set back first. W-IssuePatch.Labels is updateIssue's row and does
 // not reach this operation.
 func encodeApplyPatch(patch issueops.IssuePatch) (map[string]any, error) {
+	if err := refuseMetadataOperations(patch.Metadata, encode.OpApplyBatch); err != nil {
+		return nil, err
+	}
 	for _, excluded := range applyPatchExcludedMembers {
 		if excluded.set(patch) {
 			return nil, refuse(encode.OpApplyBatch, excluded.ledger)

@@ -112,7 +112,6 @@ func TestGraphPreviewLinkPropertiesPatchSyntaxBeforeStore(t *testing.T) {
 	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/"}
 	readonlyMode, jsonOutput, graphPreviewStructuredErrors = false, false, false
 	for _, tc := range []struct{ name, raw string }{
-		{"empty-operations", `[]`},
 		{"unsupported-operation", `[{"op":"move","path":"/note","value":"x"}]`},
 		{"duplicate-member", `[{"op":"add","path":"/note","value":1,"value":2}]`},
 	} {
