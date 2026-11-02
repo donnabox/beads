@@ -742,19 +742,19 @@ unshare --user --map-root-user --net -- bash -euc '
 	if !strings.HasSuffix(body, isolation) {
 		t.Fatal("original namespace/loopback/probe body changed")
 	}
-	for _, mode := range []string{"first-refusal", "positive", "outbound-refusal", "unavailable", "read-failure"} {
+	for _, mode := range []string{"first-refusal", "positive", "outbound-refusal", "unavailable", "read-failure", "creation-refusal", "mapping-refusal", "control-timeout", "map-empty", "map-incomplete", "map-read-failure"} {
 		t.Run(mode, func(t *testing.T) {
 			fx := newNamespacePreflightFixture(t, body, mode)
 			run := fx.start(t)
-			run.finish(t, mode != "first-refusal" && mode != "outbound-refusal")
+			run.finish(t, mode != "first-refusal" && mode != "outbound-refusal" && mode != "creation-refusal" && mode != "mapping-refusal" && mode != "control-timeout")
 			status, complete, err := run.workflowExit()
 			if err != nil || !complete {
 				t.Fatalf("missing actual exit: %d %v %v", status, complete, err)
 			}
 			wantStatus := 0
-			wantEvents := "first\nsecond\nloopback\nprobe\n"
-			if mode == "first-refusal" {
-				wantStatus, wantEvents = 1, "first\n"
+			wantEvents := "version\ncreation\nmapping\nfirst\nsecond\nloopback\nprobe\n"
+			if mode == "first-refusal" || mode == "creation-refusal" || mode == "mapping-refusal" || mode == "control-timeout" {
+				wantStatus, wantEvents = 1, "version\ncreation\nmapping\nfirst\n"
 			}
 			if mode == "outbound-refusal" {
 				wantStatus = 1
@@ -763,7 +763,40 @@ unshare --user --map-root-user --net -- bash -euc '
 				t.Fatalf("exit/events: %d %q; want %d %q", status, fx.events(t), wantStatus, wantEvents)
 			}
 			out := run.output()
-			if mode == "first-refusal" && !strings.Contains(out, "unshare: write failed /proc/self/uid_map: Operation not permitted") {
+			if !strings.Contains(out, "namespace-control version rc=0 unshare from util-linux FIXTURE") {
+				t.Fatalf("missing bounded version context: %s", out)
+			}
+			switch mode {
+			case "map-empty":
+				if strings.Count(out, "parent-map empty or read-failed: context UNKNOWN") != 2 || strings.Contains(out, "0 1001 1") {
+					t.Fatalf("empty parent maps were not explicitly unknown: %s", out)
+				}
+			case "map-incomplete":
+				if strings.Count(out, "parent-map incomplete line: context UNKNOWN") != 2 || strings.Contains(out, "0 1001 1") {
+					t.Fatalf("incomplete parent maps were not explicitly unknown: %s", out)
+				}
+			case "map-read-failure":
+				if strings.Count(out, "parent-map unavailable or not a regular readable map: context UNKNOWN") != 2 || strings.Contains(out, "0 1001 1") {
+					t.Fatalf("read-error parent map paths were not explicitly unknown: %s", out)
+				}
+			default:
+				if strings.Count(out, "0 1001 1") != 2 || strings.Count(out, "parent-map read ended (EOF or read-failed): completeness UNKNOWN") != 2 {
+					t.Fatalf("lost received parent-map rows or overstated read completeness: %s", out)
+				}
+			}
+			for _, control := range []string{"creation-only", "mapping-only"} {
+				wantRC := "0"
+				if mode == "creation-refusal" && control == "creation-only" || mode == "mapping-refusal" && control == "mapping-only" {
+					wantRC = "1"
+				}
+				if mode == "control-timeout" && control == "creation-only" {
+					wantRC = "124"
+				}
+				if !strings.Contains(out, "namespace-control "+control+" rc="+wantRC+" ") {
+					t.Fatalf("lost exact control status: %s", out)
+				}
+			}
+			if (mode == "first-refusal" || mode == "creation-refusal" || mode == "mapping-refusal" || mode == "control-timeout") && !strings.Contains(out, "unshare: write failed /proc/self/uid_map: Operation not permitted") {
 				t.Fatalf("lost original refusal: %s", out)
 			}
 			if mode == "outbound-refusal" && !strings.Contains(out, "outbound network is reachable inside the test namespace") {
@@ -813,11 +846,26 @@ func newNamespacePreflightFixture(t *testing.T, body, mode string) *integrationF
 	standin("id", `if [[ "$BD_STANDIN_TEST" == unavailable ]]; then exit 42; fi
 case "$1" in -u|-g) printf '1001\n' ;; *) exit 70 ;; esac
 `)
-	standin("unshare", `[[ "$1 $2 $3 $4" == '--user --map-root-user --net --' ]] || exit 71
+	standin("unshare", `if [[ "$*" == '--version' ]]; then
+  printf 'version\n' >> "$BD_STANDIN_STATE/events"
+  printf 'unshare from util-linux FIXTURE\n'
+  exit 0
+fi
+if [[ "$*" == '--user -- true' ]]; then
+  printf 'creation\n' >> "$BD_STANDIN_STATE/events"
+  [[ "$BD_STANDIN_TEST" != creation-refusal ]]
+  exit $?
+fi
+if [[ "$*" == '--user --map-root-user -- true' ]]; then
+  printf 'mapping\n' >> "$BD_STANDIN_STATE/events"
+  [[ "$BD_STANDIN_TEST" != mapping-refusal ]]
+  exit $?
+fi
+[[ "$1 $2 $3 $4" == '--user --map-root-user --net --' ]] || exit 71
 shift 4
 if [[ "$1" == true && $# == 1 ]]; then
   printf 'first\n' >> "$BD_STANDIN_STATE/events"
-  if [[ "$BD_STANDIN_TEST" == first-refusal ]]; then
+  if [[ "$BD_STANDIN_TEST" == first-refusal || "$BD_STANDIN_TEST" == creation-refusal || "$BD_STANDIN_TEST" == mapping-refusal || "$BD_STANDIN_TEST" == control-timeout ]]; then
     printf 'unshare: write failed /proc/self/uid_map: Operation not permitted\n' >&2
     exit 1
   fi
@@ -831,7 +879,21 @@ exec "$BD_STANDIN_BASH" "$@"
 	standin("ip", `[[ "$*" == 'link set lo up' ]] || exit 73
 printf 'loopback\n' >> "$BD_STANDIN_STATE/events"
 `)
-	standin("timeout", `[[ "$*" == '3 bash -c exec 3<>/dev/tcp/1.1.1.1/443' ]] || exit 74
+	standin("timeout", `if [[ "$1 $2 $3" == '--kill-after=1 2 unshare' ]]; then
+  [[ "$*" == '--kill-after=1 2 unshare --version' ]] || exit 75
+  shift 2
+  exec "$@"
+fi
+if [[ "$1 $2 $3" == '--kill-after=1 3 unshare' ]]; then
+  [[ "$*" == '--kill-after=1 3 unshare --user -- true' || "$*" == '--kill-after=1 3 unshare --user --map-root-user -- true' ]] || exit 76
+  if [[ "$BD_STANDIN_TEST" == control-timeout && "$*" == '--kill-after=1 3 unshare --user -- true' ]]; then
+    printf 'creation\n' >> "$BD_STANDIN_STATE/events"
+    exit 124
+  fi
+  shift 2
+  exec "$@"
+fi
+[[ "$*" == '3 bash -c exec 3<>/dev/tcp/1.1.1.1/443' ]] || exit 74
 printf 'probe\n' >> "$BD_STANDIN_STATE/events"
 [[ "$BD_STANDIN_TEST" == outbound-refusal ]]
 `)
@@ -851,6 +913,27 @@ printf 'probe\n' >> "$BD_STANDIN_STATE/events"
 		if err := os.Mkdir(scalar, 0o700); err != nil {
 			t.Fatal(err)
 		}
+	}
+	parentMap := filepath.Join(fx.root, "parent-map")
+	switch mode {
+	case "map-empty":
+		write(parentMap, "")
+	case "map-incomplete":
+		write(parentMap, "0 1001 1")
+	case "map-read-failure":
+		// A readable directory deterministically exercises the map-kind/read-error
+		// boundary, including for elevated fixture users; no chmod assumption.
+		if err := os.Mkdir(parentMap, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	default:
+		write(parentMap, "0 1001 1\n")
+	}
+	for _, path := range []string{"/proc/$$/uid_map", "/proc/$$/gid_map"} {
+		if !strings.Contains(body, path) {
+			t.Fatalf("missing parent-map context %s", path)
+		}
+		body = strings.ReplaceAll(body, path, integrationFinalizationQuote(parentMap))
 	}
 	body = strings.ReplaceAll(body, "/proc/$$/status", integrationFinalizationQuote(status))
 	for _, path := range []string{"/proc/sys/user/max_user_namespaces", "/proc/sys/user/max_net_namespaces", "/proc/sys/kernel/unprivileged_userns_clone", "/proc/sys/kernel/apparmor_restrict_unprivileged_userns", "/proc/sys/kernel/apparmor_restrict_unprivileged_unconfined", "/proc/$$/attr/current"} {

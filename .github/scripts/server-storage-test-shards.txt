@@ -41,3 +41,6 @@
 16 15 TestSerializationConflictRetry
 16 16 TestConcurrentCommentAndCloseWithoutCallerRetry
 16 16 TestIDRetentionContractRaces
+# Storage3 timed out at900s on d832; move the313.31s root off fallback13.
+# Destination14 observed312.64s;625.95s summed DATA is not a runtime guarantee.
+16 14 TestCreateBatchFastPathsMatchPerRow_Dolt

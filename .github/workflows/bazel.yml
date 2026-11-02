@@ -2146,6 +2146,56 @@ jobs:
               printf 'namespace-policy %s unavailable\n' "$path"
             fi
           done
+          # Diagnostic controls only: neither result admits tests or replaces the suffix.
+          printf 'namespace-control normal unshare route: '
+          command -v unshare || :
+          if version=$(timeout --kill-after=1 2 unshare --version 2>&1); then
+            printf 'namespace-control version rc=0 %.512s\n' "$version"
+          else
+            rc=$?
+            printf 'namespace-control version rc=%s %.512s\n' "$rc" "$version"
+          fi
+          for path in /proc/$$/uid_map /proc/$$/gid_map; do
+            printf 'namespace-control parent-map %s\n' "$path"
+            if [[ -r "$path" && -f "$path" ]]; then
+              rows=0
+              while :; do
+                line=
+                if IFS= read -r line; then
+                  rows=$((rows + 1))
+                  if (( rows > 4 )) || (( ${#line} > 512 )); then
+                    printf 'namespace-control parent-map truncated: context UNKNOWN\n'
+                    break
+                  fi
+                  printf '%s\n' "$line"
+                else
+                  if [[ -n "$line" ]]; then
+                    printf 'namespace-control parent-map incomplete line: context UNKNOWN\n'
+                  elif (( rows == 0 )); then
+                    printf 'namespace-control parent-map empty or read-failed: context UNKNOWN\n'
+                  else
+                    # Bash read does not distinguish EOF from an I/O failure.
+                    printf 'namespace-control parent-map read ended (EOF or read-failed): completeness UNKNOWN\n'
+                  fi
+                  break
+                fi
+              done < "$path"
+            else
+              printf 'namespace-control parent-map unavailable or not a regular readable map: context UNKNOWN\n'
+            fi
+          done
+          if control=$(timeout --kill-after=1 3 unshare --user -- true 2>&1); then
+            printf 'namespace-control creation-only rc=0 %.512s\n' "$control"
+          else
+            rc=$?
+            printf 'namespace-control creation-only rc=%s %.512s\n' "$rc" "$control"
+          fi
+          if control=$(timeout --kill-after=1 3 unshare --user --map-root-user -- true 2>&1); then
+            printf 'namespace-control mapping-only rc=0 %.512s\n' "$control"
+          else
+            rc=$?
+            printf 'namespace-control mapping-only rc=%s %.512s\n' "$rc" "$control"
+          fi
           unshare --user --map-root-user --net -- true
           unshare --user --map-root-user --net -- bash -euc '
             ip link set lo up

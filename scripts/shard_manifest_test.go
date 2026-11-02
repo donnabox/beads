@@ -200,6 +200,10 @@ func TestShardScriptsListOnlyRealTests(t *testing.T) {
 			}
 			wg.Wait()
 			listed, manifestSum := 0, 0
+			storageCostPins := map[string]int{
+				"TestCreateBatchFastPathsMatchPerRow_Dolt": 0,
+				"TestHighContentionStress":                 0,
+			}
 			for k := 1; k <= shards; k++ {
 				if errs[k] != nil {
 					// The script itself exits 1 on a duplicate manifest entry
@@ -220,6 +224,12 @@ func TestShardScriptsListOnlyRealTests(t *testing.T) {
 					if !ok || !strings.HasPrefix(name, "Test") || strings.ContainsAny(name, " :") {
 						continue
 					}
+					if _, tracked := storageCostPins[name]; tracked && c.script == ".github/scripts/server-storage-test-shard.sh" && shards == 16 {
+						storageCostPins[name]++
+						if k != 14 {
+							t.Errorf("%s must run only on server-storage shard14/16, got%d", name, k)
+						}
+					}
 					listed++
 					isTest := declared[name]
 					switch {
@@ -228,6 +238,13 @@ func TestShardScriptsListOnlyRealTests(t *testing.T) {
 					case !notTests[name] && !isTest:
 						t.Errorf("%s shard %d/%d lists %s, which is not a `func %s(t *testing.T)` test in %s: check_shard_coverage.py would report it missing on every run (add it to NOT_TESTS only if go test never runs it)",
 							c.script, k, shards, name, name, c.pkg)
+					}
+				}
+			}
+			if c.script == ".github/scripts/server-storage-test-shard.sh" && shards == 16 {
+				for name, count := range storageCostPins {
+					if count != 1 {
+						t.Errorf("server-storage16-shard route lists%s%d times, want exactly once", name, count)
 					}
 				}
 			}
