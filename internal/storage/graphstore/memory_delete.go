@@ -50,7 +50,7 @@ func (s *Store) DeleteMemory(ctx context.Context, request MemoryDeleteRequest) (
 			return s.withTx(ctx, false, fn)
 		}
 	}
-	err := transact(ctx, func(tx *sql.Tx) error {
+	operation := func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -124,7 +124,7 @@ func (s *Store) DeleteMemory(ctx context.Context, request MemoryDeleteRequest) (
 		if err != nil {
 			return err
 		}
-		if err := insertPreviewVersionInTx(ctx, tx, request.Path, deletionRevision, snapshot, request.Actor); err != nil {
+		if err := s.retainResourceVersionInTx(ctx, tx, request.Path, deletionRevision, snapshot, request.Actor); err != nil {
 			return err
 		}
 		if err := s.afterStage("memory-delete-retained"); err != nil {
@@ -136,7 +136,31 @@ func (s *Store) DeleteMemory(ctx context.Context, request MemoryDeleteRequest) (
 		result.Deleted = true
 		result.Terminal = &terminal
 		return nil
-	})
+	}
+	var err error
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		if request.Preview {
+			err = s.withDefinitionReadTx(ctx, txNativeMemoryDeletePreview, func(tx *sql.Tx, budget *intrinsicMetadataBudget) error {
+				capture, err := s.captureTypeRecordsInTx(ctx, tx, budget)
+				if err != nil {
+					return err
+				}
+				if err := operation(s.contextForResourceCapture(ctx, tx, capture, budget), tx); err != nil {
+					return err
+				}
+				document, err := s.projectCheckedNativeInTx(ctx, tx, request.Path, result.Memory.Revision, result.Memory, capture.installed, budget)
+				if err != nil {
+					return err
+				}
+				result.Memory.resourceDocument = &document
+				return nil
+			})
+		} else {
+			err = s.withNativeDomainTx(ctx, txNativeMemoryMutation, true, operation)
+		}
+	} else {
+		err = transact(ctx, func(tx *sql.Tx) error { return operation(ctx, tx) })
+	}
 	if err != nil {
 		return MemoryDeleteResult{}, err
 	}

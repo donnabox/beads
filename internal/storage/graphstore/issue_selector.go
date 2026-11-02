@@ -318,6 +318,21 @@ func (s *Store) ShowIssueSelected(ctx context.Context, selector IssueSelector) (
 	if err := validateIssueSelector(selector); err != nil {
 		return IssueRecord{}, err
 	}
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		var result IssueRecord
+		err := s.withCheckedIssueReadTx(ctx, func(readctx context.Context, tx *sql.Tx) error {
+			_, issue, err := s.resolveIssueDiscoverySelectorInTx(readctx, tx, selector)
+			result = issue
+			return err
+		})
+		if err != nil {
+			if errors.Is(err, errNonIssueSelector) {
+				return IssueRecord{}, ErrCapabilityUnavailable
+			}
+			return IssueRecord{}, err
+		}
+		return result, nil
+	}
 	var result IssueRecord
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
@@ -356,42 +371,64 @@ func (s *Store) ResolveIssuePaths(ctx context.Context, selectors []IssueSelector
 			return nil, err
 		}
 	}
-	paths := make([]string, len(selectors))
+	var paths []string
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		for i, selector := range selectors {
-			path, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
-			literal := selector.NativeID
-			if literal == "" {
-				identity, lookupErr := allocatedResourceIdentityForPathInTx(ctx, tx, selector.Path)
-				if lookupErr == nil {
-					literal = identity.PublicID
-				} else if !errors.Is(lookupErr, ErrNotFound) {
-					return lookupErr
-				} else {
-					literal = selector.Path
-				}
-			}
-			switch {
-			case errors.Is(err, ErrNotFound):
-				paths[i] = literal
-			case errors.Is(err, errNonIssueSelector):
-				paths[i] = literal
-			case err != nil:
-				return err
-			default:
-				paths[i], err = graph.ScopeLocalPublicResourceID(s.ScopeURL(), issue.ID)
-				if err != nil {
-					return fmt.Errorf("%w: Issue at %q has invalid public identity: %v", ErrInvalidStore, path, err)
-				}
-			}
-		}
-		return nil
+		var err error
+		paths, err = s.resolveIssuePathsInTx(ctx, tx, selectors)
+		return err
 	})
 	if err != nil {
 		return nil, err
+	}
+	return paths, nil
+}
+
+// Caller already owns binding/admission. This is the same literal fallback
+// and shipping abbreviation behavior, now reusable inside one Count read.
+func (s *Store) resolveIssuePathsInTx(ctx context.Context, tx *sql.Tx, selectors []IssueSelector) ([]string, error) {
+	if s.LayoutVersion() == TypesFreshSchemaVersion && len(selectors) > PreviewSnapshotLimit {
+		return nil, ErrLimitExceeded
+	}
+	paths := make([]string, len(selectors))
+	for i, selector := range selectors {
+		if s.LayoutVersion() == TypesFreshSchemaVersion {
+			if err := ctx.Err(); err != nil {
+				return nil, err
+			}
+		}
+		path, issue, err := s.resolveIssueDiscoverySelectorInTx(ctx, tx, selector)
+		literal := selector.NativeID
+		if literal == "" {
+			identity, lookupErr := allocatedResourceIdentityForPathInTx(ctx, tx, selector.Path)
+			if lookupErr == nil {
+				literal = identity.PublicID
+			} else if !errors.Is(lookupErr, ErrNotFound) {
+				return nil, lookupErr
+			} else {
+				literal = selector.Path
+			}
+		}
+		switch {
+		case errors.Is(err, ErrNotFound):
+			paths[i] = literal
+		case errors.Is(err, errNonIssueSelector):
+			paths[i] = literal
+		case err != nil:
+			return nil, err
+		default:
+			paths[i], err = graph.ScopeLocalPublicResourceID(s.ScopeURL(), issue.ID)
+			if err != nil {
+				return nil, fmt.Errorf("%w: Issue at %q has invalid public identity: %v", ErrInvalidStore, path, err)
+			}
+		}
+	}
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
 	}
 	return paths, nil
 }

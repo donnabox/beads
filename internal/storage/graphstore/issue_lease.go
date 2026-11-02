@@ -32,7 +32,7 @@ func (s *Store) HeartbeatIssueSelected(ctx context.Context, selector IssueSelect
 		return IssueRecord{}, err
 	}
 	var result IssueRecord
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeIssueMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -63,6 +63,9 @@ func (s *Store) HeartbeatIssueSelected(ctx context.Context, selector IssueSelect
 		}
 		return nil
 	})
+	if err != nil && s.LayoutVersion() == TypesFreshSchemaVersion {
+		return IssueRecord{}, err
+	}
 	return result, err
 }
 
@@ -90,7 +93,7 @@ func (s *Store) ReclaimExpiredIssueLeasesSelected(ctx context.Context, olderThan
 		}
 	}
 	var reclaimed []types.ReclaimedLease
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeIssueMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -157,6 +160,9 @@ func (s *Store) ReclaimExpiredIssueLeasesSelected(ctx context.Context, olderThan
 		}
 		return nil
 	})
+	if err != nil && s.LayoutVersion() == TypesFreshSchemaVersion {
+		return nil, err
+	}
 	return reclaimed, err
 }
 

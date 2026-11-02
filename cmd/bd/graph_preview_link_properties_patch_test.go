@@ -62,7 +62,7 @@ func TestGraphPreviewLinkPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		{"empty-source-guard", []string{"--if-source-revision="}, 2},
 		{"invalid-source-token", []string{"--if-source-revision=\xff"}, 2},
 		{"oversized-source-token", []string{"--if-source-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, 2},
-		{"merge-with-patch", []string{"--properties={}"}, 5},
+		{"merge-with-patch", []string{"--properties={}"}, 2},
 		{"replace-with-patch", []string{"--replace-properties={}"}, 2},
 		{"Issue-title-conflict", []string{"--title=x"}, 5},
 		{"claim-conflict", []string{"--claim"}, 5},
@@ -112,7 +112,6 @@ func TestGraphPreviewLinkPropertiesPatchSyntaxBeforeStore(t *testing.T) {
 	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/"}
 	readonlyMode, jsonOutput, graphPreviewStructuredErrors = false, false, false
 	for _, tc := range []struct{ name, raw string }{
-		{"empty-operations", `[]`},
 		{"unsupported-operation", `[{"op":"move","path":"/note","value":"x"}]`},
 		{"duplicate-member", `[{"op":"add","path":"/note","value":1,"value":2}]`},
 	} {

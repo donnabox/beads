@@ -19,7 +19,7 @@ func init() {
 	graphCmd.Flags().String("view", "", "Deprecated: generic is the ordinary graph view in link mode")
 	graphCmd.Flags().String("direction", "both", "Generic Link direction: in, out or both (graph_mode link workspaces only)")
 	graphCmd.Flags().Int("depth", 1000, "Link hop depth (0..1000); frontier reports depth truncation (link mode only)")
-	graphCmd.Flags().StringArray("link-type", nil, "Select a Link Type family, or any for all Types (repeatable OR union; default Dependency; link mode only)")
+	graphCmd.Flags().StringArray("link-type", nil, "Select a Link Type family, or any for all Types (repeatable OR union; default all in Types workspaces, Dependency in other link-mode workspaces)")
 	graphCmd.Flags().StringArray("exact-link-type", nil, "Select exactly a Link Type, without refinements (repeatable OR union; link mode only)")
 	graphCmd.Flags().Int("max-nodes", 1000, "Generic emitted Bead bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
 	graphCmd.Flags().Int("max-links", 1000, "Generic emitted Link bound (1..1000); exhaustion refuses (graph_mode link workspaces only)")
@@ -146,6 +146,25 @@ func runGraphPreviewGeneric(cmd *cobra.Command, args []string) error {
 	// A separate allocation lookup would only repeat the same canonicalization
 	// and open storage twice. Syntax and bounds have already been validated.
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+		if s.LayoutVersion() == graphstore.TypesFreshSchemaVersion {
+			// Ordinary Types graphs include real refinement relationships.
+			// Legacy layout11 retains its established Dependency default.
+			if in.ImplicitDependency {
+				in.LinkTypes = nil
+				in.AllLinkTypes = true
+				in.ImplicitDependency = false
+			}
+			snapshot, err := s.CurrentResourceDocuments(ctx)
+			if err != nil {
+				return nil, "", err
+			}
+			result, err := projectResourceGraphGeneric(snapshot, s.ScopeURL(), in)
+			if err != nil {
+				return nil, "", err
+			}
+			output, err := renderResourceGraphSelected(cmd, result, snapshot)
+			return result.OmittedLinkTypes, output, err
+		}
 		snapshot, err := s.CurrentSnapshot(ctx)
 		if err != nil {
 			return nil, "", err

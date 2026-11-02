@@ -408,7 +408,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			applyLink(patch("replace", "/note", nil), nil, map[string]any{"note": nil}, false, false, true)
 			applyLink(patch("replace", "/note", "root"), nil, map[string]any{"note": "root"}, false, false, true)
 			beforeRefusal := graphMemoryReadSnapshot(t, work)
-			for _, bad := range []string{`[{"op":"replace","path":"/title","value":"must rollback"},{"op":"remove","path":"/body"}]`, `[{"op":"replace","path":"/body","value":"must rollback"},{"op":"replace","path":"/missing","value":1}]`, `[{"op":"copy","from":"/title","path":"/body"}]`, `[{"op":"remove","path":"/bad~2"}]`, `[{"op":"replace","op":"add","path":"/body","value":"x"}]`, `[{"op":"add","path":"/temporary","value":9007199254740993}]`, `[{"op":"replace","path":"/body","value":"\ud800"}]`, `[]`} {
+			for _, bad := range []string{`[{"op":"replace","path":"/title","value":"must rollback"},{"op":"remove","path":"/body"}]`, `[{"op":"replace","path":"/body","value":"must rollback"},{"op":"replace","path":"/missing","value":1}]`, `[{"op":"copy","from":"/title","path":"/body"}]`, `[{"op":"remove","path":"/bad~2"}]`, `[{"op":"replace","op":"add","path":"/body","value":"x"}]`, `[{"op":"add","path":"/temporary","value":9007199254740993}]`, `[{"op":"replace","path":"/body","value":"\ud800"}]`} {
 				refuse("invalid_properties", "update", memory.ID, "--patch", bad)
 			}
 			for _, selector := range []string{memory.ID, link.ID} {
@@ -442,7 +442,11 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			early("invalid_selector", memory.ID, "--if-revision", "")
 			early("invalid_selector", memory.ID, "--if-revision", "="+string([]byte{255}))
 			early("invalid_selector", "beads/")
-			early("capability_unavailable", memory.ID, "--properties", "{}")
+			// Two edit modes are a grammar error before either input is read.
+			early("invalid_properties", memory.ID, "--properties", "{}")
+			// A single patch mode with an unsupported Issue flag still reaches
+			// capability refusal before reading the missing file or open pipe.
+			early("capability_unavailable", memory.ID, "--description", "unsupported with patch")
 			early("invalid_selector", link.ID, "--if-source-revision", "")
 			early("permission_denied", memory.ID, "--readonly")
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))

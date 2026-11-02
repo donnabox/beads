@@ -106,8 +106,14 @@ func (s *Store) ensureNativeTypeInTx(ctx context.Context, tx *sql.Tx, id string,
 	if err != nil {
 		return err
 	}
-	_, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name,descriptor,fingerprint) VALUES (?,?,?)`, "native-binding-"+token, expected.CanonicalJSON(), expected.Fingerprint())
-	return err
+	name := "native-binding-" + token
+	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name,descriptor,fingerprint) VALUES (?,?,?)`, name, expected.CanonicalJSON(), expected.Fingerprint()); err != nil {
+		return err
+	}
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		return s.installNativeDefinitionInTx(ctx, tx, name, expected)
+	}
+	return nil
 }
 
 // requireNativeBindingInTx checks a current/retained affiliation without

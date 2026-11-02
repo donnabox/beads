@@ -234,7 +234,7 @@ func (s *Store) SetIssueDeferred(ctx context.Context, request IssueDeferralReque
 // only retains the corresponding graph projection in the same transaction.
 // Failure is advisory to the subsequent read, as in the ordinary backends.
 func (s *Store) wakeExpiredDefersAdvisory(ctx context.Context) {
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	operation := func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -264,7 +264,13 @@ func (s *Store) wakeExpiredDefersAdvisory(ctx context.Context) {
 			}
 		}
 		return nil
-	})
+	}
+	var err error
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		err = s.withNativeDomainTx(ctx, txNativeIssueMutation, false, operation)
+	} else {
+		err = s.withTx(ctx, true, func(tx *sql.Tx) error { return operation(ctx, tx) })
+	}
 	if err != nil && !errors.Is(err, context.Canceled) {
 		fmt.Fprintf(os.Stderr, "warning: graph defer-wake sweep skipped: %s\n", strings.TrimSpace(err.Error()))
 	}

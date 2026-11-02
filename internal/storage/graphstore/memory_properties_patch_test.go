@@ -188,7 +188,7 @@ func TestMemoryPropertiesPatchLifecycle(t *testing.T) {
 func TestMemoryPropertiesPatchRefusalAndRollback(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, _, s, original, _, _ := memoryPropertiesPatchFixture(t, backend)
+			ctx, _, s, original, target, link := memoryPropertiesPatchFixture(t, backend)
 			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
 				t.Fatal(err)
 			}
@@ -203,8 +203,35 @@ func TestMemoryPropertiesPatchRefusalAndRollback(t *testing.T) {
 				}
 			}
 			request := MemoryPropertiesPatchRequest{Path: "beads/plan", Patch: memoryPropertiesOperation(t, "body", "changed"), Actor: "writer", Unconditional: true}
+			t.Run("empty-operations", func(t *testing.T) {
+				for _, unconditional := range []bool{false, true} {
+					t.Run(fmt.Sprintf("unconditional-%t", unconditional), func(t *testing.T) {
+						r := request
+						r.Patch = []byte(`[]`)
+						r.Unconditional = unconditional
+						if !unconditional {
+							r.ExpectedRevision = original.Revision
+						}
+						got, err := s.PatchMemoryProperties(ctx, r)
+						if err != nil || got.Changed || got.Replaced != nil || !reflect.DeepEqual(got.Memory, original) {
+							t.Fatalf("empty patch changed current Memory: %+v %v", got, err)
+						}
+						if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+							t.Fatal("empty patch changed full store state")
+						}
+						for path, want := range map[string]Record{"beads/plan": original, "beads/target": target} {
+							if readback, err := s.Show(ctx, path); err != nil || !reflect.DeepEqual(readback, want) {
+								t.Fatalf("empty patch changed %s on read-back: %+v %v", path, readback, err)
+							}
+						}
+						if readback, err := s.ShowLink(ctx, "links/out"); err != nil || !reflect.DeepEqual(readback, link.Link) {
+							t.Fatalf("empty patch changed owned Link on read-back: %+v %v", readback, err)
+						}
+					})
+				}
+			})
 			for _, tc := range []struct{ name, patch string }{
-				{"empty-operations", `[]`}, {"malformed", `[{`}, {"unsupported-op", `[{"op":"test","path":"/title","value":""}]`},
+				{"malformed", `[{`}, {"unsupported-op", `[{"op":"test","path":"/title","value":""}]`},
 				{"missing-target", `[{"op":"replace","path":"/missing","value":"x"}]`},
 				{"missing-title", `[{"op":"remove","path":"/title"}]`},
 				{"missing-body", `[{"op":"remove","path":"/body"}]`},

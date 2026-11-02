@@ -70,7 +70,7 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 
 func graphPreviewMemoryPropertiesPatchRequestWithRaw(cmd *cobra.Command, path string, raw []byte) (graphstore.MemoryPropertiesPatchRequest, error) {
 	var request graphstore.MemoryPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "type", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "patch", "replace-properties", "metadata", "replace-metadata", "patch-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {

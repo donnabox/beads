@@ -29,7 +29,7 @@ func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRe
 		return DependencyRemoveResult{}, fmt.Errorf("%w: remove dependency requires a UTF-8 actor", storage.ErrValidation)
 	}
 	var result DependencyRemoveResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeLinkMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -175,7 +175,7 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	if err := insertPreviewVersionInTx(ctx, tx, path, revision, snapshot, request.Actor); err != nil {
+	if err := s.retainResourceVersionInTx(ctx, tx, path, revision, snapshot, request.Actor); err != nil {
 		return LinkDeleteResult{}, err
 	}
 	if err := s.afterStage("link-retained"); err != nil {

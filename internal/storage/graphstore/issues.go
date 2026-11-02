@@ -83,7 +83,7 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 		return IssueRecord{}, err
 	}
 	var result IssueRecord
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeIssueCreate, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -175,10 +175,16 @@ func (s *Store) createIssue(ctx context.Context, path string, request publicops.
 			return err
 		}
 		if len(resolved) == 0 {
-			// This is an identity mapping, not a second snapshot. The local ordinal
-			// never escapes as the graph Version or as a portable History address.
-			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,'[]','{"inception":"create"}',?)`, path, revision, created.Issue.ID, ordinal, ordinal); err != nil {
-				return err
+			if s.LayoutVersion() == TypesFreshSchemaVersion {
+				if err := s.insertInitialNativeIssueMappingInTx(ctx, tx, path, revision, created.Issue.ID, ordinal); err != nil {
+					return err
+				}
+			} else {
+				// This is an identity mapping, not a second snapshot. The local ordinal
+				// never escapes as the graph Version or as a portable History address.
+				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,'[]','{"inception":"create"}',?)`, path, revision, created.Issue.ID, ordinal, ordinal); err != nil {
+					return err
+				}
 			}
 		} else if err := s.mapIssueCreateDependenciesInTx(ctx, tx, path, created.Issue.ID, request.Actor, resolved, true); err != nil {
 			return fmt.Errorf("map created Issue dependencies: %w", err)
@@ -328,6 +334,18 @@ func (s *Store) ShowIssue(ctx context.Context, path string) (IssueRecord, error)
 	if err := validatePath(path); err != nil {
 		return IssueRecord{}, err
 	}
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		var result IssueRecord
+		err := s.withCheckedIssueReadTx(ctx, func(readctx context.Context, tx *sql.Tx) error {
+			var err error
+			result, err = s.showIssueInTx(readctx, tx, path)
+			return err
+		})
+		if err != nil {
+			return IssueRecord{}, err
+		}
+		return result, nil
+	}
 	var result IssueRecord
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
@@ -372,6 +390,9 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	// Comments are a separate native Issue feed, outside durable_state and its
 	// retained graph version. Including them here would make a new comment look
 	// like an unversioned mutation of the Issue snapshot.
+	if err := s.chargeIssueDiscoveryHydrationInTx(ctx, tx, path); err != nil {
+		return IssueRecord{}, err
+	}
 	issue, err := issueops.HydrateIssueOperationResult(ctx, tx, issueID, false)
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue backing: %v", ErrInvalidStore, err)
@@ -431,7 +452,7 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	}
 	issue.Dependencies = nil
 	issue.Metadata = nil
-	attribution, err := applyIssueRevisionContext(Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}, revisionContext)
+	attribution, err := s.applyNativeIssueRevisionContext(Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}, revisionContext)
 	if err != nil {
 		return IssueRecord{}, err
 	}
@@ -439,8 +460,15 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, err
 	}
-	return IssueRecord{ID: publicURL, Type: typ, Revision: revision, Version: revision,
-		Properties: issue, Metadata: metadata, Owned: owned, Attribution: attribution}, nil
+	result := IssueRecord{ID: publicURL, Type: typ, Revision: revision, Version: revision,
+		Properties: issue, Metadata: metadata, Owned: owned, Attribution: attribution}
+	if err := s.captureNativeReadbackResultInTx(ctx, tx, path, &result); err != nil {
+		return IssueRecord{}, err
+	}
+	if err := s.verifyIssueDiscoveryRecordInTx(ctx, tx, path, result); err != nil {
+		return IssueRecord{}, err
+	}
+	return result, nil
 }
 
 // The installed Type set, already fingerprint-checked by checkBinding, uses

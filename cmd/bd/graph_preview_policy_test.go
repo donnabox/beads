@@ -336,6 +336,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		"versionList",
 		"memoryPropertiesPatch", "linkPropertiesPatch", "legacyImport",
 		"issueTodo", "issueHeartbeat", "issueReclaim", "issueStateRead", "issueStatus", "issueMergeSlot",
+		"queryAST",
 	} {
 		wantEnabled[capability] = true
 		if !result.Result.Capabilities[capability] {

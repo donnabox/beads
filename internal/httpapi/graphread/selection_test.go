@@ -7,8 +7,10 @@ import (
 	"reflect"
 	"testing"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 const selectionScope = "https://example.test/read/"
@@ -201,5 +203,210 @@ func TestIncidentSelection(t *testing.T) {
 		if _, err := CompileIncident(selectionScope, "beads/z", values, selectionLimits); err == nil {
 			t.Fatal("invalid incident parameters admitted")
 		}
+	}
+}
+
+// These are selection fixtures, not evidence of native installation/admission.
+// Current child v2 has different ancestry from the exact v1 on the Task.
+func resourceSelectionFixture(t *testing.T) graphstore.ResourceSnapshot {
+	t.Helper()
+	ref := func(name, revision string) resourceget.TypeReference {
+		return resourceget.TypeReference{URI: selectionScope + name, Revision: revision}
+	}
+	meta, parent, oldChild, child, relation := ref("bead-type", "m1"), ref("types/base", "p1"), ref("types/task", "c1"), ref("types/task", "c2"), ref("types/refines", "r1")
+	fact := func(reference resourceget.TypeReference, kind graph.ResourceKind, current bool, ancestors ...resourceget.TypeReference) graphstore.ResourceTypeFact {
+		return graphstore.ResourceTypeFact{Reference: reference, Definition: reference, Describes: kind, Current: current, Ancestors: append([]resourceget.TypeReference{reference}, ancestors...)}
+	}
+	result := graphstore.ResourceSnapshot{Types: []graphstore.ResourceTypeFact{
+		fact(meta, graph.KindBead, true), fact(parent, graph.KindBead, true),
+		fact(oldChild, graph.KindBead, false, parent), fact(child, graph.KindBead, true), fact(relation, graph.KindLink, true),
+	}}
+	for _, row := range []struct {
+		id         string
+		kind       graph.ResourceKind
+		typ        resourceget.TypeReference
+		properties map[string]any
+	}{
+		{"type", graph.KindBead, meta, map[string]any{"name": "type"}},
+		{"bead-type", graph.KindBead, meta, map[string]any{"name": "bead-type"}},
+		{"333", graph.KindBead, oldChild, map[string]any{"title": "Hello world", "status": "open", "metadata": map[string]any{"type": "unchanged"}}},
+		{"edge", graph.KindLink, relation, map[string]any{}},
+	} {
+		value := map[string]any{"id": selectionScope + row.id, "revision": "record-1", "type": row.typ, "properties": row.properties, "metadata": map[string]any{"retained": true}}
+		if row.kind == graph.KindBead {
+			value["ownedLinks"] = map[string]any{}
+		} else {
+			value["source"] = resourceget.TypeReference{URI: selectionScope + "333", Revision: "task-old"}
+			value["target"] = "urn:partner:UPPER"
+		}
+		raw, err := json.Marshal(value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		document, err := resourceget.NewResourceDocument(selectionScope, row.kind, raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+		result.Documents = append(result.Documents, document)
+	}
+	return result
+}
+
+func TestResourceCollectionUsesOrdinaryBeadsAndExactCapturedAncestry(t *testing.T) {
+	inventory := resourceSelectionFixture(t)
+	for _, tc := range []struct {
+		name, collection string
+		query            url.Values
+		ids              []string
+	}{
+		{"ordinary definitions and instance", "beads", nil, []string{"333", "bead-type", "type"}},
+		{"metatype selector", "beads", url.Values{"conformsTo": {selectionScope + "bead-type"}}, []string{"bead-type", "type"}},
+		{"retained parent", "beads", url.Values{"conformsTo": {selectionScope + "types/base"}}, []string{"333"}},
+		{"nominal across editions", "beads", url.Values{"type": {selectionScope + "types/task"}}, []string{"333"}},
+		{"unknown nominal URI is nonmatch", "beads", url.Values{"type": {"https://unknown.test/type"}}, []string{}},
+		{"query exact stored pin", "beads", url.Values{"selector": {`$[?@.type.revision == "c1" && @.properties.status == "open"]`}}, []string{"333"}},
+		{"endpoint and stored pin", "links", url.Values{"source": {selectionScope + "333"}, "target": {"urn:partner:UPPER"}, "selector": {`$[?@.source.revision == "task-old"]`}}, []string{"edge"}},
+		{"case-sensitive foreign endpoint", "links", url.Values{"target": {"urn:partner:upper"}}, []string{}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			query, err := CompileCollection(selectionScope, tc.collection, tc.query, selectionLimits)
+			if err != nil {
+				t.Fatal(err)
+			}
+			rows, err := query.SelectResources(inventory)
+			if err != nil {
+				t.Fatal(err)
+			}
+			want := make([]string, 0, len(tc.ids))
+			for _, id := range tc.ids {
+				want = append(want, selectionScope+id)
+			}
+			if got := selectedIDs(t, rows); !reflect.DeepEqual(got, want) {
+				t.Fatalf("got %v want %v", got, want)
+			}
+			for _, raw := range rows {
+				matched := false
+				for _, document := range inventory.Documents {
+					if string(raw) == string(document.NativeJSON()) {
+						matched = true
+					}
+				}
+				if !matched {
+					t.Fatal("selection rewrote or reconstructed a complete record")
+				}
+			}
+		})
+	}
+}
+
+func TestResourceCollectionRejectsIncompleteCaptureWithoutPartialResults(t *testing.T) {
+	query, err := CompileCollection(selectionScope, "beads", nil, selectionLimits)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name   string
+		mutate func(*graphstore.ResourceSnapshot)
+	}{
+		{"duplicate", func(s *graphstore.ResourceSnapshot) { s.Documents = append(s.Documents, s.Documents[0]) }},
+		{"missing exact affiliation", func(s *graphstore.ResourceSnapshot) { s.Types = append(s.Types[:2:2], s.Types[3:]...) }},
+		{"wrong kind", func(s *graphstore.ResourceSnapshot) { s.Types[0].Describes = graph.KindLink }},
+		{"zero document", func(s *graphstore.ResourceSnapshot) {
+			s.Documents = append(s.Documents, resourceget.ResourceDocument{})
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			snapshot := resourceSelectionFixture(t)
+			tc.mutate(&snapshot)
+			rows, err := query.SelectResources(snapshot)
+			if !errors.Is(err, graphstore.ErrInvalidStore) || rows != nil {
+				t.Fatalf("partial result %s, error %v", rows, err)
+			}
+		})
+	}
+}
+
+func TestResourceNominalSelectionSeparatesRawURIFromProductLookup(t *testing.T) {
+	snapshot := resourceSelectionFixture(t)
+	local := snapshot.Types[0].Reference
+	semantic := resourceget.TypeReference{URI: "https://protocol.example/bead-type", Revision: "global-2"}
+	snapshot.Types[0].Reference = semantic
+	snapshot.Types[0].Ancestors = []resourceget.TypeReference{semantic}
+	// Definition remains the independently checked local record edition. Only
+	// this fixture's correspondence evidence bridges its two distinct IDs.
+	for i, document := range snapshot.Documents {
+		if document.Type() != local {
+			continue
+		}
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(document.NativeJSON(), &fields); err != nil {
+			t.Fatal(err)
+		}
+		rawType, err := json.Marshal(semantic)
+		if err != nil {
+			t.Fatal(err)
+		}
+		fields["type"] = rawType
+		raw, err := json.Marshal(fields)
+		if err != nil {
+			t.Fatal(err)
+		}
+		snapshot.Documents[i], err = resourceget.NewResourceDocument(selectionScope, document.Kind(), raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	q, err := CompileCollection(selectionScope, "beads", url.Values{"type": {local.URI}}, selectionLimits)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows, err := q.SelectResources(snapshot)
+	if err != nil || len(rows) != 0 {
+		t.Fatalf("raw nominal URI was rewritten: %s %v", rows, err)
+	}
+	resolved, err := q.ResolveInstalledTypeSelectors(snapshot)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows, err = resolved.SelectResources(snapshot)
+	if err != nil || len(rows) != 2 {
+		t.Fatalf("explicit checked product lookup lost definitions: %s %v", rows, err)
+	}
+	again, err := q.SelectResources(snapshot)
+	if err != nil || len(again) != 0 {
+		t.Fatal("product lookup mutated raw selection")
+	}
+	for _, tc := range []struct {
+		name, selector string
+		product        bool
+		want           int
+	}{
+		{"raw local family is not an alias", local.URI, false, 0},
+		{"raw semantic family", semantic.URI, false, 2},
+		{"explicit product family lookup", local.URI, true, 2},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			family, err := CompileCollection(selectionScope, "beads", url.Values{"conformsTo": {tc.selector}}, selectionLimits)
+			if err != nil {
+				t.Fatal(err)
+			}
+			selected := family
+			if tc.product {
+				selected, err = family.ResolveInstalledTypeSelectors(snapshot)
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			rows, err := selected.SelectResources(snapshot)
+			if err != nil || len(rows) != tc.want {
+				t.Fatalf("family selection: got %d rows, want %d, error %v", len(rows), tc.want, err)
+			}
+			if tc.product {
+				rows, err = family.SelectResources(snapshot)
+				if err != nil || len(rows) != 0 {
+					t.Fatal("product family lookup mutated raw selection")
+				}
+			}
+		})
 	}
 }

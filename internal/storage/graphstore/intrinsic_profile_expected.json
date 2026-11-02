@@ -1,0 +1,2428 @@
+{
+  "status": "STATIC_SOURCE_EXPECTATION_CANDIDATES_NOT_RUNTIME_CANONICAL_MANIFEST",
+  "profile": "TypesFreshSchemaVersion=14 selected by Janet via parent; ordinary SchemaVersion11 unchanged",
+  "receiver": "6dd6a81f5c733a0b13f92f787e5e16c91affbb1d",
+  "objects": [
+    {
+      "name": "bd_events_journal",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE bd_events_journal (\n    seq BIGINT NOT NULL PRIMARY KEY,\n    ts DATETIME NOT NULL,\n    op VARCHAR(32) NOT NULL,\n    issue_id VARCHAR(255) NOT NULL,\n    issue_json LONGTEXT,\n    dep_json LONGTEXT,\n    comment_json LONGTEXT,\n    INDEX idx_bd_events_journal_issue (issue_id),\n    INDEX idx_bd_events_journal_ts (ts),\n    actor VARCHAR(255) NOT NULL DEFAULT ''\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0064_create_events_journal.up.sql",
+        "internal/storage/schema/migrations/0066_add_events_journal_actor.up.sql",
+        "internal/storage/schema/migrations/ignored/0023_repair_events_journal_shape.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "bd_events_seq",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE bd_events_seq (\n    id INT NOT NULL PRIMARY KEY,\n    next_seq BIGINT NOT NULL\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0064_create_events_journal.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "child_counters",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE child_counters (\n    parent_id VARCHAR(255) PRIMARY KEY,\n    last_child INT NOT NULL DEFAULT 0,\n    CONSTRAINT fk_counter_parent FOREIGN KEY (parent_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0008_create_child_counters.up.sql",
+        "internal/storage/schema/migrations/ignored/0002_create_wisp_child_counters.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "comments",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE comments (\n    id CHAR(36) NOT NULL PRIMARY KEY,\n    issue_id VARCHAR(255) NOT NULL,\n    author VARCHAR(255) NOT NULL,\n    text LONGTEXT NOT NULL,\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    INDEX idx_comments_issue (issue_id),\n    INDEX idx_comments_created_at (created_at),\n    CONSTRAINT fk_comments_issue FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE,\n    INDEX idx_comments_issue_created_id (issue_id,created_at,id)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0004_create_comments.up.sql",
+        "internal/storage/schema/migrations/0042_add_on_update_cascade.up.sql",
+        "internal/storage/schema/migrations/0051_drop_aux_id_defaults.up.sql",
+        "internal/storage/schema/migrations/0056_add_comments_keyset_index.up.sql",
+        "internal/storage/schema/migrations/0049_longtext_large_content_columns.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "compaction_snapshots",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE compaction_snapshots (\n    id CHAR(36) NOT NULL PRIMARY KEY,\n    issue_id VARCHAR(255) NOT NULL,\n    compaction_level INT NOT NULL,\n    snapshot_json BLOB NOT NULL,\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    INDEX idx_comp_snap_issue (issue_id, compaction_level, created_at DESC),\n    CONSTRAINT fk_comp_snap_issue FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0010_create_compaction_snapshots.up.sql",
+        "internal/storage/schema/migrations/0042_add_on_update_cascade.up.sql",
+        "internal/storage/schema/migrations/0051_drop_aux_id_defaults.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "config",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE config (\n    `key` VARCHAR(255) PRIMARY KEY,\n    value TEXT NOT NULL\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0006_create_config.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "custom_statuses",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE custom_statuses (\n    name VARCHAR(64) PRIMARY KEY,\n    category VARCHAR(32) NOT NULL DEFAULT 'unspecified'\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0024_create_custom_status_type_tables.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "custom_types",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE custom_types (\n    name VARCHAR(64) PRIMARY KEY\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0024_create_custom_status_type_tables.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "dependencies",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE dependencies (\n    id CHAR(36) NOT NULL PRIMARY KEY,\n    issue_id VARCHAR(255) NOT NULL,\n    type VARCHAR(32) NOT NULL DEFAULT 'blocks',\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    created_by VARCHAR(255) NOT NULL,\n    metadata JSON DEFAULT (JSON_OBJECT()),\n    thread_id VARCHAR(255) DEFAULT '',\n    depends_on_issue_id VARCHAR(255) NULL,\n    depends_on_wisp_id VARCHAR(255) NULL,\n    depends_on_external VARCHAR(255) NULL,\n    INDEX idx_dependencies_issue (issue_id),\n    INDEX idx_dependencies_thread (thread_id),\n    INDEX idx_dep_wisp_target (depends_on_wisp_id),\n    INDEX idx_dep_issue_target (depends_on_issue_id),\n    INDEX idx_dep_external_target (depends_on_external),\n    UNIQUE KEY uk_dep_issue_target (issue_id,depends_on_issue_id),\n    UNIQUE KEY uk_dep_wisp_target (issue_id,depends_on_wisp_id),\n    UNIQUE KEY uk_dep_external_target (issue_id,depends_on_external),\n    INDEX idx_dep_type_issue (type,depends_on_issue_id),\n    INDEX idx_dep_type_wisp (type,depends_on_wisp_id),\n    INDEX idx_dep_type_external (type,depends_on_external),\n    CONSTRAINT fk_dep_issue FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE,\n    CONSTRAINT fk_dep_issue_target FOREIGN KEY (depends_on_issue_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE,\n    CONSTRAINT ck_dep_one_target CHECK ((depends_on_issue_id IS NOT NULL)+(depends_on_wisp_id IS NOT NULL)+(depends_on_external IS NOT NULL)=1)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0002_create_dependencies.up.sql",
+        "internal/storage/schema/migrations/0041_split_dependencies_target.up.sql",
+        "internal/storage/schema/migrations/0042_add_on_update_cascade.up.sql",
+        "internal/storage/schema/migrations/0043_drop_dependencies_generated_column.up.sql",
+        "internal/storage/schema/migrations/0050_dependencies_deterministic_id.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "epoch_minted_addresses",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE epoch_minted_addresses (\n    address VARCHAR(255) NOT NULL,\n    store_id VARCHAR(255) NOT NULL,\n    minted_id VARCHAR(255) NOT NULL,\n    minted_epoch INT NOT NULL,\n    minted_at DATETIME NOT NULL,\n    PRIMARY KEY (address)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0071_add_epoch_minted_addresses.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "events",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE events (\n    issue_id VARCHAR(255) NOT NULL,\n    event_type VARCHAR(32) NOT NULL,\n    actor VARCHAR(255) NOT NULL,\n    old_value LONGTEXT,\n    new_value LONGTEXT,\n    comment TEXT,\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    id CHAR(36) NOT NULL,\n    PRIMARY KEY (id),\n    INDEX idx_events_created_at (created_at),\n    INDEX idx_events_issue (issue_id),\n    CONSTRAINT fk_events_issue FOREIGN KEY (issue_id) REFERENCES issues (id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0005_create_events.up.sql",
+        "internal/storage/schema/migrations/0062_events_dolt_ignore.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "federation_peers",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE federation_peers (\n    name VARCHAR(255) PRIMARY KEY,\n    remote_url VARCHAR(1024) NOT NULL,\n    username VARCHAR(255),\n    password_encrypted BLOB,\n    sovereignty VARCHAR(8) DEFAULT '',\n    last_sync DATETIME,\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    INDEX idx_federation_peers_sovereignty (sovereignty)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0015_create_federation_peers.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_catalog",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_catalog (\n        path VARBINARY(1024) PRIMARY KEY, resource_kind VARBINARY(16) NOT NULL,\n        type_url LONGBLOB NOT NULL, revision VARBINARY(32) NOT NULL,\n        allocation_state VARBINARY(16) NOT NULL, backing VARBINARY(32) NOT NULL,\n        backing_key VARBINARY(255) NULL, public_id LONGBLOB NULL, UNIQUE KEY one_backing (backing, backing_key));",
+      "constructionSource": [
+        "internal/storage/graphstore/schema.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_intrinsic_contexts",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_intrinsic_contexts (\n    context_id VARBINARY(32) PRIMARY KEY,\n    scope_url LONGBLOB NOT NULL,\n    authority_id VARBINARY(32) NOT NULL,\n    source_repository LONGBLOB NOT NULL,\n    source_commit VARBINARY(40) NOT NULL,\n    source_path LONGBLOB NOT NULL,\n    source_sha256 VARBINARY(64) NOT NULL,\n    source_bytes LONGBLOB NOT NULL,\n    semantic_source_commit VARBINARY(40) NOT NULL,\n    interpretation VARBINARY(64) NOT NULL,\n    context_sha256 VARBINARY(64) NOT NULL\n);",
+      "constructionSource": [
+        "internal/storage/graphstore/intrinsic_materialization.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_intrinsic_members",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_intrinsic_members (\n    path VARBINARY(1024) NOT NULL,\n    revision VARBINARY(32) NOT NULL,\n    allocation_key VARBINARY(32) NOT NULL,\n    context_id VARBINARY(32) NOT NULL,\n    role VARBINARY(32) NOT NULL,\n    public_id LONGBLOB NOT NULL,\n    resource_uri LONGBLOB NOT NULL,\n    resource_kind VARBINARY(16) NOT NULL,\n    global_uri LONGBLOB NOT NULL,\n    global_revision LONGBLOB NOT NULL,\n    record LONGBLOB NOT NULL,\n    record_sha256 VARBINARY(64) NOT NULL,\n    PRIMARY KEY (path, revision),\n    UNIQUE KEY one_context_role (context_id, role),\n    KEY member_context (context_id)\n);",
+      "constructionSource": [
+        "internal/storage/graphstore/intrinsic_materialization.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_issue_versions",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_issue_versions (\n        path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,\n        issue_id VARBINARY(255) NOT NULL, issue_revision BIGINT NOT NULL, owned LONGBLOB NOT NULL, revision_context LONGBLOB NULL, history_ordinal BIGINT NULL,\n        PRIMARY KEY (path, version), UNIQUE KEY one_issue_version (issue_id, issue_revision));",
+      "constructionSource": [
+        "internal/storage/graphstore/schema.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_links",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_links (\n        path VARBINARY(1024) PRIMARY KEY, source_path VARBINARY(1024) NOT NULL,\n        target_path VARBINARY(1024) NOT NULL,\n        source_revision VARBINARY(4096) NOT NULL DEFAULT '',\n        target_revision VARBINARY(4096) NOT NULL DEFAULT '', properties LONGBLOB NOT NULL,\n        metadata LONGBLOB NULL,\n        attribution LONGBLOB NOT NULL, INDEX source_links (source_path));",
+      "constructionSource": [
+        "internal/storage/graphstore/schema.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_payloads",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_payloads (\n        path VARBINARY(1024) PRIMARY KEY, properties LONGBLOB NOT NULL,\n        metadata LONGBLOB NULL);",
+      "constructionSource": [
+        "internal/storage/graphstore/schema.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_scope",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_scope (\n        singleton INT PRIMARY KEY, workspace LONGBLOB NOT NULL,\n        scope_url LONGBLOB NOT NULL, authority_id VARBINARY(32) NOT NULL,\n        schema_version INT NOT NULL, writer_token VARBINARY(32) NOT NULL);",
+      "constructionSource": [
+        "internal/storage/graphstore/schema.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_types",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_types (\n        name VARBINARY(64) PRIMARY KEY, descriptor LONGBLOB NOT NULL,\n        fingerprint VARBINARY(64) NOT NULL);",
+      "constructionSource": [
+        "internal/storage/graphstore/schema.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "graph_preview_versions",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE graph_preview_versions (\n        path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,\n        snapshot LONGBLOB NOT NULL, actor LONGBLOB NOT NULL,\n        ordinal BIGINT NOT NULL, change_at DATETIME(6) NOT NULL, native_participation_generation BIGINT NULL, native_attribution LONGBLOB NULL,\n        PRIMARY KEY (path, version), UNIQUE KEY one_path_ordinal (path, ordinal));",
+      "constructionSource": [
+        "internal/storage/graphstore/schema.go"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "ignored_schema_migrations",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE ignored_schema_migrations (\n    version INT PRIMARY KEY,\n    applied_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    content_hash CHAR(64)\n);",
+      "constructionSource": [
+        "internal/storage/schema/schema.go"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "interactions",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE interactions (\n    id VARCHAR(32) PRIMARY KEY,\n    kind VARCHAR(64) NOT NULL,\n    created_at DATETIME NOT NULL,\n    actor VARCHAR(255),\n    issue_id VARCHAR(255),\n    model VARCHAR(255),\n    prompt TEXT,\n    response TEXT,\n    error TEXT,\n    tool_name VARCHAR(255),\n    exit_code INT,\n    parent_id VARCHAR(32),\n    label VARCHAR(64),\n    reason TEXT,\n    extra JSON,\n    INDEX idx_interactions_kind (kind),\n    INDEX idx_interactions_created_at (created_at),\n    INDEX idx_interactions_issue_id (issue_id),\n    INDEX idx_interactions_parent_id (parent_id)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0014_create_interactions.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "issue_counter",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE issue_counter (\n    prefix VARCHAR(255) PRIMARY KEY,\n    last_id INT NOT NULL DEFAULT 0\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0013_create_issue_counter.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "issue_snapshots",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE issue_snapshots (\n    id CHAR(36) NOT NULL PRIMARY KEY,\n    issue_id VARCHAR(255) NOT NULL,\n    snapshot_time DATETIME NOT NULL,\n    compaction_level INT NOT NULL,\n    original_size INT NOT NULL,\n    compressed_size INT NOT NULL,\n    original_content TEXT NOT NULL,\n    archived_events TEXT,\n    INDEX idx_snapshots_issue (issue_id),\n    INDEX idx_snapshots_level (compaction_level),\n    CONSTRAINT fk_snapshots_issue FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0009_create_issue_snapshots.up.sql",
+        "internal/storage/schema/migrations/0042_add_on_update_cascade.up.sql",
+        "internal/storage/schema/migrations/0051_drop_aux_id_defaults.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "issue_versions",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE issue_versions (\n    issue_id VARCHAR(255) NOT NULL,\n    revision BIGINT NOT NULL,\n    epoch INT NOT NULL,\n    durable_state LONGBLOB,\n    change_actor VARCHAR(255),\n    change_agent VARCHAR(255),\n    change_message TEXT,\n    change_at DATETIME(6) NOT NULL,\n    removed_at DATETIME(6),\n    removed_reason VARCHAR(255),\n    PRIMARY KEY (issue_id, revision),\n    attribution_status VARCHAR(20) NOT NULL,\n    removed_restriction VARCHAR(30)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0067_add_versioned_beads_schema.up.sql",
+        "internal/storage/schema/migrations/0068_add_attribution_status.up.sql",
+        "internal/storage/schema/migrations/0069_widen_issue_versions_datetime_precision.up.sql",
+        "internal/storage/schema/migrations/0070_add_removed_restriction.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "issues",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE issues (\n    id VARCHAR(255) PRIMARY KEY,\n    content_hash VARCHAR(64),\n    title VARCHAR(500) NOT NULL,\n    description LONGTEXT NOT NULL,\n    design LONGTEXT NOT NULL,\n    acceptance_criteria LONGTEXT NOT NULL,\n    notes LONGTEXT NOT NULL,\n    status VARCHAR(32) NOT NULL DEFAULT 'open',\n    priority INT NOT NULL DEFAULT 2,\n    issue_type VARCHAR(32) NOT NULL DEFAULT 'task',\n    assignee VARCHAR(255),\n    estimated_minutes INT,\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    created_by VARCHAR(255) DEFAULT '',\n    owner VARCHAR(255) DEFAULT '',\n    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    closed_at DATETIME,\n    closed_by_session VARCHAR(255) DEFAULT '',\n    external_ref VARCHAR(255),\n    spec_id VARCHAR(1024),\n    compaction_level INT DEFAULT 0,\n    compacted_at DATETIME,\n    compacted_at_commit VARCHAR(64),\n    original_size INT,\n    sender VARCHAR(255) DEFAULT '',\n    ephemeral TINYINT(1) DEFAULT 0,\n    wisp_type VARCHAR(32) DEFAULT '',\n    pinned TINYINT(1) DEFAULT 0,\n    is_template TINYINT(1) DEFAULT 0,\n    mol_type VARCHAR(32) DEFAULT '',\n    work_type VARCHAR(32) DEFAULT 'mutex',\n    source_system VARCHAR(255) DEFAULT '',\n    metadata JSON DEFAULT (JSON_OBJECT()),\n    source_repo VARCHAR(512) DEFAULT '',\n    close_reason LONGTEXT DEFAULT '',\n    event_kind VARCHAR(32) DEFAULT '',\n    actor VARCHAR(255) DEFAULT '',\n    target VARCHAR(255) DEFAULT '',\n    payload TEXT DEFAULT '',\n    await_type VARCHAR(32) DEFAULT '',\n    await_id VARCHAR(255) DEFAULT '',\n    timeout_ns BIGINT DEFAULT 0,\n    waiters TEXT DEFAULT '',\n    hook_bead VARCHAR(255) DEFAULT '',\n    role_bead VARCHAR(255) DEFAULT '',\n    agent_state VARCHAR(32) DEFAULT '',\n    last_activity DATETIME,\n    role_type VARCHAR(32) DEFAULT '',\n    rig VARCHAR(255) DEFAULT '',\n    due_at DATETIME,\n    defer_until DATETIME,\n    INDEX idx_issues_status_updated_at (status,updated_at),\n    INDEX idx_issues_priority (priority),\n    INDEX idx_issues_issue_type (issue_type),\n    INDEX idx_issues_assignee (assignee),\n    INDEX idx_issues_created_at (created_at),\n    INDEX idx_issues_spec_id (spec_id),\n    INDEX idx_issues_external_ref (external_ref),\n    no_history TINYINT(1) DEFAULT 0,\n    started_at DATETIME,\n    is_blocked TINYINT(1) NOT NULL DEFAULT 0,\n    row_lock BIGINT NOT NULL DEFAULT 0,\n    storage_class VARCHAR(16),\n    current_revision BIGINT NOT NULL DEFAULT 1,\n    participation_generation BIGINT NULL,\n    INDEX idx_issues_is_blocked (is_blocked,status),\n    INDEX idx_issues_defer_until (defer_until)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0001_create_issues.up.sql",
+        "internal/storage/schema/migrations/0023_add_no_history_column.up.sql",
+        "internal/storage/schema/migrations/0027_add_started_at.up.sql",
+        "internal/storage/schema/migrations/0049_longtext_large_content_columns.up.sql",
+        "internal/storage/schema/migrations/0054_add_lease_columns.up.sql",
+        "internal/storage/schema/migrations/0055_move_leases_to_table.up.sql",
+        "internal/storage/schema/migrations/0060_add_storage_class.up.sql",
+        "internal/storage/schema/migrations/0067_add_versioned_beads_schema.up.sql",
+        "internal/storage/schema/migrations/0072_add_participation_generation.up.sql",
+        "internal/storage/schema/migrations/0052_add_date_indexes.up.sql",
+        "internal/storage/schema/migrations/0046_add_is_blocked.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "labels",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE labels (\n    issue_id VARCHAR(255) NOT NULL,\n    label VARCHAR(255) NOT NULL,\n    PRIMARY KEY (issue_id, label),\n    INDEX idx_labels_label (label),\n    CONSTRAINT fk_labels_issue FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0003_create_labels.up.sql",
+        "internal/storage/schema/migrations/0042_add_on_update_cascade.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "leases",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE leases (\n    issue_id VARCHAR(255) PRIMARY KEY,\n    holder VARCHAR(255) NOT NULL,\n    granted_at DATETIME NOT NULL,\n    lease_expires_at DATETIME NOT NULL,\n    heartbeat_at DATETIME NOT NULL,\n    granted_node VARCHAR(255) NOT NULL DEFAULT '',\n    INDEX idx_leases_expires (lease_expires_at)\n);",
+      "constructionSource": [
+        "internal/storage/schema/cli_migrations.go",
+        "internal/storage/schema/migrations/0055_move_leases_to_table.up.sql",
+        "internal/storage/schema/migrations/ignored/0012_create_leases.up.sql",
+        "internal/storage/schema/migrations/ignored/0016_add_lease_granted_node.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "local_metadata",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE local_metadata (\n    `key` VARCHAR(255) PRIMARY KEY,\n    value TEXT NOT NULL DEFAULT ''\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0029_create_local_metadata.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "metadata",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE metadata (\n    `key` VARCHAR(255) PRIMARY KEY,\n    value TEXT NOT NULL\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0007_create_metadata.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "provenance_events",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE provenance_events (\n    id CHAR(36) NOT NULL PRIMARY KEY,\n    issue_id VARCHAR(255) NOT NULL,\n    kind VARCHAR(32) NOT NULL,\n    actor VARCHAR(255),\n    ref VARCHAR(255),\n    ref_kind VARCHAR(32),\n    payload TEXT,\n    source VARCHAR(64) NOT NULL,\n    occurred_at DATETIME,\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    INDEX idx_provenance_events_issue_occurred (issue_id, occurred_at),\n    INDEX idx_provenance_events_ref (ref),\n    INDEX idx_provenance_events_kind (kind),\n    CONSTRAINT fk_provenance_events_issue FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0063_create_provenance_events.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "repo_mtimes",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE repo_mtimes (\n    repo_path VARCHAR(512) PRIMARY KEY,\n    jsonl_path VARCHAR(512) NOT NULL,\n    mtime_ns BIGINT NOT NULL,\n    last_checked DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    INDEX idx_repo_mtimes_checked (last_checked)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0011_create_repo_mtimes.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "routes",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE routes (\n    prefix VARCHAR(32) PRIMARY KEY,\n    path VARCHAR(512) NOT NULL,\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0012_create_routes.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "schema_migrations",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE schema_migrations (\n    version INT PRIMARY KEY,\n    content_hash CHAR(64)\n);",
+      "constructionSource": [
+        "internal/storage/schema/schema.go",
+        "internal/storage/schema/migrations/0032_drop_schema_migrations_applied_at.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "store_epoch",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE store_epoch (\n    id TINYINT(1) NOT NULL DEFAULT 1,\n    epoch INT NOT NULL DEFAULT 1,\n    bumped_at DATETIME,\n    bumped_reason VARCHAR(255),\n    PRIMARY KEY (id),\n    CONSTRAINT ck_store_epoch_singleton CHECK (id = 1)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0067_add_versioned_beads_schema.up.sql"
+      ],
+      "expectedIgnoreResult": "DontIgnore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "wisp_child_counters",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE wisp_child_counters (\n    parent_id VARCHAR(255) PRIMARY KEY,\n    last_child INT NOT NULL DEFAULT 0,\n    CONSTRAINT fk_wisp_child_counters_parent FOREIGN KEY (parent_id) REFERENCES wisps(id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/ignored/0002_create_wisp_child_counters.up.sql",
+        "internal/storage/schema/migrations/ignored/0004_add_wisp_aux_fks.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "wisp_comments",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE wisp_comments (\n    id CHAR(36) NOT NULL PRIMARY KEY,\n    issue_id VARCHAR(255) NOT NULL,\n    author VARCHAR(255) DEFAULT '',\n    text LONGTEXT NOT NULL,\n    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n    INDEX idx_wisp_comments_issue (issue_id),\n    INDEX idx_wisp_comments_issue_created_id (issue_id,created_at,id),\n    CONSTRAINT fk_wisp_comments_issue FOREIGN KEY (issue_id) REFERENCES wisps(id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0021_create_wisp_auxiliary.up.sql",
+        "internal/storage/schema/migrations/ignored/0010_drop_wisp_id_defaults.up.sql",
+        "internal/storage/schema/migrations/0056_add_comments_keyset_index.up.sql",
+        "internal/storage/schema/migrations/0065_widen_wisp_comments_text.up.sql",
+        "internal/storage/schema/migrations/ignored/0004_add_wisp_aux_fks.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "wisp_dependencies",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE wisp_dependencies (\n    id CHAR(36) NOT NULL PRIMARY KEY,\n    issue_id VARCHAR(255) NOT NULL,\n    depends_on_issue_id VARCHAR(255) NULL,\n    depends_on_wisp_id VARCHAR(255) NULL,\n    depends_on_external VARCHAR(255) NULL,\n    type VARCHAR(32) NOT NULL DEFAULT 'blocks',\n    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n    created_by VARCHAR(255) DEFAULT '',\n    metadata JSON DEFAULT (JSON_OBJECT()),\n    thread_id VARCHAR(255) DEFAULT '',\n    UNIQUE KEY uk_wisp_dep_issue_target (issue_id, depends_on_issue_id),\n    UNIQUE KEY uk_wisp_dep_wisp_target (issue_id, depends_on_wisp_id),\n    UNIQUE KEY uk_wisp_dep_external_target (issue_id, depends_on_external),\n    INDEX idx_wisp_dep_type_issue (type, depends_on_issue_id),\n    INDEX idx_wisp_dep_type_wisp (type, depends_on_wisp_id),\n    INDEX idx_wisp_dep_type_external (type, depends_on_external),\n    CONSTRAINT fk_wisp_dep_issue FOREIGN KEY (issue_id) REFERENCES wisps(id) ON DELETE CASCADE ON UPDATE CASCADE,\n    CONSTRAINT fk_wisp_dep_wisp_target FOREIGN KEY (depends_on_wisp_id) REFERENCES wisps(id) ON DELETE CASCADE ON UPDATE CASCADE,\n    CONSTRAINT fk_wisp_dep_issue_target FOREIGN KEY (depends_on_issue_id) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE,\n    CONSTRAINT ck_wisp_dep_one_target CHECK ((depends_on_issue_id IS NOT NULL) + (depends_on_wisp_id IS NOT NULL) + (depends_on_external IS NOT NULL) = 1),\n    INDEX idx_wisp_dep_type (type)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0021_create_wisp_auxiliary.up.sql",
+        "internal/storage/schema/migrations/0022_wisp_dep_type_index.up.sql",
+        "internal/storage/schema/migrations/0047_recompute_mixed_is_blocked.up.sql",
+        "internal/storage/schema/migrations/0058_heal_wisp_dependencies_split_constraints.up.sql",
+        "internal/storage/schema/migrations/ignored/0005_drop_wisp_dependencies_generated_column.up.sql",
+        "internal/storage/schema/migrations/ignored/0010_drop_wisp_id_defaults.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "wisp_events",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE wisp_events (\n    id CHAR(36) NOT NULL PRIMARY KEY,\n    issue_id VARCHAR(255) NOT NULL,\n    event_type VARCHAR(32) NOT NULL,\n    actor VARCHAR(255) DEFAULT '',\n    old_value LONGTEXT DEFAULT '',\n    new_value LONGTEXT DEFAULT '',\n    comment TEXT DEFAULT '',\n    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n    INDEX idx_wisp_events_issue (issue_id),\n    CONSTRAINT fk_wisp_events_issue FOREIGN KEY (issue_id) REFERENCES wisps(id) ON DELETE CASCADE ON UPDATE CASCADE,\n    INDEX idx_wisp_events_created_at (created_at)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0021_create_wisp_auxiliary.up.sql",
+        "internal/storage/schema/migrations/ignored/0010_drop_wisp_id_defaults.up.sql",
+        "internal/storage/schema/migrations/ignored/0004_add_wisp_aux_fks.up.sql",
+        "internal/storage/schema/migrations/0031_wisp_events_created_at_index.up.sql",
+        "internal/storage/schema/migrations/ignored/0008_widen_wisp_event_value_columns.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "wisp_labels",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE wisp_labels (\n    issue_id VARCHAR(255) NOT NULL,\n    label VARCHAR(255) NOT NULL,\n    PRIMARY KEY (issue_id, label),\n    INDEX idx_wisp_labels_label (label),\n    CONSTRAINT fk_wisp_labels_issue FOREIGN KEY (issue_id) REFERENCES wisps(id) ON DELETE CASCADE ON UPDATE CASCADE\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0021_create_wisp_auxiliary.up.sql",
+        "internal/storage/schema/migrations/ignored/0004_add_wisp_aux_fks.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "wisps",
+      "kind": "BASE TABLE",
+      "expectedCreateSQL": "CREATE TABLE wisps (\n    id VARCHAR(255) PRIMARY KEY,\n    content_hash VARCHAR(64),\n    title VARCHAR(500) NOT NULL,\n    description LONGTEXT NOT NULL DEFAULT '',\n    design LONGTEXT NOT NULL DEFAULT '',\n    acceptance_criteria LONGTEXT NOT NULL DEFAULT '',\n    notes LONGTEXT NOT NULL DEFAULT '',\n    status VARCHAR(32) NOT NULL DEFAULT 'open',\n    priority INT NOT NULL DEFAULT 2,\n    issue_type VARCHAR(32) NOT NULL DEFAULT 'task',\n    assignee VARCHAR(255),\n    estimated_minutes INT,\n    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    created_by VARCHAR(255) DEFAULT '',\n    owner VARCHAR(255) DEFAULT '',\n    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    closed_at DATETIME,\n    closed_by_session VARCHAR(255) DEFAULT '',\n    external_ref VARCHAR(255),\n    spec_id VARCHAR(1024),\n    compaction_level INT DEFAULT 0,\n    compacted_at DATETIME,\n    compacted_at_commit VARCHAR(64),\n    original_size INT,\n    sender VARCHAR(255) DEFAULT '',\n    ephemeral TINYINT(1) DEFAULT 0,\n    wisp_type VARCHAR(32) DEFAULT '',\n    pinned TINYINT(1) DEFAULT 0,\n    is_template TINYINT(1) DEFAULT 0,\n    mol_type VARCHAR(32) DEFAULT '',\n    work_type VARCHAR(32) DEFAULT 'mutex',\n    source_system VARCHAR(255) DEFAULT '',\n    metadata JSON DEFAULT (JSON_OBJECT()),\n    source_repo VARCHAR(512) DEFAULT '',\n    close_reason LONGTEXT DEFAULT '',\n    event_kind VARCHAR(32) DEFAULT '',\n    actor VARCHAR(255) DEFAULT '',\n    target VARCHAR(255) DEFAULT '',\n    payload TEXT DEFAULT '',\n    await_type VARCHAR(32) DEFAULT '',\n    await_id VARCHAR(255) DEFAULT '',\n    timeout_ns BIGINT DEFAULT 0,\n    waiters TEXT DEFAULT '',\n    hook_bead VARCHAR(255) DEFAULT '',\n    role_bead VARCHAR(255) DEFAULT '',\n    agent_state VARCHAR(32) DEFAULT '',\n    last_activity DATETIME,\n    role_type VARCHAR(32) DEFAULT '',\n    rig VARCHAR(255) DEFAULT '',\n    due_at DATETIME,\n    defer_until DATETIME,\n    INDEX idx_wisps_status (status),\n    INDEX idx_wisps_priority (priority),\n    INDEX idx_wisps_issue_type (issue_type),\n    INDEX idx_wisps_assignee (assignee),\n    INDEX idx_wisps_created_at (created_at),\n    INDEX idx_wisps_spec_id (spec_id),\n    INDEX idx_wisps_external_ref (external_ref),\n    no_history TINYINT(1) DEFAULT 0,\n    started_at DATETIME,\n    row_lock BIGINT NOT NULL DEFAULT 0,\n    storage_class VARCHAR(16),\n    current_revision BIGINT NOT NULL DEFAULT 1,\n    participation_generation BIGINT NULL,\n    is_blocked TINYINT(1) NOT NULL DEFAULT 0,\n    INDEX idx_wisps_is_blocked (is_blocked,status),\n    INDEX idx_wisps_defer_until (defer_until)\n);",
+      "constructionSource": [
+        "internal/storage/schema/migrations/0020_create_wisps.up.sql",
+        "internal/storage/schema/migrations/0023_add_no_history_column.up.sql",
+        "internal/storage/schema/migrations/0027_add_started_at.up.sql",
+        "internal/storage/schema/migrations/0049_longtext_large_content_columns.up.sql",
+        "internal/storage/schema/migrations/0054_add_lease_columns.up.sql",
+        "internal/storage/schema/migrations/0055_move_leases_to_table.up.sql",
+        "internal/storage/schema/migrations/0060_add_storage_class.up.sql",
+        "internal/storage/schema/migrations/0067_add_versioned_beads_schema.up.sql",
+        "internal/storage/schema/migrations/0072_add_participation_generation.up.sql",
+        "internal/storage/schema/migrations/ignored/0017_add_wisps_defer_until_index.up.sql",
+        "internal/storage/schema/migrations/ignored/0006_add_wisp_is_blocked.up.sql"
+      ],
+      "expectedIgnoreResult": "Ignore",
+      "sourceValues": "fixed hand-transcribed final-source SQL basis; NOT SQL executed or generic migration simulation",
+      "nativeProjectionStatus": "UNQUALIFIED: formatter/implicit FK-support indexes/effective inherited collation correspondence must be verified; never wildcard-accept unknown projection"
+    },
+    {
+      "name": "ready_issues",
+      "kind": "VIEW",
+      "expectedPersistedCreateSQL": "CREATE OR REPLACE VIEW ready_issues AS\nWITH RECURSIVE\n  blocked_directly AS (\n    SELECT DISTINCT d.issue_id\n    FROM dependencies d\n    WHERE d.type = 'blocks'\n      AND EXISTS (\n        SELECT 1 FROM issues blocker\n        WHERE blocker.id = d.depends_on_issue_id\n          AND blocker.status NOT IN ('closed', 'pinned')\n      )\n  ),\n  blocked_transitively AS (\n    SELECT issue_id, 0 as depth\n    FROM blocked_directly\n    UNION ALL\n    SELECT d.issue_id, bt.depth + 1\n    FROM blocked_transitively bt\n    JOIN dependencies d ON d.depends_on_issue_id = bt.issue_id\n    WHERE d.type = 'parent-child'\n      AND bt.depth < 50\n  )\nSELECT i.*\nFROM issues i\nLEFT JOIN blocked_transitively bt ON bt.issue_id = i.id\nWHERE (\n    i.status = 'open'\n    OR i.status IN (SELECT name FROM custom_statuses WHERE category = 'active')\n  )\n  AND (i.ephemeral = 0 OR i.ephemeral IS NULL)\n  AND bt.issue_id IS NULL\n  AND (i.defer_until IS NULL OR i.defer_until <= UTC_TIMESTAMP())\n  AND NOT EXISTS (\n    SELECT 1 FROM dependencies d_parent\n    JOIN issues parent ON parent.id = d_parent.depends_on_issue_id\n    WHERE d_parent.issue_id = i.id\n      AND d_parent.type = 'parent-child'\n      AND parent.defer_until IS NOT NULL\n      AND parent.defer_until > UTC_TIMESTAMP()\n  );\n",
+      "expectedExplicitAliasList": [],
+      "expectedResolvedColumnNames": [
+        "id",
+        "content_hash",
+        "title",
+        "description",
+        "design",
+        "acceptance_criteria",
+        "notes",
+        "status",
+        "priority",
+        "issue_type",
+        "assignee",
+        "estimated_minutes",
+        "created_at",
+        "created_by",
+        "owner",
+        "updated_at",
+        "closed_at",
+        "closed_by_session",
+        "external_ref",
+        "spec_id",
+        "compaction_level",
+        "compacted_at",
+        "compacted_at_commit",
+        "original_size",
+        "sender",
+        "ephemeral",
+        "wisp_type",
+        "pinned",
+        "is_template",
+        "mol_type",
+        "work_type",
+        "source_system",
+        "metadata",
+        "source_repo",
+        "close_reason",
+        "event_kind",
+        "actor",
+        "target",
+        "payload",
+        "await_type",
+        "await_id",
+        "timeout_ns",
+        "waiters",
+        "hook_bead",
+        "role_bead",
+        "agent_state",
+        "last_activity",
+        "role_type",
+        "rig",
+        "due_at",
+        "defer_until",
+        "no_history",
+        "started_at",
+        "is_blocked",
+        "row_lock",
+        "storage_class",
+        "current_revision",
+        "participation_generation"
+      ],
+      "expectedSqlModeSet": [
+        "NO_ENGINE_SUBSTITUTION",
+        "ONLY_FULL_GROUP_BY",
+        "STRICT_TRANS_TABLES"
+      ],
+      "constructionSource": [
+        "internal/storage/schema/migrations/0044_update_views_drop_depends_on_id.up.sql",
+        "internal/storage/schema/migrations/0001_create_issues.up.sql"
+      ],
+      "nativeProjectionStatus": "UNQUALIFIED: actual fragment envelope/full create-vs-legacy select/source default sql_mode and resolved output type/null/collation facts not observed; blocked_by_count scalar type/null source derivation not completed"
+    },
+    {
+      "name": "blocked_issues",
+      "kind": "VIEW",
+      "expectedPersistedCreateSQL": "CREATE OR REPLACE VIEW blocked_issues AS\nWITH done_frozen AS (\n    SELECT name FROM custom_statuses WHERE category IN ('done', 'frozen')\n)\nSELECT\n    i.*,\n    (SELECT COUNT(*)\n     FROM dependencies d\n     WHERE d.issue_id = i.id\n       AND d.type = 'blocks'\n       AND EXISTS (\n         SELECT 1 FROM issues blocker\n         WHERE blocker.id = d.depends_on_issue_id\n           AND blocker.status NOT IN ('closed', 'pinned')\n           AND blocker.status NOT IN (SELECT name FROM done_frozen)\n       )\n    ) as blocked_by_count\nFROM issues i\nWHERE i.status NOT IN ('closed', 'pinned')\n  AND i.status NOT IN (SELECT name FROM done_frozen)\n  AND EXISTS (\n    SELECT 1 FROM dependencies d\n    WHERE d.issue_id = i.id\n      AND d.type = 'blocks'\n      AND EXISTS (\n        SELECT 1 FROM issues blocker\n        WHERE blocker.id = d.depends_on_issue_id\n          AND blocker.status NOT IN ('closed', 'pinned')\n          AND blocker.status NOT IN (SELECT name FROM done_frozen)\n      )\n  );\n",
+      "expectedExplicitAliasList": [],
+      "expectedResolvedColumnNames": [
+        "id",
+        "content_hash",
+        "title",
+        "description",
+        "design",
+        "acceptance_criteria",
+        "notes",
+        "status",
+        "priority",
+        "issue_type",
+        "assignee",
+        "estimated_minutes",
+        "created_at",
+        "created_by",
+        "owner",
+        "updated_at",
+        "closed_at",
+        "closed_by_session",
+        "external_ref",
+        "spec_id",
+        "compaction_level",
+        "compacted_at",
+        "compacted_at_commit",
+        "original_size",
+        "sender",
+        "ephemeral",
+        "wisp_type",
+        "pinned",
+        "is_template",
+        "mol_type",
+        "work_type",
+        "source_system",
+        "metadata",
+        "source_repo",
+        "close_reason",
+        "event_kind",
+        "actor",
+        "target",
+        "payload",
+        "await_type",
+        "await_id",
+        "timeout_ns",
+        "waiters",
+        "hook_bead",
+        "role_bead",
+        "agent_state",
+        "last_activity",
+        "role_type",
+        "rig",
+        "due_at",
+        "defer_until",
+        "no_history",
+        "started_at",
+        "is_blocked",
+        "row_lock",
+        "storage_class",
+        "current_revision",
+        "participation_generation",
+        "blocked_by_count"
+      ],
+      "expectedSqlModeSet": [
+        "NO_ENGINE_SUBSTITUTION",
+        "ONLY_FULL_GROUP_BY",
+        "STRICT_TRANS_TABLES"
+      ],
+      "constructionSource": [
+        "internal/storage/schema/migrations/0045_update_blocked_view_drop_depends_on_id.up.sql",
+        "internal/storage/schema/migrations/0001_create_issues.up.sql"
+      ],
+      "nativeProjectionStatus": "UNQUALIFIED: actual fragment envelope/full create-vs-legacy select/source default sql_mode and resolved output type/null/collation facts not observed; blocked_by_count scalar type/null source derivation not completed"
+    }
+  ],
+  "sourceIdentities": {
+    "internal/storage/schema/migrations/0001_create_issues.up.sql": {
+      "gitBlob": "300724ad00dd401c26e3ab5a6d3393ced2d31ef8",
+      "sha256": "0c9bc4d97e2c5ee5d276c952333b934cd7d7d18210997d6bfd72d17f0fdb14f0",
+      "bytes": 2189
+    },
+    "internal/storage/schema/migrations/0002_create_dependencies.up.sql": {
+      "gitBlob": "c55ad140d98d1b167da4bb5f684603a5a713d592",
+      "sha256": "9ca011fa0b24ddf26f689eebf347cc2f80dc90256b099d91b993ec82c4d74da5",
+      "bytes": 697
+    },
+    "internal/storage/schema/migrations/0003_create_labels.up.sql": {
+      "gitBlob": "704a76369b15199a6df61fc5fce6cdb6ad4f6a4b",
+      "sha256": "1780f0dc941d97b74af53d5603646d05e83d94eee5a02ac68ccf929200deaec0",
+      "bytes": 273
+    },
+    "internal/storage/schema/migrations/0004_create_comments.up.sql": {
+      "gitBlob": "021f4be140621e62aa61dc3373b6b7f1afd27d43",
+      "sha256": "35ac76b3d0b2d6287cad1329c77c8a0562bb6310ba0ac34ae273d72d4bed0e2a",
+      "bytes": 435
+    },
+    "internal/storage/schema/migrations/0005_create_events.up.sql": {
+      "gitBlob": "025f6892d7a927a26ec7845186354061b2990e61",
+      "sha256": "c8cbe4bebbe0f92c8a0ccc2a1a0d11ad442635811c2dab093c34c9341a8499b2",
+      "bytes": 497
+    },
+    "internal/storage/schema/migrations/0006_create_config.up.sql": {
+      "gitBlob": "f21c9adb994caf51f107d866983b011110b3b332",
+      "sha256": "435f5ef129dd4999a9b393c98d633038f0e443280a26e63f7d4315bf025dab1f",
+      "bytes": 99
+    },
+    "internal/storage/schema/migrations/0007_create_metadata.up.sql": {
+      "gitBlob": "167cb2b687c74a6888cdfdaf91c281a4100c9eb3",
+      "sha256": "f92c4d3dd32cae489142de34c4706900736c91cdc53b0d54e87e71656b828dc9",
+      "bytes": 101
+    },
+    "internal/storage/schema/migrations/0008_create_child_counters.up.sql": {
+      "gitBlob": "7d824b9a23e4fcdff9b674d4dcf855a922518bbe",
+      "sha256": "99db9b4b5a785ddd209dff628364c4c1eff549c3ca5ec48a64c604b15ef95bfb",
+      "bytes": 223
+    },
+    "internal/storage/schema/migrations/0009_create_issue_snapshots.up.sql": {
+      "gitBlob": "d07794e0e979c8376e281504ec8bb447fb94c076",
+      "sha256": "269ef83f083766b7f2fd2dfd2814ef36a585ae4aa18bcab0468a713d48595e48",
+      "bytes": 528
+    },
+    "internal/storage/schema/migrations/0010_create_compaction_snapshots.up.sql": {
+      "gitBlob": "71692d49fc2cd31416468643d28aba18a36e4148",
+      "sha256": "cb34cbe311fd89a17d72067f449a65089f2fc9a7c4b3774d54448db5ebc3d659",
+      "bytes": 446
+    },
+    "internal/storage/schema/migrations/0011_create_repo_mtimes.up.sql": {
+      "gitBlob": "e1968b28666032a03a1fcaf618cacb61ea4aeccf",
+      "sha256": "bde5204466541dddb53a652fe58561c08b6b3c1fa7feb38a0a582d432d76bda6",
+      "bytes": 263
+    },
+    "internal/storage/schema/migrations/0012_create_routes.up.sql": {
+      "gitBlob": "b49f173582b15bfba53db02d8907a842b68fc770",
+      "sha256": "68e8ef1fc336e8ca6973f6b927b09d3206a7ebd96db9c4cdceab52fb8498c431",
+      "bytes": 254
+    },
+    "internal/storage/schema/migrations/0013_create_issue_counter.up.sql": {
+      "gitBlob": "803eec6b5e9098d981dc1aa55549ecd3a376e2f1",
+      "sha256": "7ddb30dabe32a66197de78f62400f41d000cf43d0ba8ba2a3943536504dddcdb",
+      "bytes": 118
+    },
+    "internal/storage/schema/migrations/0014_create_interactions.up.sql": {
+      "gitBlob": "0819063bddb2e1219aec70c34e8aeb20747c296f",
+      "sha256": "0e17f1cb9fc5ee5a7c43ca8e02b9fd59814f8fd4372f9ffb17b50c34388614ce",
+      "bytes": 588
+    },
+    "internal/storage/schema/migrations/0015_create_federation_peers.up.sql": {
+      "gitBlob": "0ab51332babd0dcefdfc8eb1ca1bec46656f4bff",
+      "sha256": "6aa04b3f66566b243c9a4fc09136af5c17f0ffe947a489245e3c451b995a59b9",
+      "bytes": 447
+    },
+    "internal/storage/schema/migrations/0020_create_wisps.up.sql": {
+      "gitBlob": "7c3ad881f5380215c91c51081391325614ec692d",
+      "sha256": "bca95662441635454b879bb44ca1e607df9c5efd8fd802be3d53a7371a5ced86",
+      "bytes": 2225
+    },
+    "internal/storage/schema/migrations/0021_create_wisp_auxiliary.up.sql": {
+      "gitBlob": "406f453236e527c7884f2eb97eec63e6712221fe",
+      "sha256": "d19284a2be70a448db7746ae009cb264dc86dac0d9094aae9fe80a713a08ee70",
+      "bytes": 2308
+    },
+    "internal/storage/schema/migrations/0024_create_custom_status_type_tables.up.sql": {
+      "gitBlob": "35105b66b6d668cbe189c6072672a0e29e670fc2",
+      "sha256": "816da3feeed531ca9787dca8d4b8072dd94b64d573cf4b6751c61f2390c88a68",
+      "bytes": 217
+    },
+    "internal/storage/schema/migrations/0029_create_local_metadata.up.sql": {
+      "gitBlob": "fb81b8d63b026eec0d180893995d1b2a28560b0d",
+      "sha256": "b989fc49ab03e06ff6520f150d6958efdbd3f444b69b824f7b4bb283ca6f2b65",
+      "bytes": 506
+    },
+    "internal/storage/schema/migrations/0063_create_provenance_events.up.sql": {
+      "gitBlob": "91fafbe676894096bc43c84e6042239e87cf3166",
+      "sha256": "1ef173be07ca58d17cb09ba3b3f5ca0c96edfcace8d52ae3adde2fd27e8248bd",
+      "bytes": 1914
+    },
+    "internal/storage/schema/migrations/0067_add_versioned_beads_schema.up.sql": {
+      "gitBlob": "7f26e52dfffde3e5b73016869b702f30849c4a3c",
+      "sha256": "3e847922cb99c19d35dfcb7f76ee0aad0c956e7c11dffb575af1c601eadd7b6e",
+      "bytes": 5520
+    },
+    "internal/storage/schema/migrations/0071_add_epoch_minted_addresses.up.sql": {
+      "gitBlob": "3dcafe1a008c6063b7d5c59540f05cb8998cb0cd",
+      "sha256": "47a30786a791c0440dc312ab6bfa0c081a7f39d3eec2e41d35735f8663904fe3",
+      "bytes": 2767
+    },
+    "internal/storage/schema/migrations/0062_events_dolt_ignore.up.sql": {
+      "gitBlob": "5f6abf5e4bacb6f2ab1a8ebc752f1dacfb01e8fa",
+      "sha256": "c7de6089997344784a71e7d82ea5e417baaf66320b4533d225a4a6bc3c74222a",
+      "bytes": 6455
+    },
+    "internal/storage/schema/cli_migrations.go": {
+      "gitBlob": "2d7b07c85d41b36d969dec05a0d6a883d3147210",
+      "sha256": "b7b9ce8190a47adede41a3c2e21f1d85b8eb3e775d8b72c69c9cb5166112434c",
+      "bytes": 28675
+    },
+    "internal/storage/schema/migrations/0064_create_events_journal.up.sql": {
+      "gitBlob": "83b1f9c13969752384ab14342cb4d303b4d4876f",
+      "sha256": "25ea9ad8e849dc7e32e7c5850631bedc63a5c5da3bdc58ccb2762fd7a6c758fc",
+      "bytes": 5365
+    },
+    "internal/storage/graphstore/schema.go": {
+      "gitBlob": "6c73c045e742d026d83a2441cdf6972840e74fb5",
+      "sha256": "e1b8c876faf5b4f7232b17d816aef0e250e786ad2b0f966eec9e8da16d70de8c",
+      "bytes": 11438
+    },
+    "internal/storage/schema/migrations/0066_add_events_journal_actor.up.sql": {
+      "gitBlob": "2e6fb14742f4dc6a9c6285311e5817c24a279e21",
+      "sha256": "a524d42ba0eced9350edbf6402dc2952957ff8f75a896bc8339c4cbc8596c793",
+      "bytes": 2017
+    },
+    "internal/storage/schema/migrations/ignored/0023_repair_events_journal_shape.up.sql": {
+      "gitBlob": "b0bb84be8ef0e012c5cca38960390f58e79fab6a",
+      "sha256": "d0edd83ca4cfbc46bd17799c6497a70c8c011d130d08a00c71daf792ee1dcd51",
+      "bytes": 5405
+    },
+    "internal/storage/schema/migrations/ignored/0002_create_wisp_child_counters.up.sql": {
+      "gitBlob": "f566ea8a650adae3c5b46f3e2b8581b2c6a2b5cd",
+      "sha256": "c575c6710169f2e697f3aca60f5f698acc8a64af0edb1e2305b9d377fd845f45",
+      "bytes": 1809
+    },
+    "internal/storage/schema/migrations/0042_add_on_update_cascade.up.sql": {
+      "gitBlob": "f4b3a779cbe3d91845a41528f774e18ddf62606b",
+      "sha256": "9d0fbb3d02955d25442c4a628ac518236068a97ecf164edbc814216bd5a55adc",
+      "bytes": 3916
+    },
+    "internal/storage/schema/migrations/0051_drop_aux_id_defaults.up.sql": {
+      "gitBlob": "cc65d4e36088b3bd6c117c678681dbca9677528d",
+      "sha256": "deb741d5ac5fc1e0cd2e60eb47e84f384ed3455b18d3e2f12cb4e935fe461059",
+      "bytes": 2655
+    },
+    "internal/storage/schema/migrations/0056_add_comments_keyset_index.up.sql": {
+      "gitBlob": "ca0af4d83df99885ac6a4ee5b884d3ffc04480cb",
+      "sha256": "acc28e9b1aa7272c16c86fcb9fd4a2038ae47729a60b53bb75f3a9df05cd3a82",
+      "bytes": 3186
+    },
+    "internal/storage/schema/migrations/0049_longtext_large_content_columns.up.sql": {
+      "gitBlob": "512cce8dd5eb90e64263a4e7f3d06d4fc9809bf0",
+      "sha256": "3359343efb7c28e5803de07e9088670489615d151843d7f23705f3ca8dd6a1e8",
+      "bytes": 3665
+    },
+    "internal/storage/schema/migrations/0041_split_dependencies_target.up.sql": {
+      "gitBlob": "2aa296b86b78b7742b52c6fc6319b39da17cbd0e",
+      "sha256": "e84ef393576df31550570fd3217579b1880850c0645b7d2b6ad8cf55a18ac1c0",
+      "bytes": 5430
+    },
+    "internal/storage/schema/migrations/0043_drop_dependencies_generated_column.up.sql": {
+      "gitBlob": "92c4a3df803a0f29257e8a585e4ac54c2713b8f5",
+      "sha256": "548b8a69ab82179b7ee7ab3cc87ef00b3ae28d5a3a4976f42364f6939e384668",
+      "bytes": 5358
+    },
+    "internal/storage/schema/migrations/0050_dependencies_deterministic_id.up.sql": {
+      "gitBlob": "f2577f698700245266e79d0f44769d3cc0c769eb",
+      "sha256": "96265ff898753f3bb34549fafa18bbaeb67519705b8cf4e32e67f1058df6841a",
+      "bytes": 3168
+    },
+    "internal/storage/schema/schema.go": {
+      "gitBlob": "2c95d0e9f20eecf5e7cbecff761b44f218854cbd",
+      "sha256": "5234e7816245f18d697de45b33dd2603eeabc60a5a09fb602fcb61a00d9d5cd1",
+      "bytes": 94357
+    },
+    "internal/storage/schema/migrations/0068_add_attribution_status.up.sql": {
+      "gitBlob": "e9367a54328165ce410af400ed14a5e7a0c8c8ff",
+      "sha256": "906e5eeda82f31d983b4d85bdec7ff1470c365f2b50605113075689c51eebe94",
+      "bytes": 6300
+    },
+    "internal/storage/schema/migrations/0069_widen_issue_versions_datetime_precision.up.sql": {
+      "gitBlob": "7aab13a12db40c27bdc22f2c70525a2206c7e63e",
+      "sha256": "83eac6ffa400a5bd57c10f15f8f7f6b6cd8b133cba3a498808e7c256de583514",
+      "bytes": 4938
+    },
+    "internal/storage/schema/migrations/0070_add_removed_restriction.up.sql": {
+      "gitBlob": "e60ffce0357bc0a493226093b1e320a3c5fb6876",
+      "sha256": "dac3969132263ea043b135db2a50023e616a07d9736140aac1b418ad4aae4c4a",
+      "bytes": 2671
+    },
+    "internal/storage/schema/migrations/0023_add_no_history_column.up.sql": {
+      "gitBlob": "3edd2bb3dced57c2f57868bd9b47056a6875197c",
+      "sha256": "d11cd7cb462239e49c0b2f9b93ac73771106d5450ebc3422bb7737748c6f967b",
+      "bytes": 892
+    },
+    "internal/storage/schema/migrations/0027_add_started_at.up.sql": {
+      "gitBlob": "df65047d61b7033b940de2c1de958b3a9923292a",
+      "sha256": "dd3b58a8bbed4c49e855a6002981a285f10b6094938534dd3da9b121155f24d6",
+      "bytes": 868
+    },
+    "internal/storage/schema/migrations/0054_add_lease_columns.up.sql": {
+      "gitBlob": "7b01ea3ee34af27a40c40cc56e69863bfd600fa3",
+      "sha256": "2e51058ba15be9d87415949bb03c2c7c2f0e0743c5ae0d3e819b617d95f61680",
+      "bytes": 4632
+    },
+    "internal/storage/schema/migrations/0055_move_leases_to_table.up.sql": {
+      "gitBlob": "6dbd9f0f3034403322831b3c430f281c432ce3c7",
+      "sha256": "2237ddbe13f5a783c65da3bb1292d9a5d89a5f22fddb0c33d2db57f1492df22c",
+      "bytes": 5548
+    },
+    "internal/storage/schema/migrations/0060_add_storage_class.up.sql": {
+      "gitBlob": "ce074d996a0cbad50f2b39e4cc211295155f3ca7",
+      "sha256": "40419632ba75d92dfcf08e16e77a780f014172a17068f6021937df9086a24588",
+      "bytes": 2082
+    },
+    "internal/storage/schema/migrations/0072_add_participation_generation.up.sql": {
+      "gitBlob": "8cf0fb392e76fc767e0f8b71a6490cf2f426d82f",
+      "sha256": "a1be987f0b89af87e76db6a75f53bf400d1ddca5ff2d096cfe0db985880abfe4",
+      "bytes": 3742
+    },
+    "internal/storage/schema/migrations/0052_add_date_indexes.up.sql": {
+      "gitBlob": "0043d1956828ee13f828fe63e5e58a1d8570d2dd",
+      "sha256": "60ae32bc26c41da2e743c1172f73930d18482b8a98aea08b9de85f6009f9c01d",
+      "bytes": 1791
+    },
+    "internal/storage/schema/migrations/0046_add_is_blocked.up.sql": {
+      "gitBlob": "d423e382936bc6d69f6e2568acfc4e63eacfea06",
+      "sha256": "4d6a5a5fc5e386f2c538b4f3574b82fb2ba025176997953a0a4fbd2a91cddf68",
+      "bytes": 1487
+    },
+    "internal/storage/schema/migrations/ignored/0012_create_leases.up.sql": {
+      "gitBlob": "f65ef7d7c6f15623f4da906a6689641dc4cbb2e3",
+      "sha256": "e128a1301a2bcb967f684b09318aa5cf7ed9adb5f6dd7d412de3d67d1de2b28d",
+      "bytes": 1201
+    },
+    "internal/storage/schema/migrations/0032_drop_schema_migrations_applied_at.up.sql": {
+      "gitBlob": "71050f0c67c86765bb69f033f4329b05588ea571",
+      "sha256": "42b86d6b7352f7e158532cc67f4afa142dc2503ce9f780733c06fc9da3478751",
+      "bytes": 380
+    },
+    "internal/storage/schema/migrations/ignored/0004_add_wisp_aux_fks.up.sql": {
+      "gitBlob": "bb7d465e1ff3b7c02c669654989963e56efdd807",
+      "sha256": "12e18a8bdd214d6f96625e78998433ccc9c2d0ef4d1a35307f2653e725c800b9",
+      "bytes": 2037
+    },
+    "internal/storage/schema/migrations/ignored/0010_drop_wisp_id_defaults.up.sql": {
+      "gitBlob": "930a5f0ed73ef12ac424c797ba3f4a7af62966be",
+      "sha256": "59d6644667b7e34f9d23261cb694d461ddd4953969e75519d370b0cce8afd0e8",
+      "bytes": 2174
+    },
+    "internal/storage/schema/migrations/0065_widen_wisp_comments_text.up.sql": {
+      "gitBlob": "80e95b38ff08a74d83730883da2c9985e3c459ee",
+      "sha256": "c7341bb977daff92e073db2579e63058cef88d43f1e09b13fa153a772caac2a6",
+      "bytes": 2383
+    },
+    "internal/storage/schema/migrations/0022_wisp_dep_type_index.up.sql": {
+      "gitBlob": "5ce4a3a2295340bf04644fd661cd0f593c62bf70",
+      "sha256": "fc1375e64620cd4264516718d8f924d88131881f4c00c51471b7630c11b74a45",
+      "bytes": 1241
+    },
+    "internal/storage/schema/migrations/0047_recompute_mixed_is_blocked.up.sql": {
+      "gitBlob": "300c247eb730a503ee93846bd669a6b7934a6fb3",
+      "sha256": "4aff5a7cc2e1e0250ce4cdb911d010c936681871fb627bceee4b2dc4647dd0a1",
+      "bytes": 13499
+    },
+    "internal/storage/schema/migrations/0058_heal_wisp_dependencies_split_constraints.up.sql": {
+      "gitBlob": "ce0e0722ce51db8abd9dc20118f6e539d371ff0d",
+      "sha256": "9c1c6d557a03e71cf6b49123831c9f5b5f910fcea3ca51e982ec4acce04ea6ec",
+      "bytes": 10934
+    },
+    "internal/storage/schema/migrations/ignored/0005_drop_wisp_dependencies_generated_column.up.sql": {
+      "gitBlob": "35ebcda6d105d87abf2b626f7287e4847baae4b6",
+      "sha256": "08780b28ddef6c15f5de558ea08d821b52610f810555739ee1d737779986c607",
+      "bytes": 4840
+    },
+    "internal/storage/schema/migrations/0031_wisp_events_created_at_index.up.sql": {
+      "gitBlob": "015efda6b5222335463ddbe25f21158aef930ee3",
+      "sha256": "2d5cf3a6d4245b48c1b893efcc17b9fa25f1ea807e61290cf54064451fc58d93",
+      "bytes": 314
+    },
+    "internal/storage/schema/migrations/ignored/0008_widen_wisp_event_value_columns.up.sql": {
+      "gitBlob": "4688b0b4fcca15fb1d88680006d4c59e99d12dc0",
+      "sha256": "51375854ec081d2e0b1434b5ff8b6d87092b891636214ebb9f1dbef22438cc1a",
+      "bytes": 124
+    },
+    "internal/storage/schema/migrations/ignored/0017_add_wisps_defer_until_index.up.sql": {
+      "gitBlob": "d6cc1ebd8e471576d660d79c3dc85ddfaebecfca",
+      "sha256": "1f031aaf2037280e62cbf604748a4157bf25e3a60b3392af7d74835c5059bdd8",
+      "bytes": 1102
+    },
+    "internal/storage/schema/migrations/ignored/0006_add_wisp_is_blocked.up.sql": {
+      "gitBlob": "6d6d2c6a4aef6ad9eb71e2867734e85f7c8cde16",
+      "sha256": "4746f10d7040d0b7a9e127437356de87765d12d2d27ee37c9800191e6b619d14",
+      "bytes": 1060
+    },
+    "internal/storage/schema/migrations/0044_update_views_drop_depends_on_id.up.sql": {
+      "gitBlob": "d92d97019c05ba9d7783dda49e98678161af460c",
+      "sha256": "531524854cc0e2361817d1ad94ba9470b0e81e378a5422ffb8bce71f3500adf9",
+      "bytes": 1259
+    },
+    "internal/storage/schema/migrations/0045_update_blocked_view_drop_depends_on_id.up.sql": {
+      "gitBlob": "afae93a1b35eacc819c1460349326584645e8ec4",
+      "sha256": "395dcbf186deedb592d8ed144e0b7953455efa0ccf02076d3b63e5e5d05dc241",
+      "bytes": 984
+    },
+    "internal/storage/schema/migrations/ignored/0016_add_lease_granted_node.up.sql": {
+      "gitBlob": "018f15701fcd47a769c405d7e54b2932e648a2c8",
+      "sha256": "31a55421b78d8c90db6cfba5bf8e99e87d6123271575282f761aa077e5d36386",
+      "bytes": 1719
+    },
+    "internal/storage/graphstore/intrinsic_materialization.go": {
+      "gitBlob": "371ba02a42fec53e7a331a89ce9376befb0bc6ea",
+      "sha256": "fa61aa90dc9ba8d65094d33c7c618ea43385da8f09c44ff57ea2ca3a079973a3",
+      "bytes": 6013
+    }
+  },
+  "applicationObjectCount": 44,
+  "tableCount": 42,
+  "viewCount": 2,
+  "completeRuntimeComparisonReady": false,
+  "honestUnfilledFacts": [
+    "Exact native implicit FK-support index descriptors/name reuse for source constraints, not a blanket allowlist",
+    "Final native formatter type/display/default/table-option equivalences against these hand-transcribed source values",
+    "Resolved view column types/null/collation and actual current persisted fragment/sql_mode/extra envelope facts",
+    "Hand-transcribed fresh main-vs-ignored column order and cursor-finalization source projection requires independent static verification before product constants are accepted"
+  ],
+  "implementationRequirement": "No null/unfilled descriptor may pass; this packet is source-contract proposal only. Product profile guard remains fail-closed until exact constants are resolved/reviewed. No engine query run to fill values.",
+  "nativeProjection": {
+    "status": "FIXED_SELECTED_ENGINE_PROJECTION_V1",
+    "receiver": "6dd6a81f5c733a0b13f92f787e5e16c91affbb1d",
+    "evidenceLogSHA256": "b667581d3dbe9f2f5cb9e4bf112560e899add4b982ac39662c15a1df3e57ae3a",
+    "tables": {
+      "bd_events_journal": "CREATE TABLE `bd_events_journal` (\n  `seq` bigint NOT NULL,\n  `ts` datetime NOT NULL,\n  `op` varchar(32) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `issue_json` longtext,\n  `dep_json` longtext,\n  `comment_json` longtext,\n  `actor` varchar(255) NOT NULL DEFAULT '',\n  PRIMARY KEY (`seq`),\n  KEY `idx_bd_events_journal_issue` (`issue_id`),\n  KEY `idx_bd_events_journal_ts` (`ts`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "bd_events_seq": "CREATE TABLE `bd_events_seq` (\n  `id` int NOT NULL,\n  `next_seq` bigint NOT NULL,\n  PRIMARY KEY (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "child_counters": "CREATE TABLE `child_counters` (\n  `parent_id` varchar(255) NOT NULL,\n  `last_child` int NOT NULL DEFAULT '0',\n  PRIMARY KEY (`parent_id`),\n  CONSTRAINT `fk_counter_parent` FOREIGN KEY (`parent_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "comments": "CREATE TABLE `comments` (\n  `id` char(36) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `author` varchar(255) NOT NULL,\n  `text` longtext NOT NULL,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_comments_created_at` (`created_at`),\n  KEY `idx_comments_issue` (`issue_id`),\n  KEY `idx_comments_issue_created_id` (`issue_id`,`created_at`,`id`),\n  CONSTRAINT `fk_comments_issue` FOREIGN KEY (`issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "compaction_snapshots": "CREATE TABLE `compaction_snapshots` (\n  `id` char(36) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `compaction_level` int NOT NULL,\n  `snapshot_json` blob NOT NULL,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_comp_snap_issue` (`issue_id`,`compaction_level`,`created_at`),\n  CONSTRAINT `fk_comp_snap_issue` FOREIGN KEY (`issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "config": "CREATE TABLE `config` (\n  `key` varchar(255) NOT NULL,\n  `value` text NOT NULL,\n  PRIMARY KEY (`key`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "custom_statuses": "CREATE TABLE `custom_statuses` (\n  `name` varchar(64) NOT NULL,\n  `category` varchar(32) NOT NULL DEFAULT 'unspecified',\n  PRIMARY KEY (`name`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "custom_types": "CREATE TABLE `custom_types` (\n  `name` varchar(64) NOT NULL,\n  PRIMARY KEY (`name`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "dependencies": "CREATE TABLE `dependencies` (\n  `id` char(36) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `type` varchar(32) NOT NULL DEFAULT 'blocks',\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `created_by` varchar(255) NOT NULL,\n  `metadata` json DEFAULT (json_object()),\n  `thread_id` varchar(255) DEFAULT '',\n  `depends_on_issue_id` varchar(255),\n  `depends_on_wisp_id` varchar(255),\n  `depends_on_external` varchar(255),\n  PRIMARY KEY (`id`),\n  KEY `idx_dep_external_target` (`depends_on_external`),\n  KEY `idx_dep_issue_target` (`depends_on_issue_id`),\n  KEY `idx_dep_type_external` (`type`,`depends_on_external`),\n  KEY `idx_dep_type_issue` (`type`,`depends_on_issue_id`),\n  KEY `idx_dep_type_wisp` (`type`,`depends_on_wisp_id`),\n  KEY `idx_dep_wisp_target` (`depends_on_wisp_id`),\n  KEY `idx_dependencies_issue` (`issue_id`),\n  KEY `idx_dependencies_thread` (`thread_id`),\n  UNIQUE KEY `uk_dep_external_target` (`issue_id`,`depends_on_external`),\n  UNIQUE KEY `uk_dep_issue_target` (`issue_id`,`depends_on_issue_id`),\n  UNIQUE KEY `uk_dep_wisp_target` (`issue_id`,`depends_on_wisp_id`),\n  CONSTRAINT `fk_dep_issue` FOREIGN KEY (`issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `fk_dep_issue_target` FOREIGN KEY (`depends_on_issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `ck_dep_one_target` CHECK (((((NOT(`depends_on_issue_id` IS NULL)) + (NOT(`depends_on_wisp_id` IS NULL))) + (NOT(`depends_on_external` IS NULL))) = 1))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "epoch_minted_addresses": "CREATE TABLE `epoch_minted_addresses` (\n  `address` varchar(255) NOT NULL,\n  `store_id` varchar(255) NOT NULL,\n  `minted_id` varchar(255) NOT NULL,\n  `minted_epoch` int NOT NULL,\n  `minted_at` datetime NOT NULL,\n  PRIMARY KEY (`address`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "events": "CREATE TABLE `events` (\n  `issue_id` varchar(255) NOT NULL,\n  `event_type` varchar(32) NOT NULL,\n  `actor` varchar(255) NOT NULL,\n  `old_value` longtext,\n  `new_value` longtext,\n  `comment` text,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `id` char(36) NOT NULL,\n  PRIMARY KEY (`id`),\n  KEY `idx_events_created_at` (`created_at`),\n  KEY `idx_events_issue` (`issue_id`),\n  CONSTRAINT `fk_events_issue` FOREIGN KEY (`issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "federation_peers": "CREATE TABLE `federation_peers` (\n  `name` varchar(255) NOT NULL,\n  `remote_url` varchar(1024) NOT NULL,\n  `username` varchar(255),\n  `password_encrypted` blob,\n  `sovereignty` varchar(8) DEFAULT '',\n  `last_sync` datetime,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`name`),\n  KEY `idx_federation_peers_sovereignty` (`sovereignty`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_catalog": "CREATE TABLE `graph_preview_catalog` (\n  `path` varbinary(1024) NOT NULL,\n  `resource_kind` varbinary(16) NOT NULL,\n  `type_url` longblob NOT NULL,\n  `revision` varbinary(32) NOT NULL,\n  `allocation_state` varbinary(16) NOT NULL,\n  `backing` varbinary(32) NOT NULL,\n  `backing_key` varbinary(255),\n  `public_id` longblob,\n  PRIMARY KEY (`path`),\n  UNIQUE KEY `one_backing` (`backing`,`backing_key`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_intrinsic_contexts": "CREATE TABLE `graph_preview_intrinsic_contexts` (\n  `context_id` varbinary(32) NOT NULL,\n  `scope_url` longblob NOT NULL,\n  `authority_id` varbinary(32) NOT NULL,\n  `source_repository` longblob NOT NULL,\n  `source_commit` varbinary(40) NOT NULL,\n  `source_path` longblob NOT NULL,\n  `source_sha256` varbinary(64) NOT NULL,\n  `source_bytes` longblob NOT NULL,\n  `semantic_source_commit` varbinary(40) NOT NULL,\n  `interpretation` varbinary(64) NOT NULL,\n  `context_sha256` varbinary(64) NOT NULL,\n  PRIMARY KEY (`context_id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_intrinsic_members": "CREATE TABLE `graph_preview_intrinsic_members` (\n  `path` varbinary(1024) NOT NULL,\n  `revision` varbinary(32) NOT NULL,\n  `allocation_key` varbinary(32) NOT NULL,\n  `context_id` varbinary(32) NOT NULL,\n  `role` varbinary(32) NOT NULL,\n  `public_id` longblob NOT NULL,\n  `resource_uri` longblob NOT NULL,\n  `resource_kind` varbinary(16) NOT NULL,\n  `global_uri` longblob NOT NULL,\n  `global_revision` longblob NOT NULL,\n  `record` longblob NOT NULL,\n  `record_sha256` varbinary(64) NOT NULL,\n  PRIMARY KEY (`path`,`revision`),\n  KEY `member_context` (`context_id`),\n  UNIQUE KEY `one_context_role` (`context_id`,`role`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_issue_versions": "CREATE TABLE `graph_preview_issue_versions` (\n  `path` varbinary(1024) NOT NULL,\n  `version` varbinary(32) NOT NULL,\n  `issue_id` varbinary(255) NOT NULL,\n  `issue_revision` bigint NOT NULL,\n  `owned` longblob NOT NULL,\n  `revision_context` longblob,\n  `history_ordinal` bigint,\n  PRIMARY KEY (`path`,`version`),\n  UNIQUE KEY `one_issue_version` (`issue_id`,`issue_revision`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_links": "CREATE TABLE `graph_preview_links` (\n  `path` varbinary(1024) NOT NULL,\n  `source_path` varbinary(1024) NOT NULL,\n  `target_path` varbinary(1024) NOT NULL,\n  `source_revision` varbinary(4096) NOT NULL DEFAULT 0x,\n  `target_revision` varbinary(4096) NOT NULL DEFAULT 0x,\n  `properties` longblob NOT NULL,\n  `metadata` longblob,\n  `attribution` longblob NOT NULL,\n  PRIMARY KEY (`path`),\n  KEY `source_links` (`source_path`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_payloads": "CREATE TABLE `graph_preview_payloads` (\n  `path` varbinary(1024) NOT NULL,\n  `properties` longblob NOT NULL,\n  `metadata` longblob,\n  PRIMARY KEY (`path`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_scope": "CREATE TABLE `graph_preview_scope` (\n  `singleton` int NOT NULL,\n  `workspace` longblob NOT NULL,\n  `scope_url` longblob NOT NULL,\n  `authority_id` varbinary(32) NOT NULL,\n  `schema_version` int NOT NULL,\n  `writer_token` varbinary(32) NOT NULL,\n  PRIMARY KEY (`singleton`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_types": "CREATE TABLE `graph_preview_types` (\n  `name` varbinary(64) NOT NULL,\n  `descriptor` longblob NOT NULL,\n  `fingerprint` varbinary(64) NOT NULL,\n  PRIMARY KEY (`name`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "graph_preview_versions": "CREATE TABLE `graph_preview_versions` (\n  `path` varbinary(1024) NOT NULL,\n  `version` varbinary(32) NOT NULL,\n  `snapshot` longblob NOT NULL,\n  `actor` longblob NOT NULL,\n  `ordinal` bigint NOT NULL,\n  `change_at` datetime(6) NOT NULL,\n  `native_participation_generation` bigint,\n  `native_attribution` longblob,\n  PRIMARY KEY (`path`,`version`),\n  UNIQUE KEY `one_path_ordinal` (`path`,`ordinal`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "ignored_schema_migrations": "CREATE TABLE `ignored_schema_migrations` (\n  `version` int NOT NULL,\n  `applied_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `content_hash` char(64),\n  PRIMARY KEY (`version`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "interactions": "CREATE TABLE `interactions` (\n  `id` varchar(32) NOT NULL,\n  `kind` varchar(64) NOT NULL,\n  `created_at` datetime NOT NULL,\n  `actor` varchar(255),\n  `issue_id` varchar(255),\n  `model` varchar(255),\n  `prompt` text,\n  `response` text,\n  `error` text,\n  `tool_name` varchar(255),\n  `exit_code` int,\n  `parent_id` varchar(32),\n  `label` varchar(64),\n  `reason` text,\n  `extra` json,\n  PRIMARY KEY (`id`),\n  KEY `idx_interactions_created_at` (`created_at`),\n  KEY `idx_interactions_issue_id` (`issue_id`),\n  KEY `idx_interactions_kind` (`kind`),\n  KEY `idx_interactions_parent_id` (`parent_id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "issue_counter": "CREATE TABLE `issue_counter` (\n  `prefix` varchar(255) NOT NULL,\n  `last_id` int NOT NULL DEFAULT '0',\n  PRIMARY KEY (`prefix`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "issue_snapshots": "CREATE TABLE `issue_snapshots` (\n  `id` char(36) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `snapshot_time` datetime NOT NULL,\n  `compaction_level` int NOT NULL,\n  `original_size` int NOT NULL,\n  `compressed_size` int NOT NULL,\n  `original_content` text NOT NULL,\n  `archived_events` text,\n  PRIMARY KEY (`id`),\n  KEY `idx_snapshots_issue` (`issue_id`),\n  KEY `idx_snapshots_level` (`compaction_level`),\n  CONSTRAINT `fk_snapshots_issue` FOREIGN KEY (`issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "issue_versions": "CREATE TABLE `issue_versions` (\n  `issue_id` varchar(255) NOT NULL,\n  `revision` bigint NOT NULL,\n  `epoch` int NOT NULL,\n  `durable_state` longblob,\n  `change_actor` varchar(255),\n  `change_agent` varchar(255),\n  `change_message` text,\n  `change_at` datetime(6) NOT NULL,\n  `removed_at` datetime(6),\n  `removed_reason` varchar(255),\n  `attribution_status` varchar(20) NOT NULL,\n  `removed_restriction` varchar(30),\n  PRIMARY KEY (`issue_id`,`revision`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "issues": "CREATE TABLE `issues` (\n  `id` varchar(255) NOT NULL,\n  `content_hash` varchar(64),\n  `title` varchar(500) NOT NULL,\n  `description` longtext NOT NULL,\n  `design` longtext NOT NULL,\n  `acceptance_criteria` longtext NOT NULL,\n  `notes` longtext NOT NULL,\n  `status` varchar(32) NOT NULL DEFAULT 'open',\n  `priority` int NOT NULL DEFAULT '2',\n  `issue_type` varchar(32) NOT NULL DEFAULT 'task',\n  `assignee` varchar(255),\n  `estimated_minutes` int,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `created_by` varchar(255) DEFAULT '',\n  `owner` varchar(255) DEFAULT '',\n  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  `closed_at` datetime,\n  `closed_by_session` varchar(255) DEFAULT '',\n  `external_ref` varchar(255),\n  `spec_id` varchar(1024),\n  `compaction_level` int DEFAULT '0',\n  `compacted_at` datetime,\n  `compacted_at_commit` varchar(64),\n  `original_size` int,\n  `sender` varchar(255) DEFAULT '',\n  `ephemeral` tinyint(1) DEFAULT '0',\n  `wisp_type` varchar(32) DEFAULT '',\n  `pinned` tinyint(1) DEFAULT '0',\n  `is_template` tinyint(1) DEFAULT '0',\n  `mol_type` varchar(32) DEFAULT '',\n  `work_type` varchar(32) DEFAULT 'mutex',\n  `source_system` varchar(255) DEFAULT '',\n  `metadata` json DEFAULT (json_object()),\n  `source_repo` varchar(512) DEFAULT '',\n  `close_reason` longtext DEFAULT '',\n  `event_kind` varchar(32) DEFAULT '',\n  `actor` varchar(255) DEFAULT '',\n  `target` varchar(255) DEFAULT '',\n  `payload` text DEFAULT '',\n  `await_type` varchar(32) DEFAULT '',\n  `await_id` varchar(255) DEFAULT '',\n  `timeout_ns` bigint DEFAULT '0',\n  `waiters` text DEFAULT '',\n  `hook_bead` varchar(255) DEFAULT '',\n  `role_bead` varchar(255) DEFAULT '',\n  `agent_state` varchar(32) DEFAULT '',\n  `last_activity` datetime,\n  `role_type` varchar(32) DEFAULT '',\n  `rig` varchar(255) DEFAULT '',\n  `due_at` datetime,\n  `defer_until` datetime,\n  `no_history` tinyint(1) DEFAULT '0',\n  `started_at` datetime,\n  `is_blocked` tinyint(1) NOT NULL DEFAULT '0',\n  `row_lock` bigint NOT NULL DEFAULT '0',\n  `storage_class` varchar(16),\n  `current_revision` bigint NOT NULL DEFAULT '1',\n  `participation_generation` bigint,\n  PRIMARY KEY (`id`),\n  KEY `idx_issues_assignee` (`assignee`),\n  KEY `idx_issues_created_at` (`created_at`),\n  KEY `idx_issues_defer_until` (`defer_until`),\n  KEY `idx_issues_external_ref` (`external_ref`),\n  KEY `idx_issues_is_blocked` (`is_blocked`,`status`),\n  KEY `idx_issues_issue_type` (`issue_type`),\n  KEY `idx_issues_priority` (`priority`),\n  KEY `idx_issues_spec_id` (`spec_id`),\n  KEY `idx_issues_status_updated_at` (`status`,`updated_at`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "labels": "CREATE TABLE `labels` (\n  `issue_id` varchar(255) NOT NULL,\n  `label` varchar(255) NOT NULL,\n  PRIMARY KEY (`issue_id`,`label`),\n  KEY `idx_labels_label` (`label`),\n  CONSTRAINT `fk_labels_issue` FOREIGN KEY (`issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "leases": "CREATE TABLE `leases` (\n  `issue_id` varchar(255) NOT NULL,\n  `holder` varchar(255) NOT NULL,\n  `granted_at` datetime NOT NULL,\n  `lease_expires_at` datetime NOT NULL,\n  `heartbeat_at` datetime NOT NULL,\n  `granted_node` varchar(255) NOT NULL DEFAULT '',\n  PRIMARY KEY (`issue_id`),\n  KEY `idx_leases_expires` (`lease_expires_at`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "local_metadata": "CREATE TABLE `local_metadata` (\n  `key` varchar(255) NOT NULL,\n  `value` text NOT NULL DEFAULT '',\n  PRIMARY KEY (`key`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "metadata": "CREATE TABLE `metadata` (\n  `key` varchar(255) NOT NULL,\n  `value` text NOT NULL,\n  PRIMARY KEY (`key`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "provenance_events": "CREATE TABLE `provenance_events` (\n  `id` char(36) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `kind` varchar(32) NOT NULL,\n  `actor` varchar(255),\n  `ref` varchar(255),\n  `ref_kind` varchar(32),\n  `payload` text,\n  `source` varchar(64) NOT NULL,\n  `occurred_at` datetime,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_provenance_events_issue_occurred` (`issue_id`,`occurred_at`),\n  KEY `idx_provenance_events_kind` (`kind`),\n  KEY `idx_provenance_events_ref` (`ref`),\n  CONSTRAINT `fk_provenance_events_issue` FOREIGN KEY (`issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "repo_mtimes": "CREATE TABLE `repo_mtimes` (\n  `repo_path` varchar(512) NOT NULL,\n  `jsonl_path` varchar(512) NOT NULL,\n  `mtime_ns` bigint NOT NULL,\n  `last_checked` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`repo_path`),\n  KEY `idx_repo_mtimes_checked` (`last_checked`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "routes": "CREATE TABLE `routes` (\n  `prefix` varchar(32) NOT NULL,\n  `path` varchar(512) NOT NULL,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  PRIMARY KEY (`prefix`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "schema_migrations": "CREATE TABLE `schema_migrations` (\n  `version` int NOT NULL,\n  `content_hash` char(64),\n  PRIMARY KEY (`version`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "store_epoch": "CREATE TABLE `store_epoch` (\n  `id` tinyint(1) NOT NULL DEFAULT '1',\n  `epoch` int NOT NULL DEFAULT '1',\n  `bumped_at` datetime,\n  `bumped_reason` varchar(255),\n  PRIMARY KEY (`id`),\n  CONSTRAINT `ck_store_epoch_singleton` CHECK ((`id` = 1))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "wisp_child_counters": "CREATE TABLE `wisp_child_counters` (\n  `parent_id` varchar(255) NOT NULL,\n  `last_child` int NOT NULL DEFAULT '0',\n  PRIMARY KEY (`parent_id`),\n  CONSTRAINT `fk_wisp_child_counters_parent` FOREIGN KEY (`parent_id`) REFERENCES `wisps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "wisp_comments": "CREATE TABLE `wisp_comments` (\n  `id` char(36) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `author` varchar(255) DEFAULT '',\n  `text` longtext NOT NULL,\n  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_wisp_comments_issue` (`issue_id`),\n  KEY `idx_wisp_comments_issue_created_id` (`issue_id`,`created_at`,`id`),\n  CONSTRAINT `fk_wisp_comments_issue` FOREIGN KEY (`issue_id`) REFERENCES `wisps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "wisp_dependencies": "CREATE TABLE `wisp_dependencies` (\n  `id` char(36) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `depends_on_issue_id` varchar(255),\n  `depends_on_wisp_id` varchar(255),\n  `depends_on_external` varchar(255),\n  `type` varchar(32) NOT NULL DEFAULT 'blocks',\n  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,\n  `created_by` varchar(255) DEFAULT '',\n  `metadata` json DEFAULT (json_object()),\n  `thread_id` varchar(255) DEFAULT '',\n  PRIMARY KEY (`id`),\n  KEY `fk_wisp_dep_issue_target` (`depends_on_issue_id`),\n  KEY `fk_wisp_dep_wisp_target` (`depends_on_wisp_id`),\n  KEY `idx_wisp_dep_type` (`type`),\n  KEY `idx_wisp_dep_type_external` (`type`,`depends_on_external`),\n  KEY `idx_wisp_dep_type_issue` (`type`,`depends_on_issue_id`),\n  KEY `idx_wisp_dep_type_wisp` (`type`,`depends_on_wisp_id`),\n  UNIQUE KEY `uk_wisp_dep_external_target` (`issue_id`,`depends_on_external`),\n  UNIQUE KEY `uk_wisp_dep_issue_target` (`issue_id`,`depends_on_issue_id`),\n  UNIQUE KEY `uk_wisp_dep_wisp_target` (`issue_id`,`depends_on_wisp_id`),\n  CONSTRAINT `fk_wisp_dep_issue` FOREIGN KEY (`issue_id`) REFERENCES `wisps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `fk_wisp_dep_issue_target` FOREIGN KEY (`depends_on_issue_id`) REFERENCES `issues` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `fk_wisp_dep_wisp_target` FOREIGN KEY (`depends_on_wisp_id`) REFERENCES `wisps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,\n  CONSTRAINT `ck_wisp_dep_one_target` CHECK (((((NOT(`depends_on_issue_id` IS NULL)) + (NOT(`depends_on_wisp_id` IS NULL))) + (NOT(`depends_on_external` IS NULL))) = 1))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "wisp_events": "CREATE TABLE `wisp_events` (\n  `id` char(36) NOT NULL,\n  `issue_id` varchar(255) NOT NULL,\n  `event_type` varchar(32) NOT NULL,\n  `actor` varchar(255) DEFAULT '',\n  `old_value` longtext DEFAULT '',\n  `new_value` longtext DEFAULT '',\n  `comment` text DEFAULT '',\n  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_wisp_events_created_at` (`created_at`),\n  KEY `idx_wisp_events_issue` (`issue_id`),\n  CONSTRAINT `fk_wisp_events_issue` FOREIGN KEY (`issue_id`) REFERENCES `wisps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "wisp_labels": "CREATE TABLE `wisp_labels` (\n  `issue_id` varchar(255) NOT NULL,\n  `label` varchar(255) NOT NULL,\n  PRIMARY KEY (`issue_id`,`label`),\n  KEY `idx_wisp_labels_label` (`label`),\n  CONSTRAINT `fk_wisp_labels_issue` FOREIGN KEY (`issue_id`) REFERENCES `wisps` (`id`) ON DELETE CASCADE ON UPDATE CASCADE\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin",
+      "wisps": "CREATE TABLE `wisps` (\n  `id` varchar(255) NOT NULL,\n  `content_hash` varchar(64),\n  `title` varchar(500) NOT NULL,\n  `description` longtext NOT NULL DEFAULT '',\n  `design` longtext NOT NULL DEFAULT '',\n  `acceptance_criteria` longtext NOT NULL DEFAULT '',\n  `notes` longtext NOT NULL DEFAULT '',\n  `status` varchar(32) NOT NULL DEFAULT 'open',\n  `priority` int NOT NULL DEFAULT '2',\n  `issue_type` varchar(32) NOT NULL DEFAULT 'task',\n  `assignee` varchar(255),\n  `estimated_minutes` int,\n  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `created_by` varchar(255) DEFAULT '',\n  `owner` varchar(255) DEFAULT '',\n  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  `closed_at` datetime,\n  `closed_by_session` varchar(255) DEFAULT '',\n  `external_ref` varchar(255),\n  `spec_id` varchar(1024),\n  `compaction_level` int DEFAULT '0',\n  `compacted_at` datetime,\n  `compacted_at_commit` varchar(64),\n  `original_size` int,\n  `sender` varchar(255) DEFAULT '',\n  `ephemeral` tinyint(1) DEFAULT '0',\n  `wisp_type` varchar(32) DEFAULT '',\n  `pinned` tinyint(1) DEFAULT '0',\n  `is_template` tinyint(1) DEFAULT '0',\n  `mol_type` varchar(32) DEFAULT '',\n  `work_type` varchar(32) DEFAULT 'mutex',\n  `source_system` varchar(255) DEFAULT '',\n  `metadata` json DEFAULT (json_object()),\n  `source_repo` varchar(512) DEFAULT '',\n  `close_reason` longtext DEFAULT '',\n  `event_kind` varchar(32) DEFAULT '',\n  `actor` varchar(255) DEFAULT '',\n  `target` varchar(255) DEFAULT '',\n  `payload` text DEFAULT '',\n  `await_type` varchar(32) DEFAULT '',\n  `await_id` varchar(255) DEFAULT '',\n  `timeout_ns` bigint DEFAULT '0',\n  `waiters` text DEFAULT '',\n  `hook_bead` varchar(255) DEFAULT '',\n  `role_bead` varchar(255) DEFAULT '',\n  `agent_state` varchar(32) DEFAULT '',\n  `last_activity` datetime,\n  `role_type` varchar(32) DEFAULT '',\n  `rig` varchar(255) DEFAULT '',\n  `due_at` datetime,\n  `defer_until` datetime,\n  `no_history` tinyint(1) DEFAULT '0',\n  `started_at` datetime,\n  `row_lock` bigint NOT NULL DEFAULT '0',\n  `storage_class` varchar(16),\n  `current_revision` bigint NOT NULL DEFAULT '1',\n  `participation_generation` bigint,\n  `is_blocked` tinyint(1) NOT NULL DEFAULT '0',\n  PRIMARY KEY (`id`),\n  KEY `idx_wisps_assignee` (`assignee`),\n  KEY `idx_wisps_created_at` (`created_at`),\n  KEY `idx_wisps_defer_until` (`defer_until`),\n  KEY `idx_wisps_external_ref` (`external_ref`),\n  KEY `idx_wisps_is_blocked` (`is_blocked`,`status`),\n  KEY `idx_wisps_issue_type` (`issue_type`),\n  KEY `idx_wisps_priority` (`priority`),\n  KEY `idx_wisps_spec_id` (`spec_id`),\n  KEY `idx_wisps_status` (`status`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin"
+    },
+    "views": {
+      "blocked_issues": {
+        "fragment": "CREATE OR REPLACE VIEW blocked_issues AS\nWITH done_frozen AS (\n    SELECT name FROM custom_statuses WHERE category IN ('done', 'frozen')\n)\nSELECT\n    i.*,\n    (SELECT COUNT(*)\n     FROM dependencies d\n     WHERE d.issue_id = i.id\n       AND d.type = 'blocks'\n       AND EXISTS (\n         SELECT 1 FROM issues blocker\n         WHERE blocker.id = d.depends_on_issue_id\n           AND blocker.status NOT IN ('closed', 'pinned')\n           AND blocker.status NOT IN (SELECT name FROM done_frozen)\n       )\n    ) as blocked_by_count\nFROM issues i\nWHERE i.status NOT IN ('closed', 'pinned')\n  AND i.status NOT IN (SELECT name FROM done_frozen)\n  AND EXISTS (\n    SELECT 1 FROM dependencies d\n    WHERE d.issue_id = i.id\n      AND d.type = 'blocks'\n      AND EXISTS (\n        SELECT 1 FROM issues blocker\n        WHERE blocker.id = d.depends_on_issue_id\n          AND blocker.status NOT IN ('closed', 'pinned')\n          AND blocker.status NOT IN (SELECT name FROM done_frozen)\n      )\n  )",
+        "extra": "{\"CreatedAt\": 0}",
+        "sqlMode": "NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES",
+        "columns": [
+          [
+            "id",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "content_hash",
+            "varchar(64)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "title",
+            "varchar(500)",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "description",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "design",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "acceptance_criteria",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "notes",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "status",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "priority",
+            "int",
+            null,
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "issue_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "assignee",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "estimated_minutes",
+            "int",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "created_at",
+            "datetime",
+            null,
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "created_by",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "owner",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "updated_at",
+            "datetime",
+            null,
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "closed_at",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "closed_by_session",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "external_ref",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "spec_id",
+            "varchar(1024)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "compaction_level",
+            "int",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "compacted_at",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "compacted_at_commit",
+            "varchar(64)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "original_size",
+            "int",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "sender",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "ephemeral",
+            "tinyint(1)",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "wisp_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "pinned",
+            "tinyint(1)",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "is_template",
+            "tinyint(1)",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "mol_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "work_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "source_system",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "metadata",
+            "json",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "source_repo",
+            "varchar(512)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "close_reason",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "event_kind",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "actor",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "target",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "payload",
+            "text",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "await_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "await_id",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "timeout_ns",
+            "bigint",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "waiters",
+            "text",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "hook_bead",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "role_bead",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "agent_state",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "last_activity",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "role_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "rig",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "due_at",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "defer_until",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "no_history",
+            "tinyint(1)",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "started_at",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "is_blocked",
+            "tinyint(1)",
+            null,
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "row_lock",
+            "bigint",
+            null,
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "storage_class",
+            "varchar(16)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "current_revision",
+            "bigint",
+            null,
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "participation_generation",
+            "bigint",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "blocked_by_count",
+            "bigint",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ]
+        ]
+      },
+      "ready_issues": {
+        "fragment": "CREATE OR REPLACE VIEW ready_issues AS\nWITH RECURSIVE\n  blocked_directly AS (\n    SELECT DISTINCT d.issue_id\n    FROM dependencies d\n    WHERE d.type = 'blocks'\n      AND EXISTS (\n        SELECT 1 FROM issues blocker\n        WHERE blocker.id = d.depends_on_issue_id\n          AND blocker.status NOT IN ('closed', 'pinned')\n      )\n  ),\n  blocked_transitively AS (\n    SELECT issue_id, 0 as depth\n    FROM blocked_directly\n    UNION ALL\n    SELECT d.issue_id, bt.depth + 1\n    FROM blocked_transitively bt\n    JOIN dependencies d ON d.depends_on_issue_id = bt.issue_id\n    WHERE d.type = 'parent-child'\n      AND bt.depth < 50\n  )\nSELECT i.*\nFROM issues i\nLEFT JOIN blocked_transitively bt ON bt.issue_id = i.id\nWHERE (\n    i.status = 'open'\n    OR i.status IN (SELECT name FROM custom_statuses WHERE category = 'active')\n  )\n  AND (i.ephemeral = 0 OR i.ephemeral IS NULL)\n  AND bt.issue_id IS NULL\n  AND (i.defer_until IS NULL OR i.defer_until <= UTC_TIMESTAMP())\n  AND NOT EXISTS (\n    SELECT 1 FROM dependencies d_parent\n    JOIN issues parent ON parent.id = d_parent.depends_on_issue_id\n    WHERE d_parent.issue_id = i.id\n      AND d_parent.type = 'parent-child'\n      AND parent.defer_until IS NOT NULL\n      AND parent.defer_until > UTC_TIMESTAMP()\n  )",
+        "extra": "{\"CreatedAt\": 0}",
+        "sqlMode": "NO_ENGINE_SUBSTITUTION,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES",
+        "columns": [
+          [
+            "id",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "content_hash",
+            "varchar(64)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "title",
+            "varchar(500)",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "description",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "design",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "acceptance_criteria",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "notes",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "status",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            "'open'",
+            "",
+            "",
+            ""
+          ],
+          [
+            "priority",
+            "int",
+            null,
+            "NO",
+            "",
+            "2",
+            "",
+            "",
+            ""
+          ],
+          [
+            "issue_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "NO",
+            "",
+            "'task'",
+            "",
+            "",
+            ""
+          ],
+          [
+            "assignee",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "estimated_minutes",
+            "int",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "created_at",
+            "datetime",
+            null,
+            "NO",
+            "",
+            "CURRENT_TIMESTAMP",
+            "DEFAULT_GENERATED",
+            "",
+            ""
+          ],
+          [
+            "created_by",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "owner",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "updated_at",
+            "datetime",
+            null,
+            "NO",
+            "",
+            "CURRENT_TIMESTAMP",
+            "DEFAULT_GENERATED",
+            "",
+            ""
+          ],
+          [
+            "closed_at",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "closed_by_session",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "external_ref",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "spec_id",
+            "varchar(1024)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "compaction_level",
+            "int",
+            null,
+            "YES",
+            "",
+            "0",
+            "",
+            "",
+            ""
+          ],
+          [
+            "compacted_at",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "compacted_at_commit",
+            "varchar(64)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "original_size",
+            "int",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "sender",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "ephemeral",
+            "tinyint(1)",
+            null,
+            "YES",
+            "",
+            "0",
+            "",
+            "",
+            ""
+          ],
+          [
+            "wisp_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "pinned",
+            "tinyint(1)",
+            null,
+            "YES",
+            "",
+            "0",
+            "",
+            "",
+            ""
+          ],
+          [
+            "is_template",
+            "tinyint(1)",
+            null,
+            "YES",
+            "",
+            "0",
+            "",
+            "",
+            ""
+          ],
+          [
+            "mol_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "work_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "'mutex'",
+            "",
+            "",
+            ""
+          ],
+          [
+            "source_system",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "metadata",
+            "json",
+            null,
+            "YES",
+            "",
+            "(json_object())",
+            "DEFAULT_GENERATED",
+            "",
+            ""
+          ],
+          [
+            "source_repo",
+            "varchar(512)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "close_reason",
+            "longtext",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "event_kind",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "actor",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "target",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "payload",
+            "text",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "await_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "await_id",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "timeout_ns",
+            "bigint",
+            null,
+            "YES",
+            "",
+            "0",
+            "",
+            "",
+            ""
+          ],
+          [
+            "waiters",
+            "text",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "hook_bead",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "role_bead",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "agent_state",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "last_activity",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "role_type",
+            "varchar(32)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "rig",
+            "varchar(255)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            "''",
+            "",
+            "",
+            ""
+          ],
+          [
+            "due_at",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "defer_until",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "no_history",
+            "tinyint(1)",
+            null,
+            "YES",
+            "",
+            "0",
+            "",
+            "",
+            ""
+          ],
+          [
+            "started_at",
+            "datetime",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "is_blocked",
+            "tinyint(1)",
+            null,
+            "NO",
+            "",
+            "0",
+            "",
+            "",
+            ""
+          ],
+          [
+            "row_lock",
+            "bigint",
+            null,
+            "NO",
+            "",
+            "0",
+            "",
+            "",
+            ""
+          ],
+          [
+            "storage_class",
+            "varchar(16)",
+            "utf8mb4_0900_bin",
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ],
+          [
+            "current_revision",
+            "bigint",
+            null,
+            "NO",
+            "",
+            "1",
+            "",
+            "",
+            ""
+          ],
+          [
+            "participation_generation",
+            "bigint",
+            null,
+            "YES",
+            "",
+            null,
+            "",
+            "",
+            ""
+          ]
+        ]
+      }
+    },
+    "schemaEnvelope": [
+      [
+        "type",
+        "varchar(64) COLLATE utf8mb4_0900_ai_ci",
+        "utf8mb4_0900_bin",
+        "NO",
+        "PRI",
+        null,
+        "",
+        "",
+        ""
+      ],
+      [
+        "name",
+        "varchar(64) COLLATE utf8mb4_0900_ai_ci",
+        "utf8mb4_0900_bin",
+        "NO",
+        "PRI",
+        null,
+        "",
+        "",
+        ""
+      ],
+      [
+        "fragment",
+        "longtext",
+        "utf8mb4_0900_bin",
+        "YES",
+        "",
+        null,
+        "",
+        "",
+        ""
+      ],
+      [
+        "extra",
+        "json",
+        null,
+        "YES",
+        "",
+        null,
+        "",
+        "",
+        ""
+      ],
+      [
+        "sql_mode",
+        "varchar(256) COLLATE utf8mb4_0900_ai_ci",
+        "utf8mb4_0900_bin",
+        "YES",
+        "",
+        null,
+        "",
+        "",
+        ""
+      ]
+    ]
+  }
+}

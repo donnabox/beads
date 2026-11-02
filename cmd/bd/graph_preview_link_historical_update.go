@@ -10,7 +10,7 @@ import (
 
 // Historical content acquisition and all guards remain inside the Link writer.
 func runGraphPreviewHistoricalLinkUpdate(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "source-revision", "target-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "from-revision", "properties", "patch", "replace-properties", "metadata", "replace-metadata", "patch-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "source-revision", "target-revision"); err != nil {
 		return err
 	}
 	selected, err := graphPreviewRevisionFlag(cmd, "from-revision", path, true)

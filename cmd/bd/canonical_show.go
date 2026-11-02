@@ -2,15 +2,18 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/clioutput"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 func init() {
@@ -22,8 +25,19 @@ func canonicalLinkProtection() *clioutput.Protection {
 	return &clioutput.Protection{Required: []string{"id", "type", "revision", "source", "target"}}
 }
 
+// The fresh local definition adapter adopts PR316's exact local/global identity
+// contract. Legacy records retain bdpwire.Pin and its legacy DTOs unchanged.
+const intrinsicDefinitionContract = "38534cf653a4dab7ed5a0a3f25337c90318a9b2e"
+
 func canonicalShowDescriptor(_ string, record any) clioutput.Descriptor {
 	descriptor := canonicalResourceDescriptor()
+	if doc, ok := record.(resourceget.ResourceDocument); ok {
+		return canonicalTypedResourceDescriptor(doc.Kind() == graph.KindLink, doc.NativeJSON())
+	}
+	if doc, ok := record.(resourceget.DefinitionDocument); ok {
+		return canonicalTypedResourceDescriptor(doc.Kind() == resourceget.DefinitionLink, doc.NativeJSON())
+	}
+
 	if _, isLink := record.(bdpwire.LinkRecord); isLink {
 		descriptor.Protection = canonicalLinkProtection()
 	}
@@ -37,14 +51,63 @@ func canonicalShowDescriptor(_ string, record any) clioutput.Descriptor {
 	return descriptor
 }
 
+// Complete Types-aware Resources share one representation and the same mask
+// protections, whether the selected Bead defines a Type or is an instance.
+// The native reader supplies checked documents; this does not infer category
+// or authority from a body shape or a public identifier.
+func canonicalTypedResourceDescriptor(link bool, native []byte) clioutput.Descriptor {
+	descriptor := canonicalResourceDescriptor()
+	descriptor.BDPSpec = intrinsicDefinitionContract
+	if link {
+		descriptor.Protection = canonicalLinkProtection()
+		return descriptor
+	}
+	var body struct {
+		OwnedLinks map[string]json.RawMessage `json:"ownedLinks"`
+	}
+	if json.Unmarshal(native, &body) == nil {
+		groups := make(map[string]*clioutput.Protection, len(body.OwnedLinks))
+		for typ := range body.OwnedLinks {
+			groups[typ] = &clioutput.Protection{Items: canonicalLinkProtection()}
+		}
+		descriptor.Protection.Members = map[string]*clioutput.Protection{"ownedLinks": {Members: groups}}
+	}
+	return descriptor
+}
+
+func canonicalDefinitionForDisplay(record any) (resourceget.DefinitionDocument, bool) {
+	if doc, ok := record.(resourceget.ResourceDocument); ok {
+		return doc.Definition()
+	}
+	doc, ok := record.(resourceget.DefinitionDocument)
+	return doc, ok
+}
+
 func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
-	opts, _, err := canonicalOutputOptions(cmd)
+	if canonicalRetainedSelected(cmd) && !linkOnly {
+		return runCanonicalRetained(cmd, args)
+	}
+	opts, selected, err := canonicalOutputOptions(cmd)
+	definitionWorkspace := graphPreviewConfig != nil && graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion
+	// This fresh layout adopts canonical Show as its ordinary read. Preserve the
+	// familiar --json spelling here without changing legacy layout 11 output.
+	if err == nil && definitionWorkspace && !selected {
+		if cmd.Flags().Lookup("json") != nil {
+			opts.JSON, _ = cmd.Flags().GetBool("json")
+		} else if cmd.Root().PersistentFlags().Lookup("json") != nil {
+			opts.JSON, _ = cmd.Root().PersistentFlags().GetBool("json")
+		}
+	}
 	if err != nil {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
 	// Validate even when the selector subsequently fails, so JSON failures can
 	// carry the chosen contract; ambiguous formats never guess an output mode.
-	renderer, err := clioutput.New(canonicalResourceDescriptor(), opts)
+	baseDescriptor := canonicalResourceDescriptor()
+	if definitionWorkspace {
+		baseDescriptor.BDPSpec = intrinsicDefinitionContract
+	}
+	renderer, err := clioutput.New(baseDescriptor, opts)
 	if err != nil {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
@@ -60,7 +123,11 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if len(args) != 1 {
 		return canonicalFailure(cmd, renderer, "invalid_selector", "canonical show requires exactly one Resource identity", 2)
 	}
-	if err := canonicalGraphFlags(cmd, renderer, "id", "revision"); err != nil {
+	allowed := []string{"id", "revision"}
+	if definitionWorkspace && !selected {
+		allowed = append(allowed, "json")
+	}
+	if err := canonicalGraphFlags(cmd, renderer, allowed...); err != nil {
 		return err
 	}
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "revision"); err != nil {
@@ -124,7 +191,7 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 	if versioned && localID != "" {
 		return canonicalFailure(cmd, renderer, "capability_unavailable", "retained versions require an exact canonical Scope URL", 5)
 	}
-	renderer, err = clioutput.New(canonicalShowDescriptor(path, nil), opts)
+	renderer, err = clioutput.New(baseDescriptor, opts)
 	if err != nil {
 		return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
 	}
@@ -141,7 +208,16 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 		}
 		if linkOnly {
 			if _, ok := result.(bdpwire.LinkRecord); !ok {
-				return nil, graphstore.ErrCapabilityUnavailable
+				if doc, isResource := result.(resourceget.ResourceDocument); isResource {
+					if doc.Kind() != graph.KindLink {
+						return nil, graphstore.ErrCapabilityUnavailable
+					}
+					return result, nil
+				}
+				doc, isDefinition := result.(resourceget.DefinitionDocument)
+				if !isDefinition || doc.Kind() != resourceget.DefinitionLink {
+					return nil, graphstore.ErrCapabilityUnavailable
+				}
 			}
 		}
 		return result, nil
@@ -150,6 +226,16 @@ func runCanonicalShow(cmd *cobra.Command, args []string, linkOnly bool) error {
 		renderer, err := clioutput.New(descriptor, opts)
 		if err != nil {
 			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "invalid_selector", err.Error(), 2)
+		}
+		if doc, ok := canonicalDefinitionForDisplay(result); ok && definitionHumanView(opts) {
+			data, err := renderDefinitionHuman(doc)
+			if err != nil {
+				return canonicalFailure(cmd, renderer, "output_error", err.Error(), 1)
+			}
+			if err := writeCanonicalDocument(cmd.OutOrStdout(), data); err != nil {
+				return canonicalCollectionWriteError(cmd, err)
+			}
+			return nil
 		}
 		return renderCanonicalResult(cmd, renderer, result)
 	})

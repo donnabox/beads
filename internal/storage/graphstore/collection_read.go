@@ -190,8 +190,15 @@ func (s *Store) checkCollectionMappingsInTx(ctx context.Context, tx *sql.Tx) err
 	if deletedInvalid != 0 {
 		return fmt.Errorf("%w: deleted Link Type differs from its authority", ErrInvalidStore)
 	}
+	payloadAuthorityQuery := `SELECT COUNT(*) FROM graph_preview_payloads p LEFT JOIN graph_preview_catalog c ON c.path=p.path WHERE c.path IS NULL OR c.resource_kind<>'bead' OR c.backing<>'generic' OR c.allocation_state<>'live'`
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		if !actualCheckedOperationBinding(ctx, tx, s.options, nil) {
+			return ErrInvalidStore
+		}
+		payloadAuthorityQuery = `SELECT COUNT(*) FROM graph_preview_payloads p LEFT JOIN graph_preview_catalog c ON c.path=p.path WHERE c.path IS NULL OR c.resource_kind<>'bead' OR c.backing NOT IN ('generic','installed-type','type-definition') OR c.allocation_state<>'live'`
+	}
 	for _, query := range []string{
-		`SELECT COUNT(*) FROM graph_preview_payloads p LEFT JOIN graph_preview_catalog c ON c.path=p.path WHERE c.path IS NULL OR c.resource_kind<>'bead' OR c.backing<>'generic' OR c.allocation_state<>'live'`,
+		payloadAuthorityQuery,
 		`SELECT COUNT(*) FROM issues i LEFT JOIN graph_preview_catalog c ON c.backing='issue' AND c.backing_key=i.id WHERE c.path IS NULL OR c.resource_kind<>'bead' OR c.allocation_state<>'live'`,
 		`SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND NOT ((resource_kind='link' AND backing IN ('informational','dependency') AND backing_key IS NULL) OR (resource_kind='bead' AND backing='generic' AND backing_key IS NULL) OR (resource_kind='bead' AND backing='issue' AND backing_key IS NOT NULL))`,
 	} {

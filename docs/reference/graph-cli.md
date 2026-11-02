@@ -130,10 +130,15 @@ the dotted child Issue, its parent Link, and the requested dependency Links
 commit together. A Markdown `--file` batch can also name existing local
 Issues under a `### Dependencies` heading; every heading, native dependency,
 canonical Link, and retained version commits together. Targets must be live
-local Issues. Graph mode explicitly refuses `external:` targets. Use a full
-opaque public Issue ID or same-Scope canonical URL for a target; partial-ID
+local Issues. Graph mode explicitly refuses `external:` targets. Inline
+`--deps` accepts a full opaque public Issue ID, a unique native Issue
+abbreviation under the configured prefixes, or a same-Scope canonical URL.
+Canonical URLs stay exact; ambiguous abbreviations refuse the entire create.
+An exact allocated ID never falls through to another Issue by abbreviation,
+including when that ID names a Memory, Link, or deleted Resource. Markdown
+batches still require full target IDs or exact same-Scope URLs; partial-ID
 abbreviations and dependencies on another new heading in the same file are
-not admitted. Markdown dependency spellings follow the Markdown parser, so
+not admitted there. Markdown dependency spellings follow the Markdown parser, so
 use a bare ID for an ordinary blocking dependency. A spelling beginning with
 `beads/` remains one literal public ID.
 

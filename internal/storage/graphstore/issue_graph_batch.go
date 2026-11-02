@@ -154,7 +154,7 @@ func (s *Store) ApplyNewIssueGraph(ctx context.Context, request publicops.ApplyB
 	}
 
 	var records map[string]IssueRecord
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeIssueGraphCreate, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -507,7 +507,7 @@ func (s *Store) mapExistingBatchSourceInTx(ctx context.Context, tx *sql.Tx, path
 		if err != nil {
 			return err
 		}
-		previous, err := currentIssueRevisionContextInTx(ctx, tx, path)
+		previous, err := s.currentNativeIssueRevisionContextInTx(ctx, tx, path)
 		if err != nil {
 			return err
 		}

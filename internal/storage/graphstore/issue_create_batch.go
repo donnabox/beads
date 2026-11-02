@@ -43,7 +43,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 		request.Items[index] = item
 	}
 	var records []IssueRecord
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeIssueBatchCreate, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -222,9 +222,15 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			}
 			paths[index] = path
 			if len(resolvedByItem[index]) == 0 {
-				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions
+				if s.LayoutVersion() == TypesFreshSchemaVersion {
+					if err := s.insertInitialNativeIssueMappingInTx(ctx, tx, path, revision, issue.ID, ordinal); err != nil {
+						return err
+					}
+				} else {
+					if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions
 					(path,version,issue_id,issue_revision,owned,revision_context,history_ordinal) VALUES (?,?,?,?,'[]','{"inception":"create"}',?)`, path, revision, issue.ID, ordinal, ordinal); err != nil {
-					return err
+						return err
+					}
 				}
 			}
 			if err := s.afterStage("retained"); err != nil {

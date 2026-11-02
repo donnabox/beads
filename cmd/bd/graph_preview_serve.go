@@ -10,7 +10,6 @@ import (
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/httpapi"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
-	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 // runGraphServe opens only the admitted existing ordinary-server graph store.
@@ -25,7 +24,7 @@ func runGraphServe(cmd *cobra.Command, opts serveOptions) (result error) {
 	}
 	ctx, cancel := context.WithTimeout(rootCtx, 30*time.Second)
 	defer cancel()
-	store, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
+	store, err := openSelectedGraphStore(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
 		return graphStorageError(err)
 	}
@@ -34,7 +33,7 @@ func runGraphServe(cmd *cobra.Command, opts serveOptions) (result error) {
 	if err := reader.ValidateAuthority(ctx); err != nil {
 		return graphStorageError(err)
 	}
-	reads, err := httpapi.NewGraphRead(reader, graphPreviewConfig.GraphScopeURL)
+	reads, err := httpapi.NewGraphReadWithQuery(reader, graphPreviewConfig.GraphScopeURL)
 	if err != nil {
 		return err
 	}

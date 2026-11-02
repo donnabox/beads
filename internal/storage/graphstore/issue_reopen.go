@@ -34,7 +34,7 @@ func (s *Store) ReopenIssueWithOptions(ctx context.Context, request IssueReopenR
 		return IssueMutationResult{}, fmt.Errorf("%w: reopen requires a nonempty UTF-8 actor and UTF-8 reason", storage.ErrValidation)
 	}
 	var result IssueMutationResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withNativeDomainTx(ctx, txNativeIssueMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}

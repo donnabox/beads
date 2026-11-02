@@ -8,8 +8,11 @@ import (
 	"strings"
 	"time"
 
+	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 // Human projection never changes public identity. In particular, literal
@@ -38,6 +41,23 @@ func graphHumanEndpoint(scope, id, token string) string {
 func graphHumanRow(scope string, value any) string {
 	var id, typ, title, extra string
 	switch r := value.(type) {
+	case resourceget.ResourceDocument:
+		id, typ = r.ID(), r.Type().URI
+		var body struct {
+			Properties     map[string]json.RawMessage `json:"properties"`
+			Source, Target bdpwire.Reference
+		}
+		if json.Unmarshal(r.NativeJSON(), &body) == nil {
+			_ = json.Unmarshal(body.Properties["title"], &title)
+			if r.Kind() == graph.KindLink {
+				extra = " " + graphHumanEndpoint(scope, body.Source.URI, body.Source.Revision) + " → " + graphHumanEndpoint(scope, body.Target.URI, body.Target.Revision)
+			} else {
+				var status string
+				if json.Unmarshal(body.Properties["status"], &status) == nil && status != "" {
+					extra = " " + graphMemoryDisplayText(status)
+				}
+			}
+		}
 	case graphstore.Record:
 		id, typ, title = r.ID, r.Type, r.Properties.Title
 	case graphstore.IssueRecord:
@@ -80,6 +100,9 @@ func graphHumanRevision(ctx context.Context, store *graphstore.Store, id, token 
 // The selected record is the sole content source for both current and retained
 // documents. Current relationships/comments are not hydrated into a past view.
 func graphHumanDocument(scope string, value any, revision string, retained, long bool) string {
+	if document, ok := value.(resourceget.ResourceDocument); ok {
+		return graphHumanResourceDocument(scope, document, revision, retained, long)
+	}
 	var token, body string
 	var properties any
 	var metadata json.RawMessage
@@ -181,6 +204,8 @@ func graphHumanDocument(scope string, value any, revision string, retained, long
 
 func graphHumanRecordIdentity(value any) (string, string) {
 	switch r := value.(type) {
+	case resourceget.ResourceDocument:
+		return r.ID(), r.Revision()
 	case graphstore.Record:
 		return r.ID, r.Revision
 	case graphstore.IssueRecord:
@@ -189,6 +214,39 @@ func graphHumanRecordIdentity(value any) (string, string) {
 		return r.ID, r.Revision
 	}
 	return "", ""
+}
+
+// Common documents retain domain properties verbatim. A field's name does not
+// establish a Memory/Issue interpretation or authorize dropping it from display.
+func graphHumanResourceDocument(scope string, document resourceget.ResourceDocument, revision string, retained, long bool) string {
+	var fields map[string]json.RawMessage
+	_ = json.Unmarshal(document.NativeJSON(), &fields)
+	var out strings.Builder
+	out.WriteString(graphHumanRow(scope, document))
+	state := "current"
+	if retained {
+		state = "retained snapshot"
+	}
+	if revision == "" {
+		revision = "@=" + graphMemoryDisplayText(document.Revision())
+	}
+	fmt.Fprintf(&out, "\nRevision: %s (%s)\n", revision, state)
+	for _, member := range []struct{ key, label string }{
+		{"properties", "Properties"}, {"metadata", "Metadata"}, {"ownedLinks", "Owned Links (selected revision)"}, {"revisionProvenance", "Revision provenance"},
+	} {
+		raw := fields[member.key]
+		if len(raw) == 0 || string(raw) == "{}" {
+			continue
+		}
+		var pretty bytes.Buffer
+		if json.Indent(&pretty, raw, "", "  ") == nil {
+			fmt.Fprintf(&out, "\n%s\n%s\n", member.label, definitionHumanJSONText(pretty.String()))
+		}
+	}
+	if long {
+		fmt.Fprintf(&out, "\nType identity\n%s\nExact Type revision\n%s\n", graphMemoryDisplayText(document.Type().URI), graphMemoryDisplayText(document.Type().Revision))
+	}
+	return strings.TrimSuffix(out.String(), "\n")
 }
 
 // These adjuncts are explicitly current, and only a current-state reader may

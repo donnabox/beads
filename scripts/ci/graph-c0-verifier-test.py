@@ -44,9 +44,14 @@ def runner(directory):
     # Qualification.run needs only these attributes: no Go, Dolt or network.
     root = Path(directory)
     q = module.Qualification.__new__(module.Qualification)
-    q.root, q.output, q.env = root, root, dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+    q.root, q.output, q.env = root, root, dict(os.environ, PYTHONDONTWRITEBYTECODE="1", CGO_ENABLED="1")
     q.children, q.receipts = set(), []
     return q
+
+
+def source_metadata(directory, selected, ignored=()):
+    return json.dumps(dict(Dir=str(directory), TestGoFiles=list(selected),
+                           XTestGoFiles=[], IgnoredGoFiles=list(ignored))).encode()
 
 
 def without_server(label):
@@ -170,11 +175,11 @@ class RequiredEngineControls(unittest.TestCase):
                 events += [event("run", "TestWorkflow/" + engine), event("pass", "TestWorkflow/" + engine)]
             events += [event("pass", "TestWorkflow"), event("pass")]
             q = module.Qualification.__new__(module.Qualification)
-            q.counts = {}
+            q.counts, q.output, q.env = {}, root, {"CGO_ENABLED": "1"}
             q.server = without_server
             listing = b"TestWorkflow\n"
             execution = "\n".join(json.dumps(item) for item in events).encode()
-            with mock.patch.object(q, "run", side_effect=[listing, execution]):
+            with mock.patch.object(q, "run", side_effect=[source_metadata(root, [source.name]), source_metadata(root, [source.name]), listing, execution]):
                 q.tests("./fixture", "^TestWorkflow", [source], "cli",
                         ("TestWorkflow/embedded", "TestWorkflow/server"))
             self.assertEqual(q.counts, {"cli": 1})
@@ -198,7 +203,7 @@ class RequiredGroupedExecution(unittest.TestCase):
             source = root / "storage_test.go"
             source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
             q = module.Qualification.__new__(module.Qualification)
-            q.output, q.counts = root, {}
+            q.output, q.counts, q.env = root, {}, {"CGO_ENABLED": "1"}
             opened, closed = [], []
             @contextlib.contextmanager
             def server(label):
@@ -210,6 +215,8 @@ class RequiredGroupedExecution(unittest.TestCase):
             q.server = server
             calls = []
             def run(args, label, **kwargs):
+                if args[1] == "list":
+                    return source_metadata(root, [source.name])
                 calls.append((args, label, kwargs))
                 if "-list" in args:
                     listed = names + ([names[0]] if mode == "duplicate-discovery" else [])
@@ -299,6 +306,8 @@ class CLIGroupedExecution(unittest.TestCase):
                     closed.append(label)
 
             def run(args, label, **kwargs):
+                if args[1] == "list":
+                    return source_metadata(root, [source.name])
                 if "-list" in args:
                     return ("\n".join(names) + "\n").encode()
                 selected = args[args.index("-run") + 1][2:-2].split("|")
@@ -352,12 +361,14 @@ class RequiredDiscovery(unittest.TestCase):
             root = Path(directory)
             (root / "patch_test.go").write_text(source)
             q = module.Qualification.__new__(module.Qualification)
-            q.counts = {}
+            q.counts, q.output, q.env = {}, root, {"CGO_ENABLED": "1"}
             q.server = without_server
             calls = []
 
             def run(argv, label, **kwargs):
                 calls.append((argv, label))
+                if label in ("graphpatch-source-discovery", "graphpatch-source-discovery-cgo0"):
+                    return source_metadata(root, ["patch_test.go"])
                 if label == "graphpatch-discovery":
                     return compiled.encode()
                 self.assertEqual(label, "graphpatch")
@@ -366,9 +377,9 @@ class RequiredDiscovery(unittest.TestCase):
             q.run = run
             q.tests("./internal/graphpatch", "^Test", root.glob("*_test.go"), "graphpatch")
             self.assertEqual(q.counts, {"graphpatch": 1})
-            self.assertEqual([label for _, label in calls], ["graphpatch-discovery", "graphpatch"])
+            self.assertEqual([label for _, label in calls], ["graphpatch-source-discovery", "graphpatch-source-discovery-cgo0", "graphpatch-discovery", "graphpatch"])
             self.assertTrue(all(argv[-1] == "./internal/graphpatch" for argv, _ in calls))
-            self.assertIn("-count=1", calls[1][0])
+            self.assertIn("-count=1", calls[3][0])
 
     def test_required_package_discovery_and_execution(self):
         self.exercise("package graphpatch\nfunc TestPatch(t *testing.T) {}\n", "TestPatch\n",
@@ -388,6 +399,72 @@ class RequiredDiscovery(unittest.TestCase):
         ]:
             with self.subTest(name=name), self.assertRaises(RuntimeError):
                 self.exercise(text, compiled, events)
+
+
+class BuildSelectedDiscovery(unittest.TestCase):
+    def test_actual_dual_mode_source_discovery_preserves_ignored_visibility(self):
+        for cgo in (True, False):
+            with self.subTest(cgo=cgo), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for name, text in (("base_test.go", "func TestBase(t *testing.T) {}\n"),
+                                   ("native_test.go", "//go:build cgo\n\nfunc TestNative(t *testing.T) {}\n"),
+                                   ("refusal_test.go", "//go:build !cgo\n\nfunc TestRefusal(t *testing.T) {}\n")):
+                    (root / name).write_text(text)
+                selected = ["base_test.go", "native_test.go" if cgo else "refusal_test.go"]
+                ignored = ["refusal_test.go" if cgo else "native_test.go"]
+                names = ["TestBase", "TestNative" if cgo else "TestRefusal"]
+                q = runner(directory)
+                q.counts, q.server = {}, without_server
+                q.env["CGO_ENABLED"] = "1" if cgo else "0"
+                opposite = ["base_test.go", ignored[0]]
+                with mock.patch.object(q, "run", side_effect=[source_metadata(root, selected, ignored),
+                                       source_metadata(root, opposite, [selected[1]]),
+                                       ("\n".join(names) + "\n").encode(), go_events(names)]) as run:
+                    q.tests("./fixture", "^Test", root.glob("*_test.go"), "storage")
+                self.assertEqual(q.counts, {"storage": 2})
+                self.assertEqual(run.call_args_list[0].args[0], ["go", "list", "-tags", "gms_pure_go",
+                                 "-json=Dir,TestGoFiles,XTestGoFiles,IgnoredGoFiles,Incomplete,Error", "./fixture"])
+                census = json.loads((root / "storage-source-selection.json").read_text())
+                self.assertEqual(census["selectedRoots"], names)
+                self.assertEqual(run.call_args_list[1].kwargs["env"]["CGO_ENABLED"], "0" if cgo else "1")
+                self.assertEqual(census["alternateMode"]["status"], "METADATA ONLY; not runtime PASS")
+                self.assertEqual(census["ignoredFiles"][0]["status"], "NOT COMPILED")
+                self.assertEqual(census["ignoredFiles"][0]["roots"], ["TestRefusal" if cgo else "TestNative"])
+
+    def test_invalid_or_unaccounted_selection_refuses(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "base_test.go"
+            source.write_text("func TestBase(t *testing.T) {}\n")
+            good = json.loads(source_metadata(root, [source.name]))
+            for changes in ({"Dir": "relative"}, {"Incomplete": True}, {"Incomplete": 0},
+                            {"Error": {"Err": "loading failed"}}, {"TestGoFiles": "bad"},
+                            {"TestGoFiles": ["../base_test.go"]}, {"TestGoFiles": [source.name, source.name]},
+                            {"XTestGoFiles": [source.name]}, {"IgnoredGoFiles": [source.name]},
+                            {"TestGoFiles": []}, {"TestGoFiles": ["ordinary.go"]}):
+                with self.subTest(changes=changes), self.assertRaises(RuntimeError):
+                    module.selected_test_sources({**good, **changes}, [source])
+            with self.assertRaisesRegex(RuntimeError, "duplicate offered"):
+                module.selected_test_sources(good, [source, source])
+            with self.assertRaisesRegex(RuntimeError, "outside selected package"):
+                module.selected_test_sources({**good, "Dir": str(root / "other")}, [source])
+
+    def test_selected_root_cannot_be_omitted_or_replaced_by_ignored_root(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "base_test.go"
+            ignored = root / "off_test.go"
+            source.write_text("func TestBase(t *testing.T) {}\n")
+            ignored.write_text("func TestOff(t *testing.T) {}\n")
+            for compiled in (b"", b"TestOff\n", b"TestBase\nTestOff\n"):
+                q = runner(directory)
+                q.counts, q.server = {}, without_server
+                with self.subTest(compiled=compiled), mock.patch.object(q, "run", side_effect=[
+                        source_metadata(root, [source.name], [ignored.name]),
+                        source_metadata(root, [source.name, ignored.name]), compiled]), self.assertRaisesRegex(
+                        RuntimeError, "source and compiled test discovery disagree"):
+                    q.tests("./fixture", "^Test", [source, ignored], "storage")
+                self.assertEqual(q.counts, {})
 
 
 class HTTPReceiptControls(unittest.TestCase):
@@ -560,7 +637,7 @@ finally:
             owner, registry, ready = root / "owner.py", root / "groups.jsonl", root / "ready.json"
             owner.write_text(self.OWNER)
             q = module.Qualification.__new__(module.Qualification)
-            q.root, q.output, q.env = root, root, dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+            q.root, q.output, q.env = root, root, dict(os.environ, PYTHONDONTWRITEBYTECODE="1", CGO_ENABLED="1")
             q.children, q.receipts = set(), []
             argv = [sys.executable, str(owner), str(Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py"),
                     str(registry), str(ready), str(root / "capture")]
@@ -622,7 +699,7 @@ finally:
                 "signal.signal(signal.SIGCHLD, reap)")
             owner.write_text(source)
             q = module.Qualification.__new__(module.Qualification)
-            q.root, q.output, q.env = root, root, dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+            q.root, q.output, q.env = root, root, dict(os.environ, PYTHONDONTWRITEBYTECODE="1", CGO_ENABLED="1")
             q.children, q.receipts = set(), []
             argv = [sys.executable, str(owner), str(Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py"),
                     str(registry), str(ready), str(root / "capture")]
@@ -693,7 +770,10 @@ class GraphHTTPDiscovery(unittest.TestCase):
             q.counts, q.server = {}, without_server
             listing = "\n".join(names if compiled is None else compiled).encode()
             execution = go_events(names if executed is None else executed)
-            with mock.patch.object(q, "run", side_effect=[listing, execution]):
+            # A never-enabled added source must not disappear from the union.
+            metadata = source_metadata(root, ["graph_read_test.go", "graph_endpoint_pins_test.go", "unrelated_test.go"],
+                                       ["graph_future_test.go"] if excluded_source else [])
+            with mock.patch.object(q, "run", side_effect=[metadata, metadata, listing, execution]):
                 q.tests(package, selector, root.glob(pattern), label)
             return q.counts
 
@@ -701,7 +781,7 @@ class GraphHTTPDiscovery(unittest.TestCase):
         self.assertEqual(self.exercise(), {"graph-http": 2})
 
     def test_build_excluded_source_is_refused(self):
-        with self.assertRaisesRegex(RuntimeError, "source and compiled test discovery disagree"):
+        with self.assertRaisesRegex(RuntimeError, "source excluded from both CGO modes"):
             self.exercise(excluded_source=True)
 
     def test_extra_compiled_root_is_refused(self):
@@ -743,11 +823,13 @@ class PhaseReport(unittest.TestCase):
             for groups, expected in [(4, [("storage-group-%d" % n, 2) for n in range(1, 5)]), (1, [("storage", 8)])]:
                 with self.subTest(groups=groups):
                     q = module.Qualification.__new__(module.Qualification)
-                    q.output, q.counts = root, {}
+                    q.output, q.counts, q.env = root, {}, {"CGO_ENABLED": "1"}
                     q.server = without_server
                     seen = []
 
                     def run(args, label, **kwargs):
+                        if args[1] == "list":
+                            return source_metadata(root, [source.name])
                         seen.append((label, kwargs.get("roots")))
                         if "-list" in args:
                             return ("\n".join(names) + "\n").encode()
@@ -854,7 +936,7 @@ class ServerPerGroup(unittest.TestCase):
             source = root / "storage_test.go"
             source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in self.NAMES))
             q = module.Qualification.__new__(module.Qualification)
-            q.output, q.counts = root, {}
+            q.output, q.counts, q.env = root, {}, {"CGO_ENABLED": "1"}
 
             @contextlib.contextmanager
             def server(server_label):
@@ -866,6 +948,8 @@ class ServerPerGroup(unittest.TestCase):
 
             def run(args, run_label, **kwargs):
                 steps.append(("run", run_label))
+                if args[1] == "list":
+                    return source_metadata(root, [source.name])
                 if "-list" in args:
                     return ("\n".join(self.NAMES) + "\n").encode()
                 if run_label == failing_run:
@@ -886,17 +970,17 @@ class ServerPerGroup(unittest.TestCase):
         return steps
 
     def test_every_group_runs_in_its_own_server_and_discovery_in_none(self):
-        self.assertEqual(self.trace(4, "storage"), [("run", "storage-discovery")] + [
+        self.assertEqual(self.trace(4, "storage"), [("run", "storage-source-discovery"), ("run", "storage-source-discovery-cgo0"), ("run", "storage-discovery")] + [
             step for n in range(1, 5)
             for step in (("open", f"storage-group-{n}"), ("run", f"storage-group-{n}"), ("close", f"storage-group-{n}"))])
 
     def test_single_group_package_runs_in_its_own_server_too(self):
-        self.assertEqual(self.trace(1, "graphread"), [("run", "graphread-discovery"), ("open", "graphread"),
+        self.assertEqual(self.trace(1, "graphread"), [("run", "graphread-source-discovery"), ("run", "graphread-source-discovery-cgo0"), ("run", "graphread-discovery"), ("open", "graphread"),
                                                       ("run", "graphread"), ("close", "graphread")])
 
     def test_failed_or_timed_out_group_still_closes_its_server_and_stops_the_lane(self):
         self.assertEqual(self.trace(4, "storage", failing_run="storage-group-2"), [
-            ("run", "storage-discovery"),
+            ("run", "storage-source-discovery"), ("run", "storage-source-discovery-cgo0"), ("run", "storage-discovery"),
             ("open", "storage-group-1"), ("run", "storage-group-1"), ("close", "storage-group-1"),
             ("open", "storage-group-2"), ("run", "storage-group-2"), ("close", "storage-group-2")])
 

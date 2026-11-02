@@ -18,6 +18,7 @@ import (
 	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/workapi"
 	publicops "github.com/steveyegge/beads/issueops"
+	"github.com/steveyegge/beads/resourceget"
 )
 
 // These are acquisition limits for the preview's database-backed list policy,
@@ -515,31 +516,74 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 	for _, id := range ids {
 		informational[id] = true
 	}
-	rows, err := tx.QueryContext(ctx, `SELECT c.path,c.resource_kind,c.type_url,c.revision,c.backing,c.backing_key,
+	query := `SELECT c.path,c.resource_kind,c.type_url,c.revision,c.backing,c.backing_key,
  p.path IS NOT NULL,i.id IS NOT NULL,d.id IS NOT NULL,l.path IS NOT NULL
  FROM graph_preview_catalog c
  LEFT JOIN graph_preview_payloads p ON p.path=c.path
  LEFT JOIN issues i ON c.backing='issue' AND i.id=c.backing_key
  LEFT JOIN dependencies d ON c.backing='dependency' AND d.id=c.backing_key
  LEFT JOIN graph_preview_links l ON l.path=c.path
- WHERE c.allocation_state='live' LIMIT ?`, PreviewSnapshotLimit+1)
+ WHERE c.allocation_state='live' LIMIT ?`
+	var checkedDefinitions []resourceget.ResourceDocument
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		read, ok := ctx.Value(resourceReadContextKey{}).(*resourceReadContext)
+		if !ok || read == nil || read.store != s || read.tx != tx || !actualCheckedOperationBinding(ctx, tx, s.options, read.budget) {
+			return ErrInvalidStore
+		}
+		if err := chargeIssueListCatalog14InTx(ctx, tx, read.budget); err != nil {
+			return err
+		}
+		checkedDefinitions = read.definitions
+		if len(checkedDefinitions) == 0 {
+			return ErrInvalidStore
+		}
+		query = strings.Replace(query, "SELECT c.path,c.resource_kind", "SELECT c.public_id,c.path,c.resource_kind", 1)
+	}
+	rows, err := tx.QueryContext(ctx, query, PreviewSnapshotLimit+1)
 	if err != nil {
 		return err
 	}
 	var readErr error
 	count := 0
+	seenDefinitions := map[string]bool{}
+	seenPublic := map[string]bool{}
 	for rows.Next() {
 		var path, kind, typ, revision, backing string
 		var key sql.NullString
 		var memoryExists, issueExists, dependencyExists, informationalExists bool
-		if err := rows.Scan(&path, &kind, &typ, &revision, &backing, &key, &memoryExists, &issueExists, &dependencyExists, &informationalExists); err != nil {
-			readErr = err
+		var publicID sql.NullString
+		var scanErr error
+		if s.LayoutVersion() == TypesFreshSchemaVersion {
+			if scanErr = ctx.Err(); scanErr != nil {
+				readErr = scanErr
+				break
+			}
+			scanErr = rows.Scan(&publicID, &path, &kind, &typ, &revision, &backing, &key, &memoryExists, &issueExists, &dependencyExists, &informationalExists)
+		} else {
+			scanErr = rows.Scan(&path, &kind, &typ, &revision, &backing, &key, &memoryExists, &issueExists, &dependencyExists, &informationalExists)
+		}
+		if scanErr != nil {
+			readErr = scanErr
 			break
 		}
 		count++
 		if count > PreviewSnapshotLimit {
 			readErr = fmt.Errorf("%w: graph Issue list live Resource limit exceeded", ErrLimitExceeded)
 			break
+		}
+		if s.LayoutVersion() == TypesFreshSchemaVersion {
+			id := path
+			if publicID.Valid {
+				id = publicID.String
+			}
+			if backing == "issue" && key.Valid {
+				id = key.String
+			}
+			if validatePublicID(id) != nil || seenPublic[id] {
+				readErr = ErrInvalidStore
+				break
+			}
+			seenPublic[id] = true
 		}
 		valid := validateResourcePath(path) == nil && authorityID.MatchString(revision)
 		switch backing {
@@ -551,6 +595,17 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && dependencyTypes[typ] && key.Valid && key.String != "" && dependencyExists
 		case "informational":
 			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && informational[typ] && !key.Valid && informationalExists
+		case "intrinsic", "intrinsic-link", "type-definition", "installed-type", "installed-type-link":
+			valid = valid && s.LayoutVersion() == TypesFreshSchemaVersion && publicID.Valid && issueCatalogDefinitionMatches(checkedDefinitions, s.ScopeURL(), path, kind, typ, revision, backing, publicID.String) == nil
+			if valid {
+				// Exact validated public ID, never basename/schema-shape inference.
+				uri, e := graph.CanonicalPublicResourceURL(s.ScopeURL(), publicID.String)
+				if e != nil || seenDefinitions[uri] {
+					valid = false
+				} else {
+					seenDefinitions[uri] = true
+				}
+			}
 		default:
 			valid = false
 		}
@@ -559,7 +614,24 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 			break
 		}
 	}
-	return errors.Join(readErr, rows.Err(), rows.Close())
+	if s.LayoutVersion() == TypesFreshSchemaVersion && readErr == nil && rows.NextResultSet() {
+		readErr = ErrInvalidStore
+	}
+	readErr = errors.Join(readErr, rows.Err(), rows.Close())
+	if readErr != nil {
+		return readErr
+	}
+	if s.LayoutVersion() == TypesFreshSchemaVersion {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		for _, definition := range checkedDefinitions {
+			if !seenDefinitions[definition.ID()] {
+				return fmt.Errorf("%w: checked definition missing from Issue inventory", ErrInvalidStore)
+			}
+		}
+	}
+	return nil
 }
 
 // checkResolvedIssueListConfig also charges frontend YAML fallbacks. This is a

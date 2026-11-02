@@ -160,7 +160,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 			return nil, err
 		}
 	}
-	raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
+	raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, version, head)
 	if err != nil {
 		return nil, err
 	}
@@ -198,7 +198,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 }
 
 func (s *Store) readMemoryVersionInTx(ctx context.Context, tx *sql.Tx, path, typ, version, head string) (Record, error) {
-	raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
+	raw, actor, err := s.readVersionDomainBytes(ctx, tx, path, version, head)
 	if err != nil {
 		return Record{}, err
 	}
@@ -357,21 +357,24 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 	if err != nil {
 		return err
 	}
-	previous := ""
+	// Local historical captures retain their producer's order, which may be
+	// based on private paths rather than public IDs. Validate membership without
+	// rewriting issued snapshots or imposing a different order on their bytes.
+	seen := make(map[string]struct{}, len(owned))
 	for _, raw := range owned {
 		var link LinkRecord
 		if json.Unmarshal(raw, &link) != nil {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
 		owned, err := catalog.types.Owns(typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), ownerType, graph.KindBead, facts...)}, typecatalog.Reference{URI: nativeFamilyReference(s.ScopeURL(), link.Type, graph.KindLink, facts...)})
-		if err != nil || !owned || link.Source != source ||
-			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {
+		_, duplicate := seen[link.ID]
+		if err != nil || !owned || link.Source != source || duplicate {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
 		if err := s.validateVersionLink(ctx, tx, link, raw, link.Attribution.Actor); err != nil {
 			return err
 		}
-		previous = link.ID
+		seen[link.ID] = struct{}{}
 	}
 	return nil
 }
@@ -434,7 +437,7 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 	}
 	result := IssueRecord{ID: publicURL, Type: issueType, Revision: version, Version: version,
 		Attribution: Attribution{Actor: actor.String, Status: status.String, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}
-	result.Attribution, err = applyIssueRevisionContext(result.Attribution, revisionContext)
+	result.Attribution, err = s.applyNativeIssueRevisionContext(result.Attribution, revisionContext)
 	if err != nil {
 		return IssueRecord{}, err
 	}

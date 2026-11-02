@@ -93,7 +93,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 	}
 	var result IssueMutationResult
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeIssueMutation, false, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -436,7 +436,7 @@ func (s *Store) prepareIssueUpdatePatch(request UpdateIssueRequest) (publicops.I
 	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return publicops.IssuePatch{}, 0, err
 	}
-	if request.Metadata.Replace.Set || request.Metadata.Merge.Set || len(request.Metadata.Set) > 0 || len(request.Metadata.Unset) > 0 {
+	if hasCommonMetadataPatch(request.Metadata) {
 		patch.Metadata = request.Metadata
 		count++
 	}

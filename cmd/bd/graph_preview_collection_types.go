@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
@@ -19,6 +20,24 @@ func init() {
 // conformsTo predicates. Native bare labels are Beads adapter conveniences;
 // generic BDP relative operands do not use this resolver.
 func graphPreviewCollectionTypes(cmd *cobra.Command, scope string, links bool) (exact, family string, err error) {
+	return graphPreviewCollectionTypesWithDefault(cmd, scope, links, true)
+}
+
+// issueDefault is a caller-selected population policy, independent of Resource
+// kind and explicit selectors. Canonical List selects all ordinary Beads.
+func graphPreviewCollectionTypesWithDefault(cmd *cobra.Command, scope string, links, issueDefault bool) (exact, family string, err error) {
+	layout := graphstore.SchemaVersion
+	if graphPreviewConfig != nil {
+		layout = graphPreviewConfig.GraphSchemaVersion
+	}
+	return graphPreviewCollectionTypesForLayoutWithDefault(cmd, scope, links, layout, issueDefault)
+}
+
+func graphPreviewCollectionTypesForLayout(cmd *cobra.Command, scope string, links bool, layout int) (exact, family string, err error) {
+	return graphPreviewCollectionTypesForLayoutWithDefault(cmd, scope, links, layout, true)
+}
+
+func graphPreviewCollectionTypesForLayoutWithDefault(cmd *cobra.Command, scope string, links bool, layout int, issueDefault bool) (exact, family string, err error) {
 	changed := func(name string) bool {
 		return cmd.Flags().Lookup(name) != nil && cmd.Flags().Changed(name)
 	}
@@ -26,7 +45,7 @@ func graphPreviewCollectionTypes(cmd *cobra.Command, scope string, links bool) (
 		return "", "", fmt.Errorf("--type and --conforms-to both select the Type family; supply only one")
 	}
 	if !changed("type") && !changed("exact-type") && !changed("conforms-to") {
-		if !links {
+		if !links && issueDefault && layout != graphstore.TypesFreshSchemaVersion {
 			return "", graphstore.IssueTypeURL(scope), nil
 		}
 		return "", "", nil
@@ -127,4 +146,32 @@ func graphPreviewCollectionTypeURL(scope, raw string, links bool) (string, error
 		// depends-on/blocked-by aliases belong only to dep add writes.
 		return graphstore.NativeDependencyTypeURL(scope, raw)
 	}
+}
+
+// graphPreviewReadBeadDocuments resolves product selectors and pages one checked
+// capture. A local definition identity is not an alias in the raw BDP predicate.
+func graphPreviewReadBeadDocuments(ctx context.Context, store *graphstore.Store, request graphstore.BeadListRequest) (graphstore.BeadDocumentPage, error) {
+	snapshot, err := store.CurrentResourceDocuments(ctx)
+	if err != nil {
+		return graphstore.BeadDocumentPage{}, err
+	}
+	return graphPreviewSelectCapturedBeads(snapshot, request)
+}
+
+func graphPreviewSelectCapturedBeads(snapshot graphstore.ResourceSnapshot, request graphstore.BeadListRequest) (graphstore.BeadDocumentPage, error) {
+	if request.TypeURL != "" {
+		selected, err := snapshot.ResolveType(request.TypeURL)
+		if err != nil {
+			return graphstore.BeadDocumentPage{}, err
+		}
+		request.TypeURL = selected.URI
+	}
+	if request.ConformsTo != "" {
+		selected, err := snapshot.ResolveType(request.ConformsTo)
+		if err != nil {
+			return graphstore.BeadDocumentPage{}, err
+		}
+		request.ConformsTo = selected.URI
+	}
+	return snapshot.SelectBeadDocuments(request)
 }

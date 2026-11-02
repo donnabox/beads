@@ -167,7 +167,7 @@ func (s *Store) mapIssueCreateDependenciesInTx(ctx context.Context, tx *sql.Tx, 
 		if err != nil {
 			return err
 		}
-		if err := insertPreviewVersionInTx(ctx, tx, linkPath, linkRevision, snapshot, actor); err != nil {
+		if err := s.retainResourceVersionInTx(ctx, tx, linkPath, linkRevision, snapshot, actor); err != nil {
 			return err
 		}
 		if err := s.afterStage("create-dependency-retained"); err != nil {

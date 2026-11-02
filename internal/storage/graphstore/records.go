@@ -102,7 +102,7 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if err := catalog.validateProperties(r.Type, properties, graph.KindBead); err != nil {
 		return Record{}, err
 	}
-	err = s.withTypeValidationTx(ctx, func(tx *sql.Tx) error {
+	err = s.withNativeDomainTx(ctx, txNativeMemoryCreate, true, func(ctx context.Context, tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -195,11 +195,14 @@ func (s *Store) createPreparedMemoryInTx(ctx context.Context, tx *sql.Tx, req Cr
 	if err := s.afterStage("payload"); err != nil {
 		return Record{}, err
 	}
-	err = insertPreviewVersionInTx(ctx, tx, req.Path, r.Version, snapshot, req.Actor)
+	err = s.retainResourceVersionInTx(ctx, tx, req.Path, r.Version, snapshot, req.Actor)
 	if err != nil {
 		return Record{}, err
 	}
 	if err := s.afterStage("retained"); err != nil {
+		return Record{}, err
+	}
+	if err := s.captureAppliedNativeResultInTx(ctx, tx, req.Path, &r); err != nil {
 		return Record{}, err
 	}
 	// Writes retain their existing request and Type budgets. Complete readers
@@ -287,6 +290,10 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if err := tx.QueryRowContext(ctx, `SELECT snapshot, actor FROM graph_preview_versions WHERE path = ? AND version = ?`, path, revision).Scan(&snapshot, &actor); err != nil {
 		return Record{}, fmt.Errorf("%w: missing retained state: %v", ErrInvalidStore, err)
 	}
+	snapshot, err = s.nativeDomainSnapshot(snapshot)
+	if err != nil {
+		return Record{}, err
+	}
 	publicURL, err := s.publicResourceURLInTx(ctx, tx, path)
 	if err != nil {
 		return Record{}, err
@@ -316,7 +323,7 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if err != nil {
 		return Record{}, err
 	}
-	catalog, err := s.selectedTypes()
+	catalog, err := s.selectedTypesInTx(ctx, tx)
 	if err != nil {
 		return Record{}, err
 	}
@@ -336,6 +343,9 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	}
 	if record.PublicID == "" {
 		record.PublicID = path
+	}
+	if err := s.captureNativeReadbackResultInTx(ctx, tx, path, &record); err != nil {
+		return Record{}, err
 	}
 	return record, nil
 }

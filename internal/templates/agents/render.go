@@ -19,6 +19,8 @@ const (
 	ProfileMinimal Profile = "minimal"
 	// ProfileGraphPreview is guidance for an explicitly initialized graph workspace.
 	ProfileGraphPreview Profile = "graph-preview"
+	// ProfileGraphTypes describes the explicit definition-only workspace.
+	ProfileGraphTypes Profile = "graph-types"
 )
 
 // MarkerVersion is the current format version for BEGIN BEADS INTEGRATION markers.
@@ -201,6 +203,8 @@ func templateBody(profile Profile) string {
 func templateBodyWithOpts(profile Profile, opts RenderOpts) string {
 	var body string
 	switch profile {
+	case ProfileGraphTypes:
+		body = graphTypesBody()
 	case ProfileGraphPreview:
 		body = graphPreviewBody()
 	case ProfileMinimal:
@@ -223,6 +227,31 @@ func templateBodyWithOpts(profile Profile, opts RenderOpts) string {
 	}
 
 	return body
+}
+
+func graphTypesBody() string {
+	return `## Type-definition preview
+
+This workspace contains real locally owned Type-definition Beads. Its supported commands are:
+
+` + "```sh" + `
+bd show type-for-bead-type
+bd show type-for-type
+bd show type-for-link-type
+bd show type-for-refines
+bd list --type type
+bd list --type bead-type
+bd list --type link-type
+bd type create --id foo
+bd show foo
+` + "```" + `
+
+Type definitions are persisted. Their local record identities are distinct from their common intrinsic protocol identities. Reopening this workspace preserves those records and exact Type revisions.
+
+` + "`bd create --type foo`" + ` is an explicitly unsaved prototype: it reads the real Foo definition but does not allocate or save a Bead. Do not treat its output as a persisted Resource.
+
+Other graph operations and migration of existing workspaces are unavailable in this profile. No automatic reminder hook is installed.
+`
 }
 
 func normalizeEmbeddedMarkdown(content string) string {

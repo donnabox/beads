@@ -69,3 +69,11 @@ without changing the pinned version. Go formatting and generated source filegrou
 are synchronized. Bazel is absent on the current host, so Gazelle, module tidy,
 Bazel tests and their lint/guard gates remain unverified. Final selected catalog,
 descriptor adapter and storage/CLI activation remain separate work.
+
+An absent local `PropertiesSchema` adds no constraint. It is distinct from JSON
+null (invalid), explicit true/false/object schemas and `NominalOnly` native-domain
+validation. Full properties must remain an object and every exact ancestor's
+constraint still applies. A present schema needs its explicit retrieval URI;
+an absent one does not cause a root, default value or replacement schema to be
+manufactured. Supplied resources remain validated offline even with no local
+root. This does not turn native Issue/Dependency payload validation into schemas.

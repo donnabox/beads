@@ -27,6 +27,7 @@ const graphIssueListOutputLimit = 16 << 20
 var errGraphListSelector = errors.New("invalid Issue list selector")
 
 func runGraphPreviewList(cmd *cobra.Command) error {
+	resourceWorkspace := graphPreviewConfig.GraphSchemaVersion == graphstore.TypesFreshSchemaVersion
 	if canonicalOutputSelected(cmd) {
 		return runCanonicalCollection(cmd, false)
 	}
@@ -53,7 +54,10 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		in.ParentID = ""
 	}
 	jsonFlag, _ := cmd.Flags().GetBool("json")
-	legacyJSON := !structured && (jsonOutput || jsonFlag)
+	legacyJSON := !resourceWorkspace && !structured && (jsonOutput || jsonFlag)
+	if resourceWorkspace && (jsonOutput || jsonFlag || strings.EqualFold(in.formatStr, "json")) {
+		structured = true
+	}
 	selectedType := familyType
 	if exactType != "" {
 		selectedType = exactType
@@ -70,6 +74,9 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		in.IssueType = ""
 	}
 	typed = slices.DeleteFunc(typed, func(option string) bool { return option == "type" })
+	if resourceWorkspace {
+		typed = slices.DeleteFunc(typed, func(option string) bool { return option == "long" })
+	}
 	planningType := selectedType
 	if issueFamily {
 		planningType = graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL)
@@ -79,6 +86,11 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --type", 5)
 	}
 	intersection := exactType != "" && familyType != ""
+	if resourceWorkspace {
+		if err := graphResourceListCapabilities(in, graphPreviewConfig.GraphScopeURL, exactType, plan.issueQuery); err != nil {
+			return graphFailure("capability_unavailable", err.Error(), 5)
+		}
+	}
 	// The Issue query and its legacy JSON renderer cannot apply both Type
 	// predicates. Use the Bead inventory for an otherwise unfiltered
 	// intersection, and refuse Issue-only filters rather than dropping one.
@@ -117,11 +129,19 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return nil
 		})
 	}
-	if issueFamily && exactType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) && !intersection {
+	if !resourceWorkspace && issueFamily && exactType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) && !intersection {
 		plan.issueQuery = true
 	}
 	if !plan.issueQuery {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			if resourceWorkspace {
+				page, err := graphPreviewReadBeadDocuments(ctx, s, graphstore.BeadListRequest{TypeURL: exactType, ConformsTo: familyType, All: in.AllFlag, Limit: *in.Limit, MaxRows: in.MaxRows})
+				if err != nil {
+					return nil, "", err
+				}
+				output, err := renderGraphResourceList(page, s.ScopeURL(), in.AllFlag, plan.notice, structured, quietFlag, in.longFormat)
+				return nil, output, err
+			}
 			if selectedType != "" {
 				if err := graphPreviewRequireInstalledType(ctx, s, selectedType, graph.KindBead, false); err != nil {
 					return nil, "", err
@@ -132,6 +152,22 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 				return nil, "", err
 			}
 			output, err := renderGraphBeadList(page, s.ScopeURL(), in.AllFlag, plan.notice, structured, quietFlag)
+			return nil, output, err
+		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
+	}
+	if resourceWorkspace {
+		if tree, _ := cmd.Flags().GetBool("tree"); tree && cmd.Flags().Changed("tree") {
+			return graphFailure("capability_unavailable", "Types-aware Issue trees are not available; use the ordinary flat list or graph", 5)
+		}
+		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			page, err := s.ListIssueDocuments(ctx, in.ListRequest, parent)
+			if errors.Is(err, storage.ErrValidation) {
+				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
+			}
+			if err != nil {
+				return nil, "", err
+			}
+			output, err := renderGraphResourceList(page, s.ScopeURL(), in.AllFlag, plan.notice, structured, quietFlag, in.longFormat)
 			return nil, output, err
 		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
@@ -184,6 +220,19 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		output, err := renderGraphIssueList(page, plan.notice, structured, quietFlag, s.ScopeURL())
 		return nil, output, err
 	}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
+}
+
+// The filtered native Issue seam cannot silently drop enrichment or replace an
+// exact abstract nominal selector with its concrete family. Check before any
+// read, not after pagination or after producing part of the output.
+func graphResourceListCapabilities(in listInput, scope, exact string, issueQuery bool) error {
+	if in.IncludeComments {
+		return fmt.Errorf("Types-aware complete Resource lists do not support --include-comments")
+	}
+	if issueQuery && exact == graphstore.IssueTypeURL(scope) {
+		return fmt.Errorf("Issue-only filters cannot be combined with exact abstract Issue selection; use --type issue for its family")
+	}
+	return nil
 }
 
 func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, error) {
@@ -415,6 +464,31 @@ func renderGraphBeadList(page graphstore.BeadListPage, scope string, all bool, n
 		return "", fmt.Errorf("%w: Bead list output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
 	}
 	return output.String(), nil
+}
+
+func renderGraphResourceList(page graphstore.BeadDocumentPage, scope string, all bool, notice string, structured, quiet, long bool) (string, error) {
+	ordinary := graphstore.BeadListPage{Items: make([]any, 0, len(page.Items)), HasMore: page.HasMore}
+	for _, document := range page.Items {
+		ordinary.Items = append(ordinary.Items, document)
+	}
+	if !long || structured || quiet {
+		return renderGraphBeadList(ordinary, scope, all, notice, structured, quiet)
+	}
+	var human strings.Builder
+	fmt.Fprintf(&human, "Beads (%d; more: %t; graph preview)\n", len(page.Items), page.HasMore)
+	if notice != "" {
+		human.WriteString(notice + "\n")
+	}
+	for _, document := range page.Items {
+		human.WriteString(graphHumanDocument(scope, document, "", false, true) + "\n\n")
+	}
+	if page.HasMore {
+		human.WriteString("More Beads exist; increase --limit or use --all within preview bounds.\n")
+	}
+	if human.Len() > graphIssueListOutputLimit {
+		return "", fmt.Errorf("%w: Bead list output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+	}
+	return human.String(), nil
 }
 
 func renderGraphIssueList(page graphstore.IssueListPage, notice string, structured, quiet bool, scope string) (string, error) {

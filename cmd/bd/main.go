@@ -1226,6 +1226,9 @@ var rootCmd = &cobra.Command{
 		_ = cmd.Help() // Help() always returns nil for cobra commands
 	},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) (retErr error) {
+		if err := validateCanonicalRetainedSyntax(cmd); err != nil {
+			return err
+		}
 		if err := validateCanonicalOutputInvocation(cmd); err != nil {
 			return err
 		}
@@ -1258,6 +1261,7 @@ var rootCmd = &cobra.Command{
 		// backfilled. A bare assignment leaves those commands reading a nil
 		// per-command context and losing Ctrl-C entirely.
 		setRootContext(setupGracefulShutdown())
+		bindCanonicalRetainedRootSignal(cmd, getRootContext())
 
 		// Initialize OTel. Telemetry is opt-in — initTelemetry is a noop
 		// unless BD_OTEL_ENABLED=true or a legacy BD_OTEL_* selector is set.
@@ -1300,11 +1304,24 @@ var rootCmd = &cobra.Command{
 		}
 
 		// Admit persisted graph format before legacy store discovery or maintenance.
+		if handled, err := admitCanonicalRetained(cmd); handled || err != nil {
+			return err
+		}
+		if handled, err := admitCanonicalAuthoring(cmd); handled || err != nil {
+			return err
+		}
 		if handled, err := admitCanonicalGraphPreview(cmd); handled || err != nil {
 			return err
 		}
 		if canonicalOutputSelected(cmd) {
-			return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "capability_unavailable", "canonical Resource output requires a graph workspace", 5)
+			if !dependencyListCountRequested(cmd) {
+				return canonicalFailure(cmd, canonicalFailureRendererFor(cmd), "capability_unavailable", "canonical Resource output requires a graph workspace", 5)
+			}
+			// Validate count occurrences even when a final false value would
+			// otherwise hide a true/false conflict. No Resource fallback.
+			if _, err := dependencyListCountRenderer(cmd); err != nil {
+				return err
+			}
 		}
 
 		// Block dangerous env var overrides that could cause data fragmentation (bd-hevyw).
@@ -2905,7 +2922,7 @@ func main() {
 	rootCmd.InitDefaultHelpCmd()
 	registerHelpAllFlag()
 
-	executedCmd, err := rootCmd.ExecuteC()
+	executedCmd, err := executeCLIProfileRoot(rootCmd, os.Args[1:])
 
 	// Let this command's fire-and-forget hooks finish, for the same
 	// every-exit-path reason the metrics flush below is here rather than in
