@@ -57,6 +57,8 @@ func newProfileRuntimeFixture() *profileRuntimeFixture {
 	f.complete = &cobra.Command{Use: "__complete", DisableFlagParsing: true, Hidden: true, RunE: func(*cobra.Command, []string) error { f.runs++; return nil }}
 	f.root.AddCommand(f.list, query, link, config, f.raw, f.complete,
 		&cobra.Command{Use: "delete", RunE: func(*cobra.Command, []string) error { f.runs++; return nil }},
+		&cobra.Command{Use: "uncovered", Args: func(*cobra.Command, []string) error { f.args++; return nil },
+			RunE: func(*cobra.Command, []string) error { f.runs++; return nil }},
 		&cobra.Command{Use: "version", RunE: func(*cobra.Command, []string) error { f.runs++; return nil }})
 	return f
 }
@@ -92,12 +94,22 @@ func TestCLIProfileRuntimeCompatPreservesOriginalRoute(t *testing.T) {
 }
 
 func TestCLIProfileRuntimeCanonicalRejectsBeforeEffects(t *testing.T) {
-	for _, argv := range [][]string{{"list", "--danger=x"}, {"delete"}, {"delete", "--help"}, {"raw", "--help"}, {"query"}, {"list", "--status=false"}} {
+	// Retained delete is covered. Use a registered, genuinely uncovered leaf
+	// to exercise refusal before either execution or help can reach effects.
+	if _, covered := lookupCanonicalReadLeaf([]string{"uncovered"}); covered {
+		t.Fatal("refusal fixture must stay outside the finite canonical surface")
+	}
+	for _, argv := range [][]string{{"list", "--danger=x"}, {"uncovered"}, {"uncovered", "--help"}, {"raw", "--help"}, {"query"}, {"list", "--status=false"}} {
 		t.Run(strings.Join(argv, " "), func(t *testing.T) {
 			f := newProfileRuntimeFixture()
 			_, err := executeCLIProfileRootWith(f.root, argv, runtimeProfile(cliSurfaceCanonical))
 			if err == nil {
 				t.Fatal("expected checked refusal")
+			}
+			if argv[0] == "uncovered" {
+				if code, ok := exitCodeFromError(err); !ok || code != 5 || strings.Count(f.diag.String(), "capability_unavailable:") != 1 {
+					t.Fatalf("uncovered leaf lost its capability refusal: err=%v diagnostic=%q", err, f.diag.String())
+				}
 			}
 			if f.sets != 0 || f.args != 0 || f.hooks != 0 || f.runs != 0 {
 				t.Fatalf("refused operation had effects: sets=%d args=%d hooks=%d runs=%d", f.sets, f.args, f.hooks, f.runs)
@@ -109,6 +121,26 @@ func TestCLIProfileRuntimeCanonicalRejectsBeforeEffects(t *testing.T) {
 				t.Fatal("rejected value leaked through pflag wrapper")
 			}
 		})
+	}
+}
+
+// This fake executor checks routing only, not production delete admission.
+func TestCLIProfileRuntimeCanonicalRetainedDeleteRoute(t *testing.T) {
+	descriptor, covered := lookupCanonicalReadLeaf([]string{"delete"})
+	if !covered || descriptor.Operation != canonicalReadLeafOperation("retained-singleton") || strings.Join(descriptor.Path, " ") != "delete" {
+		t.Fatalf("retained delete descriptor unavailable: %#v %v", descriptor, covered)
+	}
+	f := newProfileRuntimeFixture()
+	want, _, err := f.root.Find([]string{"delete"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := executeCLIProfileRootWith(f.root, []string{"delete"}, runtimeProfile(cliSurfaceCanonical))
+	if err != nil || got != want || f.runs != 1 || f.hooks != 1 || f.args != 0 || f.sets != 0 || f.diag.Len() != 0 {
+		t.Fatalf("retained delete route changed: err=%v same=%v runs=%d hooks=%d args=%d sets=%d diagnostic=%q", err, got == want, f.runs, f.hooks, f.args, f.sets, f.diag.String())
+	}
+	if canonicalOutputDefault(want) {
+		t.Fatal("retained delete decoration was not restored")
 	}
 }
 
@@ -169,7 +201,7 @@ func TestCLIProfileRuntimeBrokenPreferenceRepairIsBounded(t *testing.T) {
 }
 
 func TestCLIProfileRuntimeCanonicalHelpAndCompletionBoundaries(t *testing.T) {
-	for _, argv := range [][]string{{"--help"}, {"list", "--help"}, {"link"}, {"link", "--help"}, {"config", "--help"}, {"config", "get", "--help"}} {
+	for _, argv := range [][]string{{"--help"}, {"list", "--help"}, {"delete", "--help"}, {"link"}, {"link", "--help"}, {"config", "--help"}, {"config", "get", "--help"}} {
 		t.Run(strings.Join(argv, " "), func(t *testing.T) {
 			f := newProfileRuntimeFixture()
 			_, err := executeCLIProfileRootWith(f.root, argv, runtimeProfile(cliSurfaceCanonical))

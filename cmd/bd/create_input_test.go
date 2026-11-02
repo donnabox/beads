@@ -228,6 +228,11 @@ func newCreateFlagsCommand(t *testing.T, args ...string) *cobra.Command {
 				t.Fatalf("--%s has a non-empty slice default %q, which this clone does not reproduce", f.Name, f.DefValue)
 			}
 			cmd.Flags().StringSlice(f.Name, nil, f.Usage)
+		case "stringArray":
+			if f.DefValue != "[]" {
+				t.Fatalf("--%s has a non-empty array default %q, which this clone does not reproduce", f.Name, f.DefValue)
+			}
+			cmd.Flags().StringArray(f.Name, nil, f.Usage)
 		default:
 			t.Fatalf("--%s has unhandled flag type %q", f.Name, f.Value.Type())
 		}
@@ -236,6 +241,35 @@ func newCreateFlagsCommand(t *testing.T, args ...string) *cobra.Command {
 		t.Fatalf("parse %v: %v", args, err)
 	}
 	return cmd
+}
+
+func TestCreateFlagsClonePreservesStringArrays(t *testing.T) {
+	for _, name := range []string{"include", "omit", "output-format"} {
+		t.Run(name, func(t *testing.T) {
+			original := createCmd.Flags().Lookup(name)
+			if original == nil || original.Value.Type() != "stringArray" || original.DefValue != "[]" {
+				t.Fatalf("--%s is not an empty-default stringArray: %#v", name, original)
+			}
+			before, changed := original.Value.String(), original.Changed
+			cmd := newCreateFlagsCommand(t, "--"+name, "first,second", "--"+name, "third")
+			flag := cmd.Flags().Lookup(name)
+			if flag.Value.Type() != original.Value.Type() || flag.DefValue != original.DefValue || !flag.Changed {
+				t.Fatalf("--%s clone lost type, default or explicitness: %#v", name, flag)
+			}
+			values, err := cmd.Flags().GetStringArray(name)
+			if err != nil || len(values) != 2 || values[0] != "first,second" || values[1] != "third" {
+				t.Fatalf("--%s clone lost repeated values or split a literal comma: %q %v", name, values, err)
+			}
+			fresh := newCreateFlagsCommand(t)
+			defaults, err := fresh.Flags().GetStringArray(name)
+			if err != nil || len(defaults) != 0 || fresh.Flags().Changed(name) {
+				t.Fatalf("--%s clone state leaked into a fresh command: %q %v", name, defaults, err)
+			}
+			if original.Value.String() != before || original.Changed != changed {
+				t.Fatalf("--%s clone mutated the production flag", name)
+			}
+		})
+	}
 }
 
 // TestIsAmbiguousRepoTarget covers bd-8d3f: an explicit relative/bare --repo
