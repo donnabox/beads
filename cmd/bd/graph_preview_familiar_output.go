@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"runtime"
 	"sort"
 	"strings"
 	"time"
 
+	"github.com/steveyegge/beads/internal/remedy"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
@@ -124,7 +126,8 @@ func renderGraphIssueDetails(details *types.IssueDetails, opts graphIssueDetailO
 			if hidden == 1 {
 				noun = "comment"
 			}
-			fmt.Fprintf(&out, "  %s\n", ui.RenderMuted(fmt.Sprintf("… %d older %s hidden — bd show %s for the full record", hidden, noun, issue.ID)))
+			arg, note := remedy.CommandArg(runtime.GOOS, issue.ID, "<issue-id>")
+			fmt.Fprintf(&out, "  %s\n", ui.RenderMuted(fmt.Sprintf("… %d older %s hidden — bd show %s for the full record%s", hidden, noun, arg, note)))
 			comments = comments[hidden:]
 		}
 		for _, comment := range comments {

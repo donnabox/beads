@@ -1,0 +1,118 @@
+
+
+Graph preview workspaces:
+Without Issue filters, bd list reads one bounded snapshot of current Beads
+of all installed Bead Types and lists every Memory and every Issue the
+ordinary bd list would show, newest recorded change first. Closed and pinned
+Issues are hidden unless --all is given; --all also removes the row limit.
+Each human row shows the local ID and kind; an Issue row also shows its
+status and priority. Use --type NAME to narrow by Bead Type.
+--limit returns a prefix with hasMore, not a continuation cursor. A positive
+BEADS_MAX_ROWS refuses a page of more Beads than that.
+Issue-specific filters (--status, --type, --id, --title, --title-contains,
+--priority, --priority-min, --priority-max, --assignee, --no-assignee,
+--label, --label-any, --exclude-label, --pinned, --no-pinned, --parent, --no-parent, --ready, --due-before,
+--due-after, --overdue, --sort, --reverse, --long) or a matching configured
+directory label switch to the existing Issue query: Issues only, closed and
+pinned Issues omitted unless --all or a filter selects them, quoted rows
+with status and priority, and a line under the header saying Memories are
+not listed. --id accepts native Issue IDs and exact beads/PATH IDs as a
+comma-separated or repeated set, before the result limit. --parent ID
+accepts direct parent-child edges and edge-less dotted children by graph ID;
+use it with --flat, --json, or --format records-json for direct children.
+Without an output switch, --parent renders the complete bounded recursive tree. An Issue
+filter cannot be combined with a non-Issue --type;
+a configured directory label alone does not refuse one, it is simply not
+applied to Memories. --no-parent selects Issues without a parent-child edge,
+including edge-less dotted IDs.
+--ready uses the blocker-aware Issue query, defaults to open Issues, and
+refuses filters that query cannot honor. With --parent it selects transitive
+Issue descendants and prints a flat ready list, as ordinary bd list does.
+--sort accepts priority, created, updated, closed,
+title, status, type, id and assignee; id orders canonical local Bead IDs
+before the result limit. --tree=false selects
+the same flat output as --flat. --long uses the ordinary detailed Issue
+presentation. --json and --format json return the ordinary
+Issue-only array; use --format records-json for generic Bead records.
+
+Usage:
+  bd list [flags]
+
+Flags:
+      --all                          Show all issues including closed (overrides default filter); unsupported with --output-format, whose selection has no Issue status default
+  -a, --assignee string              Filter by assignee
+      --brief                        Omit the free-form text (description, design, acceptance criteria, notes, payload, waiters) from each row. Filters that read those fields, such as --desc-contains, still select on them. An omitted field is indistinguishable from an empty one in --json; fetch a whole issue with bd show.
+      --closed-after string          Filter issues closed after date (YYYY-MM-DD or RFC3339)
+      --closed-before string         Filter issues closed before date (YYYY-MM-DD or RFC3339)
+      --conforms-to string           Select a canonical absolute HTTP(S) Type URI and its conformance family; compatibility alias for --type
+      --continue string              Resume a provider continuation (not available from the current local collection provider)
+      --created-after string         Filter issues created after date (YYYY-MM-DD or RFC3339)
+      --created-before string        Filter issues created before date (YYYY-MM-DD or RFC3339)
+      --defer-after string           Filter issues deferred after date (supports relative: +6h, tomorrow)
+      --defer-before string          Filter issues deferred before date (supports relative: +6h, tomorrow)
+      --deferred                     Show only issues with defer_until set
+      --deps string[="scheduling"]   Annotate tree with dependency edges and order siblings by them: 'scheduling' (bare --deps) or 'all'
+      --desc-contains string         Filter by description substring (case-insensitive)
+      --due-after string             Filter issues due after date (supports relative: +6h, tomorrow)
+      --due-before string            Filter issues due before date (supports relative: +6h, tomorrow)
+      --empty-description            Filter issues with empty or missing description
+      --exact-type string            Select only the exact declared Type; --type includes refinements
+      --exclude-label strings        Exclude issues that have ANY of these labels
+      --exclude-type strings         Exclude issue types from results (comma-separated or repeatable, e.g., --exclude-type=convoy,epic)
+      --external-contains string     Filter by external ref substring (case-insensitive)
+      --external-ref string          Filter by exact external_ref value
+      --flat                         Disable tree format and use legacy flat list output
+      --format string                Export the dependency graph of the listed issues: 'digraph' (edge list for golang.org/x/tools/cmd/digraph), 'dot' (Graphviz), or a Go template rendered once per edge over .IssueID, .DependsOnID, .Type, .Issue, .Dependency. 'json' is the exception and does not export the graph: it is equivalent to --json, which also wins when both flags are given. 'digraph' and templates print nothing when no listed issue depends on another; 'dot' still prints the nodes
+      --has-metadata-key string      Filter issues that have this metadata key set
+  -h, --help                         help for list
+      --id string                    Filter by specific issue IDs (comma-separated or repeated, e.g., bd-1,bd-5,bd-10)
+      --include stringArray          Include a JSON Pointer; repeat to union selections
+      --include-comments             Populate each row's comments field with full comment bodies in JSON output (--json only; costs one query per row that has comments). Without it, a row with comments carries comments_omitted=true, so an absent comments field is never mistaken for having none. Text output is unaffected either way.
+      --include-ephemeral            Include ephemeral wisp-plane rows in output (normally hidden)
+      --include-gates                Include gate issues in output (normally hidden)
+      --include-infra                Include infrastructure beads (agent/role/message) in output
+      --include-templates            Include template molecules in output
+  -l, --label strings                Filter by labels (AND: must have ALL). Can combine with --label-any
+      --label-any strings            Filter by labels (OR: must have AT LEAST ONE). Can combine with --label
+      --label-pattern string         Filter by label glob pattern (e.g., 'tech-*' matches tech-debt, tech-legacy)
+      --label-regex string           Filter by label regex pattern (e.g., 'tech-(debt|legacy)')
+  -n, --limit int                    Limit results (an explicit --limit always wins, 0 meaning unlimited; otherwise --all is unlimited; otherwise a configured list.limit applies; otherwise unlimited when piped, else 20 in agent mode at a terminal, else 50). With --output-format, requests a total delivery bound; the local provider refuses larger selections without emitting a subset (default 50)
+      --long                         Show detailed multi-line output for each issue
+      --max-rows int                 Hard upper bound on rows returned. Returns a non-zero exit (code 2) and an error to stderr if exceeded. 0 disables (the default). Overrides BEADS_MAX_ROWS for this invocation. Useful in CI/agent rigs that want a circuit breaker against pathological queries. Honored on both the direct and the --proxied-server route.
+      --metadata-field stringArray   Filter by metadata field (key=value, repeatable)
+      --mol-type string              Filter by molecule type: swarm, patrol, or work
+      --no-assignee                  Filter issues with no assignee
+      --no-labels                    Filter issues with no labels
+      --no-pager                     Disable pager output
+      --no-parent                    Exclude child issues (show only top-level issues)
+      --no-pinned                    Exclude pinned issues
+      --notes-contains string        Filter by notes substring (case-insensitive)
+      --offset int                   Skip the first N matching results (0-based). Only supported under --proxied-server.
+      --omit stringArray             Omit an optional JSON Pointer, or envelope for raw JSON; repeatable
+      --output-format stringArray    Canonical collection output: default, table, detail, json or jsonl; cannot mix legacy --json/--format
+      --overdue                      Show only issues with due_at in the past (not closed)
+      --page-size int                Canonical page size; use --unpaged if the complete local selection exceeds this boundary (default 50)
+      --paged                        Return one page in canonical output; current local provider refuses truncation
+      --parent string                Filter by parent issue ID (shows children of specified issue)
+      --pinned                       Show only pinned issues
+      --pretty                       Display issues in a tree format with status/priority symbols
+  -p, --priority string              Priority (0-4 or P0-P4, 0=highest)
+      --priority-max string          Filter by maximum priority (inclusive, 0-4 or P0-P4)
+      --priority-min string          Filter by minimum priority (inclusive, 0-4 or P0-P4)
+      --ready                        Show only ready issues (no active blockers, same semantics as bd ready)
+  -r, --reverse                      Invert the sort field's default direction (created/updated/closed default to newest-first, so --sort updated --reverse is oldest-first)
+      --skip-labels                  Skip label hydration. The labels field in output will be empty regardless of actual labels. Use only when the caller does not depend on label data. Cannot combine with --label, --label-any, --label-pattern, --label-regex, --exclude-label, or --no-labels.
+      --sort string                  Sort by field: priority, created, updated, closed, status, id, title, type, assignee
+      --spec string                  Filter by spec_id prefix
+  -s, --status string                Filter by stored status (open, in_progress, blocked, deferred, closed). Comma-separated or repeated for multiple: --status open,in_progress
+      --title string                 Filter by title text (case-insensitive substring match)
+      --title-contains string        Filter by title substring (case-insensitive)
+      --tree                         Hierarchical tree format (default: true; use --flat to disable) (default true)
+  -t, --type string                  Filter by type (bug, feature, task, epic, chore, decision, merge-request, molecule, gate, convoy). Aliases: mr→merge-request, feat→feature, mol→molecule, dec/adr→decision. With --output-format, requires a canonical absolute HTTP(S) Type URI; Issue classifications and Type aliases are not resolved
+      --unpaged                      Return the complete bounded current selection in canonical output
+      --updated-after string         Filter issues updated after date (YYYY-MM-DD or RFC3339)
+      --updated-before string        Filter issues updated before date (YYYY-MM-DD or RFC3339)
+  -w, --watch                        Watch for changes and auto-update display (implies --pretty)
+      --wisp-type string             Filter by wisp type: heartbeat, ping, patrol, gc_report, recovery, error, escalation
+
+For global flags, run `bd --help`.

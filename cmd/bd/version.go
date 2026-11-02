@@ -16,7 +16,7 @@ import (
 
 var (
 	// Version is the current version of bd (overridden by ldflags at build time)
-	Version = "1.3.0"
+	Version = "1.3.2"
 	// Build can be set via ldflags at compile time
 	Build = "dev"
 	// Commit and branch the git revision the binary was built from (optional ldflag)
@@ -47,6 +47,12 @@ var versionCmd = &cobra.Command{
 				c.CloseEventAndAdd(evt)
 			}
 		}()
+
+		if len(args) > 0 {
+			return HandleErrorRespectJSON(
+				"bd version prints bd's own version information and takes no arguments.\n"+
+					"Did you mean:  bd versions %s", args[0])
+		}
 
 		commit := resolveCommitHash()
 		branch := resolveBranch()

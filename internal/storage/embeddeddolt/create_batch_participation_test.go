@@ -161,7 +161,7 @@ func firstVersionRows(ids []string) []string {
 }
 
 // requireStamped fails unless every id carries the store's epoch.
-func requireStamped(t *testing.T, what string, gens map[string]sql.NullInt64, epoch int64, ids []string) {
+func requireParticipationStamped(t *testing.T, what string, gens map[string]sql.NullInt64, epoch int64, ids []string) {
 	t.Helper()
 	var bad []string
 	for _, id := range ids {
@@ -198,7 +198,7 @@ func TestCreateBatchStampsParticipationGenerationOnBrandNewRows(t *testing.T) {
 		if !ok {
 			t.Fatal("store_epoch has no row after a versioned batch: nothing was minted")
 		}
-		requireStamped(t, fmt.Sprintf("perRow=%v", perRow), participationGenerations(t, db), epoch, ids)
+		requireParticipationStamped(t, fmt.Sprintf("perRow=%v", perRow), participationGenerations(t, db), epoch, ids)
 		return participationVersionRows(t, db)
 	}
 
@@ -245,7 +245,7 @@ func TestCreateBatchLeavesExistingLegacyRowUnstamped(t *testing.T) {
 		t.Errorf("existing legacy row %s: participation_generation = %d, want NULL (an update never promotes a legacy row)", legacy.ID, gen.Int64)
 	}
 	siblingIDs := participationIDs(siblings)
-	requireStamped(t, "brand-new siblings of a legacy row", gens, epoch, siblingIDs)
+	requireParticipationStamped(t, "brand-new siblings of a legacy row", gens, epoch, siblingIDs)
 	if got, want := participationVersionRows(t, db), firstVersionRows(siblingIDs); !slices.Equal(got, want) {
 		t.Errorf("issue_versions = %v, want only the siblings' first versions %v (none for the legacy row)", got, want)
 	}

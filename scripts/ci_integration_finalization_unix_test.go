@@ -512,3 +512,441 @@ func (fx *integrationFinalizationFixture) assertOrder(t *testing.T, events ...st
 		at = next
 	}
 }
+
+// This executes literal workflow bodies and clauses with private stand-ins.
+// It proves scheduling/status only, not Actions signaling or Bazel settlement.
+func TestBazelUnitResultFinalization(t *testing.T) {
+	job := readCIWorkflow(t, bazelWorkflowName).job(t, bazelJobName)
+	for _, mode := range []string{"success", "failure", "timeout", "skipped"} {
+		t.Run(mode, func(t *testing.T) {
+			fx := newUnitFinalizationFixture(t, job, mode)
+			run := fx.start(t)
+			run.finish(t, mode == "success" || mode == "skipped")
+			switch mode {
+			case "success":
+				fx.assertOrder(t, "test-complete", "package", "profile", "equivalence", "sync-check", "sync", "raw-upload", "analytics", "result:success")
+				fx.assertAbsent(t, "unavailable")
+			case "failure", "timeout":
+				fx.assertOrder(t, "test-enter", "unavailable", "unavailable:failure", "raw-upload", "result:failure")
+				fx.assertAbsent(t, "package", "profile", "equivalence", "sync-check", "sync", "analytics", "result:success")
+				if mode == "failure" {
+					// Even a settled natural failure is conservatively unavailable:
+					// step outcome alone does not distinguish it from a timeout.
+					fx.assertOrder(t, "test-complete", "unavailable")
+				} else {
+					fx.assertAbsent(t, "test-complete")
+				}
+				if !strings.Contains(run.output(), "Bazel test completion settlement is not established") {
+					t.Fatalf("missing explicit unavailable diagnostic:\n%s", run.output())
+				}
+			case "skipped":
+				fx.assertAbsent(t, "test-enter", "unavailable", "package", "profile", "equivalence", "sync-check", "sync", "analytics", "raw-upload")
+				fx.assertOrder(t, "result:success")
+			}
+		})
+	}
+	t.Run("cancel", func(t *testing.T) {
+		fx := newUnitFinalizationFixture(t, job, "cancel")
+		run := fx.start(t)
+		run.await(t, "test-enter")
+		run.cancel(t)
+		run.finishCancelled(t)
+		fx.assertAbsent(t, "test-complete", "package", "profile", "equivalence", "sync-check", "sync", "analytics", "raw-upload", "result:success", "result:failure")
+	})
+}
+
+func unitFinalizationCondition(t *testing.T, expression string) string {
+	t.Helper()
+	expression = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(expression, "${{"), "}}"))
+	switch expression {
+	case "always() && steps.test.outcome == 'success'":
+		return "[[ $test_outcome == 'success' ]]"
+	case "always() && steps.test.outcome != 'skipped' && steps.test.outcome != 'success'":
+		return "[[ $test_outcome != 'skipped' && $test_outcome != 'success' ]]"
+	case "always() && steps.test.outcome != '' && steps.test.outcome != 'skipped'":
+		return "[[ -n $test_outcome && $test_outcome != 'skipped' ]]"
+	case "always() && steps.bazel.outcome == 'success' && steps.test.outcome == 'success'":
+		return "[[ $bazel_outcome == 'success' && $test_outcome == 'success' ]]"
+	case "!cancelled() && steps.test.outcome == 'success'":
+		return "[[ $cancelled != 1 && $test_outcome == 'success' ]]"
+	default:
+		return integrationFinalizationCondition(t, expression)
+	}
+}
+
+func newUnitFinalizationFixture(t *testing.T, job ciWorkflowJob, mode string) *integrationFinalizationFixture {
+	t.Helper()
+	// Reuse the existing process-group owner/deadline/private outputs and
+	// single-final-signal/Wait implementation. No new supervisor is introduced.
+	fx := &integrationFinalizationFixture{root: t.TempDir(), bash: requireHostTool(t, "bash")}
+	fx.state = filepath.Join(fx.root, "state")
+	bin, tmp := filepath.Join(fx.root, "bin"), filepath.Join(fx.root, "tmp")
+	for _, dir := range []string{fx.state, bin, tmp, filepath.Join(tmp, "ci-analytics"), filepath.Join(fx.root, "scripts", "ci")} {
+		if err := os.MkdirAll(dir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, name := range []string{"date", "tee", "sleep"} {
+		if err := os.Symlink(requireHostTool(t, name), filepath.Join(bin, name)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write := func(path, body string) {
+		t.Helper()
+		if err := os.WriteFile(path, []byte("#!"+fx.bash+"\nset -eu\n"+body), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write(filepath.Join(bin, "bazel"), `
+[[ "$1" == test ]] || exit 70
+printf '{}\n' > "$RUNNER_TEMP/bazel-bep.json"
+printf 'test-enter\n' >> "$BD_STANDIN_STATE/events"
+case "$BD_STANDIN_TEST" in
+  cancel) while :; do sleep 1; done ;;
+  timeout) exit 124 ;;
+  success|failure)
+    printf 'complete\n' > "$BD_STANDIN_STATE/xml-ready"
+    printf 'test-complete\n' >> "$BD_STANDIN_STATE/events"
+    [[ "$BD_STANDIN_TEST" == success ]] || exit 3 ;;
+  *) exit 71 ;;
+esac
+`)
+	write(filepath.Join(fx.root, "scripts", "ci", "package-bazel-bd.sh"), `
+printf 'package\n' >> "$BD_STANDIN_STATE/events"
+[[ -f "$BD_STANDIN_STATE/xml-ready" ]] || exit 72
+`)
+	write(filepath.Join(bin, "python3"), `
+case "$1" in
+  tools/bazel/critpath.py) printf 'profile\n' >> "$BD_STANDIN_STATE/events" ;;
+  tools/bazel/equivalence.py) printf 'equivalence\n' >> "$BD_STANDIN_STATE/events" ;;
+  tools/bazel/ci_analytics_extract.py) printf 'analytics\n' >> "$BD_STANDIN_STATE/events" ;;
+  *) exit 74 ;;
+esac
+[[ -f "$BD_STANDIN_STATE/xml-ready" ]] || exit 73
+`)
+	write(filepath.Join(bin, "zstd"), "exit 0\n")
+	write(filepath.Join(bin, "make"), `
+case "$1" in
+  bazel-sync-check) printf 'sync-check\n' >> "$BD_STANDIN_STATE/events" ;;
+  bazel-sync) printf 'sync\n' >> "$BD_STANDIN_STATE/events" ;;
+  *) exit 76 ;;
+esac
+[[ -f "$BD_STANDIN_STATE/xml-ready" ]] || exit 75
+`)
+	write(filepath.Join(bin, "git"), `
+[[ "$*" == 'status --porcelain --untracked-files=all' ]] || exit 77
+`)
+	selected := map[string]string{
+		"bazel test //... --config=ci":                         "test",
+		"Final test diagnostics unavailable":                   "unavailable",
+		"Package bd (ci-build-artifacts layout)":               "package",
+		"Critical-path report":                                 "profile",
+		"Go test equivalence":                                  "equivalence",
+		"BUILD files in sync (gazelle, go_srcs, MODULE.bazel)": "sync",
+		"Upload test logs":                                     "raw-upload",
+		"CI analytics summary":                                 "analytics",
+		"Record job result":                                    "result",
+	}
+	seen := map[string]bool{}
+	var driver strings.Builder
+	driver.WriteString("set -eu\njob_failed=0\ncancelled=0\nbazel_outcome=success\ntest_outcome=skipped\nnogo_outcome=skipped\n")
+	for i, step := range job.Steps {
+		role, wanted := selected[step.Name]
+		if !wanted {
+			continue
+		}
+		if seen[role] {
+			t.Fatalf("duplicate selected unit workflow step: %s", role)
+		}
+		seen[role] = true
+		if role == "test" && mode == "skipped" {
+			continue // The scheduler skipped this step: execute no shell body.
+		}
+		fmt.Fprintf(&driver, "if %s; then\n", unitFinalizationCondition(t, step.If))
+		if role == "raw-upload" {
+			// An action has no Run body. Test its actual clause/order only;
+			// record admission rather than pretending to upload anything.
+			driver.WriteString("printf 'raw-upload\\n' >> \"$BD_STANDIN_STATE/events\"\nfi\n")
+			continue
+		}
+		if step.Run == "" {
+			t.Fatalf("selected unit workflow shell body is empty: %s", role)
+		}
+		path := filepath.Join(fx.root, fmt.Sprintf("unit-step-%d.sh", i))
+		if err := os.WriteFile(path, []byte(step.Run), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if role == "result" {
+			driver.WriteString("if [[ $job_failed == 1 ]]; then export JOB_STATUS=failure; else export JOB_STATUS=success; fi\n")
+		}
+		if role == "unavailable" {
+			driver.WriteString("printf 'unavailable\\n' >> \"$BD_STANDIN_STATE/events\"\n")
+		}
+		fmt.Fprintf(&driver, "if \"$BD_STANDIN_BASH\" -e -- %s; then step_outcome=success; else step_outcome=failure; job_failed=1; fi\n", integrationFinalizationQuote(path))
+		if role == "test" {
+			driver.WriteString("test_outcome=$step_outcome\n")
+		}
+		if role == "unavailable" {
+			driver.WriteString("printf 'unavailable:%s\\n' \"$step_outcome\" >> \"$BD_STANDIN_STATE/events\"\n")
+		}
+		if role == "result" {
+			driver.WriteString("printf 'result:%s\\n' \"$JOB_STATUS\" >> \"$BD_STANDIN_STATE/events\"\n")
+		}
+		driver.WriteString("fi\n")
+	}
+	for _, role := range selected {
+		if !seen[role] {
+			t.Fatalf("missing selected unit workflow step: %s", role)
+		}
+	}
+	driver.WriteString("if [[ $job_failed == 1 ]]; then exit 1; fi\n")
+	fx.script = filepath.Join(fx.root, "drive.sh")
+	if err := os.WriteFile(fx.script, []byte(driver.String()), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fx.env = []string{"PATH=" + bin, "HOME=" + fx.root, "RUNNER_TEMP=" + tmp,
+		"GITHUB_STEP_SUMMARY=" + filepath.Join(fx.root, "summary"), "GITHUB_OUTPUT=" + filepath.Join(fx.root, "output"),
+		"BD_STANDIN_STATE=" + fx.state, "BD_STANDIN_TEST=" + mode, "BD_STANDIN_BASH=" + fx.bash,
+		"BAZEL_SOLE_RUN=", "BAZEL_FRESH=", "TIER=local", "DETAILS=", "LANE=test", "MODE=local", "CHECK_RUN_ID=1", "PR_HINT=363", "BASH_ENV=", "ENV="}
+	return fx
+}
+
+// Stand-ins exercise the complete selected workflow shell body. This does not
+// create host namespaces or establish the cause of a hosted policy refusal.
+func TestHostedNamespacePreflightDiagnostics(t *testing.T) {
+	job := readCIWorkflow(t, bazelWorkflowName).job(t, "bazel-proxied")
+	var body string
+	for _, step := range job.Steps {
+		if step.Name == "Hosted offline namespace preflight" {
+			if body != "" {
+				t.Fatal("duplicate hosted namespace preflight")
+			}
+			body = step.Run
+			if step.If != "${{ needs.rbe.outputs.local_full == 'true' }}" {
+				t.Fatalf("changed admission clause: %q", step.If)
+			}
+		}
+	}
+	if body == "" {
+		t.Fatal("missing hosted namespace preflight")
+	}
+	const isolation = `unshare --user --map-root-user --net -- true
+unshare --user --map-root-user --net -- bash -euc '
+  ip link set lo up
+  if timeout 3 bash -c "exec 3<>/dev/tcp/1.1.1.1/443" 2>/dev/null; then
+    echo "::error::outbound network is reachable inside the test namespace"
+    exit 1
+  fi
+'
+`
+	if !strings.HasSuffix(body, isolation) {
+		t.Fatal("original namespace/loopback/probe body changed")
+	}
+	for _, mode := range []string{"first-refusal", "positive", "outbound-refusal", "unavailable", "read-failure", "creation-refusal", "mapping-refusal", "control-timeout", "map-empty", "map-incomplete", "map-read-failure"} {
+		t.Run(mode, func(t *testing.T) {
+			fx := newNamespacePreflightFixture(t, body, mode)
+			run := fx.start(t)
+			run.finish(t, mode != "first-refusal" && mode != "outbound-refusal" && mode != "creation-refusal" && mode != "mapping-refusal" && mode != "control-timeout")
+			status, complete, err := run.workflowExit()
+			if err != nil || !complete {
+				t.Fatalf("missing actual exit: %d %v %v", status, complete, err)
+			}
+			wantStatus := 0
+			wantEvents := "version\ncreation\nmapping\nfirst\nsecond\nloopback\nprobe\n"
+			if mode == "first-refusal" || mode == "creation-refusal" || mode == "mapping-refusal" || mode == "control-timeout" {
+				wantStatus, wantEvents = 1, "version\ncreation\nmapping\nfirst\n"
+			}
+			if mode == "outbound-refusal" {
+				wantStatus = 1
+			}
+			if status != wantStatus || fx.events(t) != wantEvents {
+				t.Fatalf("exit/events: %d %q; want %d %q", status, fx.events(t), wantStatus, wantEvents)
+			}
+			out := run.output()
+			if !strings.Contains(out, "namespace-control version rc=0 unshare from util-linux FIXTURE") {
+				t.Fatalf("missing bounded version context: %s", out)
+			}
+			switch mode {
+			case "map-empty":
+				if strings.Count(out, "parent-map empty or read-failed: context UNKNOWN") != 2 || strings.Contains(out, "0 1001 1") {
+					t.Fatalf("empty parent maps were not explicitly unknown: %s", out)
+				}
+			case "map-incomplete":
+				if strings.Count(out, "parent-map incomplete line: context UNKNOWN") != 2 || strings.Contains(out, "0 1001 1") {
+					t.Fatalf("incomplete parent maps were not explicitly unknown: %s", out)
+				}
+			case "map-read-failure":
+				if strings.Count(out, "parent-map unavailable or not a regular readable map: context UNKNOWN") != 2 || strings.Contains(out, "0 1001 1") {
+					t.Fatalf("read-error parent map paths were not explicitly unknown: %s", out)
+				}
+			default:
+				if strings.Count(out, "0 1001 1") != 2 || strings.Count(out, "parent-map read ended (EOF or read-failed): completeness UNKNOWN") != 2 {
+					t.Fatalf("lost received parent-map rows or overstated read completeness: %s", out)
+				}
+			}
+			for _, control := range []string{"creation-only", "mapping-only"} {
+				wantRC := "0"
+				if mode == "creation-refusal" && control == "creation-only" || mode == "mapping-refusal" && control == "mapping-only" {
+					wantRC = "1"
+				}
+				if mode == "control-timeout" && control == "creation-only" {
+					wantRC = "124"
+				}
+				if !strings.Contains(out, "namespace-control "+control+" rc="+wantRC+" ") {
+					t.Fatalf("lost exact control status: %s", out)
+				}
+			}
+			if (mode == "first-refusal" || mode == "creation-refusal" || mode == "mapping-refusal" || mode == "control-timeout") && !strings.Contains(out, "unshare: write failed /proc/self/uid_map: Operation not permitted") {
+				t.Fatalf("lost original refusal: %s", out)
+			}
+			if mode == "outbound-refusal" && !strings.Contains(out, "outbound network is reachable inside the test namespace") {
+				t.Fatalf("lost original outbound refusal: %s", out)
+			}
+			if strings.Contains(out, "SECRET_STATUS") || strings.Contains(out, "SECRET_ENV") || strings.Contains(out, strings.Repeat("V", 513)) {
+				t.Fatalf("unbounded/unselected diagnostic output: %s", out)
+			}
+			switch mode {
+			case "unavailable":
+				if !strings.Contains(out, "unavailable") || !strings.Contains(out, "uid unavailable") {
+					t.Fatalf("missing unavailable diagnostics: %s", out)
+				}
+			case "read-failure":
+				if !strings.Contains(out, "namespace-policy "+filepath.Join(fx.root, "read-error")+"=\n") || strings.Contains(out, strings.Repeat("V", 512)) {
+					t.Fatalf("diagnostic read failure not exercised: %s", out)
+				}
+			default:
+				if !strings.Contains(out, "CapEff:") || !strings.Contains(out, strings.Repeat("V", 512)) {
+					t.Fatalf("selected bounded diagnostics not exercised: %s", out)
+				}
+			}
+		})
+	}
+}
+
+func newNamespacePreflightFixture(t *testing.T, body, mode string) *integrationFinalizationFixture {
+	t.Helper()
+	fx := &integrationFinalizationFixture{root: t.TempDir(), bash: requireHostTool(t, "bash")}
+	fx.state = filepath.Join(fx.root, "state")
+	bin := filepath.Join(fx.root, "bin")
+	for _, dir := range []string{fx.state, bin} {
+		if err := os.Mkdir(dir, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.Symlink(requireHostTool(t, "sleep"), filepath.Join(bin, "sleep")); err != nil {
+		t.Fatal(err)
+	}
+	write := func(path, text string) {
+		t.Helper()
+		if err := os.WriteFile(path, []byte(text), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	standin := func(name, text string) { write(filepath.Join(bin, name), "#!"+fx.bash+"\nset -eu\n"+text) }
+	standin("id", `if [[ "$BD_STANDIN_TEST" == unavailable ]]; then exit 42; fi
+case "$1" in -u|-g) printf '1001\n' ;; *) exit 70 ;; esac
+`)
+	standin("unshare", `if [[ "$*" == '--version' ]]; then
+  printf 'version\n' >> "$BD_STANDIN_STATE/events"
+  printf 'unshare from util-linux FIXTURE\n'
+  exit 0
+fi
+if [[ "$*" == '--user -- true' ]]; then
+  printf 'creation\n' >> "$BD_STANDIN_STATE/events"
+  [[ "$BD_STANDIN_TEST" != creation-refusal ]]
+  exit $?
+fi
+if [[ "$*" == '--user --map-root-user -- true' ]]; then
+  printf 'mapping\n' >> "$BD_STANDIN_STATE/events"
+  [[ "$BD_STANDIN_TEST" != mapping-refusal ]]
+  exit $?
+fi
+[[ "$1 $2 $3 $4" == '--user --map-root-user --net --' ]] || exit 71
+shift 4
+if [[ "$1" == true && $# == 1 ]]; then
+  printf 'first\n' >> "$BD_STANDIN_STATE/events"
+  if [[ "$BD_STANDIN_TEST" == first-refusal || "$BD_STANDIN_TEST" == creation-refusal || "$BD_STANDIN_TEST" == mapping-refusal || "$BD_STANDIN_TEST" == control-timeout ]]; then
+    printf 'unshare: write failed /proc/self/uid_map: Operation not permitted\n' >&2
+    exit 1
+  fi
+  exit 0
+fi
+[[ "$1" == bash && "$2" == -euc && $# == 3 ]] || exit 72
+printf 'second\n' >> "$BD_STANDIN_STATE/events"
+shift
+exec "$BD_STANDIN_BASH" "$@"
+`)
+	standin("ip", `[[ "$*" == 'link set lo up' ]] || exit 73
+printf 'loopback\n' >> "$BD_STANDIN_STATE/events"
+`)
+	standin("timeout", `if [[ "$1 $2 $3" == '--kill-after=1 2 unshare' ]]; then
+  [[ "$*" == '--kill-after=1 2 unshare --version' ]] || exit 75
+  shift 2
+  exec "$@"
+fi
+if [[ "$1 $2 $3" == '--kill-after=1 3 unshare' ]]; then
+  [[ "$*" == '--kill-after=1 3 unshare --user -- true' || "$*" == '--kill-after=1 3 unshare --user --map-root-user -- true' ]] || exit 76
+  if [[ "$BD_STANDIN_TEST" == control-timeout && "$*" == '--kill-after=1 3 unshare --user -- true' ]]; then
+    printf 'creation\n' >> "$BD_STANDIN_STATE/events"
+    exit 124
+  fi
+  shift 2
+  exec "$@"
+fi
+[[ "$*" == '3 bash -c exec 3<>/dev/tcp/1.1.1.1/443' ]] || exit 74
+printf 'probe\n' >> "$BD_STANDIN_STATE/events"
+[[ "$BD_STANDIN_TEST" == outbound-refusal ]]
+`)
+	// Only copied-body proc paths are substituted; production has no test
+	// override. No host proc/security state or real unshare/ip/network is used.
+	status := filepath.Join(fx.root, "status")
+	scalar := filepath.Join(fx.root, "scalar")
+	write(status, "Name:\tSECRET_STATUS\nUid:\t1001 1001 1001 1001\nCapEff:\t0000000000000000\nSeccomp:\t2\n")
+	write(scalar, strings.Repeat("V", 700)+"\n")
+	if mode == "unavailable" {
+		status, scalar = filepath.Join(fx.root, "missing-status"), filepath.Join(fx.root, "missing-scalar")
+	}
+	if mode == "read-failure" {
+		// A readable directory deterministically fails bash read, including
+		// for elevated test users; chmod000 would not prove that branch.
+		scalar = filepath.Join(fx.root, "read-error")
+		if err := os.Mkdir(scalar, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	parentMap := filepath.Join(fx.root, "parent-map")
+	switch mode {
+	case "map-empty":
+		write(parentMap, "")
+	case "map-incomplete":
+		write(parentMap, "0 1001 1")
+	case "map-read-failure":
+		// A readable directory deterministically exercises the map-kind/read-error
+		// boundary, including for elevated fixture users; no chmod assumption.
+		if err := os.Mkdir(parentMap, 0o700); err != nil {
+			t.Fatal(err)
+		}
+	default:
+		write(parentMap, "0 1001 1\n")
+	}
+	for _, path := range []string{"/proc/$$/uid_map", "/proc/$$/gid_map"} {
+		if !strings.Contains(body, path) {
+			t.Fatalf("missing parent-map context %s", path)
+		}
+		body = strings.ReplaceAll(body, path, integrationFinalizationQuote(parentMap))
+	}
+	body = strings.ReplaceAll(body, "/proc/$$/status", integrationFinalizationQuote(status))
+	for _, path := range []string{"/proc/sys/user/max_user_namespaces", "/proc/sys/user/max_net_namespaces", "/proc/sys/kernel/unprivileged_userns_clone", "/proc/sys/kernel/apparmor_restrict_unprivileged_userns", "/proc/sys/kernel/apparmor_restrict_unprivileged_unconfined", "/proc/$$/attr/current"} {
+		if !strings.Contains(body, path) {
+			t.Fatalf("missing selected diagnostic path %s", path)
+		}
+		body = strings.ReplaceAll(body, path, integrationFinalizationQuote(scalar))
+	}
+	if strings.Contains(body, "/proc/") {
+		t.Fatal("unreceived host proc read in copied preflight")
+	}
+	fx.script = filepath.Join(fx.root, "preflight.sh")
+	write(fx.script, body)
+	fx.env = []string{"PATH=" + bin, "HOME=" + fx.root, "BD_STANDIN_BASH=" + fx.bash, "BD_STANDIN_STATE=" + fx.state, "BD_STANDIN_TEST=" + mode, "UNRELATED_SECRET=SECRET_ENV", "BASH_ENV=", "ENV="}
+	return fx
+}

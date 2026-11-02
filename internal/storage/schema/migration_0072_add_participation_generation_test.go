@@ -30,7 +30,7 @@ import (
 // work, so the fork carries this one at the next free main-track slot, 0072
 // (be-rlyjv, the #6943 fold). The ignored-track twin keeps upstream's 0028,
 // which is free on the fork. When upstream takes 0070 for the fence, the
-// fork's slot is dropped in a follow-up.
+// fork's slot remains frozen; upstream composition uses a forward extension.
 //
 // wisps.participation_generation is guarded on the wisps table existing as
 // well as the column, mirroring 0067's wisps.current_revision guard exactly
@@ -49,10 +49,12 @@ const migration0072Down = "0072_add_participation_generation.down.sql"
 // LatestVersion() drifting to 72 for the wrong reason (an unrelated migration
 // landing first) should still be caught by this test failing to explain why
 // 72 is participation_generation-shaped, which the CLI test below checks.
-func TestLatestVersionIncludesMigration0072(t *testing.T) {
-	const want = 72
-	if got := LatestVersion(); got != want {
-		t.Fatalf("LatestVersion() = %d, want %d (issues/wisps participation_generation migration slot claimed by be-h89oq)", got, want)
+func TestFrozenForkParticipationMigrationKeepsSlot0072(t *testing.T) {
+	if _, err := MigrationSQL(migration0072Up); err != nil {
+		t.Fatalf("frozen fork0072 missing: %v", err)
+	}
+	if migration0072Up != "0072_add_participation_generation.up.sql" {
+		t.Fatal("fork participation lineage moved")
 	}
 }
 

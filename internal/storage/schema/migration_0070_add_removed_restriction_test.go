@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/testutil"
 )
 
@@ -128,5 +129,26 @@ func TestMigration0070AddsRemovedRestrictionThroughDoltCLI(t *testing.T) {
 	rows = queryDoltCSV(t, dir, `SELECT issue_id, removed_restriction FROM issue_versions WHERE issue_id = 'iv-2'`)
 	if len(rows) != 1 || rows[0]["removed_restriction"] != "gone_retention" {
 		t.Fatalf("removed_restriction round-trip failed post-migration: %v", rows)
+	}
+}
+
+// Preserve upstream's vocabulary-drift regression without editing frozenSQL.
+func TestRemovedRestrictionCurrentGuidanceMatchesStoredVocabulary(t *testing.T) {
+	data, err := os.ReadFile("migrations/README.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	const heading = "## Removed-restriction vocabulary and fork epoch lineage"
+	_, guidance, ok := strings.Cut(string(data), heading)
+	if !ok {
+		t.Fatal("missing current vocabulary correction")
+	}
+	for _, stored := range []issueops.AsOfRestriction{issueops.AsOfRestrictionGoneRetention, issueops.AsOfRestrictionGoneErasure, issueops.AsOfRestrictionGoneReorganization, issueops.AsOfRestrictionUnknown} {
+		if !strings.Contains(guidance, "`"+string(stored)+"`") {
+			t.Errorf("current guidance omits canonical %q", stored)
+		}
+		if wrong := strings.ReplaceAll(string(stored), "_", "-"); wrong != string(stored) && strings.Contains(guidance, wrong) {
+			t.Errorf("current guidance teaches incompatible value %q", wrong)
+		}
 	}
 }

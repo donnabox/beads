@@ -83,6 +83,7 @@ func TestSchemaInitRecoversFromPartialNonlocalMigration(t *testing.T) {
 	//    partial 0040 committed it, and an uncommitted row would instead trip the
 	//    separate "pending migration alters a dirty table" guard
 	//    (gastownhall/beads#4566) before the replay is ever reached.
+	dropEmptyEpochTableFromHistoricalFixture(t, ctx, db)
 	if _, err := db.ExecContext(ctx, "DELETE FROM schema_migrations WHERE version >= 40"); err != nil {
 		t.Fatalf("rewind schema_migrations: %v", err)
 	}
@@ -154,6 +155,7 @@ func TestSchemaInitRecoversFromPartial0041NonlocalDelete(t *testing.T) {
 
 	// 2. Forge the partial-0041 brick: rewind the cursor to 40 (0040 recorded,
 	//    0041 not) with dolt_nonlocal_tables already empty and committed.
+	dropEmptyEpochTableFromHistoricalFixture(t, ctx, db)
 	if _, err := db.ExecContext(ctx, "DELETE FROM schema_migrations WHERE version >= 41"); err != nil {
 		t.Fatalf("rewind schema_migrations to 40: %v", err)
 	}

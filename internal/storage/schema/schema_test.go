@@ -64,9 +64,10 @@ func TestMigrateUpReturnsDirtyTablesErrorForPreExistingDirtyTable(t *testing.T) 
 	}
 	defer db.Close()
 
-	// MigrateUp re-asserts the canonical dolt_ignore patterns before anything
+	// After compatibility admission, MigrateUp re-asserts dolt_ignore before anything
 	// else (GH#4378); the rows changed, so a scoped commit lands before the
 	// pass runs (#4566: the seed must not ride the per-step pass commits).
+	expectPreExtensionEpochAdmission(t, mock, 42)
 	expectIgnorePatternSeed(mock, 42)
 	// #4356: the open-time untrack reconcile runs right after the seed and
 	// before the no-work short-circuit. On a healthy database it is two reads
@@ -1560,6 +1561,31 @@ func wispIsBlockedColumnSQLForTest(t *testing.T, dir string) string {
 	return b.String()
 }
 
+// wispArrivalSeqSQLForTest is ignored/0029's effect as direct DDL, decided in
+// Go from live state: the column and its unique index, each only if absent.
+// Same Dolt-CLI prepared-ALTER limitation as wispIsBlockedColumnSQLForTest:
+// 0029's guarded ADD COLUMN is PREPARE'd and the CLI no-ops it, so the
+// PREPARE'd CREATE UNIQUE INDEX right after it fails on a column that is not
+// there ("key column 'arrival_seq' doesn't exist in table").
+func wispArrivalSeqSQLForTest(t *testing.T, dir string) string {
+	t.Helper()
+	hasColumn := queryDoltCSV(t, dir, `
+		SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'wisps' AND COLUMN_NAME = 'arrival_seq'`)[0]["c"] != "0"
+	hasIndex := queryDoltCSV(t, dir, `
+		SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.STATISTICS
+		WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'wisps' AND INDEX_NAME = 'uk_wisps_arrival_seq'`)[0]["c"] != "0"
+
+	var b strings.Builder
+	if !hasColumn {
+		b.WriteString("ALTER TABLE wisps ADD COLUMN arrival_seq BIGINT;\n")
+	}
+	if !hasIndex {
+		b.WriteString("CREATE UNIQUE INDEX uk_wisps_arrival_seq ON wisps (arrival_seq);\n")
+	}
+	return b.String()
+}
+
 // TestFullChainFromPreWispsAndMissingDependenciesIDConvergesThroughDoltCLI is
 // the acceptance test for the migration-chain-hardening branch: it seeds a
 // database simultaneously in BOTH drifted shapes this branch fixes --
@@ -1707,6 +1733,15 @@ ALTER TABLE dependencies DROP COLUMN id;
 				b.WriteString(wispIsBlockedColumnSQLForTest(t, dir))
 				b.WriteString("\n")
 			}
+			if f.name == "0029_add_wisps_arrival_seq.up.sql" {
+				// The same limitation once more: 0029's PREPARE'd ADD COLUMN
+				// no-ops through the CLI, and its PREPARE'd unique index then
+				// names a column that does not exist. Apply its effect as direct
+				// DDL; the frozen text after it finds both and no-ops.
+				flush()
+				b.WriteString(wispArrivalSeqSQLForTest(t, dir))
+				b.WriteString("\n")
+			}
 			data, err := ignoredSource.files.ReadFile(ignoredSource.dir + "/" + f.name)
 			if err != nil {
 				t.Fatalf("read ignored %s: %v", f.name, err)
@@ -1731,6 +1766,8 @@ ALTER TABLE dependencies DROP COLUMN id;
 			`SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'wisps' AND COLUMN_NAME = 'started_at'`, "1")
 		requireDoltCount(t, dir,
 			`SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'wisp_dependencies' AND INDEX_NAME = 'idx_wisp_dep_type'`, "1")
+		requireDoltCount(t, dir,
+			`SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'wisps' AND INDEX_NAME = 'uk_wisps_arrival_seq' AND COLUMN_NAME = 'arrival_seq' AND NON_UNIQUE = 0`, "1")
 
 		requireDoltCount(t, dir,
 			`SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'dependencies' AND COLUMN_NAME = 'id'`, "1")
@@ -1778,6 +1815,9 @@ ALTER TABLE dependencies DROP COLUMN id;
 	}
 	if repair := wispIsBlockedColumnSQLForTest(t, dir); repair != "" {
 		t.Fatalf("wisps.is_blocked repair has more work after convergence, want none:\n%s", repair)
+	}
+	if repair := wispArrivalSeqSQLForTest(t, dir); repair != "" {
+		t.Fatalf("wisps.arrival_seq repair has more work after convergence, want none:\n%s", repair)
 	}
 	for _, name := range []string{
 		"0047_recompute_mixed_is_blocked.up.sql",
@@ -1977,12 +2017,22 @@ func TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities(t *testing.T)
 		// 0072: two-plane prepared ADD COLUMN, same shape as 0067.
 		"ALTER TABLE issues ADD COLUMN participation_generation BIGINT NULL;",
 		"ALTER TABLE wisps ADD COLUMN participation_generation BIGINT NULL;",
+		// 0073: two-plane prepared ADD COLUMN, same shape as 0067, then the
+		// wisps unique index behind a prepared CREATE.
+		"ALTER TABLE issues ADD COLUMN arrival_seq BIGINT;",
+		"ALTER TABLE wisps ADD COLUMN arrival_seq BIGINT;",
+		"CREATE UNIQUE INDEX uk_wisps_arrival_seq ON wisps (arrival_seq);",
 	} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("AllMigrationsSQL missing direct CLI DDL %q", want)
 		}
 	}
 	for _, forbidden := range []string{
+		// Deferred survival DDL must not enter the ordinary fresh bundle.
+		"ALTER TABLE epoch_minted_addresses ADD COLUMN carried_from VARCHAR(255) NULL;",
+		"ALTER TABLE epoch_minted_addresses ADD COLUMN gone_at_epoch INT NULL;",
+		"CREATE INDEX idx_epoch_minted_addresses_carried_from ON epoch_minted_addresses (carried_from);",
+		"ALTER TABLE epoch_minted_addresses ADD CONSTRAINT ck_epoch_minted_addresses_gone_not_before_mint CHECK (gone_at_epoch IS NULL OR gone_at_epoch >= minted_epoch);",
 		"COLUMN_NAME = 'applied_at'",
 		"ALTER TABLE child_counters DROP FOREIGN KEY fk_counter_parent",
 		"@issues_cr_needs_fix",
@@ -2016,6 +2066,15 @@ func TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities(t *testing.T)
 		// 0072 guards both planes' ALTERs the same way, mirroring 0067's pair.
 		"@issues_pg_needs_add",
 		"@wisps_pg_needs_add",
+		// 0073 guards both planes' ALTERs, and its index, with an
+		// INFORMATION_SCHEMA probe; only its source text (and its unbundled
+		// ignored twin) carries them.
+		"COLUMN_NAME = 'arrival_seq'",
+		"INDEX_NAME = 'uk_wisps_arrival_seq'",
+		"@epoch_cf_needs_add",
+		"@epoch_ge_needs_add",
+		"@epoch_ci_needs_add",
+		"@epoch_ck_needs_add",
 	} {
 		if strings.Contains(got, forbidden) {
 			t.Fatalf("AllMigrationsSQL contains source prepared-DDL guard %q", forbidden)

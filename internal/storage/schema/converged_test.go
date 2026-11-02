@@ -140,9 +140,10 @@ func seededIgnorePatterns(mainVersion int) []string {
 // expectConvergedProbe mocks the whole fast path on a converged database whose
 // session is already on it: nothing is selected, so the dolt_ignore read runs
 // unqualified against the session database DATABASE() just confirmed.
-func expectConvergedProbe(mock sqlmock.Sqlmock, database string) {
+func expectConvergedProbe(t *testing.T, mock sqlmock.Sqlmock, database string) {
 	expectCurrentDatabase(mock, database)
 	expectNoMigrationWorkNeeded(mock)
+	expectCurrentEpochAdmission(t, mock)
 	expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
 	expectIgnoredCursorGate(mock, "", false, nil, false)
 	expectMigrationLockProbe(mock, database, 1)
@@ -188,7 +189,7 @@ func TestMigrateUpWithLockSkipsLockWhenAlreadyConverged(t *testing.T) {
 	conn, mock, cleanup := newMockConn(t)
 	defer cleanup()
 
-	expectConvergedProbe(mock, "testdb")
+	expectConvergedProbe(t, mock, "testdb")
 
 	prepared := 0
 	applied, err := MigrateUpWithLock(context.Background(), conn, "testdb",
@@ -228,6 +229,7 @@ func TestMigrateUpWithLockSkipsLockOnAnUnselectedSession(t *testing.T) {
 
 	expectSessionPutOnDatabase(mock, "testdb")
 	expectNoMigrationWorkNeeded(mock)
+	expectCurrentEpochAdmission(t, mock)
 	expectDoltIgnoreRead(mock, qualifiedDoltIgnore("testdb"), seededIgnorePatterns(LatestVersion()))
 	expectIgnoredCursorGate(mock, "`testdb`", false, nil, false)
 	expectMigrationLockProbe(mock, "testdb", 1)
@@ -270,7 +272,7 @@ func TestMigrateUpWithLockTakesLockWhenBehind(t *testing.T) {
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT GET_LOCK(?, ?)")).
 		WithArgs(lockName, migrationLockAcquireTimeoutSeconds).
 		WillReturnRows(sqlmock.NewRows([]string{"locked"}).AddRow(1))
-	expectOnePendingMigration(t, mock)
+	expectPendingEpochMigrations(t, mock)
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT RELEASE_LOCK(?)")).
 		WithArgs(lockName).
 		WillReturnRows(sqlmock.NewRows([]string{"released"}).AddRow(1))
@@ -279,8 +281,8 @@ func TestMigrateUpWithLockTakesLockWhenBehind(t *testing.T) {
 	if err != nil {
 		t.Fatalf("MigrateUpWithLock() error = %v", err)
 	}
-	if applied != 1 {
-		t.Fatalf("MigrateUpWithLock() applied = %d, want 1", applied)
+	if applied != LatestVersion()-70 {
+		t.Fatalf("MigrateUpWithLock() applied = %d, want %d", applied, LatestVersion()-70)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("unmet SQL expectations: %v", err)
@@ -303,7 +305,7 @@ func TestMigrateUpWithLockKeepsLockWithBootstrapHeal(t *testing.T) {
 	expectFreshBootstrapIdentityMatch(mock)
 	mock.ExpectQuery(regexp.QuoteMeta("CALL DOLT_RESET('--hard')")).
 		WillReturnRows(sqlmock.NewRows([]string{"status"}))
-	expectOnePendingMigration(t, mock)
+	expectPendingEpochMigrations(t, mock)
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT RELEASE_LOCK(?)")).
 		WithArgs(lockName).
 		WillReturnRows(sqlmock.NewRows([]string{"released"}).AddRow(1))
@@ -313,8 +315,8 @@ func TestMigrateUpWithLockKeepsLockWithBootstrapHeal(t *testing.T) {
 	if err != nil {
 		t.Fatalf("MigrateUpWithLock() error = %v", err)
 	}
-	if applied != 1 {
-		t.Fatalf("MigrateUpWithLock() applied = %d, want 1", applied)
+	if applied != LatestVersion()-70 {
+		t.Fatalf("MigrateUpWithLock() applied = %d, want %d", applied, LatestVersion()-70)
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Fatalf("unmet SQL expectations: %v", err)
@@ -499,6 +501,7 @@ func TestAlreadyConvergedDeclinesWhileTheMigrationLockIsHeld(t *testing.T) {
 
 			expectCurrentDatabase(mock, "testdb")
 			expectNoMigrationWorkNeeded(mock)
+			expectCurrentEpochAdmission(t, mock)
 			expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
 			expectIgnoredCursorGate(mock, "", false, nil, false)
 			expectMigrationLockProbe(mock, "testdb", tt.free)
@@ -558,6 +561,7 @@ func TestAlreadyConvergedRejectsUnderSeededDoltIgnore(t *testing.T) {
 			}
 			expectCurrentDatabase(mock, "testdb")
 			expectNoMigrationWorkNeeded(mock)
+			expectCurrentEpochAdmission(t, mock)
 			expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, present)
 
 			converged, err := alreadyConverged(context.Background(), db, "testdb", nil)
@@ -657,6 +661,7 @@ func TestAlreadyConvergedAcceptsOverriddenIgnorePattern(t *testing.T) {
 
 	expectCurrentDatabase(mock, "testdb")
 	expectNoMigrationWorkNeeded(mock)
+	expectCurrentEpochAdmission(t, mock)
 	// The probe selects patterns only; the mock never offers the ignored
 	// column, so a query that filtered on it would not match this expectation.
 	expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
@@ -675,33 +680,26 @@ func TestAlreadyConvergedAcceptsOverriddenIgnorePattern(t *testing.T) {
 	}
 }
 
-// TestAlreadyConvergedOnForwardSkew documents — rather than changes —
-// what the fast path does when the database is AHEAD of this binary. MigrateUp
-// itself treats "cursor >= my latest" as nothing to do and returns (0, nil)
-// without ever consulting the lock, so the fast path returning converged is
-// the same answer for the same reason. Forward drift is a separate question,
-// asked by CheckForwardDrift at the caller (cmd/bd/main.go), and this probe
-// must not start answering it: doing so here would turn a diagnosable skew
-// error into an unexplained lock acquisition on every invocation.
-func TestAlreadyConvergedOnForwardSkew(t *testing.T) {
+// A future epoch lineage must not inherit the ordinary cursor-at-latest
+// fast path. This selected binary has no safe interpretation adapter for it;
+// the refusal must occur before ignore repairs or a migration lock/write.
+func TestAlreadyConvergedRefusesUnknownEpochLineage(t *testing.T) {
 	db, mock := newMockDB(t)
-
 	ahead := LatestVersion() + 5
 	expectCurrentDatabase(mock, "testdb")
 	expectNoMigrationWorkNeededAtVersion(mock, ahead)
-	expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(ahead))
-	expectIgnoredCursorGate(mock, "", false, nil, false)
-	expectMigrationLockProbe(mock, "testdb", 1)
-
+	expectAdmissionTables(mock, true, true)
+	expectScalar(mock, "SELECT COALESCE(MAX(version), 0) FROM schema_migrations", "version", ahead)
 	converged, err := alreadyConverged(context.Background(), db, "testdb", nil)
-	if err != nil {
-		t.Fatalf("alreadyConverged() error = %v", err)
+	var refused *EpochMigrationCompatibilityError
+	if !errors.As(err, &refused) {
+		t.Fatalf("want typed unknown-lineage refusal, got %v", err)
 	}
-	if !converged {
-		t.Fatal("alreadyConverged() = false on a forward-skewed database, want true: MigrateUp's own gate reports no work at or past latest, so the locked pass would return (0, nil) too")
+	if converged {
+		t.Fatal("unknown epoch lineage reported converged")
 	}
 	if err := mock.ExpectationsWereMet(); err != nil {
-		t.Fatalf("unmet SQL expectations: %v", err)
+		t.Fatal(err)
 	}
 }
 
@@ -732,6 +730,7 @@ func TestAlreadyConvergedFailsClosedOnUnreadableState(t *testing.T) {
 
 		expectCurrentDatabase(mock, "testdb")
 		expectNoMigrationWorkNeeded(mock)
+		expectCurrentEpochAdmission(t, mock)
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT pattern FROM dolt_ignore")).
 			WillReturnError(sql.ErrConnDone)
 
@@ -749,6 +748,7 @@ func TestAlreadyConvergedFailsClosedOnUnreadableState(t *testing.T) {
 
 		expectCurrentDatabase(mock, "testdb")
 		expectNoMigrationWorkNeeded(mock)
+		expectCurrentEpochAdmission(t, mock)
 		expectDoltIgnoreRead(mock, unqualifiedDoltIgnore, seededIgnorePatterns(LatestVersion()))
 		expectIgnoredCursorGate(mock, "", false, nil, false)
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT IS_FREE_LOCK(?)")).
@@ -782,6 +782,8 @@ func TestMigrateUpWithLockLogsAnUnavailableFastPath(t *testing.T) {
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT GET_LOCK(?, ?)")).
 		WithArgs(lockName, migrationLockAcquireTimeoutSeconds).
 		WillReturnRows(sqlmock.NewRows([]string{"locked"}).AddRow(1))
+	expectCurrentEpochAdmission(t, mock)
+	expectIgnoreSeedProbe(mock, LatestVersion(), nil)
 	mock.ExpectExec(regexp.QuoteMeta("INSERT IGNORE INTO dolt_ignore VALUES (?, true)")).
 		WillReturnError(errors.New("stop here"))
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT RELEASE_LOCK(?)")).

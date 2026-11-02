@@ -33,6 +33,7 @@ const (
 	bazelDoltIntConfig  = "dolt-int"
 	// Mode remote and integration not "off": exactly where the members do
 	// not run (see #7491's members, which skip on integration == "off" too).
+	// Its actual if adds the caller's dolt-tiers switch (withDoltTiers).
 	bazelDoltIntJobIf = "${{ needs.rbe.outputs.mode == 'remote' && inputs.integration != 'off' }}"
 )
 
@@ -187,8 +188,8 @@ func TestBazelDoltIntIsGated(t *testing.T) {
 	workflow := readCIWorkflow(t, bazelWorkflowName)
 	job := workflow.job(t, bazelDoltIntJobName)
 
-	if job.If != bazelDoltIntJobIf {
-		t.Errorf("%s if: %q, want %q", bazelDoltIntJobName, job.If, bazelDoltIntJobIf)
+	if want := withDoltTiers(bazelDoltIntJobIf); job.If != want {
+		t.Errorf("%s if: %q, want %q", bazelDoltIntJobName, job.If, want)
 	}
 	// Unlike dolt-race (both members plain-gated): bazel-cmd-dolt is
 	// flag-gated/advisory with its own continue-on-error everywhere else,
@@ -360,10 +361,10 @@ func TestBazelDoltIntIsGated(t *testing.T) {
 		}
 	}
 
-	// No test lane depends on it; the opt-in dispatch-only result gate does.
+	// No test lane depends on it; the exact dispatch/local result gates do.
 	// Every member's output reads it first.
 	for name, other := range workflow.Jobs {
-		if slices.Contains(other.Needs, bazelDoltIntJobName) && (name != bazelDispatchCoverageJobName || other.If != bazelDispatchCoverageIf) {
+		if slices.Contains(other.Needs, bazelDoltIntJobName) && !((name == bazelDispatchCoverageJobName && other.If == bazelDispatchCoverageIf) || (name == "bazel-local-coverage" && other.If == "${{ always() && needs.rbe.outputs.local_full == 'true' }}")) {
 			t.Errorf("job %s needs %s", name, bazelDoltIntJobName)
 		}
 	}
@@ -415,10 +416,11 @@ func TestBazelDoltIntJobTimeouts(t *testing.T) {
 // ran before the union (bazel-server-storage: the remote-executing modes
 // plus cache, when enabled and integration is not off; bazel-cmd-dolt: where
 // bazel-integration runs) and by none elsewhere, so bazel-gate.sh's per-mode
-// skips are unchanged. The workflow_call outputs, evaluated as GitHub does,
-// carry the running arm's result: a failed or cancelled union reds both
-// ids/flags, and a union that never reported reads as skipped, which no mode
-// it runs in allows.
+// skips are unchanged. A caller's dolt-tiers "off" (pr.yml on a merge group)
+// stops both arms in every mode. The workflow_call outputs, evaluated as
+// GitHub does, carry the running arm's result: a failed or cancelled union
+// reds both ids/flags, and a union that never reported reads as skipped,
+// which no mode it runs in allows.
 func TestBazelDoltIntArmsExactlyOnePerMode(t *testing.T) {
 	workflow := readCIWorkflow(t, bazelWorkflowName)
 	union := workflow.job(t, bazelDoltIntJobName)
@@ -433,47 +435,55 @@ func TestBazelDoltIntArmsExactlyOnePerMode(t *testing.T) {
 		t.Fatalf("members %v, want bazelUnionLanes' %v", got, bazelUnionLanes[bazelDoltIntJobName])
 	}
 	for name, m := range members {
-		if got := workflow.job(t, name).If; got != m.ifExpr {
-			t.Errorf("%s if = %q, want %q", name, got, m.ifExpr)
+		want := withFullLocalTier(withDoltTiers(m.ifExpr))
+		if name == bazelServerJobName {
+			inner := strings.TrimSuffix(strings.TrimPrefix(want, "${{ "), " }}")
+			want = "${{ always() && (" + inner + ") }}"
+		}
+		if got := workflow.job(t, name).If; got != want {
+			t.Errorf("%s if = %q, want %q", name, got, want)
 		}
 	}
 	for _, mode := range bazelRBEModes {
 		for _, event := range []string{"pull_request", "merge_group", "pull_request_target", "push", "schedule", "workflow_dispatch"} {
 			for _, integration := range []string{"", "off"} {
-				ctx := map[string]string{
-					"needs.rbe.outputs.mode":    mode,
-					"needs.rbe.outputs.enabled": bazelModeEnabled(mode),
-					"github.event_name":         event,
-					"inputs.integration":        integration,
-				}
-				wantUnionRuns := mode == "remote" && integration != "off"
-				unionRuns := evalRRCIf(t, union.If, ctx)
-				if unionRuns != wantUnionRuns {
-					t.Errorf("mode %s, %s, integration %q: %s runs = %v, want %v", mode, event, integration, bazelDoltIntJobName, unionRuns, wantUnionRuns)
-				}
-				for name, m := range members {
-					runs := evalRRCIf(t, workflow.job(t, name).If, ctx)
-					if unionRuns && runs {
-						t.Errorf("mode %s, %s, integration %q: %s and %s both run", mode, event, integration, bazelDoltIntJobName, name)
+				for _, dolt := range []string{"", "off"} {
+					ctx := map[string]string{
+						"needs.rbe.outputs.mode":    mode,
+						"needs.rbe.outputs.enabled": bazelModeEnabled(mode),
+						"github.event_name":         event,
+						"inputs.integration":        integration,
+						"inputs.dolt-tiers":         dolt,
 					}
-					wantBefore := integration != "off" && m.before(mode)
-					if got, want := unionRuns || runs, wantBefore; got != want {
-						t.Errorf("mode %s, %s, integration %q: %s's tier reported by a job = %v, want %v (where it ran before the union)", mode, event, integration, name, got, want)
+					wantUnionRuns := mode == "remote" && integration != "off" && dolt != "off"
+					unionRuns := evalRRCIf(t, union.If, ctx)
+					if unionRuns != wantUnionRuns {
+						t.Errorf("mode %s, %s, integration %q, dolt-tiers %q: %s runs = %v, want %v", mode, event, integration, dolt, bazelDoltIntJobName, unionRuns, wantUnionRuns)
 					}
-					for _, res := range []string{"success", "failure", "cancelled", ""} {
-						jobs := map[string]string{}
-						switch {
-						case unionRuns:
-							jobs[bazelDoltIntJobName] = res
-						case runs:
-							jobs[name] = res
+					for name, m := range members {
+						runs := evalRRCIf(t, workflow.job(t, name).If, ctx)
+						if unionRuns && runs {
+							t.Errorf("mode %s, %s, integration %q: %s and %s both run", mode, event, integration, bazelDoltIntJobName, name)
 						}
-						want := res
-						if !unionRuns && !runs {
-							want = ""
+						wantBefore := integration != "off" && dolt != "off" && m.before(mode)
+						if got, want := unionRuns || runs, wantBefore; got != want {
+							t.Errorf("mode %s, %s, integration %q, dolt-tiers %q: %s's tier reported by a job = %v, want %v (where it ran before the union, unless the caller turned the Dolt tiers off)", mode, event, integration, dolt, name, got, want)
 						}
-						if got := bazelCallOutputValue(t, name, jobs); got != want {
-							t.Errorf("mode %s, %s, integration %q, reporting job %q: output %s = %q, want %q", mode, event, integration, res, name, got, want)
+						for _, res := range []string{"success", "failure", "cancelled", ""} {
+							jobs := map[string]string{}
+							switch {
+							case unionRuns:
+								jobs[bazelDoltIntJobName] = res
+							case runs:
+								jobs[name] = res
+							}
+							want := res
+							if !unionRuns && !runs {
+								want = ""
+							}
+							if got := bazelCallOutputValue(t, name, jobs); got != want {
+								t.Errorf("mode %s, %s, integration %q, reporting job %q: output %s = %q, want %q", mode, event, integration, res, name, got, want)
+							}
 						}
 					}
 				}
@@ -540,6 +550,28 @@ const bazelDoltIntTestActions = 63
 // that budget, so all of them must fit at once or the slower tier's shards
 // queue behind the other's. Every rule tagged with one of the union's tags,
 // read from the BUILD files: its shard_count (1 when unsharded), summed.
+// Bazel wildcard suites exclude manual rules; explicit hosted partitions are
+// pinned separately by TestServerStorageHostedPartitions. Parse literal lists
+// across buildifier line wrapping without accepting expressions or extra tokens.
+var bazelDoltIntLiteralTags = regexp.MustCompile(`(?m)^    tags = (\[[^\]]*\]),(?:[ \t]*#.*)?$`)
+
+func bazelDoltIntRuleTags(t *testing.T, rule string) []string {
+	t.Helper()
+	m := bazelDoltIntLiteralTags.FindStringSubmatch(rule)
+	if m == nil {
+		return nil
+	}
+	residue := bazelQuotedStrRe.ReplaceAllString(m[1], "")
+	if strings.Trim(residue, "[], \t\n\r") != "" {
+		t.Fatalf("nonliteral union rule tags: %s", m[1])
+	}
+	var tags []string
+	for _, value := range bazelQuotedStrRe.FindAllStringSubmatch(m[1], -1) {
+		tags = append(tags, value[1])
+	}
+	return tags
+}
+
 func TestBazelDoltIntFitsTheJobsBudget(t *testing.T) {
 	root := bazelPolicyRoot(t)
 	rc := readPolicyFile(t, root, ".bazelrc")
@@ -556,10 +588,10 @@ func TestBazelDoltIntFitsTheJobsBudget(t *testing.T) {
 			continue
 		}
 		build := readPolicyFile(t, root, f)
-		for _, line := range strings.Split(build, "\n") {
+		for _, line := range strings.Split(bazelDoltIntLiteralTags.ReplaceAllString(build, ""), "\n") {
 			for _, tag := range tags {
-				if strings.Contains(line, tag) && !strings.HasPrefix(line, "    tags = [") {
-					t.Errorf("%s: %q outside a one-line tags list: %q", f, tag, line)
+				if strings.Contains(line, tag) {
+					t.Errorf("%s: %q outside a literal tags list: %q", f, tag, line)
 				}
 			}
 		}
@@ -569,12 +601,11 @@ func TestBazelDoltIntFitsTheJobsBudget(t *testing.T) {
 				continue
 			}
 			rule := build[loc[0] : loc[0]+end]
-			tagged := false
-			for _, line := range strings.Split(rule, "\n") {
-				if strings.HasPrefix(line, "    tags = [") && slices.ContainsFunc(tags, func(tag string) bool { return strings.Contains(line, tag) }) {
-					tagged = true
-				}
+			ruleTags := bazelDoltIntRuleTags(t, rule)
+			if slices.Contains(ruleTags, "manual") {
+				continue
 			}
+			tagged := slices.ContainsFunc(ruleTags, func(tag string) bool { return slices.Contains(tags, `"`+tag+`"`) })
 			if !tagged {
 				continue
 			}
@@ -630,13 +661,13 @@ func bazelDoltIntTaggedLabels(t *testing.T) map[string][]string {
 			if nm == nil {
 				continue
 			}
+			ruleTags := bazelDoltIntRuleTags(t, rule)
+			if slices.Contains(ruleTags, "manual") {
+				continue
+			}
 			for _, mem := range bazelDoltIntMembers {
-				tagLine := `"` + mem.tag + `"`
-				for _, line := range strings.Split(rule, "\n") {
-					if strings.HasPrefix(line, "    tags = [") && strings.Contains(line, tagLine) {
-						out[mem.tag] = append(out[mem.tag], "//"+pkg+":"+nm[1])
-						break
-					}
+				if slices.Contains(ruleTags, mem.tag) {
+					out[mem.tag] = append(out[mem.tag], "//"+pkg+":"+nm[1])
 				}
 			}
 		}

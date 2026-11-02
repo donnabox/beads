@@ -178,9 +178,9 @@ func assertWorkspaceUnchanged(t *testing.T, dir string, before workspaceSnapshot
 // refusal mattered: no storage layer stops a server connection, so a
 // `bd --readonly backup restore --force` ran to the end and replaced the store.
 // It drives the built bd as a subprocess because CheckReadonly exits the
-// process. The restore runs inside the Dolt server, so the server must be able
-// to read and write the backup directory, which a containerized one cannot:
-// run it with BEADS_TEST_ENV_RUN_DOLT=1 and BEADS_TEST_DOLT_SERVER=local.
+// process. Both the fixture's backup and the restore run inside the Dolt
+// server, against the same path on the server's own filesystem, so a local
+// and a containerized test server both serve.
 func TestBackupRestoreStrictReadonlyServerMode(t *testing.T) {
 	if testDoltServerPort == 0 {
 		t.Skip("Dolt test server not available")

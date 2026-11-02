@@ -1142,8 +1142,8 @@ class CohortWorkflow(unittest.TestCase):
         self.assertIn("timeout-minutes: 90", cohort)
         self.assertIn('--cohort "${{ matrix.cohort }}"', cohort)
         self.assertIn("name: graph-c0-${{ matrix.cohort }}-${{ github.sha }}", cohort)
-        self.assertIn("if: ${{ always() }}", gate)
-        self.assertIn("needs: [build-artifacts, graph-c0-cohort]", gate)
+        self.assertIn("if: ${{ needs.scope.outputs.linux == 'true' && (always()) }}", gate)
+        self.assertIn("needs: [scope, build-artifacts, graph-c0-cohort]", gate)
         self.assertIn('run: test "$COHORT_RESULT" = success', gate)
         for name in ("storage", "cli-http"):
             self.assertIn(f"name: graph-c0-{name}-${{{{ github.sha }}}}", gate)

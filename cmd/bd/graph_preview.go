@@ -273,6 +273,15 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	var marker []byte
 	markerPresent := false
 	if dir != "" {
+		// A proven non-directory cannot carry graph metadata. Without a graph
+		// assertion, leave ordinary workspace and blocked-env diagnostics to
+		// the legacy discovery path. Permission and marker errors still refuse.
+		graphAsserted := requested != "" || canonicalOutputSelected(cmd) ||
+			(cmd == graphCmd && graphGenericFlagsChanged(cmd)) ||
+			(cmd == importCmd && (cmd.Flags().Changed("source-prefix") || cmd.Flags().Changed("id-root")))
+		if info, statErr := os.Stat(dir); !graphAsserted && statErr == nil && !info.IsDir() {
+			return false, nil
+		}
 		marker, err = os.ReadFile(filepath.Join(dir, graphPreviewMarker)) // #nosec G304 -- fixed format sentinel in the explicitly selected workspace
 		markerPresent = err == nil
 		if err != nil && !os.IsNotExist(err) {
@@ -350,7 +359,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if memoryCommand == memoriesCmd && (cmd.Flags().Changed("all") || cmd.Flags().Changed("details") || (cmd.Flags().Changed("format") && !strings.EqualFold(format, "json"))) {
 			return true, graphFailure("capability_unavailable", "Memory discovery options require an experimental graph workspace", 5)
 		}
-		if cmd == showCmd && cmd.Flags().Changed("format") {
+		if cmd == showCmd && cmd.Flags().Changed("format") && !strings.EqualFold(format, "json") {
 			return true, graphFailure("capability_unavailable", "--format requires an experimental graph workspace", 5)
 		}
 		if (cmd == showCmd || memoryCommand == recallCmd) && cmd.Flags().Changed("revision") {
@@ -378,7 +387,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		}
 		return false, nil
 	}
-	if err := requireDoltBackend(cfg, dir); err != nil {
+	if err := requireGraphPreviewDoltBackend(cfg, dir); err != nil {
 		return true, graphFailure("graph_not_initialized", "graph_mode link: "+err.Error(), 5)
 	}
 	if cfg == nil || !graphPreviewGenerationSupported(marker) || !cfg.GraphReady || cfg.GraphSchemaVersion != graphstore.SchemaVersion || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {

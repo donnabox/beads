@@ -3,6 +3,7 @@ package scripts_test
 import (
 	"fmt"
 	"math"
+	"slices"
 	"strconv"
 	"strings"
 	"testing"
@@ -57,6 +58,70 @@ const sameRepoBlacksmithWindows4vcpu = "${{ github.repository_owner == 'gastownh
 const sameRepoBlacksmithWindows8vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-8vcpu-windows-2025' || 'windows-latest' }}"
 const sameRepoBlacksmithWindows16vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-16vcpu-windows-2025' || 'windows-latest' }}"
 
+// bazel.yml keeps forks on GitHub-hosted runners. Upstream lanes pick
+// their runner from the rbe job's decision
+// (TestBazelRBEJobDecidesOnce): Blacksmith in modes remote and cache,
+// GitHub-hosted otherwise. Mode cache reads rbe-cache (rbe-west's anonymous
+// read-only cache), which refuses GitHub-hosted runners, so its lanes (an
+// rbe=cache dispatch's, the only way into mode cache) run on Blacksmith.
+// bazelRemoteRunsOn builds that ternary for one Blacksmith size so every
+// lane's pinned runs-on is the same literal apart from the label.
+func bazelRemoteRunsOn(label string) string {
+	return "${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '" + label + "' || 'ubuntu-latest' }}"
+}
+
+// bazelRRCCacheReaderRunsOn is bazelRemoteRunsOn for the lanes that read the
+// remote repo contents cache in mode cache (isBazelRRCCacheReader): their
+// GitHub-hosted fallback is ubuntu-24.04, not ubuntu-latest, because the
+// cached trees come from a 24.04 host (design R2) and the image must not
+// move under them. (Mode cache itself now runs on Blacksmith's
+// ubuntu-2404, the family rrc-seed writes from.)
+func bazelRRCCacheReaderRunsOn(label string) string {
+	return "${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '" + label + "' || 'ubuntu-24.04' }}"
+}
+
+// bazelBlacksmithModes: the modes in which bazelRemoteRunsOn picks the
+// Blacksmith label.
+var bazelBlacksmithModes = map[string]bool{"remote": true, "cache": true}
+
+// isBazelRRCCacheReader: a remote repo contents cache reader
+// (bazelRRCReadLanes) that also runs in mode cache (not remote-only).
+// bazel-dolt-race and bazel-dolt-int run only in mode remote (their own ifs,
+// TestBazelDoltRaceArmsExactlyOnePerMode, TestBazelDoltIntArmsExactlyOnePerMode),
+// so they keep the lanes' ubuntu-latest fallback like the remote-only jobs:
+// the fallback branch of their runs-on ternary is never actually taken.
+func isBazelRRCCacheReader(name string) bool {
+	return slices.Contains(bazelRRCReadLanes, name) && !bazelRemoteOnlyJobs[name] && name != bazelDoltRaceJobName && name != bazelDoltIntJobName
+}
+
+// The default lane size: every action executes on rbe-west, but the
+// client's loading and analysis is CPU-bound and gates every action
+// (ga-vnycm2.8: 17-38 s on 2 vCPU, 12-26 s on 4), so 4 vCPU.
+var bazelLaneRunsOn = bazelRemoteRunsOn("blacksmith-4vcpu-ubuntu-2404")
+
+// rbe-prewarm only dispatches a pool worker: no Bazel client, 2 vCPU.
+var bazelPrewarmRunsOn = bazelRemoteRunsOn("blacksmith-2vcpu-ubuntu-2404")
+
+// bazel-test's `bazel test //... --config=ci` spent ~63 of its 81 s in
+// client-side loading and analysis (1798 packages, 66k configured targets;
+// critical path 7.65 s, every action a remote cache hit), which Skyframe
+// parallelizes across the client's cores: 8 vCPU (ga-vnycm2.8 analysis-only:
+// 25.6 s on 4 vCPU, 16.3 s on 8).
+var bazelTestLaneRunsOn = bazelRemoteRunsOn("blacksmith-8vcpu-ubuntu-2404")
+
+// The package gates: package-npm at 4 vCPU (F3); package-mcp at 8 vCPU with
+// pytest -n 16 (bazelMCPPytestWorkers), since its pytest run is dominated by
+// per-test `bd init` fixture setup, which is CPU-bound and parallel.
+var bazelPackageRunsOn = map[string]string{
+	"package-mcp": bazelRemoteRunsOn("blacksmith-8vcpu-ubuntu-2404"),
+	"package-npm": bazelRemoteRunsOn("blacksmith-4vcpu-ubuntu-2404"),
+}
+
+// package-mcp's BEADS_MCP_PYTEST_WORKERS: 16 xdist workers on the 8 vCPU
+// Blacksmith runner (modes remote and cache), package-mcp.sh's default 8 on
+// the GitHub-hosted fallback (forks, Dependabot, rbe off/skip).
+const bazelMCPPytestWorkers = "${{ github.repository_owner == 'gastownhall' && (needs.rbe.outputs.mode == 'remote' || needs.rbe.outputs.mode == 'cache') && '16' || '8' }}"
+
 // Same-repo Blacksmith macOS (Apple Silicon M4, ARM64). Pinned to macos-26
 // rather than blacksmith-*-macos-latest because GitHub's macos-latest (the
 // fork/Dependabot fallback) resolves to macos-26-arm64 today; pinning keeps
@@ -100,7 +165,8 @@ const sameRepoPlatformsMatrixMarkerRunsOn = "${{ matrix.runner == 'same-repo-lin
 // &&, ||, !, parentheses, and the true/false/null literals. Identifiers may
 // contain '-' (inputs.fork-farm), and == / != follow GitHub's loose equality
 // (ghEquals: strings case-insensitively, mixed types as numbers). It is not a general-purpose GHA
-// expression engine - no functions, no numbers, no object/array literals.
+// expression engine: only the argument-free always() status function; no
+// other functions, numbers or object/array literals.
 //
 // Merge queue (ci_merge_queue_test.go): callers simulate a merge_group run
 // with github.event_name "merge_group", github.actor
@@ -296,6 +362,17 @@ func (p *ghParser) parsePrimary() (any, error) {
 	case "string":
 		return tok.val, nil
 	case "ident":
+		// Graph's fan-in deliberately runs after failed dependencies.
+		// always() is true regardless of caller status; reject arguments
+		// and keep every other function outside this closed evaluator.
+		if next, ok := p.peek(); ok && next.kind == "lparen" && tok.val == "always" {
+			p.next()
+			closing, ok := p.next()
+			if !ok || closing.kind != "rparen" {
+				return nil, fmt.Errorf("always() takes no arguments")
+			}
+			return true, nil
+		}
 		switch tok.val {
 		case "true":
 			return true, nil
@@ -596,6 +673,81 @@ func TestSameRepoPlatformsMatrixMarkerRunsOnExpressionSemantics(t *testing.T) {
 	}
 }
 
+// TestBlacksmithBazelRunnerSizes evaluates every bazel.yml lane's real
+// runs-on (and package-mcp's xdist worker count) under each rbe mode: modes
+// remote and cache get the lane's Blacksmith size (mode cache reads
+// rbe-cache, which refuses GitHub-hosted runners), every other mode the
+// GitHub-hosted runner, and package-mcp runs 16 xdist workers exactly when
+// it is on its 8 vCPU runner (8 everywhere else, package-mcp.sh's default).
+func TestBlacksmithBazelRunnerSizes(t *testing.T) {
+	workflow := readCIWorkflow(t, bazelWorkflowName)
+	wantRemote := map[string]string{
+		bazelJobName:           "blacksmith-8vcpu-ubuntu-2404",
+		bazelPackageMCPJobName: "blacksmith-8vcpu-ubuntu-2404",
+		bazelPackageNPMJobName: "blacksmith-4vcpu-ubuntu-2404",
+		bazelRBEPrewarmJobName: "blacksmith-2vcpu-ubuntu-2404",
+	}
+	mcpGate := workflow.job(t, bazelPackageMCPJobName).step(t, "Run MCP package gate")
+	if got := mcpGate.Env["BEADS_MCP_PYTEST_WORKERS"]; got != bazelMCPPytestWorkers {
+		t.Errorf("package-mcp Run MCP package gate BEADS_MCP_PYTEST_WORKERS = %q, want %q", got, bazelMCPPytestWorkers)
+	}
+	for _, mode := range []string{"remote", "fork-ro", "fork-rw", "local", "cache", "skip"} {
+		ctx := map[string]string{"needs.rbe.outputs.mode": mode, "github.repository_owner": "gastownhall"}
+		for name, job := range workflow.Jobs {
+			if name == bazelRBEJobName || isBazelRRCJob(name) {
+				continue // rrc jobs: push/schedule only, never a fork (literal label)
+			}
+			if name == "bazel-dispatch-coverage" || name == "bazel-local-coverage" {
+				if job.RunsOn != "ubuntu-latest" {
+					t.Errorf("result-only %s must stay GitHub-hosted, got %q", name, job.RunsOn)
+				}
+				continue
+			}
+			want := "ubuntu-latest"
+			if isBazelRRCCacheReader(name) || name == bazelServerHostedJobName || name == bazelEmbedJobName {
+				want = "ubuntu-24.04"
+			}
+			if bazelBlacksmithModes[mode] {
+				want = "blacksmith-4vcpu-ubuntu-2404"
+				if label, ok := wantRemote[name]; ok {
+					want = label
+				}
+			}
+			if got := mustEvalGHRunsOn(t, job.RunsOn, ctx); got != want {
+				t.Errorf("%s runs-on under mode %s = %q, want %q", name, mode, got, want)
+			}
+		}
+		wantWorkers := "8"
+		if mustEvalGHRunsOn(t, workflow.job(t, bazelPackageMCPJobName).RunsOn, ctx) == "blacksmith-8vcpu-ubuntu-2404" {
+			wantWorkers = "16"
+		}
+		if got := mustEvalGHRunsOn(t, mcpGate.Env["BEADS_MCP_PYTEST_WORKERS"], ctx); got != wantWorkers {
+			t.Errorf("package-mcp BEADS_MCP_PYTEST_WORKERS under mode %s = %q, want %q", mode, got, wantWorkers)
+		}
+	}
+}
+
+func TestGHScopeAlwaysFunctionIsClosed(t *testing.T) {
+	for _, test := range []struct {
+		expr string
+		want bool
+	}{
+		{"always()", true}, {"false && always()", false},
+		{"always() && false", false}, {"!always()", false},
+		{"needs.scope.outputs.linux == 'true' && (always())", true},
+	} {
+		got, err := evalGHExpr(test.expr, map[string]string{"needs.scope.outputs.linux": "true"})
+		if err != nil || ghTruthy(got) != test.want {
+			t.Errorf("%q = %v/%v, want%v", test.expr, got, err, test.want)
+		}
+	}
+	for _, expr := range []string{"always(true)", "always(", "unknown()", "success()"} {
+		if _, err := evalGHExpr(expr, nil); err == nil {
+			t.Errorf("unsupported call accepted: %q", expr)
+		}
+	}
+}
+
 // Read the actual job expression so a lost native-only condition cannot hide
 // behind an updated expected literal. Other matrix legs retain their hosts.
 func TestNativeLintHostedFallbackMatchesLLVMHost(t *testing.T) {
@@ -632,6 +784,32 @@ func TestNativeLintHostedFallbackMatchesLLVMHost(t *testing.T) {
 				}
 				if got := mustEvalGHRunsOn(t, expr, ctx); got != want {
 					t.Errorf("actual lint runner = %q, want %q", got, want)
+				}
+			})
+		}
+	}
+}
+
+// Evaluate the actual hosted-storage expression under both owners and every
+// execution mode; the host ABI pin does not make this local-only job an RRC reader.
+func TestHostedStorageFallbackMatchesLLVMHost(t *testing.T) {
+	expr := readCIWorkflow(t, bazelWorkflowName).job(t, bazelServerHostedJobName).RunsOn
+	if isBazelRRCCacheReader(bazelServerHostedJobName) {
+		t.Fatal("hosted storage must not become a trusted RRC reader")
+	}
+	for _, owner := range []string{"gastownhall", "donnabox"} {
+		for _, mode := range []string{"remote", "cache", "local", "fork-ro", "fork-rw", "skip"} {
+			t.Run(owner+"/"+mode, func(t *testing.T) {
+				ctx := map[string]string{
+					"github.repository_owner": owner,
+					"needs.rbe.outputs.mode":  mode,
+				}
+				want := "ubuntu-24.04"
+				if owner == "gastownhall" && (mode == "remote" || mode == "cache") {
+					want = "blacksmith-4vcpu-ubuntu-2404"
+				}
+				if got := mustEvalGHRunsOn(t, expr, ctx); got != want {
+					t.Errorf("hosted storage runner = %q, want %q", got, want)
 				}
 			})
 		}

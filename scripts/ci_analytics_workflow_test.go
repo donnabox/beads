@@ -14,14 +14,15 @@ import (
 // map in the checks below, instead of being pinned independently and
 // allowed to drift apart.
 var ciAnalyticsLaneJobs = map[string]string{
-	"bazel-test":           "test",
-	"bazel-pure":           "pure",
-	"bazel-embedded":       "embedded",
-	"bazel-integration":    "integration",
-	"bazel-doltserver":     "doltserver",
-	"bazel-proxied":        "proxied-server",
-	"bazel-server-storage": "server-storage",
-	"bazel-cmd-dolt":       "cmd-dolt",
+	"bazel-test":                  "test",
+	"bazel-pure":                  "pure",
+	"bazel-embedded":              "embedded",
+	"bazel-integration":           "integration",
+	"bazel-doltserver":            "doltserver",
+	"bazel-proxied":               "proxied-server",
+	"bazel-server-storage":        "server-storage",
+	"bazel-server-storage-hosted": "server-storage",
+	"bazel-cmd-dolt":              "cmd-dolt",
 	// The dolt-server + proxied union lane (item 5; mode remote): its
 	// own lane value, so the A/B queries can pair it with its members.
 	"bazel-dolt-race": "dolt-race",
@@ -36,6 +37,7 @@ var ciAnalyticsLaneJobs = map[string]string{
 // TestBazelLaneIsGatedAlongsideLegacy's gated/advisory/flag-gated split, so
 // a new job in bazel.yml can't silently go unaccounted for here either.
 var ciAnalyticsExcludedJobs = map[string]string{
+	"bazel-local-coverage":       "result-only complete-local proof; no execution or BEP",
 	bazelDispatchCoverageJobName: "dispatch-only result gate: runs no Bazel build or tests and has no BEP to summarize",
 	"rbe":                        "decides the execution mode; builds nothing itself, so there is no BEP/exec-log/profile to summarize",
 	"rbe-prewarm":                "best-effort pre-warm dispatch to gascity's rbe-west pool; not a build/test lane",
@@ -238,6 +240,9 @@ func TestCIAnalyticsStepsAreSafeAndBounded(t *testing.T) {
 			t.Errorf("%s job %q: if %q does not require !cancelled()", jobName, upload.Name, upload.If)
 		}
 		wantUploadName := "ci-analytics-" + wantLane + "-${{ github.run_attempt }}"
+		if jobName == bazelServerHostedJobName {
+			wantUploadName = "ci-analytics-" + wantLane + "-${{ matrix.part }}-${{ github.run_attempt }}"
+		}
 		if upload.With["name"] != wantUploadName {
 			t.Errorf("%s job %q: upload name %q, want %q", jobName, upload.Name, upload.With["name"], wantUploadName)
 		}

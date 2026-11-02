@@ -99,3 +99,27 @@ constraint-named one. Text equality against a fresh store fails on correctly
 healed databases. Compare columns, primary key, unique keys, foreign keys with
 their referenced tables and actions, checks, and index coverage — see
 `migrate_wisp_dep_forward_repair_test.go`.
+
+## Removed-restriction vocabulary and fork epoch lineage
+
+The published fork0070 SQL header contains historical hyphenated examples.
+For writers, the canonical `issueops.AsOfRestriction` values are
+`gone_retention`, `gone_erasure`, `gone_reorganization`, and `unknown`.
+Live is absence of a value, never a stored spelling. Use these underscore
+values; do not copy historical header typography into retained rows.
+
+Fork0070/0071/0072 are immutable and are not upstream's permuted slots.
+Production migrations end at upstream tombstone0074. Released epoch behavior
+remains the default for both fresh and existing fork workspaces. Admission
+checks the selected70–74 hashes and the released five-column shape before
+bootstrap, ignore repair or migration writes. Unknown/future lineage or any
+survival columns are refused; no row reinterpretation or cursor rewrite occurs.
+
+The unpublished0075 SQL is preserved under `internal/testutil/epochfixture`.
+Only explicit disposable Survival fixtures install it, with an empty address
+table, and choose the separately named incoming algorithm. No production
+open, CLI bundle, column probe or registration selects that contract. These
+fixtures never record75 in the production cursor or reopen as ordinary stores.
+The incoming survival contract is deferred, not declared equivalent to the
+released contiguous-remint contract. Raw `AllMigrationsSQL` remains a fresh
+installation bundle, not an existing-store replay/admission API.

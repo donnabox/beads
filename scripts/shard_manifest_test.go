@@ -26,9 +26,9 @@ import (
 // run here so a drifted block fails `go test ./scripts/...`
 // (//scripts:go_test_sources_test under Bazel) instead of only surfacing as
 // a test silently never running in any shard. The cmd file's legacy,
-// hand-assigned 20-shard block (frozen for PR Risk's and main.yml's retired
-// fork/push jobs) has been deleted; those jobs no longer exist (see
-// engdocs/TESTING.md). The storage file's legacy 5-shard block is still
+// hand-assigned20-shard block remains for this fork's retained PR Risk
+// jobs; extant assignments stay fixed and new names use the existing hash
+// fallback. The storage file's legacy5-shard block is also
 // frozen and deliberately excluded here: its header documents that (see
 // .github/scripts/embedded-storage-test-shards.txt and engdocs/TESTING.md),
 // so a --check against it is expected to report "missing" entries by design
@@ -200,6 +200,10 @@ func TestShardScriptsListOnlyRealTests(t *testing.T) {
 			}
 			wg.Wait()
 			listed, manifestSum := 0, 0
+			storageCostPins := map[string]int{
+				"TestCreateBatchFastPathsMatchPerRow_Dolt": 0,
+				"TestHighContentionStress":                 0,
+			}
 			for k := 1; k <= shards; k++ {
 				if errs[k] != nil {
 					// The script itself exits 1 on a duplicate manifest entry
@@ -220,6 +224,12 @@ func TestShardScriptsListOnlyRealTests(t *testing.T) {
 					if !ok || !strings.HasPrefix(name, "Test") || strings.ContainsAny(name, " :") {
 						continue
 					}
+					if _, tracked := storageCostPins[name]; tracked && c.script == ".github/scripts/server-storage-test-shard.sh" && shards == 16 {
+						storageCostPins[name]++
+						if k != 14 {
+							t.Errorf("%s must run only on server-storage shard14/16, got%d", name, k)
+						}
+					}
 					listed++
 					isTest := declared[name]
 					switch {
@@ -228,6 +238,13 @@ func TestShardScriptsListOnlyRealTests(t *testing.T) {
 					case !notTests[name] && !isTest:
 						t.Errorf("%s shard %d/%d lists %s, which is not a `func %s(t *testing.T)` test in %s: check_shard_coverage.py would report it missing on every run (add it to NOT_TESTS only if go test never runs it)",
 							c.script, k, shards, name, name, c.pkg)
+					}
+				}
+			}
+			if c.script == ".github/scripts/server-storage-test-shard.sh" && shards == 16 {
+				for name, count := range storageCostPins {
+					if count != 1 {
+						t.Errorf("server-storage16-shard route lists%s%d times, want exactly once", name, count)
 					}
 				}
 			}

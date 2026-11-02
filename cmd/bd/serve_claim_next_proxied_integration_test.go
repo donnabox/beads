@@ -40,6 +40,9 @@ func (sp *serveProcess) claimNext(t *testing.T, query, body string) (int, map[st
 		t.Fatalf("POST claimNext: %v\nstderr:\n%s", err, sp.stderr.String())
 	}
 	defer func() { _ = resp.Body.Close() }()
+	if resp.StatusCode != http.StatusOK {
+		t.Logf("claimNext response: status=%d Retry-After=%q\nstderr:\n%s", resp.StatusCode, resp.Header.Get("Retry-After"), sp.stderr.String())
+	}
 	raw, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatalf("read claimNext body: %v", err)

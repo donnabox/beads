@@ -39,6 +39,7 @@ func TestEmbeddedDirtyTablesGate_BlocksReopenThenWorkingSetReconcileRecovers(t *
 		store.Close()
 		t.Fatalf("SetConfig(issue_prefix): %v", err)
 	}
+	dropEmptyEpochTableFromHistoricalFixture(t, ctx, dataDir)
 	if err := store.Commit(ctx, "bd init"); err != nil {
 		store.Close()
 		t.Fatalf("Commit (init): %v", err)
@@ -152,4 +153,27 @@ func schemaVersion(ctx context.Context, dataDir, database string) (int, error) {
 	var version int
 	err = db.QueryRowContext(ctx, "SELECT COALESCE(MAX(version), 0) FROM schema_migrations").Scan(&version)
 	return version, err
+}
+
+func dropEmptyEpochTableFromHistoricalFixture(t *testing.T, ctx context.Context, dataDir string) {
+	t.Helper()
+	db, cleanup, err := embeddeddolt.OpenSQL(ctx, dataDir, "testdb", "main")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := cleanup(); err != nil {
+			t.Error(err)
+		}
+	}()
+	var count int
+	if err := db.QueryRowContext(ctx, "SELECT COUNT(*) FROM epoch_minted_addresses").Scan(&count); err != nil {
+		t.Fatal(err)
+	}
+	if count != 0 {
+		t.Fatalf("historical fixture has %d epoch addresses; refusing to discard them", count)
+	}
+	if _, err := db.ExecContext(ctx, "DROP TABLE epoch_minted_addresses"); err != nil {
+		t.Fatal(err)
+	}
 }

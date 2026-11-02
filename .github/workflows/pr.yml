@@ -12,12 +12,26 @@ on:
   # checks_requested is the queue asking for those checks; pinned
   # explicitly (scripts/ci_merge_queue_test.go). The concurrency group
   # below keys a merge group on its own gh-readonly-queue/* ref, so queue
-  # runs never cancel each other or a PR's own runs.
+  # runs never cancel each other or a PR's own runs. A merge group runs the
+  # fast set only (the scope job below): no Windows or macOS job, and the
+  # Bazel call without its Dolt-tier lanes.
   merge_group:
     types: [ checks_requested ]
+  # The post-merge complement: the Windows and macOS jobs a merge group
+  # skipped run on every push to main. The queue lands a batch of entries
+  # as one push of its last entry (main fast-forwards to that entry's tested
+  # merge-group commit, the same tree), so a push head's tree contains every
+  # entry of its batch; an earlier entry gets the complement only as part
+  # of it. bazel.yml's own push run is every Bazel lane, so this run calls
+  # none. A red push run opens the ci/main-red issue (main-ci-alert.yml).
+  push:
+    branches: [ main ]
 
+# A push to main keys on its commit: no push's complement run cancels
+# another's or waits behind it (GitHub cancels a group's pending run when a
+# newer one queues).
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || (github.event_name == 'push' && github.sha) || github.ref }}
   cancel-in-progress: true
 
 env:
@@ -76,9 +90,52 @@ env:
   # lane runs the same integration-build bd_test without the dolt skip, so
   # each cmd/bd test runs once. Rollback: commit "false" here and false in
   # that input together; bazel-integration runs bd_test again on the next run.
+  # The flag decides only what this gate requires: a merge group skips the
+  # tier (the scope's dolt-tiers), and main's push run of bazel.yml fails on
+  # a cmd/bd tier failure either way (bazel-dolt-int's last step).
   BAZEL_CMD_DOLT_REQUIRED: "true"
 
 jobs:
+
+  scope:
+    name: Scope
+    runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      platforms: ${{ steps.decide.outputs.platforms }}
+      dolt-tiers: ${{ steps.decide.outputs.dolt-tiers }}
+      linux: ${{ steps.decide.outputs.linux }}
+      advisory: ${{ steps.decide.outputs.advisory }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts/ci-scope.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Decide what this event runs
+        id: decide
+        run: bash .github/scripts/ci-scope.sh decide
+
+  # The checks that need the PR's base commit, so no hermetic Bazel target
+  # can hold them: check-migration-hygiene.sh's delta half (C: shipped
+  # migrations are frozen, D: ignored-plane twins, E: no prepared DML in new
+  # migrations, all over `git diff <merge-base>`) and the .beads/issues.jsonl
+  # guard. Everything else this job ran is a Bazel test in bazel.yml's `test`
+  # lane (ga-96smfk.20): //scripts/repochecks:build_tags_test,
+  # :go_install_guidance_test, :winget_portable_alias_test,
+  # :migration_hygiene_test (checks A and B) and :fmt_test, and
+  # //internal/versioncheck:versioncheck_test for check-versions.sh. No Go:
+  # both steps are bash and git.
+  #
+  # Each step has its own id and `if: ${{ !cancelled() }}`, so one failure
+  # does not hide the other, and its outcome is a job output that ci-gate
+  # requires (TestPRCIGateFastChecksTokens). FAST_CHECKS (the job's own
+  # `result`) is the backstop token for a job lost before any step set its
+  # output.
+
 
   # D2 step 3: stands down where bazel-coverage says pr_lanes (same-repo,
   # non-Dependabot PRs and merge groups while BAZEL_RETIRES_LEGACY_PR_LANES
@@ -90,8 +147,8 @@ jobs:
   build-artifacts:
     name: Build Artifacts
     runs-on: ubuntu-latest
-    needs: bazel-coverage
-    if: needs.bazel-coverage.outputs.pr_lanes != 'true'
+    needs: [scope, bazel-coverage]
+    if: ${{ needs.scope.outputs.linux == 'true' && (needs.bazel-coverage.outputs.pr_lanes != 'true') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
@@ -164,6 +221,8 @@ jobs:
   # FAST_CHECKS gives ci-gate.sh one clear error line ("FAST_CHECKS=cancelled")
   # instead of five confusing ones.
   fast-checks:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: Fast checks (build tags, versions, migrations, beads diff, fmt)
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     timeout-minutes: 10
@@ -267,8 +326,8 @@ jobs:
   check-cmd-bd-puregeo-tests:
     name: Check pure-Go and js/wasm boundaries (CGO_ENABLED=0)
     runs-on: ubuntu-latest
-    needs: bazel-coverage
-    if: needs.bazel-coverage.outputs.pr_lanes != 'true'
+    needs: [scope, bazel-coverage]
+    if: ${{ needs.scope.outputs.linux == 'true' && (needs.bazel-coverage.outputs.pr_lanes != 'true') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
 
@@ -345,7 +404,7 @@ jobs:
         # is available; the goal here is to catch compile-time contamination,
         # not run the full suite.
         run: |
-          go test -tags gms_pure_go -count=1 -short -run '^Test(Help|CheckRemoteSafety|FormatDestroyToken|ShouldWireInitRemote|ExtractPrefix|IsNumericID|GetWorktreeGitDir|DriftItemStatuses|RunDriftChecks|IsServerProbablyRunning|CheckHooksDriftNotGitRepo|CheckServerDriftNoBeadsDir|CheckRemoteDriftNoBeadsDir|NocgoFactoriesHonorSharedServer|NocgoNewDoltStoreFromConfig_ErrorSuggestsCorrectFlag|NocgoNewReadOnlyStoreFromConfig_ErrorSuggestsCorrectFlag)' ./cmd/bd
+          go test -tags gms_pure_go -count=1 -short -run '^Test(Help|CheckRemoteSafety|FormatDestroyToken|ShouldWireInitRemote|ExtractPrefix|IsNumericID|GetWorktreeGitDir|DriftItemStatuses|RunDriftChecks|IsServerProbablyRunning|CheckHooksDriftNotGitRepo|CheckServerDriftNoBeadsDir|CheckRemoteDriftNoBeadsDir|NocgoFactoriesHonorSharedServer|NocgoNewDoltStoreFromConfig_ErrorSuggestsCorrectFlag|NocgoNewReadOnlyStoreFromConfig_ErrorSuggestsCorrectFlag|NocgoStoreFactoriesRefuseGraphWorkspace|StoreFactoriesRefuseUnsupportedBackendInLegacyConfig)' ./cmd/bd
 
   # Compile every shipped release target on every PR, so a platform-gating
   # mistake is caught here instead of at tag time (#5662).
@@ -375,6 +434,8 @@ jobs:
   # fetches, not lost compute). Runner choice must match the
   # TestSameRepoBlacksmithRunners pin.
   check-release-target-cross-compilation:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: Check release target cross-compilation (${{ matrix.group }})
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     timeout-minutes: 20
@@ -427,6 +488,8 @@ jobs:
   # that is the toolchain gap to roll back on (revert this runs-on line to
   # the literal `windows-latest`).
   test-windows-liveness:
+    needs: scope
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: Test (Windows) cmd/bd liveness regression
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-windows-2025' || 'windows-latest' }}
     # F7b review fix (S6): raised from 15 to 20, matching open PR #7143's own
@@ -544,6 +607,8 @@ jobs:
   # build with CGO_ENABLED=0 (or no cgo at all for doltversion), so this job
   # carries none of test-windows-liveness's cgo-toolchain risk.
   test-windows-small:
+    needs: scope
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: Test (Windows) small packages (doltversion, dbproxy server)
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-windows-2025' || 'windows-latest' }}
     timeout-minutes: 15
@@ -602,6 +667,8 @@ jobs:
   # rollback as test-windows-liveness's cgo risk above) until Blacksmith
   # confirms/enables it.
   worktree-remove-windows:
+    needs: scope
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: Worktree remove boundary (Windows)
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-windows-2025' || 'windows-latest' }}
     timeout-minutes: 15
@@ -674,6 +741,8 @@ jobs:
   # secrets here, same as every job in this file -- cross-compiling and
   # uploading an artifact needs none.
   windows-test-binaries:
+    needs: scope
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: Build Windows test binaries (cross-compile)
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     timeout-minutes: 30
@@ -740,8 +809,9 @@ jobs:
   # via mingw-w64) rather than compiling with cgo on the Windows runner
   # itself, so it carries none of test-windows-liveness's cgo-toolchain risk.
   test-windows-liveness-prebuilt:
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: Test (Windows, prebuilt) cmd/bd liveness regression
-    needs: windows-test-binaries
+    needs: [scope, windows-test-binaries]
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-windows-2025' || 'windows-latest' }}
     timeout-minutes: 15
     steps:
@@ -811,8 +881,9 @@ jobs:
   # F7b: same-repo Blacksmith (blacksmith-2vcpu-windows-2025); same prebuilt-
   # binary rationale as test-windows-liveness-prebuilt above.
   worktree-remove-windows-prebuilt:
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: Worktree remove boundary (Windows, prebuilt)
-    needs: windows-test-binaries
+    needs: [scope, windows-test-binaries]
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-windows-2025' || 'windows-latest' }}
     timeout-minutes: 15
     steps:
@@ -846,6 +917,8 @@ jobs:
   # cache restore step was already absent before the fold (every run cold-
   # builds bd), so there is no GitHub-saved cache to lose here.
   check-doc-flags:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: Check doc flags freshness
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     timeout-minutes: 15
@@ -915,6 +988,8 @@ jobs:
   # Blacksmith-macOS saver S3 said was missing, on this exact label, and the
   # GitHub-hosted fork path still restores main.yml's `test` job macOS leg.
   check-doc-freshness-platforms:
+    needs: scope
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: Check doc freshness (${{ matrix.os }})
     runs-on: ${{ matrix.runner == 'same-repo-linux' && (github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest') || matrix.runner == 'same-repo-windows' && (github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-windows-2025' || 'windows-latest') || matrix.runner == 'same-repo-macos' && (github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-6vcpu-macos-26' || 'macos-latest') || matrix.os }}
     timeout-minutes: 10
@@ -987,6 +1062,8 @@ jobs:
   # process boundary" (250-300s); see S2 below (the restore-non-race-cache
   # step) for the fix that actually targets it. Reverted to one leg per OS.
   pr-preflight-platforms:
+    needs: scope
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: PR preflight process (${{ matrix.os }})
     runs-on: ${{ matrix.runner == 'same-repo-linux' && (github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest') || matrix.runner == 'same-repo-windows' && (github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-windows-2025' || 'windows-latest') || matrix.runner == 'same-repo-macos' && (github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-6vcpu-macos-26' || 'macos-latest') || matrix.os }}
     timeout-minutes: 20
@@ -1043,6 +1120,19 @@ jobs:
         env:
           GOCACHE: ${{ runner.temp }}/go-cache/non-race
         run: go test '-tags=integration,gms_pure_go' -count=1 -run '^TestPRPreflight' ./scripts
+
+      # The CI scripts' tests run them under the host's bash, and macOS's
+      # /bin/bash is 3.2 (no mapfile; an empty "${arr[@]}" trips set -u).
+      # main.yml's Test (macOS) runs this package only after a merge, so a
+      # PR that broke it on macOS merged green (#7818). Running it here puts
+      # that break behind the required CI gate.
+      # TestPRWorkflowRunsScriptsPackageOnMacOS pins this step.
+      - name: Run the scripts package on macOS's Bash
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        env:
+          GOCACHE: ${{ runner.temp }}/go-cache/non-race
+        run: go test '-tags=gms_pure_go' -count=1 ./scripts
 
       - name: Check native user config diagnostics
         shell: bash
@@ -1138,6 +1228,8 @@ jobs:
   # cache: false and the module download step below always hits the network,
   # so this job restores no GitHub-saved cache.
   pr-policy-wrapper:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: PR Policy (wrapper timing)
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     timeout-minutes: 15
@@ -1203,8 +1295,8 @@ jobs:
       matrix:
         scope: [graphstore-odd, graphstore-even, remaining]
     runs-on: ubuntu-latest
-    needs: [build-artifacts, bazel-coverage]
-    if: needs.bazel-coverage.outputs.pr_lanes != 'true'
+    needs: [scope, build-artifacts, bazel-coverage]
+    if: ${{ needs.scope.outputs.linux == 'true' && (needs.bazel-coverage.outputs.pr_lanes != 'true') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
         with:
@@ -1295,6 +1387,8 @@ jobs:
   # main.yml's blacksmith-go-build-cache job seeds this leg's race and
   # non-race GOCACHEs; go-vet-cache's venue matrix seeds the vet leg's.
   scripts-go-checks:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: Go checks (${{ matrix.check }})
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     timeout-minutes: 30
@@ -1386,6 +1480,8 @@ jobs:
   # on Ubuntu 24.04, matching the declared sysroot and Blacksmith host. The
   # windows/darwin cross-lint legs keep their existing ubuntu-latest fallback.
   pr-lint-wrapper:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: PR Lint (${{ matrix.target }})
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || (matrix.target == 'native' && 'ubuntu-24.04' || 'ubuntu-latest') }}
     timeout-minutes: 20
@@ -1473,6 +1569,8 @@ jobs:
   # does not participate in ci-gate while maintainers evaluate the baseline
   # and refactoring payoff.
   advisory-reports:
+    needs: scope
+    if: ${{ needs.scope.outputs.advisory == 'true' }}
     name: Advisory reports (examples build, complexity)
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     # Review N-2 (2026-10-03): step timeouts sum to 42 min; 60 (not 45) keeps
@@ -1582,8 +1680,8 @@ jobs:
   test-domain-uow:
     name: Test (storage domain + uow)
     runs-on: ubuntu-latest
-    needs: [build-artifacts, bazel-coverage]
-    if: needs.bazel-coverage.outputs.pr_lanes != 'true'
+    needs: [scope, build-artifacts, bazel-coverage]
+    if: ${{ needs.scope.outputs.linux == 'true' && (needs.bazel-coverage.outputs.pr_lanes != 'true') }}
     # The race-enabled storage package has outgrown Go's implicit 10-minute
     # timeout. Keep both per-package deadlines inside one finite job budget.
     timeout-minutes: 30
@@ -1664,6 +1762,8 @@ jobs:
   # GitHub-saved cache (Dolt CLI and the sql-server image are fetched fresh
   # every run via scripts/ci/install-dolt.sh and pull-dolt-image.sh).
   test-dolt-server-fingerprint:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: Test (Dolt server fingerprint)
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     timeout-minutes: 15
@@ -1741,8 +1841,8 @@ jobs:
   contract-corpus:
     name: Contract corpus (golden + determinism + conformance)
     runs-on: ubuntu-latest
-    needs: bazel-coverage
-    if: needs.bazel-coverage.outputs.pr_lanes != 'true'
+    needs: [scope, bazel-coverage]
+    if: ${{ needs.scope.outputs.linux == 'true' && (needs.bazel-coverage.outputs.pr_lanes != 'true') }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
 
@@ -1806,6 +1906,8 @@ jobs:
   # only the same-repo leg's native-Make step fails here, that is the gap to
   # roll back on (revert this runs-on line to the literal `windows-latest`).
   windows-make-shell:
+    needs: scope
+    if: ${{ needs.scope.outputs.platforms == 'true' }}
     name: Windows Make shell (native, msys2, cygwin)
     runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-windows-2025' || 'windows-latest' }}
     timeout-minutes: 30
@@ -2317,12 +2419,13 @@ jobs:
   # Required graph-core checkpoint, including the installed mixed workflow and
   # optional-by-default real-engine tests. Never infer this capability from a normal suite with service skips.
   graph-c0-cohort:
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: Graph core / ${{ matrix.cohort }}
     strategy:
       fail-fast: false
       matrix:
         cohort: [storage, cli-http]
-    needs: build-artifacts
+    needs: [scope, build-artifacts]
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -2423,8 +2526,8 @@ jobs:
   # Preserve the required check name, but accept no incomplete/mismatched cohort.
   graph-c0:
     name: Graph core / real engines, installed CLI and BDP
-    if: ${{ always() }}
-    needs: [build-artifacts, graph-c0-cohort]
+    if: ${{ needs.scope.outputs.linux == 'true' && (always()) }}
+    needs: [scope, build-artifacts, graph-c0-cohort]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -2487,6 +2590,8 @@ jobs:
   # job) and do not consume this artifact; it is kept for the F3.5.3
   # SHA256SUMS comparison and for debugging.
   bazel:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: Bazel
     # GitHub validates every called job's requested permissions at startup,
     # including jobs whose event guard skips them. bazel.yml's rrc-seed needs
@@ -2514,6 +2619,11 @@ jobs:
       # F3: only pr.yml opts in; the package-mcp/package-npm jobs run inside
       # this call, needing only its rbe job.
       package-gates: "on"
+      # "off" on a merge group: no Dolt-tier lane (embedded, dolt-race and
+      # dolt-int, and their members outside mode remote). With
+      # cmd-dolt-required above that leaves the integration build's
+      # //cmd/bd:bd_test to main's push run too.
+      dolt-tiers: ${{ needs.scope.outputs.dolt-tiers }}
 
   # D2: pr-risk.yml's bazel-coverage job, verbatim (policy-tested
   # identical). Where it says a tier is covered, PR Risk skips that tier's
@@ -2522,6 +2632,8 @@ jobs:
   # domain+uow and contract corpus), so ci-gate requires the tier's Bazel
   # lanes to have run remotely and passed in this run.
   bazel-coverage:
+    needs: scope
+    if: ${{ needs.scope.outputs.linux == 'true' }}
     name: Bazel tier coverage
     # F3: same-repo PRs and merge_group get the org's Blacksmith pool; forks,
     # Dependabot and any other event stay GitHub-hosted. This job restores no
@@ -2615,6 +2727,7 @@ jobs:
     # minutes too.
     timeout-minutes: 10
     needs:
+      - scope
       - build-artifacts
       - fast-checks
       - graph-c0
@@ -2673,6 +2786,7 @@ jobs:
         env:
           CI_GATE_NAME: PR baseline gate
           CI_GATE_REQUIRED: >-
+            SCOPE
             BUILD_ARTIFACTS
             FAST_CHECKS
             GRAPH_C0
@@ -2709,6 +2823,13 @@ jobs:
             BAZEL_EMBEDDED_RETIRED
             BAZEL_DOLT_SERVER_RETIRED
             BAZEL_PR_LANES_RETIRED
+          SCOPE_RESULT: ${{ needs.scope.result }}
+          SCOPE_PLATFORMS: ${{ needs.scope.outputs.platforms }}
+          SCOPE_DOLT_TIERS: ${{ needs.scope.outputs.dolt-tiers }}
+          SCOPE_LINUX: ${{ needs.scope.outputs.linux }}
+          SCOPE_ADVISORY: ${{ needs.scope.outputs.advisory }}
+          CI_SCOPE_PLATFORMS_IDS: CHECK_DOC_FRESHNESS_PLATFORMS PR_PREFLIGHT_PLATFORMS TEST_WINDOWS_LIVENESS TEST_WINDOWS_LIVENESS_PREBUILT WINDOWS_MAKE_SHELL WORKTREE_REMOVE_WINDOWS WORKTREE_REMOVE_WINDOWS_PREBUILT
+          CI_SCOPE_LINUX_IDS: BAZEL BAZEL_CMD_DOLT BAZEL_COVERAGE BAZEL_DOLTSERVER BAZEL_DOLT_SERVER_RETIRED BAZEL_EMBEDDED BAZEL_EMBEDDED_RETIRED BAZEL_INTEGRATION BAZEL_LOCAL_FULL BAZEL_PROXIED BAZEL_PR_LANES_RETIRED BAZEL_PURE BAZEL_RELEASE_CROSS BAZEL_REMOTE BAZEL_SERVER_STORAGE BAZEL_TEST BUILD_ARTIFACTS CHECK_BUILD_TAGS CHECK_CMD_BD_PUREGEO_TESTS CHECK_DOC_FLAGS CHECK_MIGRATION_HYGIENE CHECK_NO_BEADS_CHANGES CHECK_RELEASE_TARGET_CROSS_COMPILATION CHECK_VERSION_CONSISTENCY CONTRACT_CORPUS FAST_CHECKS FMT_CHECK GRAPH_C0 PACKAGE_MCP PACKAGE_NPM PR_CORE_WRAPPER PR_LINT_WRAPPER PR_POLICY_WRAPPER SCRIPTS_GO_CHECKS TEST_DOLT_SERVER_FINGERPRINT TEST_DOMAIN_UOW
           GRAPH_C0: ${{ needs.graph-c0.result }}
           BUILD_ARTIFACTS: ${{ needs.build-artifacts.result }}
           # F7a: fast-checks folds five formerly-separate jobs into one job
@@ -2769,11 +2890,15 @@ jobs:
           # "true": see the run script.
           BAZEL_CMD_DOLT: ${{ needs.bazel.outputs.bazel-cmd-dolt || 'skipped' }}
           # Inputs of bazel-gate.sh, which sets BAZEL (the call's aggregate,
-          # red on a missing or inconsistent mode) and the expected skips
-          # from bazel.yml's own rbe job decision.
+          # red on a missing or inconsistent mode) and BAZEL_REMOTE, and the
+          # expected skips from bazel.yml's own rbe job decision and, for
+          # the Dolt-tier lanes, from what the call reports it ran.
           BAZEL_CALL: ${{ needs.bazel.result }}
           BAZEL_RBE_MODE: ${{ needs.bazel.outputs.rbe-mode }}
           BAZEL_RBE_ENABLED: ${{ needs.bazel.outputs.rbe-enabled }}
+          BAZEL_DOLT_TIERS: ${{ needs.bazel.outputs.dolt-tiers }}
+          BAZEL_LOCAL_FULL_INTENT: ${{ needs.bazel.outputs.local-full-intent }}
+          BAZEL_LOCAL_FULL: ${{ needs.bazel.outputs.local-full-result }}
           # D2: which legacy tiers PR Risk, or this workflow (pr_lanes),
           # retired for this PR (BAZEL_*_RETIRED below).
           BAZEL_COVERAGE: ${{ needs.bazel-coverage.result }}
@@ -2805,14 +2930,35 @@ jobs:
             CI_GATE_REQUIRED="$CI_GATE_REQUIRED BAZEL_CMD_DOLT"
           fi
           export CI_GATE_REQUIRED
+          # The scope: its result, and the jobs it turned off for this event
+          # (the CI_SCOPE_*_IDS above: none on a pull request, the Windows
+          # and macOS jobs on a merge group, the Linux jobs and the Bazel
+          # call on a push to main).
+          SCOPE="$(bash .github/scripts/ci-scope.sh result)"
+          export SCOPE
+          skipped_ok="$skipped_ok $(bash .github/scripts/ci-scope.sh skips)"
           # Bazel lanes skipped by design in the call's execution mode (all
           # of them in mode skip, the remote-only embedded, proxied and
-          # server-storage tiers in modes local and cache, and integration
-          # in mode local), and the aggregate unless the mode is missing or
-          # invalid.
+          # server-storage tiers in modes local and cache (cache: rbe=cache
+          # dispatches only, never a PR), and integration in mode local), the Dolt-tier lanes when the scope turned them
+          # off and the call reports it ran without them (a merge group),
+          # and the aggregate unless the mode is missing or invalid.
           skipped_ok="$skipped_ok $(bash .github/scripts/bazel-gate.sh skips)"
           BAZEL="$(bash .github/scripts/bazel-gate.sh aggregate)"
           export BAZEL
+          # Preserve the raw upstream remote fact. Only this exact fork may
+          # substitute a complete independently recorded local execution proof.
+          BAZEL_REMOTE="$(bash .github/scripts/bazel-gate.sh remote)"
+          export BAZEL_REMOTE
+          if [[ "$BAZEL_LOCAL_FULL_INTENT" == true ]]; then
+            [[ "$GITHUB_REPOSITORY" == donnabox/beads && "$BAZEL_RBE_MODE/$BAZEL_RBE_ENABLED" == local/false && "$BAZEL_DOLT_TIERS" == on ]] || exit 1
+            CI_GATE_REQUIRED="$CI_GATE_REQUIRED BAZEL_LOCAL_FULL"
+          elif [[ -z "$BAZEL_LOCAL_FULL_INTENT" || "$BAZEL_LOCAL_FULL_INTENT" == false ]]; then
+            CI_GATE_REQUIRED="$CI_GATE_REQUIRED BAZEL_REMOTE"
+          else
+            echo "::error::Invalid full-local selection fact"; exit 1
+          fi
+          export CI_GATE_REQUIRED
           # D2 step 3: this workflow's legacy jobs that stand down where
           # bazel-coverage says pr_lanes (exactly "true"); their Bazel lanes
           # are then required below.
@@ -2832,8 +2978,19 @@ jobs:
             local id="$1" flag="$2" covered="$3" tier="$4" result=success lane
             shift 4
             if [[ "$covered" == "true" ]]; then
-              [[ "$BAZEL_RBE_MODE" =~ ^(remote|fork-ro|fork-rw)$ ]] || result="not-run-remotely"
+              if [[ "$GITHUB_REPOSITORY" == donnabox/beads && "$BAZEL_LOCAL_FULL_INTENT" == true && "$BAZEL_RBE_MODE/$BAZEL_RBE_ENABLED" == local/false && "$BAZEL_DOLT_TIERS" == on && "$BAZEL_LOCAL_FULL" == success ]]; then
+                : # Qualified complete local replacement; still check each lane.
+              else
+                [[ "$BAZEL_RBE_MODE" =~ ^(remote|fork-ro|fork-rw)$ ]] || result="not-run-remotely"
+              fi
               for lane in "$@"; do
+                # Only the paired, validated merge-group deferral may omit
+                # a Dolt tier; a failure/cancellation is never a deferral.
+                if [[ "$SCOPE" == success && "$SCOPE_DOLT_TIERS" == off && "$BAZEL_DOLT_TIERS" == off && "${!lane:-}" == skipped ]]; then
+                  case "$lane" in
+                    BAZEL_EMBEDDED|BAZEL_DOLTSERVER|BAZEL_PROXIED|BAZEL_SERVER_STORAGE|BAZEL_CMD_DOLT) continue ;;
+                  esac
+                fi
                 [[ "${!lane:-}" == "success" ]] || result="not-run-remotely"
               done
               if [[ "$result" != "success" ]]; then
