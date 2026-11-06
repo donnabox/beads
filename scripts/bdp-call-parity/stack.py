@@ -38,11 +38,18 @@ def free_port():
 
 
 class Root:
-    """The temporary root: HOME, binaries on PATH, and every child process."""
+    """The temporary root: HOME, binaries on PATH, and every child process.
 
-    def __init__(self, bd, dolt):
+    serve_protocol and connect_protocol are the --protocol every `bd serve` and
+    `bd connect` here asks for. The parity parts measure BDP, so they ask for it. None
+    leaves the flag off, which is the only way to run a bd that predates it.
+    """
+
+    def __init__(self, bd, dolt, serve_protocol="both", connect_protocol="bdp"):
         self.bd = bd
         self.dolt = dolt
+        self.serve_protocol = serve_protocol
+        self.connect_protocol = connect_protocol
         self.path = os.path.realpath(tempfile.mkdtemp(prefix="bdp-call-parity."))
         self.home = os.path.join(self.path, "home")
         os.makedirs(self.home)
@@ -177,6 +184,8 @@ class Stack:
     def start_serve(self):
         self.serve_port = free_port()
         args = [self.root.bd, "serve", "--addr", f"127.0.0.1:{self.serve_port}"] + self.serve_args
+        if self.root.serve_protocol:
+            args += ["--protocol", self.root.serve_protocol]
         proc = subprocess.Popen(args, cwd=self.work, env=self.env(),
                                 stdout=open(self.serve_log, "ab"), stderr=subprocess.STDOUT,
                                 stdin=subprocess.DEVNULL, start_new_session=True)
@@ -197,7 +206,8 @@ class Stack:
         path = os.path.join(self.dir, name)
         os.makedirs(path)
         self._git_init(path)
-        run_bd(self.root.bd, ["connect", url or self.url], path, self.env(actor), True, 60, None)
+        protocol = ["--protocol", self.root.connect_protocol] if self.root.connect_protocol else []
+        run_bd(self.root.bd, ["connect", url or self.url] + protocol, path, self.env(actor), True, 60, None)
         return path
 
     def http(self, method, path, body=None, headers=None, timeout=60):

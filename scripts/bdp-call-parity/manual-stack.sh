@@ -85,7 +85,7 @@ start() {
       (umask 077 && printf '%s\n' "$token" >"$root/token")
       export BEADS_SERVE_TOKEN_FILE=$root/token
     fi
-    exec nohup "$BD_BIN" serve --addr "127.0.0.1:$serve_port" >"$root/serve.log" 2>&1
+    exec nohup "$BD_BIN" serve --addr "127.0.0.1:$serve_port" --protocol both >"$root/serve.log" 2>&1
   ) &
   echo $! >"$root/serve.pid"
   local base="http://127.0.0.1:$serve_port"

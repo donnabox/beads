@@ -1,7 +1,7 @@
-"""Part B: does the native command work over `bd connect`, and match direct mode?
+"""Part B: does the native command work over `bd connect --protocol bdp`, and match direct mode?
 
 Two workspaces in lockstep: `direct` talks to its Dolt server, `client` is attached
-with `bd connect` to a `bd serve` on another Dolt server. Seeds and read-backs run
+with `bd connect --protocol bdp` to a `bd serve --protocol both` on another Dolt server. Seeds and read-backs run
 in direct mode on BOTH sides, on the served workspace for the client side, so neither
 can be shaped by the path under test.
 """

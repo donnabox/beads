@@ -1,8 +1,10 @@
 # BDP Callables parity harness
 
 Measures stage 1: every Callable on `bd serve`, and every native command behind it
-over `bd connect`. It reports anomalies. It changes no product code and does not fail
-on what it finds, with these exceptions: a request from `bd connect` that is not
+over `bd connect`, with both asking for BDP: `bd serve --protocol both` and
+`bd connect --protocol bdp`. Neither is the default. It reports anomalies. It changes no
+product code and does not fail on what it finds, with these exceptions: a request from
+`bd connect` that is not
 `POST /bdp/call/NAME`, has `actor` or `author` in its arguments, or omits a parameter
 with a service default fails the run. Otherwise it exits non-zero only when the harness
 itself breaks.
@@ -40,7 +42,7 @@ Part A takes a minute, Part B the rest.
 ## Part B: the native command over `bd connect`
 
 Two workspaces in lockstep: one using its Dolt server directly, one attached with
-`bd connect` to a `bd serve` on another Dolt server. Each case runs with `--json` on
+`bd connect --protocol bdp` to a `bd serve --protocol both` on another Dolt server. Each case runs with `--json` on
 both, and again without `--json` because the text path often reads through different
 calls, then compares exit code, normalized output, and what the command moved, read
 back with `bd export` in direct mode on both databases. Verdicts: `ok`, `refused`,
@@ -66,6 +68,33 @@ name, kind, `cli` and `defaults` with the declarations in `specs/types/issue/cal
 both ways, fails if a declaration on either side has `actor` or `author`, and exits 1 on
 any difference. It is the server's counterpart of the reference
 client's `callables:check`, so a spec change shows up as a failure. It starts no stack.
+
+## The default against the base commit
+
+`wire_proof.py` is the check that the defaults (`bd serve` and `bd connect` with no
+`--protocol`) are the code that was there before BDP. It takes a `bd` built at the base
+commit and the `bd` under test, and it starts no `--protocol` on either.
+
+```bash
+python3 scripts/bdp-call-parity/wire_proof.py --base BASE_BD --new NEW_BD --dolt DOLT --out DIR
+```
+
+- **Client half.** Part B's whole command table runs through each binary against its own
+  `bd serve`, through a proxy that records every byte of every request and response. Each
+  command's requests are compared in order: method, raw path and query, every header in
+  order, and the body.
+- **Server half.** Each server is asked the same raw requests in lockstep: Part A's v0 reads
+  and writes, then fixed probes of `/`, `/bdp`, `/bdp/call`, Resource addresses and unrouted
+  paths, with and without an auth token file. Status, headers and body are compared.
+- **Masked, and nothing else:** ports and the temporary root, timestamps, UUIDs (the project
+  id), revision tokens, minted ids numbered by first appearance, cursors, `request_id`,
+  `Date`, `Content-Length` (it moves with a masked value), and the build hash in `bd version`.
+- **Verdicts.** `same`; `allowed` (the base refused the command and the new bd serves it, or
+  gets further); `state` (a command whose own wire matches, with an answer that moved because
+  an earlier `allowed` command wrote something on one side only); `output` (same wire, different
+  words on stdout or stderr); `unexplained` (anything else). `allowed-differences.md` lists every
+  `allowed` command with the base's refusal and what the new bd now sends. It exits 1 on any
+  `unexplained`.
 
 ## Cleanup
 

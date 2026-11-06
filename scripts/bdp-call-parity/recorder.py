@@ -1,6 +1,6 @@
-"""A recording proxy between `bd connect` and `bd serve`.
+"""A recording proxy between `bd connect --protocol bdp` and `bd serve`.
 
-`bd connect` speaks only /bdp/call. This records every request the client really
+On BDP, `bd connect` speaks only /bdp/call. This records every request the client really
 makes during Part B, and asks of each: is it an invocation at all, does its Callable
 declare every argument it sent, and, for a read, does v0 answer the same right now?
 
