@@ -689,6 +689,9 @@ bd comments
     |
     |   # Add a comment from a file
     |   bd comments add bd-123 -f notes.txt
+    |
+    |   # Add a comment as someone else (--author is an alias of --actor)
+    |   bd comments add bd-123 "Reviewed" --author kim
   flag --local-time type=bool default="false" usage="Show timestamps in local time instead of UTC"
 
 bd comments add
@@ -705,7 +708,10 @@ bd comments add
     |
     |   # Add a comment from a file
     |   bd comments add bd-123 -f notes.txt
-  flag --author -a type=string default="" usage="Add author to comment"
+    |
+    |   # Add a comment as someone else (--author is an alias of --actor)
+    |   bd comments add bd-123 "Reviewed" --author kim
+  flag --author -a type=string default="" usage="Alias of --actor; two different values are refused"
   flag --file -f type=string default="" usage="Read comment text from file"
 
 bd comments list
