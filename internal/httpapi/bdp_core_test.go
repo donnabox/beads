@@ -2,10 +2,13 @@ package httpapi
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"reflect"
 	"slices"
@@ -989,5 +992,77 @@ func TestCoreFaultsOffTheWire(t *testing.T) {
 	resp, body = coreRequest(t, ts, http.MethodGet, "/sw-1", nil)
 	if resp.StatusCode != http.StatusInternalServerError || len(body) != 0 {
 		t.Errorf("fault = %d: %s", resp.StatusCode, body)
+	}
+}
+
+// TestCoreSparseSelectorAdvances: a Selector matching little answers a short page
+// whose next has moved, rather than holding the request open over the whole store
+// or claiming exhaustion it has not observed.
+func TestCoreSparseSelectorAdvances(t *testing.T) {
+	store := &coreStore{}
+	for i := range coreSelectorScanBudget + 10 {
+		store.issues = append(store.issues, coreIssue(fmt.Sprintf("sw-%05d", i), types.TypeTask))
+	}
+	last := store.issues[len(store.issues)-1]
+	last.Priority = 0
+	ts := newCoreServer(t, store, Config{})
+
+	selector := url.QueryEscape(`$[?@.properties.priority == 0]`)
+	_, first := coreGetJSON(t, ts, "/bdp/beads?selector="+selector)
+	if ids := coreItemIDs(t, first); len(ids) != 0 {
+		t.Fatalf("first page = %v, want the budget spent with nothing found", ids)
+	}
+	next, ok := first["next"].(string)
+	if !ok {
+		t.Fatalf("next = %v, want a continuation: the scan has not reached the end", first["next"])
+	}
+	_, second := coreGetJSON(t, ts, strings.TrimPrefix(next, ts.base))
+	if ids := coreItemIDs(t, second); !slices.Equal(ids, []string{ts.base + "/" + last.ID}) {
+		t.Errorf("second page = %v", ids)
+	}
+	if second["next"] != nil {
+		t.Errorf("next = %v, want null at the end", second["next"])
+	}
+}
+
+func TestCoreScopeFromRequest(t *testing.T) {
+	for _, tc := range []struct {
+		host string
+		tls  bool
+		want string
+	}{
+		{"127.0.0.1:8080", false, "http://127.0.0.1:8080/"},
+		{"LOCALHOST:8080", false, "http://localhost:8080/"},
+		{"bd.svc:80", false, "http://bd.svc/"},
+		{"bd.svc:443", false, "http://bd.svc:443/"},
+		{"bd.svc:443", true, "https://bd.svc/"},
+		{"[::1]:80", false, "http://[::1]/"},
+		{"[::1]:8080", false, "http://[::1]:8080/"},
+		{"bd.svc", false, "http://bd.svc/"},
+	} {
+		r := httptest.NewRequest(http.MethodGet, "/", nil)
+		r.Host = tc.host
+		if tc.tls {
+			r.TLS = &tls.ConnectionState{}
+		}
+		if got := coreScope(r); got != tc.want {
+			t.Errorf("Host %q, TLS %v = %q, want %q", tc.host, tc.tls, got, tc.want)
+		}
+	}
+}
+
+func TestCoreLinkIDRoundTrip(t *testing.T) {
+	segment := coreLinkID("sw-a.1", "external:proj:cap", coreClock)
+	if !coreSafeSegment(segment) || strings.ContainsAny(segment, "/:=+") {
+		t.Errorf("%q is not one plain segment", segment)
+	}
+	source, target, generation, ok := coreParseLinkID(segment)
+	if !ok || source != "sw-a.1" || target != "external:proj:cap" || generation != coreClock.Unix() {
+		t.Errorf("round trip = %q, %q, %d, %v", source, target, generation, ok)
+	}
+	for _, bad := range []string{"sw-a", "dep~", "dep~@@", coreLinkIDPrefix + "c3c"} {
+		if _, _, _, ok := coreParseLinkID(bad); ok {
+			t.Errorf("%q parsed as a Link id", bad)
+		}
 	}
 }
