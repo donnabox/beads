@@ -69,6 +69,12 @@ Examples:
 		if !gcDryRun {
 			CheckReadonly("gc")
 		}
+		// All three phases maintain the database itself, and a client of bd serve
+		// has none: printing "not supported" per phase and exiting 0 would read as
+		// a sweep that ran.
+		if storeIsRemoteBackend(store) {
+			return HandleErrorRespectJSON("bd gc is not available over bd connect: it maintains the server's own database; run it on the server's workspace")
+		}
 		ctx := rootCtx
 		start := time.Now()
 

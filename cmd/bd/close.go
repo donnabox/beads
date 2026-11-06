@@ -187,8 +187,14 @@ in the molecule for you; add --no-auto to only show it.`,
 		// there too (GH#962), so there is no read-then-write TOCTOU window
 		// between the check and the close.
 		plan := closeDirectPreflight(results, resolvedIDs, reasons, force)
+		claimRequest := closeClaimNextRequest(claimNext, continueFlag)
+		claimAfterClose := claimRequest != nil && storeIsRemoteBackend(postCloseStore)
+		batchClaim := claimRequest
+		if claimAfterClose {
+			batchClaim = nil
+		}
 		outcomes, claimedNext := closeDirectRun(opsCtx, closeDirectBatches(plan.items), len(resolvedIDs),
-			session, force, postCloseStore, closeClaimNextRequest(claimNext, continueFlag))
+			session, force, postCloseStore, batchClaim)
 
 		// Report and follow up on every argument, in the order it was typed.
 		closedIssues := []closedIssueJSON{}
@@ -380,7 +386,15 @@ in the molecule for you; add --no-auto to only show it.`,
 		// does not stack claims: the survivor is already closed the second time
 		// round, nothing lands, and an empty batch earns no claim.
 		var claimedNextIssue *types.Issue
-		if claimNext && closedForCommand && !continueFlag {
+		claimFailed := false
+		if claimAfterClose && closedForCommand {
+			var claimErr error
+			if claimedNext, claimErr = remoteClaimNext(opsCtx, postCloseStore, *claimRequest); claimErr != nil {
+				fmt.Fprintf(os.Stderr, "Error claiming the next ready issue after the close: %v\n", claimErr)
+				claimFailed = true
+			}
+		}
+		if claimNext && closedForCommand && !continueFlag && !claimFailed {
 			if claimedNext != nil {
 				claimedNextIssue = claimedNext.Issue
 				mutatedStores[postCloseStore] = append(mutatedStores[postCloseStore], claimedNextIssue.ID)
@@ -434,7 +448,7 @@ in the molecule for you; add --no-auto to only show it.`,
 		if len(failures) > 0 {
 			return reportCloseFailures(failures, totalAttempted, closeClaimedID(claimedNextIssue), jsonOutput)
 		}
-		if totalAttempted > 0 && closedCount == 0 && alreadyClosed == 0 {
+		if claimFailed || (totalAttempted > 0 && closedCount == 0 && alreadyClosed == 0) {
 			return SilentExit()
 		}
 		return nil

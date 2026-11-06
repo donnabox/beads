@@ -1,7 +1,15 @@
 package main
 
 import (
+	"context"
+	"fmt"
+
+	"github.com/steveyegge/beads/internal/beads"
+	"github.com/steveyegge/beads/internal/configfile"
+	"github.com/steveyegge/beads/internal/httpclient"
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/issueops"
 )
 
 // THE ATTRIBUTION OMISSIONS (S6d).
@@ -58,4 +66,106 @@ func storeIsRemoteBackend(s storage.DoltStorage) bool {
 	}
 	remote, ok := storage.UnwrapStore(s).(storage.RemoteBackendStore)
 	return ok && remote.IsRemoteBackendStore()
+}
+
+// refuseKVOverRemoteBackend is the answer every `bd kv` subcommand gives on a
+// bd connect workspace. bd serve deliberately hides the kv.* config namespace
+// (issueops/workspaceconfig.go), so a read would answer "not
+// found" for a key that exists and a write would be refused by key. Saying so
+// up front is the only true answer the family has.
+func refuseKVOverRemoteBackend(s storage.DoltStorage, verb string) error {
+	if !storeIsRemoteBackend(s) {
+		return nil
+	}
+	return HandleErrorRespectJSON("bd kv %s is not available over bd connect: bd serve does not expose the kv.* namespace to clients; run it on the server's own workspace", verb)
+}
+
+// hydrateRemoteDependents replaces the shallow rows a remote store's dependents
+// read answers with whole ones. bd serve projects that read onto id, status,
+// type, priority, title and edge type, which is enough for `bd show`'s
+// dependents section and not for a caller rendering the row whole: every other
+// field would print blank and every timestamp as 0001-01-01. A row the follow-up
+// read cannot supply refuses rather than printing that.
+func hydrateRemoteDependents(ctx context.Context, s storage.DoltStorage, refs []*types.IssueWithDependencyMetadata) ([]*types.IssueWithDependencyMetadata, error) {
+	if !storeIsRemoteBackend(s) || len(refs) == 0 {
+		return refs, nil
+	}
+	ids := make([]string, 0, len(refs))
+	for _, ref := range refs {
+		ids = append(ids, ref.ID)
+	}
+	rows, err := s.GetIssuesByIDs(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+	byID := make(map[string]*types.Issue, len(rows))
+	for _, row := range rows {
+		byID[row.ID] = row
+	}
+	hydrated := make([]*types.IssueWithDependencyMetadata, 0, len(refs))
+	for _, ref := range refs {
+		row, ok := byID[ref.ID]
+		if !ok {
+			return nil, fmt.Errorf("bd serve listed %s as a dependent but did not return its row", ref.ID)
+		}
+		hydrated = append(hydrated, &types.IssueWithDependencyMetadata{Issue: *row, DependencyType: ref.DependencyType})
+	}
+	return hydrated, nil
+}
+
+// releaseThroughRole is `bd unclaim` on a remote store: the two raw unclaims have
+// no operation of their own, and the Releaser role is what dials releaseIssue.
+func releaseThroughRole(ctx context.Context, st storage.DoltStorage, id string, conditional bool, expected string, force bool) error {
+	releaser, err := st.Releaser()
+	if err != nil {
+		return err
+	}
+	req := issueops.ReleaseRequest{Actor: currentActor(), IssueID: id, Force: force}
+	if conditional {
+		req.ExpectedAssignee = &expected
+	}
+	_, err = releaser.Release(ctx, req)
+	return err
+}
+
+// addReasonComment appends a `--reason` comment. A remote store has no raw
+// comment append; the Commenter role is what dials addComment.
+func addReasonComment(ctx context.Context, st storage.DoltStorage, id, reason string) error {
+	if !storeIsRemoteBackend(st) {
+		_, err := st.AddIssueComment(ctx, id, currentActor(), reason)
+		return err
+	}
+	commenter, err := st.Commenter()
+	if err != nil {
+		return err
+	}
+	_, err = commenter.AddComment(ctx, issueops.AddCommentRequest{Author: currentActor(), IssueID: id, Text: reason})
+	return err
+}
+
+// workspaceIsRemoteBackend reports whether this workspace is attached with `bd
+// connect`, for a command that decides before any store is open.
+func workspaceIsRemoteBackend() bool {
+	beadsDir := beads.FindBeadsDir()
+	if beadsDir == "" {
+		return false
+	}
+	cfg, err := configfile.Load(beadsDir)
+	return err == nil && cfg != nil && cfg.GetBackend() == httpclient.Backend
+}
+
+// remoteClaimNext is `bd close --claim-next` on a remote store. batchCloseIssues
+// publishes no claim-next member, so the claim is a second request after the
+// closes rather than part of their transaction; ready.claim-next is the same
+// selection the direct route's batch makes.
+func remoteClaimNext(ctx context.Context, st storage.DoltStorage, filter issueops.ReadyRequest) (*types.IssueWithCounts, error) {
+	claimer, err := st.ReadyClaimer()
+	if err != nil {
+		return nil, err
+	}
+	result, err := claimer.ClaimNext(ctx, issueops.ClaimNextRequest{Actor: currentActor(), Filter: filter})
+	if err != nil {
+		return nil, err
+	}
+	return result.Claimed, nil
 }

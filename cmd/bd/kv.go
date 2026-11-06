@@ -259,6 +259,9 @@ Examples:
 		if err := ensureDirectMode("kv set requires direct database access"); err != nil {
 			return HandleError("%v", err)
 		}
+		if err := refuseKVOverRemoteBackend(store, "set"); err != nil {
+			return err
+		}
 
 		storageKey := kvPrefix + key
 
@@ -299,6 +302,9 @@ Examples:
 
 		if err := ensureDirectMode("kv get requires direct database access"); err != nil {
 			return HandleError("%v", err)
+		}
+		if err := refuseKVOverRemoteBackend(store, "get"); err != nil {
+			return err
 		}
 
 		storageKey := kvPrefix + key
@@ -347,6 +353,9 @@ Examples:
 		if err := ensureDirectMode("kv clear requires direct database access"); err != nil {
 			return HandleError("%v", err)
 		}
+		if err := refuseKVOverRemoteBackend(store, "clear"); err != nil {
+			return err
+		}
 
 		storageKey := kvPrefix + key
 
@@ -392,6 +401,9 @@ Examples:
 
 		if err := ensureDirectMode("kv list requires direct database access"); err != nil {
 			return HandleError("%v", err)
+		}
+		if err := refuseKVOverRemoteBackend(store, "list"); err != nil {
+			return err
 		}
 
 		ctx := rootCtx

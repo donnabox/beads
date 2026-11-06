@@ -49,6 +49,9 @@ WARNING: Direct database access bypasses the storage layer. Use with caution.`,
 			}
 		}()
 
+		if workspaceIsRemoteBackend() {
+			return HandleError("'bd sql' is not available over bd connect: bd serve publishes no SQL surface; run it on the server's own workspace")
+		}
 		if !usesSQLServer() {
 			return HandleError("'bd sql' is not yet supported in embedded mode")
 		}

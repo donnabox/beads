@@ -578,7 +578,7 @@ pointless).`,
 			// which is why it is conditioned here rather than passed straight
 			// through: `--force -s closed` is now a legitimate way to ask for
 			// the close-policy half alone.
-			updateResult, updateErr := runCommandUpdateMutation(opsCtx, ops, commandUpdateMutation{
+			updateResult, updateErr := runCommandUpdateMutation(opsCtx, remoteClaimRoute(ops, issueStore, issue), commandUpdateMutation{
 				actor:            currentActor(),
 				issueID:          result.ResolvedID,
 				patch:            patch,

@@ -7,10 +7,10 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/metrics"
-	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
 	"github.com/steveyegge/beads/internal/utils"
+	"github.com/steveyegge/beads/issueops"
 )
 
 var relateCmd = &cobra.Command{
@@ -104,24 +104,15 @@ func runRelate(cmd *cobra.Command, args []string) error {
 	// Add relates-to dependency: id1 -> id2 (bidirectional, so also id2 -> id1)
 	// Per Decision 004, relates-to links are now stored in dependencies table
 	// Add id1 -> id2
-	dep1 := &types.Dependency{
-		IssueID:     id1,
-		DependsOnID: id2,
-		Type:        types.DepRelatesTo,
-	}
-	// bd relate is an explicit dependency verb, so it records history like
-	// bd link / bd dep add (EmitEvent); only structural edge wiring stays silent.
-	if err := store.AddDependencyWithOptions(ctx, dep1, currentActor(), storage.DependencyAddOptions{EmitEvent: true}); err != nil {
-		return fmt.Errorf("failed to add relates-to %s -> %s: %w", id1, id2, err)
-	}
 	// Add id2 -> id1 (bidirectional)
-	dep2 := &types.Dependency{
-		IssueID:     id2,
-		DependsOnID: id1,
-		Type:        types.DepRelatesTo,
+	// bd relate is an explicit dependency verb, so it records history like
+	// bd link / bd dep add: both go through the DependencyEditor role.
+	edges := []issueops.DependencyEdge{
+		{IssueID: id1, DependsOnID: id2, Type: types.DepRelatesTo},
+		{IssueID: id2, DependsOnID: id1, Type: types.DepRelatesTo},
 	}
-	if err := store.AddDependencyWithOptions(ctx, dep2, currentActor(), storage.DependencyAddOptions{EmitEvent: true}); err != nil {
-		return fmt.Errorf("failed to add relates-to %s -> %s: %w", id2, id1, err)
+	if err := addDependencyEdgesDirect(ctx, store, edges, false); err != nil {
+		return fmt.Errorf("failed to add relates-to %s <-> %s: %w", id1, id2, err)
 	}
 
 	if jsonOutput {
@@ -189,12 +180,16 @@ func runUnrelate(cmd *cobra.Command, args []string) error {
 	// Per Decision 004, relates-to links are now stored in dependencies table.
 	// bd unrelate is an explicit dependency verb, so it records history
 	// (EmitEvent) like bd dep remove; only structural teardown stays silent.
+	editor, err := store.DependencyEditor()
+	if err != nil {
+		return fmt.Errorf("failed to remove relates-to %s <-> %s: %w", id1, id2, err)
+	}
 	// Remove id1 -> id2
-	if err := store.RemoveDependencyWithOptions(ctx, id1, id2, currentActor(), storage.DependencyRemoveOptions{EmitEvent: true}); err != nil {
+	if _, err := editor.RemoveDependency(ctx, issueops.RemoveDependencyRequest{Actor: currentActor(), IssueID: id1, DependsOnID: id2}); err != nil {
 		return fmt.Errorf("failed to remove relates-to %s -> %s: %w", id1, id2, err)
 	}
 	// Remove id2 -> id1 (bidirectional)
-	if err := store.RemoveDependencyWithOptions(ctx, id2, id1, currentActor(), storage.DependencyRemoveOptions{EmitEvent: true}); err != nil {
+	if _, err := editor.RemoveDependency(ctx, issueops.RemoveDependencyRequest{Actor: currentActor(), IssueID: id2, DependsOnID: id1}); err != nil {
 		return fmt.Errorf("failed to remove relates-to %s -> %s: %w", id2, id1, err)
 	}
 
