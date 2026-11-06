@@ -456,8 +456,9 @@ func TestEveryResponseCarriesTheResponseWideHeaders(t *testing.T) {
 		status                   int
 		code                     Code
 	}{
-		// No API version can ever claim this path.
-		{"unrouted path", http.MethodGet, "/no-such-route", "", http.StatusNotFound, CodeNotFound},
+		// No API version can ever claim this path, and one segment would be a
+		// BDP Resource address rather than an unrouted path.
+		{"unrouted path", http.MethodGet, "/no/such/route", "", http.StatusNotFound, CodeNotFound},
 		{"unregistered custom method", http.MethodPost, "/v0/beads/issues/bd-1:nosuchverb", "", http.StatusNotFound, CodeNotFound},
 		{"refused Host", http.MethodGet, "/healthz", "rebind.example", http.StatusBadRequest, CodeInvalidArgument},
 	} {
@@ -1992,7 +1993,7 @@ func TestAuthRefusalCostsNoDatabaseSlot(t *testing.T) {
 func TestUnroutedPathsStayUnauthenticated(t *testing.T) {
 	ts := newTestServer(t, Config{Auth: authTokenFile(t, "real-token")})
 
-	for _, path := range []string{"/v0/nonsense", "/", "/v0/beads/issues/bd-1/extra"} {
+	for _, path := range []string{"/v0/nonsense", "/v0/beads/issues/bd-1/extra"} {
 		if resp := ts.get(t, path); resp.StatusCode != http.StatusNotFound {
 			t.Errorf("GET %s with no credential = %d, want 404: paths are public spec", path, resp.StatusCode)
 		}
