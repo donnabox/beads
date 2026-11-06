@@ -33,7 +33,7 @@ const (
 	// gastownhall/bdp this surface was written against, branch
 	// trish/preview-spec-20261104 (specs/profiles/core/core.md,
 	// specs/types/issue/issue.md). It names protocol text, not this build.
-	coreSpecRevision = "7f9f163e471a0402953c985a27ed2e3b97fcb1df"
+	coreSpecRevision = "14ec2cc5dcbee0b839722514e26ee20296065c98"
 
 	coreBDPVersion = "0.1"
 	coreProfile    = "core"

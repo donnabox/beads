@@ -52,6 +52,13 @@ not declare, and fails the run if the request is not an invocation at all. Each 
 also asked of v0 at once and compared with what the client got, so `client_wire` in
 `results.json` is the live evidence that the mount and v0 still agree on real traffic.
 
+## The server table against the spec
+
+`check_spec.py --spec PATH_TO_BDP_CHECKOUT` compares `internal/httpapi/callables_table.go`'s
+name, kind and `cli` with the declarations in `specs/types/issue/callables.md`, both
+ways, and exits 1 on any difference. It is the server's counterpart of the reference
+client's `callables:check`, so a spec change shows up as a failure. It starts no stack.
+
 ## Cleanup
 
 `stack.Root.reap` stops what it started, then anything left whose command line or
