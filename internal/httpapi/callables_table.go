@@ -25,6 +25,8 @@ type callableRow struct {
 	// idempotent and atomic are what the declaration promises (Callables §6).
 	idempotent, atomic bool
 
+	// path, query and body are the declared parameters, so none of them is the
+	// operation's `actor` or `author`: see actorMember.
 	path, query, body []string
 	// adapterParams are arguments adapt consumes; v0 never sees them.
 	adapterParams []string
@@ -32,7 +34,16 @@ type callableRow struct {
 	// declaration does not require them.
 	optional []string
 	// adapt is the row's product adapter, when it has one.
-	adapt func(args map[string]json.RawMessage, actor string) *callableProblem
+	adapt func(args map[string]json.RawMessage) *callableProblem
+	// actorMember is the v0 body member revisionProvenance.actor.id is sent as,
+	// which no declaration has (specs/types/issue/callables.md §2, §3). "" on a
+	// CallableBatch means v0 records no actor, and one supplied is refused.
+	actorMember string
+	// actorOptional says v0 runs the operation with no actor at all.
+	actorOptional bool
+	// defaults are the service defaults of §4: the value of a parameter the
+	// invocation omitted. A supplied value, null included, is never replaced.
+	defaults map[string]json.RawMessage
 
 	// reasons are the v0 codes this Callable declares as callable-error.
 	reasons []string
@@ -86,6 +97,7 @@ var callableTable = []callableRow{
 	},
 	{
 		name: "issue/list", op: OpListIssues,
+		defaults: jsonMembers(`{"sort": "priority"}`),
 		query: []string{
 			"status", "type", "assignee", "label", "label_any", "exclude_label", "parent", "all",
 			"include_templates", "include_gates", "include_infra", "include_ephemeral",
@@ -98,12 +110,14 @@ var callableTable = []callableRow{
 			"pinned", "no_pinned", "deferred", "overdue", "mol_type", "wisp_type", "sort", "cursor",
 			"limit", "brief",
 		},
-		cli: `{"defaults": {"sort": "priority"}, "flags": [{"names": ["-s"], "parameter": "status"}, {"names": ["-a"], "parameter": "assignee"}, {"names": ["-t"], "parameter": "type"}, {"names": ["-l"], "parameter": "label"}, {"names": ["-n"], "parameter": "limit"}]}`,
+		cli: `{"flags": [{"names": ["-s"], "parameter": "status"}, {"names": ["-a"], "parameter": "assignee"}, {"names": ["-t"], "parameter": "type"}, {"names": ["-l"], "parameter": "label"}, {"names": ["-n"], "parameter": "limit"}]}`,
 	},
 	{
 		name: "issue/create", op: OpCreateIssue, batch: true,
+		defaults:    jsonMembers(`{"issue_type": "task"}`),
+		actorMember: "actor",
 		body: []string{
-			"actor", "id", "title", "description", "design", "acceptance_criteria", "notes",
+			"id", "title", "description", "design", "acceptance_criteria", "notes",
 			"issue_type", "status", "priority", "assignee", "owner", "labels", "estimated_minutes",
 			"external_ref", "due_at", "defer_until", "sender", "metadata", "ephemeral",
 			"no_history", "parent_id", "inherit_labels_from_parent", "dependencies", "await_type",
@@ -137,9 +151,10 @@ var callableTable = []callableRow{
 	},
 	{
 		name: "issue/update", op: OpUpdateIssue, batch: true,
-		path: []string{"id"},
+		actorMember: "actor",
+		path:        []string{"id"},
 		body: []string{
-			"actor", "patch", "claim", "expected_version", "expected_status", "expected_assignee",
+			"patch", "claim", "expected_version", "expected_status", "expected_assignee",
 			"force_close_policy", "force_assignee_transfer", "force_notes_overwrite",
 			"allow_template",
 		},
@@ -152,97 +167,108 @@ var callableTable = []callableRow{
 	},
 	{
 		name: "issue/dep/list", op: OpListRelatedIssues,
-		path:  []string{"id"},
-		query: []string{"direction", "type"},
-		cli:   `{"defaults": {"direction": "out"}, "flags": [{"names": ["-t"], "parameter": "type"}], "positionals": [{"position": 0, "parameter": "id"}]}`,
+		defaults: jsonMembers(`{"direction": "out"}`),
+		path:     []string{"id"},
+		query:    []string{"direction", "type"},
+		cli:      `{"flags": [{"names": ["-t"], "parameter": "type"}], "positionals": [{"position": 0, "parameter": "id"}]}`,
 	},
 	{
 		name: "issue/comment", op: OpAddComment, batch: true,
-		atomic:   true,
-		path:     []string{"id"},
-		body:     []string{"author", "text"},
-		optional: []string{"author"}, adapt: adaptCommentAuthor,
-		cli: `{"flags": [{"names": ["-a"], "parameter": "author"}], "fromFile": [{"names": ["-f", "--file"], "parameter": "text"}], "positionals": [{"position": 0, "parameter": "id"}, {"position": 1, "parameter": "text"}]}`,
+		actorMember: "author",
+		atomic:      true,
+		path:        []string{"id"},
+		body:        []string{"text"},
+		cli:         `{"fromFile": [{"names": ["-f", "--file"], "parameter": "text"}], "positionals": [{"position": 0, "parameter": "id"}, {"position": 1, "parameter": "text"}]}`,
 	},
 	{
 		name: "issue/claim", op: OpClaimIssue, batch: true,
-		idempotent: true,
-		path:       []string{"id"},
-		body:       []string{"actor"},
-		reasons:    []string{"already_claimed", "not_claimable"},
-		changed:    changedUnless("already_claimed"),
-		cli:        `{"positionals": [{"position": 0, "parameter": "id"}]}`,
+		actorMember: "actor",
+		idempotent:  true,
+		path:        []string{"id"},
+		reasons:     []string{"already_claimed", "not_claimable"},
+		changed:     changedUnless("already_claimed"),
+		cli:         `{"positionals": [{"position": 0, "parameter": "id"}]}`,
 	},
 	{
 		name: "issue/unclaim", op: OpReleaseIssue, batch: true,
-		path:    []string{"id"},
-		body:    []string{"actor", "expected_assignee", "force"},
-		reasons: []string{"already_claimed", "not_releasable", "precondition_failed"},
-		changed: changedWhen("changed"),
-		cli:     `{"flags": [{"names": ["--if-assignee"], "parameter": "expected_assignee"}], "positionals": [{"position": 0, "parameter": "id"}]}`,
+		actorMember: "actor",
+		path:        []string{"id"},
+		body:        []string{"expected_assignee", "force"},
+		reasons:     []string{"already_claimed", "not_releasable", "precondition_failed"},
+		changed:     changedWhen("changed"),
+		cli:         `{"flags": [{"names": ["--if-assignee"], "parameter": "expected_assignee"}], "positionals": [{"position": 0, "parameter": "id"}]}`,
 	},
 	{
 		name: "issue/heartbeat", op: OpHeartbeatIssue, batch: true,
-		path:    []string{"id"},
-		body:    []string{"actor"},
-		reasons: []string{"already_claimed", "lease_not_held"},
-		cli:     `{"positionals": [{"position": 0, "parameter": "id"}]}`,
+		actorMember: "actor",
+		path:        []string{"id"},
+		reasons:     []string{"already_claimed", "lease_not_held"},
+		cli:         `{"positionals": [{"position": 0, "parameter": "id"}]}`,
 	},
 	{
 		name: "issue/close", op: OpCloseIssue, batch: true,
-		idempotent: true,
-		path:       []string{"id"},
-		body:       []string{"actor", "reason", "session", "force", "expected_version", "auto_close_molecule"},
-		reasons:    []string{"issue_pinned", "not_assignee", "not_closable", "template_read_only"},
-		changed:    changedByClose,
-		cli:        `{"defaults": {"reason": "Closed"}, "flags": [{"names": ["-r"], "parameter": "reason"}, {"names": ["-f"], "parameter": "force"}, {"names": ["--if-revision"], "parameter": "expected_version"}], "fromFile": [{"names": ["--reason-file"], "parameter": "reason"}], "positionals": [{"position": 0, "parameter": "id"}]}`,
+		defaults:    jsonMembers(`{"reason": "Closed"}`),
+		actorMember: "actor",
+		idempotent:  true,
+		path:        []string{"id"},
+		body:        []string{"reason", "session", "force", "expected_version", "auto_close_molecule"},
+		reasons:     []string{"issue_pinned", "not_assignee", "not_closable", "template_read_only"},
+		changed:     changedByClose,
+		cli:         `{"flags": [{"names": ["-r"], "parameter": "reason"}, {"names": ["-f"], "parameter": "force"}, {"names": ["--if-revision"], "parameter": "expected_version"}], "fromFile": [{"names": ["--reason-file"], "parameter": "reason"}], "positionals": [{"position": 0, "parameter": "id"}]}`,
 	},
 	{
 		name: "issue/advance", op: OpAdvanceMolecule, batch: true,
-		path:    []string{"id"},
-		body:    []string{"actor", "auto_claim"},
-		changed: changedWhen("claimed"),
-		cli:     `{"positionals": [{"position": 0, "parameter": "id"}]}`,
+		actorMember: "actor",
+		path:        []string{"id"},
+		body:        []string{"auto_claim"},
+		changed:     changedWhen("claimed"),
+		cli:         `{"positionals": [{"position": 0, "parameter": "id"}]}`,
 	},
 	{
 		name: "issue/reopen", op: OpReopenIssue, batch: true,
-		idempotent: true,
-		path:       []string{"id"},
-		body:       []string{"actor", "reason", "expected_version"},
-		changed:    changedUnless("already_open"),
-		cli:        `{"flags": [{"names": ["-r"], "parameter": "reason"}, {"names": ["--if-revision"], "parameter": "expected_version"}], "positionals": [{"position": 0, "parameter": "id"}]}`,
+		actorMember: "actor",
+		idempotent:  true,
+		path:        []string{"id"},
+		body:        []string{"reason", "expected_version"},
+		changed:     changedUnless("already_open"),
+		cli:         `{"flags": [{"names": ["-r"], "parameter": "reason"}, {"names": ["--if-revision"], "parameter": "expected_version"}], "positionals": [{"position": 0, "parameter": "id"}]}`,
 	},
 	{
 		name: "issue/metadata/compare-and-set", op: OpCompareAndSetMetadata, batch: true,
-		path:    []string{"id"},
-		body:    []string{"actor", "key", "expected", "value"},
-		changed: changedWhen("swapped"),
-		cli:     `{"positionals": [{"position": 0, "parameter": "id"}]}`,
+		actorMember: "actor",
+		path:        []string{"id"},
+		body:        []string{"key", "expected", "value"},
+		changed:     changedWhen("swapped"),
+		cli:         `{"positionals": [{"position": 0, "parameter": "id"}]}`,
 	},
 	{
 		name: "issue/purge", op: OpSweepIssues, batch: true,
+		defaults:    jsonMembers(`{"dry_run": true, "tier": "ephemeral", "protect_referenced": false, "protect_live_dependents": true}`),
+		actorMember: "actor", actorOptional: true,
 		body: []string{
-			"tier", "actor", "closed_before", "pattern", "protect_referenced", "dry_run",
+			"tier", "closed_before", "pattern", "protect_referenced", "dry_run",
 			"protect_live_dependents", "limit", "retain_ids",
 		},
 		changed: changedUnlessDryRun("swept"),
-		cli:     `{"defaults": {"dry_run": true, "tier": "ephemeral", "protect_referenced": false, "protect_live_dependents": true}}`,
 	},
 	{
 		name: "issue/prune", op: OpSweepIssues, batch: true,
+		defaults:    jsonMembers(`{"dry_run": true, "tier": "durable", "protect_referenced": true, "protect_live_dependents": false}`),
+		actorMember: "actor", actorOptional: true,
 		body: []string{
-			"tier", "actor", "closed_before", "pattern", "protect_referenced", "dry_run",
+			"tier", "closed_before", "pattern", "protect_referenced", "dry_run",
 			"protect_live_dependents", "limit", "retain_ids",
 		},
 		changed: changedUnlessDryRun("swept"),
-		cli:     `{"defaults": {"dry_run": true, "tier": "durable", "protect_referenced": true, "protect_live_dependents": false}}`,
 	},
 	{
 		name: "issue/delete", op: OpDeleteIssues, batch: true,
+		defaults:    jsonMembers(`{"dry_run": true}`),
+		actorMember: "actor", actorOptional: true,
 		atomic:  true,
-		body:    []string{"ids", "actor", "cascade", "force", "dry_run", "expected_version"},
+		body:    []string{"ids", "cascade", "force", "dry_run", "expected_version"},
 		changed: changedUnlessDryRun("deleted"),
-		cli:     `{"defaults": {"dry_run": true}, "flags": [{"names": ["--if-revision"], "parameter": "expected_version"}]}`,
+		cli:     `{"flags": [{"names": ["--if-revision"], "parameter": "expected_version"}]}`,
 	},
 	{
 		name: "issue/get-many", op: OpBatchGetIssues,
@@ -250,22 +276,25 @@ var callableTable = []callableRow{
 	},
 	{
 		name: "issue/reclaim", op: OpReclaimIssues, batch: true,
+		defaults:    jsonMembers(`{"older_than_seconds": 600}`),
+		actorMember: "actor",
 		body: []string{
-			"actor", "older_than_seconds", "ids", "assignees", "labels", "labels_any",
+			"older_than_seconds", "ids", "assignees", "labels", "labels_any",
 			"exclude_labels", "any_replica",
 		},
 		changed: changedWhen("reclaimed"),
-		cli:     `{"defaults": {"older_than_seconds": 600}}`,
 	},
 	{
 		name: "issue/create-many", op: OpBatchCreateIssues, batch: true,
-		atomic: true,
-		body:   []string{"actor", "items"},
+		actorMember: "actor",
+		atomic:      true,
+		body:        []string{"items"},
 	},
 	{
 		name: "issue/batch", op: OpApplyBatch, batch: true,
-		atomic: true,
-		body:   []string{"actor", "items", "provenance", "force_id_prefix", "skip_per_edge_cycle_check"},
+		actorMember: "actor",
+		atomic:      true,
+		body:        []string{"items", "provenance", "force_id_prefix", "skip_per_edge_cycle_check"},
 		reasons: []string{
 			"already_claimed", "dependency_cycle", "dependency_exists", "issue_pinned",
 			"not_assignee", "not_closable", "notes_overwrite_refused", "precondition_failed",
@@ -274,18 +303,19 @@ var callableTable = []callableRow{
 	},
 	{
 		name: "issue/close-many", op: OpBatchCloseIssues, batch: true,
-		body:    []string{"actor", "items", "session", "force", "auto_close_molecule"},
-		changed: changedByBatchClose,
+		actorMember: "actor",
+		body:        []string{"items", "session", "force", "auto_close_molecule"},
+		changed:     changedByBatchClose,
 	},
 	{
 		name: "issue/claim-next", op: OpClaimNextIssue, batch: true,
-		atomic: true,
+		actorMember: "actor",
+		atomic:      true,
 		query: []string{
 			"assignee", "unassigned", "type", "exclude_type", "label", "label_any", "exclude_label",
 			"label_pattern", "label_regex", "priority", "parent", "metadata_field",
 			"has_metadata_key", "include_ephemeral", "include_deferred", "sort",
 		},
-		body:    []string{"actor"},
 		changed: changedWhen("claimed"),
 		cli:     `{"flags": [{"names": ["-p"], "parameter": "priority"}, {"names": ["-a"], "parameter": "assignee"}, {"names": ["-u"], "parameter": "unassigned"}, {"names": ["-s"], "parameter": "sort"}, {"names": ["-l"], "parameter": "label"}, {"names": ["-t"], "parameter": "type"}]}`,
 	},
@@ -303,8 +333,9 @@ var callableTable = []callableRow{
 	},
 	{
 		name: "issue/dep/add", op: OpAddDependencies, batch: true,
-		idempotent: true, atomic: true,
-		body:          []string{"actor", "edges"},
+		actorMember: "actor",
+		idempotent:  true, atomic: true,
+		body:          []string{"edges"},
 		adapterParams: []string{"source", "target", "type"}, adapt: adaptFlatDependency,
 		optional: []string{"edges"},
 		reasons:  []string{"dependency_cycle", "dependency_exists"},
@@ -313,10 +344,11 @@ var callableTable = []callableRow{
 	},
 	{
 		name: "issue/dep/remove", op: OpRemoveDependency, batch: true,
-		idempotent: true,
-		body:       []string{"actor", "issue_id", "depends_on_id"},
-		changed:    changedWhen("removed"),
-		cli:        `{"positionals": [{"position": 0, "parameter": "issue_id"}, {"position": 1, "parameter": "depends_on_id"}]}`,
+		actorMember: "actor",
+		idempotent:  true,
+		body:        []string{"issue_id", "depends_on_id"},
+		changed:     changedWhen("removed"),
+		cli:         `{"positionals": [{"position": 0, "parameter": "issue_id"}, {"position": 1, "parameter": "depends_on_id"}]}`,
 	},
 	{
 		name: "config/list", op: OpListSettings,
@@ -364,6 +396,16 @@ var callableTable = []callableRow{
 	},
 }
 
+// jsonMembers is a table literal's JSON object, by member. A malformed literal
+// panics at init, which is every test.
+func jsonMembers(document string) map[string]json.RawMessage {
+	var members map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(document), &members); err != nil {
+		panic("callable table: " + document + ": " + err.Error())
+	}
+	return members
+}
+
 // callableIndex finds a row by name.
 var callableIndex = func() map[string]*callableRow {
 	index := make(map[string]*callableRow, len(callableTable))
@@ -379,6 +421,12 @@ var callableIndex = func() map[string]*callableRow {
 type CallableRoute struct {
 	Op, Method, Path                    string
 	PathParams, QueryParams, BodyParams []string
+	// ActorMember is the v0 member revisionProvenance.actor.id is sent as.
+	ActorMember string
+	// ActorOptional says the operation runs with no actor at all.
+	ActorOptional bool
+	// Defaults are the service defaults the mount applies on omission, by parameter.
+	Defaults map[string]json.RawMessage
 }
 
 // CallableRoutes is the table, by Callable name.
@@ -393,6 +441,7 @@ func CallableRoutes() map[string]CallableRoute {
 		routes[row.name] = CallableRoute{
 			Op: row.op, Method: rt.method, Path: rt.specPathOf(),
 			PathParams: row.path, QueryParams: row.query, BodyParams: row.body,
+			ActorMember: row.actorMember, ActorOptional: row.actorOptional, Defaults: row.defaults,
 		}
 	}
 	return routes

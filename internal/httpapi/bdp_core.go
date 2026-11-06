@@ -31,9 +31,10 @@ const (
 
 	// coreSpecRevision is Core discovery's `specRevision`: the commit of
 	// gastownhall/bdp this surface was written against, branch
-	// trish/preview-spec-20261104 (specs/profiles/core/core.md,
-	// specs/types/issue/issue.md). It names protocol text, not this build.
-	coreSpecRevision = "14ec2cc5dcbee0b839722514e26ee20296065c98"
+	// trish/preview1-issue-callables-20261104 (specs/profiles/core/core.md,
+	// specs/types/issue/issue.md, specs/types/issue/callables.md). It names protocol
+	// text, not this build.
+	coreSpecRevision = "8ff2dd047104c9a59423a12d3454ec48b80929e3"
 
 	coreBDPVersion = "0.1"
 	coreProfile    = "core"

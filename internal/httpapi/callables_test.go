@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -47,6 +48,12 @@ func (ts *testServer) callSend(t *testing.T, name, body string, header http.Head
 func (ts *testServer) call(t *testing.T, name, arguments string) *http.Response {
 	t.Helper()
 	return ts.callSend(t, name, `{"arguments":`+arguments+`}`, nil)
+}
+
+// callAs invokes a Callable with revisionProvenance naming the actor.
+func (ts *testServer) callAs(t *testing.T, name, actor, arguments string) *http.Response {
+	t.Helper()
+	return ts.callSend(t, name, `{"arguments":`+arguments+`,"revisionProvenance":{"actor":{"id":"`+actor+`","basis":"writer-supplied"}}}`, nil)
 }
 
 // wantProblem asserts a mount's Problem and returns its body.
@@ -184,7 +191,7 @@ func TestCallableTableMatchesTheDocument(t *testing.T) {
 		for _, part := range []struct {
 			location   string
 			table, doc []string
-		}{{"path", row.path, path}, {"query", row.query, query}, {"body", row.body, body}} {
+		}{{"path", row.path, path}, {"query", row.query, query}, {"body", row.v0BodyMembers(), body}} {
 			if got := sortedCopy(part.table); !reflect.DeepEqual(got, part.doc) && (len(got) > 0 || len(part.doc) > 0) {
 				t.Errorf("%s %s parameters:\n table %v\n   doc %v", row.name, part.location, got, part.doc)
 			}
@@ -197,6 +204,24 @@ func TestCallableTableMatchesTheDocument(t *testing.T) {
 		for _, name := range row.optional {
 			if !slices.Contains(all, name) {
 				t.Errorf("%s: optional %q is no parameter", row.name, name)
+			}
+		}
+		// No declaration has an actor or an author (§2), and every operation that
+		// records one says so on its row: the document's body list above holds that.
+		if slices.Contains(all, "actor") || slices.Contains(all, "author") {
+			t.Errorf("%s declares an actor or an author: %v", row.name, all)
+		}
+		if row.actorMember != "" {
+			if _, v0Required := v0Parameters(doc, op.op); v0Required[row.actorMember] == row.actorOptional {
+				t.Errorf("%s: actorOptional = %v, v0 requires %s = %v", row.name, row.actorOptional, row.actorMember, v0Required[row.actorMember])
+			}
+		}
+		for name, value := range row.defaults {
+			if !slices.Contains(all, name) {
+				t.Errorf("%s: default for %q, which is no parameter", row.name, name)
+			}
+			if !json.Valid(value) {
+				t.Errorf("%s: default for %q is %s", row.name, name, value)
 			}
 		}
 	}
@@ -284,7 +309,12 @@ func TestEveryCallableReachesItsV0Handler(t *testing.T) {
 				}
 			}
 			encoded, _ := json.Marshal(args)
-			resp := ts.call(t, row.name, string(encoded))
+			var resp *http.Response
+			if row.actorMember != "" {
+				resp = ts.callAs(t, row.name, "v-"+row.actorMember, string(encoded))
+			} else {
+				resp = ts.call(t, row.name, string(encoded))
+			}
 			result, envelope := callResult(t, resp)
 			last := last.Load()
 			if last == nil {
@@ -325,15 +355,16 @@ func TestEveryCallableReachesItsV0Handler(t *testing.T) {
 					t.Errorf("query %s = %v", name, last.query[name])
 				}
 			}
-			if len(last.body) != len(row.body) {
-				t.Errorf("body = %v, want %v", last.body, row.body)
+			members := row.v0BodyMembers()
+			if len(last.body) != len(members) {
+				t.Errorf("body = %v, want %v", last.body, members)
 			}
-			for _, name := range row.body {
+			for _, name := range members {
 				if string(last.body[name]) != `"v-`+name+`"` {
 					t.Errorf("body %s = %s", name, last.body[name])
 				}
 			}
-			if len(row.body) > 0 && last.contentType != claimContentType {
+			if len(members) > 0 && last.contentType != claimContentType {
 				t.Errorf("Content-Type = %q", last.contentType)
 			}
 		})
@@ -377,7 +408,7 @@ func TestRoutedResponseEqualsDirect(t *testing.T) {
 		lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: updatedIssue("bd-1"), Changed: true}}
 		ts := newUpdateServer(t, lifecycle)
 		direct := ts.updateIssue(t, updatePath, `{"actor":"alice","patch":{"title":"new"}}`)
-		routed := ts.call(t, "issue/update", `{"id":"bd-1","actor":"alice","patch":{"title":"new"}}`)
+		routed := ts.callAs(t, "issue/update", "alice", `{"id":"bd-1","patch":{"title":"new"}}`)
 		_, _, envelope := directAndRouted(t, direct, routed)
 		if string(envelope["changed"]) != "true" {
 			t.Errorf("changed = %s, want true", envelope["changed"])
@@ -388,27 +419,27 @@ func TestRoutedResponseEqualsDirect(t *testing.T) {
 		}
 
 		lifecycle.updateResult.Changed = false
-		_, envelope = callResult(t, ts.call(t, "issue/update", `{"id":"bd-1","actor":"alice","patch":{"title":"new"}}`))
+		_, envelope = callResult(t, ts.callAs(t, "issue/update", "alice", `{"id":"bd-1","patch":{"title":"new"}}`))
 		if string(envelope["changed"]) != "false" {
 			t.Errorf("a no-op update: changed = %s, want false", envelope["changed"])
 		}
 	})
 
 	for _, tc := range []struct {
-		name        string
-		member      string
-		dryRun      bool
-		wantChanged string
+		name         string
+		direct, sent string
+		dryRun       bool
+		wantChanged  string
 	}{
-		{"issue/delete real run", `"dry_run":false,`, false, "true"},
-		{"issue/delete dry run", `"dry_run":true,`, true, "false"},
-		{"issue/delete dry_run omitted gets v0's behavior", "", false, "true"},
+		{"issue/delete real run", `"dry_run":false,`, `"dry_run":false,`, false, "true"},
+		{"issue/delete dry run", `"dry_run":true,`, `"dry_run":true,`, true, "false"},
+		{"issue/delete dry_run omitted previews", `"dry_run":true,`, "", true, "false"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			deleter := &roleDeleter{result: issueops.DeleteResult{Deleted: 2, DryRun: tc.dryRun}}
 			ts := newTestServer(t, rolesConfig(Config{Deleter: deleter}))
-			direct := ts.delete(t, `{`+tc.member+`"ids":["bd-1","bd-2"],"force":true}`)
-			routed := ts.call(t, "issue/delete", `{`+tc.member+`"ids":["bd-1","bd-2"],"force":true}`)
+			direct := ts.delete(t, `{`+tc.direct+`"ids":["bd-1","bd-2"],"force":true}`)
+			routed := ts.call(t, "issue/delete", `{`+tc.sent+`"ids":["bd-1","bd-2"],"force":true}`)
 			_, _, envelope := directAndRouted(t, direct, routed)
 			if string(envelope["changed"]) != tc.wantChanged {
 				t.Errorf("changed = %s, want %s", envelope["changed"], tc.wantChanged)
@@ -418,7 +449,7 @@ func TestRoutedResponseEqualsDirect(t *testing.T) {
 				t.Fatalf("the role saw different requests: %+v", got)
 			}
 			if got[1].DryRun != tc.dryRun {
-				t.Errorf("DryRun reaching the role = %v, want %v: no server-side default", got[1].DryRun, tc.dryRun)
+				t.Errorf("DryRun reaching the role = %v, want %v", got[1].DryRun, tc.dryRun)
 			}
 		})
 	}
@@ -506,7 +537,7 @@ func TestCallableEnvelopeRefusals(t *testing.T) {
 
 	// Not retained, and admitted: the Scope does not advertise idempotency.
 	lifecycle.updateResult = issueops.UpdateResult{Issue: updatedIssue("bd-1"), Changed: true}
-	callResult(t, ts.callSend(t, "issue/update", `{"arguments":{"id":"bd-1","actor":"a","patch":{"title":"t"}}}`,
+	callResult(t, ts.callSend(t, "issue/update", `{"arguments":{"id":"bd-1","patch":{"title":"t"}},"revisionProvenance":{"actor":{"id":"a","basis":"unknown"}}}`,
 		http.Header{"Idempotency-Key": {"k"}}))
 
 	resp := ts.callSend(t, "issue/show", `{"arguments":{"id":"bd-1"}}`, http.Header{"Accept": {"application/json"}})
@@ -544,7 +575,8 @@ func TestCallableCheckingArguments(t *testing.T) {
 		{"issue/show", `{"id":7}`, "id"},
 		{"issue/show", `{"id":"."}`, "id"},
 		{"issue/show", `{"id":".."}`, "id"},
-		{"issue/claim", `{"id":"bd-1"}`, "actor"},
+		{"issue/claim", `{"id":"bd-1"}`, "revisionProvenance.actor"},
+		{"issue/claim", `{"id":"bd-1","actor":"sam"}`, "actor"},
 		{"issue/claim", `{"id":"bd-1","actor":null}`, "actor"},
 		{"issue/claim", `{"id":"bd-1","actor":7}`, "actor"},
 		{"issue/dep/tree", `{}`, "root_id"},
@@ -568,7 +600,8 @@ func TestCallableQueryArguments(t *testing.T) {
 	reader := &roleReader{page: issueops.IssuePage{}}
 	ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
 
-	direct := ts.get(t, "/v0/beads/issues?label=a&label=b%26c&limit=5&all=true&status=open")
+	// sort=priority is issue/list's default, and not v0's.
+	direct := ts.get(t, "/v0/beads/issues?label=a&label=b%26c&limit=5&all=true&status=open&sort=priority")
 	routed := ts.call(t, "issue/list", `{"label":["a","b&c"],"limit":5,"all":true,"status":["open"]}`)
 	directAndRouted(t, direct, routed)
 	reader.mu.Lock()
@@ -604,10 +637,10 @@ func TestCallableReasonIsStoredAsSent(t *testing.T) {
 		{"past the 255-character columns", long, long},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			arguments := `{"id":"bd-1","actor":"alice","reason":"` + tc.wire + `"}`
+			arguments := `{"id":"bd-1","reason":"` + tc.wire + `"}`
 
 			closing := &roleLifecycle{closeResult: issueops.CloseResult{Issue: closedIssue("bd-1"), Changed: true}}
-			resp := newCloseServer(t, closing).call(t, "issue/close", arguments)
+			resp := newCloseServer(t, closing).callAs(t, "issue/close", "alice", arguments)
 			if resp.StatusCode != http.StatusOK {
 				t.Fatalf("issue/close = %d: %s", resp.StatusCode, readAll(t, resp))
 			}
@@ -616,7 +649,7 @@ func TestCallableReasonIsStoredAsSent(t *testing.T) {
 			}
 
 			reopening := &roleLifecycle{reopenResult: issueops.ReopenResult{Issue: reopenedIssue("bd-1"), Changed: true}}
-			resp = newReopenServer(t, reopening).call(t, "issue/reopen", arguments)
+			resp = newReopenServer(t, reopening).callAs(t, "issue/reopen", "alice", arguments)
 			if resp.StatusCode != http.StatusOK {
 				t.Fatalf("issue/reopen = %d: %s", resp.StatusCode, readAll(t, resp))
 			}
@@ -625,7 +658,7 @@ func TestCallableReasonIsStoredAsSent(t *testing.T) {
 			}
 
 			closer := &roleBatchCloser{result: issueops.CloseBatchResult{Outcomes: []issueops.CloseOutcome{{IssueID: "bd-1", Issue: closedIssue("bd-1"), Changed: true}}}}
-			resp = newBatchCloseServer(t, closer).call(t, "issue/close-many", `{"actor":"alice","items":[{"id":"bd-1","reason":"`+tc.wire+`"}]}`)
+			resp = newBatchCloseServer(t, closer).callAs(t, "issue/close-many", "alice", `{"items":[{"id":"bd-1","reason":"`+tc.wire+`"}]}`)
 			if resp.StatusCode != http.StatusOK {
 				t.Fatalf("issue/close-many = %d: %s", resp.StatusCode, readAll(t, resp))
 			}
@@ -645,7 +678,7 @@ func TestCallableFlatDependencyAdapter(t *testing.T) {
 		return editor.adds[len(editor.adds)-1].Edges
 	}
 
-	_, envelope := callResult(t, ts.call(t, "issue/dep/add", `{"actor":"a","source":"bd-1","target":"bd-2"}`))
+	_, envelope := callResult(t, ts.callAs(t, "issue/dep/add", "a", `{"source":"bd-1","target":"bd-2"}`))
 	if string(envelope["changed"]) != "true" {
 		t.Errorf("changed = %s", envelope["changed"])
 	}
@@ -654,13 +687,13 @@ func TestCallableFlatDependencyAdapter(t *testing.T) {
 		t.Errorf("omitted type: edges = %+v, want %+v", got, want)
 	}
 
-	callResult(t, ts.call(t, "issue/dep/add", `{"actor":"a","source":"bd-1","target":"bd-2","type":"related"}`))
+	callResult(t, ts.callAs(t, "issue/dep/add", "a", `{"source":"bd-1","target":"bd-2","type":"related"}`))
 	if got := lastEdges(); got[0].Type != types.DependencyType("related") {
 		t.Errorf("flat type: edges = %+v", got)
 	}
 
-	callResult(t, ts.call(t, "issue/dep/add",
-		`{"actor":"a","edges":[{"issue_id":"bd-3","depends_on_id":"bd-4","type":"blocks"},{"issue_id":"bd-5","depends_on_id":"bd-6","type":"related"}]}`))
+	callResult(t, ts.callAs(t, "issue/dep/add", "a",
+		`{"edges":[{"issue_id":"bd-3","depends_on_id":"bd-4","type":"blocks"},{"issue_id":"bd-5","depends_on_id":"bd-6","type":"related"}]}`))
 	if got := lastEdges(); len(got) != 2 || got[1].IssueID != "bd-5" {
 		t.Errorf("edges form: %+v", got)
 	}
@@ -672,69 +705,89 @@ func TestCallableFlatDependencyAdapter(t *testing.T) {
 	}
 	before := addCount()
 	for _, tc := range []struct{ arguments, param string }{
-		{`{"actor":"a"}`, "edges"},
-		{`{"actor":"a","edges":[{"issue_id":"x","depends_on_id":"y","type":"blocks"}],"source":"bd-1","target":"bd-2"}`, "source"},
-		{`{"actor":"a","edges":[{"issue_id":"x","depends_on_id":"y","type":"blocks"}],"type":"blocks"}`, "type"},
-		{`{"actor":"a","source":"bd-1"}`, "target"},
-		{`{"actor":"a","target":"bd-1"}`, "source"},
-		{`{"actor":"a","type":"blocks"}`, "source"},
-		{`{"actor":"a","source":7,"target":"bd-2"}`, "source"},
-		{`{"actor":"a","source":"bd-1","target":null}`, "target"},
-		{`{"source":"bd-1","target":"bd-2"}`, "actor"},
+		{`{}`, "edges"},
+		{`{"edges":[{"issue_id":"x","depends_on_id":"y","type":"blocks"}],"source":"bd-1","target":"bd-2"}`, "source"},
+		{`{"edges":[{"issue_id":"x","depends_on_id":"y","type":"blocks"}],"type":"blocks"}`, "type"},
+		{`{"source":"bd-1"}`, "target"},
+		{`{"target":"bd-1"}`, "source"},
+		{`{"type":"blocks"}`, "source"},
+		{`{"source":7,"target":"bd-2"}`, "source"},
+		{`{"source":"bd-1","target":null}`, "target"},
 	} {
-		body := wantProblem(t, ts.call(t, "issue/dep/add", tc.arguments), http.StatusUnprocessableEntity, bdpValidationFailed)
+		body := wantProblem(t, ts.callAs(t, "issue/dep/add", "a", tc.arguments), http.StatusUnprocessableEntity, bdpValidationFailed)
 		wantDiagnosticNaming(t, body, tc.param)
 	}
+	wantDiagnosticNaming(t, wantProblem(t, ts.call(t, "issue/dep/add", `{"source":"bd-1","target":"bd-2"}`),
+		http.StatusUnprocessableEntity, bdpValidationFailed), "revisionProvenance.actor")
 	if addCount() != before {
 		t.Error("a refused form reached the role")
 	}
 }
 
-func TestCallableCommentAuthorAdapter(t *testing.T) {
+// TestCallableCommentIsSignedByTheActor: `author` is no parameter of issue/comment.
+// The actor is what v0 stores under `author`, and v0's own rules for that name are
+// the check.
+func TestCallableCommentIsSignedByTheActor(t *testing.T) {
 	commenter := &roleCommenter{comment: storedComment("bd-1")}
 	ts := newCommentServer(t, commenter)
-	provenance := `"revisionProvenance":{"actor":{"id":"sam","basis":"writer-supplied"}}`
 
-	callResult(t, ts.callSend(t, "issue/comment", `{"arguments":{"id":"bd-1","text":"hi"},`+provenance+`}`, nil))
+	callResult(t, ts.callAs(t, "issue/comment", "sam", `{"id":"bd-1","text":"hi"}`))
 	if got := commenter.commentRequests(); got[len(got)-1].Author != "sam" {
-		t.Errorf("omitted author: %+v, want the invocation's actor", got[len(got)-1])
+		t.Errorf("the comment is signed %+v, want the invocation's actor", got[len(got)-1])
 	}
-
-	callResult(t, ts.callSend(t, "issue/comment", `{"arguments":{"id":"bd-1","text":"hi","author":"kim"},`+provenance+`}`, nil))
-	if got := commenter.commentRequests(); got[len(got)-1].Author != "kim" {
-		t.Errorf("supplied author: %+v, it wins over the actor", got[len(got)-1])
+	callResult(t, ts.callAs(t, "issue/comment", "  sam  ", `{"id":"bd-1","text":"hi"}`))
+	if got := commenter.commentRequests(); got[len(got)-1].Author != "sam" {
+		t.Errorf("v0 trims what it stores, and it did not here: %+v", got[len(got)-1])
 	}
 
 	before := len(commenter.commentRequests())
-	// No actor to fill from: the refusal is v0's, on the parameter it requires.
 	wantDiagnosticNaming(t, wantProblem(t, ts.call(t, "issue/comment", `{"id":"bd-1","text":"hi"}`),
-		http.StatusUnprocessableEntity, bdpValidationFailed), "author")
-	// null is a supplied value (§4), and v0 refuses it; nothing fills it.
-	wantDiagnosticNaming(t, wantProblem(t, ts.callSend(t, "issue/comment",
-		`{"arguments":{"id":"bd-1","text":"hi","author":null},`+provenance+`}`, nil),
-		http.StatusUnprocessableEntity, bdpValidationFailed), "author")
+		http.StatusUnprocessableEntity, bdpValidationFailed), "revisionProvenance.actor")
+	for _, arguments := range []string{
+		`{"id":"bd-1","text":"hi","author":"kim"}`,
+		`{"id":"bd-1","text":"hi","author":null}`,
+		`{"id":"bd-1","text":"hi","actor":"kim"}`,
+	} {
+		body := wantProblem(t, ts.callAs(t, "issue/comment", "sam", arguments), http.StatusUnprocessableEntity, bdpValidationFailed)
+		if body["reason"] != string(ReasonUnknownParameter) {
+			t.Errorf("%s: reason = %v, want the undeclared-argument refusal", arguments, body["reason"])
+		}
+	}
+	// v0's refusal, carried: a name that is blank once trimmed.
+	body := wantProblem(t, ts.callAs(t, "issue/comment", "   ", `{"id":"bd-1","text":"hi"}`), http.StatusUnprocessableEntity, bdpValidationFailed)
+	if carried, _ := body["v0"].(map[string]any); carried["param"] != "author" {
+		t.Errorf("a blank actor: %v, want v0's refusal of `author`", body)
+	}
 	if len(commenter.commentRequests()) != before {
 		t.Error("a refused comment reached the role")
 	}
 }
 
 // TestCallableProvenanceIsHonoredOrRefused: v0 has nowhere to carry
-// revisionProvenance but its own `actor` argument, so an input it cannot honor is
-// refused rather than dropped.
+// revisionProvenance but the name it records, so an input it cannot honor is refused
+// rather than dropped.
 func TestCallableProvenanceIsHonoredOrRefused(t *testing.T) {
 	lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: updatedIssue("bd-1"), Changed: true}}
 	ts := newUpdateServer(t, lifecycle)
-	args := `"arguments":{"id":"bd-1","actor":"sam","patch":{"title":"t"}}`
+	args := `"arguments":{"id":"bd-1","patch":{"title":"t"}}`
 
 	callResult(t, ts.callSend(t, "issue/update",
 		`{`+args+`,"revisionProvenance":{"actor":{"id":"sam","basis":"writer-supplied"},"agent":null,"message":null}}`, nil))
-	callResult(t, ts.callSend(t, "issue/update", `{`+args+`,"revisionProvenance":{}}`, nil))
+	if got := lifecycle.updateRequests(); got[len(got)-1].Actor != "sam" {
+		t.Errorf("the role was told the actor is %q", got[len(got)-1].Actor)
+	}
+	callResult(t, ts.callSend(t, "issue/update", `{`+args+`,"revisionProvenance":{"actor":{"id":"kim","basis":"unknown"}}}`, nil))
+	if got := lifecycle.updateRequests(); got[len(got)-1].Actor != "kim" {
+		t.Errorf("a basis of unknown: the role was told the actor is %q", got[len(got)-1].Actor)
+	}
 
 	before := len(lifecycle.updateRequests())
+	// `revisionProvenance` is present and names nobody, which is no actor at all.
+	wantDiagnosticNaming(t, wantProblem(t, ts.callSend(t, "issue/update", `{`+args+`,"revisionProvenance":{}}`, nil),
+		http.StatusUnprocessableEntity, bdpValidationFailed), "revisionProvenance.actor")
 	for _, provenance := range []string{
-		`{"actor":{"id":"kim","basis":"writer-supplied"}}`,
-		`{"agent":"claude"}`,
-		`{"message":"why"}`,
+		`{"actor":{"id":"sam","basis":"writer-supplied"},"agent":"claude"}`,
+		`{"actor":{"id":"sam","basis":"writer-supplied"},"message":"why"}`,
 	} {
 		wantDiagnosticNaming(t, wantProblem(t, ts.callSend(t, "issue/update", `{`+args+`,"revisionProvenance":`+provenance+`}`, nil),
 			http.StatusUnprocessableEntity, bdpValidationFailed), "revisionProvenance")
@@ -754,13 +807,218 @@ func TestCallableProvenanceIsHonoredOrRefused(t *testing.T) {
 		wantProblem(t, ts.callSend(t, "issue/update", `{`+args+`,"revisionProvenance":`+provenance+`}`, nil),
 			http.StatusBadRequest, bdpMalformedRequest)
 	}
-	// The omitted `actor` is v0's refusal, not filled from provenance: only
-	// issue/comment has that adapter.
-	wantDiagnosticNaming(t, wantProblem(t, ts.callSend(t, "issue/update",
-		`{"arguments":{"id":"bd-1","patch":{"title":"t"}},"revisionProvenance":{"actor":{"id":"sam","basis":"unknown"}}}`, nil),
-		http.StatusUnprocessableEntity, bdpValidationFailed), "revisionProvenance")
+	// What the id must be is v0's to say, as it was when the same name came in `actor`.
+	for _, id := range []string{`   `, `a\u0007b`, strings.Repeat("x", 300)} {
+		body := wantProblem(t, ts.callSend(t, "issue/update",
+			`{`+args+`,"revisionProvenance":{"actor":{"id":"`+id+`","basis":"writer-supplied"}}}`, nil),
+			http.StatusUnprocessableEntity, bdpValidationFailed)
+		if carried, _ := body["v0"].(map[string]any); carried["param"] != "actor" {
+			t.Errorf("id %q: %v, want v0's refusal of `actor`", id, body)
+		}
+	}
 	if len(lifecycle.updateRequests()) != before {
 		t.Error("a refused provenance reached the role")
+	}
+}
+
+// TestCallableActorIsDeclaredNowhere is §2 and §3 across the table: `actor` inside
+// `arguments` is any other undeclared argument, an operation that requires an actor
+// refuses its absence in words this caller can act on, the three that do not run
+// without one, and the four that record none refuse one.
+func TestCallableActorIsDeclaredNowhere(t *testing.T) {
+	var reached atomic.Int32
+	original := routeTable
+	t.Cleanup(func() { routeTable = original })
+	swapped := slices.Clone(original)
+	for i := range swapped {
+		swapped[i].handler = func(_ *Server, w http.ResponseWriter, _ *http.Request) {
+			reached.Add(1)
+			writeJSON(w, map[string]string{})
+		}
+	}
+	routeTable = swapped
+	ts := newTestServer(t, rolesConfig(Config{}))
+
+	runsWithout := []string{"issue/purge", "issue/prune", "issue/delete"}
+	refusesOne := []string{"config/set", "config/unset", "memory/remember", "memory/forget"}
+	attributed := 0
+	for i := range callableTable {
+		row := &callableTable[i]
+		if !row.batch {
+			continue
+		}
+		t.Run(row.name, func(t *testing.T) {
+			args := map[string]any{}
+			for _, name := range row.path {
+				args[name] = "v-" + name
+			}
+			if row.name == "issue/dep/add" {
+				args["source"], args["target"] = "v-source", "v-target"
+			}
+			arguments := func(extra ...string) string {
+				withExtra := maps.Clone(args)
+				for _, name := range extra {
+					withExtra[name] = "kim"
+				}
+				encoded, _ := json.Marshal(withExtra)
+				return string(encoded)
+			}
+			for _, name := range []string{"actor", "author"} {
+				before := reached.Load()
+				resp := ts.call(t, row.name, arguments(name))
+				if row.actorMember != "" {
+					resp = ts.callAs(t, row.name, "sam", arguments(name))
+				}
+				body := wantProblem(t, resp, http.StatusUnprocessableEntity, bdpValidationFailed)
+				wantDiagnosticNaming(t, body, name)
+				if body["reason"] != string(ReasonUnknownParameter) {
+					t.Errorf("`%s` in arguments: reason = %v", name, body["reason"])
+				}
+				if reached.Load() != before {
+					t.Errorf("`%s` in arguments reached v0", name)
+				}
+			}
+
+			before := reached.Load()
+			switch {
+			case slices.Contains(refusesOne, row.name):
+				if row.actorMember != "" {
+					t.Errorf("actorMember = %q", row.actorMember)
+				}
+				wantDiagnosticNaming(t, wantProblem(t, ts.callAs(t, row.name, "sam", arguments()),
+					http.StatusUnprocessableEntity, bdpValidationFailed), "revisionProvenance")
+				if reached.Load() != before {
+					t.Error("a refused actor reached v0")
+				}
+				callResult(t, ts.call(t, row.name, arguments()))
+			case slices.Contains(runsWithout, row.name):
+				attributed++
+				callResult(t, ts.call(t, row.name, arguments()))
+				callResult(t, ts.callAs(t, row.name, "sam", arguments()))
+			default:
+				attributed++
+				body := wantProblem(t, ts.call(t, row.name, arguments()), http.StatusUnprocessableEntity, bdpValidationFailed)
+				wantDiagnosticNaming(t, body, "revisionProvenance.actor")
+				if _, carried := body["v0"]; carried {
+					t.Errorf("v0 ran: %v", body)
+				}
+				if reached.Load() != before {
+					t.Error("an invocation with no actor reached v0")
+				}
+				callResult(t, ts.callAs(t, row.name, "sam", arguments()))
+			}
+		})
+	}
+	if attributed != 20 {
+		t.Errorf("%d operations take an actor, want the 19 with `actor` and issue/comment", attributed)
+	}
+}
+
+// TestCallableServiceDefaults is §4: an omitted parameter gets its declared value at
+// the route, and neither a supplied value nor `null` is replaced. The direct route is
+// held to v0's own omission alongside it.
+func TestCallableServiceDefaults(t *testing.T) {
+	type seen struct {
+		query map[string][]string
+		body  map[string]json.RawMessage
+	}
+	var last atomic.Pointer[seen]
+	original := routeTable
+	t.Cleanup(func() { routeTable = original })
+	swapped := slices.Clone(original)
+	for i := range swapped {
+		swapped[i].handler = func(_ *Server, w http.ResponseWriter, r *http.Request) {
+			got := &seen{query: r.URL.Query()}
+			if data, _ := io.ReadAll(r.Body); len(data) > 0 {
+				if err := json.Unmarshal(data, &got.body); err != nil {
+					panic(err)
+				}
+			}
+			last.Store(got)
+			writeJSON(w, map[string]string{})
+		}
+	}
+	routeTable = swapped
+	ts := newTestServer(t, rolesConfig(Config{}))
+
+	want := map[string]map[string]string{
+		"issue/list":     {"sort": `"priority"`},
+		"issue/dep/list": {"direction": `"out"`},
+		"issue/close":    {"reason": `"Closed"`},
+		"issue/create":   {"issue_type": `"task"`},
+		"issue/purge":    {"dry_run": `true`, "tier": `"ephemeral"`, "protect_referenced": `false`, "protect_live_dependents": `true`},
+		"issue/prune":    {"dry_run": `true`, "tier": `"durable"`, "protect_referenced": `true`, "protect_live_dependents": `false`},
+		"issue/delete":   {"dry_run": `true`},
+		"issue/reclaim":  {"older_than_seconds": `600`},
+	}
+	for i := range callableTable {
+		row := &callableTable[i]
+		declared, ok := want[row.name]
+		if len(row.defaults) != len(declared) {
+			t.Errorf("%s: %d defaults, want %d", row.name, len(row.defaults), len(declared))
+		}
+		if !ok {
+			continue
+		}
+		t.Run(row.name, func(t *testing.T) {
+			invoke := func(extra map[string]any) *http.Response {
+				args := map[string]any{}
+				for _, name := range row.path {
+					args[name] = "v-" + name
+				}
+				maps.Copy(args, extra)
+				encoded, _ := json.Marshal(args)
+				if row.actorMember != "" {
+					return ts.callAs(t, row.name, "sam", string(encoded))
+				}
+				return ts.call(t, row.name, string(encoded))
+			}
+			valueOf := func(name string) string {
+				got := last.Load()
+				if slices.Contains(row.query, name) {
+					return strings.Join(got.query[name], ",")
+				}
+				return string(got.body[name])
+			}
+
+			last.Store(nil)
+			callResult(t, invoke(nil))
+			for name, value := range declared {
+				wanted := value
+				if slices.Contains(row.query, name) {
+					_ = json.Unmarshal([]byte(value), &wanted)
+				}
+				if got := valueOf(name); got != wanted {
+					t.Errorf("omitted %s reached v0 as %q, want %q", name, got, wanted)
+				}
+			}
+
+			for name := range declared {
+				callResult(t, invoke(map[string]any{name: "supplied"}))
+				supplied := `"supplied"`
+				if slices.Contains(row.query, name) {
+					supplied = "supplied"
+				}
+				if got := valueOf(name); got != supplied {
+					t.Errorf("supplied %s reached v0 as %q, want %q", name, got, supplied)
+				}
+				// null is a supplied value (§4). A body member goes to v0 as it is, which
+				// refuses it. A query has no spelling of null, and is refused here.
+				last.Store(nil)
+				resp := invoke(map[string]any{name: nil})
+				if slices.Contains(row.query, name) {
+					wantDiagnosticNaming(t, wantProblem(t, resp, http.StatusUnprocessableEntity, bdpValidationFailed), name)
+					if last.Load() != nil {
+						t.Errorf("null %s reached v0", name)
+					}
+					continue
+				}
+				callResult(t, resp)
+				if got := valueOf(name); got != "null" {
+					t.Errorf("null %s reached v0 as %q", name, got)
+				}
+			}
+		})
 	}
 }
 
@@ -775,7 +1033,7 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 		if direct["code"] != string(CodeAlreadyClaimed) {
 			t.Fatalf("direct code = %v", direct)
 		}
-		body := wantProblem(t, ts.call(t, "issue/claim", `{"id":"bd-1","actor":"sam"}`), http.StatusConflict, bdpCallableError)
+		body := wantProblem(t, ts.callAs(t, "issue/claim", "sam", `{"id":"bd-1"}`), http.StatusConflict, bdpCallableError)
 		inner, ok := body["error"].(map[string]any)
 		if !ok {
 			t.Fatalf("no error member: %v", body)
@@ -811,11 +1069,11 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 	t.Run("a stale expected_version is revision-mismatch, another guard a reason", func(t *testing.T) {
 		lifecycle := &roleLifecycle{updateErr: fmt.Errorf("update: %w", issueops.ErrVersionMismatch)}
 		ts := newUpdateServer(t, lifecycle)
-		wantProblem(t, ts.call(t, "issue/update", `{"id":"bd-1","actor":"a","patch":{"title":"t"},"expected_version":"7"}`),
+		wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"bd-1","patch":{"title":"t"},"expected_version":"7"}`),
 			http.StatusConflict, bdpRevisionMismatch)
 
 		lifecycle.updateErr = fmt.Errorf("update: %w", issueops.ErrStatusMismatch)
-		body := wantProblem(t, ts.call(t, "issue/update", `{"id":"bd-1","actor":"a","patch":{"title":"t"},"expected_status":"open"}`),
+		body := wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"bd-1","patch":{"title":"t"},"expected_status":"open"}`),
 			http.StatusConflict, bdpCallableError)
 		if inner, _ := body["error"].(map[string]any); inner["code"] != string(CodePreconditionFailed) {
 			t.Errorf("error = %v", body["error"])
@@ -866,7 +1124,7 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 	t.Run("the request line books the v0 operation", func(t *testing.T) {
 		claimer := &roleClaimer{err: &issueops.ClaimConflictError{Err: issueops.ErrAlreadyClaimed, Assignee: "kim"}}
 		ts := newTestServer(t, rolesConfig(Config{Claimer: claimer}))
-		wantProblem(t, ts.call(t, "issue/claim", `{"id":"bd-1","actor":"sam"}`), http.StatusConflict, bdpCallableError)
+		wantProblem(t, ts.callAs(t, "issue/claim", "sam", `{"id":"bd-1"}`), http.StatusConflict, bdpCallableError)
 		line := findLogLine(t, ts.stderr.String(), "path=/bdp/call/issue/claim")
 		if !strings.Contains(line, "op="+OpClaimIssue) {
 			t.Errorf("request line = %s", line)
@@ -1104,21 +1362,50 @@ func TestScanInvocationKeepsTheBodysOwnBytes(t *testing.T) {
 // TestV0BodyIsTheRequestV0WouldHaveReceived: spliced rather than re-encoded, so it has
 // to come out as the same JSON either way.
 func TestV0BodyIsTheRequestV0WouldHaveReceived(t *testing.T) {
-	update := callableIndex["issue/update"]
-	_, args, _ := scanInvocation([]byte(`{"arguments":{"id":"bd-1","actor":"a b","patch":{"title":"t\"x"}}}`))
-	var got map[string]any
-	if err := json.Unmarshal(update.v0Body(&invocation{args: args}), &got); err != nil {
-		t.Fatal(err)
+	bodyOf := func(row *callableRow, document string) map[string]any {
+		t.Helper()
+		_, args, _ := scanInvocation([]byte(document))
+		inv := &invocation{args: args}
+		if detail := func() string {
+			members, _, detail := scanInvocation([]byte(document))
+			inv.arguments = members["arguments"]
+			return detail
+		}(); detail != "" {
+			t.Fatal(detail)
+		}
+		if problem := row.supplyActor(inv, json.RawMessage(`"a b"`)); problem != nil {
+			t.Fatal(problem.Detail)
+		}
+		row.supplyDefaults(inv)
+		head, rest := row.v0Body(inv)
+		var got map[string]any
+		if err := json.Unmarshal(append(slices.Clone(head), rest...), &got); err != nil {
+			t.Fatalf("%s%s: %v", head, rest, err)
+		}
+		return got
 	}
-	want := map[string]any{"actor": "a b", "patch": map[string]any{"title": `t"x`}}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("body = %v, want %v", got, want)
+	got := bodyOf(callableIndex["issue/update"], `{"arguments":{"id":"bd-1","patch":{"title":"t\"x"}}}`)
+	if want := (map[string]any{"actor": "a b", "patch": map[string]any{"title": `t"x`}}); !reflect.DeepEqual(got, want) {
+		t.Errorf("a path and a body: %v, want %v", got, want)
+	}
+	got = bodyOf(callableIndex["issue/batch"], `{"arguments": { "items" : [] } }`)
+	if want := (map[string]any{"actor": "a b", "items": []any{}}); !reflect.DeepEqual(got, want) {
+		t.Errorf("a body-only Callable: %v, want %v", got, want)
+	}
+	got = bodyOf(callableIndex["issue/delete"], `{"arguments":{ }}`)
+	if want := (map[string]any{"actor": "a b", "dry_run": true}); !reflect.DeepEqual(got, want) {
+		t.Errorf("nothing but what the layer supplied: %v, want %v", got, want)
 	}
 
 	apply := callableIndex["issue/batch"]
-	arguments := json.RawMessage(`{"actor":"a","items":[]}`)
-	if out := apply.v0Body(&invocation{arguments: arguments}); &out[0] != &arguments[0] {
+	arguments := json.RawMessage(`{"items":[]}`)
+	if head, rest := apply.v0Body(&invocation{arguments: arguments}); len(head) != 0 || &rest[0] != &arguments[0] {
 		t.Error("a body-only Callable copied its arguments")
+	}
+	inv := &invocation{arguments: arguments, args: map[string]json.RawMessage{"items": json.RawMessage(`[]`)}}
+	inv.supply("actor", json.RawMessage(`"a"`))
+	if _, rest := apply.v0Body(inv); &rest[0] != &arguments[1] {
+		t.Error("supplying the actor copied a body-only Callable's arguments")
 	}
 }
 
@@ -1233,23 +1520,55 @@ func TestCallableListIsTheOpenAPIProjection(t *testing.T) {
 		return list
 	}
 	if got := required("issue/comment"); !reflect.DeepEqual(got, []any{"id", "text"}) {
-		t.Errorf("issue/comment required = %v: author is optional", got)
+		t.Errorf("issue/comment required = %v", got)
 	}
-	if got := required("issue/dep/add"); !reflect.DeepEqual(got, []any{"actor"}) {
+	if got := required("issue/dep/add"); len(got) != 0 {
 		t.Errorf("issue/dep/add required = %v", got)
 	}
-	if got := required("issue/claim"); !reflect.DeepEqual(got, []any{"id", "actor"}) {
+	if got := required("issue/claim"); !reflect.DeepEqual(got, []any{"id"}) {
 		t.Errorf("issue/claim required = %v", got)
 	}
-	// The CLI defaults are published for the client, and appear only there.
-	deleteOp := mapAt(t, mapAt(t, paths, callableMount+"/issue/delete"), "post")
-	cli := mapAt(t, mapAt(t, deleteOp, "x-bdp-callable"), "cliMapping")
-	if defaults := mapAt(t, cli, "defaults"); defaults["dry_run"] != true {
-		t.Errorf("issue/delete cliMapping.defaults = %v", defaults)
+	// A parameter v0 requires is not required where the service has a default for it.
+	if got := required("issue/dep/list"); !reflect.DeepEqual(got, []any{"id"}) {
+		t.Errorf("issue/dep/list required = %v", got)
 	}
-	dryRun := mapAt(t, mapAt(t, declaredArguments("issue/delete"), "properties"), "dry_run")
-	if _, has := dryRun["default"]; has && dryRun["default"] != false {
-		t.Errorf("dry_run carries an OpenAPI default of %v", dryRun["default"])
+	if got := required("issue/purge"); len(got) != 0 {
+		t.Errorf("issue/purge required = %v", got)
+	}
+	for i := range callableTable {
+		row := &callableTable[i]
+		properties := mapAt(t, declaredArguments(row.name), "properties")
+		for _, name := range []string{"actor", "author"} {
+			if _, has := properties[name]; has {
+				t.Errorf("%s publishes `%s`", row.name, name)
+			}
+		}
+		for name, raw := range properties {
+			value, defaulted := row.defaults[name]
+			schema, _ := raw.(map[string]any)
+			if !defaulted {
+				continue
+			}
+			var want any
+			if err := json.Unmarshal(value, &want); err != nil {
+				t.Fatal(err)
+			}
+			if schema["default"] != want {
+				t.Errorf("%s: %s publishes default %v, want %v", row.name, name, schema["default"], want)
+			}
+			if got := schema["description"]; got != "Omitted, this Callable uses `"+string(value)+"`." {
+				t.Errorf("%s: %s is described as %v", row.name, name, got)
+			}
+			if slices.Contains(required(row.name), any(name)) {
+				t.Errorf("%s: %s has a default and is required", row.name, name)
+			}
+		}
+		op := mapAt(t, mapAt(t, paths, callableMount+"/"+row.name), "post")
+		if cli, ok := mapAt(t, op, "x-bdp-callable")["cliMapping"].(map[string]any); ok {
+			if _, has := cli["defaults"]; has {
+				t.Errorf("%s: cliMapping still has `defaults`: %v", row.name, cli)
+			}
+		}
 	}
 
 	// Every $ref resolves inside the document (§2.3), and 3.0's spellings are gone.
@@ -1287,6 +1606,6 @@ func TestCallableListIsTheOpenAPIProjection(t *testing.T) {
 func TestStorageSentinelsStayUnderProblemMapping(t *testing.T) {
 	lifecycle := &roleLifecycle{updateErr: fmt.Errorf("update: %w", storage.ErrNotFound)}
 	ts := newUpdateServer(t, lifecycle)
-	wantProblem(t, ts.call(t, "issue/update", `{"id":"bd-1","actor":"a","patch":{"title":"t"}}`),
+	wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"bd-1","patch":{"title":"t"}}`),
 		http.StatusNotFound, bdpResourceNotFound)
 }

@@ -23,7 +23,9 @@ import (
 // the row's own exemptions. Inside the slot it decodes the envelope, rebuilds the
 // request v0 would have received, hands it to the row's handler, and puts the
 // answer under the envelope the Callables profile requires. Validation and every
-// refusal are therefore v0's.
+// refusal are therefore v0's. What this layer adds is what the document gives it:
+// revisionProvenance.actor.id becomes v0's `actor` or `author`, and an omitted
+// parameter with a service default gets that default, on this surface alone.
 //
 // <scope> is the server root. A bd serve process serves one workspace, so it is
 // one Scope and needs no path of its own; the Scope URL is http://HOST:PORT/.
@@ -313,7 +315,7 @@ func (row *callableRow) invocationRequest(c *callableCapture, r *http.Request) (
 	if problem != nil {
 		return nil, problem
 	}
-	actor, problem := checkProvenance(row, inv.args, inv.provenance)
+	actor, problem := checkProvenance(row, inv.provenance)
 	if problem != nil {
 		return nil, problem
 	}
@@ -321,10 +323,14 @@ func (row *callableRow) invocationRequest(c *callableCapture, r *http.Request) (
 		return nil, problem
 	}
 	if row.adapt != nil {
-		if problem := row.adapt(inv.args, actor); problem != nil {
+		if problem := row.adapt(inv.args); problem != nil {
 			return nil, problem
 		}
 	}
+	if problem := row.supplyActor(inv, actor); problem != nil {
+		return nil, problem
+	}
+	row.supplyDefaults(inv)
 	return row.v0Request(r, inv)
 }
 
@@ -380,6 +386,15 @@ type invocation struct {
 	arguments  json.RawMessage
 	args       map[string]json.RawMessage
 	provenance map[string]json.RawMessage
+	// supplied names what this layer added to args beyond the caller's `arguments`:
+	// the actor and any defaults.
+	supplied []string
+}
+
+// supply adds an argument the caller did not send.
+func (inv *invocation) supply(name string, value json.RawMessage) {
+	inv.args[name] = value
+	inv.supplied = append(inv.supplied, name)
 }
 
 // decodeInvocation is the closed callableInvocation of Callables §3. Unknown
@@ -557,37 +572,37 @@ func hasUnpairedSurrogate(body []byte) bool {
 }
 
 // checkProvenance validates Write's closed revisionProvenanceInput and answers
-// the invocation's actor.
+// the `id` of the invocation's actor, as sent, or nil if it names none.
 //
-// V0 HAS NOWHERE TO CARRY IT. Callables §3 says the input is "carried onto every
-// revision the batch commits", and v0 records only its own `actor` argument. So
-// the rule here is honored or refused, never silently dropped: an actor must
-// agree with the `actor` argument that v0 will record, and an agent or message,
-// which v0 cannot store at all, is refused. issue/comment is the exception by
-// §3 of the Issue Callables: it uses the actor to fill `author`.
-func checkProvenance(row *callableRow, args, provenance map[string]json.RawMessage) (string, *callableProblem) {
+// V0 HAS NOWHERE TO CARRY THE REST. Callables §3 says the input is "carried onto
+// every revision the batch commits", and v0 records only the name it is given as
+// `actor` or `author`. So the rule here is honored or refused, never silently
+// dropped: an agent or message, which v0 cannot store at all, is refused, and so is
+// an actor on the four operations of §3 that record none.
+func checkProvenance(row *callableRow, provenance map[string]json.RawMessage) (json.RawMessage, *callableProblem) {
 	if provenance == nil {
-		return "", nil
+		return nil, nil
 	}
-	malformed := func(detail string) (string, *callableProblem) {
-		return "", newCallableProblem(bdpMalformedRequest, "`revisionProvenance`: "+detail)
+	malformed := func(detail string) (json.RawMessage, *callableProblem) {
+		return nil, newCallableProblem(bdpMalformedRequest, "`revisionProvenance`: "+detail)
 	}
 	for name := range provenance {
 		if name != "actor" && name != "agent" && name != "message" {
 			return malformed("`" + name + "` is not a member")
 		}
 	}
-	actor := ""
+	var actor json.RawMessage
 	if raw, ok := provenance["actor"]; ok {
 		var members map[string]json.RawMessage
 		if err := json.Unmarshal(raw, &members); err != nil || members == nil {
 			return malformed("`actor` is an object")
 		}
-		var basis string
-		if len(members) != 2 || json.Unmarshal(members["id"], &actor) != nil || actor == "" ||
+		var id, basis string
+		if len(members) != 2 || json.Unmarshal(members["id"], &id) != nil || id == "" ||
 			json.Unmarshal(members["basis"], &basis) != nil || (basis != "writer-supplied" && basis != "unknown") {
 			return malformed("`actor` is exactly a nonempty `id` and a `basis` of writer-supplied or unknown")
 		}
+		actor = members["id"]
 	}
 	for _, member := range []string{"agent", "message"} {
 		raw, ok := provenance[member]
@@ -598,18 +613,43 @@ func checkProvenance(row *callableRow, args, provenance map[string]json.RawMessa
 		if json.Unmarshal(raw, &value) != nil || (member == "agent" && value == "") {
 			return malformed("`" + member + "` is not a valid value")
 		}
-		return "", invalidArgument("revisionProvenance",
+		return nil, invalidArgument("revisionProvenance",
 			"`"+member+"` cannot be recorded: this server's operations carry no such attribution")
 	}
-	if actor == "" || row.op == OpAddComment {
-		return actor, nil
-	}
-	var named string
-	if json.Unmarshal(args["actor"], &named) != nil || named != actor {
-		return "", invalidArgument("revisionProvenance",
-			"`actor` must equal the `actor` argument, the only attribution this operation records")
+	if actor != nil && row.actorMember == "" {
+		return nil, invalidArgument("revisionProvenance",
+			"`actor` cannot be recorded: this operation records no actor")
 	}
 	return actor, nil
+}
+
+// supplyActor is the actor row of §3: revisionProvenance.actor.id goes into v0's
+// body as the row's member, where v0's own validation of a name is the check, and
+// nothing about that check is restated here. With no actor where v0 requires one
+// the refusal is this layer's, because v0's would name a member this caller cannot
+// send.
+func (row *callableRow) supplyActor(inv *invocation, actor json.RawMessage) *callableProblem {
+	switch {
+	case row.actorMember == "" || (actor == nil && row.actorOptional):
+		return nil
+	case actor != nil:
+		inv.supply(row.actorMember, actor)
+		return nil
+	}
+	message := "`revisionProvenance.actor` is required: " + row.name + " has to say who is acting, and its `id` is what v0 records as `" + row.actorMember + "`"
+	problem := newCallableProblem(bdpValidationFailed, message)
+	problem.Diagnostics = []callableDiagnostic{{Message: message, InstanceLocation: "/revisionProvenance/actor"}}
+	return problem
+}
+
+// supplyDefaults is §4: an omitted parameter with a declared default is supplied
+// that value, and anything sent, null included, is the caller's.
+func (row *callableRow) supplyDefaults(inv *invocation) {
+	for name, value := range row.defaults {
+		if _, sent := inv.args[name]; !sent {
+			inv.supply(name, value)
+		}
+	}
 }
 
 // checkArgumentNames is the first rejection of Callables §4; every unknown name
@@ -641,7 +681,7 @@ func (row *callableRow) checkArgumentNames(args map[string]json.RawMessage) *cal
 // adaptFlatDependency is the issue/dep/add adapter: flat source, target and
 // optional type, or v0's edges, exactly one form per call. An omitted type is
 // blocks, where v0 itself requires one on every edge.
-func adaptFlatDependency(args map[string]json.RawMessage, _ string) *callableProblem {
+func adaptFlatDependency(args map[string]json.RawMessage) *callableProblem {
 	_, hasEdges := args["edges"]
 	flat := ""
 	for _, name := range []string{"source", "target", "type"} {
@@ -681,21 +721,6 @@ func adaptFlatDependency(args map[string]json.RawMessage, _ string) *callablePro
 		return invalidArgument("edges", "the flat form could not be encoded")
 	}
 	args["edges"] = edges
-	return nil
-}
-
-// adaptCommentAuthor is the issue/comment adapter: an omitted `author` is the
-// invocation's actor, revisionProvenance.actor.id. With no actor either, nothing
-// is filled and v0 refuses the missing `author`.
-func adaptCommentAuthor(args map[string]json.RawMessage, actor string) *callableProblem {
-	if _, supplied := args["author"]; supplied || actor == "" {
-		return nil
-	}
-	author, err := json.Marshal(actor)
-	if err != nil {
-		return invalidArgument("author", "the actor could not be encoded")
-	}
-	args["author"] = author
 	return nil
 }
 
@@ -759,8 +784,11 @@ func (row *callableRow) v0Request(r *http.Request, inv *invocation) (*http.Reque
 	}
 
 	var body io.Reader
-	if len(row.body) > 0 {
-		body = bytes.NewReader(row.v0Body(inv))
+	var bodyLength int64
+	if len(row.body) > 0 || row.actorMember != "" {
+		head, rest := row.v0Body(inv)
+		body = io.MultiReader(bytes.NewReader(head), bytes.NewReader(rest))
+		bodyLength = int64(len(head) + len(rest))
 	}
 
 	inner, err := http.NewRequestWithContext(r.Context(), rt.method, target, body)
@@ -773,6 +801,7 @@ func (row *callableRow) v0Request(r *http.Request, inv *invocation) (*http.Reque
 	for name, value := range pathValues {
 		inner.SetPathValue(name, value)
 	}
+	inner.ContentLength = bodyLength
 	inner.Host = r.Host
 	inner.RemoteAddr = r.RemoteAddr
 	inner.Header = r.Header.Clone()
@@ -785,33 +814,51 @@ func (row *callableRow) v0Request(r *http.Request, inv *invocation) (*http.Reque
 	return inner, nil
 }
 
-// v0Body is the body v0 would have received. When every argument is a body member,
-// which is every large operation but issue/update, that is `arguments` itself:
-// checkArgumentNames has held its names to the row's, and it needs no second buffer.
-func (row *callableRow) v0Body(inv *invocation) []byte {
+// v0Body is the body v0 would have received, in two pieces. When every argument is a
+// body member, which is every large operation but issue/update, the second piece is
+// `arguments` itself: checkArgumentNames has held its names to the row's, and it needs
+// no second buffer. What this layer supplied is the first, in front of it.
+func (row *callableRow) v0Body(inv *invocation) (head, rest []byte) {
 	if len(row.path) == 0 && len(row.query) == 0 && row.adapt == nil {
-		return inv.arguments
+		if len(inv.supplied) == 0 {
+			return nil, inv.arguments
+		}
+		head = []byte{'{'}
+		for _, name := range inv.supplied {
+			head = appendBodyMember(head, name, inv.args[name])
+		}
+		if len(inv.args) == len(inv.supplied) {
+			return append(head, '}'), nil
+		}
+		// Past the opening brace, whatever comes next is a member: args is not empty.
+		return append(head, ','), inv.arguments[1:]
 	}
 	size := 2
-	for _, name := range row.body {
-		size += len(name) + len(inv.args[name]) + 4
+	for _, raw := range inv.args {
+		size += len(raw) + 64
 	}
-	body := make([]byte, 0, size)
-	body = append(body, '{')
+	head = append(make([]byte, 0, size), '{')
 	for _, name := range row.body {
-		raw, ok := inv.args[name]
-		if !ok {
-			continue
+		if raw, ok := inv.args[name]; ok {
+			head = appendBodyMember(head, name, raw)
 		}
-		if len(body) > 1 {
-			body = append(body, ',')
-		}
-		body = append(body, '"')
-		body = append(body, name...) // A declared name, which needs no escaping.
-		body = append(body, '"', ':')
-		body = append(body, raw...)
 	}
-	return append(body, '}')
+	if raw, ok := inv.args[row.actorMember]; ok {
+		head = appendBodyMember(head, row.actorMember, raw)
+	}
+	return append(head, '}'), nil
+}
+
+// appendBodyMember writes one member after the opening brace or an earlier member.
+// The name is a declared one, which needs no escaping.
+func appendBodyMember(body []byte, name string, raw json.RawMessage) []byte {
+	if len(body) > 1 {
+		body = append(body, ',')
+	}
+	body = append(body, '"')
+	body = append(body, name...)
+	body = append(body, '"', ':')
+	return append(body, raw...)
 }
 
 // routeForOp finds a v0 row by operation.

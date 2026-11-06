@@ -198,8 +198,19 @@ func (row *callableRow) openAPIOperation(v0, op map[string]any) (map[string]any,
 		if !ok {
 			return nil, fmt.Errorf("callable %q declares %q, which %s does not", row.name, name, row.op)
 		}
-		properties[name] = normalizeV0Schema(schema)
-		if v0Required[name] && !slices.Contains(row.optional, name) {
+		property, _ := normalizeV0Schema(schema).(map[string]any)
+		properties[name] = property
+		value, defaulted := row.defaults[name]
+		if defaulted {
+			// A default v0 does not have, and v0's text says what v0 does on omission.
+			var decoded any
+			if err := json.Unmarshal(value, &decoded); err != nil {
+				return nil, fmt.Errorf("callable %q: the default of %q: %w", row.name, name, err)
+			}
+			property["default"] = decoded
+			property["description"] = "Omitted, this Callable uses `" + string(value) + "`."
+		}
+		if v0Required[name] && !defaulted && !slices.Contains(row.optional, name) {
 			required = append(required, name)
 		}
 	}
@@ -291,6 +302,15 @@ func (row *callableRow) openAPIOperation(v0, op map[string]any) (map[string]any,
 		operation["parameters"] = parameters
 	}
 	return operation, nil
+}
+
+// v0BodyMembers is every member v0's body can hold: the declared ones, and the one
+// no declaration has.
+func (row *callableRow) v0BodyMembers() []string {
+	if row.actorMember == "" {
+		return row.body
+	}
+	return append(slices.Clone(row.body), row.actorMember)
 }
 
 // declaredParameters is every argument name a row admits.
