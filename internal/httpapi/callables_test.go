@@ -1,0 +1,1076 @@
+package httpapi
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
+	"reflect"
+	"slices"
+	"sort"
+	"strings"
+	"sync/atomic"
+	"testing"
+
+	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/issueops"
+)
+
+// The pins for the Callables layer (callables.go). Pure, on fake roles, like the
+// rest of this package: a fake cannot show that a routed call commits against
+// real storage, only that it reaches the v0 handler that does.
+
+// callSend posts one invocation with the media type the profile requires.
+func (ts *testServer) callSend(t *testing.T, name, body string, header http.Header) *http.Response {
+	t.Helper()
+	req, err := http.NewRequest(http.MethodPost, ts.base+callableMount+"/"+name, strings.NewReader(body))
+	if err != nil {
+		t.Fatalf("new request: %v", err)
+	}
+	req.Header.Set("Content-Type", bdpMediaType)
+	for key, values := range header {
+		req.Header[key] = values
+	}
+	resp, err := ts.client.Do(req)
+	if err != nil {
+		t.Fatalf("POST %s: %v", name, err)
+	}
+	t.Cleanup(func() { _ = resp.Body.Close() })
+	return resp
+}
+
+func (ts *testServer) call(t *testing.T, name, arguments string) *http.Response {
+	t.Helper()
+	return ts.callSend(t, name, `{"arguments":`+arguments+`}`, nil)
+}
+
+// wantProblem asserts a mount's Problem and returns its body.
+func wantProblem(t *testing.T, resp *http.Response, status int, code string) map[string]any {
+	t.Helper()
+	raw := readAll(t, resp)
+	if resp.StatusCode != status {
+		t.Fatalf("status = %d, want %d: %s", resp.StatusCode, status, raw)
+	}
+	if got := resp.Header.Get("Content-Type"); got != problemMediaType {
+		t.Errorf("Content-Type = %q, want %q", got, problemMediaType)
+	}
+	if got := resp.Header.Get("Cache-Control"); got != "private, no-store" {
+		t.Errorf("Cache-Control = %q", got)
+	}
+	var body map[string]any
+	if err := json.Unmarshal([]byte(raw), &body); err != nil {
+		t.Fatalf("body is not JSON: %v: %s", err, raw)
+	}
+	if body["code"] != code {
+		t.Fatalf("code = %v, want %s: %s", body["code"], code, raw)
+	}
+	shape := bdpProblemShapes[code]
+	if body["type"] != bdpProblemBase+shape.family || body["retry"] != shape.retry || body["status"] != float64(status) {
+		t.Errorf("type/retry/status do not match the code's fixed shape: %s", raw)
+	}
+	return body
+}
+
+// wantDiagnosticNaming asserts a validation-failed names one parameter.
+func wantDiagnosticNaming(t *testing.T, body map[string]any, param string) {
+	t.Helper()
+	diagnostics, _ := body["diagnostics"].([]any)
+	for _, raw := range diagnostics {
+		entry, _ := raw.(map[string]any)
+		if message, _ := entry["message"].(string); strings.Contains(message, "`"+param+"`") {
+			return
+		}
+	}
+	t.Errorf("no diagnostic names %q: %v", param, body)
+}
+
+// callResult asserts a 200 and returns the raw `result` and the envelope.
+func callResult(t *testing.T, resp *http.Response) (json.RawMessage, map[string]json.RawMessage) {
+	t.Helper()
+	raw := readAll(t, resp)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want 200: %s", resp.StatusCode, raw)
+	}
+	if got := resp.Header.Get("Content-Type"); got != bdpMediaType {
+		t.Errorf("Content-Type = %q, want %q", got, bdpMediaType)
+	}
+	if got := resp.Header.Get("Cache-Control"); got != "private, no-store" {
+		t.Errorf("Cache-Control = %q", got)
+	}
+	if resp.Header.Get("ETag") != "" || resp.Header.Get("Location") != "" {
+		t.Errorf("a result carries no ETag or Location: %v", resp.Header)
+	}
+	var envelope map[string]json.RawMessage
+	if err := json.Unmarshal([]byte(raw), &envelope); err != nil {
+		t.Fatalf("envelope is not JSON: %v: %s", err, raw)
+	}
+	for name := range envelope {
+		if name != "result" && name != "changed" {
+			t.Errorf("callableResult is closed, but it has %q", name)
+		}
+	}
+	return envelope["result"], envelope
+}
+
+func specParameterNames(t *testing.T, doc map[string]any, op specOp) (path, query, body []string) {
+	t.Helper()
+	if list, ok := op.op["parameters"].([]any); ok {
+		for _, raw := range list {
+			node, _ := raw.(map[string]any)
+			param := resolveRef(t, doc, node)
+			name, _ := param["name"].(string)
+			switch param["in"] {
+			case "path":
+				path = append(path, name)
+			case "query":
+				query = append(query, name)
+			}
+		}
+	}
+	if raw, ok := op.op["requestBody"].(map[string]any); ok {
+		requestBody := resolveRef(t, doc, raw)
+		media := mapAt(t, mapAt(t, requestBody, "content"), claimContentType)
+		schema := resolveRef(t, doc, mapAt(t, media, "schema"))
+		for name := range mapAt(t, schema, "properties") {
+			body = append(body, name)
+		}
+	}
+	sort.Strings(path)
+	sort.Strings(query)
+	sort.Strings(body)
+	return path, query, body
+}
+
+func sortedCopy(names []string) []string {
+	out := slices.Clone(names)
+	sort.Strings(out)
+	return out
+}
+
+// TestCallableTableMatchesTheDocument holds the one hand-written table to
+// openapi.v0.yaml in both directions: every operation but the two plain routes is
+// declared, and each row lists exactly its operation's parameters, each at its
+// location. It also proves flattening is unambiguous: no operation uses one name
+// in two locations.
+func TestCallableTableMatchesTheDocument(t *testing.T) {
+	doc := loadSpec(t)
+	ops := specOps(t, doc)
+
+	names := map[string]bool{}
+	declared := map[string]bool{}
+	for i := range callableTable {
+		row := &callableTable[i]
+		if names[row.name] {
+			t.Errorf("name %q is declared twice", row.name)
+		}
+		names[row.name] = true
+		declared[row.op] = true
+
+		op, ok := ops[row.op]
+		if !ok {
+			t.Errorf("%s routes to %q, which the document does not declare", row.name, row.op)
+			continue
+		}
+		rt, ok := routeForOp(row.op)
+		if !ok || !rt.implemented || rt.streaming {
+			t.Errorf("%s routes to %q, which is no implemented document route", row.name, row.op)
+		}
+		path, query, body := specParameterNames(t, doc, op)
+		for _, part := range []struct {
+			location   string
+			table, doc []string
+		}{{"path", row.path, path}, {"query", row.query, query}, {"body", row.body, body}} {
+			if got := sortedCopy(part.table); !reflect.DeepEqual(got, part.doc) && (len(got) > 0 || len(part.doc) > 0) {
+				t.Errorf("%s %s parameters:\n table %v\n   doc %v", row.name, part.location, got, part.doc)
+			}
+		}
+		all := row.declaredParameters()
+		sort.Strings(all)
+		if len(slices.Compact(slices.Clone(all))) != len(all) {
+			t.Errorf("%s uses one argument name twice: %v", row.name, all)
+		}
+		for _, name := range row.optional {
+			if !slices.Contains(all, name) {
+				t.Errorf("%s: optional %q is no parameter", row.name, name)
+			}
+		}
+	}
+	if len(callableTable) != 45 || len(declared) != 44 {
+		t.Errorf("table has %d names over %d operations, want 45 over 44", len(callableTable), len(declared))
+	}
+	for op := range ops {
+		if declared[op] == (op == OpHealth || op == OpWatchEvents) {
+			t.Errorf("operation %q: declared = %v", op, declared[op])
+		}
+	}
+	if callableIndex["issue/purge"].op != OpSweepIssues || callableIndex["issue/prune"].op != OpSweepIssues {
+		t.Error("issue/purge and issue/prune must both route to sweepIssues")
+	}
+}
+
+// TestCallableReasonsMatchTheOperationCodes: every code an operation can answer
+// is either mapped to a Core or Write code by §5, or is a reason its row declares.
+// precondition_failed is exempt where the only guard is expected_version, which
+// §5 maps per response.
+func TestCallableReasonsMatchTheOperationCodes(t *testing.T) {
+	versionGuardOnly := map[string]bool{OpCloseIssue: true, OpReopenIssue: true, OpDeleteIssues: true}
+	for i := range callableTable {
+		row := &callableTable[i]
+		codes := operationCodes[row.op]
+		for _, code := range codes {
+			if bdpCodeFor(code, false) != bdpCallableError {
+				continue
+			}
+			if code == CodePreconditionFailed && versionGuardOnly[row.op] {
+				continue
+			}
+			if !slices.Contains(row.reasons, string(code)) {
+				t.Errorf("%s: v0 answers %s, but the row does not declare it", row.name, code)
+			}
+		}
+		for _, reason := range row.reasons {
+			if !slices.Contains(codes, Code(reason)) {
+				t.Errorf("%s: declares %s, which v0's operation does not answer", row.name, reason)
+			}
+		}
+	}
+}
+
+// TestEveryCallableReachesItsV0Handler replaces every v0 handler with a recorder,
+// so what is asserted is the route table's own dispatch: each name lands on its
+// operation's row, by that row's method and path, with each argument at the
+// location the document gives it.
+func TestEveryCallableReachesItsV0Handler(t *testing.T) {
+	type seen struct {
+		op, method, path, id, key, contentType string
+		query                                  map[string][]string
+		body                                   map[string]json.RawMessage
+	}
+	var last atomic.Pointer[seen]
+
+	original := routeTable
+	t.Cleanup(func() { routeTable = original })
+	swapped := slices.Clone(original)
+	for i := range swapped {
+		op := swapped[i].op
+		swapped[i].handler = func(_ *Server, w http.ResponseWriter, r *http.Request) {
+			got := &seen{op: op, method: r.Method, path: r.URL.EscapedPath(), id: r.PathValue("id"),
+				key: r.PathValue("key"), contentType: r.Header.Get("Content-Type"), query: r.URL.Query()}
+			if data, _ := io.ReadAll(r.Body); len(data) > 0 {
+				if err := json.Unmarshal(data, &got.body); err != nil {
+					panic(err)
+				}
+			}
+			last.Store(got)
+			writeJSON(w, map[string]string{"op": op})
+		}
+	}
+	routeTable = swapped
+	ts := newTestServer(t, rolesConfig(Config{}))
+
+	for i := range callableTable {
+		row := &callableTable[i]
+		t.Run(row.name, func(t *testing.T) {
+			last.Store(nil)
+			args := map[string]string{}
+			for _, name := range row.declaredParameters() {
+				if !slices.Contains(row.adapterParams, name) {
+					args[name] = "v-" + name
+				}
+			}
+			encoded, _ := json.Marshal(args)
+			resp := ts.call(t, row.name, string(encoded))
+			result, envelope := callResult(t, resp)
+			last := last.Load()
+			if last == nil {
+				t.Fatal("no v0 handler ran")
+			}
+			if last.op != row.op {
+				t.Errorf("reached %s, want %s", last.op, row.op)
+			}
+			if want := fmt.Sprintf(`{"op":%q}`, row.op); strings.TrimSpace(string(result)) != want {
+				t.Errorf("result = %s, want v0's bytes %s", result, want)
+			}
+			if _, has := envelope["changed"]; has != row.batch {
+				t.Errorf("changed present = %v on a row with batch = %v", has, row.batch)
+			}
+
+			rt, _ := routeForOp(row.op)
+			if last.method != rt.method {
+				t.Errorf("method = %s, want %s", last.method, rt.method)
+			}
+			wantPath := rt.specPathOf()
+			for _, name := range row.path {
+				wantPath = strings.Replace(wantPath, "{"+name+"}", "v-"+name, 1)
+			}
+			if last.path != wantPath {
+				t.Errorf("path = %s, want %s", last.path, wantPath)
+			}
+			if slices.Contains(row.path, "id") && last.id != "v-id" {
+				t.Errorf("path value id = %q", last.id)
+			}
+			if slices.Contains(row.path, "key") && last.key != "v-key" {
+				t.Errorf("path value key = %q", last.key)
+			}
+			if len(last.query) != len(row.query) {
+				t.Errorf("query = %v, want %v", last.query, row.query)
+			}
+			for _, name := range row.query {
+				if !slices.Equal(last.query[name], []string{"v-" + name}) {
+					t.Errorf("query %s = %v", name, last.query[name])
+				}
+			}
+			if len(last.body) != len(row.body) {
+				t.Errorf("body = %v, want %v", last.body, row.body)
+			}
+			for _, name := range row.body {
+				if string(last.body[name]) != `"v-`+name+`"` {
+					t.Errorf("body %s = %s", name, last.body[name])
+				}
+			}
+			if len(row.body) > 0 && last.contentType != claimContentType {
+				t.Errorf("Content-Type = %q", last.contentType)
+			}
+		})
+	}
+}
+
+// directAndRouted sends one operation both ways against one server and returns
+// the direct body and the routed `result`.
+func directAndRouted(t *testing.T, direct, routed *http.Response) (string, json.RawMessage, map[string]json.RawMessage) {
+	t.Helper()
+	body := readAll(t, direct)
+	if direct.StatusCode != http.StatusOK {
+		t.Fatalf("direct status = %d: %s", direct.StatusCode, body)
+	}
+	result, envelope := callResult(t, routed)
+	if strings.TrimSpace(body) != string(result) {
+		t.Errorf("routed result differs from the direct body:\n direct %s\n routed %s", body, result)
+	}
+	return body, result, envelope
+}
+
+func TestRoutedResponseEqualsDirect(t *testing.T) {
+	t.Run("issue/show", func(t *testing.T) {
+		reader := &roleReader{details: &issueops.IssueDetails{
+			Issue: *seededIssue("bd-1", "alice", types.StatusOpen),
+		}}
+		ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
+		direct := ts.get(t, "/v0/beads/issues/bd-1?include_comments=true")
+		routed := ts.call(t, "issue/show", `{"id":"bd-1","include_comments":true}`)
+		_, _, envelope := directAndRouted(t, direct, routed)
+		if _, has := envelope["changed"]; has {
+			t.Error("a CallableQuery result has no `changed`")
+		}
+		got := reader.getRequests()
+		if len(got) != 2 || !reflect.DeepEqual(got[0], got[1]) {
+			t.Errorf("the role saw different requests: %+v", got)
+		}
+	})
+
+	t.Run("issue/update", func(t *testing.T) {
+		lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: updatedIssue("bd-1"), Changed: true}}
+		ts := newUpdateServer(t, lifecycle)
+		direct := ts.updateIssue(t, updatePath, `{"actor":"alice","patch":{"title":"new"}}`)
+		routed := ts.call(t, "issue/update", `{"id":"bd-1","actor":"alice","patch":{"title":"new"}}`)
+		_, _, envelope := directAndRouted(t, direct, routed)
+		if string(envelope["changed"]) != "true" {
+			t.Errorf("changed = %s, want true", envelope["changed"])
+		}
+		got := lifecycle.updateRequests()
+		if len(got) != 2 || !reflect.DeepEqual(got[0], got[1]) {
+			t.Errorf("the role saw different requests: %+v", got)
+		}
+
+		lifecycle.updateResult.Changed = false
+		_, envelope = callResult(t, ts.call(t, "issue/update", `{"id":"bd-1","actor":"alice","patch":{"title":"new"}}`))
+		if string(envelope["changed"]) != "false" {
+			t.Errorf("a no-op update: changed = %s, want false", envelope["changed"])
+		}
+	})
+
+	for _, tc := range []struct {
+		name        string
+		member      string
+		dryRun      bool
+		wantChanged string
+	}{
+		{"issue/delete real run", `"dry_run":false,`, false, "true"},
+		{"issue/delete dry run", `"dry_run":true,`, true, "false"},
+		{"issue/delete dry_run omitted gets v0's behavior", "", false, "true"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			deleter := &roleDeleter{result: issueops.DeleteResult{Deleted: 2, DryRun: tc.dryRun}}
+			ts := newTestServer(t, rolesConfig(Config{Deleter: deleter}))
+			direct := ts.delete(t, `{`+tc.member+`"ids":["bd-1","bd-2"],"force":true}`)
+			routed := ts.call(t, "issue/delete", `{`+tc.member+`"ids":["bd-1","bd-2"],"force":true}`)
+			_, _, envelope := directAndRouted(t, direct, routed)
+			if string(envelope["changed"]) != tc.wantChanged {
+				t.Errorf("changed = %s, want %s", envelope["changed"], tc.wantChanged)
+			}
+			got := deleter.requests()
+			if len(got) != 2 || !reflect.DeepEqual(got[0], got[1]) {
+				t.Fatalf("the role saw different requests: %+v", got)
+			}
+			if got[1].DryRun != tc.dryRun {
+				t.Errorf("DryRun reaching the role = %v, want %v: no server-side default", got[1].DryRun, tc.dryRun)
+			}
+		})
+	}
+}
+
+func TestCallableUnknownName(t *testing.T) {
+	ts := newTestServer(t, rolesConfig(Config{}))
+	for _, name := range []string{"issue/nope", "nope", "issue", "issue/show/extra", ""} {
+		wantProblem(t, ts.call(t, name, `{}`), http.StatusNotFound, bdpCallableNotFound)
+	}
+	// An encoded separator is not a second spelling of a name.
+	wantProblem(t, ts.call(t, "issue%2Fshow", `{"id":"bd-1"}`), http.StatusNotFound, bdpCallableNotFound)
+}
+
+// TestCallableWrongMethod: a mount admits POST whatever v0's own method is, for a
+// query as for a batch. GET of a mount is never an invocation.
+func TestCallableWrongMethod(t *testing.T) {
+	reader := &roleReader{}
+	lifecycle := &roleLifecycle{}
+	ts := newTestServer(t, rolesConfig(Config{Reader: reader, Lifecycle: lifecycle}))
+
+	for _, name := range []string{"issue/show", "issue/update", "issue/nope"} {
+		for _, method := range []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodDelete, http.MethodPatch} {
+			resp := ts.do(t, method, callableMount+"/"+name, nil)
+			if resp.StatusCode != http.StatusMethodNotAllowed {
+				t.Errorf("%s %s = %d, want 405", method, name, resp.StatusCode)
+			}
+			if got := resp.Header.Get("Allow"); got != "POST" {
+				t.Errorf("%s %s: Allow = %q", method, name, got)
+			}
+			if body := readAll(t, resp); body != "" {
+				t.Errorf("%s %s: the 405 carries a body: %s", method, name, body)
+			}
+		}
+	}
+	if len(reader.getRequests()) != 0 || len(lifecycle.updateRequests()) != 0 {
+		t.Error("a wrong method reached a role")
+	}
+
+	resp := ts.do(t, http.MethodPost, callableMount, nil)
+	if resp.StatusCode != http.StatusMethodNotAllowed || resp.Header.Get("Allow") != "GET, HEAD" {
+		t.Errorf("POST /bdp/call = %d, Allow %q", resp.StatusCode, resp.Header.Get("Allow"))
+	}
+}
+
+func TestCallableEnvelopeRefusals(t *testing.T) {
+	reader := &roleReader{}
+	lifecycle := &roleLifecycle{}
+	ts := newTestServer(t, rolesConfig(Config{Reader: reader, Lifecycle: lifecycle}))
+
+	for _, media := range []string{"", "application/json", "text/plain"} {
+		resp := ts.postBody(t, callableMount+"/issue/show", media, `{"arguments":{"id":"bd-1"}}`)
+		wantProblem(t, resp, http.StatusUnsupportedMediaType, bdpUnsupportedMedia)
+		resp = ts.postBody(t, callableMount+"/issue/update", media, `{"arguments":{"id":"bd-1"}}`)
+		wantProblem(t, resp, http.StatusUnsupportedMediaType, bdpUnsupportedMedia)
+	}
+
+	for name, body := range map[string]string{
+		"no arguments":        `{}`,
+		"arguments is null":   `{"arguments":null}`,
+		"arguments an array":  `{"arguments":[]}`,
+		"unknown member":      `{"arguments":{"id":"bd-1"},"operation":"x"}`,
+		"name member":         `{"arguments":{"id":"bd-1"},"name":"x"}`,
+		"duplicate member":    `{"arguments":{"id":"bd-1"},"arguments":{"id":"bd-2"}}`,
+		"nested duplicate":    `{"arguments":{"id":"bd-1","id":"bd-2"}}`,
+		"deep duplicate":      `{"arguments":{"id":"bd-1","patch":{"a":[{"b":1,"b":2}]}}}`,
+		"escaped duplicate":   `{"arguments":{"id":"bd-1","id":"bd-2"}}`,
+		"lone high surrogate": `{"arguments":{"id":"\ud800"}}`,
+		"lone low surrogate":  `{"arguments":{"id":"\udc00x"}}`,
+		"not JSON":            `{"arguments":`,
+		"trailing data":       `{"arguments":{"id":"bd-1"}} {}`,
+		"an array":            `[]`,
+		"provenance on query": `{"arguments":{"id":"bd-1"},"revisionProvenance":{}}`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			wantProblem(t, ts.callSend(t, "issue/show", body, nil), http.StatusBadRequest, bdpMalformedRequest)
+		})
+	}
+	if len(reader.getRequests()) != 0 {
+		t.Error("a malformed invocation reached the role")
+	}
+
+	wantProblem(t, ts.callSend(t, "issue/show", `{"arguments":{"id":"bd-1"}}`,
+		http.Header{"Idempotency-Key": {"k"}}), http.StatusBadRequest, bdpMalformedRequest)
+
+	// Not retained, and admitted: the Scope does not advertise idempotency.
+	lifecycle.updateResult = issueops.UpdateResult{Issue: updatedIssue("bd-1"), Changed: true}
+	callResult(t, ts.callSend(t, "issue/update", `{"arguments":{"id":"bd-1","actor":"a","patch":{"title":"t"}}}`,
+		http.Header{"Idempotency-Key": {"k"}}))
+
+	resp := ts.callSend(t, "issue/show", `{"arguments":{"id":"bd-1"}}`, http.Header{"Accept": {"application/json"}})
+	if resp.StatusCode != http.StatusNotAcceptable || readAll(t, resp) != "" {
+		t.Errorf("Accept application/json: status %d, want a bodyless 406", resp.StatusCode)
+	}
+	for _, accept := range []string{bdpMediaType, "application/*", "*/*", "application/json, " + bdpMediaType + ";q=0.5"} {
+		if !acceptsMedia([]string{accept}, bdpMediaType) {
+			t.Errorf("Accept %q was refused", accept)
+		}
+	}
+	for _, accept := range []string{"text/plain", bdpMediaType + ";q=0", "*/*, " + bdpMediaType + ";q=0"} {
+		if acceptsMedia([]string{accept}, bdpMediaType) {
+			t.Errorf("Accept %q was admitted", accept)
+		}
+	}
+}
+
+// TestCallableCheckingArguments is Callables §4: unknown and missing parameters
+// are validation-failed naming the parameter, and nothing runs.
+func TestCallableCheckingArguments(t *testing.T) {
+	reader := &roleReader{}
+	claimer := &roleClaimer{}
+	ts := newTestServer(t, rolesConfig(Config{Reader: reader, Claimer: claimer}))
+
+	body := wantProblem(t, ts.call(t, "issue/show", `{"id":"bd-1","zebra":1,"apple":2}`),
+		http.StatusUnprocessableEntity, bdpValidationFailed)
+	wantDiagnosticNaming(t, body, "zebra")
+	wantDiagnosticNaming(t, body, "apple")
+
+	for _, tc := range []struct{ name, arguments, param string }{
+		{"issue/show", `{}`, "id"},
+		{"issue/show", `{"id":""}`, "id"},
+		{"issue/show", `{"id":null}`, "id"},
+		{"issue/show", `{"id":7}`, "id"},
+		{"issue/show", `{"id":"."}`, "id"},
+		{"issue/show", `{"id":".."}`, "id"},
+		{"issue/claim", `{"id":"bd-1"}`, "actor"},
+		{"issue/claim", `{"id":"bd-1","actor":null}`, "actor"},
+		{"issue/claim", `{"id":"bd-1","actor":7}`, "actor"},
+		{"issue/dep/tree", `{}`, "root_id"},
+		{"issue/show", `{"id":"bd-1","include_comments":null}`, "include_comments"},
+		{"issue/show", `{"id":"bd-1","include_comments":"perhaps"}`, "include_comments"},
+		{"issue/list", `{"label":{"a":1}}`, "label"},
+		{"issue/list", `{"label":[["a"]]}`, "label"},
+	} {
+		body := wantProblem(t, ts.call(t, tc.name, tc.arguments), http.StatusUnprocessableEntity, bdpValidationFailed)
+		wantDiagnosticNaming(t, body, tc.param)
+	}
+	claimer.mu.Lock()
+	claims := len(claimer.claims)
+	claimer.mu.Unlock()
+	if len(reader.getRequests()) != 0 || claims != 0 {
+		t.Error("a rejected argument reached a role")
+	}
+}
+
+func TestCallableQueryArguments(t *testing.T) {
+	reader := &roleReader{page: issueops.IssuePage{}}
+	ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
+
+	direct := ts.get(t, "/v0/beads/issues?label=a&label=b%26c&limit=5&all=true&status=open")
+	routed := ts.call(t, "issue/list", `{"label":["a","b&c"],"limit":5,"all":true,"status":["open"]}`)
+	directAndRouted(t, direct, routed)
+	reader.mu.Lock()
+	defer reader.mu.Unlock()
+	if len(reader.list) != 2 || !reflect.DeepEqual(reader.list[0], reader.list[1]) {
+		t.Errorf("the role saw different requests: %+v", reader.list)
+	}
+}
+
+// TestCallablePathArgumentsAreEscaped: an id cannot climb out of its segment.
+func TestCallablePathArgumentsAreEscaped(t *testing.T) {
+	settings := &roleSettings{}
+	reader := &roleReader{err: fmt.Errorf("get: %w", issueops.ErrNotFound)}
+	ts := newTestServer(t, rolesConfig(Config{Settings: settings, Reader: reader}))
+	for _, id := range []string{"a/b", "a?x=1", "a#b", "a b", "a:close"} {
+		encoded, _ := json.Marshal(map[string]string{"id": id})
+		wantProblem(t, ts.call(t, "issue/show", string(encoded)), http.StatusNotFound, bdpResourceNotFound)
+		got := reader.getRequests()
+		if len(got) == 0 || got[len(got)-1].ID != id {
+			t.Errorf("id %q did not reach the role whole: %+v", id, got)
+		}
+	}
+}
+
+func TestCallableFlatDependencyAdapter(t *testing.T) {
+	editor := &roleDependencyEditor{}
+	ts := newTestServer(t, rolesConfig(Config{DependencyEditor: editor}))
+	lastEdges := func() []issueops.DependencyEdge {
+		editor.mu.Lock()
+		defer editor.mu.Unlock()
+		return editor.adds[len(editor.adds)-1].Edges
+	}
+
+	_, envelope := callResult(t, ts.call(t, "issue/dep/add", `{"actor":"a","source":"bd-1","target":"bd-2"}`))
+	if string(envelope["changed"]) != "true" {
+		t.Errorf("changed = %s", envelope["changed"])
+	}
+	want := issueops.DependencyEdge{IssueID: "bd-1", DependsOnID: "bd-2", Type: types.DepBlocks}
+	if got := lastEdges(); len(got) != 1 || got[0].IssueID != want.IssueID || got[0].DependsOnID != want.DependsOnID || got[0].Type != want.Type {
+		t.Errorf("omitted type: edges = %+v, want %+v", got, want)
+	}
+
+	callResult(t, ts.call(t, "issue/dep/add", `{"actor":"a","source":"bd-1","target":"bd-2","type":"related"}`))
+	if got := lastEdges(); got[0].Type != types.DependencyType("related") {
+		t.Errorf("flat type: edges = %+v", got)
+	}
+
+	callResult(t, ts.call(t, "issue/dep/add",
+		`{"actor":"a","edges":[{"issue_id":"bd-3","depends_on_id":"bd-4","type":"blocks"},{"issue_id":"bd-5","depends_on_id":"bd-6","type":"related"}]}`))
+	if got := lastEdges(); len(got) != 2 || got[1].IssueID != "bd-5" {
+		t.Errorf("edges form: %+v", got)
+	}
+
+	addCount := func() int {
+		editor.mu.Lock()
+		defer editor.mu.Unlock()
+		return len(editor.adds)
+	}
+	before := addCount()
+	for _, tc := range []struct{ arguments, param string }{
+		{`{"actor":"a"}`, "edges"},
+		{`{"actor":"a","edges":[{"issue_id":"x","depends_on_id":"y","type":"blocks"}],"source":"bd-1","target":"bd-2"}`, "source"},
+		{`{"actor":"a","edges":[{"issue_id":"x","depends_on_id":"y","type":"blocks"}],"type":"blocks"}`, "type"},
+		{`{"actor":"a","source":"bd-1"}`, "target"},
+		{`{"actor":"a","target":"bd-1"}`, "source"},
+		{`{"actor":"a","type":"blocks"}`, "source"},
+		{`{"actor":"a","source":7,"target":"bd-2"}`, "source"},
+		{`{"actor":"a","source":"bd-1","target":null}`, "target"},
+		{`{"source":"bd-1","target":"bd-2"}`, "actor"},
+	} {
+		body := wantProblem(t, ts.call(t, "issue/dep/add", tc.arguments), http.StatusUnprocessableEntity, bdpValidationFailed)
+		wantDiagnosticNaming(t, body, tc.param)
+	}
+	if addCount() != before {
+		t.Error("a refused form reached the role")
+	}
+}
+
+func TestCallableCommentAuthorAdapter(t *testing.T) {
+	commenter := &roleCommenter{comment: storedComment("bd-1")}
+	ts := newCommentServer(t, commenter)
+	provenance := `"revisionProvenance":{"actor":{"id":"sam","basis":"writer-supplied"}}`
+
+	callResult(t, ts.callSend(t, "issue/comment", `{"arguments":{"id":"bd-1","text":"hi"},`+provenance+`}`, nil))
+	if got := commenter.commentRequests(); got[len(got)-1].Author != "sam" {
+		t.Errorf("omitted author: %+v, want the invocation's actor", got[len(got)-1])
+	}
+
+	callResult(t, ts.callSend(t, "issue/comment", `{"arguments":{"id":"bd-1","text":"hi","author":"kim"},`+provenance+`}`, nil))
+	if got := commenter.commentRequests(); got[len(got)-1].Author != "kim" {
+		t.Errorf("supplied author: %+v, it wins over the actor", got[len(got)-1])
+	}
+
+	before := len(commenter.commentRequests())
+	// No actor to fill from: the refusal is v0's, on the parameter it requires.
+	wantDiagnosticNaming(t, wantProblem(t, ts.call(t, "issue/comment", `{"id":"bd-1","text":"hi"}`),
+		http.StatusUnprocessableEntity, bdpValidationFailed), "author")
+	// null is a supplied value (§4), and v0 refuses it; nothing fills it.
+	wantDiagnosticNaming(t, wantProblem(t, ts.callSend(t, "issue/comment",
+		`{"arguments":{"id":"bd-1","text":"hi","author":null},`+provenance+`}`, nil),
+		http.StatusUnprocessableEntity, bdpValidationFailed), "author")
+	if len(commenter.commentRequests()) != before {
+		t.Error("a refused comment reached the role")
+	}
+}
+
+// TestCallableProvenanceIsHonoredOrRefused: v0 has nowhere to carry
+// revisionProvenance but its own `actor` argument, so an input it cannot honor is
+// refused rather than dropped.
+func TestCallableProvenanceIsHonoredOrRefused(t *testing.T) {
+	lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: updatedIssue("bd-1"), Changed: true}}
+	ts := newUpdateServer(t, lifecycle)
+	args := `"arguments":{"id":"bd-1","actor":"sam","patch":{"title":"t"}}`
+
+	callResult(t, ts.callSend(t, "issue/update",
+		`{`+args+`,"revisionProvenance":{"actor":{"id":"sam","basis":"writer-supplied"},"agent":null,"message":null}}`, nil))
+	callResult(t, ts.callSend(t, "issue/update", `{`+args+`,"revisionProvenance":{}}`, nil))
+
+	before := len(lifecycle.updateRequests())
+	for _, provenance := range []string{
+		`{"actor":{"id":"kim","basis":"writer-supplied"}}`,
+		`{"agent":"claude"}`,
+		`{"message":"why"}`,
+	} {
+		wantDiagnosticNaming(t, wantProblem(t, ts.callSend(t, "issue/update", `{`+args+`,"revisionProvenance":`+provenance+`}`, nil),
+			http.StatusUnprocessableEntity, bdpValidationFailed), "revisionProvenance")
+	}
+	for _, provenance := range []string{
+		`null`,
+		`[]`,
+		`{"who":"x"}`,
+		`{"actor":"sam"}`,
+		`{"actor":{"id":"sam"}}`,
+		`{"actor":{"id":"","basis":"unknown"}}`,
+		`{"actor":{"id":"sam","basis":"attested"}}`,
+		`{"actor":{"id":"sam","basis":"unknown","extra":1}}`,
+		`{"agent":""}`,
+		`{"message":7}`,
+	} {
+		wantProblem(t, ts.callSend(t, "issue/update", `{`+args+`,"revisionProvenance":`+provenance+`}`, nil),
+			http.StatusBadRequest, bdpMalformedRequest)
+	}
+	// The omitted `actor` is v0's refusal, not filled from provenance: only
+	// issue/comment has that adapter.
+	wantDiagnosticNaming(t, wantProblem(t, ts.callSend(t, "issue/update",
+		`{"arguments":{"id":"bd-1","patch":{"title":"t"}},"revisionProvenance":{"actor":{"id":"sam","basis":"unknown"}}}`, nil),
+		http.StatusUnprocessableEntity, bdpValidationFailed), "revisionProvenance")
+	if len(lifecycle.updateRequests()) != before {
+		t.Error("a refused provenance reached the role")
+	}
+}
+
+// TestV0ProblemSurfacesAsItsDeclaredError drives real handlers into real v0
+// refusals, and compares each to the same refusal answered directly.
+func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
+	t.Run("a reason is callable-error with v0's Problem verbatim", func(t *testing.T) {
+		claimer := &roleClaimer{err: &issueops.ClaimConflictError{Err: issueops.ErrAlreadyClaimed, Assignee: "kim"}}
+		ts := newTestServer(t, rolesConfig(Config{Claimer: claimer}))
+		directResp := ts.postBody(t, "/v0/beads/issues/bd-1:claim", "application/json", `{"actor":"sam"}`)
+		direct := decodeBody(t, directResp)
+		if direct["code"] != string(CodeAlreadyClaimed) {
+			t.Fatalf("direct code = %v", direct)
+		}
+		body := wantProblem(t, ts.call(t, "issue/claim", `{"id":"bd-1","actor":"sam"}`), http.StatusConflict, bdpCallableError)
+		inner, ok := body["error"].(map[string]any)
+		if !ok {
+			t.Fatalf("no error member: %v", body)
+		}
+		delete(direct, "request_id")
+		if inner["request_id"] == nil {
+			t.Error("the verbatim Problem lost its request_id")
+		}
+		delete(inner, "request_id")
+		if !reflect.DeepEqual(inner, direct) {
+			t.Errorf("error is not v0's Problem:\n direct %v\n  error %v", direct, inner)
+		}
+		if inner["assignee"] != "kim" {
+			t.Errorf("assignee = %v", inner["assignee"])
+		}
+		if slices.Contains(callableIndex["issue/claim"].reasons, "already_claimed") == false {
+			t.Error("issue/claim does not declare already_claimed")
+		}
+	})
+
+	t.Run("not_found is resource-not-found", func(t *testing.T) {
+		reader := &roleReader{err: fmt.Errorf("get: %w", issueops.ErrNotFound)}
+		ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
+		body := wantProblem(t, ts.call(t, "issue/show", `{"id":"bd-1"}`), http.StatusNotFound, bdpResourceNotFound)
+		if _, has := body["error"]; has {
+			t.Errorf("only callable-error carries `error`: %v", body)
+		}
+		if v0, _ := body["v0"].(map[string]any); v0["code"] != string(CodeNotFound) {
+			t.Errorf("v0 = %v", body["v0"])
+		}
+	})
+
+	t.Run("a stale expected_version is revision-mismatch, another guard a reason", func(t *testing.T) {
+		lifecycle := &roleLifecycle{updateErr: fmt.Errorf("update: %w", issueops.ErrVersionMismatch)}
+		ts := newUpdateServer(t, lifecycle)
+		wantProblem(t, ts.call(t, "issue/update", `{"id":"bd-1","actor":"a","patch":{"title":"t"},"expected_version":"7"}`),
+			http.StatusConflict, bdpRevisionMismatch)
+
+		lifecycle.updateErr = fmt.Errorf("update: %w", issueops.ErrStatusMismatch)
+		body := wantProblem(t, ts.call(t, "issue/update", `{"id":"bd-1","actor":"a","patch":{"title":"t"},"expected_status":"open"}`),
+			http.StatusConflict, bdpCallableError)
+		if inner, _ := body["error"].(map[string]any); inner["code"] != string(CodePreconditionFailed) {
+			t.Errorf("error = %v", body["error"])
+		}
+	})
+
+	t.Run("a role's system failure is temporarily-unavailable, with no error member", func(t *testing.T) {
+		reader := &roleReader{err: errors.New("dial tcp 10.0.0.1:3306: secret-dsn")}
+		ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
+		resp := ts.call(t, "issue/show", `{"id":"bd-1"}`)
+		raw := readAll(t, resp)
+		if resp.StatusCode != http.StatusServiceUnavailable || strings.Contains(raw, "secret-dsn") {
+			t.Fatalf("status %d: %s", resp.StatusCode, raw)
+		}
+		var body map[string]any
+		_ = json.Unmarshal([]byte(raw), &body)
+		if body["code"] != bdpUnavailable || body["error"] != nil {
+			t.Errorf("body = %s", raw)
+		}
+	})
+
+	t.Run("a panicking handler answers the same way and is logged", func(t *testing.T) {
+		original := routeTable
+		t.Cleanup(func() { routeTable = original })
+		swapped := slices.Clone(original)
+		for i := range swapped {
+			if swapped[i].op == OpGetIssue {
+				swapped[i].handler = func(*Server, http.ResponseWriter, *http.Request) { panic("boom-marker") }
+			}
+		}
+		routeTable = swapped
+		ts := newTestServer(t, rolesConfig(Config{}))
+		wantProblem(t, ts.call(t, "issue/show", `{"id":"bd-1"}`), http.StatusServiceUnavailable, bdpUnavailable)
+		if !strings.Contains(ts.stderr.String(), "boom-marker") {
+			t.Error("the panic left no log line")
+		}
+	})
+
+	t.Run("the request line books the v0 operation", func(t *testing.T) {
+		claimer := &roleClaimer{err: &issueops.ClaimConflictError{Err: issueops.ErrAlreadyClaimed, Assignee: "kim"}}
+		ts := newTestServer(t, rolesConfig(Config{Claimer: claimer}))
+		wantProblem(t, ts.call(t, "issue/claim", `{"id":"bd-1","actor":"sam"}`), http.StatusConflict, bdpCallableError)
+		line := findLogLine(t, ts.stderr.String(), "path=/bdp/call/issue/claim")
+		if !strings.Contains(line, "op="+OpClaimIssue) {
+			t.Errorf("request line = %s", line)
+		}
+	})
+}
+
+// TestEveryV0CodeHasAnAnswer is §5 as a table, over every code the server can
+// produce, including the inner status that differs from the invocation's 409.
+func TestEveryV0CodeHasAnAnswer(t *testing.T) {
+	want := map[Code]string{
+		CodeInvalidArgument:        bdpValidationFailed,
+		CodeInvalidCursor:          bdpInvalidParameter,
+		CodeUnauthenticated:        bdpUnauthenticated,
+		CodeNotFound:               bdpResourceNotFound,
+		CodeAlreadyExists:          bdpIdentityTaken,
+		CodeIdempotencyExpired:     bdpIdentityTaken,
+		CodeBusy:                   bdpUnavailable,
+		CodeDBUnavailable:          bdpUnavailable,
+		CodeInternal:               bdpUnavailable,
+		CodeAlreadyClaimed:         bdpCallableError,
+		CodeNotClaimable:           bdpCallableError,
+		CodeNotClosable:            bdpCallableError,
+		CodeNotesOverwrite:         bdpCallableError,
+		CodeTemplateReadOnly:       bdpCallableError,
+		CodeIssuePinned:            bdpCallableError,
+		CodeNotAssignee:            bdpCallableError,
+		CodeNotReleasable:          bdpCallableError,
+		CodeLeaseNotHeld:           bdpCallableError,
+		CodeDependencyCycle:        bdpCallableError,
+		CodeDependencyExists:       bdpCallableError,
+		CodePreconditionFailed:     bdpCallableError,
+		CodeEventsJournalDisabled:  bdpCallableError,
+		CodeEventsJournalTruncated: bdpCallableError,
+		CodeEventsWatchSaturated:   bdpCallableError,
+	}
+	for code := range codeStatus {
+		expected, ok := want[code]
+		if !ok {
+			t.Errorf("v0 code %s has no expectation here", code)
+			continue
+		}
+		body, _ := json.Marshal(newResult(code, "d").Problem)
+		problem := translateV0Problem(body)
+		if problem.Code != expected {
+			t.Errorf("%s -> %s, want %s", code, problem.Code, expected)
+		}
+		if (problem.Code == bdpCallableError) != (problem.Error != nil) {
+			t.Errorf("%s: `error` present = %v on %s", code, problem.Error != nil, problem.Code)
+		}
+		if problem.Status != bdpProblemShapes[expected].status {
+			t.Errorf("%s: status = %d", code, problem.Status)
+		}
+		if problem.Code == bdpValidationFailed && len(problem.Diagnostics) == 0 {
+			t.Errorf("%s: validation-failed must carry diagnostics", code)
+		}
+	}
+
+	body, _ := json.Marshal(newResult(CodeEventsJournalTruncated, "gap").Problem)
+	problem := translateV0Problem(body)
+	var inner map[string]any
+	_ = json.Unmarshal(problem.Error, &inner)
+	if problem.Status != http.StatusConflict || inner["status"] != float64(http.StatusGone) {
+		t.Errorf("outer %d, inner %v: §5 keeps v0's own status inside `error`", problem.Status, inner["status"])
+	}
+}
+
+// TestCallablesGateBeforeInterpretation: the credential, the project stamp and the
+// wire floor are the route's own, and a refusal comes before any of the body is
+// read, so an unauthenticated caller learns nothing about names or shapes.
+func TestCallablesGateBeforeInterpretation(t *testing.T) {
+	ts := newTestServer(t, rolesConfig(Config{Auth: authTokenFile(t, "real-token")}))
+
+	for _, name := range []string{"issue/show", "issue/nope"} {
+		resp := ts.callSend(t, name, `not json`, nil)
+		wantProblem(t, resp, http.StatusUnauthorized, bdpUnauthenticated)
+		if resp.Header.Get("WWW-Authenticate") != "Bearer" {
+			t.Errorf("%s: no challenge on the 401", name)
+		}
+	}
+	wantProblem(t, ts.do(t, http.MethodGet, callableMount, nil), http.StatusUnauthorized, bdpUnauthenticated)
+
+	authed := bearer("real-token")
+	wantProblem(t, ts.callSend(t, "issue/nope", `{"arguments":{}}`, authed), http.StatusNotFound, bdpCallableNotFound)
+	if resp := ts.do(t, http.MethodGet, callableMount, authed); resp.StatusCode != http.StatusOK {
+		t.Errorf("GET /bdp/call with the credential = %d", resp.StatusCode)
+	}
+
+	ctx := http.Header{"Authorization": authed["Authorization"], ProjectIDHeader: {"not-this-project"}}
+	body := wantProblem(t, ts.callSend(t, "issue/show", `{"arguments":{"id":"bd-1"}}`, ctx),
+		http.StatusUnprocessableEntity, bdpValidationFailed)
+	wantDiagnosticNaming(t, body, ProjectIDHeader)
+}
+
+// TestCallableListIsTheOpenAPIProjection is Callables §3 and §14 over the served
+// document.
+func TestCallableListIsTheOpenAPIProjection(t *testing.T) {
+	ts := newTestServer(t, rolesConfig(Config{}))
+	resp := ts.get(t, callableMount)
+	raw := readAll(t, resp)
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d: %s", resp.StatusCode, raw)
+	}
+	if got := resp.Header.Get("Content-Type"); got != callableDocMediaType {
+		t.Errorf("Content-Type = %q", got)
+	}
+	if got := resp.Header.Get("Cache-Control"); got != "private, no-store" {
+		t.Errorf("Cache-Control = %q", got)
+	}
+	head := ts.do(t, http.MethodHead, callableMount, nil)
+	if head.StatusCode != http.StatusOK || readAll(t, head) != "" {
+		t.Errorf("HEAD = %d", head.StatusCode)
+	}
+
+	var doc map[string]any
+	if err := json.Unmarshal([]byte(raw), &doc); err != nil {
+		t.Fatalf("document is not JSON: %v", err)
+	}
+	if doc["openapi"] != "3.1.0" {
+		t.Errorf("openapi = %v", doc["openapi"])
+	}
+	paths := mapAt(t, doc, "paths")
+	if len(paths) != len(callableTable) {
+		t.Errorf("%d paths for %d names", len(paths), len(callableTable))
+	}
+	v0 := loadSpec(t)
+	ops := specOps(t, v0)
+	ids := map[string]bool{}
+	for i := range callableTable {
+		row := &callableTable[i]
+		item, ok := paths[callableMount+"/"+row.name].(map[string]any)
+		if !ok {
+			t.Errorf("no path for %s", row.name)
+			continue
+		}
+		if len(item) != 1 {
+			t.Errorf("%s: a mount admits POST only: %v", row.name, item)
+		}
+		op := mapAt(t, item, "post")
+		id, _ := op["operationId"].(string)
+		if ids[id] {
+			t.Errorf("operationId %q is used twice", id)
+		}
+		ids[id] = true
+		if op["summary"] != ops[row.op].op["summary"] {
+			t.Errorf("%s: summary = %v", row.name, op["summary"])
+		}
+
+		schema := mapAt(t, mapAt(t, mapAt(t, mapAt(t, op, "requestBody"), "content"), bdpMediaType), "schema")
+		if schema["additionalProperties"] != false {
+			t.Errorf("%s: the invocation must be closed", row.name)
+		}
+		invocation := mapAt(t, schema, "properties")
+		if _, has := invocation["revisionProvenance"]; has != row.batch {
+			t.Errorf("%s: revisionProvenance present = %v", row.name, has)
+		}
+		arguments := mapAt(t, invocation, "arguments")
+		if arguments["additionalProperties"] != false {
+			t.Errorf("%s: arguments must be closed", row.name)
+		}
+		properties := mapAt(t, arguments, "properties")
+		if len(properties) != len(row.declaredParameters()) {
+			t.Errorf("%s: %d properties for parameters %v", row.name, len(properties), row.declaredParameters())
+		}
+
+		_, hasHeader := op["parameters"]
+		if hasHeader != row.batch {
+			t.Errorf("%s: Idempotency-Key present = %v", row.name, hasHeader)
+		}
+		ok200 := mapAt(t, mapAt(t, mapAt(t, mapAt(t, op, "responses"), "200"), "content"), bdpMediaType)
+		result := mapAt(t, mapAt(t, ok200, "schema"), "properties")
+		if _, has := result["changed"]; has != row.batch {
+			t.Errorf("%s: changed declared = %v", row.name, has)
+		}
+
+		extension := mapAt(t, op, "x-bdp-callable")
+		wantType := callableTypeBase + "callable-query"
+		if row.batch {
+			wantType = callableTypeBase + "callable-batch"
+		}
+		if extension["type"] != wantType {
+			t.Errorf("%s: type = %v", row.name, extension["type"])
+		}
+	}
+	for _, tc := range []struct{ name, id string }{
+		{"issue/show", "issueShow"},
+		{"issue/metadata/compare-and-set", "issueMetadataCompareAndSet"},
+		{"issue/dep/add", "issueDepAdd"},
+		{"events/list", "eventsList"},
+	} {
+		if got := callableOperationID(tc.name); got != tc.id {
+			t.Errorf("operationId(%s) = %s, want %s", tc.name, got, tc.id)
+		}
+	}
+
+	declaredArguments := func(name string) map[string]any {
+		op := mapAt(t, mapAt(t, paths, callableMount+"/"+name), "post")
+		schema := mapAt(t, mapAt(t, mapAt(t, op, "requestBody"), "content"), bdpMediaType)
+		return mapAt(t, mapAt(t, mapAt(t, schema, "schema"), "properties"), "arguments")
+	}
+	required := func(name string) []any {
+		list, _ := declaredArguments(name)["required"].([]any)
+		return list
+	}
+	if got := required("issue/comment"); !reflect.DeepEqual(got, []any{"id", "text"}) {
+		t.Errorf("issue/comment required = %v: author is optional", got)
+	}
+	if got := required("issue/dep/add"); !reflect.DeepEqual(got, []any{"actor"}) {
+		t.Errorf("issue/dep/add required = %v", got)
+	}
+	if got := required("issue/claim"); !reflect.DeepEqual(got, []any{"id", "actor"}) {
+		t.Errorf("issue/claim required = %v", got)
+	}
+	// The CLI defaults are published for the client, and appear only there.
+	deleteOp := mapAt(t, mapAt(t, paths, callableMount+"/issue/delete"), "post")
+	cli := mapAt(t, mapAt(t, deleteOp, "x-bdp-callable"), "cliMapping")
+	if defaults := mapAt(t, cli, "defaults"); defaults["dry_run"] != true {
+		t.Errorf("issue/delete cliMapping.defaults = %v", defaults)
+	}
+	dryRun := mapAt(t, mapAt(t, declaredArguments("issue/delete"), "properties"), "dry_run")
+	if _, has := dryRun["default"]; has && dryRun["default"] != false {
+		t.Errorf("dry_run carries an OpenAPI default of %v", dryRun["default"])
+	}
+
+	// Every $ref resolves inside the document (§2.3), and 3.0's spellings are gone.
+	var walk func(node any)
+	walk = func(node any) {
+		switch value := node.(type) {
+		case []any:
+			for _, item := range value {
+				walk(item)
+			}
+		case map[string]any:
+			if ref, ok := value["$ref"].(string); ok {
+				rest, local := strings.CutPrefix(ref, "#/components/schemas/")
+				if !local || mapAt(t, mapAt(t, doc, "components"), "schemas")[rest] == nil {
+					t.Errorf("$ref %q does not resolve inside the document", ref)
+				}
+			}
+			for key, member := range value {
+				if strings.HasPrefix(key, "x-go-") || key == "x-bd-codes" {
+					t.Errorf("code-generation annotation %q survived", key)
+				}
+				if _, isBool := member.(bool); isBool && key == "nullable" {
+					t.Errorf("OpenAPI 3.0 `nullable` survived: %v", value)
+				}
+				walk(member)
+			}
+		}
+	}
+	walk(doc)
+}
+
+// TestStorageSentinelsStayUnderProblemMapping keeps one real sentinel route to a
+// Core code, so the mapping is shown to compose with ClassifyError rather than
+// only with synthetic bodies.
+func TestStorageSentinelsStayUnderProblemMapping(t *testing.T) {
+	lifecycle := &roleLifecycle{updateErr: fmt.Errorf("update: %w", storage.ErrNotFound)}
+	ts := newUpdateServer(t, lifecycle)
+	wantProblem(t, ts.call(t, "issue/update", `{"id":"bd-1","actor":"a","patch":{"title":"t"}}`),
+		http.StatusNotFound, bdpResourceNotFound)
+}

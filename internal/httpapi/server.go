@@ -1724,6 +1724,9 @@ func (s *Server) handler() http.Handler {
 		mux.Handle(key, s.dispatchCustomMethod(shared[key]))
 	}
 
+	// The Callables namespace dispatches back into this mux; see callables.go.
+	s.mountCallables(mux)
+
 	// Not an operation and deliberately not in the route table: it exists so
 	// that an unrouted path still answers with problem+json rather than
 	// net/http's text/plain default, which the document promises for EVERY
