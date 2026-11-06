@@ -79,6 +79,40 @@ func TestCloseWritesOnceAndAnswersWithTheRowItWrote(t *testing.T) {
 	}
 }
 
+// TestCloseStoresAReasonAsSent pins the rule a close reason shares with the other
+// prose this surface stores: a description and a comment body take newlines and
+// any length, and a `--reason-file` ending in a newline is the common case, so
+// the reason does too. It lands in a LONGTEXT column (migration 0049).
+func TestCloseStoresAReasonAsSent(t *testing.T) {
+	long := strings.Repeat("x", 300)
+	for _, tc := range []struct{ name, wire, want string }{
+		{"a trailing newline", `done\n`, "done\n"},
+		{"several lines", `two\nlines`, "two\nlines"},
+		{"past the 255-character columns", long, long},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			lifecycle := &roleLifecycle{closeResult: issueops.CloseResult{Issue: closedIssue("bd-1"), Changed: true}}
+			ts := newCloseServer(t, lifecycle)
+			resp := ts.closeIssue(t, closePath, `{"actor":"alice","reason":"`+tc.wire+`"}`)
+			if resp.StatusCode != http.StatusOK {
+				t.Fatalf("status = %d, want 200: %s", resp.StatusCode, readAll(t, resp))
+			}
+			if got := lifecycle.closeRequests(); len(got) != 1 || got[0].Reason != tc.want {
+				t.Fatalf("the role received %+v, want reason %q", got, tc.want)
+			}
+
+			closer := &roleBatchCloser{result: issueops.CloseBatchResult{Outcomes: []issueops.CloseOutcome{{IssueID: "bd-1", Issue: closedIssue("bd-1"), Changed: true}}}}
+			batch := newBatchCloseServer(t, closer).batchClose(t, `{"actor":"alice","items":[{"id":"bd-1","reason":"`+tc.wire+`"}]}`)
+			if batch.StatusCode != http.StatusOK {
+				t.Fatalf("batch status = %d, want 200: %s", batch.StatusCode, readAll(t, batch))
+			}
+			if got := closer.closeBatchRequests(); len(got) != 1 || got[0].Items[0].Reason != tc.want {
+				t.Fatalf("the batch role received %+v, want reason %q", got, tc.want)
+			}
+		})
+	}
+}
+
 // TestCloseIsIdempotentForAnAlreadyClosedIssue pins the wire's name for the
 // role's unchanged result. It is the re-claim's answer to the same question: an
 // agent replaying its own recovery should not have to classify an error to
@@ -292,8 +326,6 @@ func TestCloseRejectsTheShapesTheDocumentRefuses(t *testing.T) {
 		// `null` is refused rather than read as a clear: absence already means
 		// "not supplied", so a null would publish a third state with no meaning.
 		{"null reason", `{"actor":"alice","reason":null}`, "reason"},
-		{"oversize reason", `{"actor":"alice","reason":"` + strings.Repeat("x", 300) + `"}`, "reason"},
-		{"reason with a control character", "{\"actor\":\"alice\",\"reason\":\"done\\nbd: forged\"}", "reason"},
 		{"session is not a string", `{"actor":"alice","session":[]}`, "session"},
 		{"null session", `{"actor":"alice","session":null}`, "session"},
 		{"session with a control character", "{\"actor\":\"alice\",\"session\":\"s\\u0000\"}", "session"},

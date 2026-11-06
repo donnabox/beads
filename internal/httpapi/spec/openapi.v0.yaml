@@ -4171,9 +4171,9 @@ paths:
             Invalid request: an unknown query parameter, an unparseable or
             oversized body, an unknown body member, an `actor` that is empty
             after trimming, longer than 256 bytes, or carrying control
-            characters, a `reason` or `session` longer than the column holds or
-            carrying control characters — or an `expected_version` that is not
-            an integer.
+            characters, a `session` longer than the column holds or carrying
+            control characters — or an `expected_version` that is not an
+            integer. A `reason` is stored as sent, as a description is.
           x-bd-codes: [invalid_argument]
           content:
             application/problem+json:
@@ -4371,9 +4371,8 @@ paths:
             Invalid request: an unknown query parameter, an unparseable or
             oversized body, an unknown body member, an `actor` that is empty
             after trimming, longer than 256 bytes, or carrying control
-            characters, a `reason` longer than the column holds or carrying
-            control characters — or an `expected_version` that is not an
-            integer.
+            characters — or an `expected_version` that is not an integer. A
+            `reason` is stored as sent, as a description is.
           x-bd-codes: [invalid_argument]
           content:
             application/problem+json:
@@ -5499,7 +5498,8 @@ paths:
             oversized body, an unknown body or item member, an `actor` refused
             by the rules `ClaimRequest.actor` states, an `items` that is absent,
             empty or longer than 100, an item that is not an object or carries
-            no `id`, or a `reason`/`session` longer than the column holds.
+            no `id`, or a `session` longer than the column holds. A `reason` is
+            stored as sent, as a description is.
           x-bd-codes: [invalid_argument]
           content:
             application/problem+json:
