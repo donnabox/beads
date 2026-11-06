@@ -593,6 +593,49 @@ func TestCallablePathArgumentsAreEscaped(t *testing.T) {
 	}
 }
 
+// TestCallableReasonIsStoredAsSent holds the prose rule of TestCloseStoresAReasonAsSent
+// on the mount bd connect uses: a reason read from a file reaches the role whole, in
+// the one member of an invocation that takes newlines and any length.
+func TestCallableReasonIsStoredAsSent(t *testing.T) {
+	long := strings.Repeat("x", 300)
+	for _, tc := range []struct{ name, wire, want string }{
+		{"a trailing newline", `done\n`, "done\n"},
+		{"several lines", `two\nlines`, "two\nlines"},
+		{"past the 255-character columns", long, long},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			arguments := `{"id":"bd-1","actor":"alice","reason":"` + tc.wire + `"}`
+
+			closing := &roleLifecycle{closeResult: issueops.CloseResult{Issue: closedIssue("bd-1"), Changed: true}}
+			resp := newCloseServer(t, closing).call(t, "issue/close", arguments)
+			if resp.StatusCode != http.StatusOK {
+				t.Fatalf("issue/close = %d: %s", resp.StatusCode, readAll(t, resp))
+			}
+			if got := closing.closeRequests(); len(got) != 1 || got[0].Reason != tc.want {
+				t.Fatalf("issue/close: the role received %+v, want reason %q", got, tc.want)
+			}
+
+			reopening := &roleLifecycle{reopenResult: issueops.ReopenResult{Issue: reopenedIssue("bd-1"), Changed: true}}
+			resp = newReopenServer(t, reopening).call(t, "issue/reopen", arguments)
+			if resp.StatusCode != http.StatusOK {
+				t.Fatalf("issue/reopen = %d: %s", resp.StatusCode, readAll(t, resp))
+			}
+			if got := reopening.reopenRequests(); len(got) != 1 || got[0].Reason != tc.want {
+				t.Fatalf("issue/reopen: the role received %+v, want reason %q", got, tc.want)
+			}
+
+			closer := &roleBatchCloser{result: issueops.CloseBatchResult{Outcomes: []issueops.CloseOutcome{{IssueID: "bd-1", Issue: closedIssue("bd-1"), Changed: true}}}}
+			resp = newBatchCloseServer(t, closer).call(t, "issue/close-many", `{"actor":"alice","items":[{"id":"bd-1","reason":"`+tc.wire+`"}]}`)
+			if resp.StatusCode != http.StatusOK {
+				t.Fatalf("issue/close-many = %d: %s", resp.StatusCode, readAll(t, resp))
+			}
+			if got := closer.closeBatchRequests(); len(got) != 1 || got[0].Items[0].Reason != tc.want {
+				t.Fatalf("issue/close-many: the role received %+v, want reason %q", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestCallableFlatDependencyAdapter(t *testing.T) {
 	editor := &roleDependencyEditor{}
 	ts := newTestServer(t, rolesConfig(Config{DependencyEditor: editor}))

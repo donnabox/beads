@@ -62,8 +62,12 @@ var serveCmd = &cobra.Command{
 	Long: `Serve the beads HTTP API — the same work surface the CLI answers, for
 automation clients that would otherwise fork a bd subprocess per call.
 
-The wire contract is described by an OpenAPI document (/v0); GET
-/v0/beads/context reports which operations this build actually implements.
+Two surfaces answer on one address. /v0 is described by an OpenAPI document in
+the source tree (GET /v0 does not serve it); GET /v0/beads/context reports which
+operations this build actually implements. /bdp is the Beads Protocol: GET /bdp
+is Core discovery, GET /bdp/beads and GET /bdp/links are the Core reads, and POST
+/bdp/call/NAME invokes a Callable, which runs on its /v0 operation; GET /bdp/call
+lists them. bd connect talks to /bdp/call.
 
 DEPLOYMENT
 
