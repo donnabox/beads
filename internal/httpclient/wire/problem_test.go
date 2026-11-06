@@ -121,7 +121,7 @@ func TestClaimConflictsReconstructFromTheirExtensionMembers(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := refuseWith(t, 409, tc.body, nil, Request{
 				Op: OpClaimIssue, Method: http.MethodPost,
-				Path: "/v0/beads/issues/ga-1:claim", IssueID: "ga-1",
+				Path: "/v0/beads/issues/ga-1:claim", PathArg: "ga-1", IssueID: "ga-1",
 			})
 
 			var conflict *issueops.ClaimConflictError
@@ -152,7 +152,7 @@ func TestNotClosableUsesOpenChildrenPresenceAsTheDiscriminator(t *testing.T) {
 	t.Run("present means open children", func(t *testing.T) {
 		err := refuseWith(t, 409, `{"status":409,"code":"not_closable","open_children":4}`, nil, Request{
 			Op: OpCloseIssue, Method: http.MethodPost,
-			Path: "/v0/beads/issues/ga-1:close", IssueID: "ga-1",
+			Path: "/v0/beads/issues/ga-1:close", PathArg: "ga-1", IssueID: "ga-1",
 		})
 		var openChildren *issueops.CloseOpenChildrenError
 		if !errors.As(err, &openChildren) {
@@ -169,7 +169,7 @@ func TestNotClosableUsesOpenChildrenPresenceAsTheDiscriminator(t *testing.T) {
 	t.Run("absent means a live blocker", func(t *testing.T) {
 		err := refuseWith(t, 409, `{"status":409,"code":"not_closable","detail":"issue is blocked"}`, nil, Request{
 			Op: OpCloseIssue, Method: http.MethodPost,
-			Path: "/v0/beads/issues/ga-1:close", IssueID: "ga-1",
+			Path: "/v0/beads/issues/ga-1:close", PathArg: "ga-1", IssueID: "ga-1",
 		})
 		if !errors.Is(err, issueops.ErrCloseBlocked) {
 			t.Fatalf("err = %v, want ErrCloseBlocked", err)
@@ -184,7 +184,7 @@ func TestNotClosableUsesOpenChildrenPresenceAsTheDiscriminator(t *testing.T) {
 		// The pointer is what carries presence: a count of zero must not read
 		// as the other refusal.
 		err := refuseWith(t, 409, `{"status":409,"code":"not_closable","open_children":0}`, nil, Request{
-			Op: OpCloseIssue, Method: http.MethodPost, Path: "/v0/beads/issues/ga-1:close", IssueID: "ga-1",
+			Op: OpCloseIssue, Method: http.MethodPost, Path: "/v0/beads/issues/ga-1:close", PathArg: "ga-1", IssueID: "ga-1",
 		})
 		if !errors.Is(err, issueops.ErrCloseOpenChildren) {
 			t.Fatalf("err = %v, want ErrCloseOpenChildren", err)

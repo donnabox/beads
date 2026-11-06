@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"sync"
 	"testing"
+
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // The whole suite is httptest servers with canned bytes: no Dolt, no bd serve,
@@ -68,7 +70,7 @@ func (r *recorder) at(t *testing.T, i int) recorded {
 func newTestClient(t *testing.T, opts Options, creds CredentialProvider, h http.HandlerFunc) (*Client, *recorder) {
 	t.Helper()
 	rec := &recorder{}
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rec.add(r)
 		h(w, r)
 	}))

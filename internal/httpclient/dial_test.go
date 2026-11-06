@@ -112,7 +112,7 @@ func TestDialWithSuppliedClientNilTransportNoCARaisesMaxIdleConnsPerHost(t *test
 	}
 
 	const burst = 8
-	req := wire.Request{Op: "test.burst", Method: http.MethodGet, Path: "/v0/test-burst"}
+	req := wire.Request{Op: wire.OpGetContext, Method: http.MethodGet, Path: wire.PathContext}
 
 	runBurst := func() int64 {
 		var wg sync.WaitGroup

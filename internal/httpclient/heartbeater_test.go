@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/steveyegge/beads/internal/httpclient/wire"
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 	"github.com/steveyegge/beads/internal/storage"
 	storeops "github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/issueops"
@@ -34,7 +35,7 @@ type heartbeatStub struct {
 
 func (h *heartbeatStub) store(t *testing.T, caps ...string) *Store {
 	t.Helper()
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == wire.PathContext {
 			ctx := v0Context("proj-hb")
 			ctx.Capabilities = caps

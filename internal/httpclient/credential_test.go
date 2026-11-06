@@ -17,6 +17,7 @@ import (
 	"testing"
 
 	"github.com/steveyegge/beads/internal/httpapi/apigen"
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // clearCredentialEnvironment puts every rung of the ladder into its
@@ -425,7 +426,7 @@ type contextServer struct {
 
 func (s *contextServer) start(t *testing.T) *httptest.Server {
 	t.Helper()
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		s.seenMu.Lock()
 		s.seen = append(s.seen, r.Header.Get("Authorization"))
 		s.seenMu.Unlock()

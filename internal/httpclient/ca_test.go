@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"github.com/steveyegge/beads/internal/httpapi/apigen"
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // clearCAEnvironment puts BEADS_HTTP_CA_FILE into its not-configured state, the
@@ -155,7 +156,7 @@ func writeCAFile(t *testing.T, data []byte) string {
 // an IP-literal ServerName.
 func (ca testCA) startServer(t *testing.T, handler http.HandlerFunc) *url.URL {
 	t.Helper()
-	srv := httptest.NewUnstartedServer(handler)
+	srv := httptest.NewUnstartedServer(wiretest.V0(handler))
 	srv.TLS = &tls.Config{Certificates: []tls.Certificate{ca.leaf}}
 	srv.StartTLS()
 	t.Cleanup(srv.Close)
@@ -619,7 +620,7 @@ func TestTransportForFileRotationClosesSupersededIdleConnections(t *testing.T) {
 
 	var mu sync.Mutex
 	closedStates := 0
-	srv := httptest.NewUnstartedServer(h.handler())
+	srv := httptest.NewUnstartedServer(wiretest.V0(h.handler()))
 	srv.TLS = &tls.Config{Certificates: []tls.Certificate{oldCA.leaf}}
 	srv.Config.ConnState = func(_ net.Conn, state http.ConnState) {
 		if state == http.StateClosed {

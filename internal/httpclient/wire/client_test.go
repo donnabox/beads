@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/steveyegge/beads/internal/httpapi/apigen"
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -67,6 +68,7 @@ func TestBodiesRoundTripThroughTheCanonicalTypes(t *testing.T) {
 		Op:      OpClaimIssue,
 		Method:  http.MethodPost,
 		Path:    "/v0/beads/issues/ga-1:claim",
+		PathArg: "ga-1",
 		Body:    apigen.ClaimRequest{Actor: "me"},
 		IssueID: "ga-1",
 	}, &out)
@@ -97,7 +99,7 @@ func TestRedirectsAreRefusedRatherThanFollowed(t *testing.T) {
 		http.StatusTemporaryRedirect, http.StatusPermanentRedirect,
 	} {
 		t.Run(http.StatusText(status), func(t *testing.T) {
-			elsewhere := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {
+			elsewhere := httptest.NewServer(wiretest.HandlerFunc(func(http.ResponseWriter, *http.Request) {
 				t.Error("the redirect target was dialed")
 			}))
 			t.Cleanup(elsewhere.Close)
@@ -283,7 +285,7 @@ func TestAResponseNobodyReadsNeedsNoBody(t *testing.T) {
 	c, _ := newTestClient(t, Options{}, nil, func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	})
-	if err := c.Do(ctx(t), Request{Op: OpForgetMemory, Method: http.MethodDelete, Path: PathMemories + "/k"}, nil); err != nil {
+	if err := c.Do(ctx(t), Request{Op: OpForgetMemory, Method: http.MethodDelete, Path: PathMemories + "/k", PathArg: "k"}, nil); err != nil {
 		t.Fatalf("Do: %v", err)
 	}
 }
@@ -325,7 +327,7 @@ func TestTheBaseURLIsValidatedAtConstruction(t *testing.T) {
 
 func TestATrailingSlashOnTheMountRootDoesNotDoubleTheSeparator(t *testing.T) {
 	var got string
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got = r.URL.Path
 		_, _ = w.Write([]byte(`{}`))
 	}))

@@ -134,7 +134,7 @@ func TestDispatchDoesNotRetryWrites(t *testing.T) {
 	server := &busyThenOK{busyCount: 1, retryAfter: time.Millisecond}
 	s := retryTestStore(t, server.do)
 
-	write := wire.Request{Op: wire.OpClaimIssue, Method: http.MethodPost, Path: "/v0/beads/issues/bd-1:claim"}
+	write := wire.Request{Op: wire.OpClaimIssue, Method: http.MethodPost, Path: "/v0/beads/issues/bd-1:claim", PathArg: "bd-1"}
 	err := s.dispatch(context.Background(), write, nil)
 	if !errors.Is(err, wire.ErrBusy) {
 		t.Fatalf("dispatch = %v, want the busy error unretried", err)

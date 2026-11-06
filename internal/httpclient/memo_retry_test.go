@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/steveyegge/beads/internal/httpclient/wire"
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // TestDispatchRetryOfABusyMemoizedReadAsksTheServer (mc-5dkzp): dispatch comes
@@ -20,7 +21,7 @@ import (
 // what the command's later identical reads are answered from.
 func TestDispatchRetryOfABusyMemoizedReadAsksTheServer(t *testing.T) {
 	var gets atomic.Int32
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case r.URL.Path == wire.PathContext:
 			ctx := v0Context("proj-busy")

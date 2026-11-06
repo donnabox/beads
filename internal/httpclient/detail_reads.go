@@ -51,6 +51,7 @@ func (s *Store) getIssueDetails(ctx context.Context, id string, query url.Values
 		Op:      wire.OpGetIssue,
 		Method:  http.MethodGet,
 		Path:    path,
+		PathArg: id,
 		Query:   query,
 		IssueID: id,
 	}, &details)

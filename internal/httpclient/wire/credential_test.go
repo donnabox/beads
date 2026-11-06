@@ -198,6 +198,7 @@ func TestTheRetriedRequestReplaysItsBody(t *testing.T) {
 		Op:      OpClaimIssue,
 		Method:  http.MethodPost,
 		Path:    "/v0/beads/issues/ga-1:claim",
+		PathArg: "ga-1",
 		Body:    apigen.ClaimRequest{Actor: "agent-7"},
 		IssueID: "ga-1",
 	}, &out)

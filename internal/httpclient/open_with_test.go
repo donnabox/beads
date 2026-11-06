@@ -13,6 +13,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 	"github.com/steveyegge/beads/internal/storage/backends"
 )
 
@@ -87,7 +88,7 @@ func contextOnlyServer(t *testing.T, project string) (*httptest.Server, func() [
 	t.Helper()
 	var mu sync.Mutex
 	var auths []string
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		auths = append(auths, r.Header.Get("Authorization"))
 		mu.Unlock()

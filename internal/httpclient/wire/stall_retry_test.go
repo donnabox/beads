@@ -16,6 +16,8 @@ import (
 	"time"
 
 	"golang.org/x/net/netutil"
+
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // stallServer answers every request normally except those that arrive on the
@@ -42,7 +44,7 @@ func newStallServer(t *testing.T, answer http.HandlerFunc) *stallServer {
 		_, _ = io.Copy(io.Discard, r.Body)
 		<-r.Context().Done()
 	}
-	s.srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	s.srv = httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		s.mu.Lock()
 		if s.first == "" {
 			s.first = r.RemoteAddr
@@ -240,7 +242,7 @@ func TestASlowWriteIsNotCutOffByTheHeaderTimeout(t *testing.T) {
 func TestAReadThatStallsTwiceGivesUpAfterOneRetry(t *testing.T) {
 	var mu sync.Mutex
 	n := 0
-	srv := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		n++
 		mu.Unlock()
@@ -343,7 +345,7 @@ func TestARetryAfterAResetNamesTheReset(t *testing.T) {
 func TestASlowReadFinishesOnItsRetry(t *testing.T) {
 	var mu sync.Mutex
 	n := 0
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		n++
 		mu.Unlock()
@@ -393,7 +395,7 @@ func TestASlowReadFinishesOnItsRetry(t *testing.T) {
 // overall timeout instead of failing a read serve was about to answer.
 func TestAReadQueuedBehindTheConnectionLimitFinishesOnceASlotFrees(t *testing.T) {
 	occupied := make(chan struct{})
-	srv := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewUnstartedServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/occupy" {
 			close(occupied)
 			time.Sleep(3 * testHeaderTimeout)
@@ -486,7 +488,7 @@ func TestASlowCredentialSourceIsNotAStall(t *testing.T) {
 func TestASlowCredentialSourceDoesNotShortenTheRetry(t *testing.T) {
 	var mu sync.Mutex
 	var arrived []time.Time
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		arrived = append(arrived, time.Now())
 		mu.Unlock()
@@ -570,7 +572,7 @@ func TestAStallLeavesOtherServersIdleConnectionsAlone(t *testing.T) {
 	})
 	var mu sync.Mutex
 	var remotes []string
-	other := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	other := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		remotes = append(remotes, r.RemoteAddr)
 		mu.Unlock()
@@ -666,7 +668,7 @@ func TestANegativeHeaderTimeoutDisablesIt(t *testing.T) {
 func TestAReadThatSpentTheWholeTimeoutIsNotRetried(t *testing.T) {
 	var mu sync.Mutex
 	n := 0
-	srv := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		n++
 		mu.Unlock()
@@ -716,7 +718,7 @@ func TestAReadThatSpentTheWholeTimeoutIsNotRetried(t *testing.T) {
 // runs out before its answer; under the raised one it gets it.
 func TestARaisedRequestTimeoutAlsoBoundsTheStallRetry(t *testing.T) {
 	const slowRead = 2 * testHeaderTimeout
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		select {
 		case <-time.After(slowRead):
 		case <-r.Context().Done():

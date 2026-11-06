@@ -32,7 +32,7 @@ func TestEveryRequestCarriesTheProjectStamp(t *testing.T) {
 	for _, r := range []Request{
 		{Op: OpListIssues, Method: http.MethodGet, Path: PathIssues},
 		{Op: OpGetContext, Method: http.MethodGet, Path: PathContext},
-		{Op: OpClaimIssue, Method: http.MethodPost, Path: "/v0/beads/issues/x:claim", Body: map[string]string{"actor": "a"}, IssueID: "x"},
+		{Op: OpClaimIssue, Method: http.MethodPost, Path: "/v0/beads/issues/x:claim", PathArg: "x", Body: map[string]string{"actor": "a"}, IssueID: "x"},
 	} {
 		if err := c.Do(ctx(t), r, &struct{}{}); err != nil {
 			t.Fatalf("%s: %v", r.Op, err)

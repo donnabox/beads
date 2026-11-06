@@ -3,7 +3,9 @@
 package wire
 
 import (
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
@@ -212,18 +214,28 @@ func TestMemoryAndSettingKeysAreEscapedIntoOneSegment(t *testing.T) {
 	}
 }
 
-func TestTheURLTheServerSeesKeepsTheEscapingAndTheMountRoot(t *testing.T) {
-	// The end-to-end statement the escaping exists to make: whatever the id, the
-	// server's router sees one segment and decodes it back to the id, under
-	// whatever prefix the base URL mounts the surface at.
-	var gotPath, gotRaw, gotID string
-	c, _ := newTestClient(t, Options{}, nil, func(w http.ResponseWriter, r *http.Request) {
-		gotPath, gotRaw = r.URL.EscapedPath(), r.URL.RawQuery
-		gotID = strings.TrimPrefix(r.URL.Path, "/mount/v0/beads/issues/")
-		_, _ = w.Write([]byte(`{}`))
-	})
-	mounted := c.BaseURL().JoinPath("/mount/")
-	c, err := New(mounted, nil, Options{HTTPClient: c.hc})
+func TestTheInvocationKeepsTheIDWholeAndTheMountRoot(t *testing.T) {
+	// The end-to-end statement the escaping used to make on the path: whatever the
+	// id, the server gets it back whole, under whatever prefix the base URL mounts
+	// the surface at. An id travels as an argument now, so the only escaping left is
+	// JSON's, and Path's matters only as the logical request's key.
+	var gotPath string
+	var got struct {
+		Arguments map[string]string `json:"arguments"`
+	}
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotPath = r.URL.EscapedPath()
+		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
+			t.Errorf("decode: %v", err)
+		}
+		_, _ = w.Write([]byte(`{"result":{}}`))
+	}))
+	t.Cleanup(srv.Close)
+	base, err := url.Parse(srv.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := New(base.JoinPath("/mount/"), nil, Options{})
 	if err != nil {
 		t.Fatalf("New: %v", err)
 	}
@@ -234,21 +246,19 @@ func TestTheURLTheServerSeesKeepsTheEscapingAndTheMountRoot(t *testing.T) {
 	}
 	var out map[string]any
 	if err := c.Do(ctx(t), Request{
-		Op:     OpClaimIssue,
-		Method: http.MethodPost,
-		Path:   path,
-		Query:  url.Values{"actor": {"me"}},
+		Op:      OpClaimIssue,
+		Method:  http.MethodPost,
+		Path:    path,
+		PathArg: "a/b:x",
+		Body:    map[string]string{"actor": "me"},
 	}, &out); err != nil {
 		t.Fatalf("Do: %v", err)
 	}
 
-	if want := "/mount/v0/beads/issues/a%2Fb%3Ax:claim"; gotPath != want {
-		t.Errorf("escaped path = %q, want %q", gotPath, want)
+	if want := "/mount/bdp/call/issue/claim"; gotPath != want {
+		t.Errorf("path = %q, want %q", gotPath, want)
 	}
-	if gotID != "a/b:x:claim" {
-		t.Errorf("decoded final segment = %q, want %q", gotID, "a/b:x:claim")
-	}
-	if gotRaw != "actor=me" {
-		t.Errorf("query = %q, want actor=me", gotRaw)
+	if got.Arguments["id"] != "a/b:x" || got.Arguments["actor"] != "me" {
+		t.Errorf("arguments = %v", got.Arguments)
 	}
 }

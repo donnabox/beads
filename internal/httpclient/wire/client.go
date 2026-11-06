@@ -256,6 +256,8 @@ func normalizeBase(base *url.URL) *url.URL {
 // Request is one call on the v0 surface: the operation being dialed, where it
 // lives, and what it carries.
 //
+// Method, Path and Query name the v0 operation: they are what the read memo and
+// the retries key on. On the wire, all but `health` is a Callable (callables.go).
 // Path comes from the builders in paths.go and is already escaped. IssueID and
 // DependsOnID are not sent — they are what the problem mapper needs to rebuild
 // the typed conflicts whose extension members the server leaves out because the
@@ -264,7 +266,11 @@ type Request struct {
 	Op     string
 	Method string
 	Path   string
-	Query  url.Values
+	// PathArg is the caller-supplied segment Path was built from, unescaped: the
+	// id or key the operation addresses. It travels as the Callable's argument of
+	// that name, so nothing has to parse it back out of Path.
+	PathArg string
+	Query   url.Values
 	// Body is marshaled as JSON when non-nil.
 	Body any
 
@@ -327,6 +333,10 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 	if err != nil {
 		return fmt.Errorf("%s: %w", r.Op, err)
 	}
+	send, err := c.outboundFor(r, u, body)
+	if err != nil {
+		return err
+	}
 
 	var (
 		res *response
@@ -353,7 +363,7 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 	}
 	if res == nil {
 		var err error
-		res, err = c.roundTrip(ctx, r, u, body)
+		res, err = c.roundTrip(ctx, r, send)
 		if err != nil {
 			return err
 		}
@@ -371,13 +381,21 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 			return fmt.Errorf("%s: refreshing the credential for bd serve at %s: %w", r.Op, c.base.Redacted(), err)
 		}
 		if retry {
-			if res, err = c.roundTrip(ctx, r, u, body); err != nil {
+			if res, err = c.roundTrip(ctx, r, send); err != nil {
 				return err
 			}
 		}
 	}
 
 	if res.status < 200 || res.status >= 300 {
+		if send.callable != "" {
+			err := callableProblem(c.target(r), send.callable, res, c.maxRetry)
+			var prob *ProblemError
+			if errors.As(err, &prob) && prob.Status == http.StatusUnauthorized {
+				prob.CredentialSource = credentialSource(c.creds)
+			}
+			return err
+		}
 		prob := mapProblem(c.target(r), res.status, res.header, res.body, c.maxRetry)
 		// A refused credential should name the ladder rung it came from (design
 		// D7). The source is a client-side fact the provider knows, not something
@@ -396,6 +414,14 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 		return fmt.Errorf("%s: bd serve at %s answered %d with an empty body", r.Op, c.base.Redacted(), res.status)
 	}
 	decodeBody := res.body
+	if send.callable != "" {
+		if decodeBody, err = callableResult(res.body); err != nil {
+			return fmt.Errorf("%s: decoding the response from bd serve at %s: %w", r.Op, c.base.Redacted(), err)
+		}
+		if int64(len(decodeBody)) > c.maxBytes {
+			return &ResponseTooLargeError{Op: r.Op, ServerURL: c.base.Redacted(), Limit: c.maxBytes}
+		}
+	}
 	// A pre-#6053 server's `revision` is still a bare JSON integer; every
 	// apigen response type that carries one declares it `string`, so decoding
 	// straight into out would fail with an untyped json.UnmarshalTypeError on
@@ -471,8 +497,8 @@ type response struct {
 // fail a healthy read the client used to wait out. Bounded by what is left of
 // the overall Timeout instead, such a read still finishes if its headers and
 // body fit in what is left, and no read waits longer than that Timeout.
-func (c *Client) roundTrip(ctx context.Context, r Request, u *url.URL, body []byte) (*response, error) {
-	req, err := c.newRequest(ctx, r, u, body)
+func (c *Client) roundTrip(ctx context.Context, r Request, send *outbound) (*response, error) {
+	req, err := c.newRequest(ctx, r, send)
 	if err != nil {
 		return nil, err
 	}
@@ -484,10 +510,10 @@ func (c *Client) roundTrip(ctx context.Context, r Request, u *url.URL, body []by
 		// cannot be retried. A write stays bounded by the client's overall
 		// timeout, and a timeout awaiting its headers is typed in
 		// roundTripOnce.
-		return c.roundTripOnce(ctx, r, u, req, 0, time.Time{})
+		return c.roundTripOnce(ctx, r, send, req, 0, time.Time{})
 	}
 	sent := time.Now()
-	res, err := c.roundTripOnce(ctx, r, u, req, c.headerTimeout, time.Time{})
+	res, err := c.roundTripOnce(ctx, r, send, req, c.headerTimeout, time.Time{})
 	if err == nil {
 		return res, nil
 	}
@@ -505,11 +531,11 @@ func (c *Client) roundTrip(ctx context.Context, r Request, u *url.URL, body []by
 	// connection), so the retry rides another one. The transport may also be
 	// shared by every client in the process, and its idle connections to
 	// other servers are none of this request's business.
-	event := StallRetry{Op: r.Op, Method: r.Method, Host: u.Host, Reason: reason, Retry: 1, Total: stallRetries.Add(1), Err: err}
+	event := StallRetry{Op: r.Op, Method: r.Method, Host: send.url.Host, Reason: reason, Retry: 1, Total: stallRetries.Add(1), Err: err}
 	if c.onStall != nil {
 		c.onStall(event)
 	}
-	res, err = c.roundTripOnce(ctx, r, u, req, 0, deadline)
+	res, err = c.roundTripOnce(ctx, r, send, req, 0, deadline)
 	var hte *ResponseHeaderTimeoutError
 	if errors.As(err, &hte) {
 		hte.After, hte.Attempts, hte.Retried, hte.Reason = time.Since(sent), 2, true, reason
@@ -543,18 +569,31 @@ func largeApplyTimeout(n int) time.Duration {
 
 // newRequest builds r's HTTP request and stamps it (see stampRequest).
 // roundTripOnce sends a copy of it per attempt.
-func (c *Client) newRequest(ctx context.Context, r Request, u *url.URL, body []byte) (*http.Request, error) {
+func (c *Client) newRequest(ctx context.Context, r Request, send *outbound) (*http.Request, error) {
 	var rdr io.Reader
-	if body != nil {
-		rdr = bytes.NewReader(body)
+	if send.body != nil {
+		rdr = bytes.NewReader(send.body)
 	}
-	req, err := http.NewRequestWithContext(ctx, r.Method, u.String(), rdr)
+	req, err := http.NewRequestWithContext(ctx, send.method, send.url.String(), rdr)
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", r.Op, err)
 	}
-	req.Header.Set("Accept", "application/json, application/problem+json")
-	if body != nil {
-		req.Header.Set("Content-Type", "application/json")
+	if send.callable != "" {
+		req.Header.Set("Accept", callableAccept)
+		req.Header.Set("Content-Type", callableMediaType)
+		// A read on POST is still replayable, and net/http's own resend on a stale
+		// idle connection (it can fail with an error stallReason cannot name) has
+		// to know that: it honors a request with this header present. A nil value
+		// is documented to mean exactly that and not be sent, which matters because
+		// the mount refuses a CallableQuery that carries the header.
+		if r.Replayable() {
+			req.Header["Idempotency-Key"] = nil
+		}
+	} else {
+		req.Header.Set("Accept", "application/json, application/problem+json")
+		if send.body != nil {
+			req.Header.Set("Content-Type", "application/json")
+		}
 	}
 	if err := c.stampRequest(ctx, r.Op, req); err != nil {
 		return nil, err
@@ -571,7 +610,8 @@ func (c *Client) newRequest(ctx context.Context, r Request, u *url.URL, body []b
 // the 401 retry above expressible at all: both attempts are then symmetric, and
 // the request body is a []byte that can be replayed. The size cap is what makes
 // that safe.
-func (c *Client) roundTripOnce(ctx context.Context, r Request, u *url.URL, stamped *http.Request, headerTimeout time.Duration, deadline time.Time) (*response, error) {
+func (c *Client) roundTripOnce(ctx context.Context, r Request, send *outbound, stamped *http.Request, headerTimeout time.Duration, deadline time.Time) (*response, error) {
+	u := send.url
 	attemptCtx := ctx
 	if !deadline.IsZero() {
 		var cancel context.CancelFunc
@@ -627,11 +667,15 @@ func (c *Client) roundTripOnce(ctx context.Context, r Request, u *url.URL, stamp
 
 	// One byte past the cap, so an oversized body is detected rather than
 	// silently truncated into a document that happens to parse.
-	raw, err := io.ReadAll(io.LimitReader(resp.Body, c.maxBytes+1))
+	limit := c.maxBytes
+	if send.callable != "" {
+		limit += callableEnvelopeSlack
+	}
+	raw, err := io.ReadAll(io.LimitReader(resp.Body, limit+1))
 	if err != nil {
 		return nil, &ConnectError{Op: r.Op, ServerURL: c.base.Redacted(), Err: err}
 	}
-	if int64(len(raw)) > c.maxBytes {
+	if int64(len(raw)) > limit {
 		return nil, &ResponseTooLargeError{Op: r.Op, ServerURL: c.base.Redacted(), Limit: c.maxBytes}
 	}
 	return &response{status: resp.StatusCode, header: resp.Header, body: raw}, nil

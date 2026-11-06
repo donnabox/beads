@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/steveyegge/beads/internal/httpclient/wire"
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 func TestResponseHeaderTimeoutResolution(t *testing.T) {
@@ -61,7 +62,7 @@ func TestTheProductionDialRetriesAStalledReadOnAnotherConnection(t *testing.T) {
 	t.Setenv(ResponseHeaderTimeoutEnv, "300ms")
 	var mu sync.Mutex
 	first := ""
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mu.Lock()
 		if first == "" {
 			first = r.RemoteAddr
