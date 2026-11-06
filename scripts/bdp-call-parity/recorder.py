@@ -1,9 +1,11 @@
 """A recording proxy between `bd connect` and `bd serve`.
 
-The operator plans to move the client from /v0 to /bdp/call. This records every
-request the client really makes during Part B, and asks of each: which Callable
-would carry it, does that Callable declare every parameter, and, for a read, does
-the Callable answer it the same right now?
+`bd connect` speaks only /bdp/call. This records every request the client really
+makes during Part B, and asks of each: is it an invocation at all, does its Callable
+declare every argument it sent, and, for a read, does v0 answer the same right now?
+
+A request that is not POST /bdp/call/NAME is what the move exists to end, so it fails
+the run (parity.py): see non_call_requests.
 """
 
 import http.server
@@ -17,28 +19,7 @@ import callable_cases as cases
 import part_a
 
 
-def match_route(method, path):
-    """The (Callable, path arguments) a v0 request corresponds to, or (None, {})."""
-    segments = path.split("/")
-    for name, (route_method, template) in cases.ROUTES.items():
-        if route_method != method or name == "issue/prune":
-            continue
-        pattern = template.split("/")
-        if len(pattern) != len(segments):
-            continue
-        args = {}
-        for want, got in zip(pattern, segments):
-            if "{" in want:
-                param = want[want.index("{") + 1:want.index("}")]
-                suffix = want[want.index("}") + 1:]
-                if not got.endswith(suffix):
-                    break
-                args[param] = urllib.parse.unquote(got[:len(got) - len(suffix)] if suffix else got)
-            elif want != got:
-                break
-        else:
-            return name, args
-    return None, {}
+CALL_MOUNT = "/bdp/call/"
 
 
 class Recorder:
@@ -73,44 +54,42 @@ class Recorder:
                 self.send_header("Content-Length", str(len(raw)))
                 self.end_headers()
                 self.wfile.write(raw)
-                recorder.observe(self.command, self.path, dict(self.headers), body, status, raw)
+                recorder.observe(self.command, self.path, dict(self.headers), body, status, reply_headers, raw)
 
-            do_GET = do_POST = do_PATCH = do_PUT = do_DELETE = relay
+            do_GET = do_HEAD = do_OPTIONS = do_POST = do_PATCH = do_PUT = do_DELETE = relay
 
         self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
         self.url = f"http://127.0.0.1:{self.server.server_address[1]}"
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
 
-    def observe(self, method, target, headers, body, status, raw):
+    def observe(self, method, target, headers, body, status, reply_headers, raw):
         parsed = urllib.parse.urlsplit(target)
-        query = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
-        try:
-            members = json.loads(body) if body else {}
-        except ValueError:
-            members = {}
-        name, args = match_route(method, parsed.path)
-        if name in ("issue/purge",) and members.get("tier") == "durable":
-            name = "issue/prune"
+        name = parsed.path[len(CALL_MOUNT):] if parsed.path.startswith(CALL_MOUNT) and method == "POST" else None
         entry = {"method": method, "path": parsed.path, "callable": name, "status": status,
-                 "query": sorted(query), "body": sorted(members) if isinstance(members, dict) else ["(not an object)"],
+                 "query": sorted(urllib.parse.parse_qs(parsed.query, keep_blank_values=True)),
                  "headers": sorted(k.lower() for k in headers)}
         if name:
-            undeclared = sorted((set(query) | set(members)) - self.declared.get(name, set()))
-            entry["undeclared"] = undeclared
-            arguments = dict(args)
-            arguments.update({k: (v[0] if len(v) == 1 else v) for k, v in query.items()})
-            if isinstance(members, dict):
-                arguments.update(members)
-            if method == "GET" or name == "issue/get-many":
-                # A read changes nothing, so it can be asked again through the mount.
-                call_headers = {k: v for k, v in headers.items()
-                                if k.lower() in ("bd-project-id", "bd-wire-revision", "user-agent", "authorization")}
+            try:
+                invocation = json.loads(body) if body else {}
+            except ValueError:
+                invocation = {}
+            arguments = invocation.get("arguments", {}) if isinstance(invocation, dict) else {}
+            entry["arguments"] = sorted(arguments)
+            entry["undeclared"] = sorted(set(arguments) - self.declared.get(name, set()))
+            if name in cases.ROUTES and (cases.ROUTES[name][0] == "GET" or name == "issue/get-many"):
+                # A read changes nothing, so v0 can be asked the same thing at once.
+                v0_headers = {k: v for k, v in headers.items()
+                              if k.lower() in ("bd-project-id", "bd-wire-revision", "user-agent", "authorization")}
                 try:
-                    replay = self.stack.call(name, arguments, headers=call_headers)
-                    v0_reply = _Reply(status, raw)
-                    entry["replay_status"] = replay.status
-                    entry["replay_problems"] = part_a.compare(name, v0_reply, replay, same_server=True)
+                    v0_form = part_a.v0_request(name, arguments)
+                    if v0_form is None:
+                        # The mount refused it for a missing path argument, before v0.
+                        entry["replay_problems"] = [] if status != 200 else ["no path argument, yet answered 200"]
+                    else:
+                        replay = self.stack.http(v0_form[0], v0_form[1], v0_form[2], headers=v0_headers)
+                        entry["replay_status"] = replay.status
+                        entry["replay_problems"] = part_a.compare(name, replay, _Reply(status, raw, reply_headers), same_server=True)
                 except OSError as err:
                     entry["replay_problems"] = [f"replay failed: {err}"]
         with self.lock:
@@ -122,10 +101,10 @@ class Recorder:
 
 
 class _Reply:
-    def __init__(self, status, raw):
+    def __init__(self, status, raw, headers):
         self.status = status
         self.raw = raw
-        self.headers = {}
+        self.headers = headers
         try:
             self.json = json.loads(raw) if raw else None
         except ValueError:
@@ -166,16 +145,24 @@ def _arguments_of(schema, document):
     return arguments.get("properties", {}).keys()
 
 
+def non_call_requests(wire):
+    """The keys of summarize()'s rows that are not invocations: the run's failure."""
+    return [key for key in wire if key.startswith(NON_CALL)]
+
+
+NON_CALL = "(not an invocation) "
+
+
 def summarize(entries):
-    """One row per v0 route the client used."""
+    """One row per Callable the client invoked, and one per anything else it sent."""
     rows = {}
     for entry in entries:
-        key = entry["callable"] or f"(none) {entry['method']} {entry['path']}"
-        row = rows.setdefault(key, {"requests": 0, "query": set(), "body": set(), "headers": set(), "undeclared": set(),
+        key = entry["callable"] or f"{NON_CALL}{entry['method']} {entry['path']}"
+        row = rows.setdefault(key, {"requests": 0, "query": set(), "arguments": set(), "headers": set(), "undeclared": set(),
                                     "replayed": 0, "replay_failures": []})
         row["requests"] += 1
         row["query"] |= set(entry["query"])
-        row["body"] |= set(entry["body"])
+        row["arguments"] |= set(entry.get("arguments", []))
         row["headers"] |= set(entry["headers"])
         row["undeclared"] |= set(entry.get("undeclared", []))
         if "replay_problems" in entry:

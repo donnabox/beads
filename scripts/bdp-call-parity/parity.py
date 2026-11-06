@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import callable_cases  # noqa: E402
 import part_a  # noqa: E402
 import part_b  # noqa: E402
+import recorder  # noqa: E402
 from stack import Root  # noqa: E402
 
 
@@ -88,10 +89,12 @@ def write_summary(path, meta, rows, a_results, b_results, wire):
             says = r["client_says"] or r["direct_says"] or (r["output_diff"] or r["state_diff"] or [""])[0]
             lines.append(f"- {r['verdict']} ({r['mode']}): `bd {' '.join(r['argv'])}` ({', '.join(r['callables'])}): {says[:240]}")
     lines += ["", "## What the client sent during Part B", "",
-              "Recorded by a proxy between `bd connect` and `bd serve`. Replayed reads went through the Callable at once.", "",
-              "| Callable | requests | query | body | undeclared | replayed / failed |", "| --- | ---: | --- | --- | --- | --- |"]
+              "Recorded by a proxy between `bd connect` and `bd serve`. Each read was asked of v0 at once and compared.", "",
+              f"{sum(row['requests'] for row in wire.values())} requests; "
+              f"{sum(row['requests'] for key, row in wire.items() if key in recorder.non_call_requests(wire))} were not `POST /bdp/call/NAME`.", "",
+              "| Callable | requests | arguments | undeclared | replayed / failed |", "| --- | ---: | --- | --- | --- |"]
     for name, row in wire.items():
-        lines.append(f"| `{name}` | {row['requests']} | {' '.join(row['query'])} | {' '.join(row['body'])} | "
+        lines.append(f"| `{name}` | {row['requests']} | {' '.join(row['arguments'])} | "
                      f"{' '.join(row['undeclared'])} | {row['replayed']} / {len(row['replay_failures'])} |")
     with open(path, "w") as handle:
         handle.write("\n".join(lines) + "\n")
@@ -136,7 +139,11 @@ def main():
         json.dump({"meta": meta, "callables": rows, "client_wire": wire, "part_a": a_results, "part_b": b_results}, handle, indent=1)
     write_summary(os.path.join(args.out, "summary.md"), meta, rows, a_results, b_results, wire)
     log(f"wrote {args.out}/results.json and {args.out}/summary.md")
-    # Exit 0: a run that measured anomalies still measured. A harness fault raises.
+    # Exit 0: a run that measured anomalies still measured. A harness fault raises, and
+    # so does the one thing that is no anomaly: a client request that is not an invocation.
+    strays = recorder.non_call_requests(wire)
+    if strays:
+        sys.exit("bd connect sent requests other than POST /bdp/call/NAME:\n  " + "\n  ".join(strays))
 
 
 if __name__ == "__main__":

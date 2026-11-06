@@ -2,7 +2,9 @@
 
 Measures stage 1: every Callable on `bd serve`, and every native command behind it
 over `bd connect`. It reports anomalies. It changes no product code and does not fail
-on what it finds; it exits non-zero only when the harness itself breaks.
+on what it finds, with one exception: a request from `bd connect` that is not
+`POST /bdp/call/NAME` fails the run. Otherwise it exits non-zero only when the harness
+itself breaks.
 
 ```bash
 ./scripts/bdp-call-parity/run.sh --out /some/dir
@@ -45,10 +47,10 @@ the command dialed, which is the evidence for which Callable a command correspon
 ## What the client sends
 
 Part B's client reaches `bd serve` through `recorder.py`, a recording proxy. For each
-request it records the headers, query and body members, names the Callable that would
-carry it, and flags any parameter that Callable does not declare. Each read is also
-asked again through the Callable at once and compared. `client_wire` in `results.json`
-is the baseline for moving `bd connect` from `/v0` to `/bdp/call`.
+request it records the headers and argument names, flags any argument its Callable does
+not declare, and fails the run if the request is not an invocation at all. Each read is
+also asked of v0 at once and compared with what the client got, so `client_wire` in
+`results.json` is the live evidence that the mount and v0 still agree on real traffic.
 
 ## Cleanup
 

@@ -230,9 +230,9 @@ def read_cases():
     return cases
 
 
-def W(name, args, expect=None, seed=(), before=(), changed=None, v0_args=None, provenance=None, label=None, sql=(), wait=0, own_refusal=False):
+def W(name, args, expect=None, seed=(), before=(), changed=None, v0_args=None, provenance=None, label=None, sql=(), wait=0, own_refusal=False, may_change=False):
     return {"callable": name, "args": args, "expect": expect, "seed": list(seed), "before": list(before), "sql": list(sql), "wait": wait, "own_refusal": own_refusal,
-            "changed": changed, "v0_args": v0_args, "provenance": provenance, "label": label}
+            "changed": changed, "v0_args": v0_args, "provenance": provenance, "label": label, "may_change": may_change}
 
 
 def write_cases():
@@ -469,16 +469,16 @@ def write_cases():
           W("issue/dep/remove", {"issue_id": "sw-fix-v01", "depends_on_id": "sw-fix-v02"}, expect="invalid_argument", changed=False)]
     # config
     c += [W("config/set", {"key": "fix.w1", "value": "v"}, changed=True),
-          W("config/set", {"key": "fix.w1", "value": "v"}, label="same value again"),
+          W("config/set", {"key": "fix.w1", "value": "v"}, label="same value again", may_change=True),
           W("config/set", {"key": "fix.w2"}, expect="invalid_argument", changed=False),
           W("config/set", {"key": "fix key!", "value": "v"}, changed=True, label="key needing an escape"),
           W("config/set", {"key": "issue_prefix", "value": "zz"}, expect="invalid_argument", changed=False, label="a protected key"),
           W("config/unset", {"key": "fix.w1"}, changed=True),
-          W("config/unset", {"key": "fix.w1"}, label="already gone"),
+          W("config/unset", {"key": "fix.w1"}, label="already gone", may_change=True),
           W("config/unset", {"key": "fix key!"}, changed=True, label="key needing an escape")]
     # memory
     c += [W("memory/remember", {"content": "keyed", "key": "fix-w1"}, changed=True),
-          W("memory/remember", {"content": "keyed", "key": "fix-w1"}, label="same content again"),
+          W("memory/remember", {"content": "keyed", "key": "fix-w1"}, label="same content again", may_change=True),
           W("memory/remember", {"content": "replaced", "key": "fix-w1"}, changed=True),
           W("memory/remember", {"content": "the key is derived from this"}, changed=True),
           W("memory/remember", {"key": "fix-w2"}, expect="invalid_argument", changed=False),

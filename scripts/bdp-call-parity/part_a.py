@@ -187,7 +187,10 @@ def run_writes(v0_stack, call_stack, results):
             problems = [p for p in problems if p != "no v0 body carried"]
         effect = strict(before) != strict(after)
         changed = (call_reply.json or {}).get("changed") if call_reply.status == 200 else None
-        if call_reply.status == 200 and changed != effect:
+        # `false` promises no durable effect, and `true` only that there may have been
+        # one. v0's result cannot rule one out on the `may_change` cases: they accept a
+        # `true` with no visible move, and never a `false` with one.
+        if call_reply.status == 200 and changed != effect and not (case.get("may_change") and changed):
             problems.append(f"changed={changed} but the state {'did' if effect else 'did not'} move")
         if call_reply.status != 200 and effect:
             problems.append("a refused Callable moved the state")
@@ -277,9 +280,9 @@ def run_path_escapes(stack, results):
 
 def run_wire_headers(stack, results):
     """What the bd connect client sends on every request, sent to both surfaces."""
-    client_accept = "application/json, application/problem+json"
     cases_ = [
-        ("client Accept header", {"Accept": client_accept}, {"Accept": client_accept}),
+        ("client Accept header", {"Accept": "application/json, application/problem+json"},
+         {"Accept": "application/vnd.bdp.v0.1+json, application/problem+json"}),
         ("wrong Bd-Project-Id", {"Bd-Project-Id": "not-this-project"}, {"Bd-Project-Id": "not-this-project"}),
         ("future Bd-Wire-Revision", {"Bd-Wire-Revision": "9999"}, {"Bd-Wire-Revision": "9999"}),
         ("Bd-Wire-Revision below the floor", {"Bd-Wire-Revision": "0"}, {"Bd-Wire-Revision": "0"}),
@@ -291,6 +294,12 @@ def run_wire_headers(stack, results):
         problems = compare("issue/list", v0_reply, call_reply, same_server=True)
         results.append(record("issue/list", label, {"limit": 1}, v0_reply, call_reply, problems, "probe",
                               note=f"v0 {v0_reply.status} {code_of(v0_reply)}; Callable {call_reply.status} {code_of(call_reply)}"))
+    # The profile's own rule, which v0 has no counterpart to: an Accept that excludes the
+    # media type is a bodyless 406, even on a request that would have failed.
+    v0_reply = stack.http("GET", "/v0/beads/issues?limit=1", headers={"Accept": "application/json"})
+    call_reply = stack.call("issue/list", {"limit": 1}, headers={"Accept": "application/json"})
+    problems = [] if call_reply.status == 406 and not call_reply.raw else [f"status {call_reply.status}, want a bodyless 406"]
+    results.append(record("issue/list", "an Accept without the media type is refused", {"limit": 1}, v0_reply, call_reply, problems, "probe"))
 
 
 def run_handshake_identity(stack, results):
