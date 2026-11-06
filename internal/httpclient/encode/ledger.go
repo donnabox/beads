@@ -1120,7 +1120,7 @@ func commandRows() []Row {
 		{
 			ID: "F-ready-explain", Kind: KindRetired, Command: "ready", Flag: "--explain",
 			What:    "RETIRED — `bd ready --explain` is served",
-			Why:     "raw_reads.go answers the raw reads it dispatches onto, each composed from the operations that can",
+			Why:     "raw_reads.go answers the raw reads it dispatches onto, each composed from the operations that can. On a v0 connection, the default, none of this is sent and the answer is what it always was (cmd/bd's remoteOnV0)",
 			SpecRow: "D7", PinnedBy: refusedFlagMode,
 		},
 		row("F-ready-mol", "ready", "--mol", "`bd ready --mol` refuses",
@@ -1136,13 +1136,13 @@ func commandRows() []Row {
 		{
 			ID: "F-show-refs", Kind: KindRetired, Command: "show", Flag: "--refs",
 			What:    "RETIRED — `bd show --refs` is served",
-			Why:     "the command hydrates the wire's shallow dependents through batchGetIssues before rendering them",
+			Why:     "the command hydrates the wire's shallow dependents through batchGetIssues before rendering them. On a v0 connection, the default, none of this is sent and the answer is what it always was (cmd/bd's remoteOnV0)",
 			SpecRow: "D7", PinnedBy: refusedFlagMode,
 		},
 		{
 			ID: "F-show-children", Kind: KindRetired, Command: "show", Flag: "--children",
 			What:    "RETIRED — `bd show --children` is served",
-			Why:     "the command hydrates the wire's shallow dependents through batchGetIssues before rendering them",
+			Why:     "the command hydrates the wire's shallow dependents through batchGetIssues before rendering them. On a v0 connection, the default, none of this is sent and the answer is what it always was (cmd/bd's remoteOnV0)",
 			SpecRow: "D7", PinnedBy: refusedFlagMode,
 		},
 		{

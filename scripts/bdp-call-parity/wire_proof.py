@@ -146,7 +146,8 @@ class Side:
         self.connect_record = self.record_connect()
 
     def record_connect(self):
-        ran = run_bd(self.root.bd, ["connect", self.recorder.url], self.client, self.stack.env(), False, 60, None)
+        protocol = ["--protocol", self.root.connect_protocol] if self.root.connect_protocol else []
+        ran = run_bd(self.root.bd, ["connect", self.recorder.url] + protocol, self.client, self.stack.env(), False, 60, None)
         record = self.finish("connect", ["connect", "<server>"], "connect", "text", ran)
         with open(os.path.join(self.client, ".beads", "http_target.json")) as handle:
             record["sidecar"] = Masker(self.extra).text(handle.read())
@@ -212,7 +213,7 @@ class Side:
         self.root.stop(self.stack.dolt_proc)
 
 
-def client_side(bd, dolt, out, only, log):
+def client_side(bd, dolt, out, only, log, serve_protocol=None, connect_protocol=None):
     wanted = re.compile(only) if only else None
 
     def selected(group):
@@ -221,7 +222,7 @@ def client_side(bd, dolt, out, only, log):
     def text_of(group):
         return [t for t in (b_cases.as_text(c) for c in group) if t]
 
-    root = Root(os.path.abspath(bd), os.path.abspath(dolt), serve_protocol=None, connect_protocol=None)
+    root = Root(os.path.abspath(bd), os.path.abspath(dolt), serve_protocol=serve_protocol, connect_protocol=connect_protocol)
     records = []
     try:
         side = Side(root, "wire-read")
