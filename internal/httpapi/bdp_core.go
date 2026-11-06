@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"runtime/debug"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -201,14 +202,58 @@ func coreMethodNotAllowed(w http.ResponseWriter, _ *http.Request) {
 // mountCoreReads registers the Core read surface on the server's mux.
 //
 // Go's mux takes the most specific pattern, so these sit beside every /v0 row
-// and beside /bdp/call without being able to shadow one.
+// and beside /bdp/call without being able to shadow one. Resource URLs have no
+// pattern of their own; see coreResourcesOr.
 func (s *Server) mountCoreReads(mux *http.ServeMux) {
 	mux.Handle("GET /{$}", s.coreGate(opCoreScopeRoot, true, s.serveCoreScopeRoot))
 	mux.Handle("GET "+coreDiscoveryPath, s.coreGate(opCoreDiscovery, true, s.serveCoreDiscovery))
-	for _, method := range []string{http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions} {
-		mux.HandleFunc(method+" /{$}", coreMethodNotAllowed)
+	mux.Handle("GET "+coreBeadsPath, s.coreGate(opCoreBeads, false, s.serveCoreBeads))
+	mux.Handle("GET "+coreLinksPath, s.coreGate(opCoreLinks, false, s.serveCoreLinks))
+	// The rest of `bdp/` is protocol navigation this Scope does not advertise.
+	mux.Handle(coreDiscoveryPath+"/{rest...}", s.coreGate(opCoreResource, true, func(w http.ResponseWriter, r *http.Request) {
+		writeCoreProblem(w, r, coreCodeNotFound, "no such route on this Scope")
+	}))
+	for _, method := range coreRefusedMethods {
 		mux.HandleFunc(method+" "+coreDiscoveryPath, coreMethodNotAllowed)
+		mux.HandleFunc(method+" "+coreBeadsPath, coreMethodNotAllowed)
+		mux.HandleFunc(method+" "+coreLinksPath, coreMethodNotAllowed)
 	}
+}
+
+// coreRefusedMethods are the methods Core's 405 answers. Anything rarer stays
+// the catch-all's 404.
+var coreRefusedMethods = []string{
+	http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions,
+}
+
+// coreResourcesOr is the server's catch-all, because a Resource URL can be any
+// path: a method-carrying wildcard at the root would conflict with the
+// method-less /bdp/call patterns. Every registered route has already had its
+// turn by the time a request lands here.
+//
+// A Resource address is one path segment, under neither a v0 route's first segment
+// nor bdp. Any other path stays unrouted, answered the way it always was and with
+// no credential asked for it.
+func (s *Server) coreResourcesOr(unrouted http.Handler) http.Handler {
+	reserved := map[string]bool{strings.TrimPrefix(coreDiscoveryPath, "/"): true}
+	for _, rt := range routeTable {
+		first, _, _ := strings.Cut(strings.TrimPrefix(rt.pattern, "/"), "/")
+		reserved[first] = true
+	}
+	resources := s.coreGate(opCoreResource, false, s.serveCoreResource)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		segment := strings.TrimPrefix(r.URL.EscapedPath(), "/")
+		switch {
+		case reserved[segment] || strings.Contains(segment, "/"):
+			unrouted.ServeHTTP(w, r)
+		case r.Method == http.MethodGet || r.Method == http.MethodHead:
+			resources.ServeHTTP(w, r)
+		case slices.Contains(coreRefusedMethods, r.Method):
+			coreMethodNotAllowed(w, r)
+		default:
+			unrouted.ServeHTTP(w, r)
+		}
+	})
 }
 
 // coreScope is the canonical Scope URL of this request: its scheme and Host.
@@ -340,6 +385,7 @@ func writeCoreJSON(w http.ResponseWriter, value any) {
 	w.Header().Set("Content-Type", bdpMediaType)
 	w.Header().Set("Content-Length", strconv.Itoa(len(body)))
 	w.WriteHeader(http.StatusOK)
+	//nolint:gosec // G705: BDP JSON body, JSON-encoded content, no HTML sink.
 	_, _ = w.Write(body)
 }
 

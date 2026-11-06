@@ -456,8 +456,9 @@ func TestEveryResponseCarriesTheResponseWideHeaders(t *testing.T) {
 		status                   int
 		code                     Code
 	}{
-		// No API version can ever claim this path.
-		{"unrouted path", http.MethodGet, "/no-such-route", "", http.StatusNotFound, CodeNotFound},
+		// No API version can ever claim this path, and one segment would be a
+		// BDP Resource address rather than an unrouted path.
+		{"unrouted path", http.MethodGet, "/no/such/route", "", http.StatusNotFound, CodeNotFound},
 		{"unregistered custom method", http.MethodPost, "/v0/beads/issues/bd-1:nosuchverb", "", http.StatusNotFound, CodeNotFound},
 		{"refused Host", http.MethodGet, "/healthz", "rebind.example", http.StatusBadRequest, CodeInvalidArgument},
 	} {

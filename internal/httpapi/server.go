@@ -1733,9 +1733,9 @@ func (s *Server) handler() http.Handler {
 	// net/http's text/plain default, which the document promises for EVERY
 	// non-2xx byte. A method mismatch on a known path lands here too and
 	// answers 404 rather than 405, because 405 is not in the v0 vocabulary.
-	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.Handle("/", s.coreResourcesOr(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, r, newResult(CodeNotFound, "no such route on this server"))
-	}))
+	})))
 
 	return s.withRequestContext(s.checkHost(mux))
 }
