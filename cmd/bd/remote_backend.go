@@ -106,7 +106,7 @@ func hydrateRemoteDependents(ctx context.Context, s storage.DoltStorage, refs []
 	for _, ref := range refs {
 		row, ok := byID[ref.ID]
 		if !ok {
-			return nil, fmt.Errorf("bd serve listed %s as a dependent but did not return its row", ref.ID)
+			return nil, fmt.Errorf("the server listed %q as a dependent but did not return its row", ref.ID)
 		}
 		hydrated = append(hydrated, &types.IssueWithDependencyMetadata{Issue: *row, DependencyType: ref.DependencyType})
 	}

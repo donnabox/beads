@@ -146,7 +146,7 @@ func (s *Store) DetectCycles(ctx context.Context) ([][]*types.Issue, error) {
 		path := make([]*types.Issue, 0, len(cycle.Members))
 		for _, member := range cycle.Members {
 			if member.Issue == nil {
-				return nil, fmt.Errorf("bd serve at %s reported a dependency cycle through %q without the issue itself",
+				return nil, fmt.Errorf("the server at %s reported a dependency cycle through %q without the issue itself",
 					s.target.String(), member.ID)
 			}
 			path = append(path, member.Issue)
