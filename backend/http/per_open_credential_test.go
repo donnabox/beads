@@ -19,6 +19,7 @@ import (
 
 	"github.com/steveyegge/beads/backend"
 	bdhttp "github.com/steveyegge/beads/backend/http"
+	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/backends"
 )
@@ -37,7 +38,7 @@ type twoProjectServer struct {
 func newTwoProjectServer(t *testing.T, mounts ...string) *twoProjectServer {
 	t.Helper()
 	s := &twoProjectServer{auths: map[string][]string{}}
-	s.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	s.Server = httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		for _, mount := range mounts {
 			if r.URL.Path != "/"+mount+"/v0/beads/context" {
 				continue
@@ -281,13 +282,13 @@ func (r *plaintextRemote) RoundTrip(req *http.Request) (*http.Response, error) {
 	r.mu.Lock()
 	r.auths = append(r.auths, req.Header.Get("Authorization"))
 	r.mu.Unlock()
-	status, contentType, body := http.StatusNotFound, "application/problem+json", `{"status":404,"code":"not_found"}`
-	if strings.HasSuffix(req.URL.Path, "/v0/beads/context") {
-		status, contentType = http.StatusOK, "application/json"
-		body = `{"api_version":"v0","backend":"dolt","bd_version":"9.9.9",` +
+	status, contentType, body := http.StatusNotFound, "application/problem+json", `{"status":404,"code":"resource-not-found","v0":{"status":404,"code":"not_found"}}`
+	if strings.HasSuffix(req.URL.Path, "/bdp/call/issue/context") {
+		status, contentType = http.StatusOK, "application/vnd.bdp.v0.1+json"
+		body = `{"result":{"api_version":"v0","backend":"dolt","bd_version":"9.9.9",` +
 			`"beads_dir":"/srv/.beads","capabilities":["issues.get"],` +
 			`"database":"beads","dolt_mode":"server","project_id":"proj-remote","repo_root":"/srv",` +
-			`"schema_version":1,"wire_revision":1,"min_client_wire_revision":1}`
+			`"schema_version":1,"wire_revision":1,"min_client_wire_revision":1}}`
 	}
 	return &http.Response{
 		StatusCode:    status,

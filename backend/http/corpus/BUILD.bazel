@@ -21,6 +21,7 @@ go_test(
     deps = [
         "//internal/httpapi",
         "//internal/httpapi/apigen",
+        "//internal/httpclient/wire/wiretest",
         "//internal/storage",
         "//internal/storage/domain",
         "//internal/storage/embeddeddolt",

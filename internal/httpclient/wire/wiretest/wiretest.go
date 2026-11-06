@@ -126,6 +126,35 @@ func V0(h http.Handler) http.Handler {
 	})
 }
 
+// Logical is what one request asks for in v0's terms.
+type Logical struct {
+	Method string
+	Path   string
+	// RequestURI is the path as escaped, and the query.
+	RequestURI string
+	Query      url.Values
+}
+
+// LogicalRequest spells a request the way v0 would have received it, for a test that
+// watches real traffic pass and asserts on the operations it saw. Its Body is left
+// readable. A request that is no invocation is its own spelling.
+func LogicalRequest(r *http.Request) Logical {
+	if at := strings.Index(r.URL.Path, mount); at >= 0 {
+		if route, ok := Routes[r.URL.Path[at+len(mount):]]; ok && r.Method == http.MethodPost {
+			raw, err := io.ReadAll(r.Body)
+			r.Body = io.NopCloser(bytes.NewReader(raw))
+			if err == nil {
+				copied := r.Clone(r.Context())
+				copied.Body = io.NopCloser(bytes.NewReader(raw))
+				if inner, detail := v0Request(copied, r.URL.Path[:at], route); detail == "" {
+					return Logical{inner.Method, inner.URL.Path, inner.URL.RequestURI(), inner.URL.Query()}
+				}
+			}
+		}
+	}
+	return Logical{r.Method, r.URL.Path, r.URL.RequestURI(), r.URL.Query()}
+}
+
 // HandlerFunc is V0 for a handler function, so that a fake written inline needs
 // one word changed.
 func HandlerFunc(f func(http.ResponseWriter, *http.Request)) http.Handler {
@@ -253,6 +282,8 @@ func (e *envelope) open() {
 		return
 	}
 	e.opened = true
+	// A reverse proxy behind this copies v0's length, which the envelope makes wrong.
+	e.w.Header().Del("Content-Length")
 	e.w.Header().Set("Content-Type", mediaType)
 	e.w.WriteHeader(http.StatusOK)
 	_, _ = io.WriteString(e.w, `{"result":`)
@@ -317,6 +348,7 @@ func (e *envelope) translate() {
 	if err != nil {
 		panic(err)
 	}
+	e.w.Header().Del("Content-Length")
 	e.w.Header().Set("Content-Type", "application/problem+json")
 	e.w.WriteHeader(status)
 	_, _ = e.w.Write(problem)
