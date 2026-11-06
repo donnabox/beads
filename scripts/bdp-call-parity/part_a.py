@@ -173,6 +173,9 @@ def run_reads(stack, results):
         v0_reply = ask_v0(stack, name, args)
         call_reply = stack.call(name, args)
         problems = compare(name, v0_reply, call_reply, same_server=True)
+        if None in args.values():
+            # A query has no spelling of null, so the router refuses one before v0 runs.
+            problems = [p for p in problems if p != "no v0 body carried"]
         got = code_of(v0_reply)
         harness = None if got == want else f"expected v0 code {want!r}, got {got!r}"
         results.append(record(name, json.dumps(args, sort_keys=True), args, v0_reply, call_reply,
@@ -308,6 +311,33 @@ def run_actor_rules(stack, names, results):
             if got.get("v0"):
                 problems.append("v0 ran")
             entry(name, "no actor is refused", args, reply, problems)
+
+
+def run_v0_spellings(stack, results):
+    """bd connect sends each omission as a value (wire.v0Omissions). v0 must read it as the omission."""
+    def check(name, label, omitted, spelled, clean=strict):
+        first, second = call_v0(stack, name, omitted), call_v0(stack, name, spelled)
+        problems = [] if first.status == second.status else [f"status {first.status} omitted, {second.status} spelled"]
+        problems += diff(clean(first.json), clean(second.json), limit=6)
+        results.append({"part": "A", "callable": name, "label": "v0 reads a spelled omission as the omission: " + label,
+                        "mode": "probe", "arguments": spelled, "v0": {"status": first.status, "code": code_of(first)},
+                        "call": {"status": second.status, "code": code_of(second)}, "problems": problems, "pass": not problems})
+
+    for id_ in ("sw-fix-sp1", "sw-fix-sp2"):
+        call_v0(stack, "issue/create", cases.issue(id_))
+    check("issue/list", "sort", {}, {"sort": "created"})
+    check("issue/dep/list", "direction", {"id": "sw-fix-sp1"}, {"id": "sw-fix-sp1", "direction": ""})
+    check("issue/create", "issue_type", {"actor": cases.A, "title": "t"}, {"actor": cases.A, "title": "t", "issue_type": ""})
+    # The same refusal of the same member, in two sentences.
+    check("issue/purge", "tier", {"actor": cases.A}, {"actor": cases.A, "tier": ""},
+          clean=lambda body: {k: body.get(k) for k in ("code", "param", "reason")})
+    check("issue/purge", "dry_run and the protections", {"tier": "ephemeral", "actor": cases.A, "pattern": "sw-fix-nomatch*"},
+          {"tier": "ephemeral", "actor": cases.A, "pattern": "sw-fix-nomatch*", "dry_run": False, "protect_referenced": True, "protect_live_dependents": False})
+    check("issue/delete", "dry_run", {"ids": ["sw-fix-none"], "actor": cases.A}, {"ids": ["sw-fix-none"], "actor": cases.A, "dry_run": False})
+    check("issue/reclaim", "older_than_seconds", {"actor": cases.A}, {"actor": cases.A, "older_than_seconds": 0})
+    # Two rows, because a close happens once. The record is what has to agree.
+    check("issue/close", "reason", {"id": "sw-fix-sp1", "actor": cases.A}, {"id": "sw-fix-sp2", "actor": cases.A, "reason": ""},
+          clean=lambda body: {k: (body.get("issue") or body).get(k) for k in ("status", "close_reason", "closed_by_session")})
 
 
 def run_published_defaults(stack, results):
@@ -519,6 +549,7 @@ def run(root, log):
     run_unknown_argument(probe, names, results)
     run_actor_rules(probe, names, results)
     run_published_defaults(probe, results)
+    run_v0_spellings(probe, results)
     run_journal_off(probe, results)
     run_envelope(probe, results)
     run_path_escapes(call_stack, results)
