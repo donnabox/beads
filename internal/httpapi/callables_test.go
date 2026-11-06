@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httptest"
+	"os"
 	"reflect"
 	"slices"
 	"sort"
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
@@ -802,9 +805,18 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 		}
 		routeTable = swapped
 		ts := newTestServer(t, rolesConfig(Config{}))
-		wantProblem(t, ts.call(t, "issue/show", `{"id":"bd-1"}`), http.StatusServiceUnavailable, bdpUnavailable)
+		body := wantProblem(t, ts.call(t, "issue/show", `{"id":"bd-1"}`), http.StatusServiceUnavailable, bdpUnavailable)
 		if !strings.Contains(ts.stderr.String(), "boom-marker") {
 			t.Error("the panic left no log line")
+		}
+		// What a direct call would have said, so the client reads a server fault it
+		// does not retry and a request id that finds this log line.
+		v0, _ := body["v0"].(map[string]any)
+		if v0["code"] != string(CodeInternal) || v0["status"] != float64(http.StatusInternalServerError) || v0["request_id"] == "" || v0["request_id"] == nil {
+			t.Errorf("v0 = %v", body["v0"])
+		}
+		if strings.Contains(fmt.Sprint(body), "boom-marker") {
+			t.Errorf("the panic text reached the answer: %v", body)
 		}
 	})
 
@@ -904,6 +916,183 @@ func TestCallablesGateBeforeInterpretation(t *testing.T) {
 	body := wantProblem(t, ts.callSend(t, "issue/show", `{"arguments":{"id":"bd-1"}}`, ctx),
 		http.StatusUnprocessableEntity, bdpValidationFailed)
 	wantDiagnosticNaming(t, body, ProjectIDHeader)
+
+	// The handshake is exempt, as v0's row is: it is how a client learns the id, and
+	// what its rich mismatch error (database, repo root) is built from.
+	result, _ := callResult(t, ts.callSend(t, "issue/context", `{"arguments":{}}`, ctx))
+	var served map[string]any
+	if err := json.Unmarshal(result, &served); err != nil {
+		t.Fatal(err)
+	}
+	if _, ok := served["project_id"]; !ok {
+		t.Errorf("issue/context answered no project_id: %s", result)
+	}
+}
+
+// TestAnInvocationRunsItsRouteOnce: one credential check per request, not one per
+// layer. Every other check the route does costs the same, and this one can be counted:
+// with the reload gate open, each Verify reports the token file it could not read.
+func TestAnInvocationRunsItsRouteOnce(t *testing.T) {
+	ts := newTestServer(t, rolesConfig(Config{Auth: authTokenFile(t, "real-token")}))
+	ts.Server.auth.reloadGate = time.Nanosecond
+	if err := os.Remove(ts.Server.auth.path); err != nil {
+		t.Fatal(err)
+	}
+	before := strings.Count(ts.stderr.String(), "auth_reload_error")
+	resp := ts.callSend(t, "issue/context", `{"arguments":{}}`, bearer("real-token"))
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d: %s", resp.StatusCode, readAll(t, resp))
+	}
+	_ = readAll(t, resp)
+	if got := strings.Count(ts.stderr.String(), "auth_reload_error") - before; got != 1 {
+		t.Errorf("the credential was checked %d times for one invocation", got)
+	}
+}
+
+// countingBody records whether anyone asked it for bytes.
+type countingBody struct {
+	io.Reader
+	reads *atomic.Int32
+}
+
+func (b countingBody) Read(p []byte) (int, error) {
+	b.reads.Add(1)
+	return b.Reader.Read(p)
+}
+
+// TestAnInvocationsBodyIsReadInsideItsSlot is what keeps the memory bound at
+// maxInflight: a request waiting for a slot holds no body. It is refused for being
+// busy, the way a direct v0 call is, without having read a byte.
+func TestAnInvocationsBodyIsReadInsideItsSlot(t *testing.T) {
+	ts := newTestServer(t, rolesConfig(Config{}), func(s *Server) { s.semTimeout = 50 * time.Millisecond })
+	for range cap(ts.Server.sem) {
+		ts.Server.sem <- struct{}{}
+	}
+	t.Cleanup(func() {
+		for range cap(ts.Server.sem) {
+			<-ts.Server.sem
+		}
+	})
+
+	var reads atomic.Int32
+	body := countingBody{Reader: strings.NewReader(`{"arguments":{"id":"bd-1"}}`), reads: &reads}
+	invoke := func(name string, body io.Reader, media string) *httptest.ResponseRecorder {
+		req := httptest.NewRequest(http.MethodPost, callableMount+"/"+name, body)
+		req.Host = "127.0.0.1"
+		req.Header.Set("Content-Type", media)
+		rec := httptest.NewRecorder()
+		ts.Server.handler().ServeHTTP(rec, req)
+		return rec
+	}
+	rec := invoke("issue/show", body, bdpMediaType)
+
+	if rec.Code != http.StatusServiceUnavailable {
+		t.Fatalf("status = %d: %s", rec.Code, rec.Body)
+	}
+	var problem map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &problem); err != nil {
+		t.Fatal(err)
+	}
+	if v0, _ := problem["v0"].(map[string]any); v0["code"] != string(CodeBusy) {
+		t.Errorf("answer = %s", rec.Body)
+	}
+	if got := reads.Load(); got != 0 {
+		t.Errorf("the body was read %d times outside a slot", got)
+	}
+
+	t.Run("a refused media type costs no slot", func(t *testing.T) {
+		rec := invoke("issue/show", strings.NewReader(`{}`), "application/json")
+		if rec.Code != http.StatusUnsupportedMediaType {
+			t.Errorf("status = %d, want 415 at saturation: %s", rec.Code, rec.Body)
+		}
+	})
+	t.Run("issue/context holds no slot", func(t *testing.T) {
+		rec := invoke("issue/context", strings.NewReader(`{"arguments":{}}`), bdpMediaType)
+		if rec.Code != http.StatusOK {
+			t.Errorf("status = %d, want the handshake to answer at saturation: %s", rec.Code, rec.Body)
+		}
+	})
+}
+
+// TestIssueContextReadsOnlyTheEnvelopesSlack: it holds no slot, so nothing but its own
+// limit bounds what it reads.
+func TestIssueContextReadsOnlyTheEnvelopesSlack(t *testing.T) {
+	ts := newTestServer(t, rolesConfig(Config{}))
+	huge := `{"arguments":{},"revisionProvenance":"` + strings.Repeat("x", callableBodySlack) + `"}`
+	wantProblem(t, ts.callSend(t, "issue/context", huge, nil), http.StatusRequestEntityTooLarge, bdpRequestTooLarge)
+}
+
+// TestScanInvocationKeepsTheBodysOwnBytes: the members it answers are spans of the one
+// buffer, whatever the spacing, so nothing about an invocation is held twice.
+func TestScanInvocationKeepsTheBodysOwnBytes(t *testing.T) {
+	body := []byte(" {\n \"arguments\" :\t{ \"id\" : \"bd-1\" , \"nested\" : [ {\"a\":1} , \"s\" ] , \"n\":-1.5e3 , \"null\":null } , \"revisionProvenance\": {\"actor\":{\"id\":\"a\",\"basis\":\"unknown\"}} } ")
+	members, args, detail := scanInvocation(body)
+	if detail != "" {
+		t.Fatalf("detail = %q", detail)
+	}
+	for name, want := range map[string]string{
+		"id": `"bd-1"`, "nested": `[ {"a":1} , "s" ]`, "n": `-1.5e3`, "null": `null`,
+	} {
+		if got := string(args[name]); got != want {
+			t.Errorf("args[%s] = %q, want %q", name, got, want)
+		}
+	}
+	if got := string(members["revisionProvenance"]); got != `{"actor":{"id":"a","basis":"unknown"}}` {
+		t.Errorf("revisionProvenance = %q", got)
+	}
+	var whole map[string]any
+	if err := json.Unmarshal(members["arguments"], &whole); err != nil || len(whole) != 4 {
+		t.Errorf("arguments = %q: %v", members["arguments"], err)
+	}
+	if cap(args["id"]) != len(args["id"]) {
+		t.Errorf("a member can grow into its neighbor: cap %d, len %d", cap(args["id"]), len(args["id"]))
+	}
+
+	for _, malformed := range []string{``, `[]`, `1`, `null`, `"x"`, `{} {}`, `{"a":1}x`, `{"a":1,}`, `{"a":1,"a":2}`, `{"arguments":{"x":1,"x":2}}`} {
+		if members, _, detail := scanInvocation([]byte(malformed)); detail == "" && members != nil {
+			t.Errorf("%q passed the scan: %v", malformed, members)
+		}
+	}
+	if _, args, detail := scanInvocation([]byte(`{"arguments":[]}`)); detail != "" || args != nil {
+		t.Errorf("arguments that are no object: args %v, detail %q", args, detail)
+	}
+}
+
+// TestV0BodyIsTheRequestV0WouldHaveReceived: spliced rather than re-encoded, so it has
+// to come out as the same JSON either way.
+func TestV0BodyIsTheRequestV0WouldHaveReceived(t *testing.T) {
+	update := callableIndex["issue/update"]
+	_, args, _ := scanInvocation([]byte(`{"arguments":{"id":"bd-1","actor":"a b","patch":{"title":"t\"x"}}}`))
+	var got map[string]any
+	if err := json.Unmarshal(update.v0Body(&invocation{args: args}), &got); err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]any{"actor": "a b", "patch": map[string]any{"title": `t"x`}}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("body = %v, want %v", got, want)
+	}
+
+	apply := callableIndex["issue/batch"]
+	arguments := json.RawMessage(`{"actor":"a","items":[]}`)
+	if out := apply.v0Body(&invocation{arguments: arguments}); &out[0] != &arguments[0] {
+		t.Error("a body-only Callable copied its arguments")
+	}
+}
+
+// TestDepAddChangedReadsAdded: what the rule does, and the limit of it. v0's `added`
+// echoes the request, so every success says true; `false` could only follow an empty
+// answer, which that schema forbids.
+func TestDepAddChangedReadsAdded(t *testing.T) {
+	changed := callableIndex["issue/dep/add"].changed
+	if changed == nil {
+		t.Fatal("issue/dep/add has no changed rule")
+	}
+	if !changed(map[string]json.RawMessage{"added": json.RawMessage(`[{"issue_id":"a"}]`)}) {
+		t.Error("an echoed edge did not read as changed")
+	}
+	if changed(map[string]json.RawMessage{"added": json.RawMessage(`[]`)}) {
+		t.Error("no edge read as changed")
+	}
 }
 
 // TestCallableListIsTheOpenAPIProjection is Callables §3 and §14 over the served

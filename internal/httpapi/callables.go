@@ -18,11 +18,12 @@ import (
 
 // The Callables layer: POST <scope>/bdp/call/NAME routes one Callable to its v0
 // operation, and GET <scope>/bdp/call says what can be called. It holds no
-// business logic. It decodes the invocation envelope, rebuilds the request v0
-// would have received, sends it through the same ServeMux a direct v0 request
-// goes through, and puts the answer under the envelope the Callables profile
-// requires. Auth, the project and wire checks, the database slot, validation
-// and every refusal are therefore v0's.
+// business logic. An invocation runs under its v0 row's own route: the credential,
+// the project and wire checks, and the database slot are that row's, once, with
+// the row's own exemptions. Inside the slot it decodes the envelope, rebuilds the
+// request v0 would have received, hands it to the row's handler, and puts the
+// answer under the envelope the Callables profile requires. Validation and every
+// refusal are therefore v0's.
 //
 // <scope> is the server root. A bd serve process serves one workspace, so it is
 // one Scope and needs no path of its own; the Scope URL is http://HOST:PORT/.
@@ -98,6 +99,8 @@ var v0ProblemCodes = map[Code]string{
 // callableProblem is the Problem a mount answers. `v0` is an RFC 9457 extension
 // carrying v0's own body on every code but callable-error, whose `error` member
 // already carries it, so a translation loses nothing a direct call would show.
+// `reason` is v0's discriminator, on the one refusal this layer makes in v0's place
+// and that a client tells apart by it: an undeclared argument.
 type callableProblem struct {
 	Type        string               `json:"type"`
 	Status      int                  `json:"status"`
@@ -105,6 +108,7 @@ type callableProblem struct {
 	Code        string               `json:"code"`
 	Retry       string               `json:"retry"`
 	Detail      string               `json:"detail,omitempty"`
+	Reason      Reason               `json:"reason,omitempty"`
 	Diagnostics []callableDiagnostic `json:"diagnostics,omitempty"`
 	Error       json.RawMessage      `json:"error,omitempty"`
 	V0          json.RawMessage      `json:"v0,omitempty"`
@@ -147,7 +151,7 @@ type callableCapture struct {
 	header http.Header
 	status int
 	body   bytes.Buffer
-	// row is set once the request reached v0: a 200 is then v0's result.
+	// row is set when the name resolved to a Callable: a 200 is then v0's result.
 	row *callableRow
 	// final means the body is already in its answer shape.
 	final bool
@@ -180,10 +184,13 @@ func (c *callableCapture) refuse(r *http.Request, problem *callableProblem) {
 // Neither route is in routeTable, which is v0's document: the parity tests hold
 // every row there to openapi.v0.yaml.
 func (s *Server) mountCallables(mux *http.ServeMux) {
-	mux.Handle("GET "+callableMount, s.callableGate(opCallableList, s.serveCallableList))
+	mux.Handle("GET "+callableMount, s.callableGate(func(c *callableCapture, _ *http.Request) route {
+		return route{op: opCallableList, bypassSemaphore: true, handler: func(s *Server, _ http.ResponseWriter, r *http.Request) {
+			s.serveCallableList(c, r)
+		}}
+	}))
 	mux.Handle(callableMount, methodNotAllowed("GET, HEAD"))
-	mux.Handle(http.MethodPost+" "+callableMount+"/{name...}", s.callableGate(opCallableInvoke,
-		func(c *callableCapture, r *http.Request) { s.invokeCallable(mux, c, r) }))
+	mux.Handle(http.MethodPost+" "+callableMount+"/{name...}", s.callableGate(invocationRoute))
 	mux.Handle(callableMount+"/{name...}", methodNotAllowed(http.MethodPost))
 }
 
@@ -196,14 +203,16 @@ func methodNotAllowed(allow string) http.Handler {
 	})
 }
 
-// callableGate runs serve behind the same checks a v0 row gets, by being a row:
-// s.route does the credential, the project stamp and the wire floor, and the
-// database slot is left to the v0 row the request reaches.
+// callableGate runs one request behind the route pick chooses for it and writes
+// what that route captured under the mount's answer shape, after the route has
+// given its database slot back: a slow reader of the answer holds no slot.
 //
-// A panic in v0 is recovered here rather than by withRequestContext, whose
-// answer is v0's `internal` Problem: §5 maps that code, and this keeps one log
-// line and one stack trace for it.
-func (s *Server) callableGate(op string, serve func(*callableCapture, *http.Request)) http.Handler {
+// A panic in v0 is recovered here rather than by withRequestContext, whose answer
+// would be v0's bare Problem outside the Callables shape. What it answers is what
+// a direct v0 call would have said, `internal` with its request id, under §5's
+// translation of that code, so that id is not lost and one log line and one stack
+// trace stay the whole record.
+func (s *Server) callableGate(pick func(*callableCapture, *http.Request) route) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		capture := &callableCapture{header: http.Header{}}
 		defer func() {
@@ -218,70 +227,105 @@ func (s *Server) callableGate(op string, serve func(*callableCapture, *http.Requ
 			s.event("panic", "request_id", rec.id, "op", rec.op, "method", r.Method, "path", r.URL.Path,
 				"error", fmt.Sprint(p), "stack", string(debug.Stack()))
 			fresh := &callableCapture{header: http.Header{}}
-			fresh.refuse(r, newCallableProblem(bdpUnavailable, ""))
+			problem := newCallableProblem(bdpUnavailable, "")
+			if raw, err := json.Marshal(newResult(CodeInternal, "").WithRequestID(rec.id).Problem); err == nil {
+				problem = translateV0Problem(raw)
+			}
+			fresh.refuse(r, problem)
 			writeCallableResponse(w, r, fresh)
 		}()
-		s.route(route{
-			op:              op,
-			bypassSemaphore: true,
-			handler: func(_ *Server, _ http.ResponseWriter, r *http.Request) {
-				serve(capture, r)
-			},
-		}).ServeHTTP(capture, r)
+		s.route(pick(capture, r)).ServeHTTP(capture, r)
 		writeCallableResponse(w, r, capture)
 	})
 }
 
-// invokeCallable is Callables §3: the mount gives the operation, the body gives
-// the arguments, and v0 does the rest.
-func (s *Server) invokeCallable(mux http.Handler, c *callableCapture, r *http.Request) {
+// invocationRoute is the route one invocation runs under: Callables §3, on the
+// lifecycle of the v0 row the name routes to. That row's exemptions are the
+// Callable's by construction, so issue/context answers a wrong project stamp as
+// v0's handshake does, which is how a client learns the id and the rich mismatch
+// error it reports.
+//
+// The media checks run before the slot, because they cost nothing and read
+// nothing. The body is read inside the slot, as v0 reads its own.
+func invocationRoute(c *callableCapture, r *http.Request) route {
+	refusal := func(problem *callableProblem) route {
+		return route{op: opCallableInvoke, bypassSemaphore: true, handler: func(_ *Server, _ http.ResponseWriter, r *http.Request) {
+			c.refuse(r, problem)
+		}}
+	}
 	row, ok := callableFromPath(r)
 	if !ok {
-		c.refuse(r, newCallableProblem(bdpCallableNotFound, "no reachable Callable has this name"))
-		return
+		return refusal(newCallableProblem(bdpCallableNotFound, "no reachable Callable has this name"))
 	}
+	rt, ok := routeForOp(row.op)
+	if !ok {
+		return refusal(newCallableProblem(bdpUnavailable, ""))
+	}
+	c.row = row
+	v0Handler := rt.handler
+	rt.admit = func(_ http.ResponseWriter, r *http.Request) bool {
+		return row.admitInvocation(c, r)
+	}
+	rt.handler = func(s *Server, _ http.ResponseWriter, r *http.Request) {
+		inner, problem := row.invocationRequest(c, r)
+		if problem != nil {
+			c.refuse(r, problem)
+			return
+		}
+		// A custom method's id gets the bound its shared wildcard gets on a direct
+		// call (customMethodTarget), under the same answer.
+		if rt.customMethod != "" {
+			_, id, res := customMethodTarget([]route{rt}, inner.PathValue(customMethodIDValue)+rt.customMethod)
+			if res != nil {
+				s.fail(c, inner, *res)
+				return
+			}
+			inner.SetPathValue(customMethodIDValue, id)
+		}
+		v0Handler(s, c, inner)
+	}
+	return rt
+}
+
+// admitInvocation is what an invocation is refused for by its headers alone. It
+// reports whether the invocation goes on.
+func (row *callableRow) admitInvocation(c *callableCapture, r *http.Request) bool {
 	if media, _, err := mime.ParseMediaType(r.Header.Get("Content-Type")); err != nil || media != bdpMediaType {
 		c.refuse(r, newCallableProblem(bdpUnsupportedMedia, "an invocation's Content-Type is "+bdpMediaType))
-		return
+		return false
 	}
 	if !acceptsMedia(r.Header.Values("Accept"), bdpMediaType) {
 		c.final = true
 		c.status = http.StatusNotAcceptable
-		return
+		return false
 	}
 	if !row.batch && r.Header.Get("Idempotency-Key") != "" {
 		c.refuse(r, newCallableProblem(bdpMalformedRequest, "a CallableQuery invocation carries no Idempotency-Key"))
-		return
+		return false
 	}
+	return true
+}
 
-	args, provenance, problem := decodeInvocation(c, r, row)
+// invocationRequest decodes and checks the envelope, and answers the request v0
+// would have received.
+func (row *callableRow) invocationRequest(c *callableCapture, r *http.Request) (*http.Request, *callableProblem) {
+	inv, problem := decodeInvocation(c, r, row)
 	if problem != nil {
-		c.refuse(r, problem)
-		return
+		return nil, problem
 	}
-	actor, problem := checkProvenance(row, args, provenance)
+	actor, problem := checkProvenance(row, inv.args, inv.provenance)
 	if problem != nil {
-		c.refuse(r, problem)
-		return
+		return nil, problem
 	}
-	if problem := row.checkArgumentNames(args); problem != nil {
-		c.refuse(r, problem)
-		return
+	if problem := row.checkArgumentNames(inv.args); problem != nil {
+		return nil, problem
 	}
 	if row.adapt != nil {
-		if problem := row.adapt(args, actor); problem != nil {
-			c.refuse(r, problem)
-			return
+		if problem := row.adapt(inv.args, actor); problem != nil {
+			return nil, problem
 		}
 	}
-	inner, problem := row.v0Request(r, args)
-	if problem != nil {
-		c.refuse(r, problem)
-		return
-	}
-
-	c.row = row
-	mux.ServeHTTP(c, inner)
+	return row.v0Request(r, inv)
 }
 
 // callableFromPath finds the row a mount names. An encoded separator names
@@ -328,67 +372,105 @@ func acceptsMedia(values []string, media string) bool {
 	return accepted
 }
 
+// invocation is one decoded envelope. Its members are subslices of the one buffer
+// the body was read into: nothing here copies it, because an issue/batch body is
+// 16 MiB and every copy held in a slot is a copy maxInflight times over.
+type invocation struct {
+	// arguments is the `arguments` member's own bytes, and args its members.
+	arguments  json.RawMessage
+	args       map[string]json.RawMessage
+	provenance map[string]json.RawMessage
+}
+
 // decodeInvocation is the closed callableInvocation of Callables §3. Unknown
 // members, duplicate members and invalid strings are malformed-request, at every
 // depth, because v0's decoders would keep the last duplicate without a word.
-func decodeInvocation(c *callableCapture, r *http.Request, row *callableRow) (args, provenance map[string]json.RawMessage, problem *callableProblem) {
+func decodeInvocation(c *callableCapture, r *http.Request, row *callableRow) (*invocation, *callableProblem) {
 	limit := row.bodyLimit() + callableBodySlack
-	body, err := io.ReadAll(http.MaxBytesReader(c, r.Body, limit))
+	// Sized up front when the client says, so that reading a large body does not
+	// hold both the old and the new buffer each time one fills.
+	buffer := bytes.NewBuffer(make([]byte, 0, min(max(r.ContentLength, 0), limit)+bytes.MinRead))
+	_, err := buffer.ReadFrom(http.MaxBytesReader(c, r.Body, limit))
+	body := buffer.Bytes()
 	if err != nil {
 		var tooLarge *http.MaxBytesError
 		if errors.As(err, &tooLarge) {
-			return nil, nil, newCallableProblem(bdpRequestTooLarge, fmt.Sprintf("the invocation is larger than %d bytes", limit))
+			return nil, newCallableProblem(bdpRequestTooLarge, fmt.Sprintf("the invocation is larger than %d bytes", limit))
 		}
-		return nil, nil, newCallableProblem(bdpMalformedRequest, "the invocation body could not be read")
+		return nil, newCallableProblem(bdpMalformedRequest, "the invocation body could not be read")
 	}
-	if detail := invalidJSONCarrier(body); detail != "" {
-		return nil, nil, newCallableProblem(bdpMalformedRequest, detail)
+	members, args, detail := scanInvocation(body)
+	if detail != "" {
+		return nil, newCallableProblem(bdpMalformedRequest, detail)
 	}
-
-	var members map[string]json.RawMessage
-	if err := json.Unmarshal(body, &members); err != nil || members == nil {
-		return nil, nil, newCallableProblem(bdpMalformedRequest, "the invocation is a JSON object")
+	if members == nil {
+		return nil, newCallableProblem(bdpMalformedRequest, "the invocation is a JSON object")
 	}
 	for name := range members {
 		if name != "arguments" && name != "revisionProvenance" {
-			return nil, nil, newCallableProblem(bdpMalformedRequest, "`"+name+"` is not an invocation member")
+			return nil, newCallableProblem(bdpMalformedRequest, "`"+name+"` is not an invocation member")
 		}
 	}
-	if err := json.Unmarshal(members["arguments"], &args); err != nil || args == nil {
-		return nil, nil, newCallableProblem(bdpMalformedRequest, "`arguments` is required and is an object")
+	if args == nil {
+		return nil, newCallableProblem(bdpMalformedRequest, "`arguments` is required and is an object")
 	}
+	inv := &invocation{arguments: members["arguments"], args: args}
 	raw, present := members["revisionProvenance"]
 	if !present {
-		return args, nil, nil
+		return inv, nil
 	}
 	if !row.batch {
-		return nil, nil, newCallableProblem(bdpMalformedRequest, "`revisionProvenance` is rejected on a CallableQuery")
+		return nil, newCallableProblem(bdpMalformedRequest, "`revisionProvenance` is rejected on a CallableQuery")
 	}
-	if err := json.Unmarshal(raw, &provenance); err != nil || provenance == nil {
-		return nil, nil, newCallableProblem(bdpMalformedRequest, "`revisionProvenance` is an object")
+	if err := json.Unmarshal(raw, &inv.provenance); err != nil || inv.provenance == nil {
+		return nil, newCallableProblem(bdpMalformedRequest, "`revisionProvenance` is an object")
 	}
-	return args, provenance, nil
+	return inv, nil
 }
 
-// invalidJSONCarrier walks the whole document for what encoding/json lets
-// through: a duplicate member, invalid UTF-8 and an unpaired surrogate escape.
-// It returns what is wrong, or "".
-func invalidJSONCarrier(body []byte) string {
+// scanInvocation walks the whole document for what encoding/json lets through: a
+// duplicate member, invalid UTF-8 and an unpaired surrogate escape. It answers
+// what is wrong in detail, or else the document's members and the members of its
+// `arguments`, as subslices of body. Either map is nil when the document, or its
+// `arguments`, is not an object.
+func scanInvocation(body []byte) (members, args map[string]json.RawMessage, detail string) {
 	if !utf8.Valid(body) {
-		return "the invocation is not valid UTF-8"
+		return nil, nil, "the invocation is not valid UTF-8"
+	}
+	if !json.Valid(body) {
+		return nil, nil, "the invocation is not valid JSON"
 	}
 	dec := json.NewDecoder(bytes.NewReader(body))
 	dec.UseNumber()
-	// One entry per open container; nil marks an array, whose strings are values.
+	// One entry per open container; names is nil on an array, whose strings are
+	// values. into is where an object's member values are kept, when it is one of
+	// the two objects anyone reads.
 	type frame struct {
 		names     map[string]bool
 		wantValue bool
+		name      string
+		start     int64
+		into      map[string]json.RawMessage
 	}
 	var stack []*frame
 	valueDone := func() {
-		if n := len(stack); n > 0 && stack[n-1].names != nil {
-			stack[n-1].wantValue = false
+		n := len(stack)
+		if n == 0 || stack[n-1].names == nil {
+			return
 		}
+		top := stack[n-1]
+		top.wantValue = false
+		if top.into != nil {
+			top.into[top.name] = body[top.start:dec.InputOffset():dec.InputOffset()]
+		}
+	}
+	// valueStart is where the value after a member name begins.
+	valueStart := func() int64 {
+		i := dec.InputOffset()
+		for i < int64(len(body)) && strings.IndexByte(" \t\r\n:", body[i]) >= 0 {
+			i++
+		}
+		return i
 	}
 	for {
 		token, err := dec.Token()
@@ -396,13 +478,22 @@ func invalidJSONCarrier(body []byte) string {
 			break
 		}
 		if err != nil {
-			return "the invocation is not valid JSON"
+			return nil, nil, "the invocation is not valid JSON"
 		}
 		switch t := token.(type) {
 		case json.Delim:
 			switch t {
 			case '{':
-				stack = append(stack, &frame{names: map[string]bool{}})
+				opened := &frame{names: map[string]bool{}}
+				switch n := len(stack); {
+				case n == 0:
+					members = map[string]json.RawMessage{}
+					opened.into = members
+				case n == 1 && stack[0].name == "arguments":
+					args = map[string]json.RawMessage{}
+					opened.into = args
+				}
+				stack = append(stack, opened)
 			case '[':
 				stack = append(stack, &frame{})
 			default:
@@ -411,11 +502,14 @@ func invalidJSONCarrier(body []byte) string {
 			}
 		case string:
 			if n := len(stack); n > 0 && stack[n-1].names != nil && !stack[n-1].wantValue {
-				if stack[n-1].names[t] {
-					return "the invocation repeats the member `" + t + "`"
+				top := stack[n-1]
+				if top.names[t] {
+					return nil, nil, "the invocation repeats the member `" + t + "`"
 				}
-				stack[n-1].names[t] = true
-				stack[n-1].wantValue = true
+				top.names[t] = true
+				top.wantValue = true
+				top.name = t
+				top.start = valueStart()
 				continue
 			}
 			valueDone()
@@ -424,9 +518,9 @@ func invalidJSONCarrier(body []byte) string {
 		}
 	}
 	if hasUnpairedSurrogate(body) {
-		return "the invocation carries an unpaired surrogate escape"
+		return nil, nil, "the invocation carries an unpaired surrogate escape"
 	}
-	return ""
+	return members, args, ""
 }
 
 // hasUnpairedSurrogate scans valid JSON, where a backslash occurs only inside a
@@ -534,6 +628,7 @@ func (row *callableRow) checkArgumentNames(args map[string]json.RawMessage) *cal
 	}
 	slices.Sort(unknown)
 	problem := newCallableProblem(bdpValidationFailed, "these arguments are not declared parameters of "+row.name)
+	problem.Reason = ReasonUnknownParameter
 	for _, name := range unknown {
 		problem.Diagnostics = append(problem.Diagnostics, callableDiagnostic{
 			Message:          "`" + name + "` is not a declared parameter",
@@ -604,9 +699,14 @@ func adaptCommentAuthor(args map[string]json.RawMessage, actor string) *callable
 	return nil
 }
 
-// bodyLimit is the v0 operation's largest body class, so that an oversized
-// invocation is refused here, before it is held in memory outside a database slot.
+// bodyLimit is the v0 operation's largest body class. A Callable with no
+// parameters has no body class, and only the envelope's slack: issue/context, the
+// one Callable whose row holds no database slot, is among them, so what it reads
+// is bounded by that slack and maxConns rather than by any semaphore.
 func (row *callableRow) bodyLimit() int64 {
+	if len(row.path)+len(row.query)+len(row.body)+len(row.adapterParams) == 0 {
+		return 0
+	}
 	switch row.op {
 	case OpApplyBatch:
 		return maxApplyBatchBodyBytes
@@ -619,23 +719,26 @@ func (row *callableRow) bodyLimit() int64 {
 // v0Request flattens the arguments back into the request a direct v0 caller
 // would have sent. The row's route gives the method and path, so the two cannot
 // disagree.
-func (row *callableRow) v0Request(r *http.Request, args map[string]json.RawMessage) (*http.Request, *callableProblem) {
+func (row *callableRow) v0Request(r *http.Request, inv *invocation) (*http.Request, *callableProblem) {
 	rt, ok := routeForOp(row.op)
 	if !ok {
 		return nil, newCallableProblem(bdpUnavailable, "")
 	}
+	args := inv.args
 	target := rt.specPathOf()
+	pathValues := make(map[string]string, len(row.path))
 	for _, name := range row.path {
 		raw, ok := args[name]
 		if !ok {
 			return nil, invalidArgument(name, "is required")
 		}
 		var value string
-		// `.` and `..` are excluded because ServeMux would clean them into a
-		// redirect to another route.
+		// `.` and `..` are excluded because a direct call cannot name them either:
+		// ServeMux cleans them into a redirect to another route.
 		if json.Unmarshal(raw, &value) != nil || string(raw) == "null" || value == "" || value == "." || value == ".." {
 			return nil, invalidArgument(name, "must be a nonempty string")
 		}
+		pathValues[name] = value
 		target = strings.Replace(target, "{"+name+"}", url.PathEscape(value), 1)
 	}
 
@@ -657,17 +760,7 @@ func (row *callableRow) v0Request(r *http.Request, args map[string]json.RawMessa
 
 	var body io.Reader
 	if len(row.body) > 0 {
-		members := make(map[string]json.RawMessage, len(row.body))
-		for _, name := range row.body {
-			if raw, ok := args[name]; ok {
-				members[name] = raw
-			}
-		}
-		encoded, err := json.Marshal(members)
-		if err != nil {
-			return nil, newCallableProblem(bdpMalformedRequest, "the arguments could not be encoded")
-		}
-		body = bytes.NewReader(encoded)
+		body = bytes.NewReader(row.v0Body(inv))
 	}
 
 	inner, err := http.NewRequestWithContext(r.Context(), rt.method, target, body)
@@ -676,6 +769,9 @@ func (row *callableRow) v0Request(r *http.Request, args map[string]json.RawMessa
 	}
 	if body == nil {
 		inner.Body = http.NoBody // A server request's Body is never nil.
+	}
+	for name, value := range pathValues {
+		inner.SetPathValue(name, value)
 	}
 	inner.Host = r.Host
 	inner.RemoteAddr = r.RemoteAddr
@@ -687,6 +783,35 @@ func (row *callableRow) v0Request(r *http.Request, args map[string]json.RawMessa
 		inner.Header.Set("Content-Type", claimContentType)
 	}
 	return inner, nil
+}
+
+// v0Body is the body v0 would have received. When every argument is a body member,
+// which is every large operation but issue/update, that is `arguments` itself:
+// checkArgumentNames has held its names to the row's, and it needs no second buffer.
+func (row *callableRow) v0Body(inv *invocation) []byte {
+	if len(row.path) == 0 && len(row.query) == 0 && row.adapt == nil {
+		return inv.arguments
+	}
+	size := 2
+	for _, name := range row.body {
+		size += len(name) + len(inv.args[name]) + 4
+	}
+	body := make([]byte, 0, size)
+	body = append(body, '{')
+	for _, name := range row.body {
+		raw, ok := inv.args[name]
+		if !ok {
+			continue
+		}
+		if len(body) > 1 {
+			body = append(body, ',')
+		}
+		body = append(body, '"')
+		body = append(body, name...) // A declared name, which needs no escaping.
+		body = append(body, '"', ':')
+		body = append(body, raw...)
+	}
+	return append(body, '}')
 }
 
 // routeForOp finds a v0 row by operation.
@@ -756,7 +881,7 @@ func writeCallableResponse(w http.ResponseWriter, r *http.Request, c *callableCa
 	case status == http.StatusOK && c.row != nil:
 		h.Set("Content-Type", bdpMediaType)
 		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write(callableResultBody(c.row, c.body.Bytes()))
+		writeCallableResult(w, c.row, c.body.Bytes())
 	default:
 		problem := translateV0Problem(c.body.Bytes())
 		requestInfo(r.Context()).code = Code(problem.Code)
@@ -766,12 +891,10 @@ func writeCallableResponse(w http.ResponseWriter, r *http.Request, c *callableCa
 	}
 }
 
-// callableResultBody is the closed callableResult of Callables §5, with v0's
-// bytes as `result`.
-func callableResultBody(row *callableRow, result []byte) []byte {
+// writeCallableResult is the closed callableResult of Callables §5, with v0's
+// bytes as `result`, written around them rather than copied.
+func writeCallableResult(w io.Writer, row *callableRow, result []byte) {
 	result = bytes.TrimSpace(result)
-	var out bytes.Buffer
-	out.WriteByte('{')
 	if row.batch {
 		changed := true
 		if row.changed != nil {
@@ -780,12 +903,12 @@ func callableResultBody(row *callableRow, result []byte) []byte {
 				changed = row.changed(members)
 			}
 		}
-		fmt.Fprintf(&out, `"changed":%t,`, changed)
+		_, _ = fmt.Fprintf(w, `{"changed":%t,"result":`, changed)
+	} else {
+		_, _ = io.WriteString(w, `{"result":`)
 	}
-	out.WriteString(`"result":`)
-	out.Write(result)
-	out.WriteString("}\n")
-	return out.Bytes()
+	_, _ = w.Write(result)
+	_, _ = io.WriteString(w, "}\n")
 }
 
 // translateV0Problem is specs/types/issue/callables.md §5.

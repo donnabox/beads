@@ -61,6 +61,17 @@ const (
 	// (acquireLargeApply), so a decode that loses the race is refused with
 	// ErrBusy and its now-unreferenced ApplyBatchRequest is left for the next
 	// GC cycle — nothing in this file extends its lifetime past that refusal.
+	//
+	// A Callable (callables.go) reads its body inside the same slot, so the
+	// width is the same but the bytes per slot are not. POST
+	// /bdp/call/issue/batch holds the invocation (maxApplyBatchBodyBytes plus
+	// callableBodySlack, because the envelope wraps a body already at the limit)
+	// while v0's decoder buffers those same bytes again: about 2 * 16 * 16 MiB =
+	// 514 MiB rather than 256 MiB, before the decoded structures. The check for
+	// duplicate members holds its token decoder's buffer and the decoded token on
+	// top of the invocation, so a body that is one enormous string touches about
+	// 4 * 16 * 16 MiB for the length of that check. issue/context holds no slot and
+	// is bounded by callableBodySlack * maxConns instead.
 	maxInflight = 16
 	// maxConns bounds ACCEPTED connections. The semaphore does not: Go spawns
 	// a goroutine per connection, and one parked on a full semaphore still
@@ -1724,7 +1735,7 @@ func (s *Server) handler() http.Handler {
 		mux.Handle(key, s.dispatchCustomMethod(shared[key]))
 	}
 
-	// The Callables namespace dispatches back into this mux; see callables.go.
+	// The Callables namespace runs each invocation on its v0 row; see callables.go.
 	s.mountCallables(mux)
 
 	// Not an operation and deliberately not in the route table: it exists so
@@ -1994,6 +2005,10 @@ func (s *Server) route(rt route) http.Handler {
 				s.fail(w, r, *res)
 				return
 			}
+		}
+
+		if rt.admit != nil && !rt.admit(w, r) {
+			return
 		}
 
 		if !rt.bypassSemaphore {

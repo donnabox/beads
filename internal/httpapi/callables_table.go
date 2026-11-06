@@ -37,7 +37,8 @@ type callableRow struct {
 	// reasons are the v0 codes this Callable declares as callable-error.
 	reasons []string
 	// changed reads `changed` off v0's result for a batch. Nil means every
-	// success committed something, or that v0's result cannot say otherwise.
+	// success may have committed something, which v0's result cannot rule out:
+	// `false` promises no durable effect, and `true` says there may have been one.
 	changed func(result map[string]json.RawMessage) bool
 	// cli is the declaration's cliMapping, as JSON. It is client data the
 	// server only publishes (Callables §10).
@@ -307,7 +308,10 @@ var callableTable = []callableRow{
 		adapterParams: []string{"source", "target", "type"}, adapt: adaptFlatDependency,
 		optional: []string{"edges"},
 		reasons:  []string{"dependency_cycle", "dependency_exists"},
-		cli:      `{"flags": [{"names": ["-t"], "parameter": "type"}, {"names": ["--blocked-by", "--depends-on"], "parameter": "target"}], "positionals": [{"position": 0, "parameter": "source"}, {"position": 1, "parameter": "target"}]}`,
+		// This reads true on every success, a same-edge re-add included: v0's `added`
+		// echoes the request whether or not an edge was new, and its schema says so.
+		changed: changedWhen("added"),
+		cli:     `{"flags": [{"names": ["-t"], "parameter": "type"}, {"names": ["--blocked-by", "--depends-on"], "parameter": "target"}], "positionals": [{"position": 0, "parameter": "source"}, {"position": 1, "parameter": "target"}]}`,
 	},
 	{
 		name: "issue/dep/remove", op: OpRemoveDependency, batch: true,
@@ -370,6 +374,31 @@ var callableIndex = func() map[string]*callableRow {
 	}
 	return index
 }()
+
+// CallableRoute is where one Callable lands on v0, for the client's tests to hold
+// their own tables to (internal/httpclient/wire): they may not read this package's
+// table, and the client may not import this package at all.
+type CallableRoute struct {
+	Op, Method, Path                    string
+	PathParams, QueryParams, BodyParams []string
+}
+
+// CallableRoutes is the table, by Callable name.
+func CallableRoutes() map[string]CallableRoute {
+	routes := make(map[string]CallableRoute, len(callableTable))
+	for i := range callableTable {
+		row := &callableTable[i]
+		rt, ok := routeForOp(row.op)
+		if !ok {
+			continue
+		}
+		routes[row.name] = CallableRoute{
+			Op: row.op, Method: rt.method, Path: rt.specPathOf(),
+			PathParams: row.path, QueryParams: row.query, BodyParams: row.body,
+		}
+	}
+	return routes
+}
 
 // memberTrue reports whether a member of a v0 result says something happened:
 // present and neither null, false, zero nor empty. v0's bodies are compact, so
