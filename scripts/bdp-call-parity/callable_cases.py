@@ -87,6 +87,54 @@ PROBLEM_RETRY = {
     "callable-error": "after-state-change",
 }
 
+# Spec sections 2 and 3: no declaration has these. The v0 member an invocation's
+# revisionProvenance.actor.id is sent as.
+ACTOR_MEMBER = {
+    "issue/comment": "author",
+    **{name: "actor" for name in (
+        "issue/create", "issue/update", "issue/claim", "issue/unclaim", "issue/heartbeat", "issue/close",
+        "issue/advance", "issue/reopen", "issue/metadata/compare-and-set", "issue/purge", "issue/prune",
+        "issue/delete", "issue/reclaim", "issue/create-many", "issue/batch", "issue/close-many",
+        "issue/claim-next", "issue/dep/add", "issue/dep/remove")},
+}
+# Spec section 3: these run with no actor.
+ACTOR_OPTIONAL = {"issue/purge", "issue/prune", "issue/delete"}
+# Spec section 3: v0 records no actor on these, so one supplied is refused.
+RECORDS_NO_ACTOR = ("config/set", "config/unset", "memory/remember", "memory/forget")
+
+# Spec section 4: what the router supplies for an omitted parameter. v0 has none of them.
+DEFAULTS = {
+    "issue/list": {"sort": "priority"},
+    "issue/create": {"issue_type": "task"},
+    "issue/dep/list": {"direction": "out"},
+    "issue/close": {"reason": "Closed"},
+    "issue/purge": {"dry_run": True, "tier": "ephemeral", "protect_referenced": False, "protect_live_dependents": True},
+    "issue/prune": {"dry_run": True, "tier": "durable", "protect_referenced": True, "protect_live_dependents": False},
+    "issue/delete": {"dry_run": True},
+    "issue/reclaim": {"older_than_seconds": 600},
+}
+
+
+def with_defaults(name, args):
+    """The arguments a direct v0 caller has to send to get what the Callable does on omission."""
+    return {**DEFAULTS.get(name, {}), **args}
+
+
+def for_callable(name, args):
+    """A case's arguments are v0's. The Callable takes the actor in revisionProvenance."""
+    member = ACTOR_MEMBER.get(name)
+    if member is None or member not in args:
+        return args, None
+    rest = {k: v for k, v in args.items() if k != member}
+    return rest, {"actor": {"id": args[member], "basis": "writer-supplied"}}
+
+
+def lacks_actor(name, args):
+    """True when the router itself refuses these arguments for naming nobody."""
+    member = ACTOR_MEMBER.get(name)
+    return member is not None and name not in ACTOR_OPTIONAL and member not in args
+
+
 A = "parity"
 FUTURE = "2099-01-01T00:00:00Z"
 PAST = "2001-01-01T00:00:00Z"
@@ -189,6 +237,7 @@ def read_cases():
               ("issue/dep/tree", {"root_id": "sw-fix-r2", "direction": "sideways"}, "invalid_argument")]
     cases += [("issue/list", {}, None)] + [("issue/list", f, None) for f in LIST_FILTERS]
     cases += [("issue/list", {"limit": 0}, None), ("issue/list", {"cursor": "not-a-cursor"}, "invalid_cursor"),
+              ("issue/list", {"sort": None}, "invalid_argument"),
               ("issue/list", {"sort": "nonsense"}, "invalid_argument"),
               ("issue/list", {"limit": "many"}, "invalid_argument")]
     cases += [("issue/query", {"q": "status=open"}, None), ("issue/query", {"q": "priority<2", "all": True}, None),
@@ -205,7 +254,9 @@ def read_cases():
     cases += [("issue/dep/list", {"id": "sw-fix-r2", "direction": "out"}, None),
               ("issue/dep/list", {"id": "sw-fix-r1", "direction": "in"}, None),
               ("issue/dep/list", {"id": "sw-fix-ra", "direction": "out", "type": ["related"]}, None),
-              ("issue/dep/list", {"id": "sw-fix-r2"}, "invalid_argument"),
+              ("issue/dep/list", {"id": "sw-fix-r2"}, None),
+              ("issue/dep/list", {"id": "sw-fix-r2", "direction": None}, "invalid_argument"),
+              ("issue/dep/list", {"id": "sw-fix-r2", "direction": ""}, "invalid_argument"),
               ("issue/dep/list", {"id": "sw-fix-none", "direction": "out"}, "not_found")]
     cases += [("issue/get-many", {"ids": ["sw-fix-r1", "sw-fix-r2"]}, None),
               ("issue/get-many", {"ids": ["sw-fix-r1", "sw-fix-none"]}, None),
@@ -230,16 +281,19 @@ def read_cases():
     return cases
 
 
-def W(name, args, expect=None, seed=(), before=(), changed=None, v0_args=None, provenance=None, label=None, sql=(), wait=0, own_refusal=False, may_change=False):
+def W(name, args, expect=None, seed=(), before=(), changed=None, v0_args=None, label=None, sql=(), wait=0, own_refusal=False, may_change=False):
     return {"callable": name, "args": args, "expect": expect, "seed": list(seed), "before": list(before), "sql": list(sql), "wait": wait, "own_refusal": own_refusal,
-            "changed": changed, "v0_args": v0_args, "provenance": provenance, "label": label, "may_change": may_change}
+            "changed": changed, "v0_args": v0_args, "label": label, "may_change": may_change}
 
 
 def write_cases():
     c = []
     # issue/create
     c += [W("issue/create", {"actor": A, "title": "minted id", "issue_type": "task", "priority": 2}, changed=True),
-          W("issue/create", {"actor": A, "title": "no type or priority"}, expect="invalid_argument", changed=False, label="no issue_type"),
+          W("issue/create", {"actor": A, "title": "no type or priority"}, changed=True, label="issue_type omitted is task"),
+          W("issue/create", {"actor": A, "title": "typed", "issue_type": "bug"}, changed=True, label="issue_type supplied"),
+          W("issue/create", {"actor": A, "title": "null type", "issue_type": None}, expect="invalid_argument", changed=False, label="issue_type null is refused"),
+          W("issue/create", {"actor": A, "title": "empty type", "issue_type": ""}, expect="invalid_argument", changed=False, label="an empty issue_type is supplied, and v0 refuses it"),
           W("issue/create", {"actor": A, "title": "no priority", "issue_type": "task"}, changed=True),
           W("issue/create", {"actor": A, "id": "sw-fix-c01", "title": "every field", "description": "d", "design": "ds",
                              "acceptance_criteria": "ac", "notes": "n", "issue_type": "bug", "status": "open", "priority": 1,
@@ -308,13 +362,12 @@ def write_cases():
           W("issue/batch", {"actor": A, "items": [{"kind": "close", "close": {"target": {"id": "sw-fix-y10"}}}]}, expect="not_closable", seed=[issue("sw-fix-y11"), issue("sw-fix-y10", dependencies=[{"target_id": "sw-fix-y11", "type": "blocks"}])], changed=False),
           W("issue/batch", {"actor": A, "items": [{"kind": "update", "update": {"target": {"id": "sw-fix-y12"}, "patch": {"notes": "o"}}}]}, expect="notes_overwrite_refused", seed=[issue("sw-fix-y12", notes="n")], changed=False),
           W("issue/batch", {"actor": A, "items": [{"kind": "close", "close": {"target": {"id": "sw-fix-y13"}}}]}, expect="template_read_only", seed=[issue("sw-fix-y13")], sql=["sw-fix-y13"], changed=False),
-          W("issue/purge", {"tier": "ephemeral", "actor": A, "pattern": "sw-fix-y14", "retain_ids": True}, seed=[issue("sw-fix-y14", ephemeral=True)], before=[("issue/close", {"id": "sw-fix-y14", "actor": A})], changed=True, label="retain_ids keeps a tombstone"),
+          W("issue/purge", {"tier": "ephemeral", "actor": A, "dry_run": False, "pattern": "sw-fix-y14", "retain_ids": True}, seed=[issue("sw-fix-y14", ephemeral=True)], before=[("issue/close", {"id": "sw-fix-y14", "actor": A})], changed=True, label="retain_ids keeps a tombstone"),
           W("issue/create", issue("sw-fix-y14"), expect="idempotency_expired", changed=False, label="a tombstoned id"),
           W("issue/batch", {"actor": A, "items": [{"kind": "create", "create": {"id": "sw-fix-y14", "title": "t", "issue_type": "task"}}]}, expect="idempotency_expired", changed=False, label="a tombstoned id")]
     # issue/comment
     c += [W("issue/comment", {"id": "sw-fix-m01", "author": "alice", "text": "hi"}, seed=[issue("sw-fix-m01")], changed=True),
-          W("issue/comment", {"id": "sw-fix-m02", "text": "adapter"}, v0_args={"id": "sw-fix-m02", "author": "pat", "text": "adapter"},
-            provenance={"actor": {"id": "pat", "basis": "writer-supplied"}}, seed=[issue("sw-fix-m02")], changed=True, label="author from provenance"),
+          W("issue/comment", {"id": "sw-fix-m02", "author": "   ", "text": "blank"}, expect="invalid_argument", seed=[issue("sw-fix-m02")], changed=False, label="a blank name is v0's refusal"),
           W("issue/comment", {"id": "sw-fix-m03", "text": "no author"}, expect="invalid_argument", seed=[issue("sw-fix-m03")], changed=False),
           W("issue/comment", {"id": "sw-fix-m04", "author": "alice"}, expect="invalid_argument", seed=[issue("sw-fix-m04")], changed=False),
           W("issue/comment", {"id": "sw-fix-none", "author": "alice", "text": "x"}, expect="not_found", changed=False)]
@@ -324,7 +377,11 @@ def write_cases():
           W("issue/claim", {"id": "sw-fix-l03", "actor": "carol"}, expect="already_claimed", seed=[issue("sw-fix-l03")], before=[("issue/claim", {"id": "sw-fix-l03", "actor": "bob"})], changed=False),
           W("issue/claim", {"id": "sw-fix-l04", "actor": A}, expect="not_claimable", seed=[issue("sw-fix-l04")], before=[("issue/close", {"id": "sw-fix-l04", "actor": A})], changed=False),
           W("issue/claim", {"id": "sw-fix-none", "actor": A}, expect="not_found", changed=False),
-          W("issue/claim", {"id": "sw-fix-l05"}, expect="invalid_argument", seed=[issue("sw-fix-l05")], changed=False)]
+          W("issue/claim", {"id": "sw-fix-l05"}, expect="invalid_argument", seed=[issue("sw-fix-l05")], changed=False),
+          W("issue/claim", {"id": "sw-fix-l05", "actor": "   "}, expect="invalid_argument", changed=False, label="a blank actor is v0's refusal"),
+          W("issue/claim", {"id": "sw-fix-l05", "actor": "a\u0007b"}, expect="invalid_argument", changed=False, label="a control rune is v0's refusal"),
+          W("issue/claim", {"id": "sw-fix-l05", "actor": "x" * 300}, expect="invalid_argument", changed=False, label="an over-long actor is v0's refusal"),
+          W("issue/claim", {"id": "sw-fix-l05", "actor": "  padded  "}, changed=True, label="v0 trims the actor")]
     # issue/unclaim
     c += [W("issue/unclaim", {"id": "sw-fix-n01", "actor": "bob"}, seed=[issue("sw-fix-n01")], before=[("issue/claim", {"id": "sw-fix-n01", "actor": "bob"})], changed=True),
           W("issue/unclaim", {"id": "sw-fix-n02", "actor": "carol"}, expect="already_claimed", seed=[issue("sw-fix-n02")], before=[("issue/claim", {"id": "sw-fix-n02", "actor": "bob"})], changed=False),
@@ -343,7 +400,9 @@ def write_cases():
           W("issue/heartbeat", {"id": "sw-fix-h04"}, expect="invalid_argument", seed=[issue("sw-fix-h04")], changed=False)]
     # issue/close
     c += [W("issue/close", {"id": "sw-fix-x01", "actor": A, "reason": "done"}, seed=[issue("sw-fix-x01")], changed=True),
-          W("issue/close", {"id": "sw-fix-x02", "actor": A}, seed=[issue("sw-fix-x02")], changed=True, label="no reason"),
+          W("issue/close", {"id": "sw-fix-x02", "actor": A}, seed=[issue("sw-fix-x02")], changed=True, label="reason omitted is Closed"),
+          W("issue/close", {"id": "sw-fix-x16", "actor": A, "reason": ""}, seed=[issue("sw-fix-x16")], changed=True, label="an empty reason is supplied, not omitted"),
+          W("issue/close", {"id": "sw-fix-x17", "actor": A, "reason": None}, expect="invalid_argument", seed=[issue("sw-fix-x17")], changed=False, label="reason null is refused"),
           W("issue/close", {"id": "sw-fix-x03", "actor": A, "reason": "again"}, seed=[issue("sw-fix-x03")], before=[("issue/close", {"id": "sw-fix-x03", "actor": A})], changed=False, label="re-close"),
           W("issue/close", {"id": "sw-fix-x04", "actor": A, "session": "sess-1"}, seed=[issue("sw-fix-x04")], changed=True),
           W("issue/close", {"id": "sw-fix-x05", "actor": A, "expected_version": "$rev:sw-fix-x05"}, seed=[issue("sw-fix-x05")], changed=True),
@@ -384,33 +443,58 @@ def write_cases():
     closed_d = [issue("sw-fix-q01"), issue("sw-fix-q11")]
     close_d = [("issue/close", {"id": "sw-fix-q01", "actor": A}), ("issue/close", {"id": "sw-fix-q11", "actor": A})]
     c += [W("issue/purge", {"tier": "ephemeral", "actor": A, "dry_run": True, "pattern": "sw-fix-p*"}, seed=closed_e, before=close_e, changed=False, label="dry run"),
-          W("issue/purge", {"tier": "ephemeral", "actor": A, "pattern": "sw-fix-p01"}, changed=True, label="real run with pattern"),
-          W("issue/purge", {"tier": "ephemeral", "actor": A, "pattern": "sw-fix-nomatch*"}, changed=False, label="real run, nothing matches"),
-          W("issue/purge", {"tier": "ephemeral", "actor": A, "closed_before": PAST}, changed=False, label="cutoff before everything"),
+          W("issue/purge", {"tier": "ephemeral", "actor": A, "dry_run": False, "pattern": "sw-fix-p01"}, changed=True, label="real run with pattern"),
+          W("issue/purge", {"tier": "ephemeral", "actor": A, "dry_run": False, "pattern": "sw-fix-nomatch*"}, changed=False, label="real run, nothing matches"),
+          W("issue/purge", {"tier": "ephemeral", "actor": A, "dry_run": False, "closed_before": PAST}, changed=False, label="cutoff before everything"),
           W("issue/purge", {"tier": "ephemeral", "actor": A, "dry_run": True, "limit": 1, "protect_referenced": False, "protect_live_dependents": True, "retain_ids": True}, changed=False, label="dry run, every knob"),
-          W("issue/purge", {"actor": A}, expect="invalid_argument", changed=False),
+          W("issue/purge", {"actor": A}, changed=False, label="everything omitted previews the ephemeral tier"),
+          W("issue/purge", {}, changed=False, label="no actor either"),
           W("issue/purge", {"tier": "nonsense", "actor": A}, expect="invalid_argument", changed=False),
           W("issue/prune", {"tier": "durable", "actor": A, "dry_run": True, "pattern": "sw-fix-q*"}, seed=closed_d, before=close_d, changed=False, label="dry run"),
-          W("issue/prune", {"tier": "durable", "actor": A, "pattern": "sw-fix-q01", "protect_referenced": True}, changed=True, label="real run with pattern"),
-          W("issue/prune", {"tier": "durable", "actor": A, "closed_before": PAST}, changed=False, label="cutoff before everything"),
-          W("issue/prune", {"actor": A}, expect="invalid_argument", changed=False),
-          W("issue/prune", {"tier": "durable", "actor": A, "closed_before": "yesterday"}, expect="invalid_argument", changed=False)]
+          W("issue/prune", {"tier": "durable", "actor": A, "dry_run": False, "pattern": "sw-fix-q01", "protect_referenced": True}, changed=True, label="real run with pattern"),
+          W("issue/prune", {"tier": "durable", "actor": A, "dry_run": False, "closed_before": PAST}, changed=False, label="cutoff before everything"),
+          W("issue/prune", {"actor": A}, expect="invalid_argument", changed=False, label="tier omitted is durable, which wants a filter"),
+          W("issue/prune", {"actor": A, "pattern": "sw-fix-q*"}, changed=False, label="everything else omitted previews"),
+          W("issue/prune", {"pattern": "sw-fix-q*"}, changed=False, label="no actor either"),
+          W("issue/prune", {"tier": "durable", "actor": A, "dry_run": False, "closed_before": "yesterday"}, expect="invalid_argument", changed=False)]
+    held_live = [issue("sw-fix-pa1", ephemeral=True), issue("sw-fix-pa2", ephemeral=True, dependencies=[{"target_id": "sw-fix-pa1", "type": "blocks"}]),
+                 issue("sw-fix-pb1", ephemeral=True), issue("sw-fix-pb2", ephemeral=True, dependencies=[{"target_id": "sw-fix-pb1", "type": "blocks"}])]
+    close_live = [("issue/close", {"id": "sw-fix-pa1", "actor": A}), ("issue/close", {"id": "sw-fix-pb1", "actor": A})]
+    cited = [issue("sw-fix-qa1"), issue("sw-fix-qa2", description="see sw-fix-qa1"), issue("sw-fix-qb1"), issue("sw-fix-qb2", description="see sw-fix-qb1")]
+    close_cited = [("issue/close", {"id": "sw-fix-qa1", "actor": A}), ("issue/close", {"id": "sw-fix-qb1", "actor": A})]
+    c += [W("issue/purge", {"actor": A, "dry_run": False, "pattern": "sw-fix-pa1"}, seed=held_live, before=close_live, may_change=True, label="protect_live_dependents omitted holds it back"),
+          W("issue/purge", {"actor": A, "dry_run": False, "pattern": "sw-fix-pb1", "protect_live_dependents": False}, may_change=True, label="protect_live_dependents supplied"),
+          W("issue/purge", {"tier": "durable", "actor": A, "dry_run": True, "pattern": "sw-fix-qa*"}, seed=cited, before=close_cited, changed=False, label="tier supplied to purge"),
+          W("issue/purge", {"actor": A, "dry_run": True, "pattern": "sw-fix-p*", "protect_referenced": True}, changed=False, label="protect_referenced supplied"),
+          W("issue/prune", {"actor": A, "dry_run": False, "pattern": "sw-fix-qa1"}, may_change=True, label="protect_referenced omitted holds it back"),
+          W("issue/prune", {"actor": A, "dry_run": False, "pattern": "sw-fix-qb1", "protect_referenced": False}, may_change=True, label="protect_referenced supplied"),
+          W("issue/prune", {"tier": "ephemeral", "actor": A, "dry_run": True, "pattern": "*"}, changed=False, label="tier supplied to prune"),
+          W("issue/prune", {"actor": A, "dry_run": True, "pattern": "sw-fix-q*", "protect_live_dependents": True}, changed=False, label="protect_live_dependents supplied"),
+          W("issue/purge", {"actor": A, "dry_run": None}, expect="invalid_argument", changed=False, label="null dry_run is refused"),
+          W("issue/purge", {"actor": A, "tier": None}, expect="invalid_argument", changed=False, label="null tier is refused"),
+          W("issue/purge", {"actor": A, "tier": ""}, expect="invalid_argument", changed=False, label="an empty tier is supplied, and v0 refuses it")]
     # issue/delete
     c += [W("issue/delete", {"ids": ["sw-fix-d01"], "dry_run": True}, seed=[issue("sw-fix-d01")], changed=False, label="dry run"),
-          W("issue/delete", {"ids": ["sw-fix-d01"], "actor": A}, changed=True, label="real delete"),
-          W("issue/delete", {"ids": ["sw-fix-d02"], "actor": A}, expect="invalid_argument", seed=[issue("sw-fix-d02"), issue("sw-fix-d03", dependencies=[{"target_id": "sw-fix-d02", "type": "blocks"}])], label="has dependents"),
-          W("issue/delete", {"ids": ["sw-fix-d04"], "actor": A, "force": True}, seed=[issue("sw-fix-d04"), issue("sw-fix-d05", dependencies=[{"target_id": "sw-fix-d04", "type": "blocks"}])], changed=True, label="force orphans"),
-          W("issue/delete", {"ids": ["sw-fix-d06"], "actor": A, "cascade": True}, seed=[issue("sw-fix-d06"), issue("sw-fix-d07", dependencies=[{"target_id": "sw-fix-d06", "type": "blocks"}])], changed=True, label="cascade"),
-          W("issue/delete", {"ids": ["sw-fix-d08"], "actor": A, "expected_version": "$rev:sw-fix-d08"}, seed=[issue("sw-fix-d08")], changed=True),
-          W("issue/delete", {"ids": ["sw-fix-d09"], "actor": A, "expected_version": "1"}, expect="precondition_failed", seed=[issue("sw-fix-d09")], changed=False),
-          W("issue/delete", {"ids": ["sw-fix-none"], "actor": A}, expect="not_found", changed=False),
+          W("issue/delete", {"ids": ["sw-fix-d01"], "actor": A, "dry_run": False}, changed=True, label="real delete"),
+          W("issue/delete", {"ids": ["sw-fix-d02"], "actor": A, "dry_run": False}, expect="invalid_argument", seed=[issue("sw-fix-d02"), issue("sw-fix-d03", dependencies=[{"target_id": "sw-fix-d02", "type": "blocks"}])], label="has dependents"),
+          W("issue/delete", {"ids": ["sw-fix-d04"], "actor": A, "dry_run": False, "force": True}, seed=[issue("sw-fix-d04"), issue("sw-fix-d05", dependencies=[{"target_id": "sw-fix-d04", "type": "blocks"}])], changed=True, label="force orphans"),
+          W("issue/delete", {"ids": ["sw-fix-d06"], "actor": A, "dry_run": False, "cascade": True}, seed=[issue("sw-fix-d06"), issue("sw-fix-d07", dependencies=[{"target_id": "sw-fix-d06", "type": "blocks"}])], changed=True, label="cascade"),
+          W("issue/delete", {"ids": ["sw-fix-d08"], "actor": A, "dry_run": False, "expected_version": "$rev:sw-fix-d08"}, seed=[issue("sw-fix-d08")], changed=True),
+          W("issue/delete", {"ids": ["sw-fix-d09"], "actor": A, "dry_run": False, "expected_version": "1"}, expect="precondition_failed", seed=[issue("sw-fix-d09")], changed=False),
+          W("issue/delete", {"ids": ["sw-fix-none"], "actor": A, "dry_run": False}, expect="not_found", changed=False),
           W("issue/delete", {"actor": A}, expect="invalid_argument", changed=False),
-          W("issue/delete", {"ids": [], "actor": A}, expect="invalid_argument", changed=False)]
+          W("issue/delete", {"ids": [], "actor": A}, expect="invalid_argument", changed=False),
+          W("issue/delete", {"ids": ["sw-fix-da1"], "actor": A}, seed=[issue("sw-fix-da1")], changed=False, label="dry_run omitted previews"),
+          W("issue/delete", {"ids": ["sw-fix-da1"]}, changed=False, label="no actor either"),
+          W("issue/delete", {"ids": ["sw-fix-da1"], "dry_run": False}, changed=True, label="no actor, a real run"),
+          W("issue/delete", {"ids": ["sw-fix-da2"], "dry_run": None}, expect="invalid_argument", seed=[issue("sw-fix-da2")], changed=False, label="null dry_run is refused")]
     # issue/reclaim
     c += [W("issue/reclaim", {"actor": A, "older_than_seconds": 86400}, changed=False, label="nothing stale"),
           W("issue/reclaim", {"actor": A, "older_than_seconds": 0, "ids": ["sw-fix-e01"]}, seed=[issue("sw-fix-e01")], before=[("issue/claim", {"id": "sw-fix-e01", "actor": "bob"})], label="zero age, by id"),
           W("issue/reclaim", {"actor": A, "older_than_seconds": 0.001, "ids": ["sw-fix-e02"], "assignees": ["bob"], "labels": ["el"], "labels_any": ["el"], "exclude_labels": ["no"], "any_replica": True}, seed=[issue("sw-fix-e02", labels=["el"])], before=[("issue/claim", {"id": "sw-fix-e02", "actor": "bob"})], label="every filter"),
           W("issue/reclaim", {"older_than_seconds": 60}, expect="invalid_argument", changed=False),
+          W("issue/reclaim", {"actor": A}, changed=False, label="older_than_seconds omitted is 600"),
+          W("issue/reclaim", {"actor": A, "older_than_seconds": None}, expect="invalid_argument", changed=False, label="null older_than_seconds is refused"),
           W("issue/reclaim", {"actor": A, "older_than_seconds": -1}, expect="invalid_argument", changed=False)]
     # issue/create-many
     c += [W("issue/create-many", {"actor": A, "items": [{"title": "many one", "issue_type": "task", "priority": 2, "labels": ["m"]}, {"title": "many two", "issue_type": "task", "dependencies": [{"target_id": "sw-fix-r1", "type": "related"}]}]}, changed=True),

@@ -5,7 +5,10 @@ makes during Part B, and asks of each: is it an invocation at all, does its Call
 declare every argument it sent, and, for a read, does v0 answer the same right now?
 
 A request that is not POST /bdp/call/NAME is what the move exists to end, so it fails
-the run (parity.py): see non_call_requests.
+the run (parity.py): see non_call_requests. So does one with `actor` or `author` in its
+arguments, which no declaration has, and one that leaves a defaulted parameter to the
+service, because the client means v0's behavior by an omission and the default is the
+CLI's: see contract_breaches.
 """
 
 import http.server
@@ -77,6 +80,10 @@ class Recorder:
             arguments = invocation.get("arguments", {}) if isinstance(invocation, dict) else {}
             entry["arguments"] = sorted(arguments)
             entry["undeclared"] = sorted(set(arguments) - self.declared.get(name, set()))
+            entry["actor_in_arguments"] = sorted({"actor", "author"} & set(arguments))
+            entry["left_to_default"] = sorted(set(cases.DEFAULTS.get(name, {})) - set(arguments))
+            if isinstance(invocation, dict) and invocation.get("revisionProvenance") is not None:
+                entry["provenance"] = invocation["revisionProvenance"]
             if name in cases.ROUTES and (cases.ROUTES[name][0] == "GET" or name == "issue/get-many"):
                 # A read changes nothing, so v0 can be asked the same thing at once.
                 v0_headers = {k: v for k, v in headers.items()
@@ -150,6 +157,17 @@ def non_call_requests(wire):
     return [key for key in wire if key.startswith(NON_CALL)]
 
 
+def contract_breaches(wire):
+    """What the client must never send: the run's failure, one line each."""
+    out = []
+    for key, row in wire.items():
+        if row.get("actor_in_arguments"):
+            out.append(f"{key}: {' '.join(row['actor_in_arguments'])} in arguments")
+        if row.get("left_to_default"):
+            out.append(f"{key}: left {' '.join(row['left_to_default'])} to the service's default")
+    return out
+
+
 NON_CALL = "(not an invocation) "
 
 
@@ -159,12 +177,16 @@ def summarize(entries):
     for entry in entries:
         key = entry["callable"] or f"{NON_CALL}{entry['method']} {entry['path']}"
         row = rows.setdefault(key, {"requests": 0, "query": set(), "arguments": set(), "headers": set(), "undeclared": set(),
+                                    "actor_in_arguments": set(), "left_to_default": set(), "with_provenance": 0,
                                     "replayed": 0, "replay_failures": []})
         row["requests"] += 1
         row["query"] |= set(entry["query"])
         row["arguments"] |= set(entry.get("arguments", []))
         row["headers"] |= set(entry["headers"])
         row["undeclared"] |= set(entry.get("undeclared", []))
+        row["actor_in_arguments"] |= set(entry.get("actor_in_arguments", []))
+        row["left_to_default"] |= set(entry.get("left_to_default", []))
+        row["with_provenance"] += 1 if "provenance" in entry else 0
         if "replay_problems" in entry:
             row["replayed"] += 1
             if entry["replay_problems"]:

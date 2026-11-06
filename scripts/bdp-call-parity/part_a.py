@@ -47,6 +47,21 @@ def call_v0(stack, name, args):
     return stack.http(method, path, body)
 
 
+def ask_v0(stack, name, args):
+    """What a direct v0 caller has to send to get what the Callable does with args."""
+    return call_v0(stack, name, cases.with_defaults(name, args))
+
+
+def ask_callable(stack, name, args, **options):
+    """The Callable, with a case's v0 arguments: the actor goes in revisionProvenance."""
+    rest, provenance = cases.for_callable(name, args)
+    return stack.call(name, rest, provenance=provenance, **options)
+
+
+def names_the_actor(reply):
+    return "revisionProvenance.actor" in json.dumps((reply.json or {}).get("diagnostics", []))
+
+
 def interpolate(stack, args):
     """$rev:ID in a value is that issue's current revision on this stack."""
     if isinstance(args, dict):
@@ -155,7 +170,7 @@ def record(name, label, args, v0_reply, call_reply, problems, mode, **more):
 
 def run_reads(stack, results):
     for name, args, want in cases.read_cases():
-        v0_reply = call_v0(stack, name, args)
+        v0_reply = ask_v0(stack, name, args)
         call_reply = stack.call(name, args)
         problems = compare(name, v0_reply, call_reply, same_server=True)
         got = code_of(v0_reply)
@@ -178,13 +193,16 @@ def run_writes(v0_stack, call_stack, results):
         if case["wait"]:
             time.sleep(case["wait"])
         before = state_of(call_stack)
-        v0_reply = call_v0(v0_stack, name, v0_args)
-        call_reply = call_stack.call(name, call_args, provenance=case["provenance"])
+        v0_reply = ask_v0(v0_stack, name, v0_args)
+        call_reply = ask_callable(call_stack, name, call_args)
         after = state_of(call_stack)
         problems = compare(name, v0_reply, call_reply, same_server=False)
-        if case["own_refusal"]:
-            # The adapter refused before v0 ran, so there is no v0 body to carry.
+        lacks_actor = cases.lacks_actor(name, call_args)
+        if case["own_refusal"] or lacks_actor:
+            # The router refused before v0 ran, so there is no v0 body to carry.
             problems = [p for p in problems if p != "no v0 body carried"]
+        if lacks_actor and not names_the_actor(call_reply):
+            problems.append("no actor, and the refusal does not name revisionProvenance.actor")
         effect = strict(before) != strict(after)
         changed = (call_reply.json or {}).get("changed") if call_reply.status == 200 else None
         # `false` promises no durable effect, and `true` only that there may have been
@@ -239,6 +257,76 @@ def run_unknown_argument(stack, names, results):
                               note=f"v0 answered {v0_reply.status} {code_of(v0_reply)} to the same member"))
 
 
+def run_actor_rules(stack, names, results):
+    """Spec sections 2 and 3: who is acting is revisionProvenance's to say, and nothing else's."""
+    def entry(name, label, args, reply, problems, provenance=None):
+        results.append({"part": "A", "callable": name, "label": label, "mode": "probe", "arguments": args,
+                        "provenance": provenance, "v0": None, "call": {"status": reply.status, "code": code_of(reply)},
+                        "problems": problems, "pass": not problems})
+
+    sam = {"actor": {"id": "sam", "basis": "writer-supplied"}}
+    for name in names:
+        method = cases.ROUTES[name][0]
+        if method == "GET" or name == "issue/get-many":
+            continue
+        args = required_args(name)
+        if name == "issue/dep/add":
+            args.update(source="sw-fix-none", target="sw-fix-none2")
+        records = name in cases.ACTOR_MEMBER
+        for member in ("actor", "author"):
+            reply = stack.call(name, {**args, member: "kim"}, provenance=sam if records else None)
+            got = reply.json or {}
+            problems = []
+            if reply.status != 422 or got.get("code") != "validation-failed" or got.get("reason") != "unknown_parameter":
+                problems.append(f"`{member}` in arguments answered {reply.status} {got.get('code')} {got.get('reason')}")
+            if not any(d.get("instanceLocation") == "/arguments/" + member for d in got.get("diagnostics", [])):
+                problems.append(f"no diagnostic names `{member}`")
+            entry(name, f"`{member}` in arguments is refused", {**args, member: "kim"}, reply, problems, sam if records else None)
+        if name in cases.RECORDS_NO_ACTOR:
+            reply = stack.call(name, args, provenance=sam)
+            got = reply.json or {}
+            problems = [] if reply.status == 422 and got.get("code") == "validation-failed" else [f"answered {reply.status} {got.get('code')}"]
+            if "revisionProvenance" not in json.dumps(got.get("diagnostics", [])):
+                problems.append("no diagnostic names revisionProvenance")
+            entry(name, "a supplied actor is refused", args, reply, problems, sam)
+            continue
+        reply = stack.call(name, args)
+        got = reply.json or {}
+        if name in cases.ACTOR_OPTIONAL:
+            # Nothing else is wrong with a preview: it runs. A prune with no filter is refused
+            # for that, by v0, carrying v0's own body and naming no actor.
+            problems = [] if reply.status == 200 or got.get("v0") else [f"no actor answered {reply.status} {got.get('code')}"]
+            if names_the_actor(reply):
+                problems.append("refused for having no actor")
+            entry(name, "runs with no actor", args, reply, problems)
+        else:
+            problems = []
+            if reply.status != 422 or got.get("code") != "validation-failed":
+                problems.append(f"no actor answered {reply.status} {got.get('code')}")
+            if not names_the_actor(reply):
+                problems.append("the refusal does not name revisionProvenance.actor")
+            if got.get("v0"):
+                problems.append("v0 ran")
+            entry(name, "no actor is refused", args, reply, problems)
+
+
+def run_published_defaults(stack, results):
+    """Spec section 4 in the published document: a default, and not required."""
+    paths = stack.http("GET", "/bdp/call").json.get("paths", {})
+    for name, defaults in cases.DEFAULTS.items():
+        content = paths["/bdp/call/" + name]["post"]["requestBody"]["content"]
+        arguments = content[next(iter(content))]["schema"]["properties"]["arguments"]
+        problems = []
+        for param, value in defaults.items():
+            published = arguments["properties"][param].get("default", "absent")
+            if published != value or type(published) is not type(value):
+                problems.append(f"{param}: published default {published!r}, want {value!r}")
+            if param in arguments.get("required", []):
+                problems.append(f"{param} has a default and is required")
+        results.append({"part": "A", "callable": name, "label": "published defaults", "mode": "probe", "arguments": None,
+                        "v0": None, "call": None, "problems": problems, "pass": not problems})
+
+
 def run_journal_off(stack, results):
     v0_reply = call_v0(stack, "events/list", {"since": 0})
     call_reply = stack.call("events/list", {"since": 0})
@@ -289,14 +377,14 @@ def run_wire_headers(stack, results):
         ("malformed Bd-Wire-Revision", {"Bd-Wire-Revision": "x"}, {"Bd-Wire-Revision": "x"}),
     ]
     for label, v0_headers, call_headers in cases_:
-        v0_reply = stack.http("GET", "/v0/beads/issues?limit=1", headers=v0_headers)
+        v0_reply = stack.http("GET", "/v0/beads/issues?limit=1&sort=priority", headers=v0_headers)
         call_reply = stack.call("issue/list", {"limit": 1}, headers=call_headers)
         problems = compare("issue/list", v0_reply, call_reply, same_server=True)
         results.append(record("issue/list", label, {"limit": 1}, v0_reply, call_reply, problems, "probe",
                               note=f"v0 {v0_reply.status} {code_of(v0_reply)}; Callable {call_reply.status} {code_of(call_reply)}"))
     # The profile's own rule, which v0 has no counterpart to: an Accept that excludes the
     # media type is a bodyless 406, even on a request that would have failed.
-    v0_reply = stack.http("GET", "/v0/beads/issues?limit=1", headers={"Accept": "application/json"})
+    v0_reply = stack.http("GET", "/v0/beads/issues?limit=1&sort=priority", headers={"Accept": "application/json"})
     call_reply = stack.call("issue/list", {"limit": 1}, headers={"Accept": "application/json"})
     problems = [] if call_reply.status == 406 and not call_reply.raw else [f"status {call_reply.status}, want a bodyless 406"]
     results.append(record("issue/list", "an Accept without the media type is refused", {"limit": 1}, v0_reply, call_reply, problems, "probe"))
@@ -342,7 +430,7 @@ def run_auth(root, results):
     stack.serve_args = ["--auth-token-file", token_file]
     stack.start_serve()
     for label, headers in (("no credential", {}), ("wrong credential", {"Authorization": "Bearer nope"})):
-        v0_reply = stack.http("GET", "/v0/beads/issues?limit=1", headers=headers)
+        v0_reply = stack.http("GET", "/v0/beads/issues?limit=1&sort=priority", headers=headers)
         call_reply = stack.call("issue/list", {"limit": 1}, headers=headers)
         problems = compare("issue/list", v0_reply, call_reply, same_server=True)
         if v0_reply.headers.get("WWW-Authenticate") != call_reply.headers.get("WWW-Authenticate"):
@@ -350,7 +438,7 @@ def run_auth(root, results):
         results.append(record("issue/list", "auth: " + label, {"limit": 1}, v0_reply, call_reply, problems, "probe",
                               harness_note=None if code_of(v0_reply) == "unauthenticated" else "expected unauthenticated"))
     good = {"Authorization": "Bearer parity-token"}
-    v0_reply = stack.http("GET", "/v0/beads/issues?limit=1", headers=good)
+    v0_reply = stack.http("GET", "/v0/beads/issues?limit=1&sort=priority", headers=good)
     call_reply = stack.call("issue/list", {"limit": 1}, headers=good)
     results.append(record("issue/list", "auth: right credential", {"limit": 1}, v0_reply, call_reply,
                           compare("issue/list", v0_reply, call_reply, same_server=True), "probe"))
@@ -366,8 +454,8 @@ def run_large_apply(v0_stack, call_stack, results):
     items = [{"kind": "create", "create": {"title": f"large {i}", "issue_type": "task", "id": f"sw-fix-large-{i}"}}
              for i in range(101)]
     args = {"actor": cases.A, "items": items}
-    v0_reply = call_v0(v0_stack, "issue/batch", args)
-    call_reply = call_stack.call("issue/batch", args)
+    v0_reply = ask_v0(v0_stack, "issue/batch", args)
+    call_reply = ask_callable(call_stack, "issue/batch", args)
     problems = compare("issue/batch", v0_reply, call_reply, same_server=False)
     results.append(record("issue/batch", "101 items, the large-apply path", {"items": "101 creates"}, v0_reply, call_reply, problems, "write", changed=(call_reply.json or {}).get("changed"), effect=True))
 
@@ -395,8 +483,8 @@ def run_db_down(stack, results):
     time.sleep(1)
     # v0 itself answers the first request after the loss differently from the next
     # ones, so each surface is compared with v0 at the same position in the sequence.
-    v0_first = call_v0(stack, "issue/list", {"limit": 1})
-    v0_reply = call_v0(stack, "issue/list", {"limit": 1})
+    v0_first = ask_v0(stack, "issue/list", {"limit": 1})
+    v0_reply = ask_v0(stack, "issue/list", {"limit": 1})
     call_reply = stack.call("issue/list", {"limit": 1})
     problems = compare("issue/list", v0_reply, call_reply, same_server=True)
     if bool(v0_reply.headers.get("Retry-After")) != bool(call_reply.headers.get("Retry-After")):
@@ -429,6 +517,8 @@ def run(root, log):
     run_writes(v0_stack, call_stack, results)
     log(f"part A: writes done, {len(results)} results")
     run_unknown_argument(probe, names, results)
+    run_actor_rules(probe, names, results)
+    run_published_defaults(probe, results)
     run_journal_off(probe, results)
     run_envelope(probe, results)
     run_path_escapes(call_stack, results)

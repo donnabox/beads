@@ -97,9 +97,10 @@ def write_summary(path, meta, rows, a_results, b_results, wire):
               "Recorded by a proxy between `bd connect` and `bd serve`. Each read was asked of v0 at once and compared.", "",
               f"{sum(row['requests'] for row in wire.values())} requests; "
               f"{sum(row['requests'] for key, row in wire.items() if key in recorder.non_call_requests(wire))} were not `POST /bdp/call/NAME`.", "",
-              "| Callable | requests | arguments | undeclared | replayed / failed |", "| --- | ---: | --- | --- | --- |"]
+              f"Requests breaking the actor or default rule: {len(recorder.contract_breaches(wire))}.", "",
+              "| Callable | requests | with provenance | arguments | undeclared | replayed / failed |", "| --- | ---: | ---: | --- | --- | --- |"]
     for name, row in wire.items():
-        lines.append(f"| `{name}` | {row['requests']} | {' '.join(row['arguments'])} | "
+        lines.append(f"| `{name}` | {row['requests']} | {row['with_provenance']} | {' '.join(row['arguments'])} | "
                      f"{' '.join(row['undeclared'])} | {row['replayed']} / {len(row['replay_failures'])} |")
     with open(path, "w") as handle:
         handle.write("\n".join(lines) + "\n")
@@ -145,10 +146,14 @@ def main():
     write_summary(os.path.join(args.out, "summary.md"), meta, rows, a_results, b_results, wire)
     log(f"wrote {args.out}/results.json and {args.out}/summary.md")
     # Exit 0: a run that measured anomalies still measured. A harness fault raises, and
-    # so does the one thing that is no anomaly: a client request that is not an invocation.
+    # so do the things that are no anomaly: a client request that is not an invocation,
+    # or one that carries an actor in its arguments or relies on a service default.
     strays = recorder.non_call_requests(wire)
     if strays:
         sys.exit("bd connect sent requests other than POST /bdp/call/NAME:\n  " + "\n  ".join(strays))
+    breaches = recorder.contract_breaches(wire)
+    if breaches:
+        sys.exit("bd connect sent what it must not:\n  " + "\n  ".join(breaches))
 
 
 if __name__ == "__main__":

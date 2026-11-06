@@ -2,8 +2,9 @@
 
 Measures stage 1: every Callable on `bd serve`, and every native command behind it
 over `bd connect`. It reports anomalies. It changes no product code and does not fail
-on what it finds, with one exception: a request from `bd connect` that is not
-`POST /bdp/call/NAME` fails the run. Otherwise it exits non-zero only when the harness
+on what it finds, with these exceptions: a request from `bd connect` that is not
+`POST /bdp/call/NAME`, has `actor` or `author` in its arguments, or omits a parameter
+with a service default fails the run. Otherwise it exits non-zero only when the harness
 itself breaks.
 
 ```bash
@@ -28,8 +29,13 @@ Part A takes a minute, Part B the rest.
   `changed` is checked against whether the state moved.
 - **Refusals** map v0's code through the spec's section 5, and check the code, status,
   `retry`, content type, and that v0's body is carried verbatim.
-- `callable_cases.py` is the case table. Its `ROUTES` is written from the spec, not
-  from `callables_table.go`, so a routing mistake shows as a difference.
+- `callable_cases.py` is the case table. Its `ROUTES`, `ACTOR_MEMBER` and `DEFAULTS` are
+  written from the spec, not from `callables_table.go`, so a mistake shows as a difference.
+- **A case's arguments are v0's.** `for_callable` moves its `actor`, or `author` on
+  `issue/comment`, to `revisionProvenance`. `with_defaults` fills in, on the v0 side, each
+  parameter the case omits that has a service default, because a direct v0 caller has to
+  say it. An invocation naming no actor where one is required is refused before v0 runs,
+  and the case checks the refusal names `revisionProvenance.actor`.
 
 ## Part B: the native command over `bd connect`
 
@@ -48,15 +54,17 @@ the command dialed, which is the evidence for which Callable a command correspon
 
 Part B's client reaches `bd serve` through `recorder.py`, a recording proxy. For each
 request it records the headers and argument names, flags any argument its Callable does
-not declare, and fails the run if the request is not an invocation at all. Each read is
+not declare, and fails the run if the request is not an invocation at all, carries
+`actor` or `author` in `arguments`, or leaves a defaulted parameter to the service. Each read is
 also asked of v0 at once and compared with what the client got, so `client_wire` in
 `results.json` is the live evidence that the mount and v0 still agree on real traffic.
 
 ## The server table against the spec
 
 `check_spec.py --spec PATH_TO_BDP_CHECKOUT` compares `internal/httpapi/callables_table.go`'s
-name, kind and `cli` with the declarations in `specs/types/issue/callables.md`, both
-ways, and exits 1 on any difference. It is the server's counterpart of the reference
+name, kind, `cli` and `defaults` with the declarations in `specs/types/issue/callables.md`,
+both ways, fails if a declaration on either side has `actor` or `author`, and exits 1 on
+any difference. It is the server's counterpart of the reference
 client's `callables:check`, so a spec change shows up as a failure. It starts no stack.
 
 ## Cleanup
