@@ -1079,22 +1079,6 @@ func TestV0BodyIsTheRequestV0WouldHaveReceived(t *testing.T) {
 	}
 }
 
-// TestDepAddChangedReadsAdded: what the rule does, and the limit of it. v0's `added`
-// echoes the request, so every success says true; `false` could only follow an empty
-// answer, which that schema forbids.
-func TestDepAddChangedReadsAdded(t *testing.T) {
-	changed := callableIndex["issue/dep/add"].changed
-	if changed == nil {
-		t.Fatal("issue/dep/add has no changed rule")
-	}
-	if !changed(map[string]json.RawMessage{"added": json.RawMessage(`[{"issue_id":"a"}]`)}) {
-		t.Error("an echoed edge did not read as changed")
-	}
-	if changed(map[string]json.RawMessage{"added": json.RawMessage(`[]`)}) {
-		t.Error("no edge read as changed")
-	}
-}
-
 // TestCallableListIsTheOpenAPIProjection is Callables §3 and §14 over the served
 // document.
 func TestCallableListIsTheOpenAPIProjection(t *testing.T) {

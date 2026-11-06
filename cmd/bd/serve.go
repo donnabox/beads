@@ -89,9 +89,11 @@ AUTHENTICATION
 
   Optional, and off by default on loopback — where the trust model is the
   loopback boundary itself, the same one the database behind it already relies
-  on. --auth-token-file turns it on: every operation except GET /healthz then
-  requires an "Authorization: Bearer <token>" header, GET /v0/beads/context
-  included, because it reports the repo root, beads directory and database name.
+  on. --auth-token-file turns it on: every operation except GET /healthz, GET /
+  and GET /bdp then requires an "Authorization: Bearer <token>" header, GET
+  /v0/beads/context included, because it reports the repo root, beads directory
+  and database name. GET / and GET /bdp hold only this Scope's address and
+  constants.
 
   The file holds ONE TOKEN PER LINE and every line is accepted. That is the
   rotation mechanism: write the new token alongside the old, roll the clients

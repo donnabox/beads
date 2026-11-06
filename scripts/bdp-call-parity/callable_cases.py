@@ -449,7 +449,7 @@ def write_cases():
           W("issue/claim-next", {"actor": A, "sort": "nonsense"}, expect="invalid_argument", changed=False)]
     # issue/dep/add
     c += [W("issue/dep/add", {"actor": A, "edges": [{"issue_id": "sw-fix-f01", "depends_on_id": "sw-fix-f02", "type": "blocks"}]}, seed=[issue("sw-fix-f01"), issue("sw-fix-f02")], changed=True, label="edges form"),
-          W("issue/dep/add", {"actor": A, "edges": [{"issue_id": "sw-fix-f01", "depends_on_id": "sw-fix-f02", "type": "blocks"}]}, label="same edge again (declared idempotent)", changed=False),
+          W("issue/dep/add", {"actor": A, "edges": [{"issue_id": "sw-fix-f01", "depends_on_id": "sw-fix-f02", "type": "blocks"}]}, label="same edge again (declared idempotent)", may_change=True),
           W("issue/dep/add", {"actor": A, "source": "sw-fix-f03", "target": "sw-fix-f02"},
             v0_args={"actor": A, "edges": [{"issue_id": "sw-fix-f03", "depends_on_id": "sw-fix-f02", "type": "blocks"}]}, seed=[issue("sw-fix-f03")], changed=True, label="flat, type omitted"),
           W("issue/dep/add", {"actor": A, "source": "sw-fix-f04", "target": "sw-fix-f02", "type": "related"},

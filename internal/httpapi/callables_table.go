@@ -308,10 +308,8 @@ var callableTable = []callableRow{
 		adapterParams: []string{"source", "target", "type"}, adapt: adaptFlatDependency,
 		optional: []string{"edges"},
 		reasons:  []string{"dependency_cycle", "dependency_exists"},
-		// This reads true on every success, a same-edge re-add included: v0's `added`
-		// echoes the request whether or not an edge was new, and its schema says so.
-		changed: changedWhen("added"),
-		cli:     `{"flags": [{"names": ["-t"], "parameter": "type"}, {"names": ["--blocked-by", "--depends-on"], "parameter": "target"}], "positionals": [{"position": 0, "parameter": "source"}, {"position": 1, "parameter": "target"}]}`,
+		// No rule: v0's `added` echoes the request whether or not an edge was new.
+		cli: `{"flags": [{"names": ["-t"], "parameter": "type"}, {"names": ["--blocked-by", "--depends-on"], "parameter": "target"}], "positionals": [{"position": 0, "parameter": "source"}, {"position": 1, "parameter": "target"}]}`,
 	},
 	{
 		name: "issue/dep/remove", op: OpRemoveDependency, batch: true,
