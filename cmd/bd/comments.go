@@ -200,6 +200,10 @@ func checkCommentAuthorAlias(cmd *cobra.Command) error {
 	if !global.Changed("actor") {
 		return nil
 	}
+	// On v0 --author wins, and goes out as it always did: see remoteOnV0.
+	if workspaceOnV0Connection() {
+		return nil
+	}
 	named, _ := global.GetString("actor")
 	if author == "" || named == "" || author == named {
 		return nil

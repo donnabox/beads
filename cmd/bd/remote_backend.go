@@ -68,13 +68,38 @@ func storeIsRemoteBackend(s storage.DoltStorage) bool {
 	return ok && remote.IsRemoteBackendStore()
 }
 
+// remoteOnV0 reports a store attached by a bd connect speaking v0, the default.
+//
+// A v0 connection sends what it sent before BDP, request for request, except for a
+// command that used to refuse and now works. So a change to a command that already
+// answered, for the better or not, is for connections that asked for BDP, and every
+// use of this names what the old code did instead. That includes a command that read
+// through a refused raw method, swallowed the refusal and printed less: the read
+// stays unsent here, and the gap stays as it was (scripts/bdp-call-parity's
+// wire_proof.py holds all of this to a bd built before the change).
+func remoteOnV0(s storage.DoltStorage) bool {
+	remote, ok := storage.UnwrapStore(s).(interface{ Protocol() httpclient.Protocol })
+	return ok && remote.Protocol() == httpclient.ProtocolV0
+}
+
+// workspaceOnV0Connection is remoteOnV0 for a check that runs before any store is
+// open. A sidecar it cannot read is left for the store's open to report.
+func workspaceOnV0Connection() bool {
+	if !workspaceIsRemoteBackend() {
+		return false
+	}
+	target, err := httpclient.LoadTarget(beads.FindBeadsDir())
+	return err == nil && target.Protocol == httpclient.ProtocolV0
+}
+
 // refuseKVOverRemoteBackend is the answer every `bd kv` subcommand gives on a
-// bd connect workspace. bd serve deliberately hides the kv.* config namespace
-// (issueops/workspaceconfig.go), so a read would answer "not
+// bd connect workspace speaking BDP. bd serve deliberately hides the kv.* config
+// namespace (issueops/workspaceconfig.go), so a read would answer "not
 // found" for a key that exists and a write would be refused by key. Saying so
-// up front is the only true answer the family has.
+// up front is the only true answer the family has. On v0 the read goes out as it
+// always did, and gets that answer: see remoteOnV0.
 func refuseKVOverRemoteBackend(s storage.DoltStorage, verb string) error {
-	if !storeIsRemoteBackend(s) {
+	if !storeIsRemoteBackend(s) || remoteOnV0(s) {
 		return nil
 	}
 	return HandleErrorRespectJSON("bd kv %s is not available over bd connect: bd serve does not expose the kv.* namespace to clients; run it on the server's own workspace", verb)
@@ -85,9 +110,10 @@ func refuseKVOverRemoteBackend(s storage.DoltStorage, verb string) error {
 // type, priority, title and edge type, which is enough for `bd show`'s
 // dependents section and not for a caller rendering the row whole: every other
 // field would print blank and every timestamp as 0001-01-01. A row the follow-up
-// read cannot supply refuses rather than printing that.
+// read cannot supply refuses rather than printing that. On v0 the shallow rows are
+// the answer, as they always were: see remoteOnV0.
 func hydrateRemoteDependents(ctx context.Context, s storage.DoltStorage, refs []*types.IssueWithDependencyMetadata) ([]*types.IssueWithDependencyMetadata, error) {
-	if !storeIsRemoteBackend(s) || len(refs) == 0 {
+	if !storeIsRemoteBackend(s) || remoteOnV0(s) || len(refs) == 0 {
 		return refs, nil
 	}
 	ids := make([]string, 0, len(refs))

@@ -558,7 +558,7 @@ func TestPostShapedReadsSurviveStaleIdleConnections(t *testing.T) {
 	transport.MaxIdleConnsPerHost = pooled
 	t.Cleanup(transport.CloseIdleConnections)
 	c, err := New(base, nil, Options{
-		Protocol: ProtocolBDP,
+		Protocol:     ProtocolBDP,
 		HTTPClient:   &http.Client{Transport: transport},
 		OnStallRetry: func(StallRetry) { retried.Add(1) },
 	})

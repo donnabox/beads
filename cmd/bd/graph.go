@@ -404,6 +404,12 @@ func loadGraphSubgraph(ctx context.Context, s storage.DoltStorage, issueID strin
 		currentID := queue[0]
 		queue = queue[1:]
 
+		// On v0 neither read is sent, and the graph is the root and its own edges,
+		// as it always was: see remoteOnV0.
+		if remoteOnV0(s) {
+			continue
+		}
+
 		// Get issues that depend on this one (dependents)
 		dependents, err := s.GetDependents(ctx, currentID)
 		if err != nil {

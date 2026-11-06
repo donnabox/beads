@@ -134,8 +134,8 @@ func (s *Store) walkIssues(ctx context.Context, params url.Values, req issueops.
 	//                 it `want` is the caller's limit and under every other
 	//                 order it is zero, so this is that same fact spelled once
 	//                 rather than a second copy of the condition that can drift
-	//                 from it. Nothing here names `sort` for that order: the
-	//                 wire seam spells this absence `created`
+	//                 from it. Nothing here names `sort` for that order: v0 reads
+	//                 the absence as `created`, and on BDP the wire seam spells it
 	//                 (wire.v0Omissions), because issue/list's own default is
 	//                 `priority`, and a walk in that order would stop early on
 	//                 the wrong rows.

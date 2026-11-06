@@ -11,6 +11,7 @@ import collections
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
 import tempfile
@@ -30,12 +31,15 @@ from stack import Root, Stack, run_bd  # noqa: E402
 
 REQUEST_ID = re.compile(r'"request_id":"[^"]*"')
 CURSOR = re.compile(r'("(?:next_)?cursor":")[^"]*(")|([?&]cursor=)[^&"\s]*')
-BUILD_HASH = re.compile(r"\((?:[0-9a-f]{9}: ?)?[0-9a-f]{9,12}\)")
+BUILD_FACTS = re.compile(r'"(build|commit)": "[0-9a-f]+"|\([0-9a-f]{9}: \w+@[0-9a-f]+\)')
+ARRIVAL_SEQ = re.compile(r'("?arrival_seq"?:\s*)\d+')
+PING_TIME = re.compile(r"\(\d+(?:\.\d+)?m?s\)")
 DROPPED_HEADERS = {"date", "content-length", "x-request-id"}
 # What a base command says when it will not run over bd connect.
 BASE_REFUSED = re.compile(r"not supported by the http backend|not expressible on the v0 wire|not available over bd connect"
                           r"|refuses? (?:over|against)|not served|cannot be served|nothing was closed|http backend"
-                          r"|not implemented over|unknown flag|unknown command|the http store|expects? a direct")
+                          r"|not implemented over|unknown flag|unknown command|the http store|expects? a direct"
+                          r"|matching neither expressible shape")
 
 
 class Masker:
@@ -56,7 +60,9 @@ class Masker:
         value = HEX_HASH.sub("<hash>", value)
         value = REQUEST_ID.sub('"request_id":"<request>"', value)
         value = CURSOR.sub(lambda m: (m.group(1) + "<cursor>" + m.group(2)) if m.group(1) else m.group(3) + "<cursor>", value)
-        value = BUILD_HASH.sub("(<build>)", value)
+        value = BUILD_FACTS.sub("<build>", value)
+        value = ARRIVAL_SEQ.sub(lambda m: m.group(1) + "<seq>", value)
+        value = PING_TIME.sub("(<time>)", value)
         return MINTED_ID.sub(self._mint, value)
 
     def _mint(self, match):
@@ -270,6 +276,11 @@ def classify(base, new):
               "base_says": first_line(base["stderr"]) or first_line(base["stdout"]),
               "new_says": first_line(new["stderr"]) or first_line(new["stdout"]),
               "base_requests": request_lines(base), "new_requests": request_lines(new)}
+    if wire_base != wire_new and list(map(_query_as_set, wire_base)) == list(map(_query_as_set, wire_new)) and output_same:
+        # A repeated query value in another order, which is map order in the client.
+        # The answer does not depend on it, and base against base differs the same way.
+        detail["first_difference"] = first_difference(wire_base, wire_new)
+        return "query-order", detail
     base_refused = base["exit"] != 0 or BASE_REFUSED.search(base["stderr"] + base["stdout"]) is not None
     if wire_base != wire_new:
         detail["first_difference"] = first_difference(wire_base, wire_new)
@@ -286,6 +297,11 @@ def classify(base, new):
     detail["base_stdout"], detail["new_stdout"] = base["stdout"][:800], new["stdout"][:800]
     detail["base_stderr"], detail["new_stderr"] = base["stderr"][:800], new["stderr"][:800]
     return "output", detail
+
+
+def _query_as_set(request):
+    path, _, query = request["target"].partition("?")
+    return {**request, "target": (path, sorted(query.split("&")))}
 
 
 def first_difference(left, right):
@@ -337,7 +353,10 @@ def raw_request(stack, method, target, headers=None, body=None):
     request = urllib.request.Request(stack.url + target, data=body, method=method, headers=headers or {})
     try:
         with urllib.request.urlopen(request, timeout=60) as response:
-            return response.status, list(response.headers.items()), response.read()
+            # A stream that opened has no end to read to, and its heartbeats outrun any
+            # timeout. That it opened, with these headers, is the answer.
+            streaming = response.headers.get("Content-Type", "").startswith("text/event-stream")
+            return response.status, list(response.headers.items()), b"" if streaming else response.read()
     except urllib.error.HTTPError as err:
         return err.code, list(err.headers.items()), err.read()
 
@@ -438,7 +457,7 @@ def write_reports(out, results, counts, server):
             d = r["detail"]
             lines += [f"- `{r['key']}`: base exit {d['base_exit']}, new exit {d['new_exit']}. Base said: {d['base_says'][:200]}",
                       f"  new sends: {'; '.join(x[:120] for x in d['new_requests'][:6])}"]
-    for verdict, title in (("state", "Same requests, an answer moved"), ("output", "Same wire, different words"), ("unexplained", "UNEXPLAINED")):
+    for verdict, title in (("query-order", "A repeated query value in another order"), ("state", "Same requests, an answer moved"), ("output", "Same wire, different words"), ("unexplained", "UNEXPLAINED")):
         lines += ["", f"## {title} (`{verdict}`)", ""]
         for r in results:
             if r["verdict"] == verdict:
@@ -452,6 +471,18 @@ def write_reports(out, results, counts, server):
             lines.append(f"- {r['label']} {r.get('method', '')} {r.get('target', '')}: {json.dumps(r.get('base'))[:300]} / {json.dumps(r.get('new'))[:300]}")
     with open(os.path.join(out, "summary.md"), "w") as handle:
         handle.write("\n".join(lines) + "\n")
+    allowed = ["# Every request difference allowed against the base commit", "",
+               "Each command here refused at the base, and the new bd serves it or gets further.", "",
+               "| Command | Mode | Base exit | New exit | The base said | The new bd sends |", "| --- | --- | ---: | ---: | --- | --- |"]
+    for r in results:
+        if r["verdict"] == "allowed":
+            d = r["detail"]
+            mode, _, command = r["key"].partition(" ")
+            sends = "; ".join(x.split("  ")[0][:80] for x in d["new_requests"])
+            said = (d["base_says"] if len(d["base_says"]) > 2 else "(on stdout, as JSON)").replace("|", "\\|")[:160]
+            allowed.append(f"| `{command}` | {mode} | {d['base_exit']} | {d['new_exit']} | {said} | {sends} |")
+    with open(os.path.join(out, "allowed-differences.md"), "w") as handle:
+        handle.write("\n".join(allowed) + "\n")
 
 
 def main():
@@ -466,6 +497,8 @@ def main():
     parser.add_argument("--side", help=argparse.SUPPRESS)
     args = parser.parse_args()
     os.makedirs(args.out, exist_ok=True)
+    # SIGTERM takes the finally blocks, so a killed run still reaps its daemons.
+    signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))
 
     def log(message):
         print(message, flush=True)

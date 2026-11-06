@@ -28,6 +28,9 @@ func startProtocolServer(t *testing.T, protocol httpapi.Protocol) string {
 	}
 	cfg := e2eServeConfig(t, reference, e2eProjectID, e2eDatabase)
 	cfg.Protocol = protocol
+	// As bd serve's own does, so the client's external-dependency decorator stands
+	// down and what goes out is the command's own reads.
+	cfg.ExternalDependencyPolicy = true
 	srv, err := httpapi.Listen(cfg)
 	if err != nil {
 		t.Fatalf("bind the in-process server: %v", err)
@@ -131,6 +134,28 @@ func TestE2E_ProtocolPairings(t *testing.T) {
 		})
 	}
 
+	// A connect states the protocol afresh, so one with no flag is v0 again.
+	t.Run("a reconnect with no flag goes back to v0", func(t *testing.T) {
+		addr := startProtocolServer(t, httpapi.ProtocolBoth)
+		f := &remoteRolesFixture{t: t, bin: bin, dir: t.TempDir(), ids: map[string]string{}}
+		f.mustRun(nil, "connect", "http://"+addr, "--protocol", "bdp")
+		sidecar := filepath.Join(f.dir, ".beads", "http_target.json")
+		raw, err := os.ReadFile(sidecar)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(string(raw), `"protocol": "bdp"`) {
+			t.Fatalf("not recorded: %s", raw)
+		}
+		f.mustRun(nil, "connect", "http://"+addr)
+		if raw, err = os.ReadFile(sidecar); err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(string(raw), `"protocol"`) {
+			t.Errorf("still names a protocol: %s", raw)
+		}
+	})
+
 	// A saved connection outliving its server's protocol. A read of an issue that
 	// exists must not come back as "no such issue".
 	t.Run("a v0 connection whose server moved to bdp", func(t *testing.T) {
@@ -155,4 +180,66 @@ func TestE2E_ProtocolPairings(t *testing.T) {
 			t.Errorf("bd show did not say why: stdout=%s stderr=%s", r.stdout, r.stderr)
 		}
 	})
+}
+
+// A command that already answered sends on v0 what it always sent, the gap in its
+// answer included. BDP is where the fix is, and the same command there sends more.
+func TestE2E_ACommandThatAnsweredIsUnchangedOnV0(t *testing.T) {
+	skipUnlessEmbeddedDolt(t)
+	bin := buildBD(t)
+
+	for _, tc := range []struct {
+		name    string
+		args    []string
+		onV0    []string // what v0 sends; nothing else may reach the server
+		neverV0 string
+		onBDP   string
+	}{
+		{name: "list text reads no gate targets", args: []string{"list"}, neverV0: "batchGet", onBDP: "issue/get-many"},
+		{name: "ready text reads no parent epic", args: []string{"ready"}, neverV0: "/v0/beads/dependencies", onBDP: "issue/dep/edges"},
+		{name: "graph reads no dependents", args: []string{"graph", "$blocker", "--json"}, neverV0: "include_dependents", onBDP: "issue/show"},
+		{name: "ready --explain reads no blockers", args: []string{"ready", "--explain", "--json"}, neverV0: "/v0/beads/dependencies", onBDP: "issue/dep/edges"},
+		{name: "show --refs hydrates nothing", args: []string{"show", "$blocker", "--refs", "--json"}, neverV0: "batchGet", onBDP: "issue/get-many"},
+		{name: "info counts nothing", args: []string{"info", "--json"}, neverV0: "GET /v0/beads/issues", onBDP: "issue/list"},
+		{name: "update --claim is an update", args: []string{"update", "$blocked", "--claim", "--json"}, onV0: []string{"PATCH /v0/beads/issues/"}, neverV0: ":claim", onBDP: "issue/claim"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			for _, bdp := range []bool{false, true} {
+				server := httpapi.ProtocolV0
+				connect := []string{}
+				if bdp {
+					server = httpapi.ProtocolBoth
+					connect = []string{"--protocol", "bdp"}
+				}
+				proxy, counter := startCountingProxy(t, startProtocolServer(t, server))
+				f := &remoteRolesFixture{t: t, bin: bin, dir: t.TempDir(), ids: map[string]string{}}
+				f.mustRun(nil, append([]string{"connect", "http://" + proxy}, connect...)...)
+				blocker := f.create("blocker")
+				blocked := f.create("blocked")
+				f.mustRun(nil, "dep", "add", blocked, blocker)
+
+				args := make([]string, len(tc.args))
+				for i, arg := range tc.args {
+					args[i] = strings.NewReplacer("$blocker", blocker, "$blocked", blocked).Replace(arg)
+				}
+				counter.reset()
+				f.mustRun(nil, args...)
+				sent := strings.Join(counter.uriSnapshot(), "\n")
+				if bdp {
+					if !strings.Contains(sent, tc.onBDP) {
+						t.Errorf("on BDP, want %s among:\n%s", tc.onBDP, sent)
+					}
+					continue
+				}
+				if strings.Contains(sent, tc.neverV0) {
+					t.Errorf("on v0, %q went out:\n%s", tc.neverV0, sent)
+				}
+				for _, want := range tc.onV0 {
+					if !strings.Contains(sent, want) {
+						t.Errorf("on v0, want %q among:\n%s", want, sent)
+					}
+				}
+			}
+		})
+	}
 }

@@ -30,7 +30,8 @@ import (
 // claim beside anything else stays there too. And its role has no template guard,
 // so the guard runs here on the row the command already read.
 func remoteClaimRoute(next commandIssueUpdater, st storage.DoltStorage, before *types.Issue) commandIssueUpdater {
-	if !storeIsRemoteBackend(st) || before == nil || before.Ephemeral || before.NoHistory {
+	// On v0 a claim stays the updateIssue it always was: see remoteOnV0.
+	if !storeIsRemoteBackend(st) || remoteOnV0(st) || before == nil || before.Ephemeral || before.NoHistory {
 		return next
 	}
 	return remoteClaimUpdater{next: next, store: st, before: before}

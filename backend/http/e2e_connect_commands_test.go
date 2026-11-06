@@ -9,20 +9,26 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/steveyegge/beads/internal/httpapi"
 )
 
 // TestE2E_ConnectCommandParity runs, through the real `bd` binary against an
 // in-process `bd serve`, every command that used to reach the refusing shell:
 // some refused, and some printed the refusal, wrote nothing and exited 0.
 //
+// It runs on BDP, which is where all of them are fixed. On v0 the ones that used to
+// answer, however badly, stay as they were (cmd/bd's remoteOnV0 and wire_proof.py).
+//
 // A dial is named both ways, by its v0 path and by its Callable, because which of
 // the two the client speaks is the wire's business and these are about the command.
 func TestE2E_ConnectCommandParity(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
 	bin := buildBD(t)
-	addr := startE2EServer(t)
+	addr := startProtocolServer(t, httpapi.ProtocolBoth)
 	proxyAddr, counter := startCountingProxy(t, addr)
-	f := newHTTPFixture(t, bin, proxyAddr)
+	f := &remoteRolesFixture{t: t, bin: bin, dir: t.TempDir(), ids: map[string]string{}}
+	f.mustRun(nil, "connect", "http://"+proxyAddr, "--protocol", "bdp", "--expect-project-id", e2eProjectID, "--json")
 
 	dialed := func(t *testing.T, callable, v0 string) {
 		t.Helper()
