@@ -87,6 +87,11 @@ def write_summary(path, meta, rows, a_results, b_results, wire):
         if r["verdict"] != "ok":
             says = r["client_says"] or r["direct_says"] or (r["output_diff"] or r["state_diff"] or [""])[0]
             lines.append(f"- {r['verdict']} ({r['mode']}): `bd {' '.join(r['argv'])}` ({', '.join(r['callables'])}): {says[:240]}")
+    # The explicit check on the worst outcome: a refusal printed, nothing written,
+    # exit 0. This must read zero.
+    exit_zero = [r for r in b_results if r.get("verdict") == "refused-exit-zero"]
+    lines += ["", f"## Commands that refused and exited 0: {len(exit_zero)}", ""]
+    lines += [f"- {r.get('label')} ({r.get('mode')})" for r in exit_zero]
     lines += ["", "## What the client sent during Part B", "",
               "Recorded by a proxy between `bd connect` and `bd serve`. Replayed reads went through the Callable at once.", "",
               "| Callable | requests | query | body | undeclared | replayed / failed |", "| --- | ---: | --- | --- | --- | --- |"]

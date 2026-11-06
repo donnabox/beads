@@ -140,13 +140,13 @@ def first_line(ran):
     return lines[0][:300] if lines else ""
 
 
-NOT_SERVED = re.compile(r"not supported by the http backend|not expressible on the v0 wire")
+NOT_SERVED = re.compile(r"not supported by the http backend|not expressible on the v0 wire|not available over bd connect")
 
 
 def classify(direct, client, output_diff, state_diff, order_only=False):
     if client.code == -1:
         return "hung"
-    if direct.code == 0 and client.code == 0 and NOT_SERVED.search(client.err):
+    if direct.code == 0 and client.code == 0 and (NOT_SERVED.search(client.err) or NOT_SERVED.search(client.out)):
         # The command printed a refusal, wrote nothing, and exited 0.
         return "refused-exit-zero"
     if direct.code == 0 and client.code != 0:
