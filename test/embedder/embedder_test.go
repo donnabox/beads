@@ -200,7 +200,7 @@ func newStandInServer(t *testing.T) *standInServer {
 		s.mu.Unlock()
 		w.Header().Set("Content-Type", "application/json")
 		switch r.URL.Path {
-		case "/bdp/call/issue/context":
+		case "/v0/beads/context":
 			// Open/OpenWith dial lazily and never fetch this on their own
 			// (the handshake is cached per-process on the first POST-BASELINE
 			// dispatch — see internal/httpclient.Store.snapshot) — Ready
@@ -209,7 +209,7 @@ func newStandInServer(t *testing.T) *standInServer {
 			// opened through this backend could legitimately make, and a
 			// stand-in server that 404s it would be a trap for the next
 			// person who extends this test to a non-baseline operation.
-			_ = json.NewEncoder(w).Encode(map[string]any{"result": map[string]any{
+			_ = json.NewEncoder(w).Encode(map[string]any{
 				"api_version":              "v0",
 				"backend":                  "dolt",
 				"bd_version":               "9.9.9",
@@ -222,14 +222,14 @@ func newStandInServer(t *testing.T) *standInServer {
 				"schema_version":           1,
 				"wire_revision":            1,
 				"min_client_wire_revision": 1,
-			}})
-		case "/bdp/call/issue/ready":
-			_ = json.NewEncoder(w).Encode(map[string]any{"result": map[string]any{
+			})
+		case "/v0/beads/ready":
+			_ = json.NewEncoder(w).Encode(map[string]any{
 				"has_more": false,
 				"items": []map[string]any{
 					{"id": embedderReadyIssueID, "title": "embedder linkage proof", "priority": 2},
 				},
-			}})
+			})
 		default:
 			http.NotFound(w, r)
 		}

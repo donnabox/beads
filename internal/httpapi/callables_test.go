@@ -296,7 +296,7 @@ func TestEveryCallableReachesItsV0Handler(t *testing.T) {
 		}
 	}
 	routeTable = swapped
-	ts := newTestServer(t, rolesConfig(Config{}))
+	ts := newBDPServer(t, rolesConfig(Config{}))
 
 	for i := range callableTable {
 		row := &callableTable[i]
@@ -391,7 +391,7 @@ func TestRoutedResponseEqualsDirect(t *testing.T) {
 		reader := &roleReader{details: &issueops.IssueDetails{
 			Issue: *seededIssue("bd-1", "alice", types.StatusOpen),
 		}}
-		ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
+		ts := newBDPServer(t, rolesConfig(Config{Reader: reader}))
 		direct := ts.get(t, "/v0/beads/issues/bd-1?include_comments=true")
 		routed := ts.call(t, "issue/show", `{"id":"bd-1","include_comments":true}`)
 		_, _, envelope := directAndRouted(t, direct, routed)
@@ -406,7 +406,7 @@ func TestRoutedResponseEqualsDirect(t *testing.T) {
 
 	t.Run("issue/update", func(t *testing.T) {
 		lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: updatedIssue("bd-1"), Changed: true}}
-		ts := newUpdateServer(t, lifecycle)
+		ts := newBDPServer(t, rolesConfig(Config{Lifecycle: lifecycle}))
 		direct := ts.updateIssue(t, updatePath, `{"actor":"alice","patch":{"title":"new"}}`)
 		routed := ts.callAs(t, "issue/update", "alice", `{"id":"bd-1","patch":{"title":"new"}}`)
 		_, _, envelope := directAndRouted(t, direct, routed)
@@ -437,7 +437,7 @@ func TestRoutedResponseEqualsDirect(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			deleter := &roleDeleter{result: issueops.DeleteResult{Deleted: 2, DryRun: tc.dryRun}}
-			ts := newTestServer(t, rolesConfig(Config{Deleter: deleter}))
+			ts := newBDPServer(t, rolesConfig(Config{Deleter: deleter}))
 			direct := ts.delete(t, `{`+tc.direct+`"ids":["bd-1","bd-2"],"force":true}`)
 			routed := ts.call(t, "issue/delete", `{`+tc.sent+`"ids":["bd-1","bd-2"],"force":true}`)
 			_, _, envelope := directAndRouted(t, direct, routed)
@@ -456,7 +456,7 @@ func TestRoutedResponseEqualsDirect(t *testing.T) {
 }
 
 func TestCallableUnknownName(t *testing.T) {
-	ts := newTestServer(t, rolesConfig(Config{}))
+	ts := newBDPServer(t, rolesConfig(Config{}))
 	for _, name := range []string{"issue/nope", "nope", "issue", "issue/show/extra", ""} {
 		wantProblem(t, ts.call(t, name, `{}`), http.StatusNotFound, bdpCallableNotFound)
 	}
@@ -469,7 +469,7 @@ func TestCallableUnknownName(t *testing.T) {
 func TestCallableWrongMethod(t *testing.T) {
 	reader := &roleReader{}
 	lifecycle := &roleLifecycle{}
-	ts := newTestServer(t, rolesConfig(Config{Reader: reader, Lifecycle: lifecycle}))
+	ts := newBDPServer(t, rolesConfig(Config{Reader: reader, Lifecycle: lifecycle}))
 
 	for _, name := range []string{"issue/show", "issue/update", "issue/nope"} {
 		for _, method := range []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodDelete, http.MethodPatch} {
@@ -498,7 +498,7 @@ func TestCallableWrongMethod(t *testing.T) {
 func TestCallableEnvelopeRefusals(t *testing.T) {
 	reader := &roleReader{}
 	lifecycle := &roleLifecycle{}
-	ts := newTestServer(t, rolesConfig(Config{Reader: reader, Lifecycle: lifecycle}))
+	ts := newBDPServer(t, rolesConfig(Config{Reader: reader, Lifecycle: lifecycle}))
 
 	for _, media := range []string{"", "application/json", "text/plain"} {
 		resp := ts.postBody(t, callableMount+"/issue/show", media, `{"arguments":{"id":"bd-1"}}`)
@@ -561,7 +561,7 @@ func TestCallableEnvelopeRefusals(t *testing.T) {
 func TestCallableCheckingArguments(t *testing.T) {
 	reader := &roleReader{}
 	claimer := &roleClaimer{}
-	ts := newTestServer(t, rolesConfig(Config{Reader: reader, Claimer: claimer}))
+	ts := newBDPServer(t, rolesConfig(Config{Reader: reader, Claimer: claimer}))
 
 	body := wantProblem(t, ts.call(t, "issue/show", `{"id":"bd-1","zebra":1,"apple":2}`),
 		http.StatusUnprocessableEntity, bdpValidationFailed)
@@ -598,7 +598,7 @@ func TestCallableCheckingArguments(t *testing.T) {
 
 func TestCallableQueryArguments(t *testing.T) {
 	reader := &roleReader{page: issueops.IssuePage{}}
-	ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
+	ts := newBDPServer(t, rolesConfig(Config{Reader: reader}))
 
 	// sort=priority is issue/list's default, and not v0's.
 	direct := ts.get(t, "/v0/beads/issues?label=a&label=b%26c&limit=5&all=true&status=open&sort=priority")
@@ -615,7 +615,7 @@ func TestCallableQueryArguments(t *testing.T) {
 func TestCallablePathArgumentsAreEscaped(t *testing.T) {
 	settings := &roleSettings{}
 	reader := &roleReader{err: fmt.Errorf("get: %w", issueops.ErrNotFound)}
-	ts := newTestServer(t, rolesConfig(Config{Settings: settings, Reader: reader}))
+	ts := newBDPServer(t, rolesConfig(Config{Settings: settings, Reader: reader}))
 	for _, id := range []string{"a/b", "a?x=1", "a#b", "a b", "a:close"} {
 		encoded, _ := json.Marshal(map[string]string{"id": id})
 		wantProblem(t, ts.call(t, "issue/show", string(encoded)), http.StatusNotFound, bdpResourceNotFound)
@@ -640,7 +640,7 @@ func TestCallableReasonIsStoredAsSent(t *testing.T) {
 			arguments := `{"id":"bd-1","reason":"` + tc.wire + `"}`
 
 			closing := &roleLifecycle{closeResult: issueops.CloseResult{Issue: closedIssue("bd-1"), Changed: true}}
-			resp := newCloseServer(t, closing).callAs(t, "issue/close", "alice", arguments)
+			resp := newBDPServer(t, rolesConfig(Config{Lifecycle: closing})).callAs(t, "issue/close", "alice", arguments)
 			if resp.StatusCode != http.StatusOK {
 				t.Fatalf("issue/close = %d: %s", resp.StatusCode, readAll(t, resp))
 			}
@@ -649,7 +649,7 @@ func TestCallableReasonIsStoredAsSent(t *testing.T) {
 			}
 
 			reopening := &roleLifecycle{reopenResult: issueops.ReopenResult{Issue: reopenedIssue("bd-1"), Changed: true}}
-			resp = newReopenServer(t, reopening).callAs(t, "issue/reopen", "alice", arguments)
+			resp = newBDPServer(t, rolesConfig(Config{Lifecycle: reopening})).callAs(t, "issue/reopen", "alice", arguments)
 			if resp.StatusCode != http.StatusOK {
 				t.Fatalf("issue/reopen = %d: %s", resp.StatusCode, readAll(t, resp))
 			}
@@ -658,7 +658,7 @@ func TestCallableReasonIsStoredAsSent(t *testing.T) {
 			}
 
 			closer := &roleBatchCloser{result: issueops.CloseBatchResult{Outcomes: []issueops.CloseOutcome{{IssueID: "bd-1", Issue: closedIssue("bd-1"), Changed: true}}}}
-			resp = newBatchCloseServer(t, closer).callAs(t, "issue/close-many", "alice", `{"items":[{"id":"bd-1","reason":"`+tc.wire+`"}]}`)
+			resp = newBDPServer(t, rolesConfig(Config{BatchCloser: closer})).callAs(t, "issue/close-many", "alice", `{"items":[{"id":"bd-1","reason":"`+tc.wire+`"}]}`)
 			if resp.StatusCode != http.StatusOK {
 				t.Fatalf("issue/close-many = %d: %s", resp.StatusCode, readAll(t, resp))
 			}
@@ -671,7 +671,7 @@ func TestCallableReasonIsStoredAsSent(t *testing.T) {
 
 func TestCallableFlatDependencyAdapter(t *testing.T) {
 	editor := &roleDependencyEditor{}
-	ts := newTestServer(t, rolesConfig(Config{DependencyEditor: editor}))
+	ts := newBDPServer(t, rolesConfig(Config{DependencyEditor: editor}))
 	lastEdges := func() []issueops.DependencyEdge {
 		editor.mu.Lock()
 		defer editor.mu.Unlock()
@@ -729,7 +729,7 @@ func TestCallableFlatDependencyAdapter(t *testing.T) {
 // the check.
 func TestCallableCommentIsSignedByTheActor(t *testing.T) {
 	commenter := &roleCommenter{comment: storedComment("bd-1")}
-	ts := newCommentServer(t, commenter)
+	ts := newBDPServer(t, rolesConfig(Config{Commenter: commenter}))
 
 	callResult(t, ts.callAs(t, "issue/comment", "sam", `{"id":"bd-1","text":"hi"}`))
 	if got := commenter.commentRequests(); got[len(got)-1].Author != "sam" {
@@ -768,7 +768,7 @@ func TestCallableCommentIsSignedByTheActor(t *testing.T) {
 // rather than dropped.
 func TestCallableProvenanceIsHonoredOrRefused(t *testing.T) {
 	lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: updatedIssue("bd-1"), Changed: true}}
-	ts := newUpdateServer(t, lifecycle)
+	ts := newBDPServer(t, rolesConfig(Config{Lifecycle: lifecycle}))
 	args := `"arguments":{"id":"bd-1","patch":{"title":"t"}}`
 
 	callResult(t, ts.callSend(t, "issue/update",
@@ -837,7 +837,7 @@ func TestCallableActorIsDeclaredNowhere(t *testing.T) {
 		}
 	}
 	routeTable = swapped
-	ts := newTestServer(t, rolesConfig(Config{}))
+	ts := newBDPServer(t, rolesConfig(Config{}))
 
 	runsWithout := []string{"issue/purge", "issue/prune", "issue/delete"}
 	refusesOne := []string{"config/set", "config/unset", "memory/remember", "memory/forget"}
@@ -939,7 +939,7 @@ func TestCallableServiceDefaults(t *testing.T) {
 		}
 	}
 	routeTable = swapped
-	ts := newTestServer(t, rolesConfig(Config{}))
+	ts := newBDPServer(t, rolesConfig(Config{}))
 
 	want := map[string]map[string]string{
 		"issue/list":     {"sort": `"priority"`},
@@ -1027,7 +1027,7 @@ func TestCallableServiceDefaults(t *testing.T) {
 func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 	t.Run("a reason is callable-error with v0's Problem verbatim", func(t *testing.T) {
 		claimer := &roleClaimer{err: &issueops.ClaimConflictError{Err: issueops.ErrAlreadyClaimed, Assignee: "kim"}}
-		ts := newTestServer(t, rolesConfig(Config{Claimer: claimer}))
+		ts := newBDPServer(t, rolesConfig(Config{Claimer: claimer}))
 		directResp := ts.postBody(t, "/v0/beads/issues/bd-1:claim", "application/json", `{"actor":"sam"}`)
 		direct := decodeBody(t, directResp)
 		if direct["code"] != string(CodeAlreadyClaimed) {
@@ -1056,7 +1056,7 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 
 	t.Run("not_found is resource-not-found", func(t *testing.T) {
 		reader := &roleReader{err: fmt.Errorf("get: %w", issueops.ErrNotFound)}
-		ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
+		ts := newBDPServer(t, rolesConfig(Config{Reader: reader}))
 		body := wantProblem(t, ts.call(t, "issue/show", `{"id":"bd-1"}`), http.StatusNotFound, bdpResourceNotFound)
 		if _, has := body["error"]; has {
 			t.Errorf("only callable-error carries `error`: %v", body)
@@ -1068,7 +1068,7 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 
 	t.Run("a stale expected_version is revision-mismatch, another guard a reason", func(t *testing.T) {
 		lifecycle := &roleLifecycle{updateErr: fmt.Errorf("update: %w", issueops.ErrVersionMismatch)}
-		ts := newUpdateServer(t, lifecycle)
+		ts := newBDPServer(t, rolesConfig(Config{Lifecycle: lifecycle}))
 		wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"bd-1","patch":{"title":"t"},"expected_version":"7"}`),
 			http.StatusConflict, bdpRevisionMismatch)
 
@@ -1082,7 +1082,7 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 
 	t.Run("a role's system failure is temporarily-unavailable, with no error member", func(t *testing.T) {
 		reader := &roleReader{err: errors.New("dial tcp 10.0.0.1:3306: secret-dsn")}
-		ts := newTestServer(t, rolesConfig(Config{Reader: reader}))
+		ts := newBDPServer(t, rolesConfig(Config{Reader: reader}))
 		resp := ts.call(t, "issue/show", `{"id":"bd-1"}`)
 		raw := readAll(t, resp)
 		if resp.StatusCode != http.StatusServiceUnavailable || strings.Contains(raw, "secret-dsn") {
@@ -1105,7 +1105,7 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 			}
 		}
 		routeTable = swapped
-		ts := newTestServer(t, rolesConfig(Config{}))
+		ts := newBDPServer(t, rolesConfig(Config{}))
 		body := wantProblem(t, ts.call(t, "issue/show", `{"id":"bd-1"}`), http.StatusServiceUnavailable, bdpUnavailable)
 		if !strings.Contains(ts.stderr.String(), "boom-marker") {
 			t.Error("the panic left no log line")
@@ -1123,7 +1123,7 @@ func TestV0ProblemSurfacesAsItsDeclaredError(t *testing.T) {
 
 	t.Run("the request line books the v0 operation", func(t *testing.T) {
 		claimer := &roleClaimer{err: &issueops.ClaimConflictError{Err: issueops.ErrAlreadyClaimed, Assignee: "kim"}}
-		ts := newTestServer(t, rolesConfig(Config{Claimer: claimer}))
+		ts := newBDPServer(t, rolesConfig(Config{Claimer: claimer}))
 		wantProblem(t, ts.callAs(t, "issue/claim", "sam", `{"id":"bd-1"}`), http.StatusConflict, bdpCallableError)
 		line := findLogLine(t, ts.stderr.String(), "path=/bdp/call/issue/claim")
 		if !strings.Contains(line, "op="+OpClaimIssue) {
@@ -1196,7 +1196,7 @@ func TestEveryV0CodeHasAnAnswer(t *testing.T) {
 // wire floor are the route's own, and a refusal comes before any of the body is
 // read, so an unauthenticated caller learns nothing about names or shapes.
 func TestCallablesGateBeforeInterpretation(t *testing.T) {
-	ts := newTestServer(t, rolesConfig(Config{Auth: authTokenFile(t, "real-token")}))
+	ts := newBDPServer(t, rolesConfig(Config{Auth: authTokenFile(t, "real-token")}))
 
 	for _, name := range []string{"issue/show", "issue/nope"} {
 		resp := ts.callSend(t, name, `not json`, nil)
@@ -1234,7 +1234,7 @@ func TestCallablesGateBeforeInterpretation(t *testing.T) {
 // layer. Every other check the route does costs the same, and this one can be counted:
 // with the reload gate open, each Verify reports the token file it could not read.
 func TestAnInvocationRunsItsRouteOnce(t *testing.T) {
-	ts := newTestServer(t, rolesConfig(Config{Auth: authTokenFile(t, "real-token")}))
+	ts := newBDPServer(t, rolesConfig(Config{Auth: authTokenFile(t, "real-token")}))
 	ts.Server.auth.reloadGate = time.Nanosecond
 	if err := os.Remove(ts.Server.auth.path); err != nil {
 		t.Fatal(err)
@@ -1265,7 +1265,7 @@ func (b countingBody) Read(p []byte) (int, error) {
 // maxInflight: a request waiting for a slot holds no body. It is refused for being
 // busy, the way a direct v0 call is, without having read a byte.
 func TestAnInvocationsBodyIsReadInsideItsSlot(t *testing.T) {
-	ts := newTestServer(t, rolesConfig(Config{}), func(s *Server) { s.semTimeout = 50 * time.Millisecond })
+	ts := newBDPServer(t, rolesConfig(Config{}), func(s *Server) { s.semTimeout = 50 * time.Millisecond })
 	for range cap(ts.Server.sem) {
 		ts.Server.sem <- struct{}{}
 	}
@@ -1318,7 +1318,7 @@ func TestAnInvocationsBodyIsReadInsideItsSlot(t *testing.T) {
 // TestIssueContextReadsOnlyTheEnvelopesSlack: it holds no slot, so nothing but its own
 // limit bounds what it reads.
 func TestIssueContextReadsOnlyTheEnvelopesSlack(t *testing.T) {
-	ts := newTestServer(t, rolesConfig(Config{}))
+	ts := newBDPServer(t, rolesConfig(Config{}))
 	huge := `{"arguments":{},"revisionProvenance":"` + strings.Repeat("x", callableBodySlack) + `"}`
 	wantProblem(t, ts.callSend(t, "issue/context", huge, nil), http.StatusRequestEntityTooLarge, bdpRequestTooLarge)
 }
@@ -1412,7 +1412,7 @@ func TestV0BodyIsTheRequestV0WouldHaveReceived(t *testing.T) {
 // TestCallableListIsTheOpenAPIProjection is Callables §3 and §14 over the served
 // document.
 func TestCallableListIsTheOpenAPIProjection(t *testing.T) {
-	ts := newTestServer(t, rolesConfig(Config{}))
+	ts := newBDPServer(t, rolesConfig(Config{}))
 	resp := ts.get(t, callableMount)
 	raw := readAll(t, resp)
 	if resp.StatusCode != http.StatusOK {
@@ -1605,7 +1605,7 @@ func TestCallableListIsTheOpenAPIProjection(t *testing.T) {
 // only with synthetic bodies.
 func TestStorageSentinelsStayUnderProblemMapping(t *testing.T) {
 	lifecycle := &roleLifecycle{updateErr: fmt.Errorf("update: %w", storage.ErrNotFound)}
-	ts := newUpdateServer(t, lifecycle)
+	ts := newBDPServer(t, rolesConfig(Config{Lifecycle: lifecycle}))
 	wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"bd-1","patch":{"title":"t"}}`),
 		http.StatusNotFound, bdpResourceNotFound)
 }

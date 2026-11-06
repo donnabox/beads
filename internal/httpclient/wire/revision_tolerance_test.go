@@ -50,7 +50,7 @@ func getIssue(t *testing.T, c *Client, id string) (*apigen.IssueDetails, error) 
 		t.Fatalf("IssuePath: %v", err)
 	}
 	var out apigen.IssueDetails
-	err = c.dispatch(ctx(t), Request{Op: OpGetIssue, Method: http.MethodGet, Path: path, PathArg: id}, &out)
+	err = c.dispatch(ctx(t), Request{Op: OpGetIssue, Method: http.MethodGet, Path: path}, &out)
 	return &out, err
 }
 

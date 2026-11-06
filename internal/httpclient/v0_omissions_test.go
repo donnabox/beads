@@ -65,7 +65,7 @@ func (s *invocationSpy) store(t *testing.T, caps ...string) *Store {
 	if err != nil {
 		t.Fatal(err)
 	}
-	client, err := wire.New(base, nil, wire.Options{HTTPClient: srv.Client()})
+	client, err := wire.New(base, nil, wire.Options{Protocol: wire.ProtocolBDP, HTTPClient: srv.Client()})
 	if err != nil {
 		t.Fatal(err)
 	}

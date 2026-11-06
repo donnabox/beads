@@ -13,20 +13,44 @@ import (
 	"github.com/steveyegge/beads/issueops"
 )
 
-// Every operation but two reaches bd serve as a Callable: POST /bdp/call/NAME with
-// its arguments in the invocation envelope, answered under a result envelope or a
-// Problem carrying v0's own body. Request stays the vocabulary of everything above
-// this file. Its Method, Path and Query still say which v0 operation this is, and
-// the read memo and the two retries key on them, so a read is still a read. Only
-// what goes on the wire differs, and everything that differs is here.
+// Protocol is what a client speaks to bd serve. It is chosen once, by `bd connect
+// --protocol`, and saved with the connection. The zero value is v0, so a saved
+// connection that names none, and any Options that never heard of this, mean v0.
+type Protocol string
+
+const (
+	// ProtocolV0 sends every Request as the v0 HTTP request it describes.
+	ProtocolV0 Protocol = "v0"
+	// ProtocolBDP invokes every Request's Callable; see below.
+	ProtocolBDP Protocol = "bdp"
+)
+
+// ParseProtocol reads a saved or typed protocol. "" is v0: see Protocol.
+func ParseProtocol(name string) (Protocol, error) {
+	switch p := Protocol(name); p {
+	case "":
+		return ProtocolV0, nil
+	case ProtocolV0, ProtocolBDP:
+		return p, nil
+	}
+	return "", fmt.Errorf("protocol must be v0 or bdp, got %q", name)
+}
+
+// Under ProtocolBDP, every operation but two reaches bd serve as a Callable: POST
+// /bdp/call/NAME with its arguments in the invocation envelope, answered under a
+// result envelope or a Problem carrying v0's own body. Request stays the vocabulary
+// of everything above this file. Its Method, Path and Query still say which v0
+// operation this is, and the read memo and the two retries key on them, so a read
+// is still a read. Only what goes on the wire differs, and everything that differs
+// is here. Under ProtocolV0 nothing in this file runs but the one test in outboundFor.
 //
 // The two exceptions: `health` is not an operation on a Scope and needs no
 // credential, and `watchEvents` holds a stream open, which an invocation cannot
-// carry; it goes through its own door in stream.go.
+// carry; it goes through its own door in stream.go, on /v0, whatever the protocol.
 //
-// bd connect talks only to the bd serve of its own release. There is no v0
-// fallback and no capability for this: a server without the mount is told apart
-// by its answer and refused in words (CallablesAbsentError).
+// A client on BDP talks only to a bd serve of its own release with BDP on. There is
+// no v0 fallback and no capability for this: a server without the mount is told
+// apart by its answer and refused in words (CallablesAbsentError).
 //
 // A Callable differs from its v0 operation in two ways this file has to cancel out,
 // because nothing above it should notice. No declaration has an `actor`, or `author`
@@ -149,10 +173,13 @@ type outbound struct {
 }
 
 // outboundFor turns a Request into its wire form. logical is the v0 URL, and body
-// the marshaled Body. An operation with no Callable that is not one of the
-// exceptions is refused rather than sent to /v0: nothing reaches v0 by accident.
+// the marshaled Body. It is the one place the two protocols part: on v0 the Request
+// goes out as itself, and everything that makes a Callable of one (the name, the
+// envelope, the actor's move, v0Omissions) is below this line. On BDP, an operation
+// with no Callable that is not one of the exceptions is refused rather than sent to
+// /v0: nothing reaches v0 by accident.
 func (c *Client) outboundFor(r Request, logical *url.URL, body []byte) (*outbound, error) {
-	if r.Op == OpHealth {
+	if c.protocol != ProtocolBDP || r.Op == OpHealth {
 		return &outbound{method: r.Method, url: logical, body: body}, nil
 	}
 	call, err := callableFor(r, body)
@@ -401,9 +428,13 @@ func callableProblem(t target, call string, res *response, maxRetryAfter time.Du
 // may exist, and "no such issue" would send the reader looking for the wrong thing.
 var ErrCallablesAbsent = errors.New("bd serve does not serve the Callables this client invokes")
 
-// CallablesAbsentError is a server from another release: it has no /bdp/call at all
-// (NoMount), or has one without the Callable this client invoked. bd connect talks
-// only to the bd serve of its own release, so the recovery is the same for both.
+// CallablesAbsentError is a server with no /bdp/call at all (NoMount), or one with a
+// mount lacking the Callable this client invoked. The two have different causes. A
+// server without the mount may be running v0 only, as it does by default, or may be
+// a release that predates BDP, and it cannot say which: a v0-only server's every byte
+// is the same as a release without BDP, on purpose. So the message has to hold for
+// both. A mount without the Callable is another release, because this one's table is
+// held to the client's map.
 type CallablesAbsentError struct {
 	Op        string
 	ServerURL string
@@ -413,10 +444,10 @@ type CallablesAbsentError struct {
 
 func (e *CallablesAbsentError) Error() string {
 	if e.NoMount {
-		return fmt.Sprintf("bd serve at %s predates Callables: it has no %s to invoke %s on. bd connect talks only to the bd serve of its own release, so upgrade that server",
+		return fmt.Sprintf("bd serve at %s has no %s to invoke %s on: it is serving v0 only, which is its default, or is from a release without BDP, and this connection speaks --protocol bdp. Run the server with `bd serve --protocol both` (upgrading it if it does not know the flag), or connect with `bd connect --protocol v0 <url>`",
 			e.ServerURL, callableMount, e.Callable)
 	}
-	return fmt.Sprintf("bd serve at %s has no Callable %s, so it is from another release. bd connect talks only to the bd serve of its own release, so upgrade that server",
+	return fmt.Sprintf("bd serve at %s has no Callable %s, so it is from another release. bd connect --protocol bdp talks only to the bd serve of its own release, so upgrade that server, or connect with `bd connect --protocol v0 <url>`",
 		e.ServerURL, e.Callable)
 }
 

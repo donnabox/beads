@@ -14,8 +14,6 @@ import (
 	"strings"
 	"sync"
 	"testing"
-
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // recordedRequest is one request the query-recording proxy forwarded.
@@ -67,9 +65,8 @@ func startQueryRecordingProxy(t *testing.T, upstream string) (string, *queryReco
 		t.Fatal(err)
 	}
 	srv := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logical := wiretest.LogicalRequest(r)
 		rec.mu.Lock()
-		rec.reqs = append(rec.reqs, recordedRequest{method: logical.Method, path: logical.Path, query: logical.Query})
+		rec.reqs = append(rec.reqs, recordedRequest{method: r.Method, path: r.URL.Path, query: r.URL.Query()})
 		rec.mu.Unlock()
 		proxy.ServeHTTP(w, r)
 	})}

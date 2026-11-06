@@ -16,20 +16,20 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/httpapi"
 	"github.com/steveyegge/beads/internal/httpapi/apigen"
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 	"github.com/steveyegge/beads/issueops"
 )
 
-// The move to /bdp/call: what goes on the wire, and what comes back from it. Every
-// other test in this package sees the v0 vocabulary through wiretest.V0; these look
-// at the real bytes.
+// ProtocolBDP: what goes on the wire, and what comes back from it. Every other test
+// in this package is on the default, v0.
 
-// wireClient is a client aimed at a server that answers with h, unwrapped.
+// wireClient is a client on ProtocolBDP aimed at a server that answers with h.
 func wireClient(t *testing.T, opts Options, h http.HandlerFunc) *Client {
 	t.Helper()
+	opts.Protocol = ProtocolBDP
 	srv := httptest.NewServer(h)
 	t.Cleanup(srv.Close)
 	base, err := url.Parse(srv.URL)
@@ -379,7 +379,7 @@ func TestAServerFromAnotherReleaseIsToldApart(t *testing.T) {
 		if errors.Is(err, issueops.ErrNotFound) {
 			t.Errorf("reads as no such entity: %v", err)
 		}
-		for _, want := range []string{"predates Callables", "upgrade"} {
+		for _, want := range []string{"serving v0 only", "from a release without BDP", "upgrading"} {
 			if !strings.Contains(err.Error(), want) {
 				t.Errorf("err = %q, want it to say %q", err, want)
 			}
@@ -482,7 +482,7 @@ func (m *markerSeenByTransport) RoundTrip(req *http.Request) (*http.Response, er
 func TestReplayableRequestsAskTheTransportToResend(t *testing.T) {
 	seen := &markerSeenByTransport{marker: map[string]bool{}}
 	base, _ := url.Parse("http://127.0.0.1:1")
-	c, err := New(base, nil, Options{HTTPClient: &http.Client{Transport: seen}})
+	c, err := New(base, nil, Options{Protocol: ProtocolBDP, HTTPClient: &http.Client{Transport: seen}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -558,6 +558,7 @@ func TestPostShapedReadsSurviveStaleIdleConnections(t *testing.T) {
 	transport.MaxIdleConnsPerHost = pooled
 	t.Cleanup(transport.CloseIdleConnections)
 	c, err := New(base, nil, Options{
+		Protocol: ProtocolBDP,
 		HTTPClient:   &http.Client{Transport: transport},
 		OnStallRetry: func(StallRetry) { retried.Add(1) },
 	})
@@ -761,13 +762,9 @@ func TestEveryDefaultHasAV0Spelling(t *testing.T) {
 
 // TestTheClientCallableMapMatchesTheServerTable is the seam the client's table and the
 // server's would otherwise drift across: every row on the server is reachable from an
-// operation here under the same name and path argument, and the test double's routes
-// are the server's.
+// operation here under the same name and path argument.
 func TestTheClientCallableMapMatchesTheServerTable(t *testing.T) {
 	server := httpapi.CallableRoutes()
-	if len(wiretest.Routes) != len(server) {
-		t.Errorf("wiretest.Routes has %d rows, the server %d", len(wiretest.Routes), len(server))
-	}
 	seen := map[string]bool{}
 	for op, call := range callables {
 		seen[call.name] = true
@@ -783,28 +780,215 @@ func TestTheClientCallableMapMatchesTheServerTable(t *testing.T) {
 			t.Errorf("%s: path parameters %q on the server, %q here", call.name, got, call.pathName)
 		}
 	}
-	for name, row := range server {
+	for name := range server {
 		if name == "issue/prune" {
 			continue // Reached through sweepIssues' tier; see TestEveryRequestIsAnInvocation.
 		}
 		if !seen[name] {
 			t.Errorf("no operation here reaches %s", name)
 		}
-		double, ok := wiretest.Routes[name]
-		if !ok {
-			t.Errorf("wiretest has no route for %s", name)
-			continue
+	}
+}
+
+// V0 is the default, and on it a Request is the HTTP request it describes: its own
+// method, path, query and body, the JSON media types, and no trace of a Callable.
+func TestV0SendsTheRequestAsItIs(t *testing.T) {
+	cases := []struct {
+		name string
+		r    Request
+		want string
+		body string
+	}{
+		{"a read", Request{Op: OpListIssues, Method: http.MethodGet, Path: PathIssues, Query: url.Values{"status": {"open"}}},
+			"GET /v0/beads/issues?status=open", ""},
+		{"a list with no sort stays without one", Request{Op: OpListIssues, Method: http.MethodGet, Path: PathIssues},
+			"GET /v0/beads/issues", ""},
+		{"the actor stays in the body", Request{Op: OpClaimIssue, Method: http.MethodPost, Path: "/v0/beads/issues/sw-1:claim", PathArg: "sw-1", Body: map[string]string{"actor": "ann"}},
+			"POST /v0/beads/issues/sw-1:claim", `{"actor":"ann"}`},
+		{"a comment keeps its author", Request{Op: OpAddComment, Method: http.MethodPost, Path: "/v0/beads/issues/sw-1/comments", PathArg: "sw-1", Body: map[string]string{"author": "ann", "text": "hi"}},
+			"POST /v0/beads/issues/sw-1/comments", `{"author":"ann","text":"hi"}`},
+		{"no default is spelled", Request{Op: OpReclaimIssues, Method: http.MethodPost, Path: "/v0/beads/issues:reclaim", Body: map[string]string{}},
+			"POST /v0/beads/issues:reclaim", `{}`},
+		{"a blank actor is the server's to refuse", Request{Op: OpDeleteIssues, Method: http.MethodPost, Path: "/v0/beads/issues:delete", Body: map[string]string{"actor": " "}},
+			"POST /v0/beads/issues:delete", `{"actor":" "}`},
+		{"an operation with no Callable still goes out", Request{Op: OpWatchEvents, Method: http.MethodGet, Path: PathEventsWatch},
+			"GET " + PathEventsWatch, ""},
+	}
+	for _, protocol := range []Protocol{"", ProtocolV0} {
+		for _, tc := range cases {
+			t.Run(string(protocol)+"/"+tc.name, func(t *testing.T) {
+				var got, gotBody, accept, contentType string
+				srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					got = r.Method + " " + r.URL.RequestURI()
+					raw, _ := io.ReadAll(r.Body)
+					gotBody, accept, contentType = string(raw), r.Header.Get("Accept"), r.Header.Get("Content-Type")
+					// The answer is v0's own body, with no envelope to take off.
+					_, _ = io.WriteString(w, `{"plain":true}`)
+				}))
+				t.Cleanup(srv.Close)
+				base, err := url.Parse(srv.URL)
+				if err != nil {
+					t.Fatal(err)
+				}
+				c, err := New(base, nil, Options{Protocol: protocol})
+				if err != nil {
+					t.Fatal(err)
+				}
+				var out struct {
+					Plain bool `json:"plain"`
+				}
+				if err := c.Do(ctx(t), tc.r, &out); err != nil {
+					t.Fatalf("Do: %v", err)
+				}
+				if got != tc.want || gotBody != tc.body {
+					t.Errorf("sent %s %s, want %s %s", got, gotBody, tc.want, tc.body)
+				}
+				if !out.Plain {
+					t.Error("the answer was not read as v0's own body")
+				}
+				if accept != "application/json, application/problem+json" {
+					t.Errorf("Accept = %q", accept)
+				}
+				if wantType := map[bool]string{true: "application/json", false: ""}[tc.body != ""]; contentType != wantType {
+					t.Errorf("Content-Type = %q, want %q", contentType, wantType)
+				}
+			})
 		}
-		if double.Method != row.Method || double.Path != row.Path {
-			t.Errorf("%s: wiretest says %s %s, the server %s %s", name, double.Method, double.Path, row.Method, row.Path)
+	}
+}
+
+// V0's catch-all on a v0 client is v0's not_found: the mount's reading of it is BDP's.
+func TestV0ReadsANotFoundAsItAlwaysHas(t *testing.T) {
+	srv := httptest.NewServer(answer(http.StatusNotFound, `{"status":404,"code":"not_found"}`))
+	t.Cleanup(srv.Close)
+	base, err := url.Parse(srv.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := New(base, nil, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = c.Do(ctx(t), Request{Op: OpGetIssue, Method: http.MethodGet, Path: "/v0/beads/issues/sw-1", IssueID: "sw-1"}, nil)
+	if !errors.Is(err, issueops.ErrNotFound) || errors.Is(err, ErrCallablesAbsent) {
+		t.Errorf("err = %v, want ErrNotFound", err)
+	}
+}
+
+// A server with v0 off answers a code a v0 client has no row for. The client has to
+// say what the server said, and it must not be read as an issue that is not there.
+func TestV0SaysWhatABDPOnlyServerAnswered(t *testing.T) {
+	const detail = "this bd serve runs with --protocol bdp and does not serve /v0"
+	srv := httptest.NewServer(answer(http.StatusNotFound, `{"status":404,"code":"protocol_not_served","detail":"`+detail+`"}`))
+	t.Cleanup(srv.Close)
+	base, err := url.Parse(srv.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := New(base, nil, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = c.Do(ctx(t), Request{Op: OpGetIssue, Method: http.MethodGet, Path: "/v0/beads/issues/sw-1", IssueID: "sw-1"}, nil)
+	if errors.Is(err, issueops.ErrNotFound) {
+		t.Fatalf("read as a missing issue: %v", err)
+	}
+	if err == nil || !strings.Contains(err.Error(), detail) {
+		t.Errorf("err = %v, want the server's detail", err)
+	}
+}
+
+// A BDP client that finds no mount cannot know whether the server has BDP off or
+// never had it. What it says must hold for both, and name both ways out.
+func TestAMissingMountIsWordedToBeTrueEitherWay(t *testing.T) {
+	c := wireClient(t, Options{}, answer(http.StatusNotFound, `{"status":404,"code":"not_found"}`))
+	err := c.Do(ctx(t), Request{Op: OpGetContext, Method: http.MethodGet, Path: PathContext}, nil)
+	if err == nil {
+		t.Fatal("no error")
+	}
+	for _, want := range []string{"serving v0 only", "from a release without BDP", "bd serve --protocol both", "bd connect --protocol v0"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("missing %q in: %v", want, err)
 		}
-		if len(row.QueryParams) > 0 && (len(row.BodyParams) > 0 || row.ActorMember != "") {
-			if want := append(slices.Clone(row.BodyParams), row.ActorMember); !slices.Equal(double.Body, want) {
-				t.Errorf("%s: wiretest's body members %v, the server's %v", name, double.Body, want)
-			}
+	}
+	if strings.Contains(err.Error(), "predates") {
+		t.Errorf("says the server predates this, which it may not: %v", err)
+	}
+}
+
+func TestAnUnknownProtocolIsRefused(t *testing.T) {
+	base, err := url.Parse("http://127.0.0.1:1")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := New(base, nil, Options{Protocol: "both"}); err == nil {
+		t.Error(`New took "both", which is a server's setting`)
+	}
+	if p, err := ParseProtocol(""); err != nil || p != ProtocolV0 {
+		t.Errorf(`ParseProtocol("") = %q, %v: an absent protocol means v0`, p, err)
+	}
+}
+
+// What the v0 suites in this package do not reach on BDP: the two replays, with an
+// invocation in hand instead of a v0 request.
+func TestBDPReplaysAnInvocationAfterARefusedCredential(t *testing.T) {
+	var bodies []string
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		raw, _ := io.ReadAll(r.Body)
+		bodies = append(bodies, r.Method+" "+r.URL.Path+" "+string(raw))
+		if len(bodies) == 1 {
+			answer(http.StatusUnauthorized, `{"status":401,"code":"unauthenticated"}`)(w, r)
+			return
 		}
-		if double.Actor != "" && double.Actor != row.ActorMember || double.Actor == "" && row.ActorMember == "author" {
-			t.Errorf("%s: wiretest sends the actor as %q, the server as %q", name, double.Actor, row.ActorMember)
+		_, _ = io.WriteString(w, `{"changed":true,"result":{}}`)
+	}))
+	t.Cleanup(srv.Close)
+	base, err := url.Parse(srv.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	creds := &staticToken{tokens: []string{"old", "new"}, retry: true}
+	c, err := New(base, creds, Options{Protocol: ProtocolBDP})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := c.Do(ctx(t), Request{Op: OpClaimIssue, Method: http.MethodPost, Path: "/v0/beads/issues/sw-1:claim", PathArg: "sw-1",
+		Body: map[string]string{"actor": "ann"}, IssueID: "sw-1"}, nil); err != nil {
+		t.Fatalf("Do: %v", err)
+	}
+	if creds.refreshN != 1 || len(bodies) != 2 || bodies[0] != bodies[1] || !strings.HasPrefix(bodies[0], "POST /bdp/call/issue/claim ") {
+		t.Errorf("refreshed %d times, sent %v", creds.refreshN, bodies)
+	}
+}
+
+func TestBDPRetriesAStalledReadOnAnotherConnection(t *testing.T) {
+	var attempts atomic.Int32
+	release := make(chan struct{})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = io.Copy(io.Discard, r.Body)
+		if attempts.Add(1) == 1 {
+			<-release
+			return
 		}
+		_, _ = io.WriteString(w, `{"result":{"stalled":false}}`)
+	}))
+	t.Cleanup(srv.Close)
+	t.Cleanup(func() { close(release) })
+	base, err := url.Parse(srv.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := New(base, nil, Options{Protocol: ProtocolBDP, ResponseHeaderTimeout: 100 * time.Millisecond})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var out struct {
+		Stalled *bool `json:"stalled"`
+	}
+	if err := c.Do(ctx(t), Request{Op: OpListIssues, Method: http.MethodGet, Path: PathIssues}, &out); err != nil {
+		t.Fatalf("Do: %v", err)
+	}
+	if attempts.Load() != 2 || out.Stalled == nil {
+		t.Errorf("attempts = %d, out = %+v", attempts.Load(), out)
 	}
 }

@@ -54,6 +54,7 @@ var (
 	serveInsecureNoAuth    bool
 	serveAllowedHosts      []string
 	serveLargeApplyCeiling time.Duration
+	serveProtocol          string
 )
 
 var serveCmd = &cobra.Command{
@@ -62,12 +63,16 @@ var serveCmd = &cobra.Command{
 	Long: `Serve the beads HTTP API — the same work surface the CLI answers, for
 automation clients that would otherwise fork a bd subprocess per call.
 
-Two surfaces answer on one address. /v0 is described by an OpenAPI document in
-the source tree (GET /v0 does not serve it); GET /v0/beads/context reports which
-operations this build actually implements. /bdp is the Beads Protocol: GET /bdp
-is Core discovery, GET /bdp/beads and GET /bdp/links are the Core reads, and POST
-/bdp/call/NAME invokes a Callable, which runs on its /v0 operation; GET /bdp/call
-lists them. bd connect talks to /bdp/call.
+The wire contract is described by an OpenAPI document (/v0); GET
+/v0/beads/context reports which operations this build actually implements.
+
+--protocol picks what answers, on one address. v0, the default, is /v0 alone. bdp
+is the Beads Protocol alone: GET /bdp is Core discovery, GET /bdp/beads and GET
+/bdp/links are the Core reads, and POST /bdp/call/NAME invokes a Callable, which
+runs on its /v0 operation; GET /bdp/call lists them. A /v0 path then answers 404
+protocol_not_served, and the event stream, which has no Callable, is not served.
+both is both. GET /healthz answers in all three. A bd connect has to ask for the
+one the server has: bd connect --protocol bdp talks to /bdp/call.
 
 DEPLOYMENT
 
@@ -93,11 +98,11 @@ AUTHENTICATION
 
   Optional, and off by default on loopback — where the trust model is the
   loopback boundary itself, the same one the database behind it already relies
-  on. --auth-token-file turns it on: every operation except GET /healthz, GET /
-  and GET /bdp then requires an "Authorization: Bearer <token>" header, GET
-  /v0/beads/context included, because it reports the repo root, beads directory
-  and database name. GET / and GET /bdp hold only this Scope's address and
-  constants.
+  on. --auth-token-file turns it on: every operation except GET /healthz then
+  requires an "Authorization: Bearer <token>" header, GET /v0/beads/context
+  included, because it reports the repo root, beads directory and database name.
+  With --protocol bdp or both, GET / and GET /bdp need none either: they hold only
+  this Scope's address and constants.
 
   The file holds ONE TOKEN PER LINE and every line is accepted. That is the
   rotation mechanism: write the new token alongside the old, roll the clients
@@ -185,6 +190,8 @@ func registerServeFlags(cmd *cobra.Command) {
 		"Additional Host header value to answer to, e.g. a service DNS name. Repeatable; matched exactly, with no wildcards")
 	cmd.Flags().DurationVar(&serveLargeApplyCeiling, "large-apply-ceiling", httpapi.DefaultLargeApplyCeiling,
 		"Whole-run budget for a POST issues:batchApply request over 100 items (a ceiling, not a target; requests at or under 100 items are unaffected). Must be positive. The orchestrator's stop grace must be at least this long plus 5s, or an external SIGKILL can cut off an in-flight large apply a graceful drain would otherwise have waited out; see engdocs/SERVE_RUNBOOK.md")
+	cmd.Flags().StringVar(&serveProtocol, "protocol", string(httpapi.ProtocolV0),
+		"What this server answers: v0, bdp (the Beads Protocol, with /v0 off) or both")
 }
 
 // serveOptions is the part of a server's configuration that depends on NEITHER
@@ -203,6 +210,7 @@ type serveOptions struct {
 	AllowedHosts      []string
 	Auth              *httpapi.TokenFileAuth
 	LargeApplyCeiling time.Duration
+	Protocol          httpapi.Protocol
 }
 
 // applyTo writes the operator's choices onto the configuration a database arm
@@ -215,6 +223,7 @@ func (o serveOptions) applyTo(cfg *httpapi.Config) {
 	cfg.AllowedHosts = o.AllowedHosts
 	cfg.Auth = o.Auth
 	cfg.LargeApplyCeiling = o.LargeApplyCeiling
+	cfg.Protocol = o.Protocol
 }
 
 // resolveServeConfig turns the flags and their environment fallbacks into the
@@ -239,6 +248,11 @@ func resolveServeConfig() (serveOptions, error) {
 	if serveLargeApplyCeiling <= 0 {
 		return cfg, fmt.Errorf("--large-apply-ceiling must be positive, got %s", serveLargeApplyCeiling)
 	}
+	protocol, err := httpapi.ParseProtocol(serveProtocol)
+	if err != nil {
+		return cfg, err
+	}
+	cfg.Protocol = protocol
 
 	tokenFile := serveAuthTokenFile
 	if tokenFile == "" {

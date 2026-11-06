@@ -3,8 +3,9 @@
 // Package wire is the transport core of the `http` storage backend: one
 // base-URL client for the operations `bd serve` publishes
 // (internal/httpapi/spec/openapi.v0.yaml), and nothing else. Its callers speak
-// those operations' vocabulary. On the wire each is a Callable invocation
-// (callables.go), to the bd serve of this client's own release.
+// those operations' vocabulary. On the wire each is that v0 request, or, when the
+// connection chose ProtocolBDP, a Callable invocation (callables.go) to the bd serve
+// of this client's own release.
 //
 // It owns four things and deliberately owns no more:
 //
@@ -21,7 +22,7 @@
 //     to the canonical issueops sentinel the local store would have returned
 //     for the same refusal, so a caller classifies a remote refusal with the
 //     same errors.Is/errors.As arm it already uses locally.
-//   - The CAPABILITY handshake. The issue/context Callable once per client, an
+//   - The CAPABILITY handshake. GET /v0/beads/context once per client, an
 //     api_version gate, a workspace-identity check, and the two-speed
 //     pre-flight policy: the five baseline operations dispatch straight, every
 //     post-baseline operation consults the cached capability list first.

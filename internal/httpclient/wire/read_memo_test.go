@@ -12,8 +12,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // memoServer answers getIssue for bd-1 (a fresh title per request, so a hit is
@@ -47,7 +45,7 @@ func memoGetIssue(t *testing.T, c *Client, id string, q url.Values) (string, err
 	var out struct {
 		Title string `json:"title"`
 	}
-	err = c.Do(context.Background(), Request{Op: OpGetIssue, Method: http.MethodGet, Path: path, PathArg: id, Query: q, IssueID: id}, &out)
+	err = c.Do(context.Background(), Request{Op: OpGetIssue, Method: http.MethodGet, Path: path, Query: q, IssueID: id}, &out)
 	return out.Title, err
 }
 
@@ -86,10 +84,10 @@ func TestReadMemoIsDroppedByAnyWrite(t *testing.T) {
 	issuePath, _ := IssuePath("bd-1")
 	settingPath, _ := SettingPath("k")
 	for _, write := range []Request{
-		{Op: OpUpdateIssue, Method: http.MethodPatch, Path: issuePath, PathArg: "bd-1", Body: map[string]any{}},
+		{Op: OpUpdateIssue, Method: http.MethodPatch, Path: issuePath, Body: map[string]any{}},
 		{Op: OpCreateIssue, Method: http.MethodPost, Path: PathIssues, Body: map[string]any{}},
-		{Op: OpSetSetting, Method: http.MethodPut, Path: settingPath, PathArg: "k", Body: map[string]any{}},
-		{Op: OpUnsetSetting, Method: http.MethodDelete, Path: settingPath, PathArg: "k"},
+		{Op: OpSetSetting, Method: http.MethodPut, Path: settingPath, Body: map[string]any{}},
+		{Op: OpUnsetSetting, Method: http.MethodDelete, Path: settingPath},
 	} {
 		t.Run(write.Method, func(t *testing.T) {
 			c, rec := memoServer(t)
@@ -206,11 +204,11 @@ func TestReadMemoDropsAnAnswerThatOverlappedAWrite(t *testing.T) {
 		var out struct {
 			Title string `json:"title"`
 		}
-		err := c.Do(context.Background(), Request{Op: OpGetIssue, Method: http.MethodGet, Path: path, PathArg: "bd-1", IssueID: "bd-1"}, &out)
+		err := c.Do(context.Background(), Request{Op: OpGetIssue, Method: http.MethodGet, Path: path, IssueID: "bd-1"}, &out)
 		done <- answer{out.Title, err}
 	}()
 	<-arrived // the read is on the wire; the write starts and finishes while it waits
-	if err := c.Do(context.Background(), Request{Op: OpUpdateIssue, Method: http.MethodPatch, Path: path, PathArg: "bd-1", Body: map[string]any{}}, nil); err != nil {
+	if err := c.Do(context.Background(), Request{Op: OpUpdateIssue, Method: http.MethodPatch, Path: path, Body: map[string]any{}}, nil); err != nil {
 		close(release)
 		t.Fatal(err)
 	}
@@ -329,7 +327,7 @@ func TestReadMemoKeepsOnlyAnswersThatDecoded(t *testing.T) {
 			}
 
 			if tc.noOut {
-				if err := c.Do(context.Background(), Request{Op: OpGetIssue, Method: http.MethodGet, Path: path, PathArg: "bd-1", IssueID: "bd-1"}, nil); err != nil {
+				if err := c.Do(context.Background(), Request{Op: OpGetIssue, Method: http.MethodGet, Path: path, IssueID: "bd-1"}, nil); err != nil {
 					t.Fatal(err)
 				}
 			} else if _, err := memoGetIssue(t, c, "bd-1", nil); err == nil {
@@ -351,7 +349,7 @@ func TestReadMemoIsPerClient(t *testing.T) {
 		t.Run(fmt.Sprintf("client %d reads first", first), func(t *testing.T) {
 			var mu sync.Mutex
 			served := 0
-			srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				mu.Lock()
 				served++
 				n := served
@@ -430,7 +428,7 @@ func TestReadMemoDropsAnAnswerReadWhileAWriteWasInFlight(t *testing.T) {
 
 	wrote := make(chan error, 1)
 	go func() {
-		wrote <- c.Do(context.Background(), Request{Op: OpUpdateIssue, Method: http.MethodPatch, Path: path, PathArg: "bd-1", Body: map[string]any{}}, nil)
+		wrote <- c.Do(context.Background(), Request{Op: OpUpdateIssue, Method: http.MethodPatch, Path: path, Body: map[string]any{}}, nil)
 	}()
 	<-writeArrived // the write's pre-send clear has run, and the server holds it
 	during, err := memoGetIssue(t, c, "bd-1", nil)

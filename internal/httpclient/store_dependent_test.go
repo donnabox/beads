@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"github.com/steveyegge/beads/internal/httpclient/wire"
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // warmIPv4OnlyCATransport pre-builds and caches target's CA-scoped transport
@@ -297,7 +296,7 @@ func TestDialWithOwnTransportHTTPClientAndConfiguredCARefuses(t *testing.T) {
 func TestDialWithOwnTransportHTTPClientAndNoCAIsUsedVerbatim(t *testing.T) {
 	clearCAEnvironment(t)
 	h := &caContextHandler{body: v0Context("proj-own-transport-no-ca")}
-	srv := httptest.NewServer(wiretest.V0(h.handler()))
+	srv := httptest.NewServer(h.handler())
 	t.Cleanup(srv.Close)
 	u, err := url.Parse(srv.URL)
 	if err != nil {

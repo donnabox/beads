@@ -12,7 +12,6 @@ import (
 	"testing"
 
 	"github.com/steveyegge/beads/internal/httpclient/wire"
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 	"github.com/steveyegge/beads/internal/storage"
 )
 
@@ -24,7 +23,7 @@ import (
 // the backend contract: `bd create --graph` refused every explicit-id plan.
 func TestGetIssueMissIsErrNotFound(t *testing.T) {
 	var gets atomic.Int32
-	srv := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case r.URL.Path == wire.PathContext:
 			ctx := v0Context("proj-miss")

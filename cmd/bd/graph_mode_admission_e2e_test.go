@@ -14,8 +14,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // graphModeAdmissionFixture is a workspace whose metadata or format marker
@@ -332,7 +330,7 @@ func TestGraphModeConnectRefusesAFormatDeclaredDuringItsHandshake(t *testing.T) 
 				}
 				want := legacyUpgradeTreeDigest(t, declaredDir)
 				declared := make(chan error, 1)
-				server := httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					if r.URL.Path != "/v0/beads/context" {
 						http.NotFound(w, r)
 						return

@@ -107,6 +107,23 @@ func skipUnlessEmbeddedDolt(t *testing.T) {
 	t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 to run the served-surface conformance tier")
 }
 
+// servedProtocol is what the tier's subject speaks. The tier runs on the default, v0.
+// BEADS_HTTP_SERVED_PROTOCOL=bdp runs the same contracts with the subject on BDP
+// instead, against a server with both on, because a few cases dial their own v0
+// client alongside it:
+//
+//	bazel test //internal/httpclient:httpclient_served_test --config=embedded \
+//	  --test_env=BEADS_HTTP_SERVED_PROTOCOL=bdp
+var servedProtocol = func() (p struct {
+	server httpapi.Protocol
+	client wire.Protocol
+}) {
+	if os.Getenv("BEADS_HTTP_SERVED_PROTOCOL") == "bdp" {
+		p.server, p.client = httpapi.ProtocolBoth, wire.ProtocolBDP
+	}
+	return p
+}()
+
 // newServedEnv boots a reference store, serves its roles over an in-process
 // listener, and points an http client store at the bound address. The client
 // pins no expected identity, so the project-identity gate is inert — which is
@@ -147,6 +164,7 @@ func newServedEnvExpecting(t *testing.T, prefix, expectID string, opts ...func(*
 	}
 
 	cfg := serveConfig(t, reference)
+	cfg.Protocol = servedProtocol.server
 	for _, opt := range opts {
 		opt(&cfg)
 	}
@@ -170,7 +188,7 @@ func newServedEnvExpecting(t *testing.T, prefix, expectID string, opts ...func(*
 	if err != nil {
 		t.Fatalf("parse the bound address: %v", err)
 	}
-	client, err := wire.New(base, nil, wire.Options{ExpectProjectID: expectID})
+	client, err := wire.New(base, nil, wire.Options{ExpectProjectID: expectID, Protocol: servedProtocol.client})
 	if err != nil {
 		t.Fatalf("build the client: %v", err)
 	}

@@ -25,6 +25,13 @@ import (
 // contracts elsewhere in this tier cover what each one means. What this adds is the
 // statement that nothing but POST /bdp/call/NAME went out to get those answers.
 
+// newBDPServedEnv is newServedEnv with BDP on, whatever the tier's own protocol is,
+// because these tests are about it. recordedSubject is the client that speaks it.
+func newBDPServedEnv(t *testing.T, prefix string, opts ...func(*httpapi.Config)) *servedEnv {
+	t.Helper()
+	return newServedEnv(t, prefix, append(opts, func(cfg *httpapi.Config) { cfg.Protocol = httpapi.ProtocolBoth })...)
+}
+
 // wireLog is the client's transport, recording what it really sent.
 type wireLog struct {
 	mu       sync.Mutex
@@ -65,7 +72,7 @@ func (l *wireLog) wantInvocations(t *testing.T, names ...string) {
 func recordedSubject(t *testing.T, env *servedEnv) (*Store, *wireLog) {
 	t.Helper()
 	log := &wireLog{}
-	client, err := wire.New(env.base, nil, wire.Options{HTTPClient: &http.Client{Transport: log}})
+	client, err := wire.New(env.base, nil, wire.Options{Protocol: wire.ProtocolBDP, HTTPClient: &http.Client{Transport: log}})
 	if err != nil {
 		t.Fatalf("build the client: %v", err)
 	}
@@ -80,7 +87,7 @@ func servedCallablesIssue(env *servedEnv, suffix string) *types.Issue {
 }
 
 func TestServedCallablesClaimAndRelease(t *testing.T) {
-	env := newServedEnv(t, "hclaim")
+	env := newBDPServedEnv(t, "hclaim")
 	ctx := t.Context()
 	subject, log := recordedSubject(t, env)
 	issue := servedCallablesIssue(env, "a")
@@ -123,7 +130,7 @@ func TestServedCallablesClaimAndRelease(t *testing.T) {
 }
 
 func TestServedCallablesCompareAndSetMetadata(t *testing.T) {
-	env := newServedEnv(t, "hcas")
+	env := newBDPServedEnv(t, "hcas")
 	ctx := t.Context()
 	subject, log := recordedSubject(t, env)
 	issue := servedCallablesIssue(env, "a")
@@ -158,7 +165,7 @@ func TestServedCallablesCompareAndSetMetadata(t *testing.T) {
 }
 
 func TestServedCallablesBatchCreate(t *testing.T) {
-	env := newServedEnv(t, "hbatch")
+	env := newBDPServedEnv(t, "hbatch")
 	ctx := t.Context()
 	subject, log := recordedSubject(t, env)
 	creator, err := subject.BatchCreator()
@@ -195,7 +202,7 @@ func TestServedCallablesBatchCreate(t *testing.T) {
 }
 
 func TestServedCallablesCountDependencyEdges(t *testing.T) {
-	env := newServedEnv(t, "hcount")
+	env := newBDPServedEnv(t, "hcount")
 	ctx := t.Context()
 	subject, log := recordedSubject(t, env)
 	a, b, c := servedCallablesIssue(env, "a"), servedCallablesIssue(env, "b"), servedCallablesIssue(env, "c")
@@ -226,7 +233,7 @@ func TestServedCallablesCountDependencyEdges(t *testing.T) {
 
 func TestServedCallablesListEvents(t *testing.T) {
 	t.Run("the journal off is the operation's own refusal", func(t *testing.T) {
-		env := newServedEnv(t, "hjoff", func(cfg *httpapi.Config) {
+		env := newBDPServedEnv(t, "hjoff", func(cfg *httpapi.Config) {
 			cfg.EventsJournal, cfg.EventsJournalEnabled = nil, false
 		})
 		subject, log := recordedSubject(t, env)
@@ -237,7 +244,7 @@ func TestServedCallablesListEvents(t *testing.T) {
 		log.wantInvocations(t, "events/list")
 	})
 	t.Run("the journal on reads what was written", func(t *testing.T) {
-		env := newServedEnv(t, "hjon")
+		env := newBDPServedEnv(t, "hjon")
 		ctx := t.Context()
 		env.reference.SetEventsJournalEnabled(true)
 		t.Cleanup(func() { env.reference.SetEventsJournalEnabled(false) })
@@ -268,7 +275,7 @@ func TestServedCallablesListEvents(t *testing.T) {
 // TestServedCallablesListIssuesSecondPage is the page walk the parity run never
 // exercised: a cursor the server minted, handed back as an argument.
 func TestServedCallablesListIssuesSecondPage(t *testing.T) {
-	env := newServedEnv(t, "hpage")
+	env := newBDPServedEnv(t, "hpage")
 	ctx := t.Context()
 	subject, log := recordedSubject(t, env)
 	var want []string

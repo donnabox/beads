@@ -22,7 +22,6 @@ import (
 
 	"github.com/steveyegge/beads/backend"
 	bdhttp "github.com/steveyegge/beads/backend/http"
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 	"github.com/steveyegge/beads/internal/storage/backends"
 )
 
@@ -262,7 +261,7 @@ type recordingServer struct {
 func newRecordingServer(t *testing.T) *recordingServer {
 	t.Helper()
 	s := &recordingServer{}
-	s.Server = httptest.NewServer(wiretest.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	s.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		s.mu.Lock()
 		s.auths = append(s.auths, r.Header.Get("Authorization"))
 		s.mu.Unlock()

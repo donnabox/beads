@@ -201,6 +201,10 @@ type Config struct {
 	// apply's remaining deadline plus drainGrace, but a SIGKILL from outside
 	// this process does not consult it. See engdocs/SERVE_RUNBOOK.md.
 	LargeApplyCeiling time.Duration
+	// Protocol is which surfaces this server answers. Zero is v0 alone, what a
+	// Config that never set it has always served. It is wired to
+	// `bd serve --protocol`. See Protocol.
+	Protocol Protocol
 	// Provider is where every database-touching handler opens its one unit of
 	// work per request.
 	Provider uow.UnitOfWorkProvider
@@ -653,6 +657,14 @@ func Listen(cfg Config) (*Server, error) {
 			return nil, err
 		}
 	}
+	switch cfg.Protocol {
+	case "":
+		cfg.Protocol = ProtocolV0
+	default:
+		if _, err := ParseProtocol(string(cfg.Protocol)); err != nil {
+			return nil, err
+		}
+	}
 	if cfg.Stdout == nil {
 		cfg.Stdout = os.Stdout
 	}
@@ -711,7 +723,7 @@ func Listen(cfg Config) (*Server, error) {
 
 		log:      log.New(cfg.Stderr, "bd serve: ", log.LstdFlags|log.LUTC),
 		stdout:   cfg.Stdout,
-		ctxBody:  contextResponse(cfg.Workspace, cfg.SchemaVersion, advertisedCapabilities(cfg)),
+		ctxBody:  contextResponse(cfg.Workspace, cfg.SchemaVersion, capabilitiesFor(cfg.Protocol, advertisedCapabilities(cfg))),
 		hosts:    newHostPolicy(ip, cfg.AllowedHosts),
 		auth:     cfg.Auth,
 		idPrefix: prefix,
@@ -1721,6 +1733,9 @@ func (s *Server) handler() http.Handler {
 	shared := map[string][]route{}
 	var sharedOrder []string
 	for _, rt := range routeTable {
+		if isV0Route(rt) && !s.cfg.Protocol.servesV0() {
+			continue
+		}
 		if rt.customMethod == "" {
 			mux.Handle(rt.method+" "+rt.pattern, s.route(rt))
 			continue
@@ -1735,18 +1750,27 @@ func (s *Server) handler() http.Handler {
 		mux.Handle(key, s.dispatchCustomMethod(shared[key]))
 	}
 
-	// The Callables namespace runs each invocation on its v0 row; see callables.go.
-	s.mountCallables(mux)
-	s.mountCoreReads(mux)
+	if !s.cfg.Protocol.servesV0() {
+		notServed := http.HandlerFunc(s.serveProtocolNotServed)
+		mux.Handle(strings.TrimSuffix(v0PathPrefix, "/"), notServed)
+		mux.Handle(v0PathPrefix, notServed)
+	}
 
 	// Not an operation and deliberately not in the route table: it exists so
 	// that an unrouted path still answers with problem+json rather than
 	// net/http's text/plain default, which the document promises for EVERY
 	// non-2xx byte. A method mismatch on a known path lands here too and
 	// answers 404 rather than 405, because 405 is not in the v0 vocabulary.
-	mux.Handle("/", s.coreResourcesOr(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	var unrouted http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, r, newResult(CodeNotFound, "no such route on this server"))
-	})))
+	})
+	if s.cfg.Protocol.servesBDP() {
+		// The Callables namespace runs each invocation on its v0 row; see callables.go.
+		s.mountCallables(mux)
+		s.mountCoreReads(mux)
+		unrouted = s.coreResourcesOr(unrouted)
+	}
+	mux.Handle("/", unrouted)
 
 	return s.withRequestContext(s.checkHost(mux))
 }

@@ -575,35 +575,32 @@ type predatesUpdateClaimTransport struct {
 }
 
 func (p *predatesUpdateClaimTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	if req.URL.Path == "/bdp/call/issue/claim" {
+	if req.Method == http.MethodPost && strings.HasSuffix(req.URL.Path, ":claim") {
 		p.claimDials.Add(1)
 	}
-	if req.URL.Path == "/bdp/call/issue/update" && req.GetBody != nil {
+	if req.Method == http.MethodPatch && req.GetBody != nil {
 		body, err := req.GetBody()
 		if err != nil {
 			return nil, err
 		}
-		var invocation struct {
-			Arguments map[string]json.RawMessage `json:"arguments"`
-		}
-		decodeErr := json.NewDecoder(body).Decode(&invocation)
+		var members map[string]json.RawMessage
+		decodeErr := json.NewDecoder(body).Decode(&members)
 		_ = body.Close()
-		if _, claims := invocation.Arguments["claim"]; decodeErr == nil && claims && !p.servesClaim {
+		if _, claims := members["claim"]; decodeErr == nil && claims && !p.servesClaim {
 			p.refused.Add(1)
 			if req.Body != nil {
 				_ = req.Body.Close()
 			}
 			return &http.Response{
-				Status:     "422 Unprocessable Entity",
-				StatusCode: http.StatusUnprocessableEntity,
+				Status:     "400 Bad Request",
+				StatusCode: http.StatusBadRequest,
 				Proto:      "HTTP/1.1",
 				ProtoMajor: 1,
 				ProtoMinor: 1,
 				Header:     http.Header{"Content-Type": {"application/problem+json"}},
-				Body: io.NopCloser(strings.NewReader(`{"status":422,"code":"validation-failed","v0":` +
-					`{"type":"about:blank","title":"Bad Request","status":400,` +
+				Body: io.NopCloser(strings.NewReader(`{"type":"about:blank","title":"Bad Request","status":400,` +
 					`"code":"invalid_argument","reason":"unknown_parameter","param":"claim",` +
-					`"detail":"unknown request body member \"claim\"","request_id":"predates-6890"}}`)),
+					`"detail":"unknown request body member \"claim\"","request_id":"predates-6890"}`)),
 				ContentLength: -1,
 				Request:       req,
 			}, nil

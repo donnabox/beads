@@ -226,9 +226,11 @@ bd connect http://127.0.0.1:8080
 bd connect --clear
 ```
 
-`bd connect` talks only to the `bd serve` of its own release: it invokes the
-server's `/bdp/call` Callables, and a server that predates them is refused with
-a message saying to upgrade it.
+`bd connect` and `bd serve` speak the `/v0` HTTP surface by default. Each takes
+`--protocol` to speak the Beads Protocol instead: `bd serve --protocol bdp` or
+`both`, and `bd connect --protocol bdp`, which invokes the server's `/bdp/call`
+Callables and talks only to a `bd serve` of its own release. A connection and a
+server that do not share a protocol refuse in words rather than answer.
 
 HTTP mode is not a byte-for-byte mirror of local mode, though: some
 operations are knowingly refused (the wire has no way to express them) or

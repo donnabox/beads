@@ -119,11 +119,6 @@ func setOf(xs []string) map[string]bool {
 //     problem naming it — which is how the real reference server answers,
 //     since its decoder is strict.
 //
-// The proxy works in v0's terms, against the server's v0 routes, because that is what
-// the reference profile describes: startProxy puts wiretest.V0 in front of it for the
-// client, which invokes Callables. This suite therefore does not cross the server's
-// own mount; the served tiers and the parity harness do.
-//
 // Responses are otherwise passed through untouched. That is deliberately
 // generous in one direction (a response member the reference server would not
 // send still reaches the client) and is the residual fidelity gap README.md

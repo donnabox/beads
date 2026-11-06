@@ -61,6 +61,19 @@ That is how a caller who asked for an ephemeral port discovers it — read one
 line from stdout and stop. Everything else, including the request log, goes to
 stderr, so the two can be redirected separately.
 
+### Protocols
+
+`--protocol` picks what answers on the one address. `v0`, the default, is the `/v0`
+surface and nothing else: `/`, `/bdp` and anything else outside the route table answer
+v0's `not_found`. `bdp` is the Beads Protocol alone: Core and `/bdp/call`, with every
+`/v0` path answering 404 `protocol_not_served` and saying so, and the event stream,
+which has no Callable, off (its `events.watch` capability goes with it). `both` is both.
+`GET /healthz` answers in all three.
+
+A client has to ask for one the server has. `bd connect --protocol bdp` needs `bdp` or
+`both`; a plain `bd connect`, or a workspace connected before the flag existed, needs
+`v0` or `both`. A mismatch refuses, nonzero, naming both remedies.
+
 ### Run it under a supervisor
 
 `bd serve` runs in the foreground and shuts down gracefully on **SIGHUP** as

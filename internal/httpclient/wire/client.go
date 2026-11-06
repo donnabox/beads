@@ -104,6 +104,8 @@ type Options struct {
 	// handshake compares it against ContextResponse.project_id; "" skips the
 	// check.
 	ExpectProjectID string
+	// Protocol is what this client speaks. Zero is v0.
+	Protocol Protocol
 	// ResponseHeaderTimeout bounds the first attempt's wait for response
 	// headers on an idempotent request (GET, or Request.Idempotent), counted
 	// from when the request has been written and separately from the
@@ -136,6 +138,7 @@ type Client struct {
 
 	headerTimeout time.Duration
 	onStall       func(StallRetry)
+	protocol      Protocol
 
 	handshake handshakeCache
 	expectID  string
@@ -181,6 +184,11 @@ func New(base *url.URL, creds CredentialProvider, opts Options) (*Client, error)
 		expectID:  opts.ExpectProjectID,
 		onStall:   opts.OnStallRetry,
 	}
+	protocol, err := ParseProtocol(string(opts.Protocol))
+	if err != nil {
+		return nil, err
+	}
+	c.protocol = protocol
 	switch {
 	case opts.ResponseHeaderTimeout == 0:
 		c.headerTimeout = DefaultResponseHeaderTimeout
@@ -257,7 +265,8 @@ func normalizeBase(base *url.URL) *url.URL {
 // lives, and what it carries.
 //
 // Method, Path and Query name the v0 operation: they are what the read memo and
-// the retries key on. On the wire, all but `health` is a Callable (callables.go).
+// the retries key on. Under ProtocolBDP, all but `health` goes out as a Callable
+// (callables.go); under ProtocolV0, as itself.
 // Path comes from the builders in paths.go and is already escaped. IssueID and
 // DependsOnID are not sent — they are what the problem mapper needs to rebuild
 // the typed conflicts whose extension members the server leaves out because the
@@ -267,8 +276,8 @@ type Request struct {
 	Method string
 	Path   string
 	// PathArg is the caller-supplied segment Path was built from, unescaped: the
-	// id or key the operation addresses. It travels as the Callable's argument of
-	// that name, so nothing has to parse it back out of Path.
+	// id or key the operation addresses. Under ProtocolBDP it travels as the
+	// Callable's argument of that name, so nothing has to parse it back out of Path.
 	PathArg string
 	Query   url.Values
 	// Body is marshaled as JSON when non-nil.

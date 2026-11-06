@@ -27,6 +27,7 @@ var (
 	connectForce           bool
 	connectAllowPlaintext  bool
 	connectClear           bool
+	connectProtocol        string
 )
 
 var connectCmd = &cobra.Command{
@@ -58,10 +59,16 @@ or setting BEADS_HTTP_ALLOW_INSECURE=1 yourself. A later connect to a
 DIFFERENT url starts that grant over; it is never carried forward to a
 server it was not given for.
 
+--protocol is what this workspace speaks to the server, and is recorded with the
+rest. v0, the default, is the /v0 HTTP surface. bdp invokes /bdp/call instead, which
+needs a bd serve of this release running with --protocol bdp or both. A connect
+states it afresh: reconnecting without the flag goes back to v0.
+
 Examples:
   bd connect http://127.0.0.1:8080                         # loopback, no TLS needed
   bd connect https://bd.example.com --expect-project-id p1 # pin workspace identity
   bd connect https://bd.example.com --ca-file ./ca.pem     # trust only this CA
+  bd connect --protocol bdp http://127.0.0.1:8080          # speak BDP to a bd serve --protocol both
   bd connect --clear                                       # forget the server, restoring the previous backend
 `,
 	Args:          cobra.MaximumNArgs(1),
@@ -164,6 +171,11 @@ Examples:
 		}
 		rawURL := args[0]
 
+		protocol, err := httpclient.ParseProtocol(connectProtocol)
+		if err != nil {
+			return HandleError("--%v", err)
+		}
+
 		parsed, err := url.Parse(rawURL)
 		if err != nil || parsed.Host == "" {
 			// A parse failure has no *url.URL to redact, so there is nothing
@@ -262,7 +274,7 @@ Examples:
 			}
 		}
 
-		target := httpclient.Target{BaseURL: parsed, ExpectProjectID: effectiveExpectedProjectID, CAFile: caFile, AllowInsecureCredential: connectAllowPlaintext}
+		target := httpclient.Target{BaseURL: parsed, ExpectProjectID: effectiveExpectedProjectID, CAFile: caFile, AllowInsecureCredential: connectAllowPlaintext, Protocol: protocol}
 
 		ctx := context.Background()
 		snapshot, err := httpclient.Handshake(ctx, target, dialOpts)
@@ -327,7 +339,7 @@ Examples:
 		}
 
 		if jsonOutput {
-			return outputJSON(map[string]any{
+			out := map[string]any{
 				"url":           redactedURL,
 				"project_id":    target.ExpectProjectID,
 				"bd_version":    snapshot.BdVersion,
@@ -335,13 +347,20 @@ Examples:
 				"wire_revision": snapshot.WireRevision,
 				"ca_file":       caFile,
 				"capabilities":  snapshot.Capabilities,
-			})
+			}
+			if protocol != httpclient.ProtocolV0 {
+				out["protocol"] = string(protocol)
+			}
+			return outputJSON(out)
 		}
 		fmt.Printf("Connected %s to %s\n", beadsDir, redactedURL)
 		fmt.Printf("  project:        %s\n", target.ExpectProjectID)
 		fmt.Printf("  bd serve:       %s (api %s, wire revision %d)\n", snapshot.BdVersion, snapshot.ApiVersion, snapshot.WireRevision)
 		if caFile != "" {
 			fmt.Printf("  ca_file:        %s\n", caFile)
+		}
+		if protocol != httpclient.ProtocolV0 {
+			fmt.Printf("  protocol:       %s\n", protocol)
 		}
 		return nil
 	},
@@ -352,6 +371,7 @@ func init() {
 	connectCmd.Flags().StringVar(&connectCAFile, "ca-file", "", "trust ONLY this PEM file for this server (resolved and recorded as an absolute path)")
 	connectCmd.Flags().BoolVar(&connectForce, "force", false, "allow switching a workspace that already selects a different backend")
 	connectCmd.Flags().BoolVar(&connectAllowPlaintext, "allow-plaintext", false, "allow a plain http connection to a non-loopback host; remembered in the sidecar for every later command against this server")
+	connectCmd.Flags().StringVar(&connectProtocol, "protocol", string(httpclient.ProtocolV0), "what this workspace speaks to the server: v0, or bdp for /bdp/call on a bd serve --protocol bdp or both; recorded in the sidecar")
 	connectCmd.Flags().BoolVar(&connectClear, "clear", false, "remove this workspace's http activation sidecar and restore its previous backend selection in metadata.json")
 	rootCmd.AddCommand(connectCmd)
 }

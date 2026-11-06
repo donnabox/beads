@@ -80,7 +80,7 @@ func wantServiceDesc(t *testing.T, ts *testServer, resp *http.Response) {
 // TestCoreScopeRootCarriesServiceDesc: GET of the Scope URL must succeed and
 // carry the discovery Link, with no body, and asks for no credential.
 func TestCoreScopeRootCarriesServiceDesc(t *testing.T) {
-	ts := newTestServer(t, Config{Auth: authTokenFile(t, "real-token")})
+	ts := newBDPServer(t, Config{Auth: authTokenFile(t, "real-token")})
 	for _, method := range []string{http.MethodGet, http.MethodHead} {
 		resp, body := coreRequest(t, ts, method, "/", nil)
 		if resp.StatusCode != http.StatusNoContent || len(body) != 0 {
@@ -97,7 +97,7 @@ func TestCoreScopeRootCarriesServiceDesc(t *testing.T) {
 // TestCoreDiscoveryDocument pins the closed document: Core plus Callables1, the
 // Scope derived from the request, and no credential needed to read it.
 func TestCoreDiscoveryDocument(t *testing.T) {
-	ts := newTestServer(t, Config{Auth: authTokenFile(t, "real-token")})
+	ts := newBDPServer(t, Config{Auth: authTokenFile(t, "real-token")})
 	resp, body := coreRequest(t, ts, http.MethodGet, "/bdp", http.Header{"Accept": {bdpMediaType}})
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("GET /bdp = %d: %s", resp.StatusCode, body)
@@ -240,7 +240,7 @@ func (c *coreStore) GetSetting(_ context.Context, req issueops.GetSettingRequest
 func newCoreServer(t *testing.T, store *coreStore, cfg Config) *testServer {
 	t.Helper()
 	cfg.Reader, cfg.BatchGetter, cfg.EdgeReader, cfg.Relations, cfg.Settings = store, store, store, store, store
-	return newTestServer(t, rolesConfig(cfg))
+	return newBDPServer(t, rolesConfig(cfg))
 }
 
 var coreClock = time.Date(2026, 11, 6, 9, 30, 0, 0, time.UTC)

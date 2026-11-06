@@ -22,8 +22,6 @@ import (
 	"strings"
 	"sync"
 	"testing"
-
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 )
 
 // remoteRolesFixture is one workspace seeded through the CLI, whichever
@@ -225,8 +223,7 @@ func mcContextMask(body map[string]any) {
 }
 
 // startMaskingProxy is startCountingProxy that also rewrites every handshake
-// (issue/context) result through mask, when one is given. The counts stay in v0's
-// terms, which is what the tests assert on: which operations a command made.
+// (GET /v0/beads/context) body through mask, when one is given.
 func startMaskingProxy(t *testing.T, upstream string, mask func(map[string]any)) (string, *requestCounter) {
 	t.Helper()
 	target, err := url.Parse("http://" + upstream)
@@ -237,7 +234,7 @@ func startMaskingProxy(t *testing.T, upstream string, mask func(map[string]any))
 	proxy := httputil.NewSingleHostReverseProxy(target)
 	if mask != nil {
 		proxy.ModifyResponse = func(resp *http.Response) error {
-			if resp.Request.URL.Path != "/bdp/call/issue/context" || resp.StatusCode != http.StatusOK {
+			if resp.Request.URL.Path != "/v0/beads/context" || resp.StatusCode != http.StatusOK {
 				return nil
 			}
 			raw, err := io.ReadAll(resp.Body)
@@ -245,14 +242,12 @@ func startMaskingProxy(t *testing.T, upstream string, mask func(map[string]any))
 			if err != nil {
 				return err
 			}
-			var envelope struct {
-				Result map[string]any `json:"result"`
-			}
-			if err := json.Unmarshal(raw, &envelope); err != nil {
+			var body map[string]any
+			if err := json.Unmarshal(raw, &body); err != nil {
 				return err
 			}
-			mask(envelope.Result)
-			if raw, err = json.Marshal(envelope); err != nil {
+			mask(body)
+			if raw, err = json.Marshal(body); err != nil {
 				return err
 			}
 			resp.Body = io.NopCloser(bytes.NewReader(raw))
@@ -266,10 +261,9 @@ func startMaskingProxy(t *testing.T, upstream string, mask func(map[string]any))
 		t.Fatal(err)
 	}
 	srv := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logical := wiretest.LogicalRequest(r)
 		counter.mu.Lock()
-		counter.paths = append(counter.paths, logical.Method+" "+logical.Path)
-		counter.uris = append(counter.uris, logical.Method+" "+logical.RequestURI)
+		counter.paths = append(counter.paths, r.Method+" "+r.URL.Path)
+		counter.uris = append(counter.uris, r.Method+" "+r.URL.RequestURI())
 		counter.mu.Unlock()
 		proxy.ServeHTTP(w, r)
 	})}

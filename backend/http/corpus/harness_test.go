@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"github.com/steveyegge/beads/internal/httpapi"
-	"github.com/steveyegge/beads/internal/httpclient/wire/wiretest"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/domain"
 	"github.com/steveyegge/beads/internal/storage/embeddeddolt"
@@ -91,7 +90,7 @@ func startCorpusServer(t *testing.T) string {
 // startProxy serves h on an ephemeral loopback port.
 func startProxy(t *testing.T, h http.Handler) string {
 	t.Helper()
-	srv := &http.Server{Handler: wiretest.V0(h), ReadHeaderTimeout: 10 * time.Second}
+	srv := &http.Server{Handler: h, ReadHeaderTimeout: 10 * time.Second}
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatalf("listen for the reference proxy: %v", err)
