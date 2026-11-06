@@ -55,20 +55,21 @@ func answer(status int, body string) http.HandlerFunc {
 // media types, nothing in the URL, and the operation's parameters as one object.
 func TestEveryRequestIsAnInvocation(t *testing.T) {
 	cases := []struct {
-		name string
-		r    Request
-		want string // the Callable
-		args string // the invocation's arguments, as JSON
+		name       string
+		r          Request
+		want       string // the Callable
+		args       string // the invocation's arguments, as JSON
+		provenance string // the invocation's revisionProvenance; "" is none
 	}{
-		{"no parameters", Request{Op: OpGetContext, Method: http.MethodGet, Path: PathContext}, "issue/context", `{}`},
+		{"no parameters", Request{Op: OpGetContext, Method: http.MethodGet, Path: PathContext}, "issue/context", `{}`, ""},
 		{
 			"a path argument takes its name, unescaped",
 			Request{Op: OpGetIssue, Method: http.MethodGet, Path: "/v0/beads/issues/a%2Fb%3Ac", PathArg: "a/b:c"},
-			"issue/show", `{"id":"a/b:c"}`,
+			"issue/show", `{"id":"a/b:c"}`, "",
 		},
 		{
 			"a setting's key", Request{Op: OpGetSetting, Method: http.MethodGet, Path: "/v0/beads/config/k", PathArg: "k"},
-			"config/get", `{"key":"k"}`,
+			"config/get", `{"key":"k"}`, "",
 		},
 		{
 			"one query value is a string and a repeated one an array",
@@ -76,39 +77,39 @@ func TestEveryRequestIsAnInvocation(t *testing.T) {
 				Op: OpListIssues, Method: http.MethodGet, Path: PathIssues,
 				Query: url.Values{"status": {"open", "closed"}, "limit": {"10"}, "assignee": {""}, "none": {}},
 			},
-			"issue/list", `{"status":["open","closed"],"limit":"10","assignee":""}`,
+			"issue/list", `{"status":["open","closed"],"limit":"10","assignee":"","sort":"created"}`, "",
 		},
 		{
 			"a body's members", Request{Op: OpCreateIssue, Method: http.MethodPost, Path: PathIssues, Body: map[string]any{"title": "t", "priority": 2}},
-			"issue/create", `{"title":"t","priority":2}`,
+			"issue/create", `{"title":"t","priority":2,"issue_type":""}`, "",
 		},
 		{
 			"path and body", Request{Op: OpClaimIssue, Method: http.MethodPost, Path: "/x", PathArg: "ga-1", Body: map[string]string{"actor": "a"}},
-			"issue/claim", `{"id":"ga-1","actor":"a"}`,
+			"issue/claim", `{"id":"ga-1"}`, `{"actor":{"id":"a","basis":"writer-supplied"}}`,
 		},
 		{
 			"query and body", Request{Op: OpClaimNextIssue, Method: http.MethodPost, Path: PathIssuesClaimNext, Query: url.Values{"label": {"x"}}, Body: map[string]string{"actor": "a"}},
-			"issue/claim-next", `{"label":"x","actor":"a"}`,
+			"issue/claim-next", `{"label":"x"}`, `{"actor":{"id":"a","basis":"writer-supplied"}}`,
 		},
 		{
 			"a PATCH", Request{Op: OpUpdateIssue, Method: http.MethodPatch, Path: "/x", PathArg: "ga-1", Body: map[string]string{"actor": "a"}},
-			"issue/update", `{"id":"ga-1","actor":"a"}`,
+			"issue/update", `{"id":"ga-1"}`, `{"actor":{"id":"a","basis":"writer-supplied"}}`,
 		},
 		{
 			"a DELETE with a path argument alone", Request{Op: OpForgetMemory, Method: http.MethodDelete, Path: "/x", PathArg: "k"},
-			"memory/forget", `{"key":"k"}`,
+			"memory/forget", `{"key":"k"}`, "",
 		},
 		{
 			"sweep, ephemeral", Request{Op: OpSweepIssues, Method: http.MethodPost, Path: PathIssuesSweep, Body: map[string]string{"tier": "ephemeral"}},
-			"issue/purge", `{"tier":"ephemeral"}`,
+			"issue/purge", `{"tier":"ephemeral","dry_run":false,"protect_referenced":true,"protect_live_dependents":false}`, "",
 		},
 		{
 			"sweep, durable", Request{Op: OpSweepIssues, Method: http.MethodPost, Path: PathIssuesSweep, Body: map[string]string{"tier": "durable"}},
-			"issue/prune", `{"tier":"durable"}`,
+			"issue/prune", `{"tier":"durable","dry_run":false,"protect_referenced":true,"protect_live_dependents":false}`, "",
 		},
 		{
 			"sweep, wisps-plane", Request{Op: OpSweepIssues, Method: http.MethodPost, Path: PathIssuesSweep, Body: map[string]string{"tier": "wisps-plane"}},
-			"issue/purge", `{"tier":"wisps-plane"}`,
+			"issue/purge", `{"tier":"wisps-plane","dry_run":false,"protect_referenced":true,"protect_live_dependents":false}`, "",
 		},
 	}
 	for _, tc := range cases {
@@ -135,7 +136,8 @@ func TestEveryRequestIsAnInvocation(t *testing.T) {
 				t.Errorf("an Idempotency-Key went on the wire: %v", seen.header)
 			}
 			var got struct {
-				Arguments map[string]any `json:"arguments"`
+				Arguments  map[string]any `json:"arguments"`
+				Provenance any            `json:"revisionProvenance"`
 			}
 			if err := json.Unmarshal(seen.body, &got); err != nil {
 				t.Fatalf("body %s: %v", seen.body, err)
@@ -146,6 +148,15 @@ func TestEveryRequestIsAnInvocation(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got.Arguments, want) {
 				t.Errorf("arguments = %s, want %s", seen.body, tc.args)
+			}
+			var wantProvenance any
+			if tc.provenance != "" {
+				if err := json.Unmarshal([]byte(tc.provenance), &wantProvenance); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if !reflect.DeepEqual(got.Provenance, wantProvenance) {
+				t.Errorf("revisionProvenance in %s, want %s", seen.body, tc.provenance)
 			}
 		})
 	}
@@ -572,6 +583,182 @@ func TestPostShapedReadsSurviveStaleIdleConnections(t *testing.T) {
 	}
 }
 
+// sentInvocation is what one Request put on the wire, or the error that kept it home
+// with nothing dialed.
+func sentInvocation(t *testing.T, r Request) (arguments map[string]json.RawMessage, provenance json.RawMessage, err error) {
+	t.Helper()
+	dials := 0
+	c := wireClient(t, Options{}, func(w http.ResponseWriter, req *http.Request) {
+		dials++
+		var invocation struct {
+			Arguments  map[string]json.RawMessage `json:"arguments"`
+			Provenance json.RawMessage            `json:"revisionProvenance"`
+		}
+		body, _ := io.ReadAll(req.Body)
+		if err := json.Unmarshal(body, &invocation); err != nil {
+			t.Errorf("%s: %v", body, err)
+		}
+		arguments, provenance = invocation.Arguments, invocation.Provenance
+		_, _ = io.WriteString(w, `{"result":{}}`)
+	})
+	err = c.Do(ctx(t), r, &map[string]any{})
+	if err != nil && dials != 0 {
+		t.Fatalf("Do dialed and then failed: %v", err)
+	}
+	return arguments, provenance, err
+}
+
+// TestTheActorGoesInRevisionProvenance: no declaration has `actor`, or `author` on a
+// comment, so neither is ever an argument. Any other member named author stays where
+// it is, and the server refuses it for what it is.
+func TestTheActorGoesInRevisionProvenance(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		r    Request
+		id   string
+	}{
+		{"an operation's actor", Request{Op: OpClaimIssue, Method: http.MethodPost, Path: "/x", PathArg: "a", Body: map[string]string{"actor": "sam"}}, `"sam"`},
+		{"a comment's author", Request{Op: OpAddComment, Method: http.MethodPost, Path: "/x", PathArg: "a", Body: map[string]string{"author": "kim", "text": "hi"}}, `"kim"`},
+		{"the optional actor of a delete", Request{Op: OpDeleteIssues, Method: http.MethodPost, Path: PathIssues, Body: map[string]any{"actor": "sam", "ids": []string{"a"}, "dry_run": true}}, `"sam"`},
+		{"sent as written: v0 trims it, and refuses what it refuses", Request{Op: OpCloseIssue, Method: http.MethodPost, Path: "/x", PathArg: "a", Body: map[string]string{"actor": "  a\tb  "}}, `"  a\tb  "`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			arguments, provenance, err := sentInvocation(t, tc.r)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, member := range []string{"actor", "author"} {
+				if _, present := arguments[member]; present {
+					t.Errorf("`%s` went out in arguments: %v", member, arguments)
+				}
+			}
+			var got struct {
+				Actor map[string]json.RawMessage `json:"actor"`
+			}
+			if err := json.Unmarshal(provenance, &got); err != nil {
+				t.Fatalf("revisionProvenance %s: %v", provenance, err)
+			}
+			if string(got.Actor["id"]) != tc.id || string(got.Actor["basis"]) != `"writer-supplied"` || len(got.Actor) != 2 {
+				t.Errorf("revisionProvenance = %s, want the id %s", provenance, tc.id)
+			}
+		})
+	}
+}
+
+// TestABlankActorIsStillRefused: a blank actor sends no provenance, and v0 used to
+// refuse it wherever it found one. Where the Callable requires an actor it still does,
+// on the server, as it does for no actor at all. Where it does not, nothing on the
+// server could tell the blank from an omission, so it is refused here, undialed.
+func TestABlankActorIsStillRefused(t *testing.T) {
+	for _, blank := range []any{"", "   ", " \t\n", nil} {
+		for _, tc := range []struct {
+			name   string
+			r      Request
+			member string
+		}{
+			{"a claim", Request{Op: OpClaimIssue, Method: http.MethodPost, Path: "/x", PathArg: "a"}, "actor"},
+			{"a comment", Request{Op: OpAddComment, Method: http.MethodPost, Path: "/x", PathArg: "a"}, "author"},
+		} {
+			tc.r.Body = map[string]any{tc.member: blank}
+			arguments, provenance, err := sentInvocation(t, tc.r)
+			if err != nil {
+				t.Fatalf("%s, %q: %v", tc.name, blank, err)
+			}
+			if _, present := arguments[tc.member]; present || provenance != nil {
+				t.Errorf("%s, %q: arguments %v, provenance %s: the server should see no actor, which it refuses", tc.name, blank, arguments, provenance)
+			}
+		}
+		for _, r := range []Request{
+			{Op: OpDeleteIssues, Method: http.MethodPost, Path: PathIssues, Body: map[string]any{"actor": blank, "ids": []string{"a"}}},
+			{Op: OpSweepIssues, Method: http.MethodPost, Path: PathIssues, Body: map[string]any{"actor": blank, "tier": "durable", "pattern": "*"}},
+		} {
+			arguments, _, err := sentInvocation(t, r)
+			if !errors.Is(err, issueops.ErrValidation) || arguments != nil {
+				t.Errorf("%s with the actor %q: error %v, sent %v: a blank must not become a run with no actor", r.Op, blank, err, arguments)
+			}
+		}
+	}
+	if _, _, err := sentInvocation(t, Request{Op: OpClaimIssue, Method: http.MethodPost, Path: "/x", PathArg: "a", Body: map[string]any{"actor": 7}}); !errors.Is(err, issueops.ErrValidation) {
+		t.Errorf("an actor that is no string: %v", err)
+	}
+}
+
+// TestAnOmissionGoesOutAsV0sOwnValue is the trap in the service defaults. A request
+// that omits a parameter goes out saying what v0 would have done with its absence, and
+// one that names a value is left alone, so no native request ever reaches a default.
+func TestAnOmissionGoesOutAsV0sOwnValue(t *testing.T) {
+	for _, tc := range []struct {
+		op      string
+		pathArg string
+		query   url.Values
+		body    map[string]any
+		want    map[string]string
+	}{
+		{op: OpListIssues, want: map[string]string{"sort": `"created"`}},
+		{op: OpListIssues, query: url.Values{"sort": {"priority"}}, want: map[string]string{"sort": `"priority"`}},
+		{op: OpListRelatedIssues, pathArg: "a", want: map[string]string{"direction": `""`}},
+		{op: OpListRelatedIssues, pathArg: "a", query: url.Values{"direction": {"in"}}, want: map[string]string{"direction": `"in"`}},
+		{op: OpCloseIssue, pathArg: "a", body: map[string]any{}, want: map[string]string{"reason": `""`}},
+		{op: OpCloseIssue, pathArg: "a", body: map[string]any{"reason": "done"}, want: map[string]string{"reason": `"done"`}},
+		{op: OpCreateIssue, body: map[string]any{"title": "t"}, want: map[string]string{"issue_type": `""`}},
+		{op: OpCreateIssue, body: map[string]any{"title": "t", "issue_type": "bug"}, want: map[string]string{"issue_type": `"bug"`}},
+		{op: OpSweepIssues, body: map[string]any{}, want: map[string]string{"tier": `""`, "dry_run": `false`, "protect_referenced": `true`, "protect_live_dependents": `false`}},
+		{op: OpSweepIssues, body: map[string]any{"tier": "durable", "dry_run": true, "protect_referenced": false, "protect_live_dependents": true},
+			want: map[string]string{"tier": `"durable"`, "dry_run": `true`, "protect_referenced": `false`, "protect_live_dependents": `true`}},
+		{op: OpDeleteIssues, body: map[string]any{"ids": []string{"a"}}, want: map[string]string{"dry_run": `false`}},
+		{op: OpDeleteIssues, body: map[string]any{"ids": []string{"a"}, "dry_run": true}, want: map[string]string{"dry_run": `true`}},
+		{op: OpReclaimIssues, body: map[string]any{}, want: map[string]string{"older_than_seconds": `0`}},
+		{op: OpReclaimIssues, body: map[string]any{"older_than_seconds": 60}, want: map[string]string{"older_than_seconds": `60`}},
+	} {
+		r := Request{Op: tc.op, Method: http.MethodPost, Path: "/x", PathArg: tc.pathArg, Query: tc.query}
+		if tc.body != nil {
+			r.Body = tc.body
+		}
+		arguments, _, err := sentInvocation(t, r)
+		if err != nil {
+			t.Fatalf("%s: %v", tc.op, err)
+		}
+		for name, want := range tc.want {
+			if got := string(arguments[name]); got != want {
+				t.Errorf("%s %v: %s = %s, want %s", tc.op, tc.body, name, got, want)
+			}
+		}
+	}
+}
+
+// TestEveryDefaultHasAV0Spelling keeps the table above the seam honest as the server's
+// grows: a default with no row here is a native request that would silently change.
+func TestEveryDefaultHasAV0Spelling(t *testing.T) {
+	covered := 0
+	for name, row := range httpapi.CallableRoutes() {
+		for param := range row.Defaults {
+			covered++
+			if _, ok := v0Omissions[row.Op][param]; !ok {
+				t.Errorf("%s defaults %s, and v0Omissions has no value for %s's absence", name, param, row.Op)
+			}
+		}
+		if actorlessOps[row.Op] != row.ActorOptional {
+			t.Errorf("%s: actorlessOps says %v, the server %v", name, actorlessOps[row.Op], row.ActorOptional)
+		}
+	}
+	if covered == 0 {
+		t.Fatal("the server declares no defaults, so this asserted nothing")
+	}
+	for op, spelled := range v0Omissions {
+		for param := range spelled {
+			found := false
+			for _, row := range httpapi.CallableRoutes() {
+				if _, has := row.Defaults[param]; has && row.Op == op {
+					found = true
+				}
+			}
+			if !found {
+				t.Errorf("v0Omissions spells %s on %s, and no Callable defaults it", param, op)
+			}
+		}
+	}
+}
+
 // TestTheClientCallableMapMatchesTheServerTable is the seam the client's table and the
 // server's would otherwise drift across: every row on the server is reachable from an
 // operation here under the same name and path argument, and the test double's routes
@@ -611,8 +798,13 @@ func TestTheClientCallableMapMatchesTheServerTable(t *testing.T) {
 		if double.Method != row.Method || double.Path != row.Path {
 			t.Errorf("%s: wiretest says %s %s, the server %s %s", name, double.Method, double.Path, row.Method, row.Path)
 		}
-		if len(row.QueryParams) > 0 && len(row.BodyParams) > 0 && !slices.Equal(double.Body, row.BodyParams) {
-			t.Errorf("%s: wiretest's body members %v, the server's %v", name, double.Body, row.BodyParams)
+		if len(row.QueryParams) > 0 && (len(row.BodyParams) > 0 || row.ActorMember != "") {
+			if want := append(slices.Clone(row.BodyParams), row.ActorMember); !slices.Equal(double.Body, want) {
+				t.Errorf("%s: wiretest's body members %v, the server's %v", name, double.Body, want)
+			}
+		}
+		if double.Actor != "" && double.Actor != row.ActorMember || double.Actor == "" && row.ActorMember == "author" {
+			t.Errorf("%s: wiretest sends the actor as %q, the server as %q", name, double.Actor, row.ActorMember)
 		}
 	}
 }

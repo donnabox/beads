@@ -258,7 +258,7 @@ func TestTheInvocationKeepsTheIDWholeAndTheMountRoot(t *testing.T) {
 	if want := "/mount/bdp/call/issue/claim"; gotPath != want {
 		t.Errorf("path = %q, want %q", gotPath, want)
 	}
-	if got.Arguments["id"] != "a/b:x" || got.Arguments["actor"] != "me" {
+	if got.Arguments["id"] != "a/b:x" || len(got.Arguments) != 1 {
 		t.Errorf("arguments = %v", got.Arguments)
 	}
 }

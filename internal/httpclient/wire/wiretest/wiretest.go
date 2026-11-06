@@ -5,8 +5,10 @@
 //
 // V0 checks what every invocation owes the mount (the method, both media types, the
 // closed envelope), so a client that stops sending them fails every such test.
-// The translation it does is the mount's, written out here because the mount lives
-// in internal/httpapi, which a client test should not need. internal/httpapi's
+// The translation it does is the mount's, the actor's move out of revisionProvenance
+// included, written out here because the mount lives in internal/httpapi, which a
+// client test should not need. It applies no service default: a client that omitted a
+// parameter would see the omission here, and the seam's v0Omissions see that it does not. internal/httpapi's
 // TestWireTestRoutesMatchTheServerTable holds Routes to the server's table.
 //
 // It does not import the wire package, whose own tests use it.
@@ -32,6 +34,8 @@ type Route struct {
 	// and body parameters. Empty means the method decides: a GET's arguments are
 	// its query, and any other method's are its body.
 	Body []string
+	// Actor is the v0 member revisionProvenance.actor.id is sent as; empty is `actor`.
+	Actor string
 }
 
 // Routes is every declared Callable.
@@ -50,7 +54,7 @@ var Routes = map[string]Route{
 	"issue/show":                     {Method: http.MethodGet, Path: "/v0/beads/issues/{id}"},
 	"issue/update":                   {Method: http.MethodPatch, Path: "/v0/beads/issues/{id}"},
 	"issue/dep/list":                 {Method: http.MethodGet, Path: "/v0/beads/issues/{id}/related"},
-	"issue/comment":                  {Method: http.MethodPost, Path: "/v0/beads/issues/{id}/comments"},
+	"issue/comment":                  {Method: http.MethodPost, Path: "/v0/beads/issues/{id}/comments", Actor: "author"},
 	"issue/claim":                    {Method: http.MethodPost, Path: "/v0/beads/issues/{id}:claim"},
 	"issue/unclaim":                  {Method: http.MethodPost, Path: "/v0/beads/issues/{id}:release"},
 	"issue/heartbeat":                {Method: http.MethodPost, Path: "/v0/beads/issues/{id}:heartbeat"},
@@ -169,12 +173,24 @@ func v0Request(r *http.Request, prefix string, route Route) (*http.Request, stri
 		return nil, "the invocation body could not be read"
 	}
 	var invocation struct {
-		Arguments map[string]json.RawMessage `json:"arguments"`
+		Arguments  map[string]json.RawMessage `json:"arguments"`
+		Provenance struct {
+			Actor struct {
+				ID json.RawMessage `json:"id"`
+			} `json:"actor"`
+		} `json:"revisionProvenance"`
 	}
 	if err := json.Unmarshal(raw, &invocation); err != nil || invocation.Arguments == nil {
 		return nil, "`arguments` is required and is an object"
 	}
 	args := invocation.Arguments
+	if id := invocation.Provenance.Actor.ID; id != nil {
+		member := route.Actor
+		if member == "" {
+			member = "actor"
+		}
+		args[member] = id
+	}
 
 	path, rawPath := route.Path, route.Path
 	if open := strings.IndexByte(path, '{'); open >= 0 {

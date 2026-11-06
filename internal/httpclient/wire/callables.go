@@ -27,6 +27,12 @@ import (
 // bd connect talks only to the bd serve of its own release. There is no v0
 // fallback and no capability for this: a server without the mount is told apart
 // by its answer and refused in words (CallablesAbsentError).
+//
+// A Callable differs from its v0 operation in two ways this file has to cancel out,
+// because nothing above it should notice. No declaration has an `actor`, or `author`
+// on a comment, so that member of a body moves to revisionProvenance. And the service
+// defaults (specs/types/issue/callables.md §4) are the CLI's, not v0's, so a parameter
+// the layers above omitted meaning v0's behavior is spelled out here: see v0Omissions.
 const (
 	callableMount     = "/bdp/call"
 	callableMediaType = "application/vnd.bdp.v0.1+json"
@@ -95,6 +101,43 @@ var callables = map[string]callable{
 	OpListEvents:              {name: "events/list"},
 }
 
+// v0Omissions is what v0 does with each parameter a Callable has a default for, spelled
+// as a value, by v0 operation. Everything above this file was written against v0 and
+// omits a parameter to mean what v0 means by its absence, so a default applied to such
+// a request silently changes the answer: a walk of `created` pages comes back in
+// `priority` order, and a reclaim with no grace window waits ten minutes. So no native
+// request reaches a default: an omission goes out as what v0 would have done.
+//
+// Each value is what v0 reads an absent member as, which is why it can stand in:
+//   - listIssues reads an absent `sort` as `created` (listOrderDefault).
+//   - reclaimIssues reads an absent `older_than_seconds` as a window of 0.
+//   - closeIssue reads an absent `reason` as "".
+//   - createIssue reads an absent `issue_type` as "", which the role refuses, so a
+//     create with no type is still refused instead of quietly becoming a task.
+//   - sweepIssues defaults `protect_referenced` on and the other two flags off.
+//   - sweepIssues refuses an absent `tier`, and listRelatedIssues an absent `direction`,
+//     as they refuse "". Both are sent today; if one ever is not, v0's refusal stands.
+//   - deleteIssues defaults `dry_run` off.
+//
+// internal/httpapi's table is held to this one by TestEveryDefaultHasAV0Spelling.
+var v0Omissions = map[string]map[string]json.RawMessage{
+	OpListIssues:        {"sort": json.RawMessage(`"created"`)},
+	OpCreateIssue:       {"issue_type": json.RawMessage(`""`)},
+	OpListRelatedIssues: {"direction": json.RawMessage(`""`)},
+	OpCloseIssue:        {"reason": json.RawMessage(`""`)},
+	OpSweepIssues: {
+		"tier":                    json.RawMessage(`""`),
+		"dry_run":                 json.RawMessage(`false`),
+		"protect_referenced":      json.RawMessage(`true`),
+		"protect_live_dependents": json.RawMessage(`false`),
+	},
+	OpDeleteIssues:  {"dry_run": json.RawMessage(`false`)},
+	OpReclaimIssues: {"older_than_seconds": json.RawMessage(`0`)},
+}
+
+// actorlessOps are the operations v0 runs with no actor at all.
+var actorlessOps = map[string]bool{OpSweepIssues: true, OpDeleteIssues: true}
+
 // outbound is what one Request puts on the wire.
 type outbound struct {
 	method string
@@ -153,45 +196,14 @@ func callableFor(r Request, body []byte) (callable, error) {
 
 // invocationEnvelope spells a v0 request's parameters as one `arguments` object:
 // the path segment under its name, query values as strings (arrays when repeated,
-// which is how bd serve reads them back) and the body's members as they are.
+// which is how bd serve reads them back) and the body's members as they are, but
+// for the actor, which goes in `revisionProvenance`.
 func invocationEnvelope(r Request, call callable, body []byte) ([]byte, error) {
 	if call.pathName == "" && r.PathArg != "" {
 		return nil, fmt.Errorf("%s: %s takes no path argument", r.Op, call.name)
 	}
 	if call.pathName != "" && r.PathArg == "" {
 		return nil, fmt.Errorf("%s: %s needs its %s", r.Op, call.name, call.pathName)
-	}
-
-	var query map[string]json.RawMessage
-	for name, values := range r.Query {
-		var (
-			raw []byte
-			err error
-		)
-		switch len(values) {
-		case 0:
-			continue
-		case 1:
-			raw, err = json.Marshal(values[0])
-		default:
-			raw, err = json.Marshal(values)
-		}
-		if err != nil {
-			return nil, fmt.Errorf("%s: encoding query parameter %s: %w", r.Op, name, err)
-		}
-		if query == nil {
-			query = make(map[string]json.RawMessage, len(r.Query))
-		}
-		query[name] = raw
-	}
-
-	// The common large case, a body and nothing else, needs no decoding: marshaled
-	// from a Go value, it is already one object with unique members.
-	if call.pathName == "" && len(query) == 0 && bytes.HasPrefix(body, []byte("{")) {
-		envelope := make([]byte, 0, len(body)+len(`{"arguments":}`))
-		envelope = append(envelope, `{"arguments":`...)
-		envelope = append(envelope, body...)
-		return append(envelope, '}'), nil
 	}
 
 	arguments := map[string]json.RawMessage{}
@@ -203,7 +215,23 @@ func invocationEnvelope(r Request, call callable, body []byte) ([]byte, error) {
 			arguments = map[string]json.RawMessage{}
 		}
 	}
-	for name, raw := range query {
+	provenance, err := peelActor(r.Op, arguments)
+	if err != nil {
+		return nil, err
+	}
+	for name, values := range r.Query {
+		var raw []byte
+		switch len(values) {
+		case 0:
+			continue
+		case 1:
+			raw, err = json.Marshal(values[0])
+		default:
+			raw, err = json.Marshal(values)
+		}
+		if err != nil {
+			return nil, fmt.Errorf("%s: encoding query parameter %s: %w", r.Op, name, err)
+		}
 		if _, taken := arguments[name]; taken {
 			return nil, fmt.Errorf("%s: %s is both a query parameter and a body member", r.Op, name)
 		}
@@ -219,9 +247,46 @@ func invocationEnvelope(r Request, call callable, body []byte) ([]byte, error) {
 		}
 		arguments[call.pathName] = raw
 	}
+	for name, value := range v0Omissions[r.Op] {
+		if _, sent := arguments[name]; !sent {
+			arguments[name] = value
+		}
+	}
 	return json.Marshal(struct {
-		Arguments map[string]json.RawMessage `json:"arguments"`
-	}{arguments})
+		Arguments  map[string]json.RawMessage `json:"arguments"`
+		Provenance json.RawMessage            `json:"revisionProvenance,omitempty"`
+	}{arguments, provenance})
+}
+
+// peelActor takes the body's `actor`, or `author` on addComment, out of arguments and
+// answers it as a revisionProvenance, or nil when there is none to send.
+//
+// A BLANK ONE SENDS NO PROVENANCE, and that must not turn a refusal into a run. v0
+// refuses a blank actor wherever it finds one. Where v0 requires an actor, the mount
+// refuses the invocation for having none, so nothing here needs to. Where v0 can run
+// without one, on a sweep or a delete, the mount would simply run it, so the refusal
+// is made here. The role clients omit a blank before it gets this far.
+func peelActor(op string, arguments map[string]json.RawMessage) (json.RawMessage, error) {
+	member := "actor"
+	if op == OpAddComment {
+		member = "author"
+	}
+	raw, present := arguments[member]
+	if !present {
+		return nil, nil
+	}
+	delete(arguments, member)
+	var value *string
+	if err := json.Unmarshal(raw, &value); err != nil {
+		return nil, fmt.Errorf("%s: `%s` must be a string: %w", op, member, issueops.ErrValidation)
+	}
+	if value == nil || strings.TrimSpace(*value) == "" {
+		if actorlessOps[op] {
+			return nil, fmt.Errorf("%s: `%s` is blank; name someone or omit it: %w", op, member, issueops.ErrValidation)
+		}
+		return nil, nil
+	}
+	return json.Marshal(map[string]any{"actor": map[string]any{"id": raw, "basis": "writer-supplied"}})
 }
 
 // callableResult takes v0's own body out of a result envelope. The envelope's
@@ -309,7 +374,9 @@ func callableProblem(t target, call string, res *response, maxRetryAfter time.Du
 		prob.Err = issueops.ErrValidation
 		var details []string
 		for i, d := range p.Diagnostics {
-			details = append(details, stripControlRunes(d.Message))
+			if d.Message != prob.Detail {
+				details = append(details, stripControlRunes(d.Message))
+			}
 			if i == 0 {
 				prob.Param = stripControlRunes(strings.TrimPrefix(d.InstanceLocation, "/arguments/"))
 			}
