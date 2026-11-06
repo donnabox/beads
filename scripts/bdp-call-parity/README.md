@@ -85,7 +85,8 @@ python3 scripts/bdp-call-parity/wire_proof.py --base BASE_BD --new NEW_BD --dolt
   order, and the body.
 - **Server half.** Each server is asked the same raw requests in lockstep: Part A's v0 reads
   and writes, then fixed probes of `/`, `/bdp`, `/bdp/call`, Resource addresses and unrouted
-  paths, with and without an auth token file. Status, headers and body are compared.
+  paths, with and without an auth token file. Status, headers and body are compared. A close or
+  reopen reason stored as sent is the one difference allowed, and it is asked by name.
 - **Masked, and nothing else:** ports and the temporary root, timestamps, UUIDs (the project
   id), revision tokens, minted ids numbered by first appearance, cursors, `request_id`,
   `arrival_seq` (it counts every create so far, the allowed ones too), `Date`, `Content-Length`

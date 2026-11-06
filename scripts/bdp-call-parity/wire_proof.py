@@ -378,8 +378,9 @@ def server_proof(base_bd, new_bd, dolt, out, log):
     new_root = Root(os.path.abspath(new_bd), os.path.abspath(dolt), serve_protocol=None, connect_protocol=None)
     results = []
     try:
-        base = Stack(base_root, "server-base", journal=True, serve=True)
-        new = Stack(new_root, "server-new", journal=True, serve=True)
+        # One name, so a path in an answer masks to one spelling.
+        base = Stack(base_root, "server", journal=True, serve=True)
+        new = Stack(new_root, "server", journal=True, serve=True)
         part_a.seed([base, new], a_cases.READ_SEED, a_cases.READ_BEFORE)
         invocation = b'{"arguments":{"id":"sw-fix-r1"}}'
         for method, target in STATIC_PROBES:
@@ -427,6 +428,22 @@ def server_proof(base_bd, new_bd, dolt, out, log):
                 entry.update({"base": answers[0], "new": answers[1], "state_same": states[0] == states[1]})
             results.append(entry)
         log(f"server: writes done, {len(results)}")
+        # The one thing the default server answers differently, on purpose: a close or
+        # reopen reason is stored as sent (Part B's "a reason ..." commands). It is here
+        # by name, so that its being the only one is what the run shows.
+        long_reason = "x" * 300
+        for label, path, body, seed_row in (
+            ("close, a newline", "/v0/beads/issues/sw-fix-why1:close", {"actor": "a", "reason": "two\nlines"}, "sw-fix-why1"),
+            ("close, past 255", "/v0/beads/issues/sw-fix-why2:close", {"actor": "a", "reason": long_reason}, "sw-fix-why2"),
+            ("batchClose, a newline", "/v0/beads/issues:batchClose", {"actor": "a", "items": [{"id": "sw-fix-why3", "reason": "two\nlines"}]}, "sw-fix-why3"),
+            ("reopen, a newline", "/v0/beads/issues/sw-fix-why1:reopen", {"actor": "a", "reason": "two\nlines"}, None),
+        ):
+            if seed_row:
+                part_a.seed([base, new], [a_cases.issue(seed_row)], [])
+            before = len(results)
+            lockstep_probe(base, new, f"reason: {label}", "POST", path, body=json.dumps(body).encode(),
+                           headers={"Content-Type": "application/json"}, results=results)
+            results[before]["allowed"] = "a close or reopen reason is stored as sent; the base refused it"
         # The credential posture: what asks for one must be what asked for one.
         for stack in (base, new):
             path = os.path.join(stack.dir, "tokens")
@@ -468,7 +485,8 @@ def write_reports(out, results, counts, server):
     lines += ["", "## Server half, every difference", ""]
     for r in server:
         if not r["same"]:
-            lines.append(f"- {r['label']} {r.get('method', '')} {r.get('target', '')}: {json.dumps(r.get('base'))[:300]} / {json.dumps(r.get('new'))[:300]}")
+            why = f" ALLOWED: {r['allowed']}." if r.get("allowed") else ""
+            lines.append(f"- {r['label']} {r.get('method', '')} {r.get('target', '')}:{why} {json.dumps(r.get('base'))[:300]} / {json.dumps(r.get('new'))[:300]}")
     with open(os.path.join(out, "summary.md"), "w") as handle:
         handle.write("\n".join(lines) + "\n")
     allowed = ["# Every request difference allowed against the base commit", "",
@@ -530,8 +548,9 @@ def main():
         server = server_proof(args.base, args.new, args.dolt, args.out, log)
     log(f"server: {sum(not r['same'] for r in server)} of {len(server)} different")
     write_reports(args.out, results, counts, server)
-    if counts.get("unexplained"):
-        sys.exit(f"{counts['unexplained']} unexplained; see {args.out}/summary.md")
+    strays = [r for r in server if not r["same"] and not r.get("allowed")]
+    if counts.get("unexplained") or strays:
+        sys.exit(f"{counts.get('unexplained', 0)} commands and {len(strays)} server answers unexplained; see {args.out}/summary.md")
 
 
 if __name__ == "__main__":
