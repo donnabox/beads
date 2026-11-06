@@ -1726,6 +1726,7 @@ func (s *Server) handler() http.Handler {
 
 	// The Callables namespace dispatches back into this mux; see callables.go.
 	s.mountCallables(mux)
+	s.mountCoreReads(mux)
 
 	// Not an operation and deliberately not in the route table: it exists so
 	// that an unrouted path still answers with problem+json rather than

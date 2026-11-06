@@ -1992,7 +1992,7 @@ func TestAuthRefusalCostsNoDatabaseSlot(t *testing.T) {
 func TestUnroutedPathsStayUnauthenticated(t *testing.T) {
 	ts := newTestServer(t, Config{Auth: authTokenFile(t, "real-token")})
 
-	for _, path := range []string{"/v0/nonsense", "/", "/v0/beads/issues/bd-1/extra"} {
+	for _, path := range []string{"/v0/nonsense", "/v0/beads/issues/bd-1/extra"} {
 		if resp := ts.get(t, path); resp.StatusCode != http.StatusNotFound {
 			t.Errorf("GET %s with no credential = %d, want 404: paths are public spec", path, resp.StatusCode)
 		}
