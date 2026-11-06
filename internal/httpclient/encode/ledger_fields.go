@@ -224,11 +224,11 @@ func issueFilterRows() []Row {
 			PinnedBy: "TestTheExactIDsFanOutIsBounded",
 		},
 		Row{
-			ID: "E-IssueFilter.noShape", Kind: KindRefuse,
-			What:     "a raw SearchIssues call matching neither expressible shape refuses",
-			Why:      bridgeWhy + ". A filter naming no ids and no parent — the unbounded `everything` shape included — is not one of them",
+			ID: "E-IssueFilter.noShape", Kind: KindRetired,
+			What:     "RETIRED — a raw SearchIssues call naming no ids and no parent refused outright",
+			Why:      "listIssues publishes the intents that lift every default suppression, so such a filter is now the listing shape; what it cannot state refuses member by member (the S-IssueFilter.* population)",
 			SpecRow:  "D8 (off-role raw methods), D4, D11, D9 L12",
-			PinnedBy: "TestASearchFilterMatchingNeitherShapeRefuses",
+			PinnedBy: "TestARawFilterIsTheListingShape",
 		},
 		Row{
 			ID: "E-bridge-parent-shape", Kind: KindRetired,
@@ -239,6 +239,28 @@ func issueFilterRows() []Row {
 			PinnedBy: "TestTheParentWalkInvertsTheDerivedDefaults",
 		},
 	)
+}
+
+// searchListingRows classify types.IssueFilter against the listing shape.
+func searchListingRows() []Row {
+	const pin = "TestARawFilterIsTheListingShape"
+	const spec = "D8 (off-role raw methods), D9 L12"
+	row := func(field, what, why string, kind Kind) Row {
+		return Row{ID: "S-IssueFilter." + field, Kind: kind, Type: tyIssueFilter, Field: field, What: what, Why: why, SpecRow: spec, PinnedBy: pin}
+	}
+	const noParam = "listIssues publishes no parameter for it, so answering would mean widening the listing past what the caller asked for"
+	rows := []Row{
+		row("IsTemplate", "selecting templates only refuses", "listIssues publishes include_templates, an intent that admits them, and no predicate that selects them alone", KindRefuse),
+		row("SkipWisps", "holding the wisp plane out while keeping infra-typed durable rows refuses", "include_infra admits the wisp plane along with the infra types, so the plane can only be held out with those types excluded as well; dropping the opt-out would merge a plane the caller asked to skip", KindRefuse),
+		row("Ephemeral", "an ephemeral predicate refuses", "include_ephemeral admits the plane and does not restrict to it; "+noParam, KindRefuse),
+		row("SkipLabels", "the label-hydration opt-out is DROPPED", "the listing publishes no hydration parameter; the caller gets more data and never fewer rows", KindDegrade),
+		row("SkipCounts", "the cardinality-hydration opt-out is DROPPED", "the same absence as SkipLabels, and a raw search projects no counts", KindDegrade),
+		row("NoIDShrink", "the query-plan hint is DROPPED", "it selects a scan strategy and decides no row", KindDegrade),
+	}
+	for _, field := range []string{"IDPrefix", "StartedAfter", "StartedBefore", "AfterCreatedAt", "AfterID", "AfterPriority", "SourceRepo", "EphemeralTier", "IsBlocked", "IncludeDependencies", "Offset"} {
+		rows = append(rows, row(field, "a populated IssueFilter."+field+" refuses on the listing shape", noParam, KindRefuse))
+	}
+	return rows
 }
 
 // parentWalkRows classify types.IssueFilter against D4's descendant walk, which

@@ -114,7 +114,7 @@ func Encode(op Op, shape string, source any) (Encoded, error) {
 		return encodeAs(op, shape, source, ReadyBridgeParams)
 	case opShape{OpGetIssue, ""}:
 		return encodeGetIssue(op, shape, source)
-	case opShape{OpGetIssue, "searchExactIDs"}, opShape{OpListIssues, "searchParentWalk"}:
+	case opShape{OpGetIssue, "searchExactIDs"}, opShape{OpListIssues, "searchParentWalk"}, opShape{OpListIssues, "searchListing"}:
 		return encodeSearch(op, shape, source)
 	}
 	return Encoded{}, fmt.Errorf("encode: no encoder for operation %q shape %q", op, shape)
@@ -137,7 +137,7 @@ func encodeGetIssue(op Op, shape string, source any) (Encoded, error) {
 	return Encoded{Params: v, PathIDs: []string{id}}, nil
 }
 
-// encodeSearch is Encode's arm for the two SearchIssues bridge shapes: it plans
+// encodeSearch is Encode's arm for the SearchIssues bridge shapes: it plans
 // the filter and refuses one that plans to the other shape.
 func encodeSearch(op Op, shape string, source any) (Encoded, error) {
 	filter, err := sourceAs[types.IssueFilter](op, shape, source)
@@ -617,7 +617,7 @@ func (b *builder) recognizeReadyStatus(f types.WorkFilter) {
 	}
 }
 
-// SearchShape names one of the two shapes the SearchIssues bridge serves.
+// SearchShape names one of the three shapes the SearchIssues bridge serves.
 type SearchShape string
 
 const (
@@ -626,6 +626,10 @@ const (
 	// SearchParentWalk is D4's hierarchical descendant walk: paged
 	// listIssues?parent=<id> calls, one level at a time.
 	SearchParentWalk SearchShape = "searchParentWalk"
+	// SearchListing is a filter naming neither ids nor a parent: one walk of
+	// listIssues with every default suppression lifted, because a raw filter
+	// narrows only by what it says.
+	SearchListing SearchShape = "searchListing"
 )
 
 // SearchPlan is what a raw SearchIssues filter becomes.
@@ -636,9 +640,12 @@ type SearchPlan struct {
 	// Params is the listing query for the descendant walk. The pager owns the
 	// per-page `limit` and the cursor.
 	Params url.Values
+	// Listing is the request Params encodes, for the listing shape: the pager
+	// reads its order, limit and row cap, and the capability gate its members.
+	Listing issueops.ListRequest
 }
 
-// PlanSearch classifies a raw types.IssueFilter into one of the bridge's two
+// PlanSearch classifies a raw types.IssueFilter into one of the bridge's three
 // shapes, or refuses.
 //
 // SHAPE FIRST, THEN FIELDS. Which shape a filter is in decides which of its
@@ -651,8 +658,8 @@ type SearchPlan struct {
 // the filter was built from, which is what makes the inversion exact rather than
 // approximate.
 //
-// It is a FUNCTION rather than a value because only one of the two shapes reads
-// it, and the other one is the resolver's hot path: ResolvePartialID runs on
+// It is a FUNCTION rather than a value because only some shapes read it, and the
+// exact-ids one is the resolver's hot path: ResolvePartialID runs on
 // every id-taking command, and loading a vocabulary the exact-ids arm never
 // consults would put three round trips in front of every `bd show`. Deferring it
 // into the arm that needs it is also what keeps a REFUSED plan from dialing at
@@ -684,7 +691,120 @@ func PlanSearch(f types.IssueFilter, vocabulary func() ListConfig) (SearchPlan, 
 		}
 		return SearchPlan{Shape: SearchParentWalk, Params: v}, nil
 	}
-	return SearchPlan{}, &RefusedError{Op: OpListIssues, Row: RowByID("E-IssueFilter.noShape")}
+	return planListing(f, vocabulary)
+}
+
+// planListing encodes a filter naming neither ids nor a parent onto listIssues.
+//
+// THE TWO READINGS OF AN UNSET MEMBER ARE OPPOSITES, which is all this has to
+// get right. A raw types.IssueFilter restricts only by what it populates, so the
+// empty one means every row on both planes. listIssues starts from `bd list`'s
+// defaults (no closed, no pinned, no templates, no gates, no infra types, no
+// wisps) and publishes intents that lift them. So this lifts every one, which is
+// allIssueIDs' request, and sends the filter's own restrictions on top under
+// their parameters. What is left is exact.
+//
+// THREE MEMBERS CANNOT BE SAID THAT WAY. The wire has an intent for templates
+// and none for "only templates", so IsTemplate=&true refuses. It admits the wisp
+// plane through the same flag that admits infra types, so SkipWisps is only
+// expressible with the infra types excluded as well, which is what
+// workapi.BuildListFilter builds and what refuses otherwise: dropping it would
+// merge a plane the caller asked to skip. And Ephemeral is a predicate with no
+// parameter at all, so the table refuses it.
+func planListing(f types.IssueFilter, vocabulary func() ListConfig) (SearchPlan, error) {
+	b := newBuilder(OpListIssues, string(SearchListing))
+	b.refuseInexpressible(f)
+	if _, err := b.done(); err != nil {
+		return SearchPlan{}, err
+	}
+	refuse := func(row string) (SearchPlan, error) {
+		return SearchPlan{}, &RefusedError{Op: OpListIssues, Shape: string(SearchListing), Row: RowByID(row)}
+	}
+	if f.IsTemplate != nil && *f.IsTemplate {
+		return refuse("S-IssueFilter.IsTemplate")
+	}
+	if f.SkipWisps {
+		cfg := vocabulary()
+		if !carriesEveryInfraType(f.ExcludeTypes, cfg) || cfg.IsInfra(derefString((*string)(f.IssueType))) {
+			return refuse("S-IssueFilter.SkipWisps")
+		}
+	}
+
+	req := issueops.ListRequest{
+		Status:           explicitStatus(f),
+		IssueType:        derefString((*string)(f.IssueType)),
+		Assignee:         derefString(f.Assignee),
+		NoAssignee:       f.NoAssignee,
+		Labels:           f.Labels,
+		LabelsAny:        f.LabelsAny,
+		ExcludeLabels:    f.ExcludeLabels,
+		TitleSearch:      f.TitleSearch,
+		AllFlag:          true,
+		IncludeTemplates: f.IsTemplate == nil,
+		IncludeGates:     true,
+		IncludeInfra:     !f.SkipWisps,
+		IncludeEphemeral: !f.SkipWisps,
+		CreatedBefore:    f.CreatedBefore,
+		CreatedAfter:     f.CreatedAfter,
+		MetadataFields:   f.MetadataFields,
+		HasMetadataKey:   f.HasMetadataKey,
+		Brief:            f.Lite,
+		SortBy:           f.SortBy,
+		Reverse:          f.SortDesc,
+		MaxRows:          f.MaxRows,
+		MaxRowsSource:    f.MaxRowsSource,
+
+		TitleContains:    f.TitleContains,
+		DescContains:     f.DescriptionContains,
+		NotesContains:    f.NotesContains,
+		ExternalContains: f.ExternalRefContains,
+		ExternalRef:      derefString(f.ExternalRef),
+		SpecPrefix:       f.SpecIDPrefix,
+		LabelPattern:     f.LabelPattern,
+		LabelRegex:       f.LabelRegex,
+		UpdatedAfter:     f.UpdatedAfter,
+		UpdatedBefore:    f.UpdatedBefore,
+		ClosedAfter:      f.ClosedAfter,
+		ClosedBefore:     f.ClosedBefore,
+		DeferAfter:       f.DeferAfter,
+		DeferBefore:      f.DeferBefore,
+		DueAfter:         f.DueAfter,
+		DueBefore:        f.DueBefore,
+		Priority:         f.Priority,
+		PriorityMin:      f.PriorityMin,
+		PriorityMax:      f.PriorityMax,
+		EmptyDesc:        f.EmptyDescription,
+		NoLabels:         f.NoLabels,
+		NoParent:         f.NoParent,
+		ExcludeTypes:     issueTypeNames(f.ExcludeTypes),
+		ExcludeStatus:    statusNames(f.ExcludeStatus),
+		PinnedFlag:       f.Pinned != nil && *f.Pinned,
+		NoPinnedFlag:     f.Pinned != nil && !*f.Pinned,
+		DeferredFlag:     f.Deferred,
+		OverdueFlag:      f.Overdue,
+		MolType:          f.MolType,
+		WispType:         f.WispType,
+	}
+	v, err := ListParams(req)
+	if err != nil {
+		return SearchPlan{}, err
+	}
+	// After encoding: the limit is the pager's to apply, not a parameter.
+	limit := f.Limit
+	req.Limit = &limit
+	return SearchPlan{Shape: SearchListing, Params: v, Listing: req}, nil
+}
+
+// statusNames widens a typed exclusion list onto the wire's plain strings.
+func statusNames(in []types.Status) []string {
+	if len(in) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(in))
+	for _, s := range in {
+		out = append(out, string(s))
+	}
+	return out
 }
 
 // issueTypeNames widens a typed exclusion list onto the wire's plain strings.

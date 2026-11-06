@@ -80,7 +80,7 @@ func (s *Store) SearchIssueIDs(_ context.Context, query string, _ types.IssueFil
 // a repeated probe and a refused search.
 func (s *Store) ExactIDLookupOnly() bool { return true }
 
-// SearchIssues serves the two shapes the v0 wire can express and refuses every
+// SearchIssues serves the three shapes the v0 wire can express and refuses every
 // other one.
 //
 // The classification is the encoder's, not this method's: PlanSearch decides
@@ -105,6 +105,8 @@ func (s *Store) SearchIssues(ctx context.Context, query string, filter types.Iss
 		return s.getIssuesByExactID(ctx, plan.IDs)
 	case encode.SearchParentWalk:
 		return s.walkDescendants(ctx, plan)
+	case encode.SearchListing:
+		return s.searchListing(ctx, plan)
 	}
 	return nil, s.unsupported("SearchIssues")
 }
@@ -183,6 +185,32 @@ func (s *Store) walkDescendants(ctx context.Context, plan encode.SearchPlan) ([]
 	out := make([]*types.Issue, 0, len(rows))
 	for _, row := range rows {
 		if row != nil && row.Issue != nil {
+			out = append(out, row.Issue)
+		}
+	}
+	return out, nil
+}
+
+// searchListing answers the listing shape: the same pager a `bd list` rides, so
+// the order, the limit and the row cap are honored exactly as they are there, and
+// the same capability gate before the dial. Rows come back whole unless the
+// filter asked for Lite, because a raw search's caller reads the local row.
+func (s *Store) searchListing(ctx context.Context, plan encode.SearchPlan) ([]*types.Issue, error) {
+	if err := (httpReader{store: s}).refuseUnservedListFilters(ctx, plan.Listing); err != nil {
+		return nil, err
+	}
+	page, err := s.walkIssues(ctx, plan.Params, plan.Listing)
+	if err != nil {
+		return nil, err
+	}
+	// nil rather than empty on no rows, as the local search answers: a command
+	// marshaling the answer whole prints it.
+	var out []*types.Issue
+	for _, row := range page.Items {
+		if row != nil && row.Issue != nil {
+			// The listing carries each row's edges; a raw search hydrates them
+			// only on IncludeDependencies, which this shape refuses.
+			row.Issue.Dependencies = nil
 			out = append(out, row.Issue)
 		}
 	}
