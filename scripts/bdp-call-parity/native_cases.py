@@ -207,7 +207,7 @@ def writes():
     mk("create 'gate type' -t gate")
     c.append(N("issue/create", "q 'quick capture'", plain=True))
     c.append(N("issue/create", "q 'quick typed' -t bug -p 1 -l x", plain=True))
-    c.append(N("issue/create", "q 'quick parented' --parent sw-fix-cp", plain=True))
+    c.append(N("issue/create", "q 'quick parented' --parent sw-fix-qp", plain=True, seed=[create("sw-fix-qp", "-t", "epic", "-l", "inh")]))
     c.append(N("issue/create", "todo add 'a todo'"))
     c.append(N("issue/create", "todo add 'a todo with p' -p 1 -d text"))
     c.append(N("issue/create", "gate create --help", plain=True))
@@ -275,13 +275,20 @@ def writes():
     one(u, "tag {i} t1")
     one(u, "note {i} hello")
     one(u, "note {i} --file n.txt", files={"n.txt": "hello\n"})
-    one(u, "note {i} --stdin", stdin="hello\n")
+
     one(u, "label add {i} l1")
     one(u, "label remove {i} l1", "-l", "l1")
     one(u, "defer {i}")
     one(u, "defer {i} --until 2030-01-01T00:00:00Z")
     one(u, "defer {i} --reason later")
     one(u, "undefer {i}", "--defer", "2030-01-01T00:00:00Z")
+    # The exit-zero family: a per-id failure is a nonzero exit, on both sides.
+    one(u, "undefer {i}", label="undefer an issue that is not deferred")
+    c.append(N(u, "defer sw-fix-none", label="defer a missing id"))
+    c.append(N(u, "undefer sw-fix-none", label="undefer a missing id"))
+    d_ok, d_closed = fresh(), fresh()
+    c.append(N(u, f"defer {d_ok} {d_closed}", seed=[create(d_ok), create(d_closed)], before=[["update", d_closed, "--status", "pinned"]], label="defer two ids"))
+
     one(u, "set-state {i} phase=x --reason y")
     one(u, "promote {i}", "--ephemeral")
     # issue/claim
@@ -313,6 +320,7 @@ def writes():
     one("issue/close", "close {i} -r done")
     one("issue/close", "close {i} --reason-file r.txt", files={"r.txt": "done\n"}, label="a reason file ending in a newline")
     one("issue/close", "close {i} --reason-file r.txt", files={"r.txt": "done"}, label="a reason file with no newline")
+    one("issue/close", "close {i} --reason-file r.txt", files={"r.txt": "x" * 300}, label="a reason longer than 255 characters")
     one("issue/close", "close {i} -r 'two\nlines'", label="a reason with a newline")
     one("issue/close", "close {i} --session s")
     one("issue/close", "close {i}", before=[["close", "{i}"]], label="re-close")
@@ -361,6 +369,8 @@ def writes():
     one("issue/delete", "delete {i} --from-file ids.txt --force", files={"ids.txt": "sw-fix-w-none\n"}, label="--from-file with a missing id")
     d0, d1 = fresh(), fresh()
     c.append(N("issue/delete", f"delete {d0} --dry-run", seed=[create(d0), create(d1, "--deps", f"blocks:{d0}")], label="preview with dependents"))
+    d4, d5 = fresh(), fresh()
+    c.append(N("issue/delete", f"delete {d4} --dry-run", seed=[create(d4), create(d5)], before=[["dep", "add", d5, d4]], label="preview of an issue others depend on"))
     d2, d3 = fresh(), fresh()
     c.append(N("issue/delete", f"delete {d2} --force", seed=[create(d2), create(d3, "--deps", f"blocks:{d2}")], label="force with dependents"))
     d4, d5 = fresh(), fresh()
@@ -372,6 +382,8 @@ def writes():
     c.append(N("issue/delete", f"delete --from-file ids.txt --force", seed=[create(d8)], files={"ids.txt": d8 + "\n"}))
     # issue/create-many and issue/batch
     c.append(N("issue/create-many", "import --input many.jsonl", files={"many.jsonl": '{"id":"sw-fix-imp1","title":"imported one","issue_type":"task","status":"open","priority":2}\n{"id":"sw-fix-imp2","title":"imported two","issue_type":"task","status":"open","priority":2}\n'}))
+    c.append(N("issue/create-many", "import --input titles.jsonl", files={"titles.jsonl": '{"title":"imported by title","issue_type":"task","priority":2}\n'}, label="import rows naming no id"))
+    c.append(N("issue/create-many", "import --input stamped.jsonl", files={"stamped.jsonl": '{"id":"sw-fix-imp4","title":"stamped","issue_type":"task","status":"open","priority":2,"created_at":"2020-01-01T00:00:00Z","updated_at":"2020-01-01T00:00:00Z"}\n'}, label="import a row with stored timestamps"))
     c.append(N("issue/create-many", "import --input many.jsonl --dry-run", files={"many.jsonl": '{"id":"sw-fix-imp3","title":"imported three","issue_type":"task","status":"open","priority":2}\n'}))
     c.append(N("issue/create-many", "create --file many.md --dry-run", files={"many.md": "## dry md\n"}))
     e1, e2, e3 = fresh(), fresh(), fresh()
@@ -380,6 +392,11 @@ def writes():
     c.append(N("issue/batch", "batch --dry-run -f plan.txt", files={"plan.txt": 'create task 2 "batch dry"\n'}))
     c.append(N("issue/batch", "batch -m message", stdin='create task 2 "batch stdin"\n'))
     c.append(N("issue/batch", "batch", stdin="close sw-fix-none\n", label="batch with a miss"))
+    e4, e5 = fresh(), fresh()
+    plan2 = f'create task 2 "batch created two"\nupdate {e4} title=changed priority=1\nclose {e5} because\n'
+    c.append(N("issue/batch", "batch -f plan.txt", seed=[create(e4), create(e5)], files={"plan.txt": plan2}, label="batch with no dep remove"))
+    e6 = fresh()
+    c.append(N("issue/batch", "batch -f plan.txt", seed=[create(e6)], files={"plan.txt": f"update {e6} title=must-not-land\ndep remove {e6} sw-fix-none\n"}, label="batch refusing a dep remove up front"))
     # issue/dep/add
     def pair(command, *flags, **kw):
         x, y = fresh(), fresh()

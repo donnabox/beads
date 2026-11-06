@@ -192,6 +192,7 @@ func Tables() []Table {
 		readyBridgeTable(),
 		searchExactIDsTable(),
 		searchParentWalkTable(),
+		searchListingTable(),
 	}
 }
 
@@ -748,6 +749,89 @@ func searchParentWalkTable() Table {
 			walkRefusal("NoIDShrink"),
 			walkRefusal("Offset"),
 			walkRefusal("Lite"),
+		},
+	}
+}
+
+// searchListingTable is a raw filter naming neither ids nor a parent: one walk of
+// listIssues with every default suppression lifted (encode.go planListing).
+func searchListingTable() Table {
+	return Table{
+		Op: OpListIssues, Shape: string(SearchListing),
+		Source: tyIssueFilter, Target: tyListRequest,
+		Fields: []FieldEntry{
+			clientSide("IDs", "selects the exact-ids shape, so a filter that populates it never reaches this table"),
+			clientSide("ParentID", "selects the descendant walk, so a filter that populates it never reaches this table"),
+
+			paramTo("Status", "status", "Status"),
+			paramTo("Statuses", "status", "Status"),
+			paramTo("Priority", "priority", "Priority"),
+			paramTo("IssueType", "type", "IssueType"),
+			paramTo("Assignee", "assignee", "Assignee"),
+			paramTo("NoAssignee", "no_assignee", "NoAssignee"),
+			paramTo("Labels", "label", "Labels"),
+			paramTo("LabelsAny", "label_any", "LabelsAny"),
+			paramTo("ExcludeLabels", "exclude_label", "ExcludeLabels"),
+			paramTo("LabelPattern", "label_pattern", "LabelPattern"),
+			paramTo("LabelRegex", "label_regex", "LabelRegex"),
+			paramTo("TitleSearch", "title", "TitleSearch"),
+			paramTo("SpecIDPrefix", "spec", "SpecPrefix"),
+			paramTo("TitleContains", "title_contains", "TitleContains"),
+			paramTo("DescriptionContains", "desc_contains", "DescContains"),
+			paramTo("NotesContains", "notes_contains", "NotesContains"),
+			paramTo("ExternalRefContains", "external_contains", "ExternalContains"),
+			paramTo("ExternalRef", "external_ref", "ExternalRef"),
+			paramTo("CreatedAfter", "created_after", "CreatedAfter"),
+			paramTo("CreatedBefore", "created_before", "CreatedBefore"),
+			paramTo("UpdatedAfter", "updated_after", "UpdatedAfter"),
+			paramTo("UpdatedBefore", "updated_before", "UpdatedBefore"),
+			paramTo("ClosedAfter", "closed_after", "ClosedAfter"),
+			paramTo("ClosedBefore", "closed_before", "ClosedBefore"),
+			paramTo("EmptyDescription", "empty_description", "EmptyDesc"),
+			paramTo("NoLabels", "no_labels", "NoLabels"),
+			paramTo("PriorityMin", "priority_min", "PriorityMin"),
+			paramTo("PriorityMax", "priority_max", "PriorityMax"),
+			paramTo("Pinned", "pinned", "PinnedFlag"),
+			paramTo("NoParent", "no_parent", "NoParent"),
+			paramTo("MolType", "mol_type", "MolType"),
+			paramTo("WispType", "wisp_type", "WispType"),
+			paramTo("ExcludeStatus", "exclude_status", "ExcludeStatus"),
+			paramTo("ExcludeTypes", "exclude_type", "ExcludeTypes"),
+			paramTo("Deferred", "deferred", "DeferredFlag"),
+			paramTo("DeferAfter", "defer_after", "DeferAfter"),
+			paramTo("DeferBefore", "defer_before", "DeferBefore"),
+			paramTo("DueAfter", "due_after", "DueAfter"),
+			paramTo("DueBefore", "due_before", "DueBefore"),
+			paramTo("Overdue", "overdue", "OverdueFlag"),
+			paramTo("MetadataFields", "metadata_field", "MetadataFields"),
+			paramTo("HasMetadataKey", "has_metadata_key", "HasMetadataKey"),
+			paramTo("Lite", "brief", "Brief"),
+
+			clientSide("Limit", "the pager asks for pages and cuts the answer to the limit, as it does for ListRequest.Limit; unlimited maps to paging to exhaustion rather than to limit=0"),
+			clientSide("MaxRows", "the wire publishes no max_rows, so the pager enforces the cap during accumulation (D12)"),
+			clientSide("MaxRowsSource", "the cap's attribution, read back by the synthesized refusal's text; it decides no answer (D12)"),
+			clientSide("SortBy", "the pager orders the rows, and pushes the order down where it can (list_walk.go)"),
+			clientSide("SortDesc", "the other half of the order the pager owns"),
+
+			{Name: "IsTemplate", Disposition: DispInverted, Ledger: "S-IssueFilter.IsTemplate", Why: "&false is what leaving include_templates off derives on the server, and nil is what sending it derives; &true has no intent"},
+			{Name: "SkipWisps", Disposition: DispInverted, Ledger: "S-IssueFilter.SkipWisps", Why: "holding the plane out is what leaving include_infra and include_ephemeral off derives on the server, together with the infra-type exclusions"},
+
+			dropped("SkipLabels", "S-IssueFilter.SkipLabels", "the wire hydrates labels either way; the caller gets more data and never fewer rows"),
+			dropped("SkipCounts", "S-IssueFilter.SkipCounts", "the wire hydrates the cardinalities either way, and SearchIssues projects none of them"),
+			dropped("NoIDShrink", "S-IssueFilter.NoIDShrink", "a query-plan hint that decides no row"),
+
+			refused("IDPrefix", "S-IssueFilter.IDPrefix"),
+			refused("StartedAfter", "S-IssueFilter.StartedAfter"),
+			refused("StartedBefore", "S-IssueFilter.StartedBefore"),
+			refused("AfterCreatedAt", "S-IssueFilter.AfterCreatedAt"),
+			refused("AfterID", "S-IssueFilter.AfterID"),
+			refused("AfterPriority", "S-IssueFilter.AfterPriority"),
+			refused("SourceRepo", "S-IssueFilter.SourceRepo"),
+			refused("Ephemeral", "S-IssueFilter.Ephemeral"),
+			refused("EphemeralTier", "S-IssueFilter.EphemeralTier"),
+			refused("IsBlocked", "S-IssueFilter.IsBlocked"),
+			refused("IncludeDependencies", "S-IssueFilter.IncludeDependencies"),
+			refused("Offset", "S-IssueFilter.Offset"),
 		},
 	}
 }

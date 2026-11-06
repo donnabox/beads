@@ -121,7 +121,7 @@ func (s *Server) reopenRequest(w http.ResponseWriter, r *http.Request, id string
 	// The close's bounds, shared rather than restated: this value reaches the
 	// `reopened` event rather than a column, and an event stream is printed by
 	// the same renderers a close reason is.
-	reason, ok := s.storedTextMember(w, r, members, "reason")
+	reason, ok := s.storedProseMember(w, r, members, "reason")
 	if !ok {
 		return issueops.ReopenRequest{}, false
 	}

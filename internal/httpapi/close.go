@@ -104,7 +104,7 @@ func (s *Server) closeRequest(w http.ResponseWriter, r *http.Request, id string)
 	if !ok {
 		return issueops.CloseRequest{}, false
 	}
-	reason, ok := s.storedTextMember(w, r, members, "reason")
+	reason, ok := s.storedProseMember(w, r, members, "reason")
 	if !ok {
 		return issueops.CloseRequest{}, false
 	}
@@ -205,6 +205,27 @@ func (s *Server) storedTextMember(w http.ResponseWriter, r *http.Request, member
 			name, utf8.RuneCountInString(*value), types.MaxFieldLen))
 	case strings.ContainsFunc(*value, isControlChar):
 		return "", refuse("`" + name + "` must not contain control characters")
+	}
+	return *value, true
+}
+
+// storedProseMember is storedTextMember for a member whose value a person writes:
+// a close or reopen reason, read from a file with a trailing newline as often as
+// typed. The value lands in a LONGTEXT column (migration 0049), so it takes the
+// rule the other prose this surface stores takes (a description, and
+// requiredVerbatimMember's comment body): stored as sent, because a control rule
+// refuses the newlines prose is written in and a length bound refuses a stack
+// trace. The only cap is decodeJSONObjectBody's 1 MiB. Explicit `null` is still a
+// 400, for storedTextMember's reason.
+func (s *Server) storedProseMember(w http.ResponseWriter, r *http.Request, members map[string]json.RawMessage, name string) (string, bool) {
+	raw, ok := members[name]
+	if !ok {
+		return "", true
+	}
+	var value *string
+	if err := json.Unmarshal(raw, &value); err != nil || value == nil {
+		s.fail(w, r, InvalidArgument(name, ReasonInvalidValue, "`"+name+"` must be a string"))
+		return "", false
 	}
 	return *value, true
 }

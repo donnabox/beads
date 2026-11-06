@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/beads/internal/debug"
 	"github.com/steveyegge/beads/internal/metrics"
 	"github.com/steveyegge/beads/internal/storage"
 	storageissueops "github.com/steveyegge/beads/internal/storage/issueops"
@@ -623,20 +622,26 @@ func runReadyExplain(_ *cobra.Command) error {
 	readyIDs := make([]string, len(readyIssues))
 	for i, issue := range readyIssues {
 		readyIDs[i] = issue.ID
+		// bd serve's ready rows carry their edges and a local read's do not; the
+		// explanation reports edges from allDeps below.
+		issue.Dependencies = nil
 	}
+	// Every read below feeds the explanation. An explanation built past a failed
+	// one reports blank blockers and zero counts as if they were the answer, so
+	// a failure here is the command's failure.
 	depCounts, err := activeStore.GetDependencyCounts(ctx, readyIDs)
 	if err != nil {
-		debug.Logf("warning: failed to get dependency counts: %v", err)
+		return HandleErrorRespectJSON("failed to get dependency counts: %v", err)
 	}
 	allDeps, err := activeStore.GetDependencyRecordsForIssues(ctx, readyIDs)
 	if err != nil {
-		debug.Logf("warning: failed to get dependency records: %v", err)
+		return HandleErrorRespectJSON("failed to get dependency records: %v", err)
 	}
 
 	// Detect cycles
 	cycles, err := activeStore.DetectCycles(ctx)
 	if err != nil {
-		debug.Logf("warning: failed to detect cycles: %v", err)
+		return HandleErrorRespectJSON("failed to detect cycles: %v", err)
 	}
 
 	// Collect all blocker IDs to batch-fetch blocker details: the blockers
@@ -651,7 +656,7 @@ func runReadyExplain(_ *cobra.Command) error {
 	// routed through the role.
 	blockerIssues, err := activeStore.GetIssuesByIDs(ctx, blockerIDList)
 	if err != nil {
-		debug.Logf("warning: failed to get blocker issues: %v", err)
+		return HandleErrorRespectJSON("failed to get blocker issues: %v", err)
 	}
 	blockerMap := make(map[string]*types.Issue, len(blockerIssues))
 	for _, issue := range blockerIssues {

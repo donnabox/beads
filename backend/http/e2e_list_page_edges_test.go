@@ -206,8 +206,10 @@ func TestE2E_ListTextRenderingsReadOnlyTheListedIssuesEdges(t *testing.T) {
 				t.Errorf("bd %s read the edges of %v, want exactly the listed issues %v",
 					strings.Join(tc.args, " "), got, want)
 			}
-			if tc.page && len(reqs) > base+1 {
-				t.Errorf("bd %s made %d requests; bd list --json makes %d, and the text rendering may add only its one edge read",
+			// The edge read, and when a listed issue has a gate edge, the one read
+			// of those targets that decides whether it is GATED.
+			if tc.page && len(reqs) > base+2 {
+				t.Errorf("bd %s made %d requests; bd list --json makes %d, and the text rendering may add only its one edge read and one gate-target read",
 					strings.Join(tc.args, " "), len(reqs), base)
 			}
 			for _, w := range tc.want {

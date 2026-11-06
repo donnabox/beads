@@ -197,11 +197,6 @@ func (unsupportedDoltStorage) DeleteIssuesBySourceRepo(_ context.Context, _ stri
 	return
 }
 
-func (unsupportedDoltStorage) DetectCycles(_ context.Context) (_ [][]*types.Issue, err error) {
-	err = errUnsupported("DetectCycles")
-	return
-}
-
 func (unsupportedDoltStorage) Diff(_ context.Context, _ string, _ string) (_ []*storage.DiffEntry, err error) {
 	err = errUnsupported("Diff")
 	return
@@ -262,21 +257,6 @@ func (unsupportedDoltStorage) GetCurrentCommit(_ context.Context) (_ string, err
 	return
 }
 
-func (unsupportedDoltStorage) GetDependencies(_ context.Context, _ string) (_ []*types.Issue, err error) {
-	err = errUnsupported("GetDependencies")
-	return
-}
-
-func (unsupportedDoltStorage) GetDependencyCounts(_ context.Context, _ []string) (_ map[string]*types.DependencyCounts, err error) {
-	err = errUnsupported("GetDependencyCounts")
-	return
-}
-
-func (unsupportedDoltStorage) GetDependencyRecordsForIssues(_ context.Context, _ []string) (_ map[string][]*types.Dependency, err error) {
-	err = errUnsupported("GetDependencyRecordsForIssues")
-	return
-}
-
 func (unsupportedDoltStorage) GetDependencyTree(_ context.Context, _ string, _ int, _ bool, _ bool) (_ []*types.TreeNode, err error) {
 	err = errUnsupported("GetDependencyTree")
 	return
@@ -289,16 +269,6 @@ func (unsupportedDoltStorage) GetDependentRecords(_ context.Context, _ string, _
 
 func (unsupportedDoltStorage) GetDependentRecordsForIssues(_ context.Context, _ []string) (_ map[string][]*types.Dependency, err error) {
 	err = errUnsupported("GetDependentRecordsForIssues")
-	return
-}
-
-func (unsupportedDoltStorage) GetDependents(_ context.Context, _ string) (_ []*types.Issue, err error) {
-	err = errUnsupported("GetDependents")
-	return
-}
-
-func (unsupportedDoltStorage) GetEpicsEligibleForClosure(_ context.Context) (_ []*types.EpicStatus, err error) {
-	err = errUnsupported("GetEpicsEligibleForClosure")
 	return
 }
 
@@ -319,11 +289,6 @@ func (unsupportedDoltStorage) GetIssueByExternalRef(_ context.Context, _ string)
 
 func (unsupportedDoltStorage) GetIssueCommentsPage(_ context.Context, _ string, _ storage.CommentPageCursor, _ int) (_ []*types.Comment, err error) {
 	err = errUnsupported("GetIssueCommentsPage")
-	return
-}
-
-func (unsupportedDoltStorage) GetIssuesByIDs(_ context.Context, _ []string) (_ []*types.Issue, err error) {
-	err = errUnsupported("GetIssuesByIDs")
 	return
 }
 
@@ -369,11 +334,6 @@ func (unsupportedDoltStorage) GetProvenanceEvents(_ context.Context, _ string, _
 
 func (unsupportedDoltStorage) GetRepoMtime(_ context.Context, _ string) (_ int64, err error) {
 	err = errUnsupported("GetRepoMtime")
-	return
-}
-
-func (unsupportedDoltStorage) GetStaleIssues(_ context.Context, _ types.StaleFilter) (_ []*types.Issue, err error) {
-	err = errUnsupported("GetStaleIssues")
 	return
 }
 
@@ -717,4 +677,4 @@ func (unsupportedDoltStorage) VersionReconciler() (_ issueops.VersionReconciler,
 	return
 }
 
-// NOTE: partial shell (140 of 205 methods generated; 65 left to this package's hand-written set).
+// NOTE: partial shell (132 of 205 methods generated; 73 left to this package's hand-written set).
