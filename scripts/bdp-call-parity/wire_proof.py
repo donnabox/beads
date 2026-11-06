@@ -34,6 +34,7 @@ CURSOR = re.compile(r'("(?:next_)?cursor":")[^"]*(")|([?&]cursor=)[^&"\s]*')
 BUILD_FACTS = re.compile(r'"(build|commit)": "[0-9a-f]+"|\([0-9a-f]{9}: \w+@[0-9a-f]+\)')
 ARRIVAL_SEQ = re.compile(r'("?arrival_seq"?:\s*)\d+')
 PING_TIME = re.compile(r"\(\d+(?:\.\d+)?m?s\)")
+TIMINGS = re.compile(r'("\w+_ms":\s*)\d+')
 DROPPED_HEADERS = {"date", "content-length", "x-request-id"}
 # What a base command says when it will not run over bd connect.
 BASE_REFUSED = re.compile(r"not supported by the http backend|not expressible on the v0 wire|not available over bd connect"
@@ -63,6 +64,7 @@ class Masker:
         value = BUILD_FACTS.sub("<build>", value)
         value = ARRIVAL_SEQ.sub(lambda m: m.group(1) + "<seq>", value)
         value = PING_TIME.sub("(<time>)", value)
+        value = TIMINGS.sub(lambda m: m.group(1) + "<ms>", value)
         return MINTED_ID.sub(self._mint, value)
 
     def _mint(self, match):
