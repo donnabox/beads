@@ -3,14 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/metrics"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
 	"github.com/steveyegge/beads/internal/utils"
-	"github.com/steveyegge/beads/issueops"
 )
 
 var undeferCmd = &cobra.Command{
@@ -61,23 +59,10 @@ Examples:
 			return HandleErrorWithHint("database not initialized", diagHint())
 		}
 
-		ops, err := writeOps(store)
-		if err != nil {
-			return HandleError("%v", err)
-		}
-		opsCtx, err := issueOpsContext(ctx)
-		if err != nil {
-			return HandleError("%v", err)
-		}
-
-		// One id's failure does not stop the others, and it does make the
-		// command fail: see bd defer.
-		hasError := false
 		for _, fullID := range resolvedIDs {
 			issue, err := store.GetIssue(ctx, fullID)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error getting %s: %v\n", fullID, err)
-				hasError = true
 				continue
 			}
 
@@ -91,26 +76,26 @@ Examples:
 			wasDeferred := issue.Status == types.StatusDeferred
 			if !wasDeferred && issue.DeferUntil == nil {
 				fmt.Fprintf(os.Stderr, "%s is not deferred (status: %s)\n", fullID, string(issue.Status))
-				hasError = true
 				continue
 			}
 
-			patch := issueops.IssuePatch{
-				DeferUntil: issueops.Field[*time.Time]{Set: true},
+			updates := map[string]interface{}{
+				"defer_until": nil,
 			}
 			if wasDeferred {
-				patch.Status = issueops.Field[types.Status]{Set: true, Value: types.StatusOpen}
+				updates["status"] = string(types.StatusOpen)
 			}
 
-			result, err := ops.Update(opsCtx, issueops.UpdateRequest{Actor: currentActor(), IssueID: fullID, Patch: patch})
-			if err != nil {
+			if err := store.UpdateIssue(ctx, fullID, updates, currentActor()); err != nil {
 				fmt.Fprintf(os.Stderr, "Error undeferring %s: %v\n", fullID, err)
-				hasError = true
 				continue
 			}
 
 			if jsonOutput {
-				undeferredIssues = append(undeferredIssues, result.Issue)
+				issue, _ := store.GetIssue(ctx, fullID)
+				if issue != nil {
+					undeferredIssues = append(undeferredIssues, issue)
+				}
 			} else if wasDeferred {
 				fmt.Printf("%s Undeferred %s (now open)\n", ui.RenderPass("*"), fullID)
 			} else {
@@ -123,14 +108,9 @@ Examples:
 		}
 
 		if jsonOutput && len(undeferredIssues) > 0 {
-			if err := outputJSON(undeferredIssues); err != nil {
-				return err
-			}
+			return outputJSON(undeferredIssues)
 		}
 
-		if hasError {
-			return SilentExit()
-		}
 		return nil
 	},
 }

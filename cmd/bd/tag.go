@@ -7,7 +7,6 @@ import (
 	"github.com/steveyegge/beads/internal/metrics"
 	"github.com/steveyegge/beads/internal/ui"
 	"github.com/steveyegge/beads/internal/utils"
-	"github.com/steveyegge/beads/issueops"
 )
 
 var tagCmd = &cobra.Command{
@@ -68,19 +67,7 @@ Examples:
 			return HandleErrorRespectJSON("%s", err)
 		}
 
-		ops, err := writeOps(issueStore)
-		if err != nil {
-			return HandleErrorRespectJSON("adding label to %s: %v", id, err)
-		}
-		opsCtx, err := issueOpsContext(ctx)
-		if err != nil {
-			return HandleErrorRespectJSON("%v", err)
-		}
-		if _, err := ops.Update(opsCtx, issueops.UpdateRequest{
-			Actor:   currentActor(),
-			IssueID: result.ResolvedID,
-			Patch:   issueops.IssuePatch{Labels: issueops.LabelPatch{Add: []string{label}}},
-		}); err != nil {
+		if err := issueStore.AddLabel(ctx, result.ResolvedID, label, currentActor()); err != nil {
 			return HandleErrorRespectJSON("adding label to %s: %v", id, err)
 		}
 		if err := commitPendingIfEmbedded(ctx, issueStore, currentActor(), doltAutoCommitParams{

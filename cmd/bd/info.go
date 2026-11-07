@@ -70,14 +70,9 @@ Examples:
 		if store != nil {
 			ctx := rootCtx
 
-			// On v0 this read has never been sent, and the count is absent: see
-			// remoteOnV0.
-			var issues []*types.Issue
-			if !remoteOnV0(store) {
-				var err error
-				if issues, err = store.SearchIssues(ctx, "", types.IssueFilter{}); err == nil {
-					info["issue_count"] = len(issues)
-				}
+			issues, err := store.SearchIssues(ctx, "", types.IssueFilter{})
+			if err == nil {
+				info["issue_count"] = len(issues)
 			}
 
 			// THE SAME FILTER THE SETTINGS ROLE USES. `bd info --json` serves

@@ -8,7 +8,6 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
 	"github.com/steveyegge/beads/internal/utils"
-	"github.com/steveyegge/beads/issueops"
 )
 
 var duplicateCmd = &cobra.Command{
@@ -99,8 +98,12 @@ func runDuplicate(cmd *cobra.Command, args []string) error {
 	}
 
 	// Add a "duplicates" dependency edge (duplicate → canonical)
-	edge := issueops.DependencyEdge{IssueID: duplicateID, DependsOnID: canonicalID, Type: types.DepDuplicates}
-	if err := addDependencyEdgesDirect(ctx, store, []issueops.DependencyEdge{edge}, false); err != nil {
+	dep := &types.Dependency{
+		IssueID:     duplicateID,
+		DependsOnID: canonicalID,
+		Type:        types.DepDuplicates,
+	}
+	if err := store.AddDependency(ctx, dep, actor); err != nil {
 		return fmt.Errorf("failed to add duplicate link: %w", err)
 	}
 
@@ -165,8 +168,12 @@ func runSupersede(cmd *cobra.Command, args []string) error {
 	}
 
 	// Add a "supersedes" dependency edge (old → new)
-	edge := issueops.DependencyEdge{IssueID: oldID, DependsOnID: newID, Type: types.DepSupersedes}
-	if err := addDependencyEdgesDirect(ctx, store, []issueops.DependencyEdge{edge}, false); err != nil {
+	dep := &types.Dependency{
+		IssueID:     oldID,
+		DependsOnID: newID,
+		Type:        types.DepSupersedes,
+	}
+	if err := store.AddDependency(ctx, dep, actor); err != nil {
 		return fmt.Errorf("failed to add supersede link: %w", err)
 	}
 

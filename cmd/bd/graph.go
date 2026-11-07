@@ -404,16 +404,10 @@ func loadGraphSubgraph(ctx context.Context, s storage.DoltStorage, issueID strin
 		currentID := queue[0]
 		queue = queue[1:]
 
-		// On v0 neither read is sent, and the graph is the root and its own edges,
-		// as it always was: see remoteOnV0.
-		if remoteOnV0(s) {
-			continue
-		}
-
 		// Get issues that depend on this one (dependents)
 		dependents, err := s.GetDependents(ctx, currentID)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get dependents of %s: %w", currentID, err)
+			continue
 		}
 		for _, dep := range dependents {
 			if !visited[dep.ID] {
@@ -427,7 +421,7 @@ func loadGraphSubgraph(ctx context.Context, s storage.DoltStorage, issueID strin
 		// Get issues this one depends on (dependencies)
 		dependencies, err := s.GetDependencies(ctx, currentID)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get dependencies of %s: %w", currentID, err)
+			continue
 		}
 		for _, dep := range dependencies {
 			if !visited[dep.ID] {

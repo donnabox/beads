@@ -1,10 +1,6 @@
 package main
 
-import (
-	"testing"
-
-	"github.com/spf13/cobra"
-)
+import "testing"
 
 // TestValidateCommentsAddArgs is a pure unit test for "comments add"'s Args
 // guard — it calls the validator directly with no store, no Dolt, and no
@@ -41,48 +37,6 @@ func TestValidateCommentsAddArgs(t *testing.T) {
 			}
 			if !tc.wantErr && err != nil {
 				t.Fatalf("validateCommentsAddArgs(%q): expected no error, got %v", tc.args, err)
-			}
-		})
-	}
-}
-
-// TestCheckCommentAuthorAlias pins --author as an alias of --actor: two different
-// explicit values are refused, and nothing else is. The flags are declared on a
-// tree of its own, so nothing here depends on the real root's parsed state.
-func TestCheckCommentAuthorAlias(t *testing.T) {
-	origJSONOutput := jsonOutput
-	jsonOutput = false
-	t.Cleanup(func() { jsonOutput = origJSONOutput })
-
-	cases := []struct {
-		name    string
-		args    []string
-		wantErr bool
-	}{
-		{name: "two different values", args: []string{"--actor", "sam", "add", "--author", "kim"}, wantErr: true},
-		{name: "two different values, the short flag", args: []string{"--actor", "sam", "add", "-a", "kim"}, wantErr: true},
-		{name: "--actor after the command", args: []string{"add", "--actor", "sam", "--author", "kim"}, wantErr: true},
-		{name: "the same value twice", args: []string{"--actor", "sam", "add", "--author", "sam"}},
-		{name: "only --actor", args: []string{"--actor", "sam", "add"}},
-		{name: "only --author", args: []string{"add", "--author", "kim"}},
-		{name: "a blank --author names nobody", args: []string{"--actor", "sam", "add", "--author", ""}},
-		{name: "a blank --actor names nobody", args: []string{"--actor", "", "add", "--author", "kim"}},
-		{name: "neither", args: []string{"add"}},
-	}
-	for _, tc := range cases {
-		t.Run(tc.name, func(t *testing.T) {
-			root := &cobra.Command{Use: "bd"}
-			root.PersistentFlags().String("actor", "", "")
-			var got error
-			add := &cobra.Command{Use: "add", Run: func(cmd *cobra.Command, _ []string) { got = checkCommentAuthorAlias(cmd) }}
-			add.Flags().StringP("author", "a", "", "")
-			root.AddCommand(add)
-			root.SetArgs(tc.args)
-			if err := root.Execute(); err != nil {
-				t.Fatalf("parsing %q: %v", tc.args, err)
-			}
-			if (got != nil) != tc.wantErr {
-				t.Fatalf("%q: error = %v, want error %v", tc.args, got, tc.wantErr)
 			}
 		})
 	}

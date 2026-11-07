@@ -762,9 +762,6 @@ func runSyncCommand(cmd *cobra.Command, _ []string) error {
 	if st == nil {
 		return HandleErrorRespectJSON("no store available")
 	}
-	if storeIsRemoteBackend(st) {
-		return HandleErrorRespectJSON("bd sync is not available over bd connect: bd serve is the sync boundary and syncs its own database; run it on the server's workspace")
-	}
 	recomputer, ok := storage.UnwrapStore(st).(storage.BlockedRecomputer)
 	if !ok {
 		return HandleErrorRespectJSON("storage backend does not support is_blocked recompute")

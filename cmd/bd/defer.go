@@ -12,7 +12,6 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
 	"github.com/steveyegge/beads/internal/utils"
-	"github.com/steveyegge/beads/issueops"
 )
 
 // deferUntilFormatHint restates the vocabulary of
@@ -97,41 +96,40 @@ Examples:
 			return HandleErrorWithHint("database not initialized", diagHint())
 		}
 
-		ops, err := writeOps(store)
-		if err != nil {
-			return HandleError("%v", err)
-		}
-		opsCtx, err := issueOpsContext(ctx)
-		if err != nil {
-			return HandleError("%v", err)
-		}
-
-		// One id's failure does not stop the others, and it does make the
-		// command fail: printing it and exiting 0 told a script the issue was
-		// deferred when nothing was written.
-		hasError := false
 		for _, fullID := range resolvedIDs {
-			// The reason is an append OPERATION rather than a pre-merged value,
-			// for bd note's reason: the role re-reads the row inside the write.
-			patch := issueops.IssuePatch{
-				Status: issueops.Field[types.Status]{Set: true, Value: types.StatusDeferred},
+			updates := map[string]interface{}{
+				"status": string(types.StatusDeferred),
 			}
 			if deferUntil != nil {
-				patch.DeferUntil = issueops.Field[*time.Time]{Set: true, Value: deferUntil}
+				updates["defer_until"] = *deferUntil
 			}
 			if reason != "" {
-				patch.AppendNotes = issueops.Field[string]{Set: true, Value: reason}
+				issue, err := store.GetIssue(ctx, fullID)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error loading %s: %v\n", fullID, err)
+					continue
+				}
+				if issue == nil {
+					fmt.Fprintf(os.Stderr, "Issue %s not found\n", fullID)
+					continue
+				}
+				notes := issue.Notes
+				if notes != "" {
+					notes += "\n"
+				}
+				updates["notes"] = notes + reason
 			}
 
-			result, err := ops.Update(opsCtx, issueops.UpdateRequest{Actor: currentActor(), IssueID: fullID, Patch: patch})
-			if err != nil {
+			if err := store.UpdateIssue(ctx, fullID, updates, currentActor()); err != nil {
 				fmt.Fprintf(os.Stderr, "Error deferring %s: %v\n", fullID, err)
-				hasError = true
 				continue
 			}
 
 			if jsonOutput {
-				deferredIssues = append(deferredIssues, result.Issue)
+				issue, _ := store.GetIssue(ctx, fullID)
+				if issue != nil {
+					deferredIssues = append(deferredIssues, issue)
+				}
 			} else {
 				fmt.Printf("%s Deferred %s\n", ui.RenderAccent("*"), fullID)
 			}
@@ -145,9 +143,6 @@ Examples:
 
 		if len(args) > 0 {
 			commandDidWrite.Store(true)
-		}
-		if hasError {
-			return SilentExit()
 		}
 		return nil
 	},

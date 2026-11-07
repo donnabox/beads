@@ -82,53 +82,6 @@ func TestEmbeddedCommentsCLI(t *testing.T) {
 		}
 	})
 
-	// --author is an alias of --actor: two different values write nothing, the
-	// same value twice is one value, and BD_ACTOR or BEADS_ACTOR only give a default
-	// that --author overrides.
-	t.Run("comments_add_author_is_an_alias_of_actor", func(t *testing.T) {
-		issue := bdCreate(t, bd, dir, "Author alias", "--type", "task")
-		add := func(env []string, args ...string) ([]byte, error) {
-			cmd := exec.Command(bd, args...)
-			cmd.Dir = dir
-			cmd.Env = append(bdEnv(dir), env...)
-			return cmd.CombinedOutput()
-		}
-		authors := func() []string {
-			var comments []struct {
-				Author string `json:"author"`
-			}
-			out := bdComments(t, bd, dir, issue.ID, "--json")
-			if err := json.Unmarshal([]byte(out[strings.Index(out, "["):]), &comments); err != nil {
-				t.Fatalf("parse comments: %v\n%s", err, out)
-			}
-			got := make([]string, len(comments))
-			for i, comment := range comments {
-				got[i] = comment.Author
-			}
-			return got
-		}
-
-		out, err := add(nil, "--actor", "sam", "comments", "add", issue.ID, "refused", "--author", "kim")
-		if err == nil {
-			t.Fatalf("two different values: exit 0:\n%s", out)
-		}
-		if !strings.Contains(string(out), "alias of --actor") {
-			t.Errorf("two different values: %s", out)
-		}
-		if out, err := add(nil, "--actor", "sam", "comments", "add", issue.ID, "same", "--author", "sam"); err != nil {
-			t.Fatalf("the same value twice: %v\n%s", err, out)
-		}
-		if out, err := add([]string{"BD_ACTOR=env-one"}, "comments", "add", issue.ID, "over BD_ACTOR", "-a", "kim"); err != nil {
-			t.Fatalf("BD_ACTOR and --author: %v\n%s", err, out)
-		}
-		if out, err := add([]string{"BEADS_ACTOR=env-two"}, "comments", "add", issue.ID, "over BEADS_ACTOR", "--author", "lee"); err != nil {
-			t.Fatalf("BEADS_ACTOR and --author: %v\n%s", err, out)
-		}
-		if got, want := strings.Join(authors(), ","), "sam,kim,lee"; got != want {
-			t.Errorf("authors = %s, want %s: the refused one wrote nothing and --author won", got, want)
-		}
-	})
-
 	t.Run("comments_add_nonexistent_issue", func(t *testing.T) {
 		cmd := exec.Command(bd, "comments", "add", "cc-nonexistent999", "nope")
 		cmd.Dir = dir

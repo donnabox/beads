@@ -340,7 +340,11 @@ func createIssuesFromMarkdown(ctx context.Context, in createInput) error {
 	if err != nil {
 		return HandleError("%v", err)
 	}
-	result, err := createBatchOverEitherOperation(opsCtx, store, request)
+	creator, err := store.BatchCreator()
+	if err != nil {
+		return HandleError("%v", err)
+	}
+	result, err := creator.CreateBatch(opsCtx, request)
 	if err != nil {
 		return HandleError("creating issues from markdown: %v", err)
 	}
@@ -396,9 +400,10 @@ func buildMarkdownBatchRequest(templates []*IssueTemplate, in createInput) (issu
 				// here was never a different outcome — only a populated member
 				// the http wire's BatchCreateItem has no slot for and the role
 				// (correctly) refuses rather than drops. Leaving it unset removes
-				// that one refusal without changing what gets created. A request
-				// carrying what that wire leaves out (Owner, usually) goes as
-				// applyBatch's create items; see createBatchOverEitherOperation.
+				// that one refusal without changing what gets created; the http
+				// wire still refuses this request's Provenance and Owner (see
+				// internal/httpclient/batchcreator.go), so `--file` is not
+				// servable there yet.
 				Priority:     markdownItemPriority(template),
 				IssueType:    template.IssueType,
 				Assignee:     template.Assignee,
@@ -414,19 +419,14 @@ func buildMarkdownBatchRequest(templates []*IssueTemplate, in createInput) (issu
 			DefaultPriority: !template.PrioritySet,
 		})
 	}
-	request := issueops.CreateBatchRequest{
+	return issueops.CreateBatchRequest{
 		Actor: markdownBatchActor(in),
 		Items: items,
-	}
-	// The entry both routes have always written, spelled once. The role's own
-	// default would name a count and lose the file, which is the thing `bd dolt
-	// log` is read for after a bulk create. A store that cannot carry the
-	// caller's own history label (remote_backend.go) leaves it to the server's
-	// entry for the same act, as `bd reopen` does.
-	if storeCarriesCallerAttribution(store) {
-		request.Provenance = fmt.Sprintf("bd: create %d issue(s) from %s", len(templates), in.markdownFile)
-	}
-	return request, nil
+		// The entry both routes have always written, spelled once. The role's
+		// own default would name a count and lose the file, which is the thing
+		// `bd dolt log` is read for after a bulk create.
+		Provenance: fmt.Sprintf("bd: create %d issue(s) from %s", len(templates), in.markdownFile),
+	}, nil
 }
 
 // markdownBatchActor is the actor a `--file` create is attributed to. The role

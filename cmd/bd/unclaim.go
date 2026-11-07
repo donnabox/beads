@@ -91,12 +91,9 @@ Examples:
 			issueStore := result.Store
 
 			var unclaimErr error
-			switch {
-			case storeIsRemoteBackend(issueStore):
-				unclaimErr = releaseThroughRole(ctx, issueStore, fullID, conditional, ifAssignee, force)
-			case conditional:
+			if conditional {
 				unclaimErr = issueStore.UnclaimIssueIfAssignee(ctx, fullID, currentActor(), ifAssignee)
-			default:
+			} else {
 				unclaimErr = issueStore.UnclaimIssue(ctx, fullID, currentActor(), force)
 			}
 			if unclaimErr != nil {
@@ -116,7 +113,7 @@ Examples:
 			}
 
 			if reason != "" {
-				if err := addReasonComment(ctx, issueStore, fullID, reason); err != nil {
+				if _, err := issueStore.AddIssueComment(ctx, fullID, currentActor(), reason); err != nil {
 					fmt.Fprintf(os.Stderr, "Warning: failed to add reason comment: %v\n", err)
 				}
 			}

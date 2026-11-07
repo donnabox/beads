@@ -22,10 +22,6 @@ func showIssueRefs(ctx context.Context, args []string, jsonOut bool) error {
 		if err != nil {
 			return err
 		}
-		refs, err = hydrateRemoteDependents(ctx, issueStore, refs)
-		if err != nil {
-			return err
-		}
 		allRefs[issueID] = refs
 		return nil
 	}

@@ -63,10 +63,9 @@ Example:
 
 		ctx := rootCtx
 
-		// Mirrors bd create's parent handling: validate the parent exists; the
-		// role reserves the hierarchical child id and inherits the labels inside
-		// the create, so the issue and its edge commit as one write and a failed
-		// edge leaves no dep-less child behind (same contract as bd create).
+		// Mirrors bd create's parent handling: validate the parent exists,
+		// inherit its labels, and reserve a hierarchical child ID.
+		var inheritedLabels []string
 		if parentID != "" {
 			if _, err := store.GetIssue(ctx, parentID); err != nil {
 				if errors.Is(err, storage.ErrNotFound) {
@@ -74,6 +73,7 @@ Example:
 				}
 				return HandleError("failed to check parent issue: %v", err)
 			}
+			inheritedLabels, _ = store.GetLabels(ctx, parentID)
 		}
 
 		issue := &types.Issue{
@@ -81,30 +81,28 @@ Example:
 			Status:    types.StatusOpen,
 			Priority:  priority,
 			IssueType: types.IssueType(issueType).Normalize(),
-			Labels:    labels,
+			Labels:    mergeCreateLabels(labels, inheritedLabels),
 		}
 
-		ops, err := writeOps(store)
-		if err != nil {
-			return HandleError("%v", err)
+		if parentID != "" {
+			childID, err := store.GetNextChildID(ctx, parentID)
+			if err != nil {
+				return HandleError("%v", err)
+			}
+			issue.ID = childID
+			ctx = storage.WithReservedChildCounter(ctx, parentID, childID)
 		}
-		opsCtx, err := issueOpsContext(ctx)
-		if err != nil {
-			return HandleError("%v", err)
-		}
-		created, err := ops.Create(opsCtx, issueops.CreateRequest{
-			Actor:                   currentActor(),
-			Issue:                   issue,
-			ParentID:                parentID,
-			InheritLabelsFromParent: parentID != "",
-		})
-		if err != nil {
+
+		// The issue and its parent-child edge commit in one transaction; a
+		// failed edge rolls back the create instead of leaving a dep-less
+		// child behind (same contract as bd create).
+		if err := createIssueWithDeps(ctx, store, issue, currentActor(), createDepEdges{parentID: parentID}); err != nil {
 			return HandleError("%v", err)
 		}
 
 		commandDidWrite.Store(true)
 
-		fmt.Println(created.Issue.ID)
+		fmt.Println(issue.ID)
 		return nil
 	},
 }

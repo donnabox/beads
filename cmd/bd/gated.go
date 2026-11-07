@@ -130,9 +130,7 @@ func gatedIssueIDs(
 	issues []*types.Issue,
 	preloadedDeps map[string][]*types.Dependency,
 ) map[string][]string {
-	// On v0 no row has ever rendered as gated, and neither read is sent: see
-	// remoteOnV0.
-	if st == nil || remoteOnV0(st) {
+	if st == nil {
 		return nil
 	}
 	return gatesByIssueID(ctx, issues, preloadedDeps,

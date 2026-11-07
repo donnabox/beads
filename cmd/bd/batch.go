@@ -173,8 +173,6 @@ normal 'bd' subcommands for interactive/read operations.`,
 		var results []batchOpResult
 		if proxied {
 			results, err = runBatchProxiedServer(ctx, ops, commitMsg)
-		} else if storeIsRemoteBackend(store) {
-			results, err = runBatchRemote(ctx, store, ops, commitMsg)
 		} else {
 			results = make([]batchOpResult, 0, len(ops))
 			err = transact(ctx, store, commitMsg, func(tx storage.Transaction) error {

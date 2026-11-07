@@ -16,7 +16,6 @@ import (
 	"github.com/steveyegge/beads/internal/eventsjournal"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/uow"
-	"github.com/steveyegge/beads/journalops"
 )
 
 // eventFollowPollInterval is how often `bd events tail --follow` polls the
@@ -301,9 +300,7 @@ func endEventsStream(failure any) error {
 // line reader consumes, and a notice about the reader's own configuration is
 // not a record. Exit status is unchanged.
 func noticeEventsJournalDisabled(beadsDir string) {
-	// A remote workspace's own config says nothing about whether the server is
-	// journaling, so there is nothing true to say about it here.
-	if storeIsRemoteBackend(store) || eventsjournal.EnabledFor(beadsDir) {
+	if eventsjournal.EnabledFor(beadsDir) {
 		return
 	}
 	fmt.Fprintf(os.Stderr,
@@ -409,16 +406,6 @@ func journalAccessor() (storage.EventsJournalAccessor, error) {
 	return acc, nil
 }
 
-// remoteJournalReader is the read half a remote store has: listEvents, and no
-// way to prune, which is the server operator's act (journalops' package doc).
-func remoteJournalReader() (journalops.Journal, bool) {
-	if !storeIsRemoteBackend(store) {
-		return nil, false
-	}
-	reader, ok := storage.UnwrapStore(store).(journalops.Journal)
-	return reader, ok
-}
-
 // readJournal reads records with seq greater than since from the active
 // storage seam. Proxied-server mode uses its transaction-bound UOW journal
 // capability; direct stores use EventsJournalAccessor.
@@ -441,12 +428,6 @@ func readJournal(ctx context.Context, since int64, limit int) ([]eventsjournal.R
 		if err != nil {
 			return nil, err
 		}
-	} else if reader, ok := remoteJournalReader(); ok {
-		page, err := reader.ReadEventsJournalPage(ctx, since, limit)
-		if err != nil {
-			return nil, err
-		}
-		rows = page.Rows
 	} else {
 		acc, err := journalAccessor()
 		if err != nil {
@@ -472,9 +453,6 @@ func pruneJournal(ctx context.Context, before int64, retainDays, retainRows int)
 		return uow.RunTxEphemeral(ctx, uowProvider, func(ctx context.Context, uw uow.UnitOfWork) (int64, error) {
 			return uw.EventsJournalUseCase().Prune(ctx, before, retainDays, retainRows)
 		})
-	}
-	if storeIsRemoteBackend(store) {
-		return 0, fmt.Errorf("pruning the events journal is not available over bd connect: it is the server's own retention decision; run it on the server's workspace")
 	}
 	acc, err := journalAccessor()
 	if err != nil {

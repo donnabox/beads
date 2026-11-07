@@ -15,13 +15,9 @@ stdout 'Comment added'
 exec sh -c 'bd comments $(cat id.txt)'
 stdout 'This is a test comment'
 
-# Add another comment with author (an alias of --actor)
+# Add another comment with author
 exec sh -c 'bd comments add $(cat id.txt) "Second comment" --author tester'
 stdout 'Comment added'
-
-# Two different values for one author are refused
-! exec sh -c 'bd --actor sam comments add $(cat id.txt) "Refused" --author kim'
-stderr 'alias of --actor'
 
 # Comments on nonexistent issue should fail
 ! bd comments nonexistent-id

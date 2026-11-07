@@ -5,8 +5,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/metrics"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/ui"
-	"github.com/steveyegge/beads/issueops"
 )
 
 // validateNoteArgs runs as cobra's Args validation for "note", before RunE
@@ -170,19 +170,10 @@ To read notes on an issue, use: bd show <id>`,
 		// there. Concatenating onto the `issue` snapshot here (read in an
 		// earlier transaction) silently erased notes committed by a concurrent
 		// `bd note` / `bd update --append-notes` — both processes exited 0.
-		ops, err := writeOps(issueStore)
-		if err != nil {
-			return HandleErrorRespectJSON("updating %s: %v", id, err)
+		updates := map[string]interface{}{
+			issueops.OpAppendNotes: noteText,
 		}
-		opsCtx, err := issueOpsContext(ctx)
-		if err != nil {
-			return HandleErrorRespectJSON("%v", err)
-		}
-		if _, err := ops.Update(opsCtx, issueops.UpdateRequest{
-			Actor:   currentActor(),
-			IssueID: result.ResolvedID,
-			Patch:   issueops.IssuePatch{AppendNotes: issueops.Field[string]{Set: true, Value: noteText}},
-		}); err != nil {
+		if err := issueStore.UpdateIssue(ctx, result.ResolvedID, updates, currentActor()); err != nil {
 			return HandleErrorRespectJSON("updating %s: %v", id, err)
 		}
 		if err := commitPendingIfEmbedded(ctx, issueStore, currentActor(), doltAutoCommitParams{

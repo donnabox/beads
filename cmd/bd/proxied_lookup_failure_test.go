@@ -259,7 +259,7 @@ var proxiedLookupCommands = []struct {
 		},
 		wantNotFound: "Error resolving bd-missing: not found",
 		wantHardErr:  "Error resolving bd-missing: connection reset by peer",
-		exitsZero:    false,
+		exitsZero:    true,
 	},
 	{
 		name: "undefer",
@@ -268,7 +268,7 @@ var proxiedLookupCommands = []struct {
 		},
 		wantNotFound: "Error getting bd-missing: not found",
 		wantHardErr:  "Error getting bd-missing: connection reset by peer",
-		exitsZero:    false,
+		exitsZero:    true,
 	},
 	{
 		// The two routes now share one body, so this reports the DIRECT route's
