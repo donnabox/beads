@@ -1,0 +1,885 @@
+{
+  "format": "query-wrapper-map/0",
+  "status": "design-coverage-not-executed",
+  "source_commit": "116a4ea6a459ef823ea714c1f418ad4c39dd81af",
+  "product_base": "5779b6b846d358c40bdc7bad4a2fcffc779aadb6",
+  "publication_base": "5b8cdefe055b8f08cf9eb385e946396c1b5799d7",
+  "scope_note": "Source inventory is not installed-route parity at publication base. No disposition grants a blanket expressibility exception or authorizes migration. Excluded paths remain unchanged.",
+  "equivalence_obligations": [
+    "same authorized population and selected read context",
+    "same exact identities/revisions and Link witnesses",
+    "same properties, cardinalities, aggregate units and ordering",
+    "same error/completeness/bound behavior",
+    "no incidental mutation or output-mask-caused acquisition"
+  ],
+  "surfaces": [
+    {
+      "surfaces": [
+        "bd query",
+        "bd list"
+      ],
+      "disposition": "admitted-design",
+      "shared_plan": {
+        "population": "explicit Beads/Links/union",
+        "operations": [
+          "filter",
+          "order",
+          "page"
+        ]
+      },
+      "additional_contract": "Wrapper Issue-specific flags/defaults normalize explicitly; legacy expression and compatibility cutover unresolved.",
+      "source_paths": [
+        "cmd/bd/list.go",
+        "cmd/bd/list_input.go",
+        "cmd/bd/query.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": true,
+      "mapping_status": "unproven-plan",
+      "illustrative_case_ids": [
+        "population-default",
+        "population-union",
+        "null-equality-includes-absent"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd search"
+      ],
+      "disposition": "admitted-design",
+      "shared_plan": {
+        "operations": [
+          "field-select",
+          "literal-insensitive-contains",
+          "order",
+          "page"
+        ]
+      },
+      "additional_contract": "Resolve facade ID conveniences and selected text fields; legacy SQL-LIKE matching is not pure contains.",
+      "source_paths": [
+        "cmd/bd/search.go",
+        "cmd/bd/graph_preview_discovery.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "open_gap": "Unicode version, compatibility transition, body acquisition and prefix matching interface need frozen contracts.",
+      "coverage_obligation": true,
+      "mapping_status": "unproven-plan",
+      "illustrative_case_ids": [
+        "literal-contains",
+        "wildcards-not-patterns",
+        "insensitive-contains"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd show",
+        "bd view",
+        "bd link show"
+      ],
+      "disposition": "admitted-design",
+      "shared_plan": {
+        "operations": [
+          "exact-identity-lookup",
+          "exact-edition-lookup"
+        ]
+      },
+      "additional_contract": "Facade identity resolution and per-ID outcomes; rendering belongs to common contract.",
+      "source_paths": [
+        "cmd/bd/show.go",
+        "issueops/batchgetter.go",
+        "cmd/bd/graph_preview_lifecycle.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": true,
+      "mapping_status": "unproven-plan",
+      "illustrative_case_ids": [
+        "two-editions-distinct"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd links",
+        "bd link list",
+        "bd link count"
+      ],
+      "disposition": "admitted-design",
+      "shared_plan": {
+        "population": "Links",
+        "operations": [
+          "incident-selection",
+          "type-family",
+          "endpoint-reference-tests",
+          "count"
+        ]
+      },
+      "additional_contract": "Retain direction, Type, revision and parallel Link identities; external endpoint need not be fetchable.",
+      "source_paths": [
+        "cmd/bd/graph_preview_lifecycle.go",
+        "graphops/reader.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": true,
+      "mapping_status": "unproven-plan",
+      "illustrative_case_ids": [
+        "link-family",
+        "expand-parallel",
+        "count-links"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd count",
+        "bd count --by-*"
+      ],
+      "disposition": "admitted-design",
+      "shared_plan": {
+        "operations": [
+          "filter",
+          "group-count",
+          "explicit-array-unnest"
+        ]
+      },
+      "additional_contract": "Exact totals before output pages; label groups intentionally overlap only after expansion.",
+      "source_paths": [
+        "cmd/bd/count.go",
+        "issueops/counter.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "open_gap": "Group/unnest grammar, ordering and descriptor not yet frozen.",
+      "coverage_obligation": true,
+      "mapping_status": "unproven-plan",
+      "illustrative_case_ids": [
+        "count-before-page",
+        "null-grouping",
+        "array-groups-not-overlap",
+        "unnest-labels-explicit"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd versions",
+        "bd link versions"
+      ],
+      "disposition": "admitted-history-design",
+      "shared_plan": {
+        "operations": [
+          "enumerate-retained-editions",
+          "order",
+          "page"
+        ]
+      },
+      "additional_contract": "Revision/event/commit populations differ. Distinguish absent/unretained/gone/unsupported.",
+      "source_paths": [
+        "cmd/bd/versions.go",
+        "cmd/bd/graph_preview_lifecycle.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "open_gap": "History operation/result schema separate from predicate grammar; version tokens are opaque.",
+      "coverage_obligation": true,
+      "mapping_status": "unproven-plan",
+      "illustrative_case_ids": [
+        "missing-pinned-history"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd compare",
+        "bd link compare"
+      ],
+      "disposition": "admitted-history-design",
+      "shared_plan": {
+        "operations": [
+          "lookup-two-exact-editions"
+        ]
+      },
+      "additional_contract": "Compute version comparison separately; query selection does not define diff semantics.",
+      "source_paths": [
+        "cmd/bd/graph_preview_compare.go",
+        "cmd/bd/graph_preview_lifecycle.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": true,
+      "mapping_status": "unproven-plan",
+      "illustrative_case_ids": [
+        "two-editions-distinct"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd list --watch",
+        "bd show --watch"
+      ],
+      "disposition": "separate-lifecycle",
+      "shared_plan": {
+        "operations": [
+          "repeat-same-normalized-read"
+        ]
+      },
+      "additional_contract": "Refresh/subscription/terminal updates are not query continuation.",
+      "source_paths": [
+        "cmd/bd/list_input.go",
+        "cmd/bd/show.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd todo",
+        "bd todo list",
+        "bd human list",
+        "bd gate list"
+      ],
+      "disposition": "excluded-domain",
+      "shared_plan": {
+        "operations": [
+          "named-filter",
+          "order",
+          "page"
+        ]
+      },
+      "additional_contract": "Issue-specific domain facades remain unchanged in this rollout; non-read modes also excluded.",
+      "source_paths": [
+        "cmd/bd/todo.go",
+        "cmd/bd/human.go",
+        "issueops/gates.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd children",
+        "bd show --children",
+        "bd list --parent"
+      ],
+      "disposition": "excluded-domain",
+      "shared_plan": {
+        "operations": [
+          "directed-correlated-expansion"
+        ]
+      },
+      "additional_contract": "Issue parent conventions and all-status default explicitly translated in future work; no dotted-ID implicit edges.",
+      "source_paths": [
+        "cmd/bd/children.go",
+        "cmd/bd/show_children.go",
+        "cmd/bd/list_tree.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": [
+        "correlated-same-witness",
+        "distinct-neighbors"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd dep list",
+        "bd dep tree",
+        "bd dep cycles"
+      ],
+      "disposition": "excluded-domain",
+      "shared_plan": {
+        "operations": [
+          "incident-selection",
+          "bounded-walk",
+          "graph-result"
+        ]
+      },
+      "additional_contract": "All bd dep operations excluded. Dependency semantics and cycle analysis remain domain contracts.",
+      "source_paths": [
+        "cmd/bd/dep.go",
+        "cmd/bd/dep_tree.go",
+        "cmd/bd/dep_cycles.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": [
+        "graph-preserves-cycle-parallel",
+        "simple-paths"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd ready",
+        "bd list --ready",
+        "bd blocked",
+        "bd ready --explain"
+      ],
+      "disposition": "excluded-domain",
+      "shared_plan": {
+        "operations": [
+          "correlated-exists",
+          "not-exists",
+          "witnesses",
+          "counts"
+        ]
+      },
+      "additional_contract": "Issue/Dependency readiness rules, consistent explanation and permissions; no Memory Requires-as-blocker shortcut.",
+      "source_paths": [
+        "cmd/bd/ready.go",
+        "issueops/blockedlister.go",
+        "internal/workapi/ready.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": [
+        "correlated-same-witness",
+        "negative-incomplete"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd list --tree",
+        "bd list --pretty",
+        "bd list --deps",
+        "bd graph",
+        "bd mol show"
+      ],
+      "disposition": "excluded-domain-or-layout",
+      "shared_plan": {
+        "operations": [
+          "seed-selection",
+          "bounded-walk",
+          "graph-result"
+        ]
+      },
+      "additional_contract": "Issue-specific paths excluded; tree/DOT/HTML/Mermaid layout separate. Root depth/count and witness retention must be translated explicitly.",
+      "source_paths": [
+        "issueops/treewalker.go",
+        "cmd/bd/list_tree.go",
+        "cmd/bd/graph.go",
+        "cmd/bd/mol_show.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": [
+        "walk-one",
+        "post-filter-not-prune",
+        "graph-preserves-cycle-parallel"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd epic status",
+        "bd mol stale",
+        "bd mol current",
+        "bd mol ready --gated",
+        "bd mol progress",
+        "bd mol last-activity",
+        "bd swarm status"
+      ],
+      "disposition": "excluded-domain-analysis",
+      "shared_plan": {
+        "operations": [
+          "member-join",
+          "state-partition",
+          "count",
+          "time-order"
+        ]
+      },
+      "additional_contract": "Workflow eligibility, actor/context, ETA, no-child policy and progress calculations are additional computations.",
+      "source_paths": [
+        "cmd/bd/epic.go",
+        "cmd/bd/mol_stale.go",
+        "cmd/bd/mol_current.go",
+        "cmd/bd/mol_ready_gated.go",
+        "cmd/bd/mol_progress.go",
+        "cmd/bd/mol_last_activity.go",
+        "cmd/bd/swarm.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd stale",
+        "bd wisp list",
+        "bd swarm list"
+      ],
+      "disposition": "excluded-domain",
+      "shared_plan": {
+        "operations": [
+          "property-filter",
+          "time-bound",
+          "group"
+        ]
+      },
+      "additional_contract": "Relative time resolved once; Issue/workflow/storage-tier meaning belongs to existing facade.",
+      "source_paths": [
+        "cmd/bd/stale.go",
+        "cmd/bd/wisp.go",
+        "cmd/bd/swarm.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd show --refs",
+        "bd show --thread"
+      ],
+      "disposition": "excluded-domain-or-compound",
+      "shared_plan": {
+        "operations": [
+          "reverse-reference-query",
+          "directed-walk"
+        ]
+      },
+      "additional_contract": "Thread ordering and related-record acquisition remain explicit; a reference is not evidence of use.",
+      "source_paths": [
+        "cmd/bd/show.go",
+        "cmd/bd/show_thread.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd status",
+        "bd stats",
+        "bd human stats"
+      ],
+      "disposition": "excluded-compound-summary",
+      "shared_plan": {
+        "operations": [
+          "group-count",
+          "selection"
+        ]
+      },
+      "additional_contract": "Readiness, Git activity and human-domain statistics need independent context/consistency.",
+      "source_paths": [
+        "cmd/bd/status.go",
+        "cmd/bd/human.go",
+        "issueops/statsreporter.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd label list",
+        "bd label list-all",
+        "bd state",
+        "bd state list"
+      ],
+      "disposition": "excluded-domain-value-view",
+      "shared_plan": {
+        "operations": [
+          "array-unnest",
+          "distinct-values",
+          "group-count"
+        ]
+      },
+      "additional_contract": "Current label-based Issue state conventions remain wrappers. Not one row per stored Resource.",
+      "source_paths": [
+        "cmd/bd/label.go",
+        "cmd/bd/state.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": [
+        "array-groups-not-overlap",
+        "unnest-labels-explicit"
+      ]
+    },
+    {
+      "surfaces": [
+        "bd types",
+        "bd statuses"
+      ],
+      "disposition": "catalog-boundary",
+      "shared_plan": {
+        "operations": [
+          "catalog-selection-if-exposed"
+        ]
+      },
+      "additional_contract": "Built-ins and configuration rows are not automatically generic Type Beads. Requires explicit population/catalog contract.",
+      "source_paths": [
+        "cmd/bd/types.go",
+        "cmd/bd/statuses.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd history",
+        "bd diff"
+      ],
+      "disposition": "history-boundary",
+      "shared_plan": {
+        "operations": [
+          "explicit-edition-selection-where-available"
+        ]
+      },
+      "additional_contract": "Dolt commit history, audit events and repository diffs are not Resource version enumeration.",
+      "source_paths": [
+        "cmd/bd/history.go",
+        "cmd/bd/diff.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd comments",
+        "bd show --include-comments",
+        "bd show --comments-tail",
+        "bd provenance log",
+        "bd provenance by-ref"
+      ],
+      "disposition": "related-record-boundary",
+      "shared_plan": {
+        "operations": [
+          "reference-filter",
+          "order",
+          "bounded-content-selection"
+        ]
+      },
+      "additional_contract": "Current comments/provenance need an admitted representation before claiming generic Resource equivalence.",
+      "source_paths": [
+        "cmd/bd/comments.go",
+        "cmd/bd/show.go",
+        "cmd/bd/provenance.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd duplicates",
+        "bd find-duplicates",
+        "bd lint",
+        "bd swarm validate",
+        "bd graph check"
+      ],
+      "disposition": "analysis-boundary",
+      "shared_plan": {
+        "operations": [
+          "candidate-selection",
+          "explicit-content-read",
+          "graph-extraction"
+        ]
+      },
+      "additional_contract": "Hashing/similarity/AI/template/integrity analysis separate; fix/merge modes mutate.",
+      "source_paths": [
+        "cmd/bd/duplicates.go",
+        "cmd/bd/find_duplicates.go",
+        "cmd/bd/lint.go",
+        "cmd/bd/swarm.go",
+        "cmd/bd/graph.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd orphans"
+      ],
+      "disposition": "external-facts-boundary",
+      "shared_plan": {
+        "operations": [
+          "Issue-candidate-selection"
+        ]
+      },
+      "additional_contract": "Means open Issues mentioned in Git commits, not graph roots; external Git read and --fix separate.",
+      "source_paths": [
+        "cmd/bd/orphans.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd merge-slot check"
+      ],
+      "disposition": "excluded-domain",
+      "shared_plan": {
+        "operations": [
+          "context-identity-lookup",
+          "property-read"
+        ]
+      },
+      "additional_contract": "Checking availability does not acquire the slot or implement wait/release.",
+      "source_paths": [
+        "cmd/bd/merge_slot.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd export"
+      ],
+      "disposition": "export-owner-boundary",
+      "shared_plan": {
+        "operations": [
+          "seed-selection"
+        ]
+      },
+      "additional_contract": "Iris owns transfer/preservation closure/admission; representation masks and ephemeral reports are not a transfer package.",
+      "source_paths": [
+        "cmd/bd/export.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd prime",
+        "graph-format outputs"
+      ],
+      "disposition": "context-or-rendering-boundary",
+      "shared_plan": {
+        "operations": [
+          "selection",
+          "bounded-content-acquisition"
+        ]
+      },
+      "additional_contract": "Context budgets/layout and Cleo output rules separate from semantic membership.",
+      "source_paths": [
+        "cmd/bd/prime.go",
+        "cmd/bd/graph_export.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd ready --claim",
+        "bd epic close-eligible",
+        "duplicate merge/fix",
+        "orphan --fix",
+        "gate check/close",
+        "cleanup destructive modes"
+      ],
+      "disposition": "mutation-boundary",
+      "shared_plan": {
+        "operations": [
+          "selection-only"
+        ]
+      },
+      "additional_contract": "Atomic guarded read/check/write, authorization/races and mutation outcomes need independent contracts.",
+      "source_paths": [
+        "issueops/readyclaimer.go",
+        "cmd/bd/epic.go",
+        "cmd/bd/gate.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "bd remember",
+        "bd recall",
+        "bd memories",
+        "bd forget"
+      ],
+      "disposition": "excluded-compatibility-facades",
+      "shared_plan": null,
+      "additional_contract": "Donna explicitly excludes existing purpose-built Memory commands from this rollout.",
+      "source_paths": [
+        "cmd/bd/memory.go",
+        "cmd/bd/graph_preview_memories.go"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "future bd link query",
+        "future bd memory constraints/requires/coverage/explain/assess"
+      ],
+      "disposition": "excluded-future-facades",
+      "shared_plan": {
+        "operations": [
+          "family-selection",
+          "bounded-walk",
+          "collective-assessment-result"
+        ]
+      },
+      "additional_contract": "Requirements inform language, but implementation not authorized; Memory claims are Evaluation-owned and collective.",
+      "source_paths": [
+        "docs/reference/bdp/cli/query-language.md"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": [
+        "assessment-collective-context",
+        "generic-claim-no-evaluation-fetch"
+      ]
+    },
+    {
+      "surfaces": [
+        "config list/show",
+        "dolt remote list/status",
+        "worktree list",
+        "repo list",
+        "integration project/team listings",
+        "hooks",
+        "formula files",
+        "connection/context diagnostics",
+        "bd kv list",
+        "native key/value Memory",
+        "bd sql"
+      ],
+      "disposition": "control-or-backend-boundary",
+      "shared_plan": null,
+      "additional_contract": "Config/files/Git/external/back-end SQL are not Bead populations by read-only appearance; require explicit representation or remain separate.",
+      "source_paths": [
+        "cmd/bd"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    },
+    {
+      "surfaces": [
+        "proposed bd gql (upstream PR6780)"
+      ],
+      "disposition": "contributor-work-input",
+      "shared_plan": {
+        "operations": [
+          "reuse-read-roles",
+          "explicit-optional-reads",
+          "budgets"
+        ]
+      },
+      "additional_contract": "Peterkc GraphQL contribution at f937eeae812ff50407d422cebc7361435b60e554 is an Issue-specific proposed facade with separate response framing. Read, preserve and coordinate; this draft neither replaces nor closes it.",
+      "source_paths": [
+        "https://github.com/gastownhall/beads/pull/6780"
+      ],
+      "evidence": "source-inspected; illustrative primitive requirements only; no command equivalence executed",
+      "coverage_obligation": false,
+      "mapping_status": "requirement-or-boundary-only",
+      "illustrative_case_ids": []
+    }
+  ],
+  "dispositions": {
+    "admitted-design": {
+      "classification": "mapping-sketch",
+      "meaning": "Admitted design surface; concrete request equivalence remains unproved."
+    },
+    "admitted-history-design": {
+      "classification": "mapping-sketch",
+      "meaning": "Admitted design surface; concrete request equivalence remains unproved."
+    },
+    "separate-lifecycle": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "excluded-domain": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "excluded-domain-or-layout": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "excluded-domain-analysis": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "excluded-domain-or-compound": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "excluded-compound-summary": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "excluded-domain-value-view": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "catalog-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "history-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "related-record-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "analysis-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "external-facts-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "export-owner-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "context-or-rendering-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "mutation-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "excluded-compatibility-facades": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "excluded-future-facades": {
+      "classification": "out-of-current-rollout",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "control-or-backend-boundary": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    },
+    "contributor-work-input": {
+      "classification": "candidate-exception-boundary",
+      "meaning": "No migration authorized. Read primitives are requirements, not an approved expressibility exception."
+    }
+  },
+  "coverage_policy": "coverage_obligation denotes the current admitted rollout, not a waiver of future expressibility. All case links are illustrative; no row claims proven equivalence or approval of an exception."
+}
