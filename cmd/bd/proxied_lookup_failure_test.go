@@ -139,8 +139,8 @@ var proxiedLookupCommands = []struct {
 	// schema, anything at all.
 	wantHardErr string
 	// exitsZero marks the commands that report per id and keep going. --refs,
-	// --children, defer, undefer and todo done print the failure and move to
-	// the next id, so one bad id out of one still leaves the command at exit 0.
+	// --children and todo done print the failure and move to the next id, so one
+	// bad id out of one still leaves the command at exit 0.
 	// That predates these slices; the branch under test is what they print, not
 	// what they return.
 	exitsZero bool
@@ -259,7 +259,7 @@ var proxiedLookupCommands = []struct {
 		},
 		wantNotFound: "Error resolving bd-missing: not found",
 		wantHardErr:  "Error resolving bd-missing: connection reset by peer",
-		exitsZero:    true,
+		exitsZero:    false,
 	},
 	{
 		name: "undefer",
@@ -268,7 +268,7 @@ var proxiedLookupCommands = []struct {
 		},
 		wantNotFound: "Error getting bd-missing: not found",
 		wantHardErr:  "Error getting bd-missing: connection reset by peer",
-		exitsZero:    true,
+		exitsZero:    false,
 	},
 	{
 		// The two routes now share one body, so this reports the DIRECT route's

@@ -86,7 +86,10 @@ func TestProxiedServerDeferUndefer(t *testing.T) {
 
 	t.Run("undefer_nondeferred_errors", func(t *testing.T) {
 		c := bdProxiedCreate(t, bd, p.dir, "Open issue", "--type", "task")
-		stdout, stderr, _ := bdProxiedRunBuffers(t, bd, p.dir, "undefer", c.ID)
+		stdout, stderr, err := bdProxiedRunBuffers(t, bd, p.dir, "undefer", c.ID)
+		if err == nil {
+			t.Errorf("undefer of an issue that is not deferred exited 0: stdout=%q stderr=%q", stdout, stderr)
+		}
 		if !strings.Contains(stdout+stderr, "is not deferred") {
 			t.Errorf("expected 'is not deferred' message, got stdout=%q stderr=%q", stdout, stderr)
 		}

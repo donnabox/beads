@@ -60,13 +60,32 @@ func TestEmbeddedUndefer(t *testing.T) {
 
 	t.Run("undefer_not_deferred", func(t *testing.T) {
 		issue := bdCreate(t, bd, dir, "Undefer not deferred", "--type", "task")
-		// Issue is open, not deferred — undefer should print error but not crash
+		// Issue is open, not deferred: undefer says so and the exit says so too.
 		cmd := exec.Command(bd, "undefer", issue.ID)
 		cmd.Dir = dir
 		cmd.Env = bdEnv(dir)
-		out, _ := cmd.CombinedOutput()
+		out, err := cmd.CombinedOutput()
+		if err == nil {
+			t.Errorf("undefer of an issue that is not deferred exited 0: %s", out)
+		}
 		if !strings.Contains(string(out), "not deferred") {
 			t.Errorf("expected 'not deferred' message: %s", out)
+		}
+	})
+
+	t.Run("undefer_one_failure_does_not_stop_the_others", func(t *testing.T) {
+		open := bdCreate(t, bd, dir, "Undefer among others, open", "--type", "task")
+		deferred := bdCreate(t, bd, dir, "Undefer among others, deferred", "--type", "task")
+		bdDefer(t, bd, dir, deferred.ID)
+		cmd := exec.Command(bd, "undefer", open.ID, deferred.ID)
+		cmd.Dir = dir
+		cmd.Env = bdEnv(dir)
+		out, err := cmd.CombinedOutput()
+		if err == nil {
+			t.Errorf("exited 0 with one id failed: %s", out)
+		}
+		if got := getIssueStatus(t, bd, dir, deferred.ID); got != "open" {
+			t.Errorf("the other id stayed %s: %s", got, out)
 		}
 	})
 

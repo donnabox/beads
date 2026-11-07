@@ -96,6 +96,10 @@ Examples:
 			return HandleErrorWithHint("database not initialized", diagHint())
 		}
 
+		// One id's failure does not stop the others, and it does make the
+		// command fail: printing it and exiting 0 told a script the issue was
+		// deferred when nothing was written.
+		hasError := false
 		for _, fullID := range resolvedIDs {
 			updates := map[string]interface{}{
 				"status": string(types.StatusDeferred),
@@ -107,10 +111,12 @@ Examples:
 				issue, err := store.GetIssue(ctx, fullID)
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "Error loading %s: %v\n", fullID, err)
+					hasError = true
 					continue
 				}
 				if issue == nil {
 					fmt.Fprintf(os.Stderr, "Issue %s not found\n", fullID)
+					hasError = true
 					continue
 				}
 				notes := issue.Notes
@@ -122,6 +128,7 @@ Examples:
 
 			if err := store.UpdateIssue(ctx, fullID, updates, currentActor()); err != nil {
 				fmt.Fprintf(os.Stderr, "Error deferring %s: %v\n", fullID, err)
+				hasError = true
 				continue
 			}
 
@@ -143,6 +150,9 @@ Examples:
 
 		if len(args) > 0 {
 			commandDidWrite.Store(true)
+		}
+		if hasError {
+			return SilentExit()
 		}
 		return nil
 	},

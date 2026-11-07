@@ -59,10 +59,14 @@ Examples:
 			return HandleErrorWithHint("database not initialized", diagHint())
 		}
 
+		// One id's failure does not stop the others, and it does make the
+		// command fail: see bd defer.
+		hasError := false
 		for _, fullID := range resolvedIDs {
 			issue, err := store.GetIssue(ctx, fullID)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error getting %s: %v\n", fullID, err)
+				hasError = true
 				continue
 			}
 
@@ -76,6 +80,7 @@ Examples:
 			wasDeferred := issue.Status == types.StatusDeferred
 			if !wasDeferred && issue.DeferUntil == nil {
 				fmt.Fprintf(os.Stderr, "%s is not deferred (status: %s)\n", fullID, string(issue.Status))
+				hasError = true
 				continue
 			}
 
@@ -88,6 +93,7 @@ Examples:
 
 			if err := store.UpdateIssue(ctx, fullID, updates, currentActor()); err != nil {
 				fmt.Fprintf(os.Stderr, "Error undeferring %s: %v\n", fullID, err)
+				hasError = true
 				continue
 			}
 
@@ -108,9 +114,14 @@ Examples:
 		}
 
 		if jsonOutput && len(undeferredIssues) > 0 {
-			return outputJSON(undeferredIssues)
+			if err := outputJSON(undeferredIssues); err != nil {
+				return err
+			}
 		}
 
+		if hasError {
+			return SilentExit()
+		}
 		return nil
 	},
 }

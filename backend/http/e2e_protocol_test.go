@@ -274,4 +274,17 @@ func TestE2E_ACommandAnswersTheSameOnBothProtocols(t *testing.T) {
 			}
 		}
 	})
+
+	// C1: bd undefer's per-id failure is the command's failure, on both.
+	t.Run("undefer of an issue that is not deferred exits nonzero on both", func(t *testing.T) {
+		for _, s := range []*side{open(t, httpapi.ProtocolV0), open(t, httpapi.ProtocolBoth, "--protocol", "bdp")} {
+			r := s.f.run(nil, "undefer", s.blocked)
+			if r.code == 0 {
+				t.Errorf("exit 0: %s %s", r.stdout, r.stderr)
+			}
+			if !strings.Contains(r.stdout+r.stderr, "is not deferred") {
+				t.Errorf("did not say why: %s %s", r.stdout, r.stderr)
+			}
+		}
+	})
 }
