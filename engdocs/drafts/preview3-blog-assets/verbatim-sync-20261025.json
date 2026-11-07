@@ -1,0 +1,45 @@
+{
+  "scope": "Local editorial pass; no commit, push, publication, or release qualification.",
+  "blog_sha256": "b31ef662abb5e054b26c39dbcc8a5563f2f074788a3bc1dfa2c8939229515167",
+  "cli_sha256": "abbfe6d2516e8af2beae7e713067779ceb36e8491479a0f407224c85f7606ca1",
+  "verbatim_source_slice_sha256": "c82f14a5c1ec841d8bedb2bfdecfd920be87dc01e490cbd10eb3b3262e3949ae",
+  "verbatim_mirror": true,
+  "retained_html_comments": true,
+  "retained_user_introduction": true,
+  "cli_new_comments": 0,
+  "cli_unchanged": true,
+  "blog_comments_resolved": 5,
+  "diagrams_preserved": 7,
+  "syntax_checked_blog_commands": 106,
+  "runtime": {
+    "commands": 29,
+    "build": "b27df1b0490bbffadadb399097a3b242d5e0677c",
+    "counts": {
+      "issues": 3,
+      "memories": 1,
+      "dependencies": 2,
+      "comments": 1
+    },
+    "dry_run_unchanged": true,
+    "identity_maps_preserved": true,
+    "two_dependencies_visible": true,
+    "comment_body_visible": true
+  },
+  "proposal": {
+    "source": "https://github.com/gastownhall/beads/issues/5877",
+    "source_body_sha256": "efd69929dae04427e86c64dc88053f932ddf3e5151a7cc61fa631c1e56eeee83",
+    "root_body_sha256": "dcd127aafd778c3382a60286dbcabcf675ef583dc135bb4b29b722574ed36f7b",
+    "root_body_verbatim_non_child_text": true,
+    "children_unchanged": 48,
+    "defines_links_unchanged": 48,
+    "fixture_sha256": "bc0616e8590f550f91b84ce2140b4ff7e742092749893115aac9eda67c4ba0af",
+    "new_body_runtime_seeded": false
+  },
+  "document_checks": {
+    "go_docsync_tests_passed": 10,
+    "freshness": "PASS",
+    "shell_syntax": "PASS",
+    "diff_whitespace": "PASS",
+    "bazel_make_check_docs": "UNAVAILABLE: bazel executable absent; no full CI qualification"
+  }
+}
