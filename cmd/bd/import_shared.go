@@ -206,7 +206,9 @@ func importIssuesCore(ctx context.Context, _ string, store storage.DoltStorage, 
 		},
 	}
 	var err error
-	if len(issues) <= importChunkSize {
+	if storeIsRemoteBackend(store) {
+		err = importIssuesRemote(ctx, store, issues, actor, opts)
+	} else if len(issues) <= importChunkSize {
 		// Small import: one transaction, dependencies inline — exactly the
 		// pre-chunking behavior. A regular<->wisp edge between two of its
 		// rows rides inline too: the engine writes an in-batch cross-plane
@@ -925,7 +927,7 @@ func proveUnchangedImportRows(ctx context.Context, store importIssueLookup, filt
 	}
 	sort.Strings(ids)
 	comments, err := rel.GetCommentsForIssues(ctx, ids)
-	if errors.Is(err, errImportRelationsUnavailable) {
+	if errors.Is(err, errImportRelationsUnavailable) || isUnsupportedByStore(err) {
 		return nil, nil
 	}
 	if err != nil {

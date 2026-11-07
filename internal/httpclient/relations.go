@@ -99,6 +99,7 @@ func (r httpRelations) Related(ctx context.Context, req issueops.RelatedRequest)
 		Op:      wire.OpListRelatedIssues,
 		Method:  http.MethodGet,
 		Path:    path,
+		PathArg: req.ID,
 		Query:   q,
 		IssueID: req.ID,
 	}, &body); err != nil {

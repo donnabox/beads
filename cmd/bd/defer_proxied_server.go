@@ -110,6 +110,9 @@ func runDeferProxiedServer(ctx context.Context, args []string, deferUntil *time.
 	if len(args) > 0 {
 		commandDidWrite.Store(true)
 	}
+	if len(res.errs) > 0 {
+		return SilentExit()
+	}
 	return nil
 }
 
@@ -187,6 +190,9 @@ func runUndeferProxiedServer(ctx context.Context, args []string) error {
 
 	if len(args) > 0 {
 		commandDidWrite.Store(true)
+	}
+	if len(res.errs) > 0 {
+		return SilentExit()
 	}
 	return nil
 }

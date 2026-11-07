@@ -85,6 +85,15 @@ func (s *Store) IsRemoteBackendStore() bool { return true }
 
 var _ storage.RemoteBackendStore = (*Store)(nil)
 
+// Protocol is what this store's connection speaks, for a command whose behavior
+// over bd connect depends on it (cmd/bd's remoteOnV0).
+func (s *Store) Protocol() Protocol {
+	if s.target.Protocol == "" {
+		return ProtocolV0
+	}
+	return s.target.Protocol
+}
+
 // ServerEnforcesExternalDependencyPolicy satisfies
 // storage.ExternalDependencyPolicyProber (design 3.6): it answers whether the
 // server this store dials already enforces bd's external-dependency policy

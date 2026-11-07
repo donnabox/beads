@@ -12,6 +12,18 @@ import (
 // answered".
 type Target = httpclient.Target
 
+// Protocol is what a connection speaks to bd serve. The zero value is v0, the
+// default, so a Target that never set it and a saved connection that names none are
+// both v0.
+type Protocol = httpclient.Protocol
+
+// The protocols a Target can speak. ProtocolBDP needs a bd serve of this release
+// running with BDP on (bd serve --protocol bdp or both).
+const (
+	ProtocolV0  = httpclient.ProtocolV0
+	ProtocolBDP = httpclient.ProtocolBDP
+)
+
 // TargetFileName is the per-user, untracked activation sidecar that names the
 // server a workspace is attached to. metadata.json is git-tracked by design
 // and selects the backend; the URL and the identity pin are per-user state

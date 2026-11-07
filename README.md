@@ -212,9 +212,9 @@ bd connect https://bd.example.com --expect-project-id my-project
 # The everyday commands work the same way: create, show, list, update, close,
 # dependencies (including `bd dep tree`), comments, ready/count queries, and
 # batch apply all round-trip over the wire with the same semantics as a local
-# database. So does `bd ready --claim`, except against an older server or while
-# any issue holds an unsatisfied external ref: then it lists and claims in two
-# steps rather than one transaction (ledger row L14, linked below).
+# database. So does `bd ready --claim`, except while any issue holds an
+# unsatisfied external ref: then it lists and claims in two steps rather than
+# one transaction (ledger row L14, linked below).
 bd create "Fix auth bug" -p 1 -t bug
 bd ready --json
 bd close bd-a1b2 "Fixed"
@@ -225,6 +225,12 @@ bd connect http://127.0.0.1:8080
 # Forget the server and restore this workspace's previous backend selection
 bd connect --clear
 ```
+
+`bd connect` and `bd serve` speak the `/v0` HTTP surface by default. Each takes
+`--protocol` to speak the Beads Protocol instead: `bd serve --protocol bdp` or
+`both`, and `bd connect --protocol bdp`, which invokes the server's `/bdp/call`
+Callables and talks only to a `bd serve` of its own release. A connection and a
+server that do not share a protocol refuse in words rather than answer.
 
 HTTP mode is not a byte-for-byte mirror of local mode, though: some
 operations are knowingly refused (the wire has no way to express them) or

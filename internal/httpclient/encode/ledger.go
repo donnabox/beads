@@ -165,6 +165,7 @@ func Ledger() []Row {
 	rows = append(rows, queryRequestRows()...)
 	rows = append(rows, issueFilterRows()...)
 	rows = append(rows, parentWalkRows()...)
+	rows = append(rows, searchListingRows()...)
 	rows = append(rows, workFilterRows()...)
 	return rows
 }
@@ -1116,20 +1117,40 @@ func commandRows() []Row {
 		return Row{ID: id, Kind: KindRefuse, Command: command, Flag: flag, What: what, Why: why, SpecRow: "D7", PinnedBy: pinned}
 	}
 	return []Row{
-		row("F-ready-explain", "ready", "--explain", "`bd ready --explain` refuses",
-			"it dispatches onto raw GetBlockedIssues/GetIssuesByIDs/GetDependencyCounts/DetectCycles, three of which are on the unsupported allowlist"),
+		{
+			ID: "F-ready-explain", Kind: KindRetired, Command: "ready", Flag: "--explain",
+			What:    "RETIRED — `bd ready --explain` is served",
+			Why:     "raw_reads.go answers the raw reads it dispatches onto, each composed from the operations that can. On a v0 connection, the default, none of this is sent and the answer is what it always was (cmd/bd's remoteOnV0)",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
 		row("F-ready-mol", "ready", "--mol", "`bd ready --mol` refuses",
-			"its molecule subgraph load reaches findHierarchicalChildren, an IDPrefix SearchIssues shape the parent-walk bridge cannot express (E-IssueFilter.noShape). GetDependencyRecords and GetDependentsWithMetadata, which the same load also calls, stopped being the blocker once they flipped onto the wire"),
-		row("F-ready-gated", "ready", "--gated", "`bd ready --gated` refuses",
-			"it dispatches onto a filtered SearchIssues shape the bridge cannot express, plus GetDependents"),
+			"its molecule subgraph load reaches findHierarchicalChildren, an IDPrefix SearchIssues filter listIssues publishes no parameter for (S-IssueFilter.IDPrefix). GetDependencyRecords and GetDependentsWithMetadata, which the same load also calls, stopped being the blocker once they flipped onto the wire"),
+		{
+			ID: "F-ready-gated", Kind: KindRetired, Command: "ready", Flag: "--gated",
+			What:    "RETIRED — `bd ready --gated` is served",
+			Why:     "raw_reads.go answers the raw reads it dispatches onto, each composed from the operations that can, and SearchIssues' listing shape answers its filtered search",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
 		row("F-show-thread", "show", "--thread", "`bd show --thread` refuses",
 			"showMessageThread renders each reply's sender, recipient, body and timestamp off GetDependentsWithMetadata, but that read was flipped onto getIssue's include_dependents parameter, which carries the collectDependents SHALLOW projection (id/status/type/priority/title + edge type only, be-4d36f2). Those fields come back zeroed over http and zero-timestamp replies sort ahead of the root — a silent-wrong degrade the refuse-over-degrade doctrine forbids. Retires with a full-dependent wire shape, a server-side ask"),
-		row("F-show-refs", "show", "--refs", "`bd show --refs` refuses",
-			"showIssueRefs's --json marshals the full GetDependentsWithMetadata rows, but the wire answers the same collectDependents shallow projection, so created_at/assignee/description come back zeroed and the JSON differs from a local workspace. The text render consumes only the shallow fields, but the flag cannot be split from its --json mode, so the whole flag refuses rather than serve a divergent JSON silently"),
-		row("F-show-children", "show", "--children", "`bd show --children` refuses",
-			"showIssueChildren's --json marshals the full GetDependentsWithMetadata rows, the same collectDependents shallow projection as --refs, so created_at/assignee/description come back zeroed over http. `bd children` is NOT this flag: it is a `bd list --parent` listing, served through the reader role (S6c)"),
-		row("F-mol-ready", "mol ready", "", "`bd mol ready` refuses",
-			"it is the same runMolReadyGatedCore body as `bd ready --gated`"),
+		{
+			ID: "F-show-refs", Kind: KindRetired, Command: "show", Flag: "--refs",
+			What:    "RETIRED — `bd show --refs` is served",
+			Why:     "the command hydrates the wire's shallow dependents through batchGetIssues before rendering them. On a v0 connection, the default, none of this is sent and the answer is what it always was (cmd/bd's remoteOnV0)",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
+		{
+			ID: "F-show-children", Kind: KindRetired, Command: "show", Flag: "--children",
+			What:    "RETIRED — `bd show --children` is served",
+			Why:     "the command hydrates the wire's shallow dependents through batchGetIssues before rendering them. On a v0 connection, the default, none of this is sent and the answer is what it always was (cmd/bd's remoteOnV0)",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
+		{
+			ID: "F-mol-ready", Kind: KindRetired, Command: "mol ready",
+			What:    "RETIRED — `bd mol ready` is served",
+			Why:     "the same body as `bd ready --gated`",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
 		{
 			ID: "F-blocked", Kind: KindRetired, Command: "blocked",
 			What:    "RETIRED — `bd blocked` is SERVED whole",
@@ -1158,7 +1179,7 @@ func commandRows() []Row {
 			"the OSS classifier would happily serve it from the opened store, and a bd serve re-serving a remote bd serve is a proxy chain nobody designed: run serve where the database is"),
 		{
 			ID: "F-close", Kind: KindRefuse, Command: "close", Capability: "issues.batchClose",
-			What: "`bd close` is SERVED whole — single id and several ids — over issues:batchClose; it refuses against a DOWN-LEVEL server that does not advertise issues.batchClose, and --claim-next refuses against every server, before anything closes",
+			What: "`bd close` is SERVED whole — single id and several ids — over issues:batchClose; it refuses against a DOWN-LEVEL server that does not advertise issues.batchClose. The role refuses a ClaimNext against every server, before anything closes, and `bd close --claim-next` composes the same selection as a second request (ready.claim-next) after the closes",
 			Why: "the CLI's close front door routes every id, single-id included, through BatchCloser.CloseBatch, and Lifecycle.Close has zero CLI callers at tip. The wire now carries issues:batchClose, so a CloseBatchRequest of any size is one wire call and one server-side transaction; nothing is composed or refused where the capability is present. " +
 				"THE NEXT CLAIM IS THE EXCEPTION. batchCloseIssues has no member to carry it, so the client refuses a ClaimNext on both legs, after the claim's own validation and before the dial (W-CloseBatchRequest.ClaimNext). Closing and then claiming would split the role's one transaction in two, and a claim that failed after the closes committed could not report them, because the role answers with an error or with outcomes, never both. On the CLI's chain the external-dependency decorator (design 3.6) refuses first unless the server advertises wire.CapExternalDependencies, and its refusal says nothing closed and names the commands that do the same work: close without --claim-next, then `bd ready --claim` (internal/storage/externaldeps/remote_roles.go). " +
 				"Against a server too old to advertise issues.batchClose, servesBatchClose() reads the handshake snapshot and routes around the batch dial entirely, so no Preflight runs and no wire.ErrCapabilityAbsent is raised: the down-level leg's refuseUnservedCloseShape raises the STORE's own *ErrHTTPUnsupported (batchcloser.go), which names the refused shape and the server, and cmd/bd prints it against each id the batch carried. The single-item, no-ClaimNext shape still composes onto closeIssue in that down-level leg (see L18); the shapes that cannot compose refuse there. The item cap is L-close-cap",

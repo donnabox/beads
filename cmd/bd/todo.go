@@ -84,9 +84,19 @@ var addTodoCmd = &cobra.Command{
 			CreatedBy:   getActorWithGit(),
 		}
 
-		if err := getStore().CreateIssue(ctx, issue, getActorWithGit()); err != nil {
+		ops, err := writeOps(getStore())
+		if err != nil {
 			return HandleError("failed to create TODO: %v", err)
 		}
+		opsCtx, err := issueOpsContext(ctx)
+		if err != nil {
+			return HandleError("%v", err)
+		}
+		created, err := ops.Create(opsCtx, issueops.CreateRequest{Actor: getActorWithGit(), Issue: issue})
+		if err != nil {
+			return HandleError("failed to create TODO: %v", err)
+		}
+		issue = created.Issue
 
 		commandDidWrite.Store(true)
 

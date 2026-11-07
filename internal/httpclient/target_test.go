@@ -4,6 +4,7 @@ package httpclient
 
 import (
 	"errors"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -253,4 +254,70 @@ func TestSaveTargetOmitsPreviousBackendAndAllowInsecureCredentialWhenUnset(t *te
 	if strings.Contains(string(raw), "allow_plaintext") {
 		t.Errorf("sidecar carries allow_plaintext with no grant: %s", raw)
 	}
+}
+
+// A connection's protocol is recorded with it. v0 is written as its absence, so a v0
+// connection's sidecar is the file it has always been, and a sidecar written before
+// the protocol existed is a v0 connection.
+func TestTargetProtocolRoundTrip(t *testing.T) {
+	base, err := url.Parse("http://127.0.0.1:1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Run("absent means v0", func(t *testing.T) {
+		dir := t.TempDir()
+		if err := os.WriteFile(TargetPath(dir), []byte(`{"url":"http://127.0.0.1:1","api":"v0"}`), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		got, err := LoadTarget(dir)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got.Protocol != ProtocolV0 {
+			t.Errorf("Protocol = %q, want v0", got.Protocol)
+		}
+	})
+
+	for _, protocol := range []Protocol{"", ProtocolV0} {
+		t.Run("v0 is not written/"+string(protocol), func(t *testing.T) {
+			dir := t.TempDir()
+			if err := SaveTarget(dir, Target{BaseURL: base, Protocol: protocol}); err != nil {
+				t.Fatal(err)
+			}
+			raw, err := os.ReadFile(TargetPath(dir))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if strings.Contains(string(raw), "protocol") {
+				t.Errorf("the sidecar names a protocol: %s", raw)
+			}
+			if got, err := LoadTarget(dir); err != nil || got.Protocol != ProtocolV0 {
+				t.Errorf("LoadTarget = %q, %v", got.Protocol, err)
+			}
+		})
+	}
+
+	t.Run("bdp is written and read back", func(t *testing.T) {
+		dir := t.TempDir()
+		if err := SaveTarget(dir, Target{BaseURL: base, Protocol: ProtocolBDP}); err != nil {
+			t.Fatal(err)
+		}
+		if got, err := LoadTarget(dir); err != nil || got.Protocol != ProtocolBDP {
+			t.Errorf("LoadTarget = %q, %v", got.Protocol, err)
+		}
+	})
+
+	t.Run("an unknown one refuses both ways", func(t *testing.T) {
+		dir := t.TempDir()
+		if err := SaveTarget(dir, Target{BaseURL: base, Protocol: "smoke"}); err == nil {
+			t.Error("SaveTarget took smoke")
+		}
+		if err := os.WriteFile(TargetPath(dir), []byte(`{"url":"http://127.0.0.1:1","protocol":"smoke"}`), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := LoadTarget(dir); err == nil || !strings.Contains(err.Error(), TargetFileName) {
+			t.Errorf("LoadTarget: err = %v", err)
+		}
+	})
 }

@@ -527,7 +527,13 @@ type route struct {
 	// TestSpecStatusCodesMatchHandlerTable fails if a stub ever reappears
 	// without the 501 exemption that documents it.
 	implemented bool
-	handler     func(*Server, http.ResponseWriter, *http.Request)
+	// admit, when set, runs after the credential, project and wire checks and
+	// before the database slot, and reports whether the request goes on; when it
+	// says no it has written the answer. It is the Callables mount's: an
+	// invocation with the wrong media type costs no slot. No row in the table
+	// sets it.
+	admit   func(http.ResponseWriter, *http.Request) bool
+	handler func(*Server, http.ResponseWriter, *http.Request)
 }
 
 // routeTable is the whole surface. Every operation in the spec appears here,

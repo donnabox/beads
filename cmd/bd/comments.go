@@ -74,7 +74,10 @@ Examples:
   bd comments add bd-123 "This is a comment"
 
   # Add a comment from a file
-  bd comments add bd-123 -f notes.txt`,
+  bd comments add bd-123 -f notes.txt
+
+  # Add a comment as someone else (--author is an alias of --actor)
+  bd comments add bd-123 "Reviewed" --author kim`,
 	Args:          validateCommentsArgs,
 	SilenceUsage:  true,
 	SilenceErrors: true,
@@ -179,7 +182,33 @@ func validateCommentsAddArgs(cmd *cobra.Command, args []string) error {
 	if err := cobra.MinimumNArgs(1)(cmd, args); err != nil {
 		return err
 	}
-	return checkCommentIDNotReservedWord(args[0])
+	if err := checkCommentIDNotReservedWord(args[0]); err != nil {
+		return err
+	}
+	return checkCommentAuthorAlias(cmd)
+}
+
+// checkCommentAuthorAlias refuses two different explicit authors. --author is
+// an alias of the global --actor, so "--actor sam --author kim" names two people
+// for one comment, and neither can quietly win. It runs as Args validation, ahead
+// of the store and of every write. Only the two flags are compared: BD_ACTOR and
+// BEADS_ACTOR are defaults, which --author overrides as --actor does. A blank value
+// names nobody, which is how both flags read it, so it conflicts with nothing.
+func checkCommentAuthorAlias(cmd *cobra.Command) error {
+	author, _ := cmd.Flags().GetString("author")
+	global := cmd.Root().PersistentFlags()
+	if !global.Changed("actor") {
+		return nil
+	}
+	// On v0 --author wins, and goes out as it always did: see remoteOnV0.
+	if workspaceOnV0Connection() {
+		return nil
+	}
+	named, _ := global.GetString("actor")
+	if author == "" || named == "" || author == named {
+		return nil
+	}
+	return HandleErrorRespectJSON("--author is an alias of --actor, and they name two people: --actor %q, --author %q. Send one", named, author)
 }
 
 var commentsAddCmd = &cobra.Command{
@@ -192,7 +221,10 @@ Examples:
   bd comments add bd-123 "Working on this now"
 
   # Add a comment from a file
-  bd comments add bd-123 -f notes.txt`,
+  bd comments add bd-123 -f notes.txt
+
+  # Add a comment as someone else (--author is an alias of --actor)
+  bd comments add bd-123 "Reviewed" --author kim`,
 	Args:          validateCommentsAddArgs,
 	SilenceUsage:  true,
 	SilenceErrors: true,
@@ -214,10 +246,12 @@ Examples:
 			return HandleErrorRespectJSON("%v", err)
 		}
 
-		author, _ := cmd.Flags().GetString("author")
-		if author == "" {
-			author = getActorWithGit()
+		// --author is --actor by another name, so it attributes the whole write,
+		// the embedded commit below included.
+		if author, _ := cmd.Flags().GetString("author"); author != "" {
+			setActor(author)
 		}
+		author := getActorWithGit()
 
 		// Dispatched after the text is resolved so both backends read the
 		// same sources and report the same conflicts.
@@ -323,7 +357,7 @@ func init() {
 	commentsCmd.AddCommand(commentsAddCmd)
 	commentsCmd.Flags().Bool("local-time", false, "Show timestamps in local time instead of UTC")
 	commentsAddCmd.Flags().StringP("file", "f", "", "Read comment text from file")
-	commentsAddCmd.Flags().StringP("author", "a", "", "Add author to comment")
+	commentsAddCmd.Flags().StringP("author", "a", "", "Alias of --actor; two different values are refused")
 
 	// Issue ID completions
 	commentsCmd.ValidArgsFunction = issueIDCompletion

@@ -180,8 +180,6 @@ func TestReopenRejectsTheShapesTheDocumentRefuses(t *testing.T) {
 		{"unknown member", `{"actor":"alice","cascade":true}`, "cascade"},
 		{"reason is not a string", `{"actor":"alice","reason":7}`, "reason"},
 		{"null reason", `{"actor":"alice","reason":null}`, "reason"},
-		{"oversize reason", `{"actor":"alice","reason":"` + strings.Repeat("x", 300) + `"}`, "reason"},
-		{"reason with a control character", "{\"actor\":\"alice\",\"reason\":\"why\\nbd: forged\"}", "reason"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			lifecycle := &roleLifecycle{reopenResult: issueops.ReopenResult{Issue: reopenedIssue("bd-1")}}

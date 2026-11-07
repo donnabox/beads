@@ -203,6 +203,7 @@ func journalRow(record apigen.EventRecord) journalops.Row {
 		TS:      record.TS,
 		Op:      record.Op,
 		IssueID: record.IssueID,
+		Actor:   record.Actor,
 	}
 	if payload := string(record.Issue); payload != "" && payload != "null" {
 		row.IssueJSON = payload

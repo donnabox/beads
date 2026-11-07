@@ -106,6 +106,7 @@ func (m *httpMoleculeStepper) Advance(ctx context.Context, req issueops.AdvanceR
 		Op:      wire.OpAdvanceMolecule,
 		Method:  http.MethodPost,
 		Path:    path,
+		PathArg: req.ClosedStepID,
 		Body:    body,
 		IssueID: req.ClosedStepID,
 	}, &res); err != nil {
