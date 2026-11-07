@@ -196,3 +196,110 @@ func batchApplyItem(op batchOp) (issueops.ApplyItem, string, error) {
 	}
 	return issueops.ApplyItem{}, "", fmt.Errorf("internal: unhandled batch op %q", op.cmd)
 }
+
+// importIssuesRemote imports over applyBatch, whose create item is the only bulk
+// create that carries an explicit id (batchCreateIssues mints its own, so an
+// imported row would lose its identity). Each chunk is one all-or-nothing request.
+//
+// The create item carries no stored timestamps, comments or close state, so a row
+// holding one refuses, naming the member, rather than arriving without it. It
+// creates and never upserts, so a row the server already holds refuses too: the
+// direct route's upsert merges columns inside a transaction, which no operation
+// on the wire does.
+//
+// Rows naming no id and nothing else the narrower bulk create leaves out go there
+// instead, which is the operation that exists for them.
+func importIssuesRemote(ctx context.Context, st storage.DoltStorage, rows []*types.Issue, actor string, opts ImportOptions) error {
+	if opts.ConflictSkip {
+		return fmt.Errorf("skipping conflicting rows is not available over bd connect: bd serve's bulk create has no such mode")
+	}
+	if done, err := importWithBatchCreate(ctx, st, rows, actor); done || err != nil {
+		return err
+	}
+	var items []issueops.ApplyItem
+	for _, row := range rows {
+		if row == nil {
+			continue
+		}
+		if len(row.Comments) > 0 {
+			return fmt.Errorf("%s carries comments, which bd serve's bulk create cannot store with their timestamps; import it on the server's own workspace", row.ID)
+		}
+		issue := *row
+		deps := issue.Dependencies
+		issue.Dependencies = nil
+		items = append(items, issueops.ApplyItem{Kind: issueops.ItemCreate, Create: &issueops.CreateItem{Issue: &issue}})
+		for _, dep := range deps {
+			items = append(items, issueops.ApplyItem{Kind: issueops.ItemDepAdd, DepAdd: &issueops.DepAddItem{
+				Source: issueops.Ref{ID: row.ID},
+				Target: issueops.Ref{ID: dep.DependsOnID},
+				Type:   dep.Type,
+			}})
+		}
+	}
+	applier, err := st.BatchApplier()
+	if err != nil {
+		return err
+	}
+	for len(items) > 0 {
+		n := min(len(items), issueops.MaxApplyBatchItems)
+		_, err := applier.ApplyBatch(ctx, issueops.ApplyBatchRequest{
+			Actor:         actor,
+			Items:         items[:n],
+			ForceIDPrefix: opts.SkipPrefixValidation,
+		})
+		if errors.Is(err, issueops.ErrAlreadyExists) {
+			return fmt.Errorf("import over bd connect creates new issues only, and does not upsert a row the server holds: %w", err)
+		}
+		if err != nil {
+			return err
+		}
+		items = items[n:]
+	}
+	return nil
+}
+
+// importWithBatchCreate imports id-less rows through batchCreateIssues, and
+// reports false, with nothing sent, when a row is one that operation cannot carry.
+func importWithBatchCreate(ctx context.Context, st storage.DoltStorage, rows []*types.Issue, actor string) (bool, error) {
+	items := make([]issueops.BatchCreateItem, 0, len(rows))
+	for _, row := range rows {
+		if row == nil {
+			continue
+		}
+		if row.ID != "" || len(row.Dependencies) > 0 || len(row.Comments) > 0 || (row.Status != "" && row.Status != types.StatusOpen) {
+			return false, nil
+		}
+		issue := *row
+		issue.Status = "" // open is the operation's own default, and it has no such member.
+		items = append(items, issueops.BatchCreateItem{Issue: &issue})
+	}
+	creator, err := st.BatchCreator()
+	if err != nil {
+		return false, err
+	}
+	created, err := creator.CreateBatch(ctx, issueops.CreateBatchRequest{Actor: actor, Items: items})
+	if isUnsupportedByStore(err) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	// The import reports each row's id, and the server minted them; the answer is
+	// in request order (httpBatchCreator checks its length).
+	next := 0
+	for _, row := range rows {
+		if row != nil {
+			row.ID = created.Issues[next].ID
+			next++
+		}
+	}
+	return true, nil
+}
+
+// isUnsupportedByStore reports an act the store refuses for having no way to do it
+// (nothing was sent), which a caller with another route takes as a reason to use
+// that route rather than as a failure.
+func isUnsupportedByStore(err error) bool {
+	var unsupported *storage.ErrUnsupported
+	return errors.As(err, &unsupported)
+}

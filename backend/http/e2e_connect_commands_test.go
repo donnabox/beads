@@ -190,6 +190,37 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Errorf("the batch wrote before refusing: %v", row)
 				}
 			})
+			t.Run("B12 import creates, and refuses what it cannot carry", func(t *testing.T) {
+				file := filepath.Join(f.dir, "ids.jsonl")
+				importedID := "e2e-imp" + tc.protocol
+				line := `{"id":"` + importedID + `","title":"imported one","issue_type":"task","status":"open","priority":2}` + "\n"
+				if err := os.WriteFile(file, []byte(line), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				c.counter.reset()
+				f.mustRun(nil, "import", "--input", file, "--json")
+				c.dialed(t, "issue/batch", ":batchApply")
+				if row := c.show(t, importedID); row["title"] != "imported one" {
+					t.Fatalf("after bd import: %v", row)
+				}
+
+				titles := filepath.Join(f.dir, "titles.jsonl")
+				if err := os.WriteFile(titles, []byte(`{"title":"imported by title","issue_type":"task","priority":2}`+"\n"), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				c.counter.reset()
+				f.mustRun(nil, "import", "--input", titles, "--json")
+				c.dialed(t, "issue/create-many", ":batchCreate")
+
+				stamped := filepath.Join(f.dir, "stamped.jsonl")
+				stampedLine := `{"id":"e2e-imp2","title":"stamped","issue_type":"task","status":"open","priority":2,"created_at":"2020-01-01T00:00:00Z","updated_at":"2020-01-01T00:00:00Z"}` + "\n"
+				if err := os.WriteFile(stamped, []byte(stampedLine), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				c.refused(t, "CreatedAt", "import", "--input", stamped)
+
+				f.mustRun(nil, "import", "--input", file, "--dry-run", "--json")
+			})
 			//ROWS
 		})
 	}
