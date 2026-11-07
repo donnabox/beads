@@ -162,6 +162,66 @@ func TestGuardComparedInsideTheWrite(t *testing.T) {
 		}
 	})
 
+	t.Run("a reopen writes row_lock, so it loses to a guarded label write", func(t *testing.T) {
+		id := "grd-race4"
+		seed(t, id)
+		if _, err := lifecycle.Close(ctx, publicops.CloseRequest{Actor: "seed", IssueID: id, Reason: "done"}); err != nil {
+			t.Fatal(err)
+		}
+		want := guardFingerprint(read(t, id))
+		var attempts atomic.Int32
+		var labelErr error
+		_, reopenErr := lifecycle.Reopen(ctx, publicops.ReopenRequest{
+			Actor: "first", IssueID: id,
+			InTx: &publicops.RowCheck{Run: func(current *types.Issue) error {
+				if err := staleGuard(want, current); err != nil {
+					return err
+				}
+				if attempts.Add(1) == 1 {
+					_, labelErr = lifecycle.Update(ctx, publicops.UpdateRequest{
+						Actor: "second", IssueID: id, Patch: label("x"),
+						InTx: func(current *types.Issue, _ *publicops.UpdateRequest) error { return staleGuard(want, current) },
+					})
+				}
+				return nil
+			}},
+		})
+		if labelErr != nil {
+			t.Fatalf("the write that landed first was refused: %v", labelErr)
+		}
+		if !errors.Is(reopenErr, publicops.ErrVersionMismatch) {
+			t.Fatalf("the stale reopen came back %v, want a version mismatch", reopenErr)
+		}
+	})
+
+	t.Run("a close loses to a guarded label write", func(t *testing.T) {
+		id := "grd-race5"
+		want := seed(t, id)
+		var attempts atomic.Int32
+		var labelErr error
+		_, closeErr := lifecycle.Close(ctx, publicops.CloseRequest{
+			Actor: "first", IssueID: id, Reason: "done",
+			InTx: &publicops.RowCheck{Run: func(current *types.Issue) error {
+				if err := staleGuard(want, current); err != nil {
+					return err
+				}
+				if attempts.Add(1) == 1 {
+					_, labelErr = lifecycle.Update(ctx, publicops.UpdateRequest{
+						Actor: "second", IssueID: id, Patch: label("x"),
+						InTx: func(current *types.Issue, _ *publicops.UpdateRequest) error { return staleGuard(want, current) },
+					})
+				}
+				return nil
+			}},
+		})
+		if labelErr != nil {
+			t.Fatalf("the write that landed first was refused: %v", labelErr)
+		}
+		if !errors.Is(closeErr, publicops.ErrVersionMismatch) {
+			t.Fatalf("the stale close came back %v, want a version mismatch", closeErr)
+		}
+	})
+
 	t.Run("a guard can compute the patch from the state the write lands on", func(t *testing.T) {
 		id := "grd-derive"
 		seed(t, id)

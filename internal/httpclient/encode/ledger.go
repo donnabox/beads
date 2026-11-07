@@ -693,6 +693,22 @@ func writeSideRows() []Row {
 			PinnedBy: pinnedByS3Conformance,
 		},
 		{
+			ID: "W-CloseRequest.InTx", Kind: KindRefuse,
+			Type: tyCloseRequest, Field: "InTx",
+			What:     "a check run inside the close's transaction refuses",
+			Why:      "W-UpdateRequest.InTx's reason: there is no wire on which to send code, and dropping a guard is what a caller cannot find out afterwards",
+			SpecRow:  updateSpec,
+			PinnedBy: pinnedByS3Conformance,
+		},
+		{
+			ID: "W-ReopenRequest.InTx", Kind: KindRefuse,
+			Type: tyReopenRequest, Field: "InTx",
+			What:     "a check run inside the reopen's transaction refuses",
+			Why:      "W-UpdateRequest.InTx's reason: there is no wire on which to send code, and dropping a guard is what a caller cannot find out afterwards",
+			SpecRow:  updateSpec,
+			PinnedBy: pinnedByS3Conformance,
+		},
+		{
 			ID: "W-CloseRequest.ExpectedVersion", Kind: KindRetired,
 			What:     "the compare-and-set row-version precondition on a close used to refuse",
 			Why:      "RETIRED by the client wave that sends it (ga-jbuyf). CloseIssueRequest publishes expected_version (upstream #5506) and this client now emits it, so the guard reaches the server rather than refusing here — and the ordering the role promises, that the precondition is checked BEFORE the idempotent re-close, is the server's to keep and the served tier's to assert",

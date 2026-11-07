@@ -468,6 +468,11 @@ func (o *issueOperations) Close(ctx context.Context, request publicops.CloseRequ
 		if err != nil {
 			return publicops.CloseResult{}, "", err
 		}
+		if attempt.InTx != nil {
+			if err := attempt.InTx.Run(before); err != nil {
+				return publicops.CloseResult{}, "", err
+			}
+		}
 		var closed domain.CloseIssueResult
 		if useWisp {
 			closed, err = uw.IssueUseCase().CloseWispChecked(ctx, attempt.IssueID, domain.CloseIssueParams{Reason: attempt.Reason, Session: attempt.Session}, attempt.Actor, attempt.Force)
@@ -517,6 +522,11 @@ func (o *issueOperations) Reopen(ctx context.Context, request publicops.ReopenRe
 		if err != nil {
 			return publicops.ReopenResult{}, "", err
 		}
+		if attempt.InTx != nil {
+			if err := attempt.InTx.Run(before); err != nil {
+				return publicops.ReopenResult{}, "", err
+			}
+		}
 		var reopened domain.ReopenIssueResult
 		if useWisp {
 			reopened, err = uw.IssueUseCase().ReopenWisp(ctx, attempt.IssueID, domain.ReopenIssueParams{Reason: attempt.Reason}, attempt.Actor)
@@ -533,7 +543,16 @@ func (o *issueOperations) Reopen(ctx context.Context, request publicops.ReopenRe
 		if err != nil {
 			return publicops.ReopenResult{}, "", err
 		}
-		return publicops.ReopenResult{Issue: hydrated, Changed: !semanticIssueEqual(before, hydrated)},
+		changed := !semanticIssueEqual(before, hydrated)
+		if attempt.InTx != nil && changed && hydrated.RowVersion == before.RowVersion {
+			if err := remintRowLockInUOW(ctx, uw, attempt.IssueID, useWisp); err != nil {
+				return publicops.ReopenResult{}, "", err
+			}
+			if hydrated, err = hydrateIssueOperation(ctx, uw, issue, false, false); err != nil {
+				return publicops.ReopenResult{}, "", err
+			}
+		}
+		return publicops.ReopenResult{Issue: hydrated, Changed: changed},
 			storageissueops.HistoryEntry(attempt.Provenance, "reopen issue"), nil
 	})
 }

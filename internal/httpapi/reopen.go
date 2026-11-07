@@ -58,6 +58,8 @@ func (s *Server) handleReopen(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	request.InTx = rowCheckFromContext(r.Context())
+
 	lifecycle, err := s.lifecycle(r)
 	if err != nil {
 		s.failReopen(w, r, request, err)

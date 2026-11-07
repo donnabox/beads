@@ -17,6 +17,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/issueops"
 )
@@ -231,6 +232,22 @@ func (c *coreStore) Related(_ context.Context, req issueops.RelatedRequest) ([]*
 		}
 	}
 	return related, nil
+}
+
+// rowInTx is the row a role's transaction would read: an unreadable store refuses, and
+// an unknown id is the miss a real leg answers.
+func (c *coreStore) rowInTx(id string) (*types.Issue, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.getErr != nil {
+		return nil, c.getErr
+	}
+	for _, issue := range c.issues {
+		if issue.ID == id {
+			return issue, nil
+		}
+	}
+	return nil, fmt.Errorf("issue %s: %w", id, storage.ErrNotFound)
 }
 
 func (c *coreStore) GetSetting(_ context.Context, req issueops.GetSettingRequest) (issueops.SettingResult, error) {

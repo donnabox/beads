@@ -57,6 +57,8 @@ func (s *Server) handleClose(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	request.InTx = rowCheckFromContext(r.Context())
+
 	lifecycle, err := s.lifecycle(r)
 	if err != nil {
 		s.failClose(w, r, request, err)

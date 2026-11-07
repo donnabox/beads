@@ -1619,8 +1619,8 @@ func TestCallableGuardTakesACoreRevision(t *testing.T) {
 		issue := coreIssue("sw-1", types.TypeTask)
 		issue.RowVersion = rowVersion
 		store := &coreStore{issues: []*types.Issue{issue}}
-		lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: issue}}
-		deleter := &roleDeleter{result: issueops.DeleteResult{Deleted: 1}}
+		lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: issue}, inTxRow: store.rowInTx}
+		deleter := &roleDeleter{result: issueops.DeleteResult{Deleted: 1}, inTxRow: store.rowInTx}
 		return newCoreServer(t, store, Config{Lifecycle: lifecycle, Deleter: deleter}), store, issue, lifecycle, deleter
 	}
 	revision := func(t *testing.T, ts *testServer) string {
@@ -1673,6 +1673,36 @@ func TestCallableGuardTakesACoreRevision(t *testing.T) {
 		wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"sw-1",`+patch+`,"expected_version":"`+token+`"}`), http.StatusConflict, bdpRevisionMismatch)
 		if got := lifecycle.updateRequests(); len(got) != 0 {
 			t.Errorf("reached the role: %+v", got)
+		}
+	})
+
+	// The race the outside comparison had: a label-only write that lands after the mount
+	// has the request and before the role's transaction reads the row. The row lock half
+	// of the token still matches, so only the whole token, compared in the transaction,
+	// can catch it.
+	t.Run("a change landing on the way to the write is refused", func(t *testing.T) {
+		for _, name := range []string{"issue/update", "issue/close", "issue/reopen", "issue/delete"} {
+			ts, store, issue, lifecycle, deleter := setup(t, 7)
+			token := revision(t, ts)
+			read := store.rowInTx
+			landing := func(id string) (*types.Issue, error) {
+				store.mu.Lock()
+				issue.Labels = []string{"landed"}
+				store.mu.Unlock()
+				return read(id)
+			}
+			lifecycle.inTxRow, deleter.inTxRow = landing, landing
+			arguments := `{"id":"sw-1",`
+			switch name {
+			case "issue/update":
+				arguments += patch + `,`
+			case "issue/delete":
+				arguments = `{"ids":["sw-1"],`
+			}
+			wantProblem(t, ts.callAs(t, name, "a", arguments+`"expected_version":"`+token+`"}`), http.StatusConflict, bdpRevisionMismatch)
+			if got := len(lifecycle.updateRequests()) + len(lifecycle.closeRequests()) + len(lifecycle.reopenRequests()) + len(deleter.requests()); got != 0 {
+				t.Errorf("%s: %d writes got past a stale guard", name, got)
+			}
 		}
 	})
 

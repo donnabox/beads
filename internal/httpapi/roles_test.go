@@ -801,6 +801,10 @@ type roleLifecycle struct {
 	reopenErr    error
 	updateResult issueops.UpdateResult
 	updateErr    error
+	// inTxRow is the row a request's InTx hook sees, as a real leg reads it in its
+	// transaction. A refusal there means the role writes nothing, so the request is not
+	// recorded: every list below means "got past the guard".
+	inTxRow func(id string) (*types.Issue, error)
 
 	mu      sync.Mutex
 	creates []issueops.CreateRequest
@@ -827,7 +831,25 @@ func (l *roleLifecycle) createRequests() []issueops.CreateRequest {
 	return append([]issueops.CreateRequest(nil), l.creates...)
 }
 
+// rowForInTx is what a hook runs over. A double with no row to give refuses loudly: a
+// silently skipped guard is what these tests are here to catch.
+func rowForInTx(inTxRow func(string) (*types.Issue, error), id string) (*types.Issue, error) {
+	if inTxRow == nil {
+		return nil, errors.New("this double was handed an InTx hook and has no row to run it over")
+	}
+	return inTxRow(id)
+}
+
 func (l *roleLifecycle) Update(_ context.Context, req issueops.UpdateRequest) (issueops.UpdateResult, error) {
+	if req.InTx != nil {
+		row, err := rowForInTx(l.inTxRow, req.IssueID)
+		if err != nil {
+			return issueops.UpdateResult{}, err
+		}
+		if err := req.InTx(row, &req); err != nil {
+			return issueops.UpdateResult{}, err
+		}
+	}
 	l.mu.Lock()
 	l.updates = append(l.updates, req)
 	l.mu.Unlock()
@@ -846,6 +868,15 @@ func (l *roleLifecycle) updateRequests() []issueops.UpdateRequest {
 }
 
 func (l *roleLifecycle) Close(_ context.Context, req issueops.CloseRequest) (issueops.CloseResult, error) {
+	if req.InTx != nil {
+		row, err := rowForInTx(l.inTxRow, req.IssueID)
+		if err != nil {
+			return issueops.CloseResult{}, err
+		}
+		if err := req.InTx.Run(row); err != nil {
+			return issueops.CloseResult{}, err
+		}
+	}
 	l.mu.Lock()
 	l.closes = append(l.closes, req)
 	l.mu.Unlock()
@@ -856,6 +887,15 @@ func (l *roleLifecycle) Close(_ context.Context, req issueops.CloseRequest) (iss
 }
 
 func (l *roleLifecycle) Reopen(_ context.Context, req issueops.ReopenRequest) (issueops.ReopenResult, error) {
+	if req.InTx != nil {
+		row, err := rowForInTx(l.inTxRow, req.IssueID)
+		if err != nil {
+			return issueops.ReopenResult{}, err
+		}
+		if err := req.InTx.Run(row); err != nil {
+			return issueops.ReopenResult{}, err
+		}
+	}
 	l.mu.Lock()
 	l.reopens = append(l.reopens, req)
 	l.mu.Unlock()
@@ -1225,12 +1265,23 @@ func (s *roleSweeper) requests() []issueops.SweepRequest {
 type roleDeleter struct {
 	result issueops.DeleteResult
 	err    error
+	// inTxRow is roleLifecycle's.
+	inTxRow func(id string) (*types.Issue, error)
 
 	mu    sync.Mutex
 	calls []issueops.DeleteRequest
 }
 
 func (d *roleDeleter) Delete(_ context.Context, req issueops.DeleteRequest) (issueops.DeleteResult, error) {
+	if req.InTx != nil {
+		row, err := rowForInTx(d.inTxRow, strings.TrimSpace(req.IDs[0]))
+		if err != nil {
+			return issueops.DeleteResult{}, err
+		}
+		if err := req.InTx(row); err != nil {
+			return issueops.DeleteResult{}, err
+		}
+	}
 	d.mu.Lock()
 	d.calls = append(d.calls, req)
 	d.mu.Unlock()

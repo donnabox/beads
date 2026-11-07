@@ -68,6 +68,8 @@ func (s *Server) handleDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	request.InTx = guardFromContext(r.Context())
+
 	deleter, err := s.deleter(r)
 	if err != nil {
 		s.failErr(w, r, err)

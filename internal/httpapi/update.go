@@ -89,6 +89,8 @@ func (s *Server) handleUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	request.InTx = updateGuardFromContext(r.Context())
+
 	lifecycle, err := s.lifecycle(r)
 	if err != nil {
 		s.failUpdate(w, r, request, err)

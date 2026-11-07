@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -334,7 +335,14 @@ func (row *callableRow) invocationRequest(s *Server, c *callableCapture, r *http
 	if problem := row.settleCoreGuard(s, r, inv); problem != nil {
 		return nil, problem
 	}
-	return row.v0Request(r, inv)
+	inner, problem := row.v0Request(r, inv)
+	if problem != nil {
+		return nil, problem
+	}
+	if inv.guard != nil {
+		inner = inner.WithContext(context.WithValue(inner.Context(), coreGuardKey{}, inv.guard))
+	}
+	return inner, nil
 }
 
 // settleCoreGuard is the routing rule's revision tokens: `expected_version` also
@@ -343,11 +351,10 @@ func (row *callableRow) invocationRequest(s *Server, c *callableCapture, r *http
 // routes go on refusing such a token. A bare row lock, or anything else that is no
 // Core token, is left for v0 to read.
 //
-// A Core token is compared whole against the record as it stands, which is what
-// catches a label-only write, and v0 is then sent its row lock half, which v0 checks
-// inside the write's own transaction. The comparison is outside that transaction: a
-// write that moves only the digest can land between the two. A record that cannot be
-// named here, or does not exist, goes on to v0, whose refusal is the answer.
+// v0 is sent the token's row lock half, and the whole token rides the request's
+// context to the role, which compares it inside the write's own transaction: see
+// coreGuard. That is what catches a label-only write, including one that lands while
+// this request is on its way there.
 func (row *callableRow) settleCoreGuard(s *Server, r *http.Request, inv *invocation) *callableProblem {
 	raw, sent := inv.args[expectedVersionMember]
 	if !sent || !slices.Contains(row.body, expectedVersionMember) {
@@ -361,43 +368,14 @@ func (row *callableRow) settleCoreGuard(s *Server, r *http.Request, inv *invocat
 	if !isCore {
 		return nil
 	}
-	if id, named := row.guardedID(inv.args); named {
-		p := newCoreProjector(s, r)
-		found, err := p.lookup(r.Context(), id)
-		if err != nil {
-			return newCallableProblem(bdpUnavailable, "the record's revision could not be read")
-		}
-		if found != nil && found.bead != nil {
-			record, err := p.bead(r.Context(), found.bead)
-			if err != nil {
-				return newCallableProblem(bdpUnavailable, "the record's revision could not be read")
-			}
-			if record.Revision != token {
-				return newCallableProblem(bdpRevisionMismatch, "`"+expectedVersionMember+"` is a revision this record no longer carries")
-			}
-		}
-	}
 	replaced, err := json.Marshal(rowLock)
 	if err != nil {
 		return newCallableProblem(bdpUnavailable, "")
 	}
 	inv.args[expectedVersionMember] = replaced
 	inv.rebuild = true
+	inv.guard = newCoreGuard(s, r, token, rowLock)
 	return nil
-}
-
-// guardedID is the one record a row's guard is about: its path `id`, or the single
-// distinct id of `ids`. More than one is v0's to refuse.
-func (row *callableRow) guardedID(args map[string]json.RawMessage) (string, bool) {
-	if slices.Contains(row.path, "id") {
-		var id string
-		return id, json.Unmarshal(args["id"], &id) == nil && id != ""
-	}
-	var ids []string
-	if json.Unmarshal(args["ids"], &ids) != nil || len(ids) == 0 || distinctDeleteIDs(ids) != 1 {
-		return "", false
-	}
-	return strings.TrimSpace(ids[0]), true
 }
 
 // callableFromPath finds the row a mount names. An encoded separator names
@@ -458,6 +436,9 @@ type invocation struct {
 	// rebuild says a member of args differs from `arguments`, so v0's body cannot be
 	// `arguments` itself.
 	rebuild bool
+	// guard is the Core token `expected_version` carried, for the handler to hand to
+	// its role.
+	guard *coreGuard
 }
 
 // supply adds an argument the caller did not send.

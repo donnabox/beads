@@ -375,6 +375,15 @@ func ExecuteClose(ctx context.Context, tx *sql.Tx, request publicops.CloseReques
 	if attempt.Actor == "" || attempt.IssueID == "" {
 		return publicops.CloseResult{}, nil, fmt.Errorf("%w: close requires actor and issue ID", storage.ErrValidation)
 	}
+	if attempt.InTx != nil {
+		current, err := HydrateIssueOperationResult(ctx, tx, attempt.IssueID, false)
+		if err != nil {
+			return publicops.CloseResult{}, nil, err
+		}
+		if err := attempt.InTx.Run(current); err != nil {
+			return publicops.CloseResult{}, nil, err
+		}
+	}
 	closed, err := CloseIssueCheckedInTx(ctx, tx, attempt.IssueID, attempt.Reason, attempt.Actor, attempt.Session, attempt.Force, attempt.ExpectedVersion)
 	if err != nil {
 		return publicops.CloseResult{}, nil, err
@@ -415,12 +424,26 @@ func ExecuteReopen(ctx context.Context, tx *sql.Tx, request publicops.ReopenRequ
 			return publicops.ReopenResult{}, nil, err
 		}
 	}
+	if attempt.InTx != nil {
+		current, err := HydrateIssueOperationResult(ctx, tx, attempt.IssueID, false)
+		if err != nil {
+			return publicops.ReopenResult{}, nil, err
+		}
+		if err := attempt.InTx.Run(current); err != nil {
+			return publicops.ReopenResult{}, nil, err
+		}
+	}
 	reopened, err := ReopenIssueInTx(ctx, tx, attempt.IssueID, attempt.Reason, attempt.Actor)
 	if err != nil {
 		return publicops.ReopenResult{}, nil, err
 	}
 	tables := ChangedTables{}
 	if reopened.Changed {
+		if attempt.InTx != nil {
+			if err := remintRowLockInTx(ctx, tx, attempt.IssueID); err != nil {
+				return publicops.ReopenResult{}, nil, err
+			}
+		}
 		issueTable, _, eventTable, _ := WispTableRouting(reopened.IsWisp)
 		tables.Add(issueTable, eventTable)
 	}

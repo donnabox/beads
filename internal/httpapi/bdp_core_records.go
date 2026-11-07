@@ -300,6 +300,68 @@ func coreRevisionRowLock(token string) (string, bool) {
 	return rowLock, true
 }
 
+// coreGuard is a Core revision compared inside the transaction that writes on it.
+//
+// The comparison needs the projection, which the storage roles cannot import, so the
+// role calls back with the row it read. A Callable's handler finds the guard in its
+// request's context: nothing but the Callable mount puts one there, so a direct v0
+// request never has one and its role request is what it always was.
+type coreGuard struct {
+	p       *coreProjector
+	token   string
+	rowLock int64
+}
+
+type coreGuardKey struct{}
+
+// newCoreGuard warms the type table first. A projection inside a transaction should
+// not take a second connection for it, and a store that cannot say answers the same
+// question again inside, where its failure is the refusal.
+func newCoreGuard(s *Server, r *http.Request, token, rowLock string) *coreGuard {
+	guard := &coreGuard{p: newCoreProjector(s, r), token: token}
+	guard.rowLock, _ = types.ParseRevisionToken(rowLock)
+	_, _ = guard.p.configuredTypes(r.Context())
+	return guard
+}
+
+// check compares the whole token with the record as the transaction reads it. A miss
+// is the same typed mismatch the row lock's own guard answers, so every handler maps it
+// as it maps that.
+func (g *coreGuard) check(current *types.Issue) error {
+	record, err := g.p.bead(g.p.r.Context(), current)
+	if err != nil {
+		return err
+	}
+	if record.Revision != g.token {
+		return &issueops.VersionMismatchError{Expected: g.rowLock, Current: current.RowVersion}
+	}
+	return nil
+}
+
+// guardFromContext is the guard a Callable invocation carries, as Delete's hook, or nil.
+func guardFromContext(ctx context.Context) func(*types.Issue) error {
+	if guard, ok := ctx.Value(coreGuardKey{}).(*coreGuard); ok {
+		return guard.check
+	}
+	return nil
+}
+
+// rowCheckFromContext is the same for Close's and Reopen's.
+func rowCheckFromContext(ctx context.Context) *issueops.RowCheck {
+	if check := guardFromContext(ctx); check != nil {
+		return &issueops.RowCheck{Run: check}
+	}
+	return nil
+}
+
+// updateGuardFromContext is the same for Update's hook.
+func updateGuardFromContext(ctx context.Context) func(*types.Issue, *issueops.UpdateRequest) error {
+	if guard, ok := ctx.Value(coreGuardKey{}).(*coreGuard); ok {
+		return func(current *types.Issue, _ *issueops.UpdateRequest) error { return guard.check(current) }
+	}
+	return nil
+}
+
 // coreBeadProperties is §3.2 and §3.4: the row's own JSON, less what the record
 // carries elsewhere or not at all. Unknown native members survive by being
 // removed from nothing, which is how a new durable column reaches a client.

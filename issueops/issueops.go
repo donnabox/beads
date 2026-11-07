@@ -393,6 +393,13 @@ type UpdateRequest struct {
 	InTx func(current *Issue, attempt *UpdateRequest) error
 }
 
+// RowCheck is a check run over a row inside the transaction that writes it; see
+// UpdateRequest.InTx. It is held by pointer where a request is otherwise comparable,
+// so that it stays comparable.
+type RowCheck struct {
+	Run func(current *Issue) error
+}
+
 // CloseRequest describes an issue closure.
 type CloseRequest struct {
 	Actor   string
@@ -417,6 +424,9 @@ type CloseRequest struct {
 	// authority fence. It never bypasses the template guard, validation,
 	// ExpectedVersion, or lifecycle rules.
 	Force bool
+	// InTx is UpdateRequest.InTx's check, over the row as this close's own
+	// transaction reads it. It can only refuse: a close has no patch to rewrite.
+	InTx *RowCheck
 	// ExpectedVersion requires the current row version to match, and is checked
 	// BEFORE the idempotent close — so a re-close of an already-closed issue
 	// still refuses on a stale token rather than reporting the no-op it would
@@ -474,6 +484,10 @@ type CloseRequest struct {
 
 // ReopenRequest describes an issue reopening.
 type ReopenRequest struct {
+	// InTx is UpdateRequest.InTx's check, over the row as this reopen's own
+	// transaction reads it. It can only refuse. A reopen carrying it rewrites
+	// row_lock when it changes the row, for the reason given there.
+	InTx *RowCheck
 	Actor   string
 	IssueID string
 	// Reason records why literal closed and configured done statuses move to

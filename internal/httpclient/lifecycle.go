@@ -666,6 +666,10 @@ func (l *httpLifecycle) Close(ctx context.Context, req issueops.CloseRequest) (i
 		return issueops.CloseResult{}, err
 	}
 
+	if req.InTx != nil {
+		return issueops.CloseResult{}, l.store.inexpressible("Lifecycle.Close", refuse(encode.OpCloseIssue, "W-CloseRequest.InTx"))
+	}
+
 	body := closeBody(req.Actor, req.Reason, req.Session, req.Force)
 	body.ExpectedVersion = revisionGuard(req.ExpectedVersion)
 	// AutoCloseMolecule rides the member only where the server advertises it;
@@ -710,6 +714,9 @@ func (l *httpLifecycle) Reopen(ctx context.Context, req issueops.ReopenRequest) 
 	}
 	if err := requireID("issue id", req.IssueID); err != nil {
 		return issueops.ReopenResult{}, err
+	}
+	if req.InTx != nil {
+		return issueops.ReopenResult{}, refuse(encode.OpReopenIssue, "W-ReopenRequest.InTx")
 	}
 	if req.Provenance != "" {
 		return issueops.ReopenResult{}, refuse(encode.OpReopenIssue, "W-ReopenRequest.Provenance")
