@@ -4,6 +4,10 @@ package bdhttp_test
 
 import (
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"net/http/httputil"
+	"net/url"
 	"slices"
 	"strings"
 	"testing"
@@ -127,6 +131,34 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Errorf("the reason did not land as a comment: %s", comments)
 				}
 			})
+			t.Run("B10 close --claim-next", func(t *testing.T) {
+				id := f.create("close then claim")
+				f.create("next up")
+				c.counter.reset()
+				out := f.mustRun(nil, "close", id, "--claim-next", "--json").stdout
+				c.dialed(t, "issue/claim-next", ":claimNext")
+				if !strings.Contains(out, "claimed") {
+					t.Errorf("bd close --claim-next --json: %s", out)
+				}
+			})
+
+			t.Run("B10 a failed claim exits nonzero with the close committed", func(t *testing.T) {
+				id := f.create("close and the claim fails")
+				f.create("next up, unreachable")
+				failing := refuseClaimNextProxy(t, proxyAddr)
+				other := &remoteRolesFixture{t: t, bin: bin, dir: t.TempDir(), ids: map[string]string{}}
+				other.mustRun(nil, append([]string{"connect", failing, "--expect-project-id", e2eProjectID, "--json"}, tc.connect...)...)
+				r := other.run(nil, "close", id, "--claim-next")
+				if r.code == 0 {
+					t.Fatalf("exit 0 with the claim failed: %s %s", r.stdout, r.stderr)
+				}
+				if !strings.Contains(r.stderr, "claiming the next ready issue") {
+					t.Errorf("did not say the claim failed: %s", r.stderr)
+				}
+				if row := c.show(t, id); row["status"] != "closed" {
+					t.Errorf("the close did not stay committed: %v", row)
+				}
+			})
 			//ROWS
 		})
 	}
@@ -172,4 +204,21 @@ func (c *connectCommands) refused(t *testing.T, want string, args ...string) {
 	if !strings.Contains(r.stdout+r.stderr, want) {
 		t.Errorf("bd %v: want %q in stdout=%s stderr=%s", args, want, r.stdout, r.stderr)
 	}
+}
+
+// refuseClaimNextProxy forwards everything to addr but the claim of the next ready
+// issue, which it fails, so the close before it stands and the claim after it does
+// not. It answers the proxy's own URL.
+func refuseClaimNextProxy(t *testing.T, addr string) string {
+	t.Helper()
+	forward := httputil.NewSingleHostReverseProxy(&url.URL{Scheme: "http", Host: addr})
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.Contains(r.URL.Path, "claim-next") || strings.Contains(r.URL.Path, ":claimNext") {
+			http.Error(w, "the claim fails here", http.StatusInternalServerError)
+			return
+		}
+		forward.ServeHTTP(w, r)
+	}))
+	t.Cleanup(srv.Close)
+	return srv.URL
 }

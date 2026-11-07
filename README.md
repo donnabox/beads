@@ -241,9 +241,9 @@ row, never a silent gap — see
 [`engdocs/design/http-divergence-ledger.md`](engdocs/design/http-divergence-ledger.md)
 for the full, generated list of what differs and why before depending on an
 HTTP-backed workspace for a workflow you haven't checked against it. One
-refusal to know up front: `bd close --claim-next` closes nothing over HTTP,
-because the wire's batch close cannot carry the claim. Close without it, then
-run `bd ready --claim`.
+difference to know up front: `bd close --claim-next` is two requests over HTTP,
+because the wire's batch close cannot carry the claim. A claim that fails exits
+nonzero with the closes already committed.
 
 [Cross-repo dependencies](docs/core-concepts/dependencies.md#cross-repo-dependencies)
 keep their policy over HTTP. The client resolves each `external:` reference

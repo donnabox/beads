@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/issueops"
 )
 
@@ -40,4 +41,20 @@ func addReasonComment(ctx context.Context, st storage.DoltStorage, id, reason st
 	}
 	_, err = commenter.AddComment(ctx, issueops.AddCommentRequest{Author: currentActor(), IssueID: id, Text: reason})
 	return err
+}
+
+// remoteClaimNext is `bd close --claim-next` on a remote store. batchCloseIssues
+// publishes no claim-next member, so the claim is a second request after the
+// closes rather than part of their transaction; ready.claim-next is the same
+// selection the direct route's batch makes.
+func remoteClaimNext(ctx context.Context, st storage.DoltStorage, filter issueops.ReadyRequest) (*types.IssueWithCounts, error) {
+	claimer, err := st.ReadyClaimer()
+	if err != nil {
+		return nil, err
+	}
+	result, err := claimer.ClaimNext(ctx, issueops.ClaimNextRequest{Actor: currentActor(), Filter: filter})
+	if err != nil {
+		return nil, err
+	}
+	return result.Claimed, nil
 }

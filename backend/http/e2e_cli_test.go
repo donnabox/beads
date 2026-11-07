@@ -41,7 +41,7 @@ const e2eDatabase = "httpe2e"
 // (both the matching case and the stale case, which must exit 13 with the
 // precondition_failed body), close, dep add, ready, count, list (JSON, text
 // and --deps), an external dependency through dep tree, ready, list --ready,
-// ready --claim, a refused close --claim-next and a refused then forced close,
+// ready --claim, a refused then forced close,
 // a claim after that close, and delete.
 func TestE2E_BDOverHTTP(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
@@ -228,21 +228,6 @@ func TestE2E_BDOverHTTP(t *testing.T) {
 	if got := firstJSONField(t, claim.stdout, "id"); got != depID {
 		t.Errorf("bd ready --claim claimed %q, want %s (%s is externally blocked): %s", got, depID, extID, claim.stdout)
 	}
-	// --claim-next refuses whole over http, before anything closes, and names
-	// the commands that do the same work. It is asked again once extID is
-	// closed, because a closed holder of an external ref changes nothing.
-	refuseClaimNext := func(when string) {
-		t.Helper()
-		r := runBD(t, bin, workspace, nil, "close", depID, "--claim-next")
-		if r.code == 0 || !strings.Contains(r.stderr, "nothing was closed") || !strings.Contains(r.stderr, "bd ready --claim") {
-			t.Errorf("bd close %s --claim-next %s (exit %d) did not refuse with the bd ready --claim hint: stdout=%s stderr=%s", depID, when, r.code, r.stdout, r.stderr)
-		}
-		show := runBD(t, bin, workspace, nil, "show", depID, "--json")
-		if status := firstJSONField(t, show.stdout, "status"); show.code != 0 || status == "closed" {
-			t.Errorf("bd show %s (exit %d) status = %q after a refused bd close --claim-next %s, want it not closed: stderr=%s", depID, show.code, status, when, show.stderr)
-		}
-	}
-	refuseClaimNext("while " + extID + " is open")
 	refused := runBD(t, bin, workspace, nil, "close", extID)
 	if refused.code == 0 || !strings.Contains(refused.stderr, externalRef) || !strings.Contains(refused.stderr, "use --force") {
 		t.Errorf("bd close %s (exit %d) did not refuse it as blocked by %s: stdout=%s stderr=%s", extID, refused.code, externalRef, refused.stdout, refused.stderr)
@@ -254,7 +239,6 @@ func TestE2E_BDOverHTTP(t *testing.T) {
 	if status := firstJSONField(t, forcedShow.stdout, "status"); forcedShow.code != 0 || status != "closed" {
 		t.Errorf("bd show %s (exit %d) status = %q after bd close --force, want %q: stderr=%s", extID, forcedShow.code, status, "closed", forcedShow.stderr)
 	}
-	refuseClaimNext("after " + extID + " was closed")
 
 	// The closed extID still holds an unsatisfied external ref, so the claim
 	// stays on the decorator's composed leg (ledger row L14). It must still
