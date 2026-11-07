@@ -4,6 +4,7 @@ package bdhttp_test
 
 import (
 	"encoding/json"
+	"slices"
 	"strings"
 	"testing"
 
@@ -36,6 +37,13 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 				f.mustRun(nil, "priority", id, "1")
 				if row := c.show(t, id); row["priority"] != float64(1) {
 					t.Fatalf("after bd priority: %v", row)
+				}
+			})
+			t.Run("B2 tag", func(t *testing.T) {
+				id := f.create("tag me")
+				f.mustRun(nil, "tag", id, "t1")
+				if labels, _ := c.show(t, id)["labels"].([]any); !slices.Contains(labels, any("t1")) {
+					t.Fatalf("after bd tag: %v", labels)
 				}
 			})
 			//ROWS
