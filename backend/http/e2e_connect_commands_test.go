@@ -85,6 +85,20 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Errorf("bd supersede did not close %s", old)
 				}
 			})
+			t.Run("B7 dep relate and unrelate", func(t *testing.T) {
+				e, g := f.create("relate one"), f.create("relate two")
+				f.mustRun(nil, "dep", "relate", e, g)
+				if out := f.mustRun(nil, "dep", "list", e, "--json").stdout; !depListHas(t, out, g, "relates-to") {
+					t.Errorf("bd dep relate left no edge: %s", out)
+				}
+				if out := f.mustRun(nil, "dep", "list", g, "--json").stdout; !depListHas(t, out, e, "relates-to") {
+					t.Errorf("bd dep relate left no edge back: %s", out)
+				}
+				f.mustRun(nil, "dep", "unrelate", e, g)
+				if out := f.mustRun(nil, "dep", "list", e, "--json").stdout; strings.Contains(out, g) {
+					t.Errorf("bd dep unrelate left the edge: %s", out)
+				}
+			})
 			//ROWS
 		})
 	}
