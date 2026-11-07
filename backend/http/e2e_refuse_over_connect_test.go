@@ -29,6 +29,7 @@ func TestE2E_ConnectRefusalsSayWhy(t *testing.T) {
 			addr := startProtocolServer(t, tc.server)
 			f := &remoteRolesFixture{t: t, bin: bin, dir: t.TempDir(), ids: map[string]string{}}
 			f.mustRun(nil, append([]string{"connect", "http://" + addr}, tc.connect...)...)
+			id := f.create("refused over connect")
 
 			for _, row := range []struct {
 				name string
@@ -55,6 +56,16 @@ func TestE2E_ConnectRefusalsSayWhy(t *testing.T) {
 					name: "E3 sync", args: []string{"sync"},
 					want: "bd sync is not available over bd connect: bd serve is the sync boundary",
 					not:  []string{"is_blocked recompute"},
+				},
+				{
+					name: "E4 show --as-of", args: []string{"show", id, "--as-of", "HEAD"},
+					want: "bd show --as-of is not available over bd connect: bd serve publishes no point-in-time read",
+					not:  []string{"operation AsOf not supported", "Error fetching", "no issues found"},
+				},
+				{
+					name: "E4 show --as-of --json", args: []string{"show", id, "--as-of", "HEAD", "--json"},
+					want: "bd show --as-of is not available over bd connect",
+					not:  []string{"operation AsOf not supported", "Error fetching", "no issues found"},
 				},
 			} {
 				t.Run(row.name, func(t *testing.T) {

@@ -87,6 +87,11 @@ func showIssueChildren(ctx context.Context, args []string, jsonOut bool, shortMo
 // showIssueAsOf displays issues as they existed at a specific commit or branch ref.
 // This requires a versioned storage backend (e.g., Dolt).
 func showIssueAsOf(ctx context.Context, args []string, ref string, shortMode bool) error {
+	// A per-id failure would reach the "no issues found" envelope below, which is
+	// false: the ids may well exist.
+	if storeIsRemoteBackend(store) {
+		return HandleErrorRespectJSON("bd show --as-of is not available over bd connect: bd serve publishes no point-in-time read; run it on the server's own workspace")
+	}
 	var allIssues []*types.Issue
 	foundCount := 0
 	for idx, id := range args {
