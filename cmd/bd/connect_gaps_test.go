@@ -115,3 +115,22 @@ func TestReadyExplainAFailedReadIsTheCommandsFailure(t *testing.T) {
 		t.Error("the row's own edges stayed: the explanation reports edges from its own read")
 	}
 }
+
+// TestHydrateRemoteDependentsRefusesARowItCannotSupply pins row D6's refusal: a
+// shallow row printed whole is blank fields and a 0001-01-01 timestamp, so a row
+// the follow-up read does not return refuses rather than printing that.
+func TestHydrateRemoteDependentsRefusesARowItCannotSupply(t *testing.T) {
+	refs := []*types.IssueWithDependencyMetadata{{Issue: types.Issue{ID: "t-shallow"}, DependencyType: types.DepBlocks}}
+
+	if _, err := hydrateRemoteDependents(context.Background(), &gapStubStore{remote: true}, refs); err == nil || !strings.Contains(err.Error(), `"t-shallow"`) {
+		t.Fatalf("a row the read did not return: err = %v", err)
+	}
+	if _, err := hydrateRemoteDependents(context.Background(), &gapStubStore{remote: true, failing: "GetIssuesByIDs"}, refs); !errors.Is(err, errGapRead) {
+		t.Fatalf("a failed read: err = %v", err)
+	}
+	// A local store's rows are whole already, so nothing is read.
+	got, err := hydrateRemoteDependents(context.Background(), &gapStubStore{failing: "GetIssuesByIDs"}, refs)
+	if err != nil || len(got) != 1 {
+		t.Fatalf("a local store: got %v, err %v", got, err)
+	}
+}

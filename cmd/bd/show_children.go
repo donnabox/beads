@@ -30,6 +30,10 @@ func showIssueChildren(ctx context.Context, args []string, jsonOut bool, shortMo
 		if err != nil {
 			return err
 		}
+		refs, err = hydrateRemoteDependents(ctx, issueStore, refs)
+		if err != nil {
+			return err
+		}
 		// Filter for only parent-child relationships
 		for _, ref := range refs {
 			if ref.DependencyType == types.DepParentChild {

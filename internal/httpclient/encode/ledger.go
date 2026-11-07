@@ -1133,10 +1133,18 @@ func commandRows() []Row {
 		},
 		row("F-show-thread", "show", "--thread", "`bd show --thread` refuses",
 			"showMessageThread renders each reply's sender, recipient, body and timestamp off GetDependentsWithMetadata, but that read was flipped onto getIssue's include_dependents parameter, which carries the collectDependents SHALLOW projection (id/status/type/priority/title + edge type only, be-4d36f2). Those fields come back zeroed over http and zero-timestamp replies sort ahead of the root — a silent-wrong degrade the refuse-over-degrade doctrine forbids. Retires with a full-dependent wire shape, a server-side ask"),
-		row("F-show-refs", "show", "--refs", "`bd show --refs` refuses",
-			"showIssueRefs's --json marshals the full GetDependentsWithMetadata rows, but the wire answers the same collectDependents shallow projection, so created_at/assignee/description come back zeroed and the JSON differs from a local workspace. The text render consumes only the shallow fields, but the flag cannot be split from its --json mode, so the whole flag refuses rather than serve a divergent JSON silently"),
-		row("F-show-children", "show", "--children", "`bd show --children` refuses",
-			"showIssueChildren's --json marshals the full GetDependentsWithMetadata rows, the same collectDependents shallow projection as --refs, so created_at/assignee/description come back zeroed over http. `bd children` is NOT this flag: it is a `bd list --parent` listing, served through the reader role (S6c)"),
+		{
+			ID: "F-show-refs", Kind: KindRetired, Command: "show", Flag: "--refs",
+			What:    "RETIRED — `bd show --refs` is served",
+			Why:     "the command hydrates the wire's shallow dependents through batchGetIssues before rendering them, and a row that read cannot supply refuses",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
+		{
+			ID: "F-show-children", Kind: KindRetired, Command: "show", Flag: "--children",
+			What:    "RETIRED — `bd show --children` is served",
+			Why:     "the command hydrates the wire's shallow dependents through batchGetIssues before rendering them, and a row that read cannot supply refuses",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
 		{
 			ID: "F-mol-ready", Kind: KindRetired, Command: "mol ready",
 			What:    "RETIRED — `bd mol ready` is served",

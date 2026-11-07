@@ -41,8 +41,6 @@ func TestE2E_ConnectGapsAreClosed(t *testing.T) {
 				}
 				t.Errorf("no request reached %s (%s): %v", callable, v0, counter.snapshot())
 			}
-			_ = dialed
-
 			t.Run("D1 list text renders the gate marker", func(t *testing.T) {
 				subject := f.create("gated subject")
 				f.mustRun(nil, "gate", "create", "--type=timer", "--timeout=1h", "--blocks", subject, "--json")
@@ -109,6 +107,19 @@ func TestE2E_ConnectGapsAreClosed(t *testing.T) {
 				}
 				if !titled {
 					t.Errorf("bd ready --explain lost the blocker's title: %s", out)
+				}
+			})
+
+			t.Run("D6 show --refs and --children carry whole rows", func(t *testing.T) {
+				epic := strings.TrimSpace(f.mustRun(nil, "create", "refs epic", "-t", "epic", "--silent").stdout)
+				f.mustRun(nil, "create", "refs child", "--parent", epic, "-d", "the body", "--silent")
+				for _, flag := range []string{"--refs", "--children"} {
+					counter.reset()
+					out := f.mustRun(nil, "show", epic, flag, "--json").stdout
+					if strings.Contains(out, "0001-01-01") || !strings.Contains(out, "the body") {
+						t.Errorf("bd show %s came back shallow: %s", flag, out)
+					}
+					dialed(t, "issue/get-many", ":batchGet")
 				}
 			})
 			//ROWS

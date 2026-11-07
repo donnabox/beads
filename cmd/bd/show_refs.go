@@ -22,6 +22,10 @@ func showIssueRefs(ctx context.Context, args []string, jsonOut bool) error {
 		if err != nil {
 			return err
 		}
+		refs, err = hydrateRemoteDependents(ctx, issueStore, refs)
+		if err != nil {
+			return err
+		}
 		allRefs[issueID] = refs
 		return nil
 	}
@@ -138,4 +142,37 @@ func getRefTypeEmoji(depType types.DependencyType) string {
 	default:
 		return "→" // Default arrow
 	}
+}
+
+// hydrateRemoteDependents replaces the shallow rows a remote store's dependents
+// read answers with whole ones. bd serve projects that read onto id, status,
+// type, priority, title and edge type, which is enough for `bd show`'s
+// dependents section and not for a caller rendering the row whole: every other
+// field would print blank and every timestamp as 0001-01-01. A row the follow-up
+// read cannot supply refuses rather than printing that.
+func hydrateRemoteDependents(ctx context.Context, s storage.DoltStorage, refs []*types.IssueWithDependencyMetadata) ([]*types.IssueWithDependencyMetadata, error) {
+	if !storeIsRemoteBackend(s) || len(refs) == 0 {
+		return refs, nil
+	}
+	ids := make([]string, 0, len(refs))
+	for _, ref := range refs {
+		ids = append(ids, ref.ID)
+	}
+	rows, err := s.GetIssuesByIDs(ctx, ids)
+	if err != nil {
+		return nil, err
+	}
+	byID := make(map[string]*types.Issue, len(rows))
+	for _, row := range rows {
+		byID[row.ID] = row
+	}
+	hydrated := make([]*types.IssueWithDependencyMetadata, 0, len(refs))
+	for _, ref := range refs {
+		row, ok := byID[ref.ID]
+		if !ok {
+			return nil, fmt.Errorf("the server listed %q as a dependent but did not return its row", ref.ID)
+		}
+		hydrated = append(hydrated, &types.IssueWithDependencyMetadata{Issue: *row, DependencyType: ref.DependencyType})
+	}
+	return hydrated, nil
 }

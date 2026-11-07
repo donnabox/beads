@@ -104,7 +104,8 @@ func (s *Store) GetDependenciesWithMetadata(ctx context.Context, id string) ([]*
 // field set `bd show`'s dependents section and its reader-accessor JSON consume,
 // so those paths are full-parity — but a caller reading any field OUTSIDE it
 // over http reads a zero. Such a caller has to hydrate the rows itself: GetDependents
-// (raw_reads.go) does.
+// (raw_reads.go) does, and `bd show --refs/--children` do through batchGetIssues
+// (cmd/bd/show_refs.go hydrateRemoteDependents).
 func (s *Store) GetDependentsWithMetadata(ctx context.Context, id string) ([]*types.IssueWithDependencyMetadata, error) {
 	q := url.Values{}
 	q.Set("include_dependents", "true")
