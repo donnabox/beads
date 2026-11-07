@@ -73,6 +73,18 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Errorf("bd todo: %s", out)
 				}
 			})
+			t.Run("B6 duplicate and supersede", func(t *testing.T) {
+				a, b := f.create("duplicate of"), f.create("canonical")
+				f.mustRun(nil, "duplicate", a, "--of", b)
+				if c.show(t, a)["status"] != "closed" {
+					t.Errorf("bd duplicate did not close %s", a)
+				}
+				old, replacement := f.create("superseded"), f.create("replacement")
+				f.mustRun(nil, "supersede", old, "--with", replacement)
+				if c.show(t, old)["status"] != "closed" {
+					t.Errorf("bd supersede did not close %s", old)
+				}
+			})
 			//ROWS
 		})
 	}
