@@ -67,6 +67,12 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Errorf("bd q --parent did not inherit labels: %v", labels)
 				}
 			})
+			t.Run("B5 todo add", func(t *testing.T) {
+				f.mustRun(nil, "todo", "add", "a todo", "-d", "todo body")
+				if out := f.mustRun(nil, "todo", "--json").stdout; !strings.Contains(out, "a todo") {
+					t.Errorf("bd todo: %s", out)
+				}
+			})
 			//ROWS
 		})
 	}
