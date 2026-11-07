@@ -46,6 +46,13 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Fatalf("after bd tag: %v", labels)
 				}
 			})
+			t.Run("B3 note", func(t *testing.T) {
+				id := f.create("note me")
+				f.mustRun(nil, "note", id, "a note")
+				if row := c.show(t, id); !strings.Contains(row["notes"].(string), "a note") {
+					t.Fatalf("after bd note: %v", row)
+				}
+			})
 			//ROWS
 		})
 	}
