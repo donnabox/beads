@@ -180,9 +180,9 @@ func v0Parameters(v0, op map[string]any) (schemas map[string]any, required map[s
 
 // adapterParameterSchemas are the arguments no v0 operation declares.
 var adapterParameterSchemas = map[string]any{
-	"source": map[string]any{"type": "string", "description": "The edge's source; v0's `issue_id`. Exactly one of the flat form and `edges`."},
-	"target": map[string]any{"type": "string", "description": "The edge's target; v0's `depends_on_id`."},
-	"type":   map[string]any{"type": "string", "description": "The edge type. An omitted type is `blocks`."},
+	"source": map[string]any{"type": "string", "minLength": 1, "maxLength": 255, "description": "The edge's source; v0's `issue_id`. Exactly one of the flat form and `edges`."},
+	"target": map[string]any{"type": "string", "minLength": 1, "maxLength": 255, "description": "The edge's target; v0's `depends_on_id`."},
+	"type":   map[string]any{"type": "string", "minLength": 1, "maxLength": 255, "description": "The edge type. An omitted type is `blocks`."},
 }
 
 // openAPIOperation is one row under the §14 table.

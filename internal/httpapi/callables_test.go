@@ -711,6 +711,12 @@ func TestCallableFlatDependencyAdapter(t *testing.T) {
 		{`{"type":"blocks"}`, "source"},
 		{`{"source":7,"target":"bd-2"}`, "source"},
 		{`{"source":"bd-1","target":null}`, "target"},
+		{`{"source":"","target":"bd-2"}`, "source"},
+		{`{"source":"bd-1","target":""}`, "target"},
+		{`{"source":"bd-1","target":"bd-2","type":""}`, "type"},
+		{`{"source":"` + strings.Repeat("a", 256) + `","target":"bd-2"}`, "source"},
+		{`{"source":"bd-1","target":"` + strings.Repeat("a", 256) + `"}`, "target"},
+		{`{"source":"bd-1","target":"bd-2","type":"` + strings.Repeat("a", 256) + `"}`, "type"},
 	} {
 		body := wantProblem(t, ts.callAs(t, "issue/dep/add", "a", tc.arguments), http.StatusUnprocessableEntity, bdpValidationFailed)
 		wantDiagnosticNaming(t, body, tc.param)
@@ -1437,6 +1443,12 @@ func TestCallableListIsTheOpenAPIProjection(t *testing.T) {
 	paths := mapAt(t, doc, "paths")
 	if len(paths) != len(callableTable) {
 		t.Errorf("%d paths for %d names", len(paths), len(callableTable))
+	}
+	for _, name := range []string{"source", "target", "type"} {
+		schema, _ := adapterParameterSchemas[name].(map[string]any)
+		if schema["minLength"] != 1 || schema["maxLength"] != 255 {
+			t.Errorf("issue/dep/add %s = %v, want the declaration's bounds 1 and 255", name, schema)
+		}
 	}
 	v0 := loadSpec(t)
 	ops := specOps(t, v0)
