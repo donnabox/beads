@@ -1,0 +1,35 @@
+{
+  "base": "c8910bd2b7e5c7631abfa7299ca749cd3d49d32c",
+  "sourceSHA256": {
+    "internal/storage/graphstore/legacy_import_test.go": "c04cb93e4db841698ff2bb2909c30b3b1d5a8e0b5268e48d54120ce398a9a747",
+    "internal/storage/graphstore/legacy_import_freshness_error_test.go": "87bd1d9d25cd553ebf12293efb642d079af68006ee83385837ae5568752e12bb",
+    "internal/storage/graphstore/BUILD.bazel": "6456b83589f07dfe311e38e1cb869fb25297a84c9131e0d8da4899d77af5bfa0",
+    "cmd/bd/graph_preview_assignee_error_test.go": "8af0397b9834e3d5e059e527b4ed24d6f0b2345bcf6f617b9b7df7c25dcc993c"
+  },
+  "sourceScope": "test-only delta; production importer unchanged",
+  "tests": {
+    "storage": {
+      "passTestRecords": 17,
+      "fail": 0,
+      "skip": 0
+    },
+    "cli": {
+      "passTestRecords": 9,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "lint": {
+    "version": "v2.10.1",
+    "toolchain": "go1.26.5",
+    "newFromRev": "HEAD (c8910bd2b)",
+    "scope": [
+      "./internal/storage/graphstore",
+      "./cmd/bd"
+    ],
+    "issues": 0,
+    "earlierAttempt": "go1.26.3 failed package loading; preserved, not qualification"
+  },
+  "runtime": "embedded/shared-server unchanged-source gate remains unrun; no engine started",
+  "review": "native scoped delta no findings; frozen predecessor actual external council still running, no transferred pass"
+}

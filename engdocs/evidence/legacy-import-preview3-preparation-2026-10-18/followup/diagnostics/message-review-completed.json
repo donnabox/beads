@@ -1,0 +1,13 @@
+{
+  "source": "ffc139a059f3dc166a99760b4dc3112c1222ae3b",
+  "exitCode": 0,
+  "stdoutSHA256": "2bc3212a5307662c07c387200978282a88faaaaad1d3fb2ea98245bf62c06c91",
+  "stderrBytes": 0,
+  "verdict": "No blocking defect/regression; three Low findings",
+  "findings": [
+    "Pin existing-context dedup branch",
+    "Unsplit in-repo inventory path",
+    "Reflow docs paragraph"
+  ],
+  "scopeDeviation": "External reviewer reported unsolicited additional Codex CLI reviewer; that nested result is excluded from requested council. Genuine external direct static findings retained; next run restricts tools to file reads and prohibits delegation."
+}
