@@ -233,8 +233,10 @@ var coreRefusedMethods = []string{
 // turn by the time a request lands here.
 //
 // A Resource address is one path segment, under neither a v0 route's first segment
-// nor bdp. Any other path stays unrouted, answered the way it always was and with
-// no credential asked for it.
+// nor bdp. A path of several segments outside those namespaces addresses nothing on
+// this Scope, so it is the answer any absent Resource gets, behind the same gate. A
+// path under a v0 route's first segment stays unrouted, answered the way it always
+// was and with no credential asked for it.
 func (s *Server) coreResourcesOr(unrouted http.Handler) http.Handler {
 	reserved := map[string]bool{strings.TrimPrefix(coreDiscoveryPath, "/"): true}
 	for _, rt := range routeTable {
@@ -242,11 +244,17 @@ func (s *Server) coreResourcesOr(unrouted http.Handler) http.Handler {
 		reserved[first] = true
 	}
 	resources := s.coreGate(opCoreResource, false, s.serveCoreResource)
+	absent := s.coreGate(opCoreResource, false, func(w http.ResponseWriter, r *http.Request) {
+		writeCoreProblem(w, r, coreCodeNotFound, "")
+	})
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		segment := strings.TrimPrefix(r.URL.EscapedPath(), "/")
+		path := strings.TrimPrefix(r.URL.EscapedPath(), "/")
+		first, _, several := strings.Cut(path, "/")
 		switch {
-		case reserved[segment] || strings.Contains(segment, "/"):
+		case reserved[first]:
 			unrouted.ServeHTTP(w, r)
+		case several && (r.Method == http.MethodGet || r.Method == http.MethodHead):
+			absent.ServeHTTP(w, r)
 		case r.Method == http.MethodGet || r.Method == http.MethodHead:
 			resources.ServeHTTP(w, r)
 		case slices.Contains(coreRefusedMethods, r.Method):

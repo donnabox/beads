@@ -54,6 +54,8 @@ func TestProtocolV0IsAServerWithoutBDP(t *testing.T) {
 				{http.MethodGet, "/sw-1"},
 				{http.MethodPost, "/bdp"},
 				{http.MethodGet, "/bdp/nonsense"},
+				{http.MethodGet, "/a/b"},
+				{http.MethodPost, "/a/b"},
 			} {
 				status, problem := answerTo(t, ts, c[0], c[1])
 				if status != http.StatusNotFound || problem.Code != string(CodeNotFound) || detailOf(problem) != "no such route on this server" {
