@@ -1,0 +1,54 @@
+{
+  "id": "R1",
+  "title": "Retire a Memory without losing the record: forget it, and every earlier version stays readable byte for byte",
+  "spec": ["#5877 S3", "#5877 R5", "be-t35px step 2"],
+  "state": "pass",
+  "steps": [
+    {
+      "name": "remember-m1",
+      "argv": ["remember", "--stdin", "--id", "beads/r1/m1", "--title", "M1", "--json"],
+      "stdin": {"name": "B1", "text": "first body of M1\n"},
+      "capture": {
+        "V1": {"path": "$.result.version", "kind": "token"},
+        "REV1": {"path": "$.result.revision", "kind": "token"}
+      },
+      "expect": [{"op": "exit", "equals": 0}]
+    },
+    {
+      "name": "update-m1",
+      "argv": ["remember", "--stdin", "--update", "beads/r1/m1", "--if-revision", "${REV1}", "--json"],
+      "stdin": {"name": "B2", "text": "second body of M1, after the guarded update\n"},
+      "capture": {
+        "V2": {"path": "$.result.memory.version", "kind": "token"},
+        "REV2": {"path": "$.result.memory.revision", "kind": "token"}
+      },
+      "expect": [{"op": "exit", "equals": 0}]
+    },
+    {
+      "name": "read-current",
+      "argv": ["recall", "beads/r1/m1"],
+      "expect": [{"op": "exit", "equals": 0}, {"op": "stdout", "equals_input": "B2"}]
+    },
+    {
+      "name": "forget-m1",
+      "argv": ["forget", "beads/r1/m1", "--if-revision", "${REV2}", "--json"],
+      "expect": [{"op": "exit", "equals": 0}]
+    },
+    {
+      "name": "read-forgotten",
+      "argv": ["recall", "beads/r1/m1"],
+      "capture": {"FORGOTTEN_CODE": {"stderr_code": true}},
+      "expect": [{"op": "exit", "nonzero": true}, {"op": "stdout", "empty": true}]
+    },
+    {
+      "name": "read-version-1",
+      "argv": ["recall", "beads/r1/m1", "--version", "${V1}"],
+      "expect": [{"op": "exit", "equals": 0}, {"op": "stdout", "equals_input": "B1"}]
+    },
+    {
+      "name": "read-version-2",
+      "argv": ["recall", "beads/r1/m1", "--version", "${V2}"],
+      "expect": [{"op": "exit", "equals": 0}, {"op": "stdout", "equals_input": "B2"}]
+    }
+  ]
+}

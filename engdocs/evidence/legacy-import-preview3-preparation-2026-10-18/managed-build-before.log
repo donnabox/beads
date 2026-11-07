@@ -1,0 +1,166 @@
+go_srcs.py: 5 stale managed block(s): ./BUILD.bazel, cmd/bd/BUILD.bazel, internal/legacyimport/BUILD.bazel, scripts/BUILD.bazel, tools/bazel/BUILD.bazel; run `make bazel-sync`
+--- a/./BUILD.bazel
++++ b/./BUILD.bazel
+@@ -411,6 +411,7 @@
+         "//internal/httpclient/wire:repo_doc_files",
+         "//internal/idgen:repo_doc_files",
+         "//internal/jira:repo_doc_files",
++        "//internal/legacyimport:repo_doc_files",
+         "//internal/linear:repo_doc_files",
+         "//internal/lockfile:repo_doc_files",
+         "//internal/memoryapi:repo_doc_files",
+@@ -665,6 +666,7 @@
+         "//internal/httpclient/wire:repo_go_srcs",
+         "//internal/idgen:repo_go_srcs",
+         "//internal/jira:repo_go_srcs",
++        "//internal/legacyimport:repo_go_srcs",
+         "//internal/linear:repo_go_srcs",
+         "//internal/lockfile:repo_go_srcs",
+         "//internal/memoryapi:repo_go_srcs",
+@@ -904,6 +906,7 @@
+         "//internal/httpclient/wire:repo_go_test_srcs",
+         "//internal/idgen:repo_go_test_srcs",
+         "//internal/jira:repo_go_test_srcs",
++        "//internal/legacyimport:repo_go_test_srcs",
+         "//internal/linear:repo_go_test_srcs",
+         "//internal/lockfile:repo_go_test_srcs",
+         "//internal/memoryapi:repo_go_test_srcs",
+@@ -1152,6 +1155,7 @@
+         "//internal/httpclient/wire:repo_other_files",
+         "//internal/idgen:repo_other_files",
+         "//internal/jira:repo_other_files",
++        "//internal/legacyimport:repo_other_files",
+         "//internal/linear:repo_other_files",
+         "//internal/lockfile:repo_other_files",
+         "//internal/memoryapi:repo_other_files",
+--- a/cmd/bd/BUILD.bazel
++++ b/cmd/bd/BUILD.bazel
+@@ -1960,6 +1960,14 @@
+     ],
+     visibility = ["//:__pkg__"],
+ )
++# Synthetic legacy export fixtures linked from the qualification report.
++exports_files(
++    [
++        "testdata/legacy-import/ordinary.jsonl",
++        "testdata/legacy-import/producer.json",
++    ],
++    visibility = ["//:__pkg__"],
++)
+ 
+ # --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+ 
+@@ -2034,12 +2042,3 @@
+ )
+ 
+ # --- end repo_files ---
+-
+-# Synthetic legacy export fixtures linked from the qualification report.
+-exports_files(
+-    [
+-        "testdata/legacy-import/ordinary.jsonl",
+-        "testdata/legacy-import/producer.json",
+-    ],
+-    visibility = ["//:__pkg__"],
+-)
+--- a/internal/legacyimport/BUILD.bazel
++++ b/internal/legacyimport/BUILD.bazel
+@@ -16,3 +16,64 @@
+     srcs = ["jsonl_test.go"],
+     embed = [":legacyimport"],
+ )
++
++# --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
++
++filegroup(
++    name = "repo_doc_files",
++    srcs = glob(
++        [
++            "**/*.md",
++            "**/*.mdx",
++        ],
++        allow_empty = True,
++        exclude = ["**/node_modules/**"],
++    ),
++    visibility = ["//:__subpackages__"],
++)
++
++filegroup(
++    name = "repo_go_srcs",
++    srcs = glob(
++        ["**/*.go"],
++        allow_empty = True,
++        exclude = [
++            "**/*_test.go",
++            "**/node_modules/**",
++        ],
++    ),
++    visibility = ["//:__subpackages__"],
++)
++
++filegroup(
++    name = "repo_go_test_srcs",
++    srcs = glob(
++        ["**/*_test.go"],
++        allow_empty = True,
++        exclude = ["**/node_modules/**"],
++    ),
++    visibility = ["//:__subpackages__"],
++)
++
++filegroup(
++    name = "repo_other_files",
++    srcs = glob(
++        ["**"],
++        exclude = [
++            "**/*.db",
++            "**/*.exe",
++            "**/*.go",
++            "**/*.md",
++            "**/*.mdx",
++            "**/*.out",
++            "**/*.prof",
++            "**/*.pyc",
++            "**/*.test",
++            "**/__pycache__/**",
++            "**/node_modules/**",
++        ],
++    ),
++    visibility = ["//:__subpackages__"],
++)
++
++# --- end repo_files ---
+--- a/scripts/BUILD.bazel
++++ b/scripts/BUILD.bazel
+@@ -399,6 +399,11 @@
+         "//test/docsync:__pkg__",
+     ],
+ )
++# Disposable fixture producer linked from the legacy import evidence.
++exports_files(
++    ["legacy-import-fixture.py"],
++    visibility = ["//:__pkg__"],
++)
+ 
+ # --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+ 
+@@ -460,9 +465,3 @@
+ )
+ 
+ # --- end repo_files ---
+-
+-# Disposable fixture producer linked from the legacy import evidence.
+-exports_files(
+-    ["legacy-import-fixture.py"],
+-    visibility = ["//:__pkg__"],
+-)
+--- a/tools/bazel/BUILD.bazel
++++ b/tools/bazel/BUILD.bazel
+@@ -227,6 +227,7 @@
+         "//internal/httpclient:httpclient",
+         "//internal/idgen:idgen",
+         "//internal/jira:jira",
++        "//internal/legacyimport:legacyimport",
+         "//internal/linear:linear",
+         "//internal/lockfile:lockfile",
+         "//internal/memoryapi:memoryapi",

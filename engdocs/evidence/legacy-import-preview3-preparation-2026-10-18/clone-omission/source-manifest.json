@@ -1,0 +1,12 @@
+{
+  "baseEvidenceHead": "1a9f3435ce4a4639c689364eecaf0ef2e6a66d3b",
+  "files": {
+    "internal/storage/graphstore/legacy_import_freshness_error_test.go": "389cd3134181a725e911d43e477034c62d861851638a30122493f97c4a3935bb",
+    "internal/storage/graphstore/legacy_import_test.go": "5926fd9931ea5b11a54264d33098a6e4f5229b9e5059369326b138a4d20451a2",
+    "internal/storage/graphstore/legacy_import.go": "2a71f67ced67eb0e4957168ccd2f425b7f6fb2c28d80ad858e543bf8a95b03dc",
+    "internal/types/types.go": "92c243be5b0c6c10c9a40128d50be26b37099a8f13081fa1d0ee0a8106186d30"
+  },
+  "sourceScope": "two test files only; no production or SDK source changed",
+  "runtime": "no engines/producer/DB; full installed/activation/Bazel gates open",
+  "reviewedSourceCandidate": "b4d2d9613ce725552472749fa0c08d5a81022183 plus cache-control-only diff"
+}

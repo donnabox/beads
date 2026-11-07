@@ -1,0 +1,119 @@
+name: Fork macOS
+
+# This repository's own workflow (upstream has no copy, so syncs never conflict
+# on it; rule M1, be-6i64d8). Upstream's F4 removed pr.yml's PR macOS job and
+# left main.yml's push-to-main macOS leg as the only macOS lane. Here main is a
+# byte-identical upstream mirror, so that leg tests upstream's code and never
+# this fork's: without this file no lane in this repository would run macOS on
+# a fork change. The job below is the one pr.yml carried before that sync, moved
+# here unchanged: graphstore split into bounded groups by
+# scripts/ci/macos-go-test.py, every terminal recorded and uploaded.
+#
+# It runs beside pr.yml, not inside it. It is not in CI Gate's needs, so it can
+# neither delay nor fail that gate; read its result as the macOS signal it is.
+# scripts/fork_macos_lane_pin_test.go pins this file.
+
+on:
+  pull_request:
+    branches: [ integration ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  BD_DISABLE_METRICS: "1"
+  BD_DISABLE_EVENT_FLUSH: "1"
+
+jobs:
+  # macOS-only regressions were landing on main undetected: main.yml's Test
+  # (macos-latest) leg only runs `if: github.event_name == 'push' &&
+  # github.ref == 'refs/heads/main'`, so no PR ever exercises it. On
+  # 2026-08-01 that leg went red from three separately-merged PRs in a single
+  # day, all $TMPDIR=/var/folders symlink/path-depth consequences that only
+  # reproduce on macOS - none of the three could have seen the failure
+  # pre-merge, and the local bisect lane can't diagnose it either (Linux
+  # host, macOS-only failure). This job mirrors that leg's steps on every PR
+  # so the same class of regression fails here instead of on main. It is
+  # self-contained (no build-artifacts dependency): the macOS leg in main.yml
+  # never downloads or verifies the Linux build-artifacts bundle, it just
+  # builds and tests directly.
+  #
+  # Deliberately NOT continue-on-error: unlike the advisory legs elsewhere in
+  # pr.yml that tolerate infrastructure flakiness, a red macOS test here is a
+  # real regression.
+  test-macos:
+    name: Test (macos-latest)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+      - name: Set up Go
+        id: setup-go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: 'go.mod'
+          cache: false
+
+      - name: Restore Go module cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/go/pkg/mod
+          key: beads-go-mod-v2-${{ runner.os }}-${{ runner.arch }}-go-${{ steps.setup-go.outputs.go-version }}-${{ hashFiles('go.mod', 'go.sum') }}
+          restore-keys: beads-go-mod-v2-${{ runner.os }}-${{ runner.arch }}-go-${{ steps.setup-go.outputs.go-version }}-
+
+      - name: Restore non-race Go build cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/go-cache/non-race
+          key: beads-go-build-v2-${{ runner.os }}-${{ runner.arch }}-go-${{ steps.setup-go.outputs.go-version }}-base-gms_pure_go-non-race-${{ github.sha }}
+          restore-keys: beads-go-build-v2-${{ runner.os }}-${{ runner.arch }}-go-${{ steps.setup-go.outputs.go-version }}-base-gms_pure_go-non-race-
+
+      - name: Restore race Go build cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/go-cache/race
+          key: beads-go-build-v2-${{ runner.os }}-${{ runner.arch }}-go-${{ steps.setup-go.outputs.go-version }}-base-gms_pure_go-race-${{ github.sha }}
+          restore-keys: beads-go-build-v2-${{ runner.os }}-${{ runner.arch }}-go-${{ steps.setup-go.outputs.go-version }}-base-gms_pure_go-race-
+
+      - name: Install Dolt (Linux/macOS)
+        run: ./scripts/ci/install-dolt.sh
+
+      - name: Verify dolt on PATH
+        run: dolt version
+
+      - name: Configure Git and Dolt identity
+        run: |
+          git config --global user.name "CI Bot"
+          git config --global user.email "ci@beads.test"
+          dolt config --global --add user.name "CI Bot"
+          dolt config --global --add user.email "ci@beads.test"
+
+      - name: Build
+        env:
+          GOCACHE: ${{ runner.temp }}/go-cache/non-race
+        run: go build -v -tags gms_pure_go ./cmd/bd
+
+      - name: Test
+        env:
+          BEADS_TEST_BD_BINARY: ${{ github.workspace }}/bd
+          GOCACHE: ${{ runner.temp }}/go-cache/race
+        timeout-minutes: 120
+        # Keep every existing test and the 30m per-process alarm. Only graphstore
+        # is split into exhaustive discovered groups; its serial race suite grew
+        # beyond one package deadline. The dispatcher records every terminal.
+        run: python3 scripts/ci/macos-go-test.py
+
+      - name: Upload macOS test evidence
+        if: always()
+        timeout-minutes: 5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: macos-go-test-${{ github.sha }}
+          path: artifacts/macos-go-test
+          if-no-files-found: warn
+          retention-days: 7

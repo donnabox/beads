@@ -1,0 +1,165 @@
+ok  	github.com/steveyegge/beads	1.035s	coverage: 62.4% of statements
+ok  	github.com/steveyegge/beads/backend	1.335s	coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/backend/conformance	1.932s	coverage: 0.9% of statements
+	github.com/steveyegge/beads/beadserrors		coverage: 0.0% of statements
+FAIL	github.com/steveyegge/beads/cmd/bd	1503.811s
+ok  	github.com/steveyegge/beads/cmd/bd/doctor	17.101s	coverage: 46.2% of statements
+ok  	github.com/steveyegge/beads/cmd/bd/doctor/fix	4.602s	coverage: 39.6% of statements
+ok  	github.com/steveyegge/beads/cmd/bd/protocol	37.755s	coverage: 69.9% of statements
+ok  	github.com/steveyegge/beads/cmd/bd/setup	1.616s	coverage: 79.7% of statements
+ok  	github.com/steveyegge/beads/format	0.472s	coverage: 63.0% of statements
+ok  	github.com/steveyegge/beads/graphops	0.366s	coverage: 100.0% of statements
+ok  	github.com/steveyegge/beads/internal/ado	4.034s	coverage: 92.2% of statements
+ok  	github.com/steveyegge/beads/internal/atomicfile	0.602s	coverage: 56.8% of statements
+ok  	github.com/steveyegge/beads/internal/audit	2.284s	coverage: 64.6% of statements
+ok  	github.com/steveyegge/beads/internal/beads	13.602s	coverage: 87.6% of statements
+ok  	github.com/steveyegge/beads/internal/ceiling	0.266s	coverage: 98.0% of statements
+ok  	github.com/steveyegge/beads/internal/compact	0.410s	coverage: 81.4% of statements
+ok  	github.com/steveyegge/beads/internal/config	4.730s	coverage: 81.7% of statements
+ok  	github.com/steveyegge/beads/internal/configfile	0.687s	coverage: 76.0% of statements
+ok  	github.com/steveyegge/beads/internal/creds	0.272s	coverage: 91.7% of statements
+ok  	github.com/steveyegge/beads/internal/debug	0.232s	coverage: 100.0% of statements
+ok  	github.com/steveyegge/beads/internal/doltremote	0.260s	coverage: 38.8% of statements
+ok  	github.com/steveyegge/beads/internal/doltserver	25.920s	coverage: 73.1% of statements
+ok  	github.com/steveyegge/beads/internal/doltversion	7.544s	coverage: 87.1% of statements
+ok  	github.com/steveyegge/beads/internal/eventsjournal	0.802s	coverage: 84.7% of statements
+ok  	github.com/steveyegge/beads/internal/execenv	0.281s	coverage: 100.0% of statements
+FAIL	github.com/steveyegge/beads/internal/fdhygiene	0.273s
+ok  	github.com/steveyegge/beads/internal/formula	1.454s	coverage: 82.3% of statements
+	github.com/steveyegge/beads/internal/formula/cmd/schemagen		coverage: 0.0% of statements
+	github.com/steveyegge/beads/internal/formula/schemagen		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/git	2.213s	coverage: 69.7% of statements
+ok  	github.com/steveyegge/beads/internal/gitenv	0.326s	coverage: 95.3% of statements
+ok  	github.com/steveyegge/beads/internal/githooksenv	0.200s	coverage: 100.0% of statements
+ok  	github.com/steveyegge/beads/internal/github	1.165s	coverage: 62.7% of statements
+ok  	github.com/steveyegge/beads/internal/gitignore	0.211s	coverage: 100.0% of statements
+ok  	github.com/steveyegge/beads/internal/gitlab	10.998s	coverage: 63.3% of statements
+ok  	github.com/steveyegge/beads/internal/gittraceenv	0.497s	coverage: 98.0% of statements
+ok  	github.com/steveyegge/beads/internal/graphpatch	0.400s	coverage: 93.3% of statements
+ok  	github.com/steveyegge/beads/internal/hooks	2.660s	coverage: 85.7% of statements
+ok  	github.com/steveyegge/beads/internal/httpapi	8.385s	coverage: 86.9% of statements
+	github.com/steveyegge/beads/internal/httpapi/apigen		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/httpapi/bdpwire	0.291s	coverage: 93.7% of statements
+ok  	github.com/steveyegge/beads/internal/httpapi/graphread	15.999s	coverage: 88.9% of statements
+	github.com/steveyegge/beads/internal/httpapi/spec		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/httpapi/wireshape	0.934s	coverage: 84.9% of statements
+ok  	github.com/steveyegge/beads/internal/httpapi/wireshape/cmd/gendigest	0.980s	coverage: 36.4% of statements
+ok  	github.com/steveyegge/beads/internal/httpclient	3.293s	coverage: 87.8% of statements
+ok  	github.com/steveyegge/beads/internal/httpclient/encode	1.229s	coverage: 89.6% of statements
+ok  	github.com/steveyegge/beads/internal/httpclient/wire	1.566s	coverage: 88.2% of statements
+ok  	github.com/steveyegge/beads/internal/idgen	0.253s	coverage: 93.3% of statements
+ok  	github.com/steveyegge/beads/internal/jira	1.971s	coverage: 79.6% of statements
+ok  	github.com/steveyegge/beads/internal/legacyimport	0.495s	coverage: 88.6% of statements
+ok  	github.com/steveyegge/beads/internal/linear	3.291s	coverage: 65.6% of statements
+ok  	github.com/steveyegge/beads/internal/lockfile	0.371s	coverage: 50.0% of statements
+ok  	github.com/steveyegge/beads/internal/memoryapi	0.266s	coverage: 100.0% of statements
+ok  	github.com/steveyegge/beads/internal/metrics	7.601s	coverage: 77.8% of statements
+ok  	github.com/steveyegge/beads/internal/migration	0.753s	coverage: 92.8% of statements
+ok  	github.com/steveyegge/beads/internal/migration/legacysqlite	14.931s	coverage: 87.9% of statements
+ok  	github.com/steveyegge/beads/internal/molecules	0.438s	coverage: 22.7% of statements
+ok  	github.com/steveyegge/beads/internal/notion	0.727s	coverage: 72.4% of statements
+ok  	github.com/steveyegge/beads/internal/procid	0.680s	coverage: 33.3% of statements
+ok  	github.com/steveyegge/beads/internal/query	0.328s	coverage: 56.6% of statements
+ok  	github.com/steveyegge/beads/internal/recipes	0.243s	coverage: 75.6% of statements
+ok  	github.com/steveyegge/beads/internal/remotecache	13.091s	coverage: 81.4% of statements
+ok  	github.com/steveyegge/beads/internal/replay	0.433s	coverage: [no statements]
+ok  	github.com/steveyegge/beads/internal/replay/compare	31.525s	coverage: 92.2% of statements
+ok  	github.com/steveyegge/beads/internal/replay/doltcli	16.781s	coverage: 96.2% of statements
+ok  	github.com/steveyegge/beads/internal/replay/driver	937.639s	coverage: 58.2% of statements
+ok  	github.com/steveyegge/beads/internal/replay/oracle	39.529s	coverage: 88.6% of statements
+ok  	github.com/steveyegge/beads/internal/replay/replaytest	2.374s	coverage: 39.4% of statements
+ok  	github.com/steveyegge/beads/internal/replay/scenarios/compatwindow	119.580s	coverage: [no statements]
+ok  	github.com/steveyegge/beads/internal/replay/scenarios/lostupdate	39.463s	coverage: [no statements]
+ok  	github.com/steveyegge/beads/internal/replay/translate	692.703s	coverage: 94.1% of statements
+ok  	github.com/steveyegge/beads/internal/routing	5.079s	coverage: 81.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage	0.973s	coverage: 67.0% of statements
+	github.com/steveyegge/beads/internal/storage/backendnames		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/backends	0.586s	coverage: 90.5% of statements
+	github.com/steveyegge/beads/internal/storage/batchbench		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/batchfixtures	0.402s	coverage: 30.6% of statements
+ok  	github.com/steveyegge/beads/internal/storage/contextinfo	1.697s	coverage: 100.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/createbatchequiv	0.841s	coverage: 5.6% of statements
+ok  	github.com/steveyegge/beads/internal/storage/dberrors	0.455s	coverage: 52.7% of statements
+ok  	github.com/steveyegge/beads/internal/storage/dbproxy/identity	0.620s	coverage: 76.2% of statements
+ok  	github.com/steveyegge/beads/internal/storage/dbproxy/pidfile	0.461s	coverage: 72.4% of statements
+ok  	github.com/steveyegge/beads/internal/storage/dbproxy/proxy	23.794s	coverage: 63.2% of statements
+ok  	github.com/steveyegge/beads/internal/storage/dbproxy/server	48.488s	coverage: 82.8% of statements
+ok  	github.com/steveyegge/beads/internal/storage/dbproxy/util	0.286s	coverage: 50.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/depid	0.215s	coverage: 100.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/dolt	18.232s	coverage: 28.3% of statements
+ok  	github.com/steveyegge/beads/internal/storage/doltutil	16.606s	coverage: 89.8% of statements
+ok  	github.com/steveyegge/beads/internal/storage/domain	1.571s	coverage: 7.7% of statements
+ok  	github.com/steveyegge/beads/internal/storage/domain/db	1.234s	coverage: 15.8% of statements
+ok  	github.com/steveyegge/beads/internal/storage/domain/fs	2.084s	coverage: 80.3% of statements
+ok  	github.com/steveyegge/beads/internal/storage/domain/git	19.965s	coverage: 83.5% of statements
+ok  	github.com/steveyegge/beads/internal/storage/embeddeddolt	470.519s	coverage: 29.2% of statements
+	github.com/steveyegge/beads/internal/storage/embeddeddolt/cmd		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/externaldeps	0.442s	coverage: 66.2% of statements
+	github.com/steveyegge/beads/internal/storage/fs		coverage: 0.0% of statements
+	github.com/steveyegge/beads/internal/storage/git		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/graphstore	1216.625s	coverage: 81.1% of statements
+ok  	github.com/steveyegge/beads/internal/storage/issueops	3.879s	coverage: 34.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/journalscan	0.397s	coverage: 88.4% of statements
+ok  	github.com/steveyegge/beads/internal/storage/kvkeys	0.230s	coverage: [no statements]
+ok  	github.com/steveyegge/beads/internal/storage/memoryops	0.507s	coverage: 17.6% of statements
+ok  	github.com/steveyegge/beads/internal/storage/rowid	0.266s	coverage: 100.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/schema	1.648s	coverage: 74.3% of statements
+ok  	github.com/steveyegge/beads/internal/storage/sqlbuild	0.472s	coverage: 68.7% of statements
+ok  	github.com/steveyegge/beads/internal/storage/sqlclass	0.309s	coverage: 69.2% of statements
+	github.com/steveyegge/beads/internal/storage/sqlcount		coverage: 0.0% of statements
+	github.com/steveyegge/beads/internal/storage/storagecontract		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/storage/uow	6.819s	coverage: 36.5% of statements
+ok  	github.com/steveyegge/beads/internal/storage/versioncontrolops	0.470s	coverage: 37.2% of statements
+ok  	github.com/steveyegge/beads/internal/telemetry	0.597s	coverage: 33.0% of statements
+	github.com/steveyegge/beads/internal/templates		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/templates/agents	0.238s	coverage: 97.3% of statements
+ok  	github.com/steveyegge/beads/internal/testutil	0.871s	coverage: 14.6% of statements
+ok  	github.com/steveyegge/beads/internal/testutil/bazeltest	0.245s	coverage: 60.5% of statements
+ok  	github.com/steveyegge/beads/internal/testutil/credentialcmd	0.347s	coverage: 16.4% of statements
+	github.com/steveyegge/beads/internal/testutil/fixtures		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/timeparsing	0.254s	coverage: 93.8% of statements
+ok  	github.com/steveyegge/beads/internal/tracker	13.258s	coverage: 45.9% of statements
+ok  	github.com/steveyegge/beads/internal/tracker/conformance	0.487s	coverage: 83.5% of statements
+ok  	github.com/steveyegge/beads/internal/types	0.341s	coverage: 79.7% of statements
+ok  	github.com/steveyegge/beads/internal/ui	0.429s	coverage: 69.7% of statements
+ok  	github.com/steveyegge/beads/internal/uimd	0.408s	coverage: 92.3% of statements
+ok  	github.com/steveyegge/beads/internal/utils	15.932s	coverage: 88.0% of statements
+ok  	github.com/steveyegge/beads/internal/validation	0.360s	coverage: 95.6% of statements
+ok  	github.com/steveyegge/beads/internal/versioncheck	1.212s	coverage: 81.9% of statements
+ok  	github.com/steveyegge/beads/internal/versionedhistory	0.548s	coverage: 95.2% of statements
+ok  	github.com/steveyegge/beads/internal/workapi	0.528s	coverage: 89.4% of statements
+	github.com/steveyegge/beads/internal/workapi/storecounter		coverage: 0.0% of statements
+	github.com/steveyegge/beads/internal/workapi/storequerier		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/workapi/storereader	0.234s	coverage: 66.7% of statements
+	github.com/steveyegge/beads/internal/workapi/storereadycounter		coverage: 0.0% of statements
+	github.com/steveyegge/beads/internal/workapi/storestats		coverage: 0.0% of statements
+	github.com/steveyegge/beads/internal/workapi/storeversionreconciler		coverage: 0.0% of statements
+	github.com/steveyegge/beads/internal/workapi/storeworkspaceconfig		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/internal/workspacegate	13.701s	coverage: 88.7% of statements
+ok  	github.com/steveyegge/beads/internal/worktreeremove	0.392s	coverage: 80.4% of statements
+ok  	github.com/steveyegge/beads/issueops	0.851s	coverage: 26.1% of statements
+	github.com/steveyegge/beads/journalops		coverage: 0.0% of statements
+?   	github.com/steveyegge/beads/memoryops	[no test files]
+	github.com/steveyegge/beads/plugins/beads		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/schema	0.399s	coverage: 50.0% of statements
+FAIL	github.com/steveyegge/beads/scripts	227.529s
+ok  	github.com/steveyegge/beads/scripts/bench-ready-indexes	0.272s	coverage: 63.6% of statements
+ok  	github.com/steveyegge/beads/scripts/check-versions	2.230s	coverage: 87.3% of statements
+	github.com/steveyegge/beads/scripts/checkworkflowtags		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/scripts/corpus-acquire	24.951s	coverage: 65.0% of statements
+	github.com/steveyegge/beads/scripts/driver-core		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/scripts/gitattributespolicy	0.661s	coverage: [no statements]
+ok  	github.com/steveyegge/beads/scripts/internal/testbash	0.307s	coverage: 76.1% of statements
+ok  	github.com/steveyegge/beads/scripts/migration-test/catalog	0.264s	coverage: 50.6% of statements
+ok  	github.com/steveyegge/beads/scripts/mutation-translator	4.892s	coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/scripts/oracle-query	2.602s	coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/scripts/pr-lint	0.206s	coverage: 77.8% of statements
+ok  	github.com/steveyegge/beads/scripts/prlintmake	2.314s	coverage: [no statements]
+	github.com/steveyegge/beads/scripts/repro-dolt-hang		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/scripts/repro-dolt-prod-timeouts	8.627s	coverage: 36.6% of statements
+ok  	github.com/steveyegge/beads/scripts/scenarios	3.986s	coverage: 88.1% of statements
+ok  	github.com/steveyegge/beads/scripts/workflowtags	0.365s	coverage: 90.4% of statements
+	github.com/steveyegge/beads/test/conformance		coverage: 0.0% of statements
+ok  	github.com/steveyegge/beads/test/docsync	0.497s	coverage: [no statements]
+ok  	github.com/steveyegge/beads/test/testmainconvention	0.617s	coverage: [no statements]
+ok  	github.com/steveyegge/beads/tools/docsmint	0.376s	coverage: 84.1% of statements
