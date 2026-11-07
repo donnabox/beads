@@ -30,12 +30,11 @@ const (
 	coreBeadsPath     = "/bdp/beads"
 	coreLinksPath     = "/bdp/links"
 
-	// coreSpecRevision is Core discovery's `specRevision`: the commit of
-	// gastownhall/bdp this surface was written against, branch
-	// trish/preview1-issue-callables-20261104 (specs/profiles/core/core.md,
-	// specs/types/issue/issue.md, specs/types/issue/callables.md). It names protocol
-	// text, not this build.
-	coreSpecRevision = "7620a095a9ce5bb4209775c17340e4f493c67cee"
+	// coreSpecRevision is Core discovery's `specRevision`: by Core's definition, the
+	// latest commit that changed a canonical protocol source at or before `bdp.pin`
+	// (Core, Write, Types or Events). It names protocol text, not this build, and it
+	// can differ from the pin itself.
+	coreSpecRevision = "f168d60f1ce5155d03ecb5324e328310c21b8ed0"
 
 	coreBDPVersion = "0.1"
 	coreProfile    = "write"
