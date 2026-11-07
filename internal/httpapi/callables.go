@@ -782,6 +782,9 @@ func adaptFlatDependency(args map[string]json.RawMessage) *callableProblem {
 		if json.Unmarshal(raw, &value) != nil || string(raw) == "null" {
 			return invalidArgument(member.arg, "must be a string")
 		}
+		if n := utf8.RuneCountInString(value); n < 1 || n > 255 {
+			return invalidArgument(member.arg, "must be 1 to 255 characters")
+		}
 		edge[member.wire] = raw
 		delete(args, member.arg)
 	}
