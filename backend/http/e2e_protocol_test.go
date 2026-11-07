@@ -220,7 +220,7 @@ func TestE2E_ACommandAnswersTheSameOnBothProtocols(t *testing.T) {
 		{name: "ready --explain", args: []string{"ready", "--explain", "--json"}},
 		{name: "show --refs", args: []string{"show", "$blocker", "--refs", "--json"}},
 		{name: "stale", args: []string{"stale"}},
-		{name: "kv get", args: []string{"kv", "get", "nothing"}},
+		{name: "kv get", args: []string{"kv", "get", "nothing"}, refuses: "not available over bd connect"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			v0 := open(t, httpapi.ProtocolV0)

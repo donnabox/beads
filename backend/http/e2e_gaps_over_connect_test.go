@@ -139,7 +139,18 @@ func TestE2E_ConnectGapsAreClosed(t *testing.T) {
 					t.Errorf("after a claim with an edit: %s", shown)
 				}
 			})
-			//ROWS
+
+			t.Run("D8 the kv family refuses", func(t *testing.T) {
+				for _, args := range [][]string{{"kv", "get", "k"}, {"kv", "list"}, {"kv", "set", "k", "v"}, {"kv", "clear", "k"}} {
+					r := f.run(nil, args...)
+					if r.code == 0 {
+						t.Errorf("bd %v exited 0: %s %s", args, r.stdout, r.stderr)
+					}
+					if !strings.Contains(r.stdout+r.stderr, "not available over bd connect") {
+						t.Errorf("bd %v did not say why: %s %s", args, r.stdout, r.stderr)
+					}
+				}
+			})
 		})
 	}
 }
