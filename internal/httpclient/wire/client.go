@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"golang.org/x/net/http/httpguts"
@@ -142,6 +143,11 @@ type Client struct {
 
 	handshake handshakeCache
 	expectID  string
+
+	// scope is the Scope URL bd serve's discovery names, read once and only when a
+	// Scope-local Type has to be spelled (callables_types.go).
+	scopeMu sync.Mutex
+	scope   string
 
 	// memo, when EnableReadMemo turned it on, answers a repeated identical
 	// single-row or settings read from the response already received
@@ -342,7 +348,7 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 	if err != nil {
 		return fmt.Errorf("%s: %w", r.Op, err)
 	}
-	send, err := c.outboundFor(r, u, body)
+	send, err := c.outboundFor(ctx, r, u, body)
 	if err != nil {
 		return err
 	}
@@ -398,7 +404,7 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 
 	if res.status < 200 || res.status >= 300 {
 		if send.callable != "" {
-			err := callableProblem(c.target(r), send.callable, callableScope(c.base), res, c.maxRetry)
+			err := callableProblem(c.target(r), send.callable, func() (string, error) { return c.bdpScope(ctx) }, res, c.maxRetry)
 			var prob *ProblemError
 			if errors.As(err, &prob) && prob.Status == http.StatusUnauthorized {
 				prob.CredentialSource = credentialSource(c.creds)
@@ -424,7 +430,7 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 	}
 	decodeBody := res.body
 	if send.callable != "" {
-		if decodeBody, err = callableResult(r.Op, callableScope(c.base), res.body); err != nil {
+		if decodeBody, err = callableResult(r.Op, func() (string, error) { return c.bdpScope(ctx) }, res.body); err != nil {
 			return fmt.Errorf("%s: decoding the response from bd serve at %s: %w", r.Op, c.base.Redacted(), err)
 		}
 		if int64(len(decodeBody)) > c.maxBytes {

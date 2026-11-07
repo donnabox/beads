@@ -51,6 +51,9 @@ func TestTheClientSpellsArgumentTypesAsReferences(t *testing.T) {
 			var scope string
 			c := wireClient(t, Options{}, func(w http.ResponseWriter, req *http.Request) {
 				scope = "http://" + req.Host + "/"
+				if serveDiscovery(w, req) {
+					return
+				}
 				var invocation struct {
 					Arguments map[string]json.RawMessage `json:"arguments"`
 				}
@@ -85,6 +88,9 @@ func TestTheClientReadsResultTypesBackToNames(t *testing.T) {
 	answer := ""
 	c := wireClient(t, Options{}, func(w http.ResponseWriter, req *http.Request) {
 		scope = "http://" + req.Host + "/"
+		if serveDiscovery(w, req) {
+			return
+		}
 		_, _ = io.WriteString(w, strings.ReplaceAll(answer, "SCOPE", scope))
 	})
 
@@ -132,12 +138,68 @@ func TestTheClientReadsResultTypesBackToNames(t *testing.T) {
 
 func TestTheClientReadsAProblemsTypesBackToNames(t *testing.T) {
 	body := `{"status":409,"title":"Conflict","code":"not_closable","blockers":[{"id":"bd-2","kind":"local","type":"` + wireLinkTypes + `waits-for"}]}`
-	got, err := typeNames(OpCloseIssue, "http://127.0.0.1:1/", []byte(body), false)
+	got, err := typeNames(OpCloseIssue, func() (string, error) { return "http://127.0.0.1:1/", nil }, []byte(body), false)
 	if err != nil {
 		t.Fatal(err)
 	}
 	want := `{"status":409,"title":"Conflict","code":"not_closable","blockers":[{"id":"bd-2","kind":"local","type":"waits-for"}]}`
 	if string(got) != want {
 		t.Errorf("problem = %s, want %s", got, want)
+	}
+}
+
+// serveDiscovery answers Core discovery as bd serve does, naming the Scope of the
+// Host it was asked at, and says whether the request was that.
+func serveDiscovery(w http.ResponseWriter, req *http.Request) bool {
+	if req.Method != http.MethodGet || req.URL.Path != "/bdp" {
+		return false
+	}
+	_, _ = io.WriteString(w, `{"scope":"http://`+req.Host+`/"}`)
+	return true
+}
+
+// TestTheScopeIsTheServersNotTheClients: a proxy can change the Host bd serve sees, so a
+// Scope-local Type is spelled under the Scope bd serve's discovery names, read once.
+func TestTheScopeIsTheServersNotTheClients(t *testing.T) {
+	discoveries := 0
+	var sent map[string]json.RawMessage
+	c := wireClient(t, Options{}, func(w http.ResponseWriter, req *http.Request) {
+		if req.URL.Path == "/bdp" {
+			discoveries++
+			if got := req.Header.Get("Accept"); got != "application/vnd.bdp.v0.1+json" {
+				t.Errorf("discovery Accept = %q", got)
+			}
+			_, _ = io.WriteString(w, `{"scope":"https://behind.proxy.test/"}`)
+			return
+		}
+		var invocation struct {
+			Arguments map[string]json.RawMessage `json:"arguments"`
+		}
+		body, _ := io.ReadAll(req.Body)
+		_ = json.Unmarshal(body, &invocation)
+		sent = invocation.Arguments
+		_, _ = io.WriteString(w, `{"result":{}}`)
+	})
+	for range 2 {
+		r := Request{Op: OpListIssues, Method: http.MethodGet, Path: PathIssues, Query: url.Values{"exclude_type": {"rig"}}}
+		if err := c.Do(ctx(t), r, &map[string]any{}); err != nil {
+			t.Fatalf("Do: %v", err)
+		}
+	}
+	if string(sent["exclude_type"]) != `["https://behind.proxy.test/types/issue/rig"]` {
+		t.Errorf("exclude_type = %s", sent["exclude_type"])
+	}
+	if discoveries != 1 {
+		t.Errorf("discovery was read %d times, want once", discoveries)
+	}
+	// A request naming only shared Types reads no discovery at all.
+	c2 := wireClient(t, Options{}, func(w http.ResponseWriter, req *http.Request) {
+		if req.URL.Path == "/bdp" {
+			t.Error("discovery read for a shared Type")
+		}
+		_, _ = io.WriteString(w, `{"result":{}}`)
+	})
+	if err := c2.Do(ctx(t), Request{Op: OpListIssues, Method: http.MethodGet, Path: PathIssues, Query: url.Values{"type": {"bug"}}}, &map[string]any{}); err != nil {
+		t.Fatalf("Do: %v", err)
 	}
 }

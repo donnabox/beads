@@ -2,6 +2,7 @@ package wire
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -178,7 +179,7 @@ type outbound struct {
 // envelope, the actor's move, v0Omissions) is below this line. On BDP, an operation
 // with no Callable that is not one of the exceptions is refused rather than sent to
 // /v0: nothing reaches v0 by accident.
-func (c *Client) outboundFor(r Request, logical *url.URL, body []byte) (*outbound, error) {
+func (c *Client) outboundFor(ctx context.Context, r Request, logical *url.URL, body []byte) (*outbound, error) {
 	if c.protocol != ProtocolBDP || r.Op == OpHealth {
 		return &outbound{method: r.Method, url: logical, body: body}, nil
 	}
@@ -186,7 +187,7 @@ func (c *Client) outboundFor(r Request, logical *url.URL, body []byte) (*outboun
 	if err != nil {
 		return nil, err
 	}
-	envelope, err := invocationEnvelope(r, call, body, callableScope(c.base))
+	envelope, err := invocationEnvelope(r, call, body, func() (string, error) { return c.bdpScope(ctx) })
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +226,7 @@ func callableFor(r Request, body []byte) (callable, error) {
 // the path segment under its name, query values as strings (arrays when repeated,
 // which is how bd serve reads them back) and the body's members as they are, but
 // for the actor, which goes in `revisionProvenance`.
-func invocationEnvelope(r Request, call callable, body []byte, scope string) ([]byte, error) {
+func invocationEnvelope(r Request, call callable, body []byte, scope scopeFunc) ([]byte, error) {
 	if call.pathName == "" && r.PathArg != "" {
 		return nil, fmt.Errorf("%s: %s takes no path argument", r.Op, call.name)
 	}
@@ -322,7 +323,7 @@ func peelActor(op string, arguments map[string]json.RawMessage) (json.RawMessage
 // callableResult takes v0's own body out of a result envelope, with its Types read
 // back to v0's names (typeNames). The envelope's `changed` is dropped: a v0 body
 // already says what it did, and nothing above this layer reads anything else.
-func callableResult(op, scope string, body []byte) ([]byte, error) {
+func callableResult(op string, scope scopeFunc, body []byte) ([]byte, error) {
 	var envelope struct {
 		Result json.RawMessage `json:"result"`
 	}
@@ -370,7 +371,7 @@ const (
 // v0's own invalid_argument means, and those get its sentinel so a caller sees the
 // same refusal. An answer that is not a Problem of either kind is something in front
 // of bd serve, and reads as it always has.
-func callableProblem(t target, call, scope string, res *response, maxRetryAfter time.Duration) error {
+func callableProblem(t target, call string, scope scopeFunc, res *response, maxRetryAfter time.Duration) error {
 	var p mountProblem
 	_ = json.Unmarshal(res.body, &p)
 

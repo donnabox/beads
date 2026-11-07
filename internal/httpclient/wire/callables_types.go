@@ -1,11 +1,13 @@
 package wire
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"net"
+	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/steveyegge/beads/internal/httpapi/typeref"
 	"github.com/steveyegge/beads/internal/utils"
@@ -26,24 +28,54 @@ var aliasingTypeFilters = map[string]bool{
 	OpListReadyWork: true, OpCountReadyWork: true, OpClaimNextIssue: true, OpListIssues: true,
 }
 
-// callableScope is the Scope URL bd serve computes for this client's requests: the
-// origin it dials, lowercased, without a default port. A Scope-local Type is spelled
-// under it, so both ends must agree on it.
-func callableScope(base *url.URL) string {
-	host := strings.ToLower(base.Host)
-	if name, port, err := net.SplitHostPort(host); err == nil &&
-		((base.Scheme == "http" && port == "80") || (base.Scheme == "https" && port == "443")) {
-		host = name
-		if strings.Contains(name, ":") {
-			host = "[" + name + "]"
-		}
+// scopeFunc answers the Scope URL a Scope-local Type is spelled under. It is asked
+// only for a name outside Issue §2's shared tables, which is rare, so the common
+// request costs no extra round trip.
+type scopeFunc func() (string, error)
+
+// bdpScope is the Scope URL bd serve names in its Core discovery document, read once.
+// It is the server's, not this client's base URL: a proxy in front of bd serve can
+// change the Host the server sees, and with it the Scope it spells and accepts a
+// Scope-local Type under. Nothing is guessed when it cannot be read.
+func (c *Client) bdpScope(ctx context.Context) (string, error) {
+	c.scopeMu.Lock()
+	defer c.scopeMu.Unlock()
+	if c.scope != "" {
+		return c.scope, nil
 	}
-	return (&url.URL{Scheme: base.Scheme, Host: host, Path: "/"}).String()
+	r := Request{Op: opCoreDiscovery, Method: http.MethodGet, Path: coreDiscoveryPath}
+	send := &outbound{method: http.MethodGet, url: c.base.JoinPath(coreDiscoveryPath)}
+	req, err := c.newRequest(ctx, r, send)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Accept", callableMediaType)
+	res, err := c.roundTripOnce(ctx, r, send, req, c.headerTimeout, time.Time{})
+	if err != nil {
+		return "", fmt.Errorf("reading bd serve's Scope to spell a Scope-local Type: %w", err)
+	}
+	var discovery struct {
+		Scope string `json:"scope"`
+	}
+	if res.status != http.StatusOK || json.Unmarshal(res.body, &discovery) != nil {
+		return "", fmt.Errorf("reading bd serve's Scope to spell a Scope-local Type: %s answered %d", coreDiscoveryPath, res.status)
+	}
+	scope, err := url.Parse(discovery.Scope)
+	if err != nil || (scope.Scheme != "http" && scope.Scheme != "https") || scope.Host == "" || !strings.HasSuffix(scope.Path, "/") {
+		return "", fmt.Errorf("bd serve's discovery names no usable Scope: %q", discovery.Scope)
+	}
+	c.scope = discovery.Scope
+	return c.scope, nil
 }
+
+const (
+	opCoreDiscovery   = "coreDiscovery"
+	coreDiscoveryPath = "/bdp"
+)
 
 // typeArguments spells the arguments' Types as the Callable declares them. An empty
 // name stays empty, so the server refuses it as v0 refused it.
-func typeArguments(op, scope string, arguments map[string]json.RawMessage) error {
+func typeArguments(op string, scope scopeFunc, arguments map[string]json.RawMessage) error {
 	plans, err := typeref.Load()
 	if err != nil {
 		return err
@@ -63,19 +95,20 @@ func typeArguments(op, scope string, arguments map[string]json.RawMessage) error
 		if value == "" {
 			return "", nil
 		}
+		namespace, local, table := typeref.BeadNamespace, typeref.LocalBeadTypes, typeref.BeadTypeNames
 		if kind == typeref.Link {
-			if typeref.LinkTypeNames[value] {
-				return typeref.LinkNamespace + value, nil
-			}
-			return scope + typeref.LocalLinkTypes + url.PathEscape(value), nil
-		}
-		if at == "/exclude_type" || strings.HasPrefix(at, "/exclude_type/") || (at == "/type" && aliasingTypeFilters[op]) {
+			namespace, local, table = typeref.LinkNamespace, typeref.LocalLinkTypes, typeref.LinkTypeNames
+		} else if at == "/exclude_type" || strings.HasPrefix(at, "/exclude_type/") || (at == "/type" && aliasingTypeFilters[op]) {
 			value = utils.NormalizeIssueType(value)
 		}
-		if typeref.BeadTypeNames[value] {
-			return typeref.BeadNamespace + value, nil
+		if table[value] {
+			return namespace + value, nil
 		}
-		return scope + typeref.LocalBeadTypes + url.PathEscape(value), nil
+		prefix, err := scope()
+		if err != nil {
+			return "", err
+		}
+		return prefix + local + url.PathEscape(value), nil
 	})
 	if err != nil {
 		return fmt.Errorf("%s: spelling the arguments' Types: %w", op, err)
@@ -108,7 +141,7 @@ func splitTypeList(raw json.RawMessage) (json.RawMessage, error) {
 // typeNames reads bd serve's Type references back to v0's names: a result when
 // result is set, and otherwise a Problem body. A reference this client cannot spell
 // as a name is an error rather than a guess.
-func typeNames(op, scope string, body []byte, result bool) ([]byte, error) {
+func typeNames(op string, scope scopeFunc, body []byte, result bool) ([]byte, error) {
 	plans, err := typeref.Load()
 	if err != nil {
 		return nil, err
@@ -125,7 +158,11 @@ func typeNames(op, scope string, body []byte, result bool) ([]byte, error) {
 		if name, ok := strings.CutPrefix(value, namespace); ok && table[name] {
 			return name, nil
 		}
-		if name, ok := strings.CutPrefix(value, scope+local); ok {
+		prefix, err := scope()
+		if err != nil {
+			return "", err
+		}
+		if name, ok := strings.CutPrefix(value, prefix+local); ok {
 			if plain, err := url.PathUnescape(name); err == nil && plain != "" {
 				return plain, nil
 			}
