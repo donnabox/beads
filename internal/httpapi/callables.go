@@ -76,7 +76,7 @@ var bdpProblemShapes = map[string]bdpProblemShape{
 	bdpUnavailable:      {"unavailable", http.StatusServiceUnavailable, retryAfterDelay},
 	bdpUnsupportedMedia: {"request", http.StatusUnsupportedMediaType, retryNever},
 	bdpValidationFailed: {"validation", http.StatusUnprocessableEntity, retryNever},
-	bdpIdentityTaken:    {"conflict", http.StatusConflict, retryNever},
+	bdpIdentityTaken:    {"conflict", http.StatusConflict, retryAfterStateMoved},
 	bdpRevisionMismatch: {"conflict", http.StatusConflict, retryAfterStateMoved},
 	bdpCallableNotFound: {"not-found", http.StatusNotFound, retryAfterStateMoved},
 	bdpCallableError:    {"conflict", http.StatusConflict, retryAfterStateMoved},
