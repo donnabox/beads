@@ -53,6 +53,20 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Fatalf("after bd note: %v", row)
 				}
 			})
+			t.Run("B4 q and q --parent", func(t *testing.T) {
+				id := strings.TrimSpace(f.mustRun(nil, "q", "quick capture", "-p", "1", "-l", "x").stdout)
+				if row := c.show(t, id); row["title"] != "quick capture" || row["priority"] != float64(1) {
+					t.Fatalf("after bd q: %v", row)
+				}
+				parent := strings.TrimSpace(f.mustRun(nil, "create", "q parent", "-t", "epic", "-l", "inherited", "--silent").stdout)
+				child := strings.TrimSpace(f.mustRun(nil, "q", "quick child", "--parent", parent).stdout)
+				if !strings.HasPrefix(child, parent+".") {
+					t.Errorf("bd q --parent minted %s under %s", child, parent)
+				}
+				if labels, _ := c.show(t, child)["labels"].([]any); !slices.Contains(labels, any("inherited")) {
+					t.Errorf("bd q --parent did not inherit labels: %v", labels)
+				}
+			})
 			//ROWS
 		})
 	}
