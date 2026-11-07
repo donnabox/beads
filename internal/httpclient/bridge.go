@@ -181,6 +181,7 @@ func (s *Store) GetIssue(ctx context.Context, id string) (*types.Issue, error) {
 		Op:      wire.OpGetIssue,
 		Method:  http.MethodGet,
 		Path:    path,
+		PathArg: id,
 		Query:   url.Values{},
 		IssueID: id,
 	}, &details)

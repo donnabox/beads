@@ -48,7 +48,7 @@ func (c *Client) ClaimIssue(ctx context.Context, id string, body apigen.ClaimReq
 		return nil, err
 	}
 	var out apigen.ClaimResponse
-	r := Request{Op: OpClaimIssue, Method: http.MethodPost, Path: path, Body: body, IssueID: id}
+	r := Request{Op: OpClaimIssue, Method: http.MethodPost, Path: path, PathArg: id, Body: body, IssueID: id}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}
@@ -96,7 +96,7 @@ func (c *Client) ReleaseIssue(ctx context.Context, id string, body apigen.Releas
 		return nil, err
 	}
 	var out apigen.ReleaseIssueResponse
-	r := Request{Op: OpReleaseIssue, Method: http.MethodPost, Path: path, Body: body, IssueID: id}
+	r := Request{Op: OpReleaseIssue, Method: http.MethodPost, Path: path, PathArg: id, Body: body, IssueID: id}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}
@@ -120,7 +120,7 @@ func (c *Client) AddComment(ctx context.Context, id string, body apigen.AddComme
 		return nil, err
 	}
 	var out apigen.Comment
-	r := Request{Op: OpAddComment, Method: http.MethodPost, Path: path, Body: body, IssueID: id}
+	r := Request{Op: OpAddComment, Method: http.MethodPost, Path: path, PathArg: id, Body: body, IssueID: id}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}
@@ -160,7 +160,7 @@ func (c *Client) CloseIssue(ctx context.Context, id string, body apigen.CloseIss
 		return nil, err
 	}
 	var out apigen.CloseIssueResponse
-	r := Request{Op: OpCloseIssue, Method: http.MethodPost, Path: path, Body: body, IssueID: id, Actor: body.Actor}
+	r := Request{Op: OpCloseIssue, Method: http.MethodPost, Path: path, PathArg: id, Body: body, IssueID: id, Actor: body.Actor}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}
@@ -174,7 +174,7 @@ func (c *Client) ReopenIssue(ctx context.Context, id string, body apigen.ReopenI
 		return nil, err
 	}
 	var out apigen.ReopenIssueResponse
-	r := Request{Op: OpReopenIssue, Method: http.MethodPost, Path: path, Body: body, IssueID: id}
+	r := Request{Op: OpReopenIssue, Method: http.MethodPost, Path: path, PathArg: id, Body: body, IssueID: id}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}
@@ -297,7 +297,7 @@ func (c *Client) UpdateIssue(ctx context.Context, id, actor string, patch map[st
 		ForceNotesOverwrite:   trueOrAbsent(flags.ForceNotesOverwrite),
 		AllowTemplate:         trueOrAbsent(flags.AllowTemplate),
 	}
-	r := Request{Op: OpUpdateIssue, Method: http.MethodPatch, Path: path, Body: body, IssueID: id}
+	r := Request{Op: OpUpdateIssue, Method: http.MethodPatch, Path: path, PathArg: id, Body: body, IssueID: id}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}
@@ -335,7 +335,7 @@ func (c *Client) CompareAndSetMetadata(ctx context.Context, id string, body apig
 		return nil, err
 	}
 	var out apigen.CompareAndSetMetadataResponse
-	r := Request{Op: OpCompareAndSetMetadata, Method: http.MethodPost, Path: path, Body: body, IssueID: id}
+	r := Request{Op: OpCompareAndSetMetadata, Method: http.MethodPost, Path: path, PathArg: id, Body: body, IssueID: id}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}
@@ -572,7 +572,7 @@ func (c *Client) RecallMemory(ctx context.Context, key string) (*apigen.Memory, 
 		return nil, err
 	}
 	var out apigen.Memory
-	r := Request{Op: OpGetMemory, Method: http.MethodGet, Path: path}
+	r := Request{Op: OpGetMemory, Method: http.MethodGet, Path: path, PathArg: key}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}
@@ -587,7 +587,7 @@ func (c *Client) ForgetMemory(ctx context.Context, key string) (*apigen.Memory, 
 		return nil, err
 	}
 	var out apigen.Memory
-	r := Request{Op: OpForgetMemory, Method: http.MethodDelete, Path: path}
+	r := Request{Op: OpForgetMemory, Method: http.MethodDelete, Path: path, PathArg: key}
 	if err := c.dispatch(ctx, r, &out); err != nil {
 		return nil, err
 	}

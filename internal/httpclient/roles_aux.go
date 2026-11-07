@@ -159,10 +159,11 @@ func (c httpWorkspaceConfig) SetSetting(ctx context.Context, req issueops.SetSet
 	}
 	var body apigen.Setting
 	if err := c.store.dispatch(ctx, wire.Request{
-		Op:     wire.OpSetSetting,
-		Method: http.MethodPut,
-		Path:   path,
-		Body:   apigen.SetSettingRequest{Value: req.Value},
+		Op:      wire.OpSetSetting,
+		Method:  http.MethodPut,
+		Path:    path,
+		PathArg: req.Key,
+		Body:    apigen.SetSettingRequest{Value: req.Value},
 	}, &body); err != nil {
 		return issueops.SetSettingResult{}, err
 	}
@@ -192,9 +193,10 @@ func (c httpWorkspaceConfig) UnsetSetting(ctx context.Context, req issueops.Unse
 	}
 	var body apigen.RemovedSetting
 	if err := c.store.dispatch(ctx, wire.Request{
-		Op:     wire.OpUnsetSetting,
-		Method: http.MethodDelete,
-		Path:   path,
+		Op:      wire.OpUnsetSetting,
+		Method:  http.MethodDelete,
+		Path:    path,
+		PathArg: req.Key,
 	}, &body); err != nil {
 		return issueops.UnsetSettingResult{}, err
 	}

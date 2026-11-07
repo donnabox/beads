@@ -131,6 +131,7 @@ func (s *Store) getIssuesByExactID(ctx context.Context, ids []string) ([]*types.
 			Op:      wire.OpGetIssue,
 			Method:  http.MethodGet,
 			Path:    path,
+			PathArg: id,
 			IssueID: id,
 		}, &details)
 		if errors.Is(err, issueops.ErrNotFound) {
@@ -227,9 +228,10 @@ func (s *Store) GetConfig(ctx context.Context, key string) (string, error) {
 	}
 	var setting apigen.Setting
 	if err := s.dispatch(ctx, wire.Request{
-		Op:     wire.OpGetSetting,
-		Method: http.MethodGet,
-		Path:   path,
+		Op:      wire.OpGetSetting,
+		Method:  http.MethodGet,
+		Path:    path,
+		PathArg: key,
 	}, &setting); err != nil {
 		return "", err
 	}

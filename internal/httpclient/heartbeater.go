@@ -78,6 +78,7 @@ func (h *httpHeartbeater) Heartbeat(ctx context.Context, req issueops.HeartbeatR
 		Op:         wire.OpHeartbeatIssue,
 		Method:     http.MethodPost,
 		Path:       path,
+		PathArg:    req.IssueID,
 		Body:       apigen.HeartbeatIssueRequest{Actor: req.Actor},
 		IssueID:    req.IssueID,
 		Actor:      req.Actor,

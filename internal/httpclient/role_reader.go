@@ -156,6 +156,7 @@ func (r httpReader) Get(ctx context.Context, req issueops.GetRequest) (*issueops
 		Op:      wire.OpGetIssue,
 		Method:  http.MethodGet,
 		Path:    path,
+		PathArg: id,
 		Query:   params,
 		IssueID: id,
 	}, &details); err != nil {
