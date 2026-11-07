@@ -35,8 +35,8 @@ jobs:
     # Not Blacksmith: on this fork those jobs sit queued (no runner picks them up), and
     # ubuntu-latest is what has actually run here.
     runs-on: ubuntu-latest
-    # About 26 minutes on a laptop once built, and no Linux run has been measured. Running
-    # out of time fails the job; it does not pass it.
+    # 26 and 68 minutes for the wire proof on a loaded laptop, and no Linux run has been
+    # measured. Running out of time fails the job; it does not pass it.
     timeout-minutes: 120
     steps:
       # The head itself, not the merge ref, and all of history: the base is a merge base.
@@ -63,7 +63,7 @@ jobs:
         run: ./scripts/ci/install-dolt.sh
 
       - name: Install lsof
-        run: command -v lsof || sudo apt-get install -y lsof
+        run: command -v lsof || { sudo apt-get update -qq && sudo apt-get install -y lsof; }
 
       - name: Test the gate itself
         run: python3 scripts/bringup-gates/g2_test.py
