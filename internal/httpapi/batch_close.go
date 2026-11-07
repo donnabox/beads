@@ -287,7 +287,17 @@ func batchCloseItem(index int, raw map[string]json.RawMessage) (issueops.BatchCl
 	}
 	reason := ""
 	if wire.Reason != nil {
-		// storedProseMember's rule, applied to an item member: stored as sent.
+		// storedTextMember's rules, applied to an item member: the value lands
+		// in a column a renderer prints, so an unfiltered C1 introducer would
+		// make a close reason an escape-sequence payload.
+		switch {
+		case types.CheckFieldLen("reason", *wire.Reason) != nil:
+			return issueops.BatchCloseItem{}, refuse("reason",
+				fmt.Sprintf("`reason` is %d characters; storage holds at most %d",
+					utf8.RuneCountInString(*wire.Reason), types.MaxFieldLen))
+		case strings.ContainsFunc(*wire.Reason, isControlChar):
+			return issueops.BatchCloseItem{}, refuse("reason", "`reason` must not contain control characters")
+		}
 		reason = *wire.Reason
 	}
 	return issueops.BatchCloseItem{IssueID: wire.Id, Reason: reason}, nil

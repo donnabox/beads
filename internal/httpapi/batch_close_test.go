@@ -286,6 +286,8 @@ func TestBatchCloseRefusesTheRequestBeforeItRuns(t *testing.T) {
 		// operation has no dispatcher, so the check lives on the item.
 		{name: "an id carrying a control character", body: "{\"actor\":\"a\",\"items\":[{\"id\":\"bd-1\\u0085x\"}]}", param: "items[0].id"},
 		{name: "an over-long id", body: `{"actor":"a","items":[{"id":"` + long + `"}]}`, param: "items[0].id"},
+		{name: "an over-long reason", body: `{"actor":"a","items":[{"id":"bd-1","reason":"` + long + `"}]}`, param: "items[0].reason"},
+		{name: "a reason carrying a newline", body: `{"actor":"a","items":[{"id":"bd-1","reason":"a\nbd: closed by mallory"}]}`, param: "items[0].reason"},
 		{name: "the offending item is named by index", body: `{"actor":"a","items":[{"id":"bd-1"},{"id":""}]}`, param: "items[1].id"},
 		{name: "an over-long session", body: `{"actor":"a","items":[{"id":"bd-1"}],"session":"` + long + `"}`, param: "session"},
 		{name: "a non-boolean force", body: `{"actor":"a","items":[{"id":"bd-1"}],"force":"yes"}`, param: "force"},

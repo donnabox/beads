@@ -626,44 +626,42 @@ func TestCallablePathArgumentsAreEscaped(t *testing.T) {
 	}
 }
 
-// TestCallableReasonIsStoredAsSent holds the prose rule of TestCloseStoresAReasonAsSent
-// on the mount bd connect uses: a reason read from a file reaches the role whole, in
-// the one member of an invocation that takes newlines and any length.
-func TestCallableReasonIsStoredAsSent(t *testing.T) {
+// TestCallableReasonTakesV0sBounds: a Callable runs on its v0 handler, so a close or
+// reopen reason with a control character, or past what v0's reason column holds, is
+// refused here as it is there, with v0's refusal carried, and the role never runs.
+func TestCallableReasonTakesV0sBounds(t *testing.T) {
 	long := strings.Repeat("x", 300)
-	for _, tc := range []struct{ name, wire, want string }{
-		{"a trailing newline", `done\n`, "done\n"},
-		{"several lines", `two\nlines`, "two\nlines"},
-		{"past the 255-character columns", long, long},
+	for _, tc := range []struct{ name, wire string }{
+		{"a trailing newline", `done\n`},
+		{"several lines", `two\nlines`},
+		{"past the 255-character columns", long},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			wantRefused := func(resp *http.Response, callable, param string) {
+				t.Helper()
+				body := wantProblem(t, resp, http.StatusUnprocessableEntity, bdpValidationFailed)
+				if carried, _ := body["v0"].(map[string]any); carried["param"] != param {
+					t.Errorf("%s: %v, want v0's refusal of `%s`", callable, body, param)
+				}
+			}
 			arguments := `{"id":"bd-1","reason":"` + tc.wire + `"}`
 
 			closing := &roleLifecycle{closeResult: issueops.CloseResult{Issue: closedIssue("bd-1"), Changed: true}}
-			resp := newBDPServer(t, rolesConfig(Config{Lifecycle: closing})).callAs(t, "issue/close", "alice", arguments)
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("issue/close = %d: %s", resp.StatusCode, readAll(t, resp))
-			}
-			if got := closing.closeRequests(); len(got) != 1 || got[0].Reason != tc.want {
-				t.Fatalf("issue/close: the role received %+v, want reason %q", got, tc.want)
+			wantRefused(newBDPServer(t, rolesConfig(Config{Lifecycle: closing})).callAs(t, "issue/close", "alice", arguments), "issue/close", "reason")
+			if got := closing.closeRequests(); len(got) != 0 {
+				t.Errorf("issue/close: the role ran: %+v", got)
 			}
 
 			reopening := &roleLifecycle{reopenResult: issueops.ReopenResult{Issue: reopenedIssue("bd-1"), Changed: true}}
-			resp = newBDPServer(t, rolesConfig(Config{Lifecycle: reopening})).callAs(t, "issue/reopen", "alice", arguments)
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("issue/reopen = %d: %s", resp.StatusCode, readAll(t, resp))
-			}
-			if got := reopening.reopenRequests(); len(got) != 1 || got[0].Reason != tc.want {
-				t.Fatalf("issue/reopen: the role received %+v, want reason %q", got, tc.want)
+			wantRefused(newBDPServer(t, rolesConfig(Config{Lifecycle: reopening})).callAs(t, "issue/reopen", "alice", arguments), "issue/reopen", "reason")
+			if got := reopening.reopenRequests(); len(got) != 0 {
+				t.Errorf("issue/reopen: the role ran: %+v", got)
 			}
 
 			closer := &roleBatchCloser{result: issueops.CloseBatchResult{Outcomes: []issueops.CloseOutcome{{IssueID: "bd-1", Issue: closedIssue("bd-1"), Changed: true}}}}
-			resp = newBDPServer(t, rolesConfig(Config{BatchCloser: closer})).callAs(t, "issue/close-many", "alice", `{"items":[{"id":"bd-1","reason":"`+tc.wire+`"}]}`)
-			if resp.StatusCode != http.StatusOK {
-				t.Fatalf("issue/close-many = %d: %s", resp.StatusCode, readAll(t, resp))
-			}
-			if got := closer.closeBatchRequests(); len(got) != 1 || got[0].Items[0].Reason != tc.want {
-				t.Fatalf("issue/close-many: the role received %+v, want reason %q", got, tc.want)
+			wantRefused(newBDPServer(t, rolesConfig(Config{BatchCloser: closer})).callAs(t, "issue/close-many", "alice", `{"items":[{"id":"bd-1","reason":"`+tc.wire+`"}]}`), "issue/close-many", "items[0].reason")
+			if got := closer.closeBatchRequests(); len(got) != 0 {
+				t.Errorf("issue/close-many: the role ran: %+v", got)
 			}
 		})
 	}

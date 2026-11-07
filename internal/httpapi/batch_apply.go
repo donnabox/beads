@@ -762,7 +762,7 @@ func applyCloseItem(prefix string, raw map[string]json.RawMessage) (*issueops.Cl
 	if res != nil {
 		return nil, res
 	}
-	reason, res := applyProseMember(raw, prefix, "reason")
+	reason, res := applyTextMember(raw, prefix, "reason")
 	if res != nil {
 		return nil, res
 	}
@@ -1378,21 +1378,6 @@ func applyVersionGuardMember(raw map[string]json.RawMessage, prefix string) (*in
 		return refuse()
 	}
 	return &parsed, nil
-}
-
-// applyProseMember is the pure twin of Server.storedProseMember: stored as sent,
-// for a member a person writes.
-func applyProseMember(raw map[string]json.RawMessage, prefix, member string) (string, *Result) {
-	encoded, ok := raw[member]
-	if !ok {
-		return "", nil
-	}
-	var value *string
-	if err := json.Unmarshal(encoded, &value); err != nil || value == nil {
-		res := InvalidArgument(prefix+member, ReasonInvalidValue, "`"+member+"` must be a string")
-		return "", &res
-	}
-	return *value, nil
 }
 
 // applyBoundedText applies the bounds a stored string carries wherever it is
