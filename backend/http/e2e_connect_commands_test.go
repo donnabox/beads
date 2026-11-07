@@ -113,6 +113,20 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Fatalf("after bd undefer: %v", row)
 				}
 			})
+			t.Run("B9 unclaim dials the release", func(t *testing.T) {
+				id := f.create("unclaim me")
+				f.mustRun(nil, "update", id, "--claim")
+				c.counter.reset()
+				f.mustRun(nil, "unclaim", id, "--reason", "changed my mind")
+				c.dialed(t, "issue/unclaim", ":release")
+				row := c.show(t, id)
+				if row["status"] != "open" || row["assignee"] != nil {
+					t.Fatalf("after bd unclaim: %v", row)
+				}
+				if comments := f.mustRun(nil, "comments", id).stdout; !strings.Contains(comments, "changed my mind") {
+					t.Errorf("the reason did not land as a comment: %s", comments)
+				}
+			})
 			//ROWS
 		})
 	}

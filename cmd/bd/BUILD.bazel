@@ -302,6 +302,7 @@ go_library(
         "relate.go",
         "relate_proxied_server.go",
         "remote_backend.go",
+        "remote_writes.go",
         "remote_migrate_gate.go",
         "rename.go",
         "rename_prefix.go",
