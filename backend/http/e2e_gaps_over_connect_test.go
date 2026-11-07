@@ -122,6 +122,23 @@ func TestE2E_ConnectGapsAreClosed(t *testing.T) {
 					dialed(t, "issue/get-many", ":batchGet")
 				}
 			})
+
+			t.Run("D7 a bare --claim dials claimIssue", func(t *testing.T) {
+				id := f.create("claim me")
+				counter.reset()
+				out := f.mustRun(nil, "update", id, "--claim", "--json").stdout
+				dialed(t, "issue/claim", ":claim")
+				if !strings.Contains(out, "in_progress") {
+					t.Errorf("bd update --claim --json: %s", out)
+				}
+				// A claim beside a field edit stays one write.
+				other := f.create("claim me with a title")
+				f.mustRun(nil, "update", other, "--claim", "--title", "claimed and renamed")
+				shown := f.mustRun(nil, "show", other, "--json").stdout
+				if !strings.Contains(shown, "claimed and renamed") || !strings.Contains(shown, "in_progress") {
+					t.Errorf("after a claim with an edit: %s", shown)
+				}
+			})
 			//ROWS
 		})
 	}

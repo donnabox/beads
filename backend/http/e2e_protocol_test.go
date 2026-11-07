@@ -252,14 +252,15 @@ func TestE2E_ACommandAnswersTheSameOnBothProtocols(t *testing.T) {
 		})
 	}
 
-	// `bd update --claim` is an update on both protocols, not a claimIssue.
-	t.Run("update --claim is issue/update on BDP", func(t *testing.T) {
-		s := open(t, httpapi.ProtocolBoth, "--protocol", "bdp")
-		s.counter.reset()
-		s.f.mustRun(nil, "update", s.blocked, "--claim", "--json")
-		sent := strings.Join(s.counter.uriSnapshot(), "\n")
-		if !strings.Contains(sent, "issue/update") || strings.Contains(sent, "issue/claim") {
-			t.Errorf("sent:\n%s", sent)
+	// D7: a bare `bd update --claim` is the claim operation on both protocols.
+	t.Run("a bare update --claim is a claim on both", func(t *testing.T) {
+		for _, s := range []*side{open(t, httpapi.ProtocolV0), open(t, httpapi.ProtocolBoth, "--protocol", "bdp")} {
+			s.counter.reset()
+			s.f.mustRun(nil, "update", s.blocked, "--claim", "--json")
+			sent := strings.Join(s.counter.uriSnapshot(), "\n")
+			if !strings.Contains(sent, "issue/claim") && !strings.Contains(sent, ":claim") {
+				t.Errorf("sent:\n%s", sent)
+			}
 		}
 	})
 

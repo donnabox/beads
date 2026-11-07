@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 
@@ -578,7 +579,7 @@ pointless).`,
 			// which is why it is conditioned here rather than passed straight
 			// through: `--force -s closed` is now a legitimate way to ask for
 			// the close-policy half alone.
-			updateResult, updateErr := runCommandUpdateMutation(opsCtx, ops, commandUpdateMutation{
+			updateResult, updateErr := runCommandUpdateMutation(opsCtx, remoteClaimRoute(ops, issueStore, issue), commandUpdateMutation{
 				actor:            currentActor(),
 				issueID:          result.ResolvedID,
 				patch:            patch,
@@ -1159,4 +1160,52 @@ func templateReadOnlyRefusal(id string, err error) (error, bool) {
 		return nil, false
 	}
 	return &issueops.TemplateReadOnlyError{IssueID: id}, true
+}
+
+// remoteClaimRoute sends a bare `bd update --claim` on a remote store to
+// claimIssue, the operation that exists for it. Lifecycle.Update stays on
+// updateIssue for everyone else, a library caller included, because only that
+// answers the post-write revision a guarded follow-up composes from; this command
+// composes nothing from it.
+//
+// Three facts about claimIssue make the route conditional. It excludes the wisp
+// plane, so a wisp stays on updateIssue. It carries nothing but the actor, so a
+// claim beside anything else stays there too. And its role has no template guard,
+// so the guard runs here on the row the command already read.
+func remoteClaimRoute(next commandIssueUpdater, st storage.DoltStorage, before *types.Issue) commandIssueUpdater {
+	if !storeIsRemoteBackend(st) || before == nil || before.Ephemeral || before.NoHistory {
+		return next
+	}
+	return remoteClaimUpdater{next: next, store: st, before: before}
+}
+
+type remoteClaimUpdater struct {
+	next   commandIssueUpdater
+	store  storage.DoltStorage
+	before *types.Issue
+}
+
+func (u remoteClaimUpdater) Update(ctx context.Context, req issueops.UpdateRequest) (issueops.UpdateResult, error) {
+	bare := issueops.UpdateRequest{Actor: req.Actor, IssueID: req.IssueID, Claim: true}
+	if !reflect.DeepEqual(req, bare) {
+		return u.next.Update(ctx, req)
+	}
+	if err := storageissueops.AuthorizeTemplateUpdate(u.before, req); err != nil {
+		return issueops.UpdateResult{}, err
+	}
+	claimer, err := u.store.IssueClaimer()
+	if err != nil {
+		return issueops.UpdateResult{}, err
+	}
+	claimed, err := claimer.Claim(ctx, issueops.ClaimRequest{Actor: req.Actor, IssueID: req.IssueID})
+	if err != nil {
+		return issueops.UpdateResult{}, err
+	}
+	// claimIssue answers the bare row; the command reports the labels too. The
+	// claim has landed, so a failed read-back reports the row it has.
+	issue := claimed.Issue
+	if hydrated, readErr := u.store.GetIssue(ctx, req.IssueID); readErr == nil && hydrated != nil {
+		issue = hydrated
+	}
+	return issueops.UpdateResult{Issue: issue, Changed: claimed.Changed}, nil
 }
