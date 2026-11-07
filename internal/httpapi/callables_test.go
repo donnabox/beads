@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"reflect"
+	"regexp"
 	"slices"
 	"sort"
 	"strings"
@@ -17,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/steveyegge/beads/internal/httpapi/typeref"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/issueops"
@@ -188,6 +190,11 @@ func TestCallableTableMatchesTheDocument(t *testing.T) {
 			t.Errorf("%s routes to %q, which is no implemented document route", row.name, row.op)
 		}
 		path, query, body := specParameterNames(t, doc, op)
+		// The Types rule renames v0's issue_type (callables.md §2).
+		for i, name := range body {
+			body[i] = typeref.CallableName(name)
+		}
+		sort.Strings(body)
 		for _, part := range []struct {
 			location   string
 			table, doc []string
@@ -303,10 +310,26 @@ func TestEveryCallableReachesItsV0Handler(t *testing.T) {
 		t.Run(row.name, func(t *testing.T) {
 			last.Store(nil)
 			args := map[string]string{}
+			// arrived is what v0 sees for each of its members: the argument's value, or
+			// for a Type the Types rule reaches, the native name its reference spells.
+			arrived := map[string]string{}
+			plans, err := typeref.Load()
+			if err != nil {
+				t.Fatal(err)
+			}
+			shape := plans.Arguments(row.op, typeref.ToV0)
 			for _, name := range row.declaredParameters() {
-				if !slices.Contains(row.adapterParams, name) {
-					args[name] = "v-" + name
+				if slices.Contains(row.adapterParams, name) {
+					continue
 				}
+				args[name] = "v-" + name
+				arrived[shape.Rename(name)] = "v-" + name
+				if kind := typeArgumentKind(row, name); kind != typeref.None {
+					args[name], arrived[shape.Rename(name)] = typeExample(kind)
+				}
+			}
+			if row.actorMember != "" {
+				arrived[row.actorMember] = "v-" + row.actorMember
 			}
 			encoded, _ := json.Marshal(args)
 			var resp *http.Response
@@ -351,7 +374,7 @@ func TestEveryCallableReachesItsV0Handler(t *testing.T) {
 				t.Errorf("query = %v, want %v", last.query, row.query)
 			}
 			for _, name := range row.query {
-				if !slices.Equal(last.query[name], []string{"v-" + name}) {
+				if !slices.Equal(last.query[name], []string{arrived[name]}) {
 					t.Errorf("query %s = %v", name, last.query[name])
 				}
 			}
@@ -360,8 +383,9 @@ func TestEveryCallableReachesItsV0Handler(t *testing.T) {
 				t.Errorf("body = %v, want %v", last.body, members)
 			}
 			for _, name := range members {
-				if string(last.body[name]) != `"v-`+name+`"` {
-					t.Errorf("body %s = %s", name, last.body[name])
+				name = shape.Rename(name)
+				if string(last.body[name]) != `"`+arrived[name]+`"` {
+					t.Errorf("body %s = %s, want %q", name, last.body[name], arrived[name])
 				}
 			}
 			if len(members) > 0 && last.contentType != claimContentType {
@@ -380,10 +404,39 @@ func directAndRouted(t *testing.T, direct, routed *http.Response) (string, json.
 		t.Fatalf("direct status = %d: %s", direct.StatusCode, body)
 	}
 	result, envelope := callResult(t, routed)
-	if strings.TrimSpace(body) != string(result) {
-		t.Errorf("routed result differs from the direct body:\n direct %s\n routed %s", body, result)
+	if want := underTypesRule(strings.TrimSpace(body)); want != string(result) {
+		t.Errorf("routed result differs from the direct body under the Types rule:\n direct %s\n   want %s\n routed %s", body, want, result)
 	}
 	return body, result, envelope
+}
+
+// underTypesRule is callables.md §2's Types rule applied to a v0 body by hand, with
+// no help from the code under test: an Issue's issue_type is `type`, valued with the
+// shared Bead Type reference. It knows only what these bodies carry; anything else
+// the rule reaches shows as a difference.
+var issueTypeMember = regexp.MustCompile(`"issue_type":"([a-z-]+)"`)
+
+func underTypesRule(body string) string {
+	return issueTypeMember.ReplaceAllString(body, `"type":"https://github.com/gastownhall/bdp/types/issue/$1"`)
+}
+
+// typeArgumentKind is what the Types rule says of a declared argument.
+func typeArgumentKind(row *callableRow, name string) typeref.Kind {
+	if kind := typeref.ParameterKind(row.op, name); kind != typeref.None {
+		return kind
+	}
+	if row.op == OpCreateIssue && name == "type" {
+		return typeref.Bead
+	}
+	return typeref.None
+}
+
+// typeExample is a Type reference and the native name it reads back to.
+func typeExample(kind typeref.Kind) (reference, name string) {
+	if kind == typeref.Link {
+		return "https://github.com/gastownhall/bdp/types/dependency/tracks", "tracks"
+	}
+	return "https://github.com/gastownhall/bdp/types/issue/bug", "bug"
 }
 
 func TestRoutedResponseEqualsDirect(t *testing.T) {
@@ -685,14 +738,14 @@ func TestCallableFlatDependencyAdapter(t *testing.T) {
 		t.Errorf("omitted type: edges = %+v, want %+v", got, want)
 	}
 
-	callResult(t, ts.callAs(t, "issue/dep/add", "a", `{"source":"bd-1","target":"bd-2","type":"related"}`))
+	callResult(t, ts.callAs(t, "issue/dep/add", "a", `{"source":"bd-1","target":"bd-2","type":"https://github.com/gastownhall/bdp/types/dependency/related"}`))
 	if got := lastEdges(); got[0].Type != types.DependencyType("related") {
 		t.Errorf("flat type: edges = %+v", got)
 	}
 
 	callResult(t, ts.callAs(t, "issue/dep/add", "a",
-		`{"edges":[{"issue_id":"bd-3","depends_on_id":"bd-4","type":"blocks"},{"issue_id":"bd-5","depends_on_id":"bd-6","type":"related"}]}`))
-	if got := lastEdges(); len(got) != 2 || got[1].IssueID != "bd-5" {
+		`{"edges":[{"issue_id":"bd-3","depends_on_id":"bd-4","type":"https://github.com/gastownhall/bdp/types/dependency/blocks"},{"issue_id":"bd-5","depends_on_id":"bd-6","type":"https://github.com/gastownhall/bdp/types/dependency/related"}]}`))
+	if got := lastEdges(); len(got) != 2 || got[1].IssueID != "bd-5" || got[1].Type != types.DependencyType("related") {
 		t.Errorf("edges form: %+v", got)
 	}
 
@@ -949,7 +1002,7 @@ func TestCallableServiceDefaults(t *testing.T) {
 		"issue/list":     {"sort": `"priority"`},
 		"issue/dep/list": {"direction": `"out"`},
 		"issue/close":    {"reason": `"Closed"`},
-		"issue/create":   {"issue_type": `"task"`},
+		"issue/create":   {"type": `"task"`},
 		"issue/purge":    {"dry_run": `true`, "tier": `"ephemeral"`, "protect_referenced": `false`, "protect_live_dependents": `true`},
 		"issue/prune":    {"dry_run": `true`, "tier": `"durable"`, "protect_referenced": `true`, "protect_live_dependents": `false`},
 		"issue/delete":   {"dry_run": `true`},
@@ -977,12 +1030,17 @@ func TestCallableServiceDefaults(t *testing.T) {
 				}
 				return ts.call(t, row.name, string(encoded))
 			}
+			plans, err := typeref.Load()
+			if err != nil {
+				t.Fatal(err)
+			}
+			shape := plans.Arguments(row.op, typeref.ToV0)
 			valueOf := func(name string) string {
 				got := last.Load()
 				if slices.Contains(row.query, name) {
 					return strings.Join(got.query[name], ",")
 				}
-				return string(got.body[name])
+				return string(got.body[shape.Rename(name)])
 			}
 
 			last.Store(nil)
@@ -998,10 +1056,15 @@ func TestCallableServiceDefaults(t *testing.T) {
 			}
 
 			for name := range declared {
-				callResult(t, invoke(map[string]any{name: "supplied"}))
-				supplied := `"supplied"`
+				value, supplied := "supplied", `"supplied"`
+				if kind := typeArgumentKind(row, name); kind != typeref.None {
+					var native string
+					value, native = typeExample(kind)
+					supplied = `"` + native + `"`
+				}
+				callResult(t, invoke(map[string]any{name: value}))
 				if slices.Contains(row.query, name) {
-					supplied = "supplied"
+					supplied = strings.Trim(supplied, `"`)
 				}
 				if got := valueOf(name); got != supplied {
 					t.Errorf("supplied %s reached v0 as %q, want %q", name, got, supplied)
@@ -1451,11 +1514,14 @@ func TestCallableListIsTheOpenAPIProjection(t *testing.T) {
 			t.Errorf("%s isn't marked compiled: %v", path, extension)
 		}
 	}
-	for _, name := range []string{"source", "target", "type"} {
+	for _, name := range []string{"source", "target"} {
 		schema, _ := adapterParameterSchemas[name].(map[string]any)
 		if schema["minLength"] != 1 || schema["maxLength"] != 255 {
 			t.Errorf("issue/dep/add %s = %v, want the declaration's bounds 1 and 255", name, schema)
 		}
+	}
+	if schema, _ := adapterParameterSchemas["type"].(map[string]any); schema["format"] != "uri" || schema["pattern"] != "^https?://.+" {
+		t.Errorf("issue/dep/add type = %v, want a Link Type reference (callables.md §2)", schema)
 	}
 	v0 := loadSpec(t)
 	ops := specOps(t, v0)

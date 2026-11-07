@@ -20,6 +20,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/httpapi"
 	"github.com/steveyegge/beads/internal/httpapi/apigen"
+	"github.com/steveyegge/beads/internal/httpapi/typeref"
 	"github.com/steveyegge/beads/issueops"
 )
 
@@ -81,7 +82,7 @@ func TestEveryRequestIsAnInvocation(t *testing.T) {
 		},
 		{
 			"a body's members", Request{Op: OpCreateIssue, Method: http.MethodPost, Path: PathIssues, Body: map[string]any{"title": "t", "priority": 2}},
-			"issue/create", `{"title":"t","priority":2,"issue_type":""}`, "",
+			"issue/create", `{"title":"t","priority":2,"type":""}`, "",
 		},
 		{
 			"path and body", Request{Op: OpClaimIssue, Method: http.MethodPost, Path: "/x", PathArg: "ga-1", Body: map[string]string{"actor": "a"}},
@@ -701,8 +702,10 @@ func TestAnOmissionGoesOutAsV0sOwnValue(t *testing.T) {
 		{op: OpListRelatedIssues, pathArg: "a", query: url.Values{"direction": {"in"}}, want: map[string]string{"direction": `"in"`}},
 		{op: OpCloseIssue, pathArg: "a", body: map[string]any{}, want: map[string]string{"reason": `""`}},
 		{op: OpCloseIssue, pathArg: "a", body: map[string]any{"reason": "done"}, want: map[string]string{"reason": `"done"`}},
-		{op: OpCreateIssue, body: map[string]any{"title": "t"}, want: map[string]string{"issue_type": `""`}},
-		{op: OpCreateIssue, body: map[string]any{"title": "t", "issue_type": "bug"}, want: map[string]string{"issue_type": `"bug"`}},
+		// The Types rule (callables.md §2) spells v0's issue_type as `type`. An empty name
+		// stays empty, which the server refuses as v0 refused it.
+		{op: OpCreateIssue, body: map[string]any{"title": "t"}, want: map[string]string{"type": `""`}},
+		{op: OpCreateIssue, body: map[string]any{"title": "t", "issue_type": "bug"}, want: map[string]string{"type": `"https://github.com/gastownhall/bdp/types/issue/bug"`}},
 		{op: OpSweepIssues, body: map[string]any{}, want: map[string]string{"tier": `""`, "dry_run": `false`, "protect_referenced": `true`, "protect_live_dependents": `false`}},
 		{op: OpSweepIssues, body: map[string]any{"tier": "durable", "dry_run": true, "protect_referenced": false, "protect_live_dependents": true},
 			want: map[string]string{"tier": `"durable"`, "dry_run": `true`, "protect_referenced": `false`, "protect_live_dependents": `true`}},
@@ -734,7 +737,11 @@ func TestEveryDefaultHasAV0Spelling(t *testing.T) {
 	for name, row := range httpapi.CallableRoutes() {
 		for param := range row.Defaults {
 			covered++
-			if _, ok := v0Omissions[row.Op][param]; !ok {
+			found := false
+			for v0 := range v0Omissions[row.Op] {
+				found = found || typeref.CallableName(v0) == param
+			}
+			if !found {
 				t.Errorf("%s defaults %s, and v0Omissions has no value for %s's absence", name, param, row.Op)
 			}
 		}
@@ -749,7 +756,7 @@ func TestEveryDefaultHasAV0Spelling(t *testing.T) {
 		for param := range spelled {
 			found := false
 			for _, row := range httpapi.CallableRoutes() {
-				if _, has := row.Defaults[param]; has && row.Op == op {
+				if _, has := row.Defaults[typeref.CallableName(param)]; has && row.Op == op {
 					found = true
 				}
 			}

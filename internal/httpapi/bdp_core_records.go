@@ -18,21 +18,21 @@ import (
 	"unicode/utf8"
 
 	"github.com/steveyegge/beads/internal/config"
+	"github.com/steveyegge/beads/internal/httpapi/typeref"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/issueops"
 )
 
 // Issue and Dependency Types §2: the shared identities, one fixed table in the
-// provider. A native name is a suffix of its namespace, and the tables below are
-// what stops a suffix being derived from anything else.
+// provider, kept in typeref so the Callables mount and its client read the same one.
 const (
-	coreBeadTypeNamespace = "https://github.com/gastownhall/bdp/types/issue/"
-	coreLinkTypeNamespace = "https://github.com/gastownhall/bdp/types/dependency/"
-	coreBeadFamily        = coreBeadTypeNamespace + "issue"
-	coreLinkFamily        = coreLinkTypeNamespace + "dependency"
+	coreBeadTypeNamespace = typeref.BeadNamespace
+	coreLinkTypeNamespace = typeref.LinkNamespace
+	coreBeadFamily        = typeref.BeadFamily
+	coreLinkFamily        = typeref.LinkFamily
 
-	coreLocalBeadTypes = "types/issue/"
-	coreLocalLinkTypes = "types/dependency/"
+	coreLocalBeadTypes = typeref.LocalBeadTypes
+	coreLocalLinkTypes = typeref.LocalLinkTypes
 
 	coreKindBead = "bead"
 	coreKindLink = "link"
@@ -50,19 +50,10 @@ const (
 	coreExternalPrefix = "external:"
 )
 
-var coreBeadTypeNames = map[string]bool{
-	"task": true, "bug": true, "feature": true, "epic": true, "chore": true, "decision": true,
-	"message": true, "molecule": true, "gate": true, "spike": true, "story": true,
-	"milestone": true, "event": true,
-}
-
-var coreLinkTypeNames = map[string]bool{
-	"blocks": true, "parent-child": true, "conditional-blocks": true, "waits-for": true,
-	"related": true, "discovered-from": true, "replies-to": true, "relates-to": true,
-	"duplicates": true, "supersedes": true, "authored-by": true, "assigned-to": true,
-	"approved-by": true, "attests": true, "tracks": true, "until": true, "caused-by": true,
-	"validates": true, "delegated-from": true,
-}
+var (
+	coreBeadTypeNames = typeref.BeadTypeNames
+	coreLinkTypeNames = typeref.LinkTypeNames
+)
 
 // coreDefaultInfraTypes is what an unconfigured workspace calls infrastructure,
 // the same fallback the HTTP client spells for itself: this package reaches
@@ -202,6 +193,63 @@ func (p *coreProjector) beadType(ctx context.Context, name string) (string, erro
 		return "", errCoreUnservable{"a record's classification " + strconv.Quote(name) + " has no identity in this Scope's type table"}
 	}
 	return p.scope + coreLocalBeadTypes + url.PathEscape(name), nil
+}
+
+// beadTypeName is §2's Bead table read backwards: the native classification a Type
+// reference names, or why it names none. Only a concrete Type of the package, or a
+// Scope-local identity this Scope configures, names one; the abstract base, a Link
+// Type and every other Type are refused, and nothing is guessed.
+func (p *coreProjector) beadTypeName(ctx context.Context, uri string) (string, string) {
+	if name, ok := strings.CutPrefix(uri, coreBeadTypeNamespace); ok {
+		switch {
+		case uri == coreBeadFamily:
+			return "", "`issue/issue` is abstract and admits no direct instance; send a concrete Type"
+		case coreBeadTypeNames[name]:
+			return name, ""
+		}
+		return "", "the Issue package has no Type `" + name + "`"
+	}
+	if strings.HasPrefix(uri, coreLinkTypeNamespace) {
+		return "", "this is a Dependency Link Type, and a Bead has an Issue Type"
+	}
+	if name, ok := strings.CutPrefix(uri, p.scope+coreLocalBeadTypes); ok {
+		plain, err := url.PathUnescape(name)
+		if err != nil {
+			return "", "this is not a Type this Scope configures"
+		}
+		configured, err := p.configuredTypes(ctx)
+		if err == nil && configured[plain] {
+			return plain, ""
+		}
+		return "", "this is not a Type this Scope configures"
+	}
+	return "", "this Scope writes the Issue and Dependency Types only"
+}
+
+// linkTypeName is linkType read backwards. A kind outside §2's table is Scope-local
+// whatever it is, so a Scope-local reference names its suffix, and only a kind the
+// shared table holds is refused there: linkType never spells one that way.
+func (p *coreProjector) linkTypeName(uri string) (string, string) {
+	if name, ok := strings.CutPrefix(uri, coreLinkTypeNamespace); ok {
+		switch {
+		case uri == coreLinkFamily:
+			return "", "`dependency/dependency` is abstract and admits no direct instance; send a concrete Type"
+		case coreLinkTypeNames[name]:
+			return name, ""
+		}
+		return "", "the Dependency package has no Type `" + name + "`"
+	}
+	if strings.HasPrefix(uri, coreBeadTypeNamespace) {
+		return "", "this is an Issue Bead Type, and a dependency has a Dependency Link Type"
+	}
+	if name, ok := strings.CutPrefix(uri, p.scope+coreLocalLinkTypes); ok {
+		plain, err := url.PathUnescape(name)
+		if err != nil || plain == "" || coreLinkTypeNames[plain] {
+			return "", "this is not a Link Type of this Scope"
+		}
+		return plain, ""
+	}
+	return "", "this Scope relates Beads with the Dependency Types only"
 }
 
 // linkType maps a native edge kind. The native kind vocabulary is open with no

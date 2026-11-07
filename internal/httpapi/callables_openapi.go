@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/steveyegge/beads/internal/httpapi/spec"
+	"github.com/steveyegge/beads/internal/httpapi/typeref"
 )
 
 // GET <scope>/bdp/call: the OpenAPI document Callables §14 projects from the
@@ -71,6 +72,9 @@ func buildCallableDocument() ([]byte, error) {
 	v0Components, _ := v0["components"].(map[string]any)
 	schemas := map[string]any{"callableProblem": callableProblemSchema()}
 	for name, schema := range mapMember(v0Components, "schemas") {
+		if component, ok := schema.(map[string]any); ok {
+			schema = typeref.ProjectComponent(name, component)
+		}
 		schemas[name] = normalizeV0Schema(schema)
 	}
 	doc := map[string]any{
@@ -138,9 +142,11 @@ func callableOperationID(name string) string {
 	return strings.Join(words, "")
 }
 
-// v0Parameters reads a v0 operation's flattened parameters: each one's schema,
-// help and whether v0 requires it.
+// v0Parameters reads a v0 operation's flattened parameters under the Types rule
+// (callables.md §2): each one's schema, help and whether v0 requires it, by the
+// name the Callable declares.
 func v0Parameters(v0, op map[string]any) (schemas map[string]any, required map[string]bool) {
+	opID, _ := op["operationId"].(string)
 	schemas, required = map[string]any{}, map[string]bool{}
 	list, _ := op["parameters"].([]any)
 	for _, raw := range list {
@@ -157,7 +163,7 @@ func v0Parameters(v0, op map[string]any) (schemas map[string]any, required map[s
 		if help, ok := param["description"]; ok {
 			schema["description"] = help
 		}
-		schemas[name] = schema
+		schemas[name] = projectTypeParameter(opID, name, schema)
 		required[name], _ = param["required"].(bool)
 	}
 	rawBody := mapMember(op, "requestBody")
@@ -165,7 +171,11 @@ func v0Parameters(v0, op map[string]any) (schemas map[string]any, required map[s
 		return schemas, required
 	}
 	body := deref(v0, rawBody)
-	schema := deref(v0, mapMember(mapMember(mapMember(body, "content"), claimContentType), "schema"))
+	ref := mapMember(mapMember(mapMember(body, "content"), claimContentType), "schema")
+	schema := deref(v0, ref)
+	if name, ok := ref["$ref"].(string); ok {
+		schema = typeref.ProjectComponent(name[strings.LastIndex(name, "/")+1:], schema)
+	}
 	for name, member := range mapMember(schema, "properties") {
 		schemas[name] = member
 	}
@@ -182,7 +192,7 @@ func v0Parameters(v0, op map[string]any) (schemas map[string]any, required map[s
 var adapterParameterSchemas = map[string]any{
 	"source": map[string]any{"type": "string", "minLength": 1, "maxLength": 255, "description": "The edge's source; v0's `issue_id`. Exactly one of the flat form and `edges`."},
 	"target": map[string]any{"type": "string", "minLength": 1, "maxLength": 255, "description": "The edge's target; v0's `depends_on_id`."},
-	"type":   map[string]any{"type": "string", "minLength": 1, "maxLength": 255, "description": "The edge type. An omitted type is `blocks`."},
+	"type":   typeref.ReferenceSchema(typeref.Link, map[string]any{"type": "string", "description": "The edge's Link Type. An omitted type is `" + coreLinkTypeNamespace + "blocks`."}),
 }
 
 // openAPIOperation is one row under the §14 table.

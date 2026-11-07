@@ -276,33 +276,11 @@ func (c *writeCall) beadType(raw json.RawMessage) (string, *callableProblem) {
 	if problem != nil {
 		return "", problem
 	}
-	refuse := func(reason string) (string, *callableProblem) {
-		return "", writeInvalid(writeRequestDiagnostic("type", reason))
+	name, refusal := c.p.beadTypeName(c.ctx, uri)
+	if refusal != "" {
+		return "", writeInvalid(writeRequestDiagnostic("type", refusal))
 	}
-	if name, ok := strings.CutPrefix(uri, coreBeadTypeNamespace); ok {
-		switch {
-		case uri == coreBeadFamily:
-			return refuse("`issue/issue` is abstract and admits no direct instance; send a concrete Type")
-		case coreBeadTypeNames[name]:
-			return name, nil
-		}
-		return refuse("the Issue package has no Type `" + name + "`")
-	}
-	if strings.HasPrefix(uri, coreLinkTypeNamespace) {
-		return refuse("this is a Dependency Link Type, and a Bead has an Issue Type")
-	}
-	if name, ok := strings.CutPrefix(uri, c.p.scope+coreLocalBeadTypes); ok {
-		plain, err := url.PathUnescape(name)
-		if err != nil {
-			return refuse("this is not a Type this Scope configures")
-		}
-		configured, err := c.p.configuredTypes(c.ctx)
-		if err == nil && configured[plain] {
-			return plain, nil
-		}
-		return refuse("this is not a Type this Scope configures")
-	}
-	return refuse("this Scope writes the Issue and Dependency Types only")
+	return name, nil
 }
 
 // checkProtectedMember refuses input on a member Issue §3.3 does not let a client

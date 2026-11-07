@@ -186,7 +186,7 @@ func (c *Client) outboundFor(r Request, logical *url.URL, body []byte) (*outboun
 	if err != nil {
 		return nil, err
 	}
-	envelope, err := invocationEnvelope(r, call, body)
+	envelope, err := invocationEnvelope(r, call, body, callableScope(c.base))
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +225,7 @@ func callableFor(r Request, body []byte) (callable, error) {
 // the path segment under its name, query values as strings (arrays when repeated,
 // which is how bd serve reads them back) and the body's members as they are, but
 // for the actor, which goes in `revisionProvenance`.
-func invocationEnvelope(r Request, call callable, body []byte) ([]byte, error) {
+func invocationEnvelope(r Request, call callable, body []byte, scope string) ([]byte, error) {
 	if call.pathName == "" && r.PathArg != "" {
 		return nil, fmt.Errorf("%s: %s takes no path argument", r.Op, call.name)
 	}
@@ -279,6 +279,9 @@ func invocationEnvelope(r Request, call callable, body []byte) ([]byte, error) {
 			arguments[name] = value
 		}
 	}
+	if err := typeArguments(r.Op, scope, arguments); err != nil {
+		return nil, err
+	}
 	return json.Marshal(struct {
 		Arguments  map[string]json.RawMessage `json:"arguments"`
 		Provenance json.RawMessage            `json:"revisionProvenance,omitempty"`
@@ -316,10 +319,10 @@ func peelActor(op string, arguments map[string]json.RawMessage) (json.RawMessage
 	return json.Marshal(map[string]any{"actor": map[string]any{"id": raw, "basis": "writer-supplied"}})
 }
 
-// callableResult takes v0's own body out of a result envelope. The envelope's
-// `changed` is dropped: a v0 body already says what it did, and nothing above this
-// layer reads anything else.
-func callableResult(body []byte) ([]byte, error) {
+// callableResult takes v0's own body out of a result envelope, with its Types read
+// back to v0's names (typeNames). The envelope's `changed` is dropped: a v0 body
+// already says what it did, and nothing above this layer reads anything else.
+func callableResult(op, scope string, body []byte) ([]byte, error) {
 	var envelope struct {
 		Result json.RawMessage `json:"result"`
 	}
@@ -329,7 +332,7 @@ func callableResult(body []byte) ([]byte, error) {
 	if envelope.Result == nil {
 		return nil, errors.New("the answer has no `result`")
 	}
-	return envelope.Result, nil
+	return typeNames(op, scope, envelope.Result, true)
 }
 
 // mountProblem is the part of the mount's Problem this client reads. V0 and Error
@@ -367,7 +370,7 @@ const (
 // v0's own invalid_argument means, and those get its sentinel so a caller sees the
 // same refusal. An answer that is not a Problem of either kind is something in front
 // of bd serve, and reads as it always has.
-func callableProblem(t target, call string, res *response, maxRetryAfter time.Duration) error {
+func callableProblem(t target, call, scope string, res *response, maxRetryAfter time.Duration) error {
 	var p mountProblem
 	_ = json.Unmarshal(res.body, &p)
 
@@ -376,6 +379,11 @@ func callableProblem(t target, call string, res *response, maxRetryAfter time.Du
 		inner = p.Error
 	}
 	if len(inner) > 0 {
+		// v0's body with its Types read back. One this client cannot read stays as
+		// the server spelled it: the refusal is still the refusal.
+		if named, err := typeNames(t.op, scope, inner, false); err == nil {
+			inner = named
+		}
 		var v0 struct {
 			Status int `json:"status"`
 		}

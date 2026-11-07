@@ -398,7 +398,7 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 
 	if res.status < 200 || res.status >= 300 {
 		if send.callable != "" {
-			err := callableProblem(c.target(r), send.callable, res, c.maxRetry)
+			err := callableProblem(c.target(r), send.callable, callableScope(c.base), res, c.maxRetry)
 			var prob *ProblemError
 			if errors.As(err, &prob) && prob.Status == http.StatusUnauthorized {
 				prob.CredentialSource = credentialSource(c.creds)
@@ -424,7 +424,7 @@ func (c *Client) Do(ctx context.Context, r Request, out any) error {
 	}
 	decodeBody := res.body
 	if send.callable != "" {
-		if decodeBody, err = callableResult(res.body); err != nil {
+		if decodeBody, err = callableResult(r.Op, callableScope(c.base), res.body); err != nil {
 			return fmt.Errorf("%s: decoding the response from bd serve at %s: %w", r.Op, c.base.Redacted(), err)
 		}
 		if int64(len(decodeBody)) > c.maxBytes {

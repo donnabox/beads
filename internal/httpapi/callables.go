@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/steveyegge/beads/internal/httpapi/typeref"
 )
 
 // The Callables layer: POST <scope>/bdp/call/NAME routes one Callable to its v0
@@ -295,6 +297,7 @@ func invocationRoute(c *callableCapture, r *http.Request) route {
 			inner.SetPathValue(customMethodIDValue, id)
 		}
 		v0Handler(s, c, inner)
+		row.convertResultTypes(s, r, c)
 	}
 	return rt
 }
@@ -332,15 +335,20 @@ func (row *callableRow) invocationRequest(s *Server, c *callableCapture, r *http
 	if problem := row.checkArgumentNames(inv.args); problem != nil {
 		return nil, problem
 	}
+	// The defaults and the adapter speak the Callable's values, so both run before
+	// the Types rule reads every Type back to v0's spelling.
+	row.supplyDefaults(inv)
 	if row.adapt != nil {
 		if problem := row.adapt(inv.args); problem != nil {
 			return nil, problem
 		}
 	}
+	if problem := row.convertArgumentTypes(s, r, inv); problem != nil {
+		return nil, problem
+	}
 	if problem := row.supplyActor(inv, actor); problem != nil {
 		return nil, problem
 	}
-	row.supplyDefaults(inv)
 	if problem := row.settleCoreGuard(s, r, inv); problem != nil {
 		return nil, problem
 	}
@@ -739,8 +747,9 @@ func (row *callableRow) checkArgumentNames(args map[string]json.RawMessage) *cal
 }
 
 // adaptFlatDependency is the issue/dep/add adapter: flat source, target and
-// optional type, or v0's edges, exactly one form per call. An omitted type is
-// blocks, where v0 itself requires one on every edge.
+// optional type, or v0's edges, exactly one form per call. An omitted type is the
+// blocks Link Type, where v0 itself requires one on every edge. It runs before the
+// Types rule, so the edge it builds carries the Callable's reference.
 func adaptFlatDependency(args map[string]json.RawMessage) *callableProblem {
 	_, hasEdges := args["edges"]
 	flat := ""
@@ -758,7 +767,7 @@ func adaptFlatDependency(args map[string]json.RawMessage) *callableProblem {
 	case hasEdges:
 		return nil
 	}
-	edge := map[string]json.RawMessage{"type": json.RawMessage(`"blocks"`)}
+	edge := map[string]json.RawMessage{"type": json.RawMessage(`"` + coreLinkTypeNamespace + `blocks"`)}
 	for _, member := range []struct{ arg, wire string }{
 		{"source", "issue_id"}, {"target", "depends_on_id"}, {"type", "type"},
 	} {
@@ -901,7 +910,14 @@ func (row *callableRow) v0Body(inv *invocation) (head, rest []byte) {
 		size += len(raw) + 64
 	}
 	head = append(make([]byte, 0, size), '{')
+	plans, _ := typeref.Load()
+	var shape *typeref.Shape
+	if plans != nil {
+		shape = plans.Arguments(row.op, typeref.ToV0)
+	}
 	for _, name := range row.body {
+		// The Types rule has already put the member under v0's name.
+		name = shape.Rename(name)
 		if raw, ok := inv.args[name]; ok {
 			head = appendBodyMember(head, name, raw)
 		}
@@ -1076,7 +1092,7 @@ func v0Diagnostic(param *string, detail string) callableDiagnostic {
 	}
 	diagnostic := callableDiagnostic{Message: "`" + *param + "`: " + detail}
 	if !strings.ContainsAny(*param, ".[-") {
-		diagnostic.InstanceLocation = "/arguments/" + *param
+		diagnostic.InstanceLocation = "/arguments/" + typeref.CallableName(*param)
 	}
 	return diagnostic
 }
