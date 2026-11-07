@@ -1444,6 +1444,13 @@ func TestCallableListIsTheOpenAPIProjection(t *testing.T) {
 	if len(paths) != len(callableTable) {
 		t.Errorf("%d paths for %d names", len(paths), len(callableTable))
 	}
+	for path, item := range paths {
+		post, _ := item.(map[string]any)["post"].(map[string]any)
+		extension, _ := post["x-bdp-callable"].(map[string]any)
+		if extension["compiled"] != true {
+			t.Errorf("%s isn't marked compiled: %v", path, extension)
+		}
+	}
 	for _, name := range []string{"source", "target", "type"} {
 		schema, _ := adapterParameterSchemas[name].(map[string]any)
 		if schema["minLength"] != 1 || schema["maxLength"] != 255 {
