@@ -58,7 +58,7 @@ const (
 	// writeExceptionsCapability says what this Scope lists but does not serve.
 	// Core has base clients ignore a capability they do not know, so it changes
 	// nothing for them; a client that reads it can skip the refused call.
-	writeExceptionsCapability        = "https://github.com/steveyegge/beads/bdp/capabilities/write-exceptions"
+	writeExceptionsCapability        = "https://github.com/gastownhall/bdp/capabilities/write-exceptions"
 	writeExceptionsCapabilityVersion = "1"
 )
 
