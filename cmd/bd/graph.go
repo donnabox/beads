@@ -407,7 +407,7 @@ func loadGraphSubgraph(ctx context.Context, s storage.DoltStorage, issueID strin
 		// Get issues that depend on this one (dependents)
 		dependents, err := s.GetDependents(ctx, currentID)
 		if err != nil {
-			continue
+			return nil, fmt.Errorf("failed to get dependents of %s: %w", currentID, err)
 		}
 		for _, dep := range dependents {
 			if !visited[dep.ID] {
@@ -421,7 +421,7 @@ func loadGraphSubgraph(ctx context.Context, s storage.DoltStorage, issueID strin
 		// Get issues this one depends on (dependencies)
 		dependencies, err := s.GetDependencies(ctx, currentID)
 		if err != nil {
-			continue
+			return nil, fmt.Errorf("failed to get dependencies of %s: %w", currentID, err)
 		}
 		for _, dep := range dependencies {
 			if !visited[dep.ID] {
@@ -437,7 +437,7 @@ func loadGraphSubgraph(ctx context.Context, s storage.DoltStorage, issueID strin
 	for _, issue := range subgraph.Issues {
 		deps, err := s.GetDependencyRecords(ctx, issue.ID)
 		if err != nil {
-			continue
+			return nil, fmt.Errorf("failed to get dependency records of %s: %w", issue.ID, err)
 		}
 		for _, dep := range deps {
 			// Resolve external deps via routing (bd-k0pfm)

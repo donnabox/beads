@@ -64,6 +64,16 @@ func TestE2E_ConnectGapsAreClosed(t *testing.T) {
 					t.Errorf("bd info --json has no issue_count: %s", out)
 				}
 			})
+
+			t.Run("D3 graph reports dependents", func(t *testing.T) {
+				parent := f.create("graph root")
+				child := f.create("graph dependent")
+				f.mustRun(nil, "dep", "add", child, parent)
+				out := f.mustRun(nil, "graph", parent, "--json").stdout
+				if !strings.Contains(out, child) {
+					t.Errorf("bd graph %s does not name its dependent %s: %s", parent, child, out)
+				}
+			})
 			//ROWS
 		})
 	}
