@@ -242,7 +242,7 @@ func (row *callableRow) openAPIOperation(v0, op map[string]any) (map[string]any,
 		resultRequired = append(resultRequired, "changed")
 	}
 
-	extension := map[string]any{"type": callableTypeBase + kind}
+	extension := map[string]any{"type": callableTypeBase + kind, "compiled": true}
 	if row.idempotent {
 		extension["idempotent"] = true
 	}
