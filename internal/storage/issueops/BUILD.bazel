@@ -112,8 +112,10 @@ go_library(
     importpath = "github.com/steveyegge/beads/internal/storage/issueops",
     visibility = ["//:__subpackages__"],
     deps = [
+        "//graphops",
         "//internal/config",
         "//internal/debug",
+        "//internal/graphpatch",
         "//internal/idgen",
         "//internal/storage",
         "//internal/storage/dberrors",
