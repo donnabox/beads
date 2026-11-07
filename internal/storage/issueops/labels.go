@@ -133,11 +133,19 @@ func getLabelsIntoFromTable(ctx context.Context, tx DBTX, labelTable string, ids
 // transaction. Automatically routes to wisp tables if the ID is an active wisp.
 // Uses INSERT IGNORE for idempotency.
 func AddLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issueID, label, actor string) error {
+	_, err := AddLabelInTxWithResult(ctx, tx, labelTable, eventTable, issueID, label, actor)
+	return err
+}
+
+// AddLabelInTxWithResult performs AddLabelInTx and reports whether a label row changed.
+// A no-op or error returns false; true describes completed writes in the caller's
+// transaction, not a committed outcome.
+func AddLabelInTxWithResult(ctx context.Context, tx DBTX, labelTable, eventTable, issueID, label, actor string) (bool, error) {
 	// Reject an over-length label up front. The INSERT IGNORE below would
 	// otherwise silently truncate it to the VARCHAR(255) column, storing a label
 	// the caller never sent; a typed ErrFieldTooLong is the clean rejection.
 	if err := types.CheckFieldLen("label", label); err != nil {
-		return err
+		return false, err
 	}
 	if labelTable == "" || eventTable == "" {
 		isWisp := IsActiveWispInTx(ctx, tx, issueID)
@@ -151,16 +159,16 @@ func AddLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issueID,
 	}
 	useWisps, err := labelTableUsesWisps(labelTable)
 	if err != nil {
-		return fmt.Errorf("add label: %w", err)
+		return false, fmt.Errorf("add label: %w", err)
 	}
 	//nolint:gosec // G201: labelTable is from WispTableRouting ("labels" or "wisp_labels")
 	result, err := tx.ExecContext(ctx, fmt.Sprintf(`INSERT IGNORE INTO %s (issue_id, label) VALUES (?, ?)`, labelTable), issueID, label)
 	if err != nil {
-		return fmt.Errorf("add label: %w", err)
+		return false, fmt.Errorf("add label: %w", err)
 	}
 	rows, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("add label: rows affected: %w", err)
+		return false, fmt.Errorf("add label: rows affected: %w", err)
 	}
 	if rows == 0 {
 		issueTable := "issues"
@@ -170,12 +178,12 @@ func AddLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issueID,
 		var count int
 		//nolint:gosec // G201: issueTable is one of two hardcoded constants.
 		if err := tx.QueryRowContext(ctx, fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE id = ?", issueTable), issueID).Scan(&count); err != nil {
-			return fmt.Errorf("add label: verify issue: %w", err)
+			return false, fmt.Errorf("add label: verify issue: %w", err)
 		}
 		if count == 0 {
-			return fmt.Errorf("add label: issue %s does not exist", issueID)
+			return false, fmt.Errorf("add label: issue %s does not exist", issueID)
 		}
-		return nil
+		return false, nil
 	}
 	comment := "Added label: " + label
 	if err := InsertDerivedEvent(ctx, tx, eventTable, AuxEvent{
@@ -184,7 +192,7 @@ func AddLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issueID,
 		Actor:     actor,
 		Comment:   str(comment),
 	}); err != nil {
-		return fmt.Errorf("add label: record event: %w", err)
+		return false, fmt.Errorf("add label: record event: %w", err)
 	}
 	// A label write bypasses UpdateIssueInTx entirely, so it must bump
 	// updated_at itself -- otherwise --updated-after filtering, stale-upsert
@@ -192,19 +200,30 @@ func AddLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issueID,
 	// Must run before RecordEventInTx below so the journal snapshot below
 	// captures the bumped value, matching UpdateIssueInTx's own ordering.
 	if err := TouchIssueUpdatedAtInTx(ctx, tx, issueID, useWisps); err != nil {
-		return fmt.Errorf("add label: %w", err)
+		return false, fmt.Errorf("add label: %w", err)
 	}
 	// A label is part of the bead snapshot, so a label write journals as an
 	// update carrying the complete post-mutation set.
-	return RecordEventInTx(ctx, tx, EventUpdate, issueID, actor)
+	if err := RecordEventInTx(ctx, tx, EventUpdate, issueID, actor); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // RemoveLabelInTx removes a label from an issue and records an event within
 // an existing transaction. Automatically routes to wisp tables if the ID is
 // an active wisp.
+func RemoveLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issueID, label, actor string) error {
+	_, err := RemoveLabelInTxWithResult(ctx, tx, labelTable, eventTable, issueID, label, actor)
+	return err
+}
+
+// RemoveLabelInTxWithResult performs RemoveLabelInTx and reports whether a label row changed.
+// A no-op or error returns false; true describes completed writes in the caller's
+// transaction, not a committed outcome.
 //
 //nolint:gosec // G201: table names come from WispTableRouting (hardcoded constants)
-func RemoveLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issueID, label, actor string) error {
+func RemoveLabelInTxWithResult(ctx context.Context, tx DBTX, labelTable, eventTable, issueID, label, actor string) (bool, error) {
 	if labelTable == "" || eventTable == "" {
 		isWisp := IsActiveWispInTx(ctx, tx, issueID)
 		_, lt, et, _ := WispTableRouting(isWisp)
@@ -217,18 +236,18 @@ func RemoveLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issue
 	}
 	useWisps, err := labelTableUsesWisps(labelTable)
 	if err != nil {
-		return fmt.Errorf("remove label: %w", err)
+		return false, fmt.Errorf("remove label: %w", err)
 	}
 	result, err := tx.ExecContext(ctx, fmt.Sprintf(`DELETE FROM %s WHERE issue_id = ? AND label = ?`, labelTable), issueID, label)
 	if err != nil {
-		return fmt.Errorf("remove label: %w", err)
+		return false, fmt.Errorf("remove label: %w", err)
 	}
 	rows, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("remove label: rows affected: %w", err)
+		return false, fmt.Errorf("remove label: rows affected: %w", err)
 	}
 	if rows == 0 {
-		return nil
+		return false, nil
 	}
 	comment := "Removed label: " + label
 	if err := InsertDerivedEvent(ctx, tx, eventTable, AuxEvent{
@@ -237,12 +256,15 @@ func RemoveLabelInTx(ctx context.Context, tx DBTX, labelTable, eventTable, issue
 		Actor:     actor,
 		Comment:   str(comment),
 	}); err != nil {
-		return fmt.Errorf("remove label: record event: %w", err)
+		return false, fmt.Errorf("remove label: record event: %w", err)
 	}
 	if err := TouchIssueUpdatedAtInTx(ctx, tx, issueID, useWisps); err != nil {
-		return fmt.Errorf("remove label: %w", err)
+		return false, fmt.Errorf("remove label: %w", err)
 	}
-	return RecordEventInTx(ctx, tx, EventUpdate, issueID, actor)
+	if err := RecordEventInTx(ctx, tx, EventUpdate, issueID, actor); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // labelTableUsesWisps validates the exhaustive label-table routing contract.
@@ -259,8 +281,8 @@ func labelTableUsesWisps(labelTable string) (bool, error) {
 	}
 }
 
-// TouchIssueUpdatedAtInTx bumps an issue's updated_at without touching any other
-// column. Callers that mutate an issue through a side channel other than
+// TouchIssueUpdatedAtInTx bumps an issue's updated_at and row_lock.
+// Callers that mutate an issue through a side channel other than
 // UpdateIssueInTx -- label add/remove write directly to the labels/
 // wisp_labels table, bypassing the normal field-update path entirely --
 // must call this so --updated-after filtering, stale-upsert rejection, and
