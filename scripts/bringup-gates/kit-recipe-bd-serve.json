@@ -20,16 +20,18 @@
       }
     }
   },
-  "link": {
-    "type": "https://github.com/gastownhall/bdp/types/dependency/blocks",
-    "id": "service-allocated",
-    "properties": {},
-    "metadata": {
-      "source": "provider-kit"
-    }
-  },
   "excepted": {
-    "write.link-update": "updateLink is not implemented on bd serve and refuses 422 operation-not-supported, by Donna's ruling: it waits for a durable Link identity",
-    "IT-10": "This row is updateLink's on the Issue package; same ruling"
+    "write.link-create": "createLink is not implemented on bd serve and refuses 422 operation-not-supported, by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads. This recipe has no `link` fixture, so the kit does not exercise it",
+    "write.link-update": "updateLink is not implemented on bd serve and refuses 422 operation-not-supported, by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads. This recipe has no `link` fixture, so the kit does not exercise it",
+    "write.link-delete": "deleteLink is not implemented on bd serve and refuses 422 operation-not-supported, by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads. This recipe has no `link` fixture, so the kit does not exercise it",
+    "IT-2": "On a Scope holding no Dependency record this row makes one with createLink, which is refused by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads",
+    "IT-3": "The createBead half of this row still runs first; its createLink half answers operation-not-supported rather than validation-failed, by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads",
+    "IT-6": "A self-Link answers operation-not-supported rather than validation-failed, because createLink refuses every request, by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads",
+    "IT-7": "Needs a Link made with createLink, which is refused by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads",
+    "IT-8": "Needs a Link made with createLink, which is refused by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads",
+    "IT-9": "This row is createLink's and deleteLink's, which are refused by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads",
+    "IT-10": "This row is updateLink's on a Link made with createLink, both refused by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads",
+    "IT-12": "Needs an incident Link made with createLink, which is refused by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads. The kit runs issue/dep/add for no Scope in this row, so deleteBead's refusal is not witnessed by it",
+    "IT-15": "On a Write Scope the kit makes this row's Link with createLink, which is refused by Donna's ruling for Sprint 1: Link writes wait until Links have identity and revisions comparable to Beads. The kit reaches issue/dep/add only on a Scope without Write"
   }
 }

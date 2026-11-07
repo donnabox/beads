@@ -9,7 +9,6 @@ import (
 	"slices"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/uow"
@@ -27,9 +26,10 @@ import (
 // row back into a record. Each check that depends on the state a write lands on runs
 // inside that write's transaction, through the role's InTx hook.
 //
-// `updateLink` IS NOT IMPLEMENTED, by Donna's ruling: it waits for Link identity. The
-// directory must list it (Write: "the six Resource members always"), so it is
-// listed, answers operation-not-supported, and discovery says so.
+// THE LINK WRITES ARE NOT IMPLEMENTED, by Donna's ruling: `createLink`, `updateLink` and
+// `deleteLink` wait until Links have identity and revisions comparable to Beads. The
+// directory must list them (Write: "the six Resource members always"), so they are
+// listed, answer operation-not-supported, and discovery says so.
 const (
 	coreOperationsPath = "/bdp/operations"
 
@@ -60,9 +60,15 @@ const (
 	// nothing for them; a client that reads it can skip the refused call.
 	writeExceptionsCapability        = "https://github.com/steveyegge/beads/bdp/capabilities/write-exceptions"
 	writeExceptionsCapabilityVersion = "1"
-
-	writeUpdateLinkDetail = "`updateLink` is not implemented on this Scope: changing a Link in place waits for a durable Link identity. Delete the Link and create it again."
 )
+
+// writeLinkExceptions are the directory members this Scope lists and does not serve.
+var writeLinkExceptions = []string{"createLink", "updateLink", "deleteLink"}
+
+// writeLinkExceptionDetail says why, and what changes a Link in the meantime.
+func writeLinkExceptionDetail(member string) string {
+	return "`" + member + "` is not implemented on this Scope: Link writes wait until Links have identity and revisions comparable to Beads. The `issue/dep/add` and `issue/dep/remove` Callables change Links."
+}
 
 // writeResult is the closed mutation result. There is no ownerRevisions: preview-1
 // of the Issue package declares no ownership (Issue §6).
@@ -113,9 +119,9 @@ func (s *Server) writeOperationTargets() []struct {
 		{"createBead", opWriteCreateBead, s.writeTarget(createBeadMembers, serveCreateBead)},
 		{"updateBead", opWriteUpdateBead, s.writeTarget(updateBeadMembers, serveUpdateBead)},
 		{"deleteBead", opWriteDeleteBead, s.writeTarget(deleteBeadMembers, serveDeleteBead)},
-		{"createLink", opWriteCreateLink, s.writeTarget(createLinkMembers, serveCreateLink)},
-		{"updateLink", opWriteUpdateLink, s.serveUpdateLink},
-		{"deleteLink", opWriteDeleteLink, s.writeTarget(deleteLinkMembers, serveDeleteLink)},
+		{"createLink", opWriteCreateLink, serveLinkException("createLink")},
+		{"updateLink", opWriteUpdateLink, serveLinkException("updateLink")},
+		{"deleteLink", opWriteDeleteLink, serveLinkException("deleteLink")},
 	}
 }
 
@@ -157,17 +163,19 @@ func (s *Server) serveWriteDirectory(w http.ResponseWriter, r *http.Request) {
 	writeCoreJSON(w, directory)
 }
 
-// serveUpdateLink is Donna's exception. It reads no body and no state. Write
-// prescribes `operation-not-supported` for a recognized operation a provider does
-// not serve only inside atomic batch, so that code, its family, status and retry are
-// what is answered, with no batch pointer: there is no /operations/I here.
-func (s *Server) serveUpdateLink(w http.ResponseWriter, r *http.Request) {
-	if !admitWriteMedia(w, r) {
-		return
+// serveLinkException is Donna's exception, for each Link write. It reads no body and
+// no state. Write prescribes `operation-not-supported` for a recognized operation a
+// provider does not serve only inside atomic batch, so that code, its family, status and
+// retry are what is answered, with no batch pointer: there is no /operations/I here.
+func serveLinkException(member string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !admitWriteMedia(w, r) {
+			return
+		}
+		problem := newCallableProblem(bdpOperationNotSupported, writeLinkExceptionDetail(member))
+		problem.Operation = member
+		writeWriteProblem(w, r, problem)
 	}
-	problem := newCallableProblem(bdpOperationNotSupported, writeUpdateLinkDetail)
-	problem.Operation = "updateLink"
-	writeWriteProblem(w, r, problem)
 }
 
 // writeAccepts is Core's Accept rule for the one media type every answer here offers.
@@ -246,8 +254,6 @@ var (
 	// revisionProvenance on deleteBead is Donna's 2026-11-06 ruling; write.md's table
 	// and schema have not caught up.
 	deleteBeadMembers = writeMembers{[]string{"bead"}, []string{"expectedRevision", "revisionProvenance"}}
-	createLinkMembers = writeMembers{[]string{"type", "source", "target"}, []string{"id", "properties", "metadata", "revisionProvenance"}}
-	deleteLinkMembers = writeMembers{[]string{"link"}, []string{"expectedRevision", "revisionProvenance"}}
 )
 
 // readWriteBody reads and checks the carrier: scanInvocation refuses what
@@ -518,165 +524,6 @@ func serveDeleteBead(c *writeCall) error {
 	return nil
 }
 
-// serveCreateLink is createLink. The role refuses an occupied pair and a target naming
-// no row inside its transaction.
-func serveCreateLink(c *writeCall) error {
-	kind, problem := c.linkType(c.members["type"])
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	source, problem := c.linkSource()
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	target, problem := c.linkTargetOf()
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	if source == target {
-		return &writeRefusal{writeInvalid(writeRequestDiagnostic("target", "a Dependency Link's endpoints are different Beads; a self-Link is refused"))}
-	}
-	if problem := c.refuseSuppliedLinkID(); problem != nil {
-		return &writeRefusal{problem}
-	}
-	properties, problem := writeObjectMember(c.members, "properties")
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	metadata, problem := writeObjectMember(c.members, "metadata")
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	if problem := checkAdmissibleNumbers(properties, metadata); problem != nil {
-		return &writeRefusal{problem}
-	}
-	threadID, problem := linkThreadID(properties)
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	actor, problem := c.actor()
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	if kind == string(types.DepParentChild) && strings.HasPrefix(target, coreExternalPrefix) {
-		return &writeRefusal{writeInvalid(writeRequestDiagnostic("target", "a `parent-child` Link's target is a Bead of this Scope, never an external Resource"))}
-	}
-	edge := issueops.DependencyEdge{
-		IssueID: source, DependsOnID: target, Type: types.DependencyType(kind), ThreadID: threadID,
-	}
-	if raw, sent := c.members["metadata"]; sent {
-		edge.Metadata = string(raw)
-	}
-	editor, err := c.s.dependencyEditor(c.r)
-	if err != nil {
-		return err
-	}
-	result, err := editor.AddDependencies(c.ctx, issueops.AddDependenciesRequest{
-		Actor: actor, Edges: []issueops.DependencyEdge{edge}, Exact: true,
-	})
-	if err != nil {
-		return err
-	}
-	if len(result.StoredEdges) != 1 {
-		return errors.New("create link: the editor reported success without the stored edge")
-	}
-	live := map[string]bool{}
-	if !strings.HasPrefix(target, coreExternalPrefix) {
-		live[target] = true
-	}
-	record, err := c.p.link(result.StoredEdges[0], live)
-	if err != nil {
-		return err
-	}
-	c.respond(writeResult{Outcome: writeOutcomeCreated, Changed: true, Resource: record})
-	return nil
-}
-
-// serveDeleteLink is deleteLink.
-//
-// A Link's identity carries its row's creation second, so a Link created and removed
-// inside one second would hand its id straight to the pair's next Link. Holding the
-// removal past that second closes it on this route. It closes nothing on v0's route,
-// and nothing else records a Link's identity once the row is gone: see coreLinkID.
-func serveDeleteLink(c *writeCall) error {
-	subject, problem := c.subject("link")
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	expected, problem := c.expectedRevision()
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	actor, problem := c.actor()
-	if problem != nil {
-		return &writeRefusal{problem}
-	}
-	source, target, generation, ok := subject.link()
-	if !ok {
-		return &writeRefusal{newCallableProblem(bdpResourceNotFound, "")}
-	}
-	found, err := c.p.lookupLink(c.ctx, source, target, generation)
-	if err != nil {
-		return err
-	}
-	if found == nil || found.edge == nil {
-		return &writeRefusal{newCallableProblem(bdpResourceNotFound, "")}
-	}
-	if err := holdPastCreationSecond(c.ctx, found.edge.CreatedAt); err != nil {
-		return err
-	}
-	editor, err := c.s.dependencyEditor(c.r)
-	if err != nil {
-		return err
-	}
-	var name writeDeletedName
-	result, err := editor.RemoveDependency(c.ctx, issueops.RemoveDependencyRequest{
-		Actor: actor, IssueID: source, DependsOnID: target,
-		InTx: &issueops.EdgeCheck{Run: func(current *issueops.Dependency) error {
-			if current.CreatedAt.Unix() != generation {
-				return &writeRefusal{newCallableProblem(bdpResourceNotFound, "")}
-			}
-			record, err := c.p.link(current, found.live)
-			if err != nil {
-				return err
-			}
-			if expected != "" && record.Revision != expected {
-				return writeMismatch("expectedRevision")
-			}
-			name = writeDeletedName{ID: record.ID, Type: record.Type, Revision: record.Revision}
-			return nil
-		}},
-	})
-	if err != nil {
-		return err
-	}
-	if !result.Removed {
-		return &writeRefusal{newCallableProblem(bdpResourceNotFound, "")}
-	}
-	c.respond(writeResult{
-		Outcome: writeOutcomeDeleted, Changed: true,
-		Deleted: &writeDeleted{ResourceKind: coreKindLink, Resource: name},
-	})
-	return nil
-}
-
-// holdPastCreationSecond returns once the wall clock has left the second a row was
-// stamped with, so no row stamped after it can share that second.
-func holdPastCreationSecond(ctx context.Context, createdAt time.Time) error {
-	wait := time.Until(time.Unix(createdAt.Unix()+1, 0))
-	if wait <= 0 {
-		return nil
-	}
-	timer := time.NewTimer(wait)
-	defer timer.Stop()
-	select {
-	case <-timer.C:
-		return nil
-	case <-ctx.Done():
-		return ctx.Err()
-	}
-}
-
 // failWrite answers a failure from the role or the projection, in Write's table.
 //
 // A native refusal whose words name tables or configuration is not quoted, as v0's
@@ -687,10 +534,6 @@ func (s *Server) failWrite(w http.ResponseWriter, r *http.Request, err error) {
 		refusal      *writeRefusal
 		unservable   errCoreUnservable
 		incident     *issueops.IncidentEdgesError
-		occupied     *issueops.DependencyOccupiedError
-		conflict     *issueops.DependencyTypeConflictError
-		hierarchy    *issueops.DependencyHierarchyConflictError
-		endpoint     *issueops.DependencyEndpointNotFoundError
 		expired      *issueops.IdempotencyExpiredError
 		notFound     *issueops.NotFoundError
 		openChildren *issueops.CloseOpenChildrenError
@@ -711,17 +554,7 @@ func (s *Server) failWrite(w http.ResponseWriter, r *http.Request, err error) {
 		writeWriteProblem(w, r, newCallableProblem(bdpRevisionMismatch, "`expectedRevision` is a revision this Resource does not carry"))
 	case errors.As(err, &incident):
 		writeWriteProblem(w, r, newCallableProblem(bdpIncidentLinksExist, "this Bead has live incident Links; remove them first"))
-	case errors.As(err, &occupied):
-		s.failOccupiedPair(w, r, occupied.Occupant)
-	case errors.As(err, &conflict):
-		invalid("this ordered pair already carries a Dependency Link of another Type, and a pair holds at most one")
-	case errors.As(err, &hierarchy), errors.Is(err, issueops.ErrDependencyCycle):
-		refused()
-		writeWriteProblem(w, r, writeInvalid(callableDiagnostic{
-			Message: "this Link would create a dependency cycle or a hierarchy conflict; nothing was written",
-			Reason:  "dependency-cycle",
-		}))
-	case errors.As(err, &endpoint), errors.As(err, &notFound), errors.Is(err, issueops.ErrNotFound), errors.Is(err, storage.ErrNotFound):
+	case errors.As(err, &notFound), errors.Is(err, issueops.ErrNotFound), errors.Is(err, storage.ErrNotFound):
 		writeWriteProblem(w, r, newCallableProblem(bdpResourceNotFound, ""))
 	case errors.As(err, &expired), errors.Is(err, issueops.ErrIdempotencyExpired):
 		writeWriteProblem(w, r, newCallableProblem(bdpIdentityTaken, "this identity was retired and cannot be created again"))
@@ -729,8 +562,6 @@ func (s *Server) failWrite(w http.ResponseWriter, r *http.Request, err error) {
 		writeWriteProblem(w, r, newCallableProblem(bdpIdentityTaken, "a live Resource already has this identity"))
 	case errors.Is(err, uow.ErrDeleteFenceUnavailable):
 		writeCoreProblem(w, r, coreCodeUnavailable, "another write to this Resource is still in progress")
-	case errors.Is(err, issueops.ErrSelfDependency):
-		invalid("a Dependency Link's endpoints are different Beads; a self-Link is refused")
 	case errors.As(err, &openChildren), errors.Is(err, issueops.ErrCloseOpenChildren):
 		invalid("this status closes an issue with open children; close them first, through `issue/close`")
 	case errors.Is(err, issueops.ErrCloseBlocked):
@@ -741,7 +572,7 @@ func (s *Server) failWrite(w http.ResponseWriter, r *http.Request, err error) {
 		invalid("a value is longer than storage holds; nothing was written")
 	case isTemplateRefusal(err):
 		invalid("templates are read-only; nothing was written")
-	case errors.Is(err, issueops.ErrValidation), errors.Is(err, storage.ErrValidation), errors.Is(err, issueops.ErrDependencySourceNotFound):
+	case errors.Is(err, issueops.ErrValidation), errors.Is(err, storage.ErrValidation):
 		invalid("a value was refused by this workspace's own validation; nothing was written")
 	default:
 		s.failCoreErr(w, r, err)
@@ -751,16 +582,4 @@ func (s *Server) failWrite(w http.ResponseWriter, r *http.Request, err error) {
 func isTemplateRefusal(err error) bool {
 	var template *issueops.TemplateReadOnlyError
 	return errors.As(err, &template)
-}
-
-// failOccupiedPair names the occupying Link (Issue IT-7), so that a caller can read or
-// remove it. The refusal is validation-failed, as Issue §4.4 says, and it is the Link
-// the request itself would have made visible.
-func (s *Server) failOccupiedPair(w http.ResponseWriter, r *http.Request, occupant *issueops.Dependency) {
-	message := "this ordered pair already carries a Dependency Link, and a pair holds at most one"
-	if occupant != nil {
-		p := newCoreProjector(s, r)
-		message += ": " + p.scope + coreLinkID(occupant.IssueID, occupant.DependsOnID, occupant.CreatedAt)
-	}
-	writeWriteProblem(w, r, writeInvalid(writeRequestDiagnostic("target", message)))
 }

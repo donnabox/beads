@@ -72,15 +72,18 @@ which has no Callable, off (its `events.watch` capability goes with it). `both` 
 
 On `bdp` and `both`, `GET /bdp` advertises profile `write`, and `GET /bdp/operations`
 lists BDP Write's six targets for the Issue and Dependency Types: `createBead`,
-`updateBead`, `deleteBead`, `createLink`, `deleteLink` and `updateLink`. **`updateLink`
-is not implemented**: it waits for a durable Link identity, Write requires the
-directory to list it, and it answers 422 `operation-not-supported`, which discovery
-states in its `write-exceptions` capability. A Link is changed by deleting it and
-creating another. There are no aliases, no `idempotency` capability, so a repeated
-request runs under the ordinary rules, and no atomic batch or Events. Other Types are
-refused. `revisionProvenance.actor` is recorded as the native actor; `agent` and
-`message` have nowhere to go and are refused. A Link's identity is its pair and its
-row's creation second, and it is not retained after the Link is gone.
+`updateBead`, `deleteBead`, `createLink`, `updateLink` and `deleteLink`. **Only the three
+Bead writes are served. `createLink`, `updateLink` and `deleteLink` are not implemented**:
+they wait until Links have identity and revisions comparable to Beads, Write requires the
+directory to list them, and each answers 422 `operation-not-supported`, reading no body or
+state, which discovery states in its `write-exceptions` capability. Links are read through
+Core and changed through the `issue/dep/add` and `issue/dep/remove` Callables. `deleteBead`
+refuses 409 `incident-links-exist` while any Link touches the Bead. There are no aliases,
+no `idempotency` capability, so a repeated request runs under the ordinary rules, and no
+atomic batch or Events. Other Types are refused. `revisionProvenance.actor` is recorded as
+the native actor; `agent` and `message` have nowhere to go and are refused. A Link's
+identity is its pair and its row's creation second, and it is not retained after the Link
+is gone, which is why Link writes wait.
 
 A client has to ask for one the server has. `bd connect --protocol bdp` needs `bdp` or
 `both`; a plain `bd connect`, or a workspace connected before the flag existed, needs

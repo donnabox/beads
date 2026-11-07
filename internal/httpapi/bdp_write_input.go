@@ -202,7 +202,7 @@ func (c *writeCall) parseReference(member, value string) (writeReference, *calla
 	return writeReference{local: strings.Join(decoded, "/")}, nil
 }
 
-// subject reads a Resource subject: `bead` or `link`.
+// subject reads a Resource subject.
 func (c *writeCall) subject(member string) (writeReference, *callableProblem) {
 	var value string
 	if err := json.Unmarshal(c.members[member], &value); err != nil || isJSONNull(c.members[member]) {
@@ -250,32 +250,6 @@ func (c *writeCall) createdBeadID() (string, *callableProblem) {
 		return refuse("this path is protocol navigation and cannot be a Resource identity")
 	}
 	return ref.local, nil
-}
-
-// refuseSuppliedLinkID is Issue §5's rule for createLink's `id`: a Link's identity is
-// allocated here from its pair and a generation, so none can be supplied. A spelling of
-// that allocator's is identity-taken (IT-9): nothing records which of them have been
-// issued, so none can be promised free.
-func (c *writeCall) refuseSuppliedLinkID() *callableProblem {
-	raw, sent := c.members["id"]
-	if !sent {
-		return nil
-	}
-	var value string
-	if err := json.Unmarshal(raw, &value); err != nil || isJSONNull(raw) {
-		return newCallableProblem(bdpMalformedRequest, "`id` is a string")
-	}
-	ref, problem := c.parseReference("id", value)
-	if problem != nil {
-		return problem
-	}
-	if ref.local == "" {
-		return newCallableProblem(bdpMalformedRequest, "`id` names a Resource of this Scope")
-	}
-	if _, _, _, isLink := ref.link(); isLink {
-		return newCallableProblem(bdpIdentityTaken, "this spelling is one this provider allocates, and a Link's identity is never supplied or reused")
-	}
-	return writeInvalid(writeRequestDiagnostic("id", "this provider allocates Link identities; omit `id`"))
 }
 
 // typeCarrier reads a Type affiliation down to its URI. A pin is a well-formed input
@@ -329,140 +303,6 @@ func (c *writeCall) beadType(raw json.RawMessage) (string, *callableProblem) {
 		return refuse("this is not a Type this Scope configures")
 	}
 	return refuse("this Scope writes the Issue and Dependency Types only")
-}
-
-// linkType is the same for a Link. The native kind vocabulary is open with no
-// configuration behind it, so a Scope-local kind goes back through as the read path
-// spells it.
-func (c *writeCall) linkType(raw json.RawMessage) (string, *callableProblem) {
-	uri, problem := typeCarrier(raw)
-	if problem != nil {
-		return "", problem
-	}
-	refuse := func(reason string) (string, *callableProblem) {
-		return "", writeInvalid(writeRequestDiagnostic("type", reason))
-	}
-	if name, ok := strings.CutPrefix(uri, coreLinkTypeNamespace); ok {
-		switch {
-		case uri == coreLinkFamily:
-			return refuse("`dependency/dependency` is abstract and admits no direct instance; send a concrete Type")
-		case coreLinkTypeNames[name]:
-			return name, nil
-		}
-		return refuse("the Dependency package has no Type `" + name + "`")
-	}
-	if strings.HasPrefix(uri, coreBeadTypeNamespace) {
-		return refuse("this is an Issue Bead Type, and a Link has a Dependency Type")
-	}
-	if name, ok := strings.CutPrefix(uri, c.p.scope+coreLocalLinkTypes); ok {
-		plain, err := url.PathUnescape(name)
-		if err == nil && types.DependencyType(plain).IsValid() {
-			return plain, nil
-		}
-		return refuse("this is not a relationship kind this store can hold")
-	}
-	return refuse("this Scope writes the Issue and Dependency Types only")
-}
-
-// endpoint reads source or target, which admit a pin the provider must refuse
-// (Issue §4.1) rather than lose.
-func (c *writeCall) endpoint(member string) (string, *callableProblem) {
-	raw := c.members[member]
-	var value string
-	if err := json.Unmarshal(raw, &value); err != nil || isJSONNull(raw) {
-		var pinned map[string]json.RawMessage
-		if err := json.Unmarshal(raw, &pinned); err == nil && len(pinned) == 2 {
-			_, hasURI := pinned["uri"]
-			_, hasRevision := pinned["revision"]
-			if hasURI && hasRevision {
-				return "", writeInvalid(writeRequestDiagnostic(member, "pinned endpoints are outside preview-1; send the Reference alone"))
-			}
-		}
-		return "", newCallableProblem(bdpMalformedRequest, "`"+member+"` is a Reference")
-	}
-	return value, nil
-}
-
-// linkSource is a live in-Scope Bead's native id, or a refusal: the source of a
-// Dependency is never external (Issue §4.1), and its existence is the role's to check.
-func (c *writeCall) linkSource() (string, *callableProblem) {
-	value, problem := c.endpoint("source")
-	if problem != nil {
-		return "", problem
-	}
-	ref, problem := c.parseReference("source", value)
-	if problem != nil {
-		return "", problem
-	}
-	if ref.local == "" {
-		return "", writeInvalid(writeRequestDiagnostic("source", "a Dependency's source is a Bead of this Scope"))
-	}
-	if _, _, _, isLink := ref.link(); isLink {
-		return "", writeInvalid(writeRequestDiagnostic("source", "a Link endpoint is a Bead, and this names a Link"))
-	}
-	id, ok := ref.bead()
-	if !ok {
-		return "", newCallableProblem(bdpResourceNotFound, "")
-	}
-	return id, nil
-}
-
-// linkTargetOf is the stored target: an in-Scope Bead's native id, or a native external
-// reference, which is an opaque URI as it stands. Native storage has no other spelling
-// for an opaque target, so another URI refuses rather than being guessed at; that
-// includes this provider's own read-side foreign spelling, whose meaning Issue §11 keeps
-// open.
-func (c *writeCall) linkTargetOf() (string, *callableProblem) {
-	value, problem := c.endpoint("target")
-	if problem != nil {
-		return "", problem
-	}
-	if strings.HasPrefix(value, coreExternalPrefix) {
-		return value, nil
-	}
-	ref, problem := c.parseReference("target", value)
-	if problem != nil {
-		return "", problem
-	}
-	if ref.local == "" {
-		return "", writeInvalid(writeRequestDiagnostic("target", "this provider stores an opaque target only in the form `external:<project>:<capability>`"))
-	}
-	if _, _, _, isLink := ref.link(); isLink {
-		return "", writeInvalid(writeRequestDiagnostic("target", "a Link endpoint is a Bead, and this names a Link"))
-	}
-	id, ok := ref.bead()
-	if !ok {
-		return "", newCallableProblem(bdpResourceNotFound, "")
-	}
-	return id, nil
-}
-
-// linkThreadID applies Issue §4.2 to a createLink's properties: `thread_id` is the one
-// writable member, and native storage holds no other.
-func linkThreadID(properties map[string]any) (string, *callableProblem) {
-	threadID := ""
-	names := make([]string, 0, len(properties))
-	for name := range properties {
-		names = append(names, name)
-	}
-	slices.Sort(names)
-	for _, name := range names {
-		switch name {
-		case "thread_id":
-			text, ok := properties[name].(string)
-			if !ok {
-				return "", writeInvalid(writeDiagnostic("/thread_id", "`thread_id` is a string"))
-			}
-			threadID = text
-		case "created_at", "created_by":
-			return "", writeInvalid(writeDiagnostic("/"+name, "`"+name+"` is service-managed and cannot be supplied"))
-		case "dep_type":
-			return "", writeInvalid(writeDiagnostic("/"+name, "`dep_type` is refused: a Link's classification is its `type`"))
-		default:
-			return "", writeInvalid(writeDiagnostic("/"+jsonPointerEscape(name), "`"+name+"` is outside this store's write boundary for a Link; it would not persist"))
-		}
-	}
-	return threadID, nil
 }
 
 // checkProtectedMember refuses input on a member Issue §3.3 does not let a client

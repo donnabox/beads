@@ -35,7 +35,7 @@ type writeRoles struct {
 	race func()
 	// actors records who each write named.
 	actors []string
-	// now stamps new rows and edges.
+	// now stamps new rows.
 	now func() time.Time
 }
 
@@ -43,7 +43,7 @@ func newWriteServer(t *testing.T, cfg Config) (*testServer, *writeRoles) {
 	t.Helper()
 	store := &coreStore{}
 	roles := &writeRoles{store: store, retired: map[string]bool{}, now: func() time.Time { return coreClock }}
-	cfg.Lifecycle, cfg.Deleter, cfg.DependencyEditor = roles, roles, roles
+	cfg.Lifecycle, cfg.Deleter = roles, roles
 	return newCoreServer(t, store, cfg), roles
 }
 
@@ -217,65 +217,6 @@ func (f *writeRoles) Delete(_ context.Context, req issueops.DeleteRequest) (issu
 	}
 	f.store.issues = slices.DeleteFunc(f.store.issues, func(issue *types.Issue) bool { return issue.ID == id })
 	return issueops.DeleteResult{Deleted: 1, DeletedIDs: []string{id}}, nil
-}
-
-func (f *writeRoles) AddDependencies(_ context.Context, req issueops.AddDependenciesRequest) (issueops.AddDependenciesResult, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.actors = append(f.actors, req.Actor)
-	edge := req.Edges[0]
-	if !req.Exact {
-		return issueops.AddDependenciesResult{}, errors.New("a Write create asks for the exact edge")
-	}
-	if f.find(edge.IssueID) == nil {
-		return issueops.AddDependenciesResult{}, &issueops.DependencyEndpointNotFoundError{
-			IssueID: edge.IssueID, DependsOnID: edge.DependsOnID, MissingID: edge.IssueID, Err: issueops.ErrDependencySourceNotFound,
-		}
-	}
-	if !strings.HasPrefix(edge.DependsOnID, "external:") && f.find(edge.DependsOnID) == nil {
-		return issueops.AddDependenciesResult{}, &issueops.DependencyEndpointNotFoundError{
-			IssueID: edge.IssueID, DependsOnID: edge.DependsOnID, MissingID: edge.DependsOnID, Err: issueops.ErrDependencyTargetNotFound,
-		}
-	}
-	f.store.mu.Lock()
-	defer f.store.mu.Unlock()
-	for _, existing := range f.store.edges {
-		if existing.IssueID == edge.IssueID && existing.DependsOnID == edge.DependsOnID {
-			return issueops.AddDependenciesResult{}, &issueops.DependencyOccupiedError{Occupant: existing}
-		}
-	}
-	stored := &types.Dependency{
-		IssueID: edge.IssueID, DependsOnID: edge.DependsOnID, Type: edge.Type,
-		Metadata: edge.Metadata, ThreadID: edge.ThreadID, CreatedBy: req.Actor, CreatedAt: f.now().Truncate(time.Second),
-	}
-	f.store.edges = append(f.store.edges, stored)
-	return issueops.AddDependenciesResult{Added: req.Edges, StoredEdges: []*types.Dependency{stored}}, nil
-}
-
-func (f *writeRoles) RemoveDependency(_ context.Context, req issueops.RemoveDependencyRequest) (issueops.RemoveDependencyResult, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-	f.actors = append(f.actors, req.Actor)
-	f.store.mu.Lock()
-	var current *types.Dependency
-	for _, edge := range f.store.edges {
-		if edge.IssueID == req.IssueID && edge.DependsOnID == req.DependsOnID {
-			current = edge
-		}
-	}
-	f.store.mu.Unlock()
-	if current == nil {
-		return issueops.RemoveDependencyResult{Removed: false}, nil
-	}
-	if req.InTx != nil {
-		if err := req.InTx.Run(current); err != nil {
-			return issueops.RemoveDependencyResult{}, err
-		}
-	}
-	f.store.mu.Lock()
-	defer f.store.mu.Unlock()
-	f.store.edges = slices.DeleteFunc(f.store.edges, func(edge *types.Dependency) bool { return edge == current })
-	return issueops.RemoveDependencyResult{Removed: true}, nil
 }
 
 func (f *writeRoles) lastActor() string {
@@ -473,8 +414,9 @@ func TestWriteDiscovery(t *testing.T) {
 	}
 	exceptions, _ := capabilities[writeExceptionsCapability].(map[string]any)
 	detail, _ := exceptions[writeExceptionsCapabilityVersion].(map[string]any)
-	if notSupported, _ := detail["operationsNotSupported"].([]any); len(notSupported) != 1 || notSupported[0] != "updateLink" {
-		t.Errorf("discovery does not say updateLink is refused: %s", body)
+	notSupported, _ := detail["operationsNotSupported"].([]any)
+	if len(notSupported) != 3 || notSupported[0] != "createLink" || notSupported[1] != "updateLink" || notSupported[2] != "deleteLink" {
+		t.Errorf("discovery does not say the three Link writes are refused: %s", body)
 	}
 
 	resp, body = coreRequest(t, ts, http.MethodGet, coreOperationsPath, http.Header{"Accept": {bdpMediaType}})
@@ -566,8 +508,10 @@ func TestWriteAsksACredential(t *testing.T) {
 	if reply.status != http.StatusUnauthorized || reply.body["code"] != "unauthenticated" {
 		t.Fatalf("got %d %s", reply.status, reply.raw)
 	}
-	if reply := writePost(t, ts, "updateLink", `{}`); reply.status != http.StatusUnauthorized {
-		t.Fatalf("updateLink answered an anonymous caller: %d %s", reply.status, reply.raw)
+	for _, member := range writeLinkExceptions {
+		if reply := writePost(t, ts, member, `{}`); reply.status != http.StatusUnauthorized {
+			t.Fatalf("%s answered an anonymous caller: %d %s", member, reply.status, reply.raw)
+		}
 	}
 	if roles.find("wr-a") != nil {
 		t.Fatal("created")
@@ -969,7 +913,7 @@ func TestDeleteBead(t *testing.T) {
 	t.Run("IT-12 any incident Link refuses, and none is named", func(t *testing.T) {
 		seedBead(t, ts, "wr-a")
 		seedBead(t, ts, "wr-b")
-		link := writePost(t, ts, "createLink", `{"type":"`+writeBlock+`","source":"wr-a","target":"wr-b"}`).succeeded(t, writeOutcomeCreated, true)
+		seedLink(t, ts, roles, "wr-a", "wr-b")
 		for _, id := range []string{"wr-a", "wr-b"} {
 			reply := writePost(t, ts, "deleteBead", `{"bead":"`+id+`"}`)
 			reply.refused(t, bdpIncidentLinksExist)
@@ -977,12 +921,14 @@ func TestDeleteBead(t *testing.T) {
 				t.Errorf("the refusal discloses a Link: %s", reply.raw)
 			}
 		}
-		writePost(t, ts, "deleteLink", `{"link":"`+link["id"].(string)+`"}`).succeeded(t, writeOutcomeDeleted, true)
+		roles.store.mu.Lock()
+		roles.store.edges = nil
+		roles.store.mu.Unlock()
 		writePost(t, ts, "deleteBead", `{"bead":"wr-a"}`).succeeded(t, writeOutcomeDeleted, true)
 	})
 	t.Run("an external target is an incident Link too", func(t *testing.T) {
 		seedBead(t, ts, "wr-e")
-		writePost(t, ts, "createLink", `{"type":"`+writeBlock+`","source":"wr-e","target":"external:proj:cap"}`).succeeded(t, writeOutcomeCreated, true)
+		seedLink(t, ts, roles, "wr-e", "external:proj:cap")
 		writePost(t, ts, "deleteBead", `{"bead":"wr-e"}`).refused(t, bdpIncidentLinksExist)
 	})
 	t.Run("Donna's ruling: revisionProvenance is admitted, and its actor recorded", func(t *testing.T) {
@@ -1001,184 +947,77 @@ func TestDeleteBead(t *testing.T) {
 	})
 }
 
-// TestLinks is IT-6 to IT-9 and IT-15, and the projection's limits on this route.
-func TestLinks(t *testing.T) {
+// seedLink stores a live edge as `issue/dep/add` would, since Write makes none, and
+// answers its record as a read serves it.
+func seedLink(t *testing.T, ts *testServer, roles *writeRoles, source, target string) map[string]any {
+	t.Helper()
+	roles.store.mu.Lock()
+	roles.store.edges = append(roles.store.edges, &types.Dependency{
+		IssueID: source, DependsOnID: target, Type: types.DepBlocks, CreatedBy: "sam", CreatedAt: coreClock,
+	})
+	roles.store.mu.Unlock()
+	_, list := coreGetJSON(t, ts, "/"+source+"?view=links&direction=outbound")
+	items, _ := list["items"].([]any)
+	for _, item := range items {
+		record := item.(map[string]any)
+		if record["target"] == ts.base+"/"+target || record["target"] == target {
+			return record
+		}
+	}
+	t.Fatalf("no served Link %s -> %s in %v", source, target, list)
+	return nil
+}
+
+// TestLinkWritesAreExceptions: Donna's ruling, that all three wait until Links have
+// identity and revisions comparable to Beads. Each refuses, always, with the words of
+// the only unsupported-operation refusal Write has, reading neither body nor state.
+func TestLinkWritesAreExceptions(t *testing.T) {
 	ts, roles := newWriteServer(t, Config{})
 	seedBead(t, ts, "wr-a")
 	seedBead(t, ts, "wr-b")
 	seedBead(t, ts, "wr-c")
-	create := func(body string) writeReply { return writePost(t, ts, "createLink", body) }
-
-	t.Run("IT-8 the record serves the stated direction", func(t *testing.T) {
-		link := create(`{"type":"`+writeBlock+`","source":"wr-a","target":"`+ts.base+`/wr-b","properties":{"thread_id":"th"},"metadata":{"gate":"g"},"revisionProvenance":{"actor":{"id":"sam","basis":"writer-supplied"}}}`).succeeded(t, writeOutcomeCreated, true)
-		if link["source"] != ts.base+"/wr-a" || link["target"] != ts.base+"/wr-b" || link["type"] != writeBlock {
-			t.Errorf("link = %v", link)
-		}
-		properties := link["properties"].(map[string]any)
-		if properties["thread_id"] != "th" || properties["created_by"] != "sam" {
-			t.Errorf("properties = %v", properties)
-		}
-		if link["metadata"].(map[string]any)["gate"] != "g" {
-			t.Errorf("metadata = %v", link["metadata"])
-		}
-		_, read := coreGetJSON(t, ts, strings.TrimPrefix(link["id"].(string), ts.base))
-		got, _ := json.Marshal(link)
-		want, _ := json.Marshal(read)
-		if !bytes.Equal(got, want) {
-			t.Errorf("result %s\nread   %s", got, want)
-		}
-	})
-	t.Run("IT-7 an occupied pair refuses with any Type, naming the occupant", func(t *testing.T) {
-		_, list := coreGetJSON(t, ts, "/wr-a?view=links&direction=outbound")
-		occupant := list["items"].([]any)[0].(map[string]any)["id"].(string)
-		for _, kind := range []string{writeBlock, coreLinkTypeNamespace + "related"} {
-			reply := create(`{"type":"` + kind + `","source":"wr-a","target":"wr-b"}`)
-			reply.refused(t, bdpValidationFailed)
-			reply.wantDiagnostic(t, occupant)
-		}
-	})
-	t.Run("the reverse pair is a different pair", func(t *testing.T) {
-		create(`{"type":"`+writeBlock+`","source":"wr-b","target":"wr-a"}`).succeeded(t, writeOutcomeCreated, true)
-	})
-	t.Run("IT-6 a self-Link refuses", func(t *testing.T) {
-		create(`{"type":"`+writeBlock+`","source":"wr-a","target":"wr-a"}`).refused(t, bdpValidationFailed)
-		create(`{"type":"`+writeBlock+`","source":"wr-a","target":"`+ts.base+`/wr-a"}`).refused(t, bdpValidationFailed)
-	})
-	t.Run("IT-3 Types", func(t *testing.T) {
-		for _, kind := range []string{coreLinkFamily, writeTask, coreBeadFamily, coreLinkTypeNamespace + "nosuch", "https://example.invalid/r"} {
-			create(`{"type":"`+kind+`","source":"wr-a","target":"wr-c"}`).refused(t, bdpValidationFailed)
-		}
-		create(`{"type":{"uri":"`+writeBlock+`","revision":"blocks-preview-1"},"source":"wr-a","target":"wr-c"}`).refused(t, bdpValidationFailed)
-	})
-	t.Run("endpoints", func(t *testing.T) {
-		source := roles.find("wr-a")
-		for _, body := range []string{
-			`{"type":"` + writeBlock + `","source":{"uri":"wr-a","revision":"r"},"target":"wr-c"}`,
-			`{"type":"` + writeBlock + `","source":"wr-a","target":{"uri":"wr-c","revision":"r"}}`,
-			`{"type":"` + writeBlock + `","source":"external:p:c","target":"wr-c"}`,
-			`{"type":"` + writeBlock + `","source":"https://elsewhere.invalid/x","target":"wr-c"}`,
-			`{"type":"` + writeBlock + `","source":"wr-a","target":"https://elsewhere.invalid/x"}`,
-			`{"type":"` + writeBlock + `","source":"wr-a","target":"beads-id:wr-c"}`,
-			`{"type":"` + writeBlock + `","source":"` + coreLinkID("wr-a", "wr-b", coreClock) + `","target":"wr-c"}`,
-			`{"type":"` + writeBlock + `","source":"wr-a","target":"` + coreLinkID("wr-a", "wr-b", coreClock) + `"}`,
-		} {
-			create(body).refused(t, bdpValidationFailed)
-		}
-		for _, body := range []string{
-			`{"type":"` + writeBlock + `","source":"wr-none","target":"wr-c"}`,
-			`{"type":"` + writeBlock + `","source":"wr-a","target":"wr-none"}`,
-			`{"type":"` + writeBlock + `","source":"wr-a","target":"other-prefix-1"}`,
-		} {
-			create(body).refused(t, bdpResourceNotFound)
-		}
-		for _, body := range []string{
-			`{"type":"` + writeBlock + `","source":3,"target":"wr-c"}`,
-			`{"type":"` + writeBlock + `","source":"@x","target":"wr-c"}`,
-			`{"type":"` + writeBlock + `","source":{"uri":"wr-a"},"target":"wr-c"}`,
-			`{"type":"` + writeBlock + `","target":"wr-c"}`,
-		} {
-			create(body).refused(t, bdpMalformedRequest)
-		}
-		if source.ID != "wr-a" {
-			t.Fatal("unreachable")
-		}
-	})
-	t.Run("properties", func(t *testing.T) {
-		for _, properties := range []string{`{"created_at":"2026-01-01T00:00:00Z"}`, `{"created_by":"x"}`, `{"dep_type":"blocks"}`, `{"label":"x"}`, `{"thread_id":3}`} {
-			create(`{"type":"`+writeBlock+`","source":"wr-a","target":"wr-c","properties":`+properties+`}`).refused(t, bdpValidationFailed)
-		}
-	})
-	t.Run("IT-15 an external target is the opaque URI", func(t *testing.T) {
-		link := create(`{"type":"`+writeBlock+`","source":"wr-c","target":"external:proj:cap"}`).succeeded(t, writeOutcomeCreated, true)
-		if link["target"] != "external:proj:cap" {
-			t.Errorf("target = %v", link["target"])
-		}
-		_, list := coreGetJSON(t, ts, "/wr-c?view=links&direction=outbound")
-		if items := list["items"].([]any); len(items) != 1 || items[0].(map[string]any)["target"] != "external:proj:cap" {
-			t.Errorf("incident = %v", list)
-		}
-	})
-	t.Run("IT-9 remove and add gives a new identity, and the old one stays taken", func(t *testing.T) {
-		clock := coreClock
-		roles.mu.Lock()
-		roles.now = func() time.Time { return clock }
-		roles.mu.Unlock()
-		seedBead(t, ts, "wr-d")
-		seedBead(t, ts, "wr-e")
-		first := create(`{"type":"`+writeBlock+`","source":"wr-d","target":"wr-e","metadata":{"v":1}}`).succeeded(t, writeOutcomeCreated, true)
-		reply := writePost(t, ts, "deleteLink", `{"link":"`+first["id"].(string)+`","expectedRevision":"`+recordRevision(t, first)+`"}`)
-		reply.succeeded(t, writeOutcomeDeleted, true)
-		name := reply.body["deleted"].(map[string]any)["resource"].(map[string]any)
-		if reply.body["deleted"].(map[string]any)["resourceKind"] != "link" || name["id"] != first["id"] || name["revision"] != first["revision"] || name["type"] != writeBlock {
-			t.Errorf("deleted = %v", reply.body["deleted"])
-		}
-		resp, body := coreRequest(t, ts, http.MethodGet, strings.TrimPrefix(first["id"].(string), ts.base), nil)
-		wantCoreProblem(t, resp, body, coreCodeNotFound)
-		writePost(t, ts, "deleteLink", `{"link":"`+first["id"].(string)+`"}`).refused(t, bdpResourceNotFound)
-
-		clock = clock.Add(time.Second)
-		second := create(`{"type":"`+writeBlock+`","source":"wr-d","target":"wr-e","metadata":{"v":2}}`).succeeded(t, writeOutcomeCreated, true)
-		if second["id"] == first["id"] {
-			t.Errorf("the pair's next Link took the old identity %v", first["id"])
-		}
-		create(`{"id":"`+first["id"].(string)+`","type":"`+writeBlock+`","source":"wr-d","target":"wr-e"}`).refused(t, bdpIdentityTaken)
-	})
-	t.Run("a supplied identity is the allocator's to give", func(t *testing.T) {
-		create(`{"id":"my-link","type":"`+writeBlock+`","source":"wr-a","target":"wr-c"}`).refused(t, bdpValidationFailed)
-		create(`{"id":"`+coreLinkID("wr-a", "wr-c", coreClock)+`","type":"`+writeBlock+`","source":"wr-a","target":"wr-c"}`).refused(t, bdpIdentityTaken)
-		create(`{"id":"a//b","type":"`+writeBlock+`","source":"wr-a","target":"wr-c"}`).refused(t, bdpMalformedRequest)
-	})
-	t.Run("a Link deleted in its creation second holds past it", func(t *testing.T) {
-		roles.mu.Lock()
-		roles.now = time.Now
-		roles.mu.Unlock()
-		seedBead(t, ts, "wr-f")
-		seedBead(t, ts, "wr-g")
-		first := create(`{"type":"`+writeBlock+`","source":"wr-f","target":"wr-g"}`).succeeded(t, writeOutcomeCreated, true)
-		writePost(t, ts, "deleteLink", `{"link":"`+first["id"].(string)+`"}`).succeeded(t, writeOutcomeDeleted, true)
-		second := create(`{"type":"`+writeBlock+`","source":"wr-f","target":"wr-g"}`).succeeded(t, writeOutcomeCreated, true)
-		if second["id"] == first["id"] {
-			t.Errorf("reused %v", first["id"])
-		}
-		roles.mu.Lock()
-		roles.now = func() time.Time { return coreClock }
-		roles.mu.Unlock()
-	})
-	t.Run("deleteLink's guard and subject", func(t *testing.T) {
-		link := create(`{"type":"`+writeBlock+`","source":"wr-a","target":"wr-c"}`).succeeded(t, writeOutcomeCreated, true)
-		writePost(t, ts, "deleteLink", `{"link":"`+link["id"].(string)+`","expectedRevision":"nope"}`).refused(t, bdpRevisionMismatch)
-		writePost(t, ts, "deleteLink", `{"link":"`+link["id"].(string)+`","revisionProvenance":{"agent":"x"}}`).refused(t, bdpValidationFailed)
-		writePost(t, ts, "deleteLink", `{"link":"wr-a"}`).refused(t, bdpResourceNotFound)
-		writePost(t, ts, "deleteLink", `{"link":"`+coreLinkID("wr-a", "wr-c", coreClock.Add(time.Hour))+`"}`).refused(t, bdpResourceNotFound)
-		writePost(t, ts, "deleteLink", `{"link":"`+link["id"].(string)+`"}`).succeeded(t, writeOutcomeDeleted, true)
-	})
-}
-
-// TestUpdateLinkIsAnException: Donna's ruling. It refuses, always, with the words of
-// the only unsupported-operation refusal Write has, reading neither body nor state.
-func TestUpdateLinkIsAnException(t *testing.T) {
-	ts, roles := newWriteServer(t, Config{})
-	seedBead(t, ts, "wr-a")
-	seedBead(t, ts, "wr-b")
-	link := writePost(t, ts, "createLink", `{"type":"`+writeBlock+`","source":"wr-a","target":"wr-b"}`).succeeded(t, writeOutcomeCreated, true)
-	for _, body := range []string{
-		`{"link":"` + link["id"].(string) + `","metadata":{"m":1}}`,
-		`{"link":"no-such"}`,
-		`not json at all`,
-	} {
-		reply := writePost(t, ts, "updateLink", body)
-		reply.refused(t, bdpOperationNotSupported)
-		if reply.body["operation"] != "updateLink" {
-			t.Errorf("problem = %s", reply.raw)
-		}
+	link := seedLink(t, ts, roles, "wr-a", "wr-b")
+	id := link["id"].(string)
+	bodies := map[string][]string{
+		"createLink": {
+			`{"type":"` + writeBlock + `","source":"wr-a","target":"wr-c"}`,
+			`{"type":"` + writeBlock + `","source":"wr-a","target":"wr-b"}`,
+			`{"type":"` + writeBlock + `","source":"wr-a","target":"wr-a"}`,
+			`{"type":"` + writeBlock + `","source":"no-such","target":"wr-c"}`,
+		},
+		"updateLink": {`{"link":"` + id + `","metadata":{"m":1}}`, `{"link":"no-such"}`},
+		"deleteLink": {`{"link":"` + id + `"}`, `{"link":"` + id + `","expectedRevision":"` + recordRevision(t, link) + `"}`, `{"link":"no-such"}`},
 	}
-	writePostAs(t, ts, "updateLink", `{}`, http.Header{"Content-Type": {"application/json"}}).refused(t, bdpUnsupportedMedia)
-	_, read := coreGetJSON(t, ts, strings.TrimPrefix(link["id"].(string), ts.base))
+	// A store that cannot answer shows the refusal asks it nothing.
+	roles.store.mu.Lock()
+	roles.store.getErr = errors.New("the store was read")
+	roles.store.mu.Unlock()
+	for member, sent := range bodies {
+		t.Run(member, func(t *testing.T) {
+			for _, body := range append(sent, `not json at all`, `{}`, strings.Repeat("x", writeBodyBytes+1)) {
+				reply := writePost(t, ts, member, body)
+				reply.refused(t, bdpOperationNotSupported)
+				if reply.status != http.StatusUnprocessableEntity || reply.body["operation"] != member {
+					t.Errorf("problem = %d %s", reply.status, reply.raw)
+				}
+				detail, _ := reply.body["detail"].(string)
+				if !strings.Contains(detail, member) || strings.Contains(detail, "Delete the Link") {
+					t.Errorf("the refusal's words are not true of %s: %s", member, reply.raw)
+				}
+			}
+			writePostAs(t, ts, member, `{}`, http.Header{"Content-Type": {"application/json"}}).refused(t, bdpUnsupportedMedia)
+		})
+	}
+	roles.store.mu.Lock()
+	roles.store.getErr = nil
+	edges := len(roles.store.edges)
+	roles.store.mu.Unlock()
+	if edges != 1 {
+		t.Fatalf("edges = %d, want the one seeded", edges)
+	}
+	_, read := coreGetJSON(t, ts, strings.TrimPrefix(id, ts.base))
 	if read["revision"] != link["revision"] {
 		t.Error("the Link moved")
-	}
-	if len(roles.store.edges) != 1 {
-		t.Fatalf("edges = %d", len(roles.store.edges))
 	}
 }
 

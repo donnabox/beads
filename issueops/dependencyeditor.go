@@ -45,10 +45,6 @@ type DependencyEdge struct {
 	// value at all — non-empty, within the column's length — and NEVER for
 	// membership of the constants above, which name an open set.
 	Type DependencyType
-	// Metadata and ThreadID are stored on the row when set. Empty is what every
-	// caller that predates them sends, and the row's defaults stand.
-	Metadata string
-	ThreadID string
 }
 
 // AddDependenciesRequest describes one set of edges asserted together.
@@ -76,13 +72,6 @@ type AddDependenciesRequest struct {
 	// self-dependency refusal: an edge that points an issue at itself is
 	// refused with or without it.
 	SkipPerEdgeCycleCheck bool
-	// Exact asks for the edge as stated or a refusal, inside the transaction. An
-	// edge on a pair that already holds one of ANY type is refused with
-	// *DependencyOccupiedError rather than answered as an idempotent re-add. A
-	// target that is not "external:" must name a row, whatever its prefix, rather
-	// than be taken for another repository's: *DependencyEndpointNotFoundError.
-	// AddDependenciesResult.StoredEdges then carries the rows as stored.
-	Exact bool
 }
 
 // AddDependenciesResult reports the edges that landed.
@@ -93,9 +82,6 @@ type AddDependenciesResult struct {
 	// caller reporting what landed reads the RESULT, and never has to know
 	// which of the two it is safe to read.
 	Added []DependencyEdge
-	// StoredEdges is the rows as this request's transaction stored them, in
-	// request order, when the request set Exact, and nil otherwise.
-	StoredEdges []*Dependency
 }
 
 // RemoveDependencyRequest describes the removal of one edge.
@@ -107,15 +93,6 @@ type RemoveDependencyRequest struct {
 	// IssueID and DependsOnID name the edge exactly. Neither may be empty.
 	IssueID     string
 	DependsOnID string
-	// InTx is UpdateRequest.InTx's check, over the edge as this removal's own
-	// transaction reads it. An absent edge is Removed: false without calling it. It
-	// is held by pointer so that this request stays comparable.
-	InTx *EdgeCheck
-}
-
-// EdgeCheck is RowCheck for an edge.
-type EdgeCheck struct {
-	Run func(current *Dependency) error
 }
 
 // RemoveDependencyResult reports what the removal found.

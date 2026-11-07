@@ -204,8 +204,6 @@ var (
 	tyReopenRequest = reflect.TypeOf(issueops.ReopenRequest{})
 	tyDeleteRequest = reflect.TypeOf(issueops.DeleteRequest{})
 	tyAddDeps       = reflect.TypeOf(issueops.AddDependenciesRequest{})
-	tyRemoveDep     = reflect.TypeOf(issueops.RemoveDependencyRequest{})
-	tyDepEdge       = reflect.TypeOf(issueops.DependencyEdge{})
 	tyIssuePatch    = reflect.TypeOf(issueops.IssuePatch{})
 
 	tyCreateRequest   = reflect.TypeOf(issueops.CreateRequest{})
@@ -708,38 +706,6 @@ func writeSideRows() []Row {
 			What:     "a check run inside the reopen's transaction refuses",
 			Why:      "W-UpdateRequest.InTx's reason: there is no wire on which to send code, and dropping a guard is what a caller cannot find out afterwards",
 			SpecRow:  updateSpec,
-			PinnedBy: pinnedByS3Conformance,
-		},
-		{
-			ID: "W-AddDependenciesRequest.Exact", Kind: KindRefuse,
-			Type: tyAddDeps, Field: "Exact",
-			What:     "asking for an edge exactly as stated refuses",
-			Why:      "addDependencies publishes no such member, and dropping it would answer a same-type re-add as a success the caller asked to be refused",
-			SpecRow:  "D8 refuse-not-drop",
-			PinnedBy: pinnedByS3Conformance,
-		},
-		{
-			ID: "W-RemoveDependencyRequest.InTx", Kind: KindRefuse,
-			Type: tyRemoveDep, Field: "InTx",
-			What:     "a check run inside an edge removal's transaction refuses",
-			Why:      "W-UpdateRequest.InTx's reason: there is no wire on which to send code, and dropping a guard is what a caller cannot find out afterwards",
-			SpecRow:  "D8 refuse-not-drop",
-			PinnedBy: pinnedByS3Conformance,
-		},
-		{
-			ID: "W-DependencyEdge.Metadata", Kind: KindRefuse,
-			Type: tyDepEdge, Field: "Metadata",
-			What:     "an edge's metadata refuses",
-			Why:      "addDependencies publishes no such member on an edge, and dropping it would store an edge without what the caller asked to put on it",
-			SpecRow:  "D8 refuse-not-drop",
-			PinnedBy: pinnedByS3Conformance,
-		},
-		{
-			ID: "W-DependencyEdge.ThreadID", Kind: KindRefuse,
-			Type: tyDepEdge, Field: "ThreadID",
-			What:     "an edge's thread refuses",
-			Why:      "addDependencies publishes no such member on an edge, and dropping it would store an edge without what the caller asked to put on it",
-			SpecRow:  "D8 refuse-not-drop",
 			PinnedBy: pinnedByS3Conformance,
 		},
 		{

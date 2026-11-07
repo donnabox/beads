@@ -131,8 +131,6 @@ type callableDiagnostic struct {
 	InstanceLocation string `json:"instanceLocation,omitempty"`
 	// Document says a failure is in metadata; omitted means properties (Write).
 	Document string `json:"document,omitempty"`
-	// Reason is Issue §4.4's `dependency-cycle`.
-	Reason string `json:"reason,omitempty"`
 }
 
 func newCallableProblem(code, detail string) *callableProblem {

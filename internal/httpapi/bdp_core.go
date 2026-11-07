@@ -353,8 +353,8 @@ type coreSelectorLimits struct {
 // The profile is `write` and Callables is advertised beside it. What this Scope does
 // not offer is said by absence, which Write gives its meaning: no `aliases`, so no alias
 // operations; no idempotency capability, so a repeat runs under the ordinary rules; no
-// atomic batch, rooted allocation, historical update or Events. The one thing the
-// directory must list and cannot serve, `updateLink`, has its own entry.
+// atomic batch, rooted allocation, historical update or Events. What the directory must
+// list and this Scope does not serve, the three Link writes, has its own entry.
 func (s *Server) serveCoreDiscovery(w http.ResponseWriter, r *http.Request) {
 	if len(r.URL.RawQuery) != 0 {
 		writeCoreProblem(w, r, coreCodeInvalidParameter, "discovery takes no query parameters")
@@ -383,7 +383,7 @@ func (s *Server) serveCoreDiscovery(w http.ResponseWriter, r *http.Request) {
 		Capabilities: map[string]map[string]map[string]any{
 			callablesCapability: {callablesCapabilityVersion: {}},
 			writeExceptionsCapability: {writeExceptionsCapabilityVersion: {
-				"operationsNotSupported": []string{"updateLink"},
+				"operationsNotSupported": writeLinkExceptions,
 			}},
 		},
 	})

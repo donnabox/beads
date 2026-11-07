@@ -261,45 +261,20 @@ func TestGuardComparedInsideTheWrite(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	exact := func(source, target string, kind types.DependencyType) (publicops.AddDependenciesResult, error) {
-		return editor.AddDependencies(ctx, publicops.AddDependenciesRequest{
-			Actor: "linker", Exact: true,
-			Edges: []publicops.DependencyEdge{{IssueID: source, DependsOnID: target, Type: kind, Metadata: `{"gate":"g"}`, ThreadID: "th"}},
-		})
-	}
-
-	t.Run("an exact edge is stored as stated, or refused", func(t *testing.T) {
+	t.Run("a delete can refuse over any incident edge", func(t *testing.T) {
 		seed(t, "grd-a")
 		seed(t, "grd-b")
-		added, err := exact("grd-a", "grd-b", types.DepBlocks)
-		if err != nil {
+		seed(t, "grd-ext")
+		if _, err := editor.AddDependencies(ctx, publicops.AddDependenciesRequest{
+			Actor: "linker",
+			Edges: []publicops.DependencyEdge{
+				{IssueID: "grd-a", DependsOnID: "grd-b", Type: types.DepBlocks},
+				{IssueID: "grd-ext", DependsOnID: "external:proj:cap", Type: types.DepBlocks},
+			},
+		}); err != nil {
 			t.Fatal(err)
 		}
-		if len(added.StoredEdges) != 1 {
-			t.Fatalf("stored = %+v", added.StoredEdges)
-		}
-		stored := added.StoredEdges[0]
-		if stored.Metadata != `{"gate":"g"}` || stored.ThreadID != "th" || stored.CreatedBy != "linker" || stored.CreatedAt.IsZero() {
-			t.Errorf("stored = %+v", stored)
-		}
-		for _, kind := range []types.DependencyType{types.DepBlocks, types.DepRelated} {
-			var occupied *publicops.DependencyOccupiedError
-			if _, err := exact("grd-a", "grd-b", kind); !errors.As(err, &occupied) || occupied.Occupant == nil || occupied.Occupant.Type != types.DepBlocks {
-				t.Errorf("%s on an occupied pair = %v", kind, err)
-			}
-		}
-		// A target of another prefix would otherwise be taken for another repository's.
-		var missing *publicops.DependencyEndpointNotFoundError
-		if _, err := exact("grd-a", "other-1", types.DepBlocks); !errors.As(err, &missing) || missing.MissingID != "other-1" {
-			t.Errorf("a target naming no row = %v", err)
-		}
-		if _, err := exact("grd-a", "external:proj:cap", types.DepBlocks); err != nil {
-			t.Errorf("an external target = %v", err)
-		}
-	})
-
-	t.Run("a delete can refuse over any incident edge", func(t *testing.T) {
-		for _, id := range []string{"grd-a", "grd-b"} {
+		for _, id := range []string{"grd-a", "grd-b", "grd-ext"} {
 			var incident *publicops.IncidentEdgesError
 			if _, err := deleter.Delete(ctx, publicops.DeleteRequest{Actor: "x", IDs: []string{id}, RefuseIncidentEdges: true, Force: true}); !errors.As(err, &incident) {
 				t.Errorf("delete %s = %v", id, err)
@@ -308,32 +283,6 @@ func TestGuardComparedInsideTheWrite(t *testing.T) {
 		seed(t, "grd-free")
 		if _, err := deleter.Delete(ctx, publicops.DeleteRequest{Actor: "x", IDs: []string{"grd-free"}, RefuseIncidentEdges: true}); err != nil {
 			t.Errorf("delete with no edge = %v", err)
-		}
-	})
-
-	t.Run("a guarded removal reads the edge in its transaction", func(t *testing.T) {
-		wantErr := errors.New("stale")
-		var seen *types.Dependency
-		_, err := editor.RemoveDependency(ctx, publicops.RemoveDependencyRequest{
-			Actor: "x", IssueID: "grd-a", DependsOnID: "grd-b",
-			InTx: &publicops.EdgeCheck{Run: func(current *types.Dependency) error { seen = current; return wantErr }},
-		})
-		if !errors.Is(err, wantErr) || seen == nil || seen.Metadata != `{"gate":"g"}` {
-			t.Fatalf("removal = %v, saw %+v", err, seen)
-		}
-		removed, err := editor.RemoveDependency(ctx, publicops.RemoveDependencyRequest{
-			Actor: "x", IssueID: "grd-a", DependsOnID: "grd-b",
-			InTx: &publicops.EdgeCheck{Run: func(*types.Dependency) error { return nil }},
-		})
-		if err != nil || !removed.Removed {
-			t.Fatalf("removal = %+v, %v", removed, err)
-		}
-		removed, err = editor.RemoveDependency(ctx, publicops.RemoveDependencyRequest{
-			Actor: "x", IssueID: "grd-a", DependsOnID: "grd-b",
-			InTx: &publicops.EdgeCheck{Run: func(*types.Dependency) error { t.Error("called on an absent edge"); return nil }},
-		})
-		if err != nil || removed.Removed {
-			t.Fatalf("second removal = %+v, %v", removed, err)
 		}
 	})
 

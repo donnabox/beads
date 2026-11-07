@@ -112,47 +112,19 @@ func TestGuardHooksOnTheStoreLeg(t *testing.T) {
 		}
 	})
 
-	t.Run("edges", func(t *testing.T) {
+	t.Run("incident edges", func(t *testing.T) {
 		a, b := seed(t), seed(t)
-		exact := func(target string, kind types.DependencyType) (publicops.AddDependenciesResult, error) {
-			return editor.AddDependencies(ctx, publicops.AddDependenciesRequest{
-				Actor: "linker", Exact: true,
-				Edges: []publicops.DependencyEdge{{IssueID: a.ID, DependsOnID: target, Type: kind, Metadata: `{"gate":"g"}`, ThreadID: "th"}},
-			})
-		}
-		added, err := exact(b.ID, types.DepBlocks)
-		if err != nil {
+		if _, err := editor.AddDependencies(ctx, publicops.AddDependenciesRequest{
+			Actor: "linker",
+			Edges: []publicops.DependencyEdge{{IssueID: a.ID, DependsOnID: b.ID, Type: types.DepBlocks}},
+		}); err != nil {
 			t.Fatal(err)
-		}
-		if len(added.StoredEdges) != 1 || added.StoredEdges[0].Metadata != `{"gate":"g"}` || added.StoredEdges[0].ThreadID != "th" {
-			t.Fatalf("stored = %+v", added.StoredEdges)
-		}
-		var occupied *publicops.DependencyOccupiedError
-		if _, err := exact(b.ID, types.DepRelated); !errors.As(err, &occupied) {
-			t.Errorf("an occupied pair = %v", err)
-		}
-		var missing *publicops.DependencyEndpointNotFoundError
-		if _, err := exact("other-1", types.DepBlocks); !errors.As(err, &missing) {
-			t.Errorf("a target naming no row = %v", err)
 		}
 		for _, id := range []string{a.ID, b.ID} {
 			var incident *publicops.IncidentEdgesError
 			if _, err := deleter.Delete(ctx, publicops.DeleteRequest{Actor: "x", IDs: []string{id}, RefuseIncidentEdges: true, Force: true}); !errors.As(err, &incident) {
 				t.Errorf("delete %s = %v", id, err)
 			}
-		}
-		if _, err := editor.RemoveDependency(ctx, publicops.RemoveDependencyRequest{
-			Actor: "x", IssueID: a.ID, DependsOnID: b.ID,
-			InTx: &publicops.EdgeCheck{Run: func(*types.Dependency) error { return stale }},
-		}); !errors.Is(err, stale) {
-			t.Fatalf("removal refusal = %v", err)
-		}
-		removed, err := editor.RemoveDependency(ctx, publicops.RemoveDependencyRequest{
-			Actor: "x", IssueID: a.ID, DependsOnID: b.ID,
-			InTx: &publicops.EdgeCheck{Run: func(*types.Dependency) error { return nil }},
-		})
-		if err != nil || !removed.Removed {
-			t.Fatalf("removal = %+v, %v", removed, err)
 		}
 	})
 
