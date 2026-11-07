@@ -35,6 +35,7 @@ go_test(
         "e2e_blocked_test.go",
         "e2e_cli_test.go",
         "e2e_export_test.go",
+        "e2e_gaps_over_connect_test.go",
         "e2e_gates_test.go",
         "e2e_heartbeat_test.go",
         "e2e_link_test.go",
@@ -73,6 +74,7 @@ go_test(
         "//internal/storage/issueops",
         "//internal/testutil/bazeltest",
         "//internal/testutil/legacyworkspace",
+        "//internal/ui",
     ],
 )
 
