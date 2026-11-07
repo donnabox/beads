@@ -1,20 +1,32 @@
 {
   "bead": {
     "type": "https://github.com/gastownhall/bdp/types/issue/task",
-    "id": "sw-kit{unique}",
+    "id": "service-allocated",
     "create": {
-      "properties": { "title": "kit original", "status": "open", "priority": 2 },
-      "metadata": { "source": "provider-kit" }
+      "properties": {
+        "title": "kit original",
+        "status": "open",
+        "priority": 2
+      },
+      "metadata": {
+        "source": "provider-kit"
+      }
     },
     "update": {
-      "properties": { "title": "kit updated", "status": "open", "priority": 2 }
+      "properties": {
+        "title": "kit updated",
+        "status": "open",
+        "priority": 2
+      }
     }
   },
   "link": {
     "type": "https://github.com/gastownhall/bdp/types/dependency/blocks",
     "id": "service-allocated",
     "properties": {},
-    "metadata": { "source": "provider-kit" }
+    "metadata": {
+      "source": "provider-kit"
+    }
   },
   "excepted": {
     "write.link-update": "updateLink is not implemented on bd serve and refuses 422 operation-not-supported, by Donna's ruling: it waits for a durable Link identity",
