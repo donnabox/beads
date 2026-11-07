@@ -17,7 +17,7 @@ import (
 )
 
 // The Write surface of the Beads Protocol, for the Issue and Dependency Types: the
-// operation directory and the six targets it lists. See
+// six operations at Core's fixed bdp/operations/NAME. See
 // specs/profiles/write/write.md and specs/types/issue/issue.md.
 //
 // Like Core it holds no storage. It runs on the roles the Callables run on, one role
@@ -27,13 +27,12 @@ import (
 // inside that write's transaction, through the role's InTx hook.
 //
 // THE LINK WRITES ARE NOT IMPLEMENTED, by Donna's ruling: `createLink`, `updateLink` and
-// `deleteLink` wait until Links have identity and revisions comparable to Beads. The
-// directory must list them (Write: "the six Resource members always"), so they are
-// listed, answer operation-not-supported, and discovery says so.
+// `deleteLink` wait until Links have identity and revisions comparable to Beads. Write
+// has the six Resource operations always, so they are mounted, answer
+// operation-not-supported, and discovery says so.
 const (
 	coreOperationsPath = "/bdp/operations"
 
-	opWriteDirectory  = "writeDirectory"
 	opWriteCreateBead = "writeCreateBead"
 	opWriteUpdateBead = "writeUpdateBead"
 	opWriteDeleteBead = "writeDeleteBead"
@@ -62,7 +61,7 @@ const (
 	writeExceptionsCapabilityVersion = "1"
 )
 
-// writeLinkExceptions are the directory members this Scope lists and does not serve.
+// writeLinkExceptions are the operations this Scope mounts and does not serve.
 var writeLinkExceptions = []string{"createLink", "updateLink", "deleteLink"}
 
 // writeLinkExceptionDetail says why, and what changes a Link in the meantime.
@@ -106,7 +105,7 @@ type writeCall struct {
 	members map[string]json.RawMessage
 }
 
-// writeOperationTargets are the directory's six members, in the order Write lists
+// writeOperationTargets are Write's six Resource operations, in the order Write lists
 // them, with the local name each is served at.
 func (s *Server) writeOperationTargets() []struct {
 	member, op string
@@ -125,42 +124,15 @@ func (s *Server) writeOperationTargets() []struct {
 	}
 }
 
-// mountWrite registers the directory and its targets beside Core's routes. The rest
-// of bdp/operations/ stays the catch-all's uniform 404.
+// mountWrite registers the six operations at their fixed routes beside Core's. Write
+// retired its operation directory, so bdp/operations itself, like the rest of
+// bdp/operations/, is an absent path: the bdp/ catch-all's uniform 404.
 func (s *Server) mountWrite(mux *http.ServeMux) {
-	mux.Handle("GET "+coreOperationsPath, s.coreGate(opWriteDirectory, true, s.serveWriteDirectory))
-	mux.HandleFunc(coreOperationsPath, func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Allow", "GET, HEAD")
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	})
 	for _, target := range s.writeOperationTargets() {
 		path := coreOperationsPath + "/" + target.member
 		mux.Handle(http.MethodPost+" "+path, s.coreGate(target.op, false, target.serve))
 		mux.Handle(path, methodNotAllowed(http.MethodPost))
 	}
-}
-
-// serveWriteDirectory answers GET of the directory. Like discovery it is the
-// addresses the caller used and constants of this build, so it asks no credential.
-func (s *Server) serveWriteDirectory(w http.ResponseWriter, r *http.Request) {
-	if len(r.URL.RawQuery) != 0 {
-		writeCoreProblem(w, r, coreCodeInvalidParameter, "the operation directory takes no query parameters")
-		return
-	}
-	if !writeAccepts(r) {
-		w.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-	scope := coreScope(r)
-	setCoreNavigation(w.Header(), scope)
-	if coreNotModified(w, r, "") {
-		return
-	}
-	directory := map[string]string{}
-	for _, target := range s.writeOperationTargets() {
-		directory[target.member] = scope + strings.TrimPrefix(coreOperationsPath, "/") + "/" + target.member
-	}
-	writeCoreJSON(w, directory)
 }
 
 // serveLinkException is Donna's exception, for each Link write. It reads no body and

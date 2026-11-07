@@ -386,8 +386,8 @@ func TestWriteIsNotOnV0(t *testing.T) {
 	}
 }
 
-// TestWriteDiscovery pins the advertisement: Write, its directory of six, and what is
-// not offered.
+// TestWriteDiscovery pins the advertisement: Write, what is not offered, and no
+// navigation member, because Core fixes every route (bdp/operations/NAME).
 func TestWriteDiscovery(t *testing.T) {
 	ts := newBDPServer(t, Config{Auth: authTokenFile(t, "real-token")})
 	resp, body := coreRequest(t, ts, http.MethodGet, "/bdp", http.Header{"Accept": {bdpMediaType}})
@@ -398,10 +398,10 @@ func TestWriteDiscovery(t *testing.T) {
 	if err := json.Unmarshal(body, &doc); err != nil {
 		t.Fatal(err)
 	}
-	if doc["profile"] != "write" || doc["operations"] != ts.base+coreOperationsPath {
+	if doc["profile"] != "write" {
 		t.Errorf("discovery = %s", body)
 	}
-	for _, absent := range []string{"aliases", "events", "historicalResolution", "beads", "links"} {
+	for _, absent := range []string{"operations", "aliases", "events", "historicalResolution", "beads", "links"} {
 		if _, has := doc[absent]; has {
 			t.Errorf("discovery advertises %s: %s", absent, body)
 		}
@@ -419,34 +419,30 @@ func TestWriteDiscovery(t *testing.T) {
 		t.Errorf("discovery does not say the three Link writes are refused: %s", body)
 	}
 
-	resp, body = coreRequest(t, ts, http.MethodGet, coreOperationsPath, http.Header{"Accept": {bdpMediaType}})
-	if resp.StatusCode != http.StatusOK || resp.Header.Get("Content-Type") != bdpMediaType {
-		t.Fatalf("GET directory = %d %q: %s", resp.StatusCode, resp.Header.Get("Content-Type"), body)
-	}
-	var directory map[string]string
-	if err := json.Unmarshal(body, &directory); err != nil {
-		t.Fatal(err)
-	}
-	want := []string{"createBead", "updateBead", "deleteBead", "createLink", "updateLink", "deleteLink"}
-	seen := map[string]bool{}
-	for _, member := range want {
-		if !strings.HasPrefix(directory[member], ts.base+"/") {
-			t.Errorf("%s = %q", member, directory[member])
+	// The retired directory is an absent path under bdp/, answered as any other is.
+	baseline, baselineBody := coreRequest(t, ts, http.MethodGet, "/bdp/nothing", http.Header{"Accept": {bdpMediaType}})
+	wantCoreProblem(t, baseline, baselineBody, coreCodeNotFound)
+	for _, method := range []string{http.MethodGet, http.MethodHead, http.MethodPost} {
+		resp, body = coreRequest(t, ts, method, coreOperationsPath, http.Header{"Accept": {bdpMediaType}})
+		if resp.StatusCode != baseline.StatusCode || resp.Header.Get("Allow") != "" {
+			t.Errorf("%s %s = %d, Allow %q; want the absent path's %d", method, coreOperationsPath, resp.StatusCode, resp.Header.Get("Allow"), baseline.StatusCode)
 		}
-		seen[directory[member]] = true
-	}
-	if len(directory) != len(want) || len(seen) != len(want) {
-		t.Errorf("directory is not six distinct members: %s", body)
+		if method == http.MethodGet {
+			wantCoreProblem(t, resp, body, coreCodeNotFound)
+		}
 	}
 
-	resp, _ = coreRequest(t, ts, http.MethodPost, coreOperationsPath, nil)
-	if resp.StatusCode != http.StatusMethodNotAllowed || resp.Header.Get("Allow") != "GET, HEAD" {
-		t.Errorf("POST directory = %d, Allow %q", resp.StatusCode, resp.Header.Get("Allow"))
-	}
+	want := []string{"createBead", "updateBead", "deleteBead", "createLink", "updateLink", "deleteLink"}
 	for _, member := range want {
 		resp, body = coreRequest(t, ts, http.MethodGet, coreOperationsPath+"/"+member, nil)
 		if resp.StatusCode != http.StatusMethodNotAllowed || resp.Header.Get("Allow") != "POST" || len(body) != 0 {
 			t.Errorf("GET %s = %d, Allow %q, %d bytes; want a bodyless 405", member, resp.StatusCode, resp.Header.Get("Allow"), len(body))
+		}
+	}
+	for _, absent := range []string{"putAlias", "deleteAlias", "atomicBatch"} {
+		resp, body = coreRequest(t, ts, http.MethodPost, coreOperationsPath+"/"+absent, nil)
+		if resp.StatusCode != baseline.StatusCode {
+			t.Errorf("POST %s = %d: %s; want the absent path's %d", absent, resp.StatusCode, body, baseline.StatusCode)
 		}
 	}
 }

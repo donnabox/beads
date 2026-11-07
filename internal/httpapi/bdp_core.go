@@ -322,7 +322,6 @@ type coreDiscovery struct {
 	Profile      string                               `json:"profile"`
 	Scope        string                               `json:"scope"`
 	SpecRevision string                               `json:"specRevision"`
-	Operations   string                               `json:"operations"`
 	Order        string                               `json:"order"`
 	Limits       coreDiscoveryLimits                  `json:"limits"`
 	Capabilities map[string]map[string]map[string]any `json:"capabilities"`
@@ -352,8 +351,9 @@ type coreSelectorLimits struct {
 // The profile is `write` and Callables is advertised beside it. What this Scope does
 // not offer is said by absence, which Write gives its meaning: no `aliases`, so no alias
 // operations; no idempotency capability, so a repeat runs under the ordinary rules; no
-// atomic batch, rooted allocation, historical update or Events. What the directory must
-// list and this Scope does not serve, the three Link writes, has its own entry.
+// atomic batch, rooted allocation, historical update or Events. Write's operations sit
+// at Core's fixed bdp/operations/NAME, so discovery names none of them; the three Link
+// writes, which this Scope mounts and does not serve, have their own entry.
 func (s *Server) serveCoreDiscovery(w http.ResponseWriter, r *http.Request) {
 	if len(r.URL.RawQuery) != 0 {
 		writeCoreProblem(w, r, coreCodeInvalidParameter, "discovery takes no query parameters")
@@ -373,7 +373,6 @@ func (s *Server) serveCoreDiscovery(w http.ResponseWriter, r *http.Request) {
 		Profile:      coreProfile,
 		Scope:        scope,
 		SpecRevision: coreSpecRevision,
-		Operations:   scope + strings.TrimPrefix(coreOperationsPath, "/"),
 		Order:        coreOrder,
 		Limits: coreDiscoveryLimits{
 			Page:     corePageLimits{DefaultItems: corePageDefaultItems, MaximumItems: corePageMaximumItems},
