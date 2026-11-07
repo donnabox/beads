@@ -1607,3 +1607,155 @@ func TestStorageSentinelsStayUnderProblemMapping(t *testing.T) {
 	wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"bd-1","patch":{"title":"t"}}`),
 		http.StatusNotFound, bdpResourceNotFound)
 }
+
+// TestCallableGuardTakesACoreRevision: the Issue document's routing rule. A token
+// from a generic Core record works as `expected_version` on the Callable path, with
+// both of its halves checked; a bare row lock goes on working, and v0's own route is
+// not touched.
+func TestCallableGuardTakesACoreRevision(t *testing.T) {
+	const patch = `"patch":{"title":"t"}`
+	setup := func(t *testing.T, rowVersion int64) (*testServer, *coreStore, *types.Issue, *roleLifecycle, *roleDeleter) {
+		t.Helper()
+		issue := coreIssue("sw-1", types.TypeTask)
+		issue.RowVersion = rowVersion
+		store := &coreStore{issues: []*types.Issue{issue}}
+		lifecycle := &roleLifecycle{updateResult: issueops.UpdateResult{Issue: issue}}
+		deleter := &roleDeleter{result: issueops.DeleteResult{Deleted: 1}}
+		return newCoreServer(t, store, Config{Lifecycle: lifecycle, Deleter: deleter}), store, issue, lifecycle, deleter
+	}
+	revision := func(t *testing.T, ts *testServer) string {
+		t.Helper()
+		_, record := coreGetJSON(t, ts, "/sw-1")
+		return record["revision"].(string)
+	}
+
+	t.Run("a token never starts with a dash, and works with a negative row lock", func(t *testing.T) {
+		for _, rowVersion := range []int64{7, -4107163796693034294} {
+			ts, _, _, lifecycle, _ := setup(t, rowVersion)
+			token := revision(t, ts)
+			if strings.HasPrefix(token, "-") {
+				t.Fatalf("token %q reads as a flag", token)
+			}
+			if resp := ts.callAs(t, "issue/update", "a", `{"id":"sw-1",`+patch+`,"expected_version":"`+token+`"}`); resp.StatusCode != http.StatusOK {
+				t.Fatalf("%q: status %d", token, resp.StatusCode)
+			}
+			got := lifecycle.updateRequests()
+			if len(got) != 1 || got[0].ExpectedVersion == nil || *got[0].ExpectedVersion != rowVersion {
+				t.Fatalf("%q reached the role as %+v", token, got)
+			}
+		}
+	})
+
+	t.Run("a change the row lock does not see is refused, and writes nothing", func(t *testing.T) {
+		ts, store, issue, lifecycle, _ := setup(t, 7)
+		token := revision(t, ts)
+		store.mu.Lock()
+		issue.Labels = []string{"new"} // A label-only write: the row lock stays at 7.
+		store.mu.Unlock()
+		for _, name := range []string{"issue/update", "issue/close", "issue/reopen"} {
+			arguments := `{"id":"sw-1",`
+			if name == "issue/update" {
+				arguments += patch + `,`
+			}
+			wantProblem(t, ts.callAs(t, name, "a", arguments+`"expected_version":"`+token+`"}`), http.StatusConflict, bdpRevisionMismatch)
+		}
+		if got := len(lifecycle.updateRequests()) + len(lifecycle.closeRequests()) + len(lifecycle.reopenRequests()); got != 0 {
+			t.Errorf("%d requests reached a role past a stale digest", got)
+		}
+	})
+
+	t.Run("a moved row lock is refused", func(t *testing.T) {
+		ts, store, issue, lifecycle, _ := setup(t, 7)
+		token := revision(t, ts)
+		store.mu.Lock()
+		issue.RowVersion = 8
+		store.mu.Unlock()
+		wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"sw-1",`+patch+`,"expected_version":"`+token+`"}`), http.StatusConflict, bdpRevisionMismatch)
+		if got := lifecycle.updateRequests(); len(got) != 0 {
+			t.Errorf("reached the role: %+v", got)
+		}
+	})
+
+	t.Run("a bare row lock keeps working, and v0 reads it", func(t *testing.T) {
+		ts, _, _, lifecycle, _ := setup(t, 7)
+		if resp := ts.callAs(t, "issue/update", "a", `{"id":"sw-1",`+patch+`,"expected_version":"7"}`); resp.StatusCode != http.StatusOK {
+			t.Fatalf("status %d", resp.StatusCode)
+		}
+		got := lifecycle.updateRequests()
+		if len(got) != 1 || got[0].ExpectedVersion == nil || *got[0].ExpectedVersion != 7 {
+			t.Fatalf("reached the role as %+v", got)
+		}
+		lifecycle.updateErr = fmt.Errorf("update: %w", issueops.ErrVersionMismatch)
+		wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"sw-1",`+patch+`,"expected_version":"6"}`), http.StatusConflict, bdpRevisionMismatch)
+	})
+
+	t.Run("v0's refusal stands for what is no token", func(t *testing.T) {
+		ts, _, _, lifecycle, _ := setup(t, 7)
+		for _, value := range []string{`"nope"`, `7`, `null`, `"-4107163796693034294-85a3c1d2e3f405162738495a6b7c8d9e"`} {
+			wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"sw-1",`+patch+`,"expected_version":`+value+`}`), http.StatusUnprocessableEntity, bdpValidationFailed)
+		}
+		if got := lifecycle.updateRequests(); len(got) != 0 {
+			t.Errorf("reached the role: %+v", got)
+		}
+	})
+
+	t.Run("issue/delete takes one, with its defaults intact, and two ids are v0's to refuse", func(t *testing.T) {
+		ts, store, issue, _, deleter := setup(t, 7)
+		token := revision(t, ts)
+		if resp := ts.call(t, "issue/delete", `{"ids":["sw-1"," sw-1"],"expected_version":"`+token+`"}`); resp.StatusCode != http.StatusOK {
+			t.Fatalf("status %d", resp.StatusCode)
+		}
+		got := deleter.requests()
+		if len(got) != 1 || got[0].ExpectedVersion == nil || *got[0].ExpectedVersion != 7 || !got[0].DryRun {
+			t.Fatalf("reached the role as %+v", got)
+		}
+		wantProblem(t, ts.call(t, "issue/delete", `{"ids":["sw-1","sw-2"],"expected_version":"`+token+`"}`), http.StatusUnprocessableEntity, bdpValidationFailed)
+		store.mu.Lock()
+		issue.Labels = []string{"new"}
+		store.mu.Unlock()
+		wantProblem(t, ts.call(t, "issue/delete", `{"ids":["sw-1"],"expected_version":"`+token+`"}`), http.StatusConflict, bdpRevisionMismatch)
+		if got := deleter.requests(); len(got) != 1 {
+			t.Errorf("%d requests reached the role, want 1", len(got))
+		}
+	})
+
+	t.Run("a missing record is v0's answer", func(t *testing.T) {
+		ts, _, _, lifecycle, _ := setup(t, 7)
+		token := revision(t, ts)
+		lifecycle.updateErr = fmt.Errorf("update: %w", storage.ErrNotFound)
+		wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"sw-404",`+patch+`,"expected_version":"`+token+`"}`), http.StatusNotFound, bdpResourceNotFound)
+	})
+
+	t.Run("a guard that cannot be read writes nothing", func(t *testing.T) {
+		ts, store, _, lifecycle, _ := setup(t, 7)
+		token := revision(t, ts)
+		store.mu.Lock()
+		store.getErr = errors.New("db down")
+		store.mu.Unlock()
+		wantProblem(t, ts.callAs(t, "issue/update", "a", `{"id":"sw-1",`+patch+`,"expected_version":"`+token+`"}`), http.StatusServiceUnavailable, bdpUnavailable)
+		if got := lifecycle.updateRequests(); len(got) != 0 {
+			t.Errorf("reached the role: %+v", got)
+		}
+	})
+
+	t.Run("v0's own route does not take a Core token", func(t *testing.T) {
+		ts, _, _, lifecycle, _ := setup(t, 7)
+		token := revision(t, ts)
+		req, err := http.NewRequest(http.MethodPatch, ts.base+"/v0/beads/issues/sw-1", strings.NewReader(`{"actor":"a",`+patch+`,"expected_version":"`+token+`"}`))
+		if err != nil {
+			t.Fatal(err)
+		}
+		req.Header.Set("Content-Type", "application/json")
+		resp, err := ts.client.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("status %d, want 400", resp.StatusCode)
+		}
+		if got := lifecycle.updateRequests(); len(got) != 0 {
+			t.Errorf("reached the role: %+v", got)
+		}
+	})
+}

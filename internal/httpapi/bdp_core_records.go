@@ -272,10 +272,32 @@ func (p *coreProjector) bead(ctx context.Context, issue *types.Issue) (*coreBead
 	return &coreBead{
 		ID:         id,
 		Type:       typeURI,
-		Revision:   types.RevisionToken(issue.RowVersion) + "-" + digest,
+		Revision:   coreBeadRevision(digest, issue.RowVersion),
 		Properties: properties,
 		Metadata:   metadata,
 	}, nil
+}
+
+// coreBeadRevision spells a Bead's revision: the content digest, because the row
+// lock does not move on a label-only write (Issue §7), and then the row lock. The
+// digest comes first so that a token never starts with `-`, which would read as a
+// flag on a command line: a row lock is a signed 64-bit number. The token stays
+// opaque to a client. The one thing that takes it apart is coreRevisionRowLock.
+func coreBeadRevision(digest string, rowVersion int64) string {
+	return digest + "-" + types.RevisionToken(rowVersion)
+}
+
+// coreRevisionRowLock reads the row lock back out of a token coreBeadRevision
+// spelled. It reports false for anything else, a bare row lock included.
+func coreRevisionRowLock(token string) (string, bool) {
+	digest, rowLock, ok := strings.Cut(token, "-")
+	if !ok || len(digest) != coreDigestHexLen || strings.Trim(digest, "0123456789abcdef") != "" {
+		return "", false
+	}
+	if _, err := types.ParseRevisionToken(rowLock); err != nil {
+		return "", false
+	}
+	return rowLock, true
 }
 
 // coreBeadProperties is §3.2 and §3.4: the row's own JSON, less what the record
@@ -339,6 +361,9 @@ func coreMetadataObject(raw []byte) map[string]any {
 	return map[string]any{}
 }
 
+// coreDigestHexLen is how long a digest is, spelled in hex.
+const coreDigestHexLen = 32
+
 // coreDigest names the content half of a revision: scheme
 // sha256-gojson-literal, SHA-256 over this package's JSON spelling with object
 // members sorted and every number kept as its stored literal. Core requires a
@@ -351,7 +376,7 @@ func coreDigest(value any) (string, error) {
 		return "", err
 	}
 	sum := sha256.Sum256(body)
-	return hex.EncodeToString(sum[:16]), nil
+	return hex.EncodeToString(sum[:coreDigestHexLen/2]), nil
 }
 
 // coreLinkID allocates a Link's one opaque segment from its ordered pair and a

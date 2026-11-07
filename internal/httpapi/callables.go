@@ -269,7 +269,7 @@ func invocationRoute(c *callableCapture, r *http.Request) route {
 		return row.admitInvocation(c, r)
 	}
 	rt.handler = func(s *Server, _ http.ResponseWriter, r *http.Request) {
-		inner, problem := row.invocationRequest(c, r)
+		inner, problem := row.invocationRequest(s, c, r)
 		if problem != nil {
 			c.refuse(r, problem)
 			return
@@ -310,7 +310,7 @@ func (row *callableRow) admitInvocation(c *callableCapture, r *http.Request) boo
 
 // invocationRequest decodes and checks the envelope, and answers the request v0
 // would have received.
-func (row *callableRow) invocationRequest(c *callableCapture, r *http.Request) (*http.Request, *callableProblem) {
+func (row *callableRow) invocationRequest(s *Server, c *callableCapture, r *http.Request) (*http.Request, *callableProblem) {
 	inv, problem := decodeInvocation(c, r, row)
 	if problem != nil {
 		return nil, problem
@@ -331,7 +331,73 @@ func (row *callableRow) invocationRequest(c *callableCapture, r *http.Request) (
 		return nil, problem
 	}
 	row.supplyDefaults(inv)
+	if problem := row.settleCoreGuard(s, r, inv); problem != nil {
+		return nil, problem
+	}
 	return row.v0Request(r, inv)
+}
+
+// settleCoreGuard is the routing rule's revision tokens: `expected_version` also
+// takes a token from a generic Core record. v0 knows only the row lock, so this is
+// done here, before the request v0 would have received is built, and v0's own
+// routes go on refusing such a token. A bare row lock, or anything else that is no
+// Core token, is left for v0 to read.
+//
+// A Core token is compared whole against the record as it stands, which is what
+// catches a label-only write, and v0 is then sent its row lock half, which v0 checks
+// inside the write's own transaction. The comparison is outside that transaction: a
+// write that moves only the digest can land between the two. A record that cannot be
+// named here, or does not exist, goes on to v0, whose refusal is the answer.
+func (row *callableRow) settleCoreGuard(s *Server, r *http.Request, inv *invocation) *callableProblem {
+	raw, sent := inv.args[expectedVersionMember]
+	if !sent || !slices.Contains(row.body, expectedVersionMember) {
+		return nil
+	}
+	var token string
+	if json.Unmarshal(raw, &token) != nil {
+		return nil
+	}
+	rowLock, isCore := coreRevisionRowLock(token)
+	if !isCore {
+		return nil
+	}
+	if id, named := row.guardedID(inv.args); named {
+		p := newCoreProjector(s, r)
+		found, err := p.lookup(r.Context(), id)
+		if err != nil {
+			return newCallableProblem(bdpUnavailable, "the record's revision could not be read")
+		}
+		if found != nil && found.bead != nil {
+			record, err := p.bead(r.Context(), found.bead)
+			if err != nil {
+				return newCallableProblem(bdpUnavailable, "the record's revision could not be read")
+			}
+			if record.Revision != token {
+				return newCallableProblem(bdpRevisionMismatch, "`"+expectedVersionMember+"` is a revision this record no longer carries")
+			}
+		}
+	}
+	replaced, err := json.Marshal(rowLock)
+	if err != nil {
+		return newCallableProblem(bdpUnavailable, "")
+	}
+	inv.args[expectedVersionMember] = replaced
+	inv.rebuild = true
+	return nil
+}
+
+// guardedID is the one record a row's guard is about: its path `id`, or the single
+// distinct id of `ids`. More than one is v0's to refuse.
+func (row *callableRow) guardedID(args map[string]json.RawMessage) (string, bool) {
+	if slices.Contains(row.path, "id") {
+		var id string
+		return id, json.Unmarshal(args["id"], &id) == nil && id != ""
+	}
+	var ids []string
+	if json.Unmarshal(args["ids"], &ids) != nil || len(ids) == 0 || distinctDeleteIDs(ids) != 1 {
+		return "", false
+	}
+	return strings.TrimSpace(ids[0]), true
 }
 
 // callableFromPath finds the row a mount names. An encoded separator names
@@ -389,6 +455,9 @@ type invocation struct {
 	// supplied names what this layer added to args beyond the caller's `arguments`:
 	// the actor and any defaults.
 	supplied []string
+	// rebuild says a member of args differs from `arguments`, so v0's body cannot be
+	// `arguments` itself.
+	rebuild bool
 }
 
 // supply adds an argument the caller did not send.
@@ -819,7 +888,7 @@ func (row *callableRow) v0Request(r *http.Request, inv *invocation) (*http.Reque
 // `arguments` itself: checkArgumentNames has held its names to the row's, and it needs
 // no second buffer. What this layer supplied is the first, in front of it.
 func (row *callableRow) v0Body(inv *invocation) (head, rest []byte) {
-	if len(row.path) == 0 && len(row.query) == 0 && row.adapt == nil {
+	if len(row.path) == 0 && len(row.query) == 0 && row.adapt == nil && !inv.rebuild {
 		if len(inv.supplied) == 0 {
 			return nil, inv.arguments
 		}
