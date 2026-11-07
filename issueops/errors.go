@@ -415,6 +415,20 @@ func (e *VersionMismatchError) Error() string {
 // Unwrap makes VersionMismatchError match ErrVersionMismatch.
 func (e *VersionMismatchError) Unwrap() error { return ErrVersionMismatch }
 
+// DependencyOccupiedError refuses an AddDependenciesRequest.Exact edge whose ordered
+// pair already holds an edge of any type. Occupant is that edge as the transaction read
+// it.
+type DependencyOccupiedError struct {
+	Occupant *Dependency
+}
+
+func (e *DependencyOccupiedError) Error() string {
+	if e.Occupant == nil {
+		return "this pair already holds a dependency"
+	}
+	return "pair " + e.Occupant.IssueID + " -> " + e.Occupant.DependsOnID + " already holds a dependency of type " + string(e.Occupant.Type)
+}
+
 // IncidentEdgesError refuses a delete with DeleteRequest.RefuseIncidentEdges: an
 // edge still touches the named row. It names no edge, because the caller it answers
 // may not be entitled to see which.

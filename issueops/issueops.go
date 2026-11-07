@@ -487,7 +487,7 @@ type ReopenRequest struct {
 	// InTx is UpdateRequest.InTx's check, over the row as this reopen's own
 	// transaction reads it. It can only refuse. A reopen carrying it rewrites
 	// row_lock when it changes the row, for the reason given there.
-	InTx *RowCheck
+	InTx    *RowCheck
 	Actor   string
 	IssueID string
 	// Reason records why literal closed and configured done statuses move to

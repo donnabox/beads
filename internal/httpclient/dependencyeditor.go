@@ -57,6 +57,9 @@ func (d *httpDependencyEditor) AddDependencies(ctx context.Context, req issueops
 	if req.SkipPerEdgeCycleCheck {
 		return issueops.AddDependenciesResult{}, refuse(encode.OpAddDependencies, "W-AddDependenciesRequest.SkipPerEdgeCycleCheck")
 	}
+	if req.Exact {
+		return issueops.AddDependenciesResult{}, refuse(encode.OpAddDependencies, "W-AddDependenciesRequest.Exact")
+	}
 	if len(req.Edges) > maxAddDependencyEdges {
 		return issueops.AddDependenciesResult{}, refuse(encode.OpAddDependencies, "L16")
 	}
@@ -99,6 +102,9 @@ func (d *httpDependencyEditor) RemoveDependency(ctx context.Context, req issueop
 	if err := requireActor(req.Actor); err != nil {
 		return issueops.RemoveDependencyResult{}, err
 	}
+	if req.InTx != nil {
+		return issueops.RemoveDependencyResult{}, d.store.inexpressible("DependencyEditor.RemoveDependency", refuse(encode.OpRemoveDependency, "W-RemoveDependencyRequest.InTx"))
+	}
 	if err := requireID("issue id", req.IssueID); err != nil {
 		return issueops.RemoveDependencyResult{}, err
 	}
@@ -134,6 +140,10 @@ func checkEdge(i int, edge issueops.DependencyEdge) error {
 		return invalid("edges[%d].type is required", i)
 	case edge.IssueID == edge.DependsOnID:
 		return fmt.Errorf("%s: %w", edge.IssueID, issueops.ErrSelfDependency)
+	case edge.Metadata != "":
+		return refuse(encode.OpAddDependencies, "W-DependencyEdge.Metadata")
+	case edge.ThreadID != "":
+		return refuse(encode.OpAddDependencies, "W-DependencyEdge.ThreadID")
 	}
 	// The dotted-id hierarchy rule, for the self-dependency check's reason: the
 	// server refuses it as a 400 that arrives here as a bare ErrValidation,

@@ -252,4 +252,100 @@ func TestGuardComparedInsideTheWrite(t *testing.T) {
 			t.Fatalf("a no-op moved the row: %d %v -> %d %v", before.RowVersion, before.UpdatedAt, after.RowVersion, after.UpdatedAt)
 		}
 	})
+
+	editor, err := NewDependencyEditor(provider)
+	if err != nil {
+		t.Fatal(err)
+	}
+	deleter, err := NewDeleter(provider)
+	if err != nil {
+		t.Fatal(err)
+	}
+	exact := func(source, target string, kind types.DependencyType) (publicops.AddDependenciesResult, error) {
+		return editor.AddDependencies(ctx, publicops.AddDependenciesRequest{
+			Actor: "linker", Exact: true,
+			Edges: []publicops.DependencyEdge{{IssueID: source, DependsOnID: target, Type: kind, Metadata: `{"gate":"g"}`, ThreadID: "th"}},
+		})
+	}
+
+	t.Run("an exact edge is stored as stated, or refused", func(t *testing.T) {
+		seed(t, "grd-a")
+		seed(t, "grd-b")
+		added, err := exact("grd-a", "grd-b", types.DepBlocks)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(added.StoredEdges) != 1 {
+			t.Fatalf("stored = %+v", added.StoredEdges)
+		}
+		stored := added.StoredEdges[0]
+		if stored.Metadata != `{"gate":"g"}` || stored.ThreadID != "th" || stored.CreatedBy != "linker" || stored.CreatedAt.IsZero() {
+			t.Errorf("stored = %+v", stored)
+		}
+		for _, kind := range []types.DependencyType{types.DepBlocks, types.DepRelated} {
+			var occupied *publicops.DependencyOccupiedError
+			if _, err := exact("grd-a", "grd-b", kind); !errors.As(err, &occupied) || occupied.Occupant == nil || occupied.Occupant.Type != types.DepBlocks {
+				t.Errorf("%s on an occupied pair = %v", kind, err)
+			}
+		}
+		// A target of another prefix would otherwise be taken for another repository's.
+		var missing *publicops.DependencyEndpointNotFoundError
+		if _, err := exact("grd-a", "other-1", types.DepBlocks); !errors.As(err, &missing) || missing.MissingID != "other-1" {
+			t.Errorf("a target naming no row = %v", err)
+		}
+		if _, err := exact("grd-a", "external:proj:cap", types.DepBlocks); err != nil {
+			t.Errorf("an external target = %v", err)
+		}
+	})
+
+	t.Run("a delete can refuse over any incident edge", func(t *testing.T) {
+		for _, id := range []string{"grd-a", "grd-b"} {
+			var incident *publicops.IncidentEdgesError
+			if _, err := deleter.Delete(ctx, publicops.DeleteRequest{Actor: "x", IDs: []string{id}, RefuseIncidentEdges: true, Force: true}); !errors.As(err, &incident) {
+				t.Errorf("delete %s = %v", id, err)
+			}
+		}
+		seed(t, "grd-free")
+		if _, err := deleter.Delete(ctx, publicops.DeleteRequest{Actor: "x", IDs: []string{"grd-free"}, RefuseIncidentEdges: true}); err != nil {
+			t.Errorf("delete with no edge = %v", err)
+		}
+	})
+
+	t.Run("a guarded removal reads the edge in its transaction", func(t *testing.T) {
+		wantErr := errors.New("stale")
+		var seen *types.Dependency
+		_, err := editor.RemoveDependency(ctx, publicops.RemoveDependencyRequest{
+			Actor: "x", IssueID: "grd-a", DependsOnID: "grd-b",
+			InTx: &publicops.EdgeCheck{Run: func(current *types.Dependency) error { seen = current; return wantErr }},
+		})
+		if !errors.Is(err, wantErr) || seen == nil || seen.Metadata != `{"gate":"g"}` {
+			t.Fatalf("removal = %v, saw %+v", err, seen)
+		}
+		removed, err := editor.RemoveDependency(ctx, publicops.RemoveDependencyRequest{
+			Actor: "x", IssueID: "grd-a", DependsOnID: "grd-b",
+			InTx: &publicops.EdgeCheck{Run: func(*types.Dependency) error { return nil }},
+		})
+		if err != nil || !removed.Removed {
+			t.Fatalf("removal = %+v, %v", removed, err)
+		}
+		removed, err = editor.RemoveDependency(ctx, publicops.RemoveDependencyRequest{
+			Actor: "x", IssueID: "grd-a", DependsOnID: "grd-b",
+			InTx: &publicops.EdgeCheck{Run: func(*types.Dependency) error { t.Error("called on an absent edge"); return nil }},
+		})
+		if err != nil || removed.Removed {
+			t.Fatalf("second removal = %+v, %v", removed, err)
+		}
+	})
+
+	t.Run("stored timestamps are what a later read shows", func(t *testing.T) {
+		issue := &types.Issue{ID: "grd-time", Title: "t", IssueType: types.TypeTask, Status: types.StatusOpen, Priority: 2}
+		created, err := lifecycle.Create(ctx, publicops.CreateRequest{Actor: "seed", Issue: issue, StoredTimestamps: true})
+		if err != nil {
+			t.Fatal(err)
+		}
+		later := read(t, "grd-time")
+		if !created.Issue.CreatedAt.Equal(later.CreatedAt) || !created.Issue.UpdatedAt.Equal(later.UpdatedAt) || created.Issue.RowVersion != later.RowVersion {
+			t.Errorf("create answered %v %v %d, a read shows %v %v %d", created.Issue.CreatedAt, created.Issue.UpdatedAt, created.Issue.RowVersion, later.CreatedAt, later.UpdatedAt, later.RowVersion)
+		}
+	})
 }

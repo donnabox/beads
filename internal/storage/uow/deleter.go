@@ -93,8 +93,17 @@ func (d *deleter) Delete(ctx context.Context, req publicops.DeleteRequest) (publ
 	// notifyingProvider and then an externaldeps uowProvider — both of which
 	// pass THEMSELVES, not the inner provider, to NewDeleter, so d.provider
 	// is a decorator here in every real deployment, never the bare provider.
+	//
+	// A request carrying InTx asks further than that, through fenceTarget: a role
+	// built over a per-request wrapper still gets the fence. A guarded delete with
+	// only ExpectedVersion is left as it stands, because a v0 request's answers are
+	// not this path's to change: see fenceTarget.
+	sp, fenced := UnwrapProvider(d.provider).(*doltSQLProvider)
+	if req.InTx != nil {
+		sp, fenced = fenceTarget(d.provider)
+	}
 	if req.ExpectedVersion != nil || req.InTx != nil {
-		if sp, ok := UnwrapProvider(d.provider).(*doltSQLProvider); ok {
+		if fenced {
 			var result publicops.DeleteResult
 			err := withDeleteFence(ctx, sp, req.IDs[0], func() error {
 				var ferr error

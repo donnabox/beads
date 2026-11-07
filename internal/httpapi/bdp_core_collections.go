@@ -378,7 +378,7 @@ func (s *Server) serveCoreBeads(w http.ResponseWriter, r *http.Request) {
 
 // coreAcceptable answers the bodyless 406 and reports whether to go on.
 func coreAcceptable(w http.ResponseWriter, r *http.Request) bool {
-	if acceptsMedia(r.Header.Values("Accept"), bdpMediaType) {
+	if acceptsMedia(r.Header.Values("Accept")) {
 		return true
 	}
 	w.Header().Set("Cache-Control", "private, no-store")

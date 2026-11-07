@@ -59,6 +59,9 @@ const (
 	retryNever           = "never"
 	retryAfterStateMoved = "after-state-change"
 	retryAfterDelay      = "after-delay"
+
+	bdpIncidentLinksExist    = "incident-links-exist"
+	bdpOperationNotSupported = "operation-not-supported"
 )
 
 // bdpProblemShape is what Core, Write and Callables §9 fix for a code.
@@ -81,6 +84,9 @@ var bdpProblemShapes = map[string]bdpProblemShape{
 	bdpRevisionMismatch: {"conflict", http.StatusConflict, retryAfterStateMoved},
 	bdpCallableNotFound: {"not-found", http.StatusNotFound, retryAfterStateMoved},
 	bdpCallableError:    {"conflict", http.StatusConflict, retryAfterStateMoved},
+
+	bdpIncidentLinksExist:    {"conflict", http.StatusConflict, retryAfterStateMoved},
+	bdpOperationNotSupported: {"request", http.StatusUnprocessableEntity, retryAfterStateMoved},
 }
 
 // v0ProblemCodes is specs/types/issue/callables.md §5: the v0 codes that meet
@@ -112,6 +118,7 @@ type callableProblem struct {
 	Retry       string               `json:"retry"`
 	Detail      string               `json:"detail,omitempty"`
 	Reason      Reason               `json:"reason,omitempty"`
+	Operation   string               `json:"operation,omitempty"`
 	Diagnostics []callableDiagnostic `json:"diagnostics,omitempty"`
 	Error       json.RawMessage      `json:"error,omitempty"`
 	V0          json.RawMessage      `json:"v0,omitempty"`
@@ -122,6 +129,10 @@ type callableProblem struct {
 type callableDiagnostic struct {
 	Message          string `json:"message"`
 	InstanceLocation string `json:"instanceLocation,omitempty"`
+	// Document says a failure is in metadata; omitted means properties (Write).
+	Document string `json:"document,omitempty"`
+	// Reason is Issue §4.4's `dependency-cycle`.
+	Reason string `json:"reason,omitempty"`
 }
 
 func newCallableProblem(code, detail string) *callableProblem {
@@ -297,7 +308,7 @@ func (row *callableRow) admitInvocation(c *callableCapture, r *http.Request) boo
 		c.refuse(r, newCallableProblem(bdpUnsupportedMedia, "an invocation's Content-Type is "+bdpMediaType))
 		return false
 	}
-	if !acceptsMedia(r.Header.Values("Accept"), bdpMediaType) {
+	if !acceptsMedia(r.Header.Values("Accept")) {
 		c.final = true
 		c.status = http.StatusNotAcceptable
 		return false
@@ -392,10 +403,11 @@ func callableFromPath(r *http.Request) (*callableRow, bool) {
 
 // acceptsMedia is Core's Accept rule for an endpoint that offers one media type:
 // missing permits it, and the most specific matching range decides, q=0 included.
-func acceptsMedia(values []string, media string) bool {
+func acceptsMedia(values []string) bool {
 	if strings.TrimSpace(strings.Join(values, "")) == "" {
 		return true
 	}
+	media := bdpMediaType
 	mainType, _, _ := strings.Cut(media, "/")
 	best, accepted := -1, false
 	for _, value := range values {

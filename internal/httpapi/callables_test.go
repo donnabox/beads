@@ -545,12 +545,12 @@ func TestCallableEnvelopeRefusals(t *testing.T) {
 		t.Errorf("Accept application/json: status %d, want a bodyless 406", resp.StatusCode)
 	}
 	for _, accept := range []string{bdpMediaType, "application/*", "*/*", "application/json, " + bdpMediaType + ";q=0.5"} {
-		if !acceptsMedia([]string{accept}, bdpMediaType) {
+		if !acceptsMedia([]string{accept}) {
 			t.Errorf("Accept %q was refused", accept)
 		}
 	}
 	for _, accept := range []string{"text/plain", bdpMediaType + ";q=0", "*/*, " + bdpMediaType + ";q=0"} {
-		if acceptsMedia([]string{accept}, bdpMediaType) {
+		if acceptsMedia([]string{accept}) {
 			t.Errorf("Accept %q was admitted", accept)
 		}
 	}

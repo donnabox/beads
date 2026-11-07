@@ -13,8 +13,8 @@ import (
 //
 //   - ProtocolV0 is v0 alone, exactly as this server answered before BDP existed: no
 //     /bdp, no Scope root, and every path outside the route table is v0's own 404.
-//   - ProtocolBDP is BDP alone: Core, and the Callables, which still run on their v0
-//     rows but are no longer reachable as v0 routes.
+//   - ProtocolBDP is BDP alone: Core, Write for the Issue and Dependency Types, and the
+//     Callables, which still run on their v0 rows but are no longer reachable as v0 routes.
 //   - ProtocolBoth is both.
 //
 // The zero value is v0, so a Config that never heard of this field serves what it

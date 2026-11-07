@@ -113,6 +113,34 @@ func withDeleteFence(ctx context.Context, p *doltSQLProvider, id string, fn func
 	return fn()
 }
 
+// FenceProvider is what a per-request wrapper around a provider answers so that a
+// role built over the wrapper can still reach the provider's fence.
+//
+// It is a separate question from ProviderUnwrapper, on purpose. bd serve's request
+// wrapper is not a ProviderUnwrapper, so a guarded delete arriving on v0 has never
+// found the fence the deleter's comment describes: two same-token deletes through bd
+// serve both answer success. Making the wrapper unwrap would change those answers, and
+// v0's answers are not to change, so only a request that carries InTx asks this.
+type FenceProvider interface {
+	FenceProvider() UnitOfWorkProvider
+}
+
+// fenceTarget walks a provider chain down to the provider that holds the fence.
+func fenceTarget(p UnitOfWorkProvider) (*doltSQLProvider, bool) {
+	for {
+		switch next := p.(type) {
+		case *doltSQLProvider:
+			return next, true
+		case FenceProvider:
+			p = next.FenceProvider()
+		case ProviderUnwrapper:
+			p = next.Unwrap()
+		default:
+			return nil, false
+		}
+	}
+}
+
 // currentDatabaseName reads the database conn's session is attached to.
 // doltSQLProvider carries no database field of its own (the name lives only
 // in the DSN each pool connection was opened with), and every connection

@@ -1768,6 +1768,7 @@ func (s *Server) handler() http.Handler {
 		// The Callables namespace runs each invocation on its v0 row; see callables.go.
 		s.mountCallables(mux)
 		s.mountCoreReads(mux)
+		s.mountWrite(mux)
 		unrouted = s.coreResourcesOr(unrouted)
 	}
 	mux.Handle("/", unrouted)

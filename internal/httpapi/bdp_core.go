@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -37,7 +38,7 @@ const (
 	coreSpecRevision = "7620a095a9ce5bb4209775c17340e4f493c67cee"
 
 	coreBDPVersion = "0.1"
-	coreProfile    = "core"
+	coreProfile    = "write"
 	coreOrder      = "canonical-uri"
 
 	// callablesCapability is Callables §1. Version "1" has a closed empty
@@ -236,16 +237,11 @@ var coreRefusedMethods = []string{
 // nor bdp. Any other path stays unrouted, answered the way it always was and with
 // no credential asked for it.
 func (s *Server) coreResourcesOr(unrouted http.Handler) http.Handler {
-	reserved := map[string]bool{strings.TrimPrefix(coreDiscoveryPath, "/"): true}
-	for _, rt := range routeTable {
-		first, _, _ := strings.Cut(strings.TrimPrefix(rt.pattern, "/"), "/")
-		reserved[first] = true
-	}
 	resources := s.coreGate(opCoreResource, false, s.serveCoreResource)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		segment := strings.TrimPrefix(r.URL.EscapedPath(), "/")
 		switch {
-		case reserved[segment] || strings.Contains(segment, "/"):
+		case s.reservedSegment(segment) || strings.Contains(segment, "/"):
 			unrouted.ServeHTTP(w, r)
 		case r.Method == http.MethodGet || r.Method == http.MethodHead:
 			resources.ServeHTTP(w, r)
@@ -255,6 +251,20 @@ func (s *Server) coreResourcesOr(unrouted http.Handler) http.Handler {
 			unrouted.ServeHTTP(w, r)
 		}
 	})
+}
+
+// reservedSegment says a first path segment is protocol navigation or a v0 route, so
+// no Resource can be addressed there.
+func (s *Server) reservedSegment(segment string) bool {
+	if segment == strings.TrimPrefix(coreDiscoveryPath, "/") {
+		return true
+	}
+	for _, rt := range routeTable {
+		if first, _, _ := strings.Cut(strings.TrimPrefix(rt.pattern, "/"), "/"); first == segment {
+			return true
+		}
+	}
+	return false
 }
 
 // coreScope is the canonical Scope URL of this request: its scheme and Host.
@@ -298,13 +308,14 @@ func (s *Server) serveCoreScopeRoot(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// coreDiscovery is the closed coreDiscovery schema, less the members this
+// coreDiscovery is the closed writeDiscovery schema, less the members this
 // Scope has nothing to say with.
 type coreDiscovery struct {
 	BDPVersion   string                               `json:"bdpVersion"`
 	Profile      string                               `json:"profile"`
 	Scope        string                               `json:"scope"`
 	SpecRevision string                               `json:"specRevision"`
+	Operations   string                               `json:"operations"`
 	Order        string                               `json:"order"`
 	Limits       coreDiscoveryLimits                  `json:"limits"`
 	Capabilities map[string]map[string]map[string]any `json:"capabilities"`
@@ -331,15 +342,18 @@ type coreSelectorLimits struct {
 // credential; the v0 identity handshake, which names the repo and the database,
 // stays guarded.
 //
-// The profile is `core` and Callables is advertised beside it. Write's generic
-// verbs are not served, so the Write literal would be a promise nothing keeps.
+// The profile is `write` and Callables is advertised beside it. What this Scope does
+// not offer is said by absence, which Write gives its meaning: no `aliases`, so no alias
+// operations; no idempotency capability, so a repeat runs under the ordinary rules; no
+// atomic batch, rooted allocation, historical update or Events. The one thing the
+// directory must list and cannot serve, `updateLink`, has its own entry.
 func (s *Server) serveCoreDiscovery(w http.ResponseWriter, r *http.Request) {
 	if len(r.URL.RawQuery) != 0 {
 		writeCoreProblem(w, r, coreCodeInvalidParameter, "discovery takes no query parameters")
 		return
 	}
 	scope := coreScope(r)
-	if !acceptsMedia(r.Header.Values("Accept"), bdpMediaType) {
+	if !acceptsMedia(r.Header.Values("Accept")) {
 		w.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
@@ -352,6 +366,7 @@ func (s *Server) serveCoreDiscovery(w http.ResponseWriter, r *http.Request) {
 		Profile:      coreProfile,
 		Scope:        scope,
 		SpecRevision: coreSpecRevision,
+		Operations:   scope + strings.TrimPrefix(coreOperationsPath, "/"),
 		Order:        coreOrder,
 		Limits: coreDiscoveryLimits{
 			Page:     corePageLimits{DefaultItems: corePageDefaultItems, MaximumItems: corePageMaximumItems},
@@ -359,8 +374,16 @@ func (s *Server) serveCoreDiscovery(w http.ResponseWriter, r *http.Request) {
 		},
 		Capabilities: map[string]map[string]map[string]any{
 			callablesCapability: {callablesCapabilityVersion: {}},
+			writeExceptionsCapability: {writeExceptionsCapabilityVersion: {
+				"operationsNotSupported": []string{"updateLink"},
+			}},
 		},
 	})
+}
+
+// readLimitedBody reads a whole request body under a bound.
+func readLimitedBody(w http.ResponseWriter, r *http.Request, limit int64) ([]byte, error) {
+	return io.ReadAll(http.MaxBytesReader(w, r.Body, limit))
 }
 
 // marshalCoreJSON is the one spelling of a BDP JSON body: no HTML escaping, so

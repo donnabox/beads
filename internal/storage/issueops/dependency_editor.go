@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/domain"
@@ -130,6 +131,12 @@ func ExecuteAddDependencies(ctx context.Context, tx *sql.Tx, request publicops.A
 		return publicops.AddDependenciesResult{}, nil, err
 	}
 
+	if request.Exact {
+		if err := checkExactEdgesInTx(ctx, tx, request.Edges); err != nil {
+			return publicops.AddDependenciesResult{}, nil, err
+		}
+	}
+
 	tables := ChangedTables{}
 	for phase := 0; phase < 2; phase++ {
 		parentPhase := phase == 0
@@ -150,7 +157,66 @@ func ExecuteAddDependencies(ctx context.Context, tx *sql.Tx, request publicops.A
 	}
 	added := make([]publicops.DependencyEdge, len(request.Edges))
 	copy(added, request.Edges)
-	return publicops.AddDependenciesResult{Added: added}, tables, nil
+	result := publicops.AddDependenciesResult{Added: added}
+	if request.Exact {
+		stored, err := storedEdgesInTx(ctx, tx, request.Edges)
+		if err != nil {
+			return publicops.AddDependenciesResult{}, nil, err
+		}
+		result.StoredEdges = stored
+	}
+	return result, tables, nil
+}
+
+// checkExactEdgesInTx is AddDependenciesRequest.Exact's refusals.
+func checkExactEdgesInTx(ctx context.Context, tx *sql.Tx, edges []publicops.DependencyEdge) error {
+	for _, edge := range edges {
+		existing, err := GetDependencyRecordsForIssuesInTx(ctx, tx, []string{edge.IssueID})
+		if err != nil {
+			return err
+		}
+		for _, dep := range existing[edge.IssueID] {
+			if dep != nil && dep.DependsOnID == edge.DependsOnID {
+				return &publicops.DependencyOccupiedError{Occupant: dep}
+			}
+		}
+		if strings.HasPrefix(edge.DependsOnID, "external:") {
+			continue
+		}
+		wispSet, err := WispIDSetInTx(ctx, tx, []string{edge.DependsOnID})
+		if err != nil {
+			return err
+		}
+		found, err := GetIssuesByIDsInTx(ctx, tx, []string{edge.DependsOnID}, wispSet)
+		if err != nil {
+			return err
+		}
+		if len(found) == 0 {
+			return &publicops.DependencyEndpointNotFoundError{
+				IssueID: edge.IssueID, DependsOnID: edge.DependsOnID, MissingID: edge.DependsOnID,
+				Err: publicops.ErrDependencyTargetNotFound,
+			}
+		}
+	}
+	return nil
+}
+
+// storedEdgesInTx reads back the rows this transaction wrote.
+func storedEdgesInTx(ctx context.Context, tx *sql.Tx, edges []publicops.DependencyEdge) ([]*types.Dependency, error) {
+	stored := make([]*types.Dependency, 0, len(edges))
+	for _, edge := range edges {
+		rows, err := GetDependencyRecordsForIssuesInTx(ctx, tx, []string{edge.IssueID})
+		if err != nil {
+			return nil, err
+		}
+		for _, dep := range rows[edge.IssueID] {
+			if dep != nil && dep.DependsOnID == edge.DependsOnID {
+				stored = append(stored, dep)
+				break
+			}
+		}
+	}
+	return stored, nil
 }
 
 // addDependencyEdgeInTx writes one edge and reports the durable tables it
@@ -171,7 +237,7 @@ func ExecuteAddDependencies(ctx context.Context, tx *sql.Tx, request publicops.A
 func addDependencyEdgeInTx(ctx context.Context, tx *sql.Tx, request publicops.AddDependenciesRequest, edge publicops.DependencyEdge, sourceIsWisp bool) (ChangedTables, error) {
 	sourceTable, _, eventTable, depTable := WispTableRouting(sourceIsWisp)
 
-	dep := &types.Dependency{IssueID: edge.IssueID, DependsOnID: edge.DependsOnID, Type: edge.Type}
+	dep := &types.Dependency{IssueID: edge.IssueID, DependsOnID: edge.DependsOnID, Type: edge.Type, Metadata: edge.Metadata, ThreadID: edge.ThreadID}
 	written, err := AddDependencyInTxWithResult(ctx, tx, dep, request.Actor, AddDependencyOpts{
 		SourceTable:    sourceTable,
 		WriteTable:     depTable,
@@ -259,6 +325,26 @@ func ExecuteRemoveDependency(ctx context.Context, tx *sql.Tx, request publicops.
 	// (GH#2455). ChangedTables drops the wisp tables itself.
 	sourceIsWisp := IsActiveWispInTx(ctx, tx, request.IssueID)
 	_, _, eventTable, depTable := WispTableRouting(sourceIsWisp)
+
+	if request.InTx != nil {
+		existing, err := GetDependencyRecordsForIssuesInTx(ctx, tx, []string{request.IssueID})
+		if err != nil {
+			return publicops.RemoveDependencyResult{}, nil, err
+		}
+		found := false
+		for _, dep := range existing[request.IssueID] {
+			if dep != nil && dep.DependsOnID == request.DependsOnID {
+				found = true
+				if err := request.InTx.Run(dep); err != nil {
+					return publicops.RemoveDependencyResult{}, nil, err
+				}
+				break
+			}
+		}
+		if !found {
+			return publicops.RemoveDependencyResult{Removed: false}, nil, nil
+		}
+	}
 
 	// RemoveDependencyInTx reports whether it recorded an event, which on the
 	// explicit-verb path is exactly "an edge was there and is gone" — it

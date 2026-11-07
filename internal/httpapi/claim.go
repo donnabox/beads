@@ -605,6 +605,10 @@ func (p timedProvider) NewUOW(ctx context.Context) (uow.UnitOfWork, error) {
 	return uw, err
 }
 
+// FenceProvider is the provider behind this wrapper, for the role that needs its
+// fence: see uow.FenceProvider, which says why this is not an Unwrap.
+func (p timedProvider) FenceProvider() uow.UnitOfWorkProvider { return p.inner }
+
 // Close satisfies the provider interface and is never called: RunTxResult
 // closes units of work, not providers. It deliberately does NOT reach the
 // wrapped provider — closing the process-wide pool from inside one request

@@ -112,7 +112,7 @@ func TestCoreDiscoveryDocument(t *testing.T) {
 	if err := json.Unmarshal(body, &doc); err != nil {
 		t.Fatal(err)
 	}
-	if doc["bdpVersion"] != "0.1" || doc["profile"] != "core" || doc["scope"] != ts.base+"/" {
+	if doc["bdpVersion"] != "0.1" || doc["profile"] != "write" || doc["scope"] != ts.base+"/" {
 		t.Errorf("discovery = %s", body)
 	}
 	if rev, _ := doc["specRevision"].(string); len(rev) != 40 || strings.ToLower(rev) != rev {
@@ -124,7 +124,7 @@ func TestCoreDiscoveryDocument(t *testing.T) {
 	if !ok || len(detail) != 0 {
 		t.Errorf("Callables advertisement = %v, want version 1 with empty detail", capabilities)
 	}
-	for _, closedOut := range []string{"operations", "beads", "links", "events", "historicalResolution", "aliases", "types"} {
+	for _, closedOut := range []string{"beads", "links", "events", "historicalResolution", "aliases", "types"} {
 		if _, present := doc[closedOut]; present {
 			t.Errorf("discovery advertises %q, which this Scope does not serve", closedOut)
 		}
