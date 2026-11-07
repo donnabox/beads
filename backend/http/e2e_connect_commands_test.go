@@ -8,6 +8,8 @@ import (
 	"net/http/httptest"
 	"net/http/httputil"
 	"net/url"
+	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"testing"
@@ -157,6 +159,35 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 				}
 				if row := c.show(t, id); row["status"] != "closed" {
 					t.Errorf("the close did not stay committed: %v", row)
+				}
+			})
+			t.Run("B11 batch applies as one request", func(t *testing.T) {
+				a, b, third := f.create("batch one"), f.create("batch two"), f.create("batch three")
+				script := filepath.Join(f.dir, "plan.txt")
+				plan := "create task 2 \"batch created\"\nupdate " + a + " title=changed\nclose " + b + " because\ndep add " + third + " " + a + " blocks\n"
+				if err := os.WriteFile(script, []byte(plan), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				c.counter.reset()
+				f.mustRun(nil, "batch", "-f", script)
+				c.dialed(t, "issue/batch", ":batchApply")
+				if row := c.show(t, a); row["title"] != "changed" {
+					t.Errorf("after bd batch: %v", row)
+				}
+				if row := c.show(t, b); row["status"] != "closed" || row["close_reason"] != "because" {
+					t.Errorf("after bd batch: %v", row)
+				}
+			})
+
+			t.Run("B11 a batch dep remove refuses before anything is sent", func(t *testing.T) {
+				a, b := f.create("no batch one"), f.create("no batch two")
+				script := filepath.Join(f.dir, "remove.txt")
+				if err := os.WriteFile(script, []byte("update "+a+" title=must-not-land\ndep remove "+a+" "+b+"\n"), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				c.refused(t, "line 2", "batch", "-f", script)
+				if row := c.show(t, a); row["title"] == "must-not-land" {
+					t.Errorf("the batch wrote before refusing: %v", row)
 				}
 			})
 			//ROWS
