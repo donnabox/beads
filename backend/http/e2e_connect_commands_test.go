@@ -231,6 +231,18 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Errorf("bd create --file: %s", out)
 				}
 			})
+			t.Run("B14 events read and pruning refuses", func(t *testing.T) {
+				// This server does not journal, so the read reaches it and is told so. The
+				// rows themselves are TestServedJournalCarriesTheActor's.
+				c.counter.reset()
+				c.refused(t, "events_journal_disabled", "events", "tail")
+				c.dialed(t, "events/list", "/v0/beads/events")
+				c.refused(t, "events_journal_disabled", "events", "export")
+				c.refused(t, "not available over bd connect", "events", "prune", "--before", "1")
+				if r := f.run(nil, "events", "tail"); strings.Contains(r.stderr, "journal is disabled") {
+					t.Errorf("the local journal note says nothing true about the server: %s", r.stderr)
+				}
+			})
 			//ROWS
 		})
 	}

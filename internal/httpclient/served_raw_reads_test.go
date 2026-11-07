@@ -291,3 +291,31 @@ func TestServedSearchIssuesListingShape(t *testing.T) {
 		}
 	})
 }
+
+// TestServedJournalCarriesTheActor: `bd events tail` over bd connect prints the
+// row the client rebuilt from the wire's record, so a member the rebuild drops is
+// a member the stream silently lacks. The wire publishes the actor.
+func TestServedJournalCarriesTheActor(t *testing.T) {
+	skipUnlessEmbeddedDolt(t)
+	ctx := context.Background()
+	env := newServedEnv(t, "ja")
+	env.reference.SetEventsJournalEnabled(true)
+	t.Cleanup(func() { env.reference.SetEventsJournalEnabled(false) })
+	if err := env.createIssue(ctx, &types.Issue{ID: "ja-1", Title: "journaled", Status: types.StatusOpen, IssueType: types.TypeTask}, "ada"); err != nil {
+		t.Fatal(err)
+	}
+	want, err := env.reference.ReadEventsJournal(ctx, 0, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := env.subject.ReadEventsJournalPage(ctx, 0, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(want) == 0 || len(got.Rows) != len(want) {
+		t.Fatalf("got %d rows, want %d", len(got.Rows), len(want))
+	}
+	if want[0].Actor == "" || got.Rows[0].Actor != want[0].Actor {
+		t.Fatalf("actor = %q, want %q", got.Rows[0].Actor, want[0].Actor)
+	}
+}
