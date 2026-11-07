@@ -221,6 +221,16 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 
 				f.mustRun(nil, "import", "--input", file, "--dry-run", "--json")
 			})
+			t.Run("B13 create --file", func(t *testing.T) {
+				file := filepath.Join(f.dir, "many.md")
+				if err := os.WriteFile(file, []byte("## first from md\n\n## second from md\n\n### Priority\n1\n"), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				out := f.mustRun(nil, "create", "--file", file, "--json").stdout
+				if !strings.Contains(out, "first from md") || !strings.Contains(out, "second from md") {
+					t.Errorf("bd create --file: %s", out)
+				}
+			})
 			//ROWS
 		})
 	}

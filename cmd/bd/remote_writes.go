@@ -303,3 +303,62 @@ func isUnsupportedByStore(err error) bool {
 	var unsupported *storage.ErrUnsupported
 	return errors.As(err, &unsupported)
 }
+
+// createBatchOverEitherOperation is `bd create --file`. On a local store it is the
+// role. On a remote one batchCreateIssues carries eight issue members; a request
+// holding another (Owner, which `bd create` fills from the git identity, is the
+// usual one) is refused before the dial, and goes as applyBatch's create items
+// instead, which carry it in the same one transaction.
+func createBatchOverEitherOperation(ctx context.Context, st storage.DoltStorage, request issueops.CreateBatchRequest) (issueops.CreateBatchResult, error) {
+	creator, err := st.BatchCreator()
+	if err != nil {
+		return issueops.CreateBatchResult{}, err
+	}
+	result, err := creator.CreateBatch(ctx, request)
+	if err == nil || !storeIsRemoteBackend(st) || !isUnsupportedByStore(err) {
+		return result, err
+	}
+
+	items := make([]issueops.ApplyItem, 0, len(request.Items))
+	for i, item := range request.Items {
+		key := fmt.Sprintf("item-%d", i)
+		items = append(items, issueops.ApplyItem{Kind: issueops.ItemCreate, Create: &issueops.CreateItem{
+			Key: key, Issue: item.Issue, DefaultPriority: item.DefaultPriority,
+		}})
+		for _, dep := range item.Dependencies {
+			items = append(items, issueops.ApplyItem{Kind: issueops.ItemDepAdd, DepAdd: &issueops.DepAddItem{
+				Source: issueops.Ref{Key: key},
+				Target: issueops.Ref{ID: dep.TargetID},
+				Type:   dep.Type,
+			}})
+		}
+	}
+	applier, err := st.BatchApplier()
+	if err != nil {
+		return issueops.CreateBatchResult{}, err
+	}
+	applied, err := applier.ApplyBatch(ctx, issueops.ApplyBatchRequest{Actor: request.Actor, Items: items, ForceIDPrefix: request.ForceIDPrefix})
+	if err != nil {
+		return issueops.CreateBatchResult{}, err
+	}
+	// applyBatch answers ids and no rows, and the command reports the rows.
+	ids := make([]string, 0, len(request.Items))
+	for i := range request.Items {
+		ids = append(ids, applied.Keys[fmt.Sprintf("item-%d", i)])
+	}
+	rows, err := st.GetIssuesByIDs(ctx, ids)
+	if err != nil {
+		return issueops.CreateBatchResult{}, fmt.Errorf("the issues were created, and reading them back failed: %w", err)
+	}
+	byID := make(map[string]*types.Issue, len(rows))
+	for _, row := range rows {
+		byID[row.ID] = row
+	}
+	issues := make([]*types.Issue, 0, len(ids))
+	for _, id := range ids {
+		if row, ok := byID[id]; ok {
+			issues = append(issues, row)
+		}
+	}
+	return issueops.CreateBatchResult{Issues: issues}, nil
+}
