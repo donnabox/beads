@@ -34,7 +34,7 @@ const (
 	// trish/preview1-issue-callables-20261104 (specs/profiles/core/core.md,
 	// specs/types/issue/issue.md, specs/types/issue/callables.md). It names protocol
 	// text, not this build.
-	coreSpecRevision = "8ff2dd047104c9a59423a12d3454ec48b80929e3"
+	coreSpecRevision = "7620a095a9ce5bb4209775c17340e4f493c67cee"
 
 	coreBDPVersion = "0.1"
 	coreProfile    = "core"
