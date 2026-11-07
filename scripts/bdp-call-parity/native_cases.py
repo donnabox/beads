@@ -436,7 +436,7 @@ def writes():
     one("issue/comment", "comment {i} --file c.txt", files={"c.txt": "from file\n"})
     one("issue/comment", "comment {i} --stdin", stdin="from stdin\n")
     one("issue/comment", "comments add {i} hello")
-    one("issue/comment", "comments add {i} hello --author kim", label="--author is an alias of --actor")
+    one("issue/comment", "comments add {i} hello --author kim", label="--author names someone else")
     one("issue/comment", "comments add {i} hello --actor kim --author kim", label="--actor and --author, one name")
     one("issue/comment", "comments add {i} hello --actor sam --author kim", label="--actor and --author, two names")
     one("issue/comment", "comments add {i} -a alice hello")

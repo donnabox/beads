@@ -85,19 +85,19 @@ python3 scripts/bdp-call-parity/wire_proof.py --base BASE_BD --new NEW_BD --dolt
   order, and the body.
 - **Server half.** Each server is asked the same raw requests in lockstep: Part A's v0 reads
   and writes, then fixed probes of `/`, `/bdp`, `/bdp/call`, Resource addresses and unrouted
-  paths, with and without an auth token file. Status, headers and body are compared. A close or
-  reopen reason stored as sent is the one difference allowed, and it is asked by name.
+  paths, with and without an auth token file, and a close or reopen reason the base refuses,
+  asked by name. Status, headers and body are compared. Any difference fails the run.
 - **Masked, and nothing else:** ports and the temporary root, timestamps, UUIDs (the project
   id), revision tokens, minted ids numbered by first appearance, cursors, `request_id`,
-  `arrival_seq` (it counts every create so far, the allowed ones too), `Date`, `Content-Length`
+  `arrival_seq` (it counts every create so far), `Date`, `Content-Length`
   (it moves with a masked value), the build hash in `bd version`, and the time in `bd ping`.
-- **Verdicts.** `same`; `allowed` (the base refused the command and the new bd serves it, or
-  gets further); `query-order` (one repeated query value in another order, which is map order
-  in the client and differs base against base too); `state` (a command whose own wire matches, with an answer that moved because
-  an earlier `allowed` command wrote something on one side only); `output` (same wire, different
-  words on stdout or stderr); `unexplained` (anything else). `allowed-differences.md` lists every
-  `allowed` command with the base's refusal and what the new bd now sends. It exits 1 on any
-  `unexplained`.
+- **Verdicts.** `same`; `query-order` (one repeated query value in another order, which is map
+  order in the client and differs base against base too, with identical answers and output);
+  `unexplained` (anything else). There is no list of tolerated differences. It exits 1 on any
+  command that is not one of the first two and on any server answer that differs.
+
+`bd` behaves the same on both protocols, and both as the base does: a command the base refuses
+over `bd connect` refuses on `--protocol bdp` too, and with the same words.
 
 ## Cleanup
 

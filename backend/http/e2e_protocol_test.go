@@ -182,64 +182,96 @@ func TestE2E_ProtocolPairings(t *testing.T) {
 	})
 }
 
-// A command that already answered sends on v0 what it always sent, the gap in its
-// answer included. BDP is where the fix is, and the same command there sends more.
-func TestE2E_ACommandThatAnsweredIsUnchangedOnV0(t *testing.T) {
+// A command answers the same on either protocol, refusals included: BDP changes what
+// goes on the wire and nothing a command does. Each pair runs through the real bd,
+// one server of each kind, on the same seed, and the request count is what tells a
+// command that reads more on one protocol.
+func TestE2E_ACommandAnswersTheSameOnBothProtocols(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
 	bin := buildBD(t)
 
+	type side struct {
+		f       *remoteRolesFixture
+		counter *requestCounter
+		blocker string
+		blocked string
+	}
+	open := func(t *testing.T, server httpapi.Protocol, connect ...string) *side {
+		t.Helper()
+		proxy, counter := startCountingProxy(t, startProtocolServer(t, server))
+		f := &remoteRolesFixture{t: t, bin: bin, dir: t.TempDir(), ids: map[string]string{}}
+		f.mustRun(nil, append([]string{"connect", "http://" + proxy}, connect...)...)
+		s := &side{f: f, counter: counter, blocker: f.create("blocker"), blocked: f.create("blocked")}
+		f.mustRun(nil, "dep", "add", s.blocked, s.blocker)
+		return s
+	}
+
 	for _, tc := range []struct {
-		name    string
-		args    []string
-		onV0    []string // what v0 sends; nothing else may reach the server
-		neverV0 string
-		onBDP   string
+		name string
+		args []string
+		// refuses, when set, is what both protocols' refusal has to name.
+		refuses string
 	}{
-		{name: "list text reads no gate targets", args: []string{"list"}, neverV0: "batchGet", onBDP: "issue/get-many"},
-		{name: "ready text reads no parent epic", args: []string{"ready"}, neverV0: "/v0/beads/dependencies", onBDP: "issue/dep/edges"},
-		{name: "graph reads no dependents", args: []string{"graph", "$blocker", "--json"}, neverV0: "include_dependents", onBDP: "issue/show"},
-		{name: "ready --explain reads no blockers", args: []string{"ready", "--explain", "--json"}, neverV0: "/v0/beads/dependencies", onBDP: "issue/dep/edges"},
-		{name: "show --refs hydrates nothing", args: []string{"show", "$blocker", "--refs", "--json"}, neverV0: "batchGet", onBDP: "issue/get-many"},
-		{name: "info counts nothing", args: []string{"info", "--json"}, neverV0: "GET /v0/beads/issues", onBDP: "issue/list"},
-		{name: "update --claim is an update", args: []string{"update", "$blocked", "--claim", "--json"}, onV0: []string{"PATCH /v0/beads/issues/"}, neverV0: ":claim", onBDP: "issue/claim"},
+		{name: "list", args: []string{"list"}},
+		{name: "ready", args: []string{"ready"}},
+		{name: "graph", args: []string{"graph", "$blocker", "--json"}},
+		{name: "info", args: []string{"info", "--json"}},
+		{name: "update --claim", args: []string{"update", "$blocked", "--claim", "--json"}},
+		{name: "ready --explain", args: []string{"ready", "--explain", "--json"}},
+		{name: "show --refs refuses", args: []string{"show", "$blocker", "--refs", "--json"}, refuses: "--refs"},
+		{name: "stale refuses", args: []string{"stale"}, refuses: "GetStaleIssues"},
+		{name: "kv get", args: []string{"kv", "get", "nothing"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			for _, bdp := range []bool{false, true} {
-				server := httpapi.ProtocolV0
-				connect := []string{}
-				if bdp {
-					server = httpapi.ProtocolBoth
-					connect = []string{"--protocol", "bdp"}
-				}
-				proxy, counter := startCountingProxy(t, startProtocolServer(t, server))
-				f := &remoteRolesFixture{t: t, bin: bin, dir: t.TempDir(), ids: map[string]string{}}
-				f.mustRun(nil, append([]string{"connect", "http://" + proxy}, connect...)...)
-				blocker := f.create("blocker")
-				blocked := f.create("blocked")
-				f.mustRun(nil, "dep", "add", blocked, blocker)
-
+			v0 := open(t, httpapi.ProtocolV0)
+			bdp := open(t, httpapi.ProtocolBoth, "--protocol", "bdp")
+			run := func(s *side) (bdResult, int) {
 				args := make([]string, len(tc.args))
 				for i, arg := range tc.args {
-					args[i] = strings.NewReplacer("$blocker", blocker, "$blocked", blocked).Replace(arg)
+					args[i] = strings.NewReplacer("$blocker", s.blocker, "$blocked", s.blocked).Replace(arg)
 				}
-				counter.reset()
-				f.mustRun(nil, args...)
-				sent := strings.Join(counter.uriSnapshot(), "\n")
-				if bdp {
-					if !strings.Contains(sent, tc.onBDP) {
-						t.Errorf("on BDP, want %s among:\n%s", tc.onBDP, sent)
-					}
-					continue
-				}
-				if strings.Contains(sent, tc.neverV0) {
-					t.Errorf("on v0, %q went out:\n%s", tc.neverV0, sent)
-				}
-				for _, want := range tc.onV0 {
-					if !strings.Contains(sent, want) {
-						t.Errorf("on v0, want %q among:\n%s", want, sent)
+				s.counter.reset()
+				r := s.f.run(nil, args...)
+				return r, len(s.counter.uriSnapshot())
+			}
+			onV0, sentV0 := run(v0)
+			onBDP, sentBDP := run(bdp)
+			if onV0.code != onBDP.code {
+				t.Errorf("exit %d on v0, %d on BDP:\nv0: %s\nbdp: %s", onV0.code, onBDP.code, onV0.stderr, onBDP.stderr)
+			}
+			if sentV0 != sentBDP {
+				t.Errorf("%d requests on v0, %d on BDP", sentV0, sentBDP)
+			}
+			if tc.refuses != "" {
+				for name, r := range map[string]bdResult{"v0": onV0, "bdp": onBDP} {
+					if r.code == 0 || !strings.Contains(r.stdout+r.stderr, tc.refuses) {
+						t.Errorf("on %s, exit %d, want a refusal naming %q: %s %s", name, r.code, tc.refuses, r.stdout, r.stderr)
 					}
 				}
 			}
 		})
 	}
+
+	// `bd update --claim` is an update on both protocols, not a claimIssue.
+	t.Run("update --claim is issue/update on BDP", func(t *testing.T) {
+		s := open(t, httpapi.ProtocolBoth, "--protocol", "bdp")
+		s.counter.reset()
+		s.f.mustRun(nil, "update", s.blocked, "--claim", "--json")
+		sent := strings.Join(s.counter.uriSnapshot(), "\n")
+		if !strings.Contains(sent, "issue/update") || strings.Contains(sent, "issue/claim") {
+			t.Errorf("sent:\n%s", sent)
+		}
+	})
+
+	// `bd comments add --author X` attributes the comment to X on both: on BDP the
+	// wire layer moves the author to revisionProvenance.
+	t.Run("--author names the comment's author on both", func(t *testing.T) {
+		for _, s := range []*side{open(t, httpapi.ProtocolV0), open(t, httpapi.ProtocolBoth, "--protocol", "bdp")} {
+			s.f.mustRun(nil, "comments", "add", s.blocked, "hello", "--author", "kim")
+			listed := s.f.mustRun(nil, "comments", s.blocked, "--json")
+			if !strings.Contains(listed.stdout, `"author": "kim"`) {
+				t.Errorf("the comment is not kim's: %s", listed.stdout)
+			}
+		}
+	})
 }

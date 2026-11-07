@@ -36,12 +36,6 @@ ARRIVAL_SEQ = re.compile(r'("?arrival_seq"?:\s*)\d+')
 PING_TIME = re.compile(r"\(\d+(?:\.\d+)?m?s\)")
 TIMINGS = re.compile(r'("\w+_ms":\s*)\d+')
 DROPPED_HEADERS = {"date", "content-length", "x-request-id"}
-# What a base command says when it will not run over bd connect.
-BASE_REFUSED = re.compile(r"not supported by the http backend|not expressible on the v0 wire|not available over bd connect"
-                          r"|refuses? (?:over|against)|not served|cannot be served|nothing was closed|http backend"
-                          r"|not implemented over|unknown flag|unknown command|the http store|expects? a direct"
-                          r"|matching neither expressible shape")
-
 
 class Masker:
     """Everything two independent runs may differ in, applied to raw text."""
@@ -265,7 +259,7 @@ def request_lines(record):
 
 
 def classify(base, new):
-    """One command's verdict, and what differed."""
+    """One command's verdict, and what differed. There are three, and only the first two pass."""
     if base.get("seed_failed") or new.get("seed_failed"):
         return ("same" if base.get("seed_failed") == new.get("seed_failed") else "unexplained"), {"seed": [base.get("seed_failed"), new.get("seed_failed")]}
     wire_base = [r["request"] for r in base["requests"]]
@@ -278,28 +272,19 @@ def classify(base, new):
     detail = {"base_exit": base["exit"], "new_exit": new["exit"],
               "base_says": first_line(base["stderr"]) or first_line(base["stdout"]),
               "new_says": first_line(new["stderr"]) or first_line(new["stdout"]),
-              "base_requests": request_lines(base), "new_requests": request_lines(new)}
-    if wire_base != wire_new and list(map(_query_as_set, wire_base)) == list(map(_query_as_set, wire_new)) and output_same:
-        # A repeated query value in another order, which is map order in the client.
-        # The answer does not depend on it, and base against base differs the same way.
-        detail["first_difference"] = first_difference(wire_base, wire_new)
-        return "query-order", detail
-    base_refused = base["exit"] != 0 or BASE_REFUSED.search(base["stderr"] + base["stdout"]) is not None
+              "base_requests": request_lines(base), "new_requests": request_lines(new),
+              "base_stdout": base["stdout"][:800], "new_stdout": new["stdout"][:800],
+              "base_stderr": base["stderr"][:800], "new_stderr": new["stderr"][:800]}
     if wire_base != wire_new:
         detail["first_difference"] = first_difference(wire_base, wire_new)
-        if sorted(map(json.dumps, wire_base)) == sorted(map(json.dumps, wire_new)):
-            detail["order_only"] = True
-        if base_refused and (new["exit"] == 0 or new["exit"] != base["exit"] or BASE_REFUSED.search(base["stderr"] + base["stdout"])):
-            return "allowed", detail
-        return "unexplained", detail
     if answers_base != answers_new:
         detail["first_answer_difference"] = first_difference(answers_base, answers_new)
-        if base_refused and base["exit"] != 0 and new["exit"] == 0:
-            return "allowed", detail
-        return "state", detail
-    detail["base_stdout"], detail["new_stdout"] = base["stdout"][:800], new["stdout"][:800]
-    detail["base_stderr"], detail["new_stderr"] = base["stderr"][:800], new["stderr"][:800]
-    return "output", detail
+    if (wire_base != wire_new and answers_base == answers_new and output_same
+            and list(map(_query_as_set, wire_base)) == list(map(_query_as_set, wire_new))):
+        # A repeated query value in another order, which is map order in the client.
+        # The answer does not depend on it, and base against base differs the same way.
+        return "query-order", detail
+    return "unexplained", detail
 
 
 def _query_as_set(request):
@@ -431,9 +416,8 @@ def server_proof(base_bd, new_bd, dolt, out, log):
                 entry.update({"base": answers[0], "new": answers[1], "state_same": states[0] == states[1]})
             results.append(entry)
         log(f"server: writes done, {len(results)}")
-        # The one thing the default server answers differently, on purpose: a close or
-        # reopen reason is stored as sent (Part B's "a reason ..." commands). It is here
-        # by name, so that its being the only one is what the run shows.
+        # A close or reopen reason is the one member a native fix once changed on /v0,
+        # so it is asked by name: both refuse these.
         long_reason = "x" * 300
         for label, path, body, seed_row in (
             ("close, a newline", "/v0/beads/issues/sw-fix-why1:close", {"actor": "a", "reason": "two\nlines"}, "sw-fix-why1"),
@@ -443,10 +427,8 @@ def server_proof(base_bd, new_bd, dolt, out, log):
         ):
             if seed_row:
                 part_a.seed([base, new], [a_cases.issue(seed_row)], [])
-            before = len(results)
             lockstep_probe(base, new, f"reason: {label}", "POST", path, body=json.dumps(body).encode(),
                            headers={"Content-Type": "application/json"}, results=results)
-            results[before]["allowed"] = "a close or reopen reason is stored as sent; the base refused it"
         # The credential posture: what asks for one must be what asked for one.
         for stack in (base, new):
             path = os.path.join(stack.dir, "tokens")
@@ -470,14 +452,8 @@ def server_proof(base_bd, new_bd, dolt, out, log):
 def write_reports(out, results, counts, server):
     lines = ["# Default settings against the base commit", "",
              f"Client half: {dict(counts)}.",
-             f"Server half: {len(server)} asked in lockstep, {sum(not r['same'] for r in server)} different.", "",
-             "## Commands the base refused or got less far with (`allowed`)", ""]
-    for r in results:
-        if r["verdict"] == "allowed":
-            d = r["detail"]
-            lines += [f"- `{r['key']}`: base exit {d['base_exit']}, new exit {d['new_exit']}. Base said: {d['base_says'][:200]}",
-                      f"  new sends: {'; '.join(x[:120] for x in d['new_requests'][:6])}"]
-    for verdict, title in (("query-order", "A repeated query value in another order"), ("state", "Same requests, an answer moved"), ("output", "Same wire, different words"), ("unexplained", "UNEXPLAINED")):
+             f"Server half: {len(server)} asked in lockstep, {sum(not r['same'] for r in server)} different.", ""]
+    for verdict, title in (("query-order", "A repeated query value in another order"), ("unexplained", "UNEXPLAINED")):
         lines += ["", f"## {title} (`{verdict}`)", ""]
         for r in results:
             if r["verdict"] == verdict:
@@ -488,22 +464,9 @@ def write_reports(out, results, counts, server):
     lines += ["", "## Server half, every difference", ""]
     for r in server:
         if not r["same"]:
-            why = f" ALLOWED: {r['allowed']}." if r.get("allowed") else ""
-            lines.append(f"- {r['label']} {r.get('method', '')} {r.get('target', '')}:{why} {json.dumps(r.get('base'))[:300]} / {json.dumps(r.get('new'))[:300]}")
+            lines.append(f"- {r['label']} {r.get('method', '')} {r.get('target', '')}: {json.dumps(r.get('base'))[:300]} / {json.dumps(r.get('new'))[:300]}")
     with open(os.path.join(out, "summary.md"), "w") as handle:
         handle.write("\n".join(lines) + "\n")
-    allowed = ["# Every request difference allowed against the base commit", "",
-               "Each command here refused at the base, and the new bd serves it or gets further.", "",
-               "| Command | Mode | Base exit | New exit | The base said | The new bd sends |", "| --- | --- | ---: | ---: | --- | --- |"]
-    for r in results:
-        if r["verdict"] == "allowed":
-            d = r["detail"]
-            mode, _, command = r["key"].partition(" ")
-            sends = "; ".join(x.split("  ")[0][:80] for x in d["new_requests"])
-            said = (d["base_says"] if len(d["base_says"]) > 2 else "(on stdout, as JSON)").replace("|", "\\|")[:160]
-            allowed.append(f"| `{command}` | {mode} | {d['base_exit']} | {d['new_exit']} | {said} | {sends} |")
-    with open(os.path.join(out, "allowed-differences.md"), "w") as handle:
-        handle.write("\n".join(allowed) + "\n")
 
 
 def main():
@@ -551,9 +514,10 @@ def main():
         server = server_proof(args.base, args.new, args.dolt, args.out, log)
     log(f"server: {sum(not r['same'] for r in server)} of {len(server)} different")
     write_reports(args.out, results, counts, server)
-    strays = [r for r in server if not r["same"] and not r.get("allowed")]
-    if counts.get("unexplained") or strays:
-        sys.exit(f"{counts.get('unexplained', 0)} commands and {len(strays)} server answers unexplained; see {args.out}/summary.md")
+    strays = [r for r in server if not r["same"]]
+    unknown = set(counts) - {"same", "query-order"}
+    if unknown or strays:
+        sys.exit(f"{sum(counts[v] for v in unknown)} commands and {len(strays)} server answers differ from the base; see {args.out}/summary.md")
 
 
 if __name__ == "__main__":
