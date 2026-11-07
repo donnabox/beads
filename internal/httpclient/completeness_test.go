@@ -146,7 +146,7 @@ var legitimatelyUnsupported = map[string]string{
 	// on the wire at all.
 	//
 	// THE TWO UNCLAIMS ARE NO LONGER PART OF THAT SENTENCE, and the split
-	// matters because `bd unclaim` reaches the role instead over http. The wire
+	// matters because it is the reason `bd unclaim` still refuses. The wire
 	// publishes releaseIssue (#5507) and the RELEASER ROLE dials it
 	// (releaser.go), including the compare-and-set on the holder that is exactly
 	// UnclaimIssueIfAssignee's question — so these are ordinary raw front doors
@@ -247,17 +247,22 @@ var legitimatelyUnsupported = map[string]string{
 
 	// Dependency and blocked-set raw reads. The served dependency surface is
 	// anchored (listDependencies takes >=1 issue_id) and role-shaped; these are
-	// the unanchored or off-role shapes. The ones several operations together can
-	// answer exactly have left this list for raw_reads.go.
-	"FindWispDependentsRecursive":  "raw read: no recursive-dependents operation",
-	"GetBlockingInfoForIssues":     "raw read: role BlockingAnnotator serves this shape",
-	"GetDependencyTree":            "raw read: role TreeWalker serves this shape",
-	"GetDependentRecords":          "raw read: no dependents operation off getIssue",
-	"GetDependentRecordsForIssues": "raw read: no multi-id dependents operation",
-	"IsBlocked":                    "raw read: role BlockingAnnotator serves this shape",
-	"IterAllDependencyRecords":     "raw read: streaming has no wire shape",
-	"IterDependenciesWithMetadata": "raw read: streaming has no wire shape",
-	"IterDependentsWithMetadata":   "raw read: streaming has no wire shape",
+	// the unanchored or off-role shapes. `bd blocked` and `bd ready --explain`
+	// refuse on these, which is why they are named in D7's refused class.
+	"DetectCycles":                  "raw read: role CycleDetector serves this shape",
+	"FindWispDependentsRecursive":   "raw read: no recursive-dependents operation",
+	"GetBlockingInfoForIssues":      "raw read: role BlockingAnnotator serves this shape",
+	"GetDependencies":               "raw read: role EdgeReader serves this shape",
+	"GetDependencyCounts":           "raw read: the paired blocks-only batch, expressible as two GraphCounter calls with Types set to the blocking type — the role's own leaf declines to name it as a third method, and re-routing it here would invent the map-of-two-numbers shape no wire operation carries",
+	"GetDependencyTree":             "raw read: role TreeWalker serves this shape",
+	"GetDependentRecords":           "raw read: no dependents operation off getIssue",
+	"GetDependencyRecordsForIssues": "raw read: no multi-id dependencies operation; the source-keyed, multi-id mirror of GetDependentRecordsForIssues' target-keyed shape — same gap, opposite direction",
+	"GetDependentRecordsForIssues":  "raw read: no multi-id dependents operation",
+	"GetDependents":                 "raw read: no dependents operation off getIssue",
+	"IsBlocked":                     "raw read: role BlockingAnnotator serves this shape",
+	"IterAllDependencyRecords":      "raw read: streaming has no wire shape",
+	"IterDependenciesWithMetadata":  "raw read: streaming has no wire shape",
+	"IterDependentsWithMetadata":    "raw read: streaming has no wire shape",
 
 	// Comment reads beyond getIssue's include_comments.
 	"GetCommentCounts":     "raw read: no comment-count operation",
@@ -266,14 +271,17 @@ var legitimatelyUnsupported = map[string]string{
 	"IterIssueComments":    "raw read: streaming has no wire shape",
 
 	// Issue reads with no wire mapping.
-	"GetIssueByExternalRef":    "raw read: no external-ref lookup operation",
-	"GetIssuesByLabel":         "raw read: role Reader serves the label filter (ListRequest.Labels). It said \"no label-filtered operation\", and listIssues publishes label, label_any and exclude_label — the encoder sends all three. What is true is that Reader.List does not answer THIS question: this method unions the durable and wisp planes with no status, type or plane suppression at all and its own priority/created order, where the listing answers the durable plane under workapi's default suppressions. Re-routing it would be a second spelling that returns a different set",
-	"GetLabelsForIssues":       "raw read: no multi-id label operation",
-	"GetNewlyUnblockedByClose": "raw read: no unblocked-by-close operation",
-	"GetNextChildID":           "raw read: id allocation is a server-side act",
-	"GetStatisticsNoBlocked":   "raw read: getStats has no blocked-suppression variant",
-	"SearchIssueSummaries":     "raw read: no summary-projection search operation; SearchIssues (role: Searcher) hydrates full issues, and the wire publishes no narrower searchIssues projection for list-shaped rendering to drop onto",
-	"SearchIssuesWithCounts":   "raw read: no counts-bearing search operation",
+	"GetEpicsEligibleForClosure": "raw read: no epic-eligibility operation",
+	"GetIssueByExternalRef":      "raw read: no external-ref lookup operation",
+	"GetIssuesByIDs":             "raw read: multi-id fan-out belongs to the SearchIssues IDs shape",
+	"GetIssuesByLabel":           "raw read: role Reader serves the label filter (ListRequest.Labels). It said \"no label-filtered operation\", and listIssues publishes label, label_any and exclude_label — the encoder sends all three. What is true is that Reader.List does not answer THIS question: this method unions the durable and wisp planes with no status, type or plane suppression at all and its own priority/created order, where the listing answers the durable plane under workapi's default suppressions. Re-routing it would be a second spelling that returns a different set",
+	"GetLabelsForIssues":         "raw read: no multi-id label operation",
+	"GetNewlyUnblockedByClose":   "raw read: no unblocked-by-close operation",
+	"GetNextChildID":             "raw read: id allocation is a server-side act",
+	"GetStaleIssues":             "raw read: no staleness operation",
+	"GetStatisticsNoBlocked":     "raw read: getStats has no blocked-suppression variant",
+	"SearchIssueSummaries":       "raw read: no summary-projection search operation; SearchIssues (role: Searcher) hydrates full issues, and the wire publishes no narrower searchIssues projection for list-shaped rendering to drop onto",
+	"SearchIssuesWithCounts":     "raw read: no counts-bearing search operation",
 
 	// Streaming iterators. Every wire read is a page, not a stream.
 	"IterBlockedIssues": "raw read: streaming has no wire shape",

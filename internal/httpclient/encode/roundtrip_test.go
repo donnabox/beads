@@ -626,10 +626,6 @@ func assertEveryEncodedFieldWasExercised(t *testing.T, exercised map[string]map[
 		// is fed back through the same builder and the filter that comes out is
 		// compared with the one that went in.
 		"listIssues/searchParentWalk": "TestTheParentWalkRoundTripsThroughTheServerDecoder",
-		// The listing shape's parameters are ListParams' own: planListing projects
-		// the filter onto a ListRequest and encodes that, and listIssues' table is
-		// swept above.
-		"listIssues/searchListing": "TestARawFilterIsTheListingShape",
 	}
 
 	for _, table := range Tables() {

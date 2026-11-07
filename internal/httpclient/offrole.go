@@ -30,11 +30,8 @@ package httpclient
 // GetIssue probe to bridge.go, and the settings, statistics and vocabulary reads
 // to vocabulary.go.
 //
-// The reads several operations together answer exactly (GetDependents,
-// GetDependencies, GetIssuesByIDs, GetDependencyRecordsForIssues and their
-// neighbors) are in raw_reads.go.
-//
 // Everything NOT here and not in accessors.go, store.go or metadata.go is on the
-// generated shell and refuses permanently — including GetLabelsForIssues,
-// GetNextChildID and the VersionReconciler, Bootstrapper and InitVerifier
-// accessors.
+// generated shell and refuses permanently — including the batch and unanchored
+// variants (GetLabelsForIssues, GetDependencyRecordsForIssues, GetDependencies,
+// GetDependents, GetNextChildID) and the VersionReconciler, Bootstrapper and
+// InitVerifier accessors.

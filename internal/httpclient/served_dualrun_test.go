@@ -295,13 +295,12 @@ func TestDualRunIDResolutionProbesAgreeWithTheReferenceStore(t *testing.T) {
 	c, _, _, scope := dualRunFixture(t, "resolve")
 	present, absent := scope+"-a", scope+"-never-seeded"
 
-	// A filter naming neither an id set nor a parent is the listing shape now
-	// (TestServedSearchIssuesListingShape). What that shape cannot state still
-	// refuses with the encoder's ledgered refusal rather than widening.
-	if _, err := c.client.SearchIssues(ctx, "", types.IssueFilter{IDPrefix: scope}); err == nil {
-		t.Error("a SearchIssues the listing cannot state answered instead of refusing")
+	// The shapeless filter — neither an id set nor a parent — is the unbounded
+	// "everything" question, and it refuses rather than answering it.
+	if _, err := c.client.SearchIssues(ctx, "", types.IssueFilter{}); err == nil {
+		t.Error("a shapeless SearchIssues answered instead of refusing")
 	} else if !errors.Is(err, encode.ErrRefused) {
-		t.Errorf("a SearchIssues the listing cannot state refused with %v, want the encoder's ledgered refusal", err)
+		t.Errorf("a shapeless SearchIssues refused with %v, want the encoder's ledgered refusal", err)
 	}
 
 	for _, ids := range [][]string{{present}, {absent}, {present, absent}} {
