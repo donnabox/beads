@@ -51,6 +51,11 @@ func TestE2E_ConnectRefusalsSayWhy(t *testing.T) {
 					want: "'bd sql' is not available over bd connect: bd serve publishes no SQL surface",
 					not:  []string{"embedded mode"},
 				},
+				{
+					name: "E3 sync", args: []string{"sync"},
+					want: "bd sync is not available over bd connect: bd serve is the sync boundary",
+					not:  []string{"is_blocked recompute"},
+				},
 			} {
 				t.Run(row.name, func(t *testing.T) {
 					r := f.run(nil, row.args...)
