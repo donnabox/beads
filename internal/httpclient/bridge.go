@@ -28,8 +28,8 @@ import (
 // filter widens a result set invisibly and the server can only reject the
 // parameters it receives (L12).
 //
-// The SEARCH bridge is not here. Its two shapes are id resolution's (resolve.go)
-// and the descendant walk's, and both live beside the surfaces that own them.
+// The SEARCH bridge is not here. Its shapes are id resolution's, the descendant
+// walk's and the listing's (resolve.go), and they live beside what they share.
 
 // GetReadyWork serves `bd ready`'s text listing.
 //

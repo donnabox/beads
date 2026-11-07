@@ -165,6 +165,7 @@ func Ledger() []Row {
 	rows = append(rows, queryRequestRows()...)
 	rows = append(rows, issueFilterRows()...)
 	rows = append(rows, parentWalkRows()...)
+	rows = append(rows, searchListingRows()...)
 	rows = append(rows, workFilterRows()...)
 	return rows
 }
@@ -1119,7 +1120,7 @@ func commandRows() []Row {
 		row("F-ready-explain", "ready", "--explain", "`bd ready --explain` refuses",
 			"it dispatches onto raw GetBlockedIssues/GetIssuesByIDs/GetDependencyCounts/DetectCycles, three of which are on the unsupported allowlist"),
 		row("F-ready-mol", "ready", "--mol", "`bd ready --mol` refuses",
-			"its molecule subgraph load reaches findHierarchicalChildren, an IDPrefix SearchIssues shape the parent-walk bridge cannot express (E-IssueFilter.noShape). GetDependencyRecords and GetDependentsWithMetadata, which the same load also calls, stopped being the blocker once they flipped onto the wire"),
+			"its molecule subgraph load reaches findHierarchicalChildren, an IDPrefix SearchIssues filter listIssues publishes no parameter for (S-IssueFilter.IDPrefix). GetDependencyRecords and GetDependentsWithMetadata, which the same load also calls, stopped being the blocker once they flipped onto the wire"),
 		row("F-ready-gated", "ready", "--gated", "`bd ready --gated` refuses",
 			"it dispatches onto a filtered SearchIssues shape the bridge cannot express, plus GetDependents"),
 		row("F-show-thread", "show", "--thread", "`bd show --thread` refuses",

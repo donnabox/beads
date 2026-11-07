@@ -60,7 +60,7 @@ func RenderLedgerMarkdown() string {
 		},
 		{
 			"Search bridge / IssueFilter (D4, D11)",
-			"The off-role SearchIssues bridge serves two shapes and no others: the exact-ids fast path and the parent descendant walk. Every other populated IssueFilter member is a filter the bridge would have to drop to answer, so it refuses.",
+			"The off-role SearchIssues bridge serves three shapes: the exact-ids fast path, the parent descendant walk, and a walk of listIssues for a filter naming neither. A populated IssueFilter member a shape cannot state is a filter the bridge would have to drop to answer, so it refuses.",
 			func(id string) bool {
 				return strings.HasPrefix(id, "E-IssueFilter") || strings.HasPrefix(id, "E-bridge")
 			},
@@ -69,6 +69,11 @@ func RenderLedgerMarkdown() string {
 			"Parent-walk derived defaults (D4)",
 			"The descendant walk reads the same IssueFilter as the exact-ids shape and reads it differently. The wire publishes intents (all, include_templates, include_gates, include_infra) and the server re-derives the exclusions; the bridge inverts the derived defaults back to intents and refuses anything the inversion cannot account for.",
 			func(id string) bool { return strings.HasPrefix(id, "P-") },
+		},
+		{
+			"Listing shape of SearchIssues (D8)",
+			"A filter naming neither ids nor a parent is one walk of listIssues with every default suppression lifted, because a raw filter narrows only by what it says. These are the members that walk cannot state, or that it drops because they decide no row.",
+			func(id string) bool { return strings.HasPrefix(id, "S-") },
 		},
 		{
 			"Ready bridge / WorkFilter (D8)",

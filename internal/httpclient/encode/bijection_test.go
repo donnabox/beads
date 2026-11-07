@@ -388,6 +388,11 @@ func TestEncoderHonorsEveryTableDisposition(t *testing.T) {
 		}
 
 		for _, entry := range table.Fields {
+			// Populating one of these leaves the listing shape for another table,
+			// which TestARawFilterIsTheListingShape pins directly.
+			if table.Shape == string(SearchListing) && (entry.Name == "IDs" || entry.Name == "ParentID") {
+				continue
+			}
 			t.Run(tableName(table)+"/"+entry.Name, func(t *testing.T) {
 				source := reflect.New(table.Source).Elem()
 				source.Set(base)
@@ -477,10 +482,9 @@ func TestTheExactIDsFanOutIsBounded(t *testing.T) {
 	}
 }
 
-// TestASearchFilterMatchingNeitherShapeRefuses covers the two shape decisions
-// the per-field sweep cannot express: the empty filter, which means EVERYTHING
-// and is the most dangerous drop on this surface, and the id-plus-parent pair,
-// which is neither shape.
+// TestASearchFilterMatchingNeitherShapeRefuses covers the shape decision the
+// per-field sweep cannot express: the id-plus-parent pair, which is neither
+// shape.
 func TestASearchFilterMatchingNeitherShapeRefuses(t *testing.T) {
 	parent := "bd-parent"
 	for _, tc := range []struct {
@@ -488,7 +492,6 @@ func TestASearchFilterMatchingNeitherShapeRefuses(t *testing.T) {
 		filter types.IssueFilter
 		row    string
 	}{
-		{"the empty filter", types.IssueFilter{}, "E-IssueFilter.noShape"},
 		{"ids and a parent together", types.IssueFilter{IDs: []string{"bd-1"}, ParentID: &parent}, "E-IssueFilter.shapeConflict"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -501,6 +504,64 @@ func TestASearchFilterMatchingNeitherShapeRefuses(t *testing.T) {
 				t.Errorf("refusal cites %q, want %q", refusal.Row.ID, tc.row)
 			}
 		})
+	}
+}
+
+// TestARawFilterIsTheListingShape pins what the sweep cannot: which shape a
+// filter selects, and that an unset member means "no restriction", the opposite
+// of what it means to `bd list`.
+func TestARawFilterIsTheListingShape(t *testing.T) {
+	parent := "bd-parent"
+	if plan, err := PlanSearch(types.IssueFilter{IDs: []string{"bd-1"}}, ZeroVocabulary); err != nil || plan.Shape != SearchExactIDs {
+		t.Errorf("an id set planned as %q (err=%v)", plan.Shape, err)
+	}
+	if plan, err := PlanSearch(types.IssueFilter{ParentID: &parent, ExcludeStatus: []types.Status{types.StatusClosed, types.StatusPinned}}, ZeroVocabulary); err == nil && plan.Shape != SearchParentWalk {
+		t.Errorf("a parent planned as %q", plan.Shape)
+	}
+
+	plan, err := PlanSearch(types.IssueFilter{}, ZeroVocabulary)
+	if err != nil {
+		t.Fatalf("the empty filter: %v", err)
+	}
+	if plan.Shape != SearchListing {
+		t.Fatalf("the empty filter planned as %q", plan.Shape)
+	}
+	for _, param := range []string{"all", "include_templates", "include_gates", "include_infra", "include_ephemeral"} {
+		if plan.Params.Get(param) != "true" {
+			t.Errorf("the empty filter means every row, so %s must be sent; params=%v", param, plan.Params)
+		}
+	}
+
+	no, yes := false, true
+	plan, err = PlanSearch(types.IssueFilter{IsTemplate: &no, Pinned: &no}, ZeroVocabulary)
+	if err != nil {
+		t.Fatalf("IsTemplate=false, Pinned=false: %v", err)
+	}
+	if plan.Params.Has("include_templates") || plan.Params.Get("no_pinned") != "true" {
+		t.Errorf("params=%v", plan.Params)
+	}
+
+	var refusal *RefusedError
+	if _, err := PlanSearch(types.IssueFilter{IsTemplate: &yes}, ZeroVocabulary); !errors.As(err, &refusal) || refusal.Row.ID != "S-IssueFilter.IsTemplate" {
+		t.Errorf("IsTemplate=true: %v", err)
+	}
+	if _, err := PlanSearch(types.IssueFilter{SkipWisps: true}, ZeroVocabulary); !errors.As(err, &refusal) || refusal.Row.ID != "S-IssueFilter.SkipWisps" {
+		t.Errorf("SkipWisps with infra types admitted: %v", err)
+	}
+
+	// The filter `bd list` builds: holding the plane out is expressible with the
+	// infra types excluded, which is what leaving the intents off derives.
+	cfg := ZeroVocabulary()
+	excluded := []types.IssueType{"gate"}
+	for _, name := range cfg.InfraTypes() {
+		excluded = append(excluded, types.IssueType(name))
+	}
+	plan, err = PlanSearch(types.IssueFilter{SkipWisps: true, ExcludeTypes: excluded}, ZeroVocabulary)
+	if err != nil {
+		t.Fatalf("SkipWisps with the infra exclusions: %v", err)
+	}
+	if plan.Params.Has("include_infra") || plan.Params.Has("include_ephemeral") {
+		t.Errorf("params=%v", plan.Params)
 	}
 }
 
