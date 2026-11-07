@@ -48,6 +48,7 @@ func CloneUpdateRequest(request publicops.UpdateRequest) publicops.UpdateRequest
 func CloneCloseRequest(request publicops.CloseRequest) publicops.CloseRequest {
 	clone := request
 	clone.ExpectedVersion = cloneInt64(request.ExpectedVersion)
+	clone.InTx = cloneRowCheck(request.InTx)
 	return clone
 }
 
@@ -55,7 +56,16 @@ func CloneCloseRequest(request publicops.CloseRequest) publicops.CloseRequest {
 func CloneReopenRequest(request publicops.ReopenRequest) publicops.ReopenRequest {
 	clone := request
 	clone.ExpectedVersion = cloneInt64(request.ExpectedVersion)
+	clone.InTx = cloneRowCheck(request.InTx)
 	return clone
+}
+
+func cloneRowCheck(check *publicops.RowCheck) *publicops.RowCheck {
+	if check == nil {
+		return nil
+	}
+	clone := *check
+	return &clone
 }
 
 func clonePublicIssue(issue *publicops.Issue) *publicops.Issue {

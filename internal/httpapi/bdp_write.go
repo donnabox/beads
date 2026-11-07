@@ -596,8 +596,8 @@ func serveCreateLink(c *writeCall) error {
 //
 // A Link's identity carries its row's creation second, so a Link created and removed
 // inside one second would hand its id straight to the pair's next Link. Holding the
-// removal past that second closes it on this route; Core's lifetime non-reuse has no
-// other footing here, as the report and the projection's own comment say.
+// removal past that second closes it on this route. It closes nothing on v0's route,
+// and nothing else records a Link's identity once the row is gone: see coreLinkID.
 func serveDeleteLink(c *writeCall) error {
 	subject, problem := c.subject("link")
 	if problem != nil {
