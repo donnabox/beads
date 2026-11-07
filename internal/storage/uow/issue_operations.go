@@ -112,7 +112,9 @@ func (o *issueOperations) Create(ctx context.Context, request publicops.CreateRe
 		if err != nil {
 			return publicops.CreateResult{}, "", err
 		}
-		storageissueops.OverlayCreateTimestamps(issue, created.Issue)
+		if !attempt.StoredTimestamps {
+			storageissueops.OverlayCreateTimestamps(issue, created.Issue)
+		}
 		return publicops.CreateResult{Issue: issue}, "create issue", nil
 	})
 }
@@ -215,13 +217,27 @@ func (o *issueOperations) Update(ctx context.Context, request publicops.UpdateRe
 		if err != nil {
 			return publicops.UpdateResult{}, "", validationError(err)
 		}
-		before, _, err := operationIssue(ctx, uw, attempt.IssueID, attempt.IssuePlaneOnly)
+		before, useWisp, err := operationIssue(ctx, uw, attempt.IssueID, attempt.IssuePlaneOnly)
 		if err != nil {
 			return publicops.UpdateResult{}, "", err
 		}
 		before, err = hydrateIssueOperation(ctx, uw, before, false, attempt.IssuePlaneOnly)
 		if err != nil {
 			return publicops.UpdateResult{}, "", err
+		}
+		// The caller's own check, over this attempt's read of the row, and the
+		// patch it settled on: everything below sees that patch.
+		if attempt.InTx != nil {
+			if err := attempt.InTx(before, &attempt); err != nil {
+				return publicops.UpdateResult{}, "", err
+			}
+			if err := validateUpdateRequest(attempt); err != nil {
+				return publicops.UpdateResult{}, "", err
+			}
+			spec, err = updateSpec(attempt)
+			if err != nil {
+				return publicops.UpdateResult{}, "", validationError(err)
+			}
 		}
 		// The assignee fence belongs here, over the same-transaction row the
 		// update is about to mutate, and not in ApplyUpdate: callers build their
@@ -255,8 +271,33 @@ func (o *issueOperations) Update(ctx context.Context, request publicops.UpdateRe
 			return publicops.UpdateResult{}, "", err
 		}
 		changed := claimChanged || !semanticIssueEqual(before, issue)
+		if attempt.InTx != nil && changed && issue.RowVersion == before.RowVersion {
+			if err := remintRowLockInUOW(ctx, uw, attempt.IssueID, useWisp); err != nil {
+				return publicops.UpdateResult{}, "", err
+			}
+			if issue, err = hydrateIssueOperation(ctx, uw, updated, false, attempt.IssuePlaneOnly); err != nil {
+				return publicops.UpdateResult{}, "", err
+			}
+		}
 		return publicops.UpdateResult{Issue: issue, Changed: changed}, updateHistoryEntry(attempt, changed), nil
 	})
+}
+
+// remintRowLockInUOW rewrites row_lock on a row this unit of work changed without
+// touching the row itself: a label-only write. UpdateRequest.InTx says why a guarded
+// writer needs it, and the update is what moves updated_at with it.
+func remintRowLockInUOW(ctx context.Context, uw UnitOfWork, id string, useWisp bool) error {
+	table := "issues"
+	if useWisp {
+		table = "wisps"
+	}
+	clause, args := storageissueops.RowLockClause()
+	//nolint:gosec // G201: table is one of two hardcoded constants, clause a fixed fragment.
+	query := fmt.Sprintf("UPDATE %s SET %s, updated_at = ? WHERE id = ?", table, clause)
+	if _, err := uw.RawSQLUseCase().Exec(ctx, query, append(args, time.Now().UTC(), id)...); err != nil {
+		return fmt.Errorf("rewrite row_lock of %s: %w", id, err)
+	}
+	return nil
 }
 
 // updatePreconditionsHold reports whether request's compare-and-set
@@ -506,7 +547,7 @@ func (o *issueOperations) Reopen(ctx context.Context, request publicops.ReopenRe
 // polling caller mint one per call. Every other update names one even when its
 // post-state compares equal, because a same-value write still touches the row.
 func updateHistoryEntry(request publicops.UpdateRequest, changed bool) string {
-	if !changed && request.Claim && reflect.DeepEqual(request.Patch, publicops.IssuePatch{}) {
+	if !changed && (request.Claim || request.InTx != nil) && reflect.DeepEqual(request.Patch, publicops.IssuePatch{}) {
 		return ""
 	}
 	return storageissueops.HistoryEntry(request.Provenance, "update issue")

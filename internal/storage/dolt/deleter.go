@@ -118,7 +118,7 @@ func (s *deleter) Delete(ctx context.Context, req issueops.DeleteRequest) (issue
 	// scoped to serverMode only. See withDeleteFence's doc for the full
 	// design and why one pinned connection, rather than a pool-sourced one,
 	// is required.
-	if req.ExpectedVersion != nil && s.store.serverMode {
+	if (req.ExpectedVersion != nil || req.InTx != nil) && s.store.serverMode {
 		if err := s.store.withDeleteFence(ctx, req.IDs[0], write); err != nil {
 			return issueops.DeleteResult{}, err
 		}

@@ -119,6 +119,9 @@ func createBody(req issueops.CreateRequest) (apigen.CreateIssueRequest, error) {
 		return apigen.CreateIssueRequest{}, invalid(
 			"Issue carries comments or dependencies; supply edges through the request's own Dependencies")
 	}
+	if req.StoredTimestamps {
+		return apigen.CreateIssueRequest{}, refuse(encode.OpCreateIssue, "W-CreateRequest.StoredTimestamps")
+	}
 	if req.IDPrefix != "" && req.Issue.ID != "" && !req.ForceIDPrefix {
 		// Refused only where the override would ACT. The role reads it for one
 		// thing — checking an explicit id it was not told to force — so a create
@@ -917,6 +920,8 @@ func refuseUnwirableUpdateMembers(req issueops.UpdateRequest) error {
 		return refuse(encode.OpUpdateIssue, "W-UpdateRequest.IssuePlaneOnly")
 	case req.Provenance != "":
 		return refuse(encode.OpUpdateIssue, "W-UpdateRequest.Provenance")
+	case req.InTx != nil:
+		return refuse(encode.OpUpdateIssue, "W-UpdateRequest.InTx")
 	}
 	return nil
 }

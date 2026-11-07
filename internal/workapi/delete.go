@@ -49,6 +49,11 @@ func ValidateDeleteRequest(in issueops.DeleteRequest) error {
 				issueops.ErrValidation, distinct)
 		}
 	}
+	if in.InTx != nil || in.RefuseIncidentEdges {
+		if distinct := len(NormalizeDeleteIDs(in.IDs)); distinct > 1 {
+			return fmt.Errorf("%w: a delete guarded on one row names %d issues", issueops.ErrValidation, distinct)
+		}
+	}
 	return nil
 }
 

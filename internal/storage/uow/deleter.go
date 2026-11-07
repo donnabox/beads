@@ -93,7 +93,7 @@ func (d *deleter) Delete(ctx context.Context, req publicops.DeleteRequest) (publ
 	// notifyingProvider and then an externaldeps uowProvider — both of which
 	// pass THEMSELVES, not the inner provider, to NewDeleter, so d.provider
 	// is a decorator here in every real deployment, never the bare provider.
-	if req.ExpectedVersion != nil {
+	if req.ExpectedVersion != nil || req.InTx != nil {
 		if sp, ok := UnwrapProvider(d.provider).(*doltSQLProvider); ok {
 			var result publicops.DeleteResult
 			err := withDeleteFence(ctx, sp, req.IDs[0], func() error {
@@ -167,6 +167,25 @@ func deleteInUOW(ctx context.Context, uw UnitOfWork, req publicops.DeleteRequest
 			return publicops.DeleteResult{}, &publicops.VersionMismatchError{Expected: *req.ExpectedVersion, Current: current}
 		}
 	}
+	// The caller's own check, over this attempt's read of the row.
+	if req.InTx != nil {
+		current, err := hydrateIssueOperation(ctx, uw, present[req.IDs[0]], false, false)
+		if err != nil {
+			return publicops.DeleteResult{}, fmt.Errorf("delete: read the guarded row: %w", err)
+		}
+		if err := req.InTx(current); err != nil {
+			return publicops.DeleteResult{}, err
+		}
+	}
+	if req.RefuseIncidentEdges {
+		incident, err := incidentEdgesInUOW(ctx, uw, req.IDs)
+		if err != nil {
+			return publicops.DeleteResult{}, err
+		}
+		if incident {
+			return publicops.DeleteResult{}, &publicops.IncidentEdgesError{IssueID: req.IDs[0]}
+		}
+	}
 
 	// The guard runs only when the request did not already say what to do
 	// about dependents. Under Cascade the use case reports the dependents the
@@ -222,6 +241,39 @@ func deleteInUOW(ctx context.Context, uw UnitOfWork, req publicops.DeleteRequest
 		result.Orphaned = deleted.OrphanedIssues
 	}
 	return result, nil
+}
+
+// incidentEdgesInUOW reports whether any edge touches ids, in either direction and
+// in either plane. The wisp plane is optional, as externalDependentsBySourceInUOW
+// says.
+func incidentEdgesInUOW(ctx context.Context, uw UnitOfWork, ids []string) (bool, error) {
+	depUC := uw.DependencyUseCase()
+	for _, plane := range []struct {
+		list     func(context.Context, []string, domain.DepListFilter) (domain.DepBulkResult, error)
+		optional bool
+	}{
+		{list: depUC.ListByIssueIDs},
+		{list: depUC.ListByWispIDs, optional: true},
+	} {
+		res, err := plane.list(ctx, ids, domain.DepListFilter{Direction: domain.DepDirectionBoth})
+		if err != nil {
+			if plane.optional && dberrors.IsTableNotExist(err) {
+				continue
+			}
+			return false, fmt.Errorf("delete: check incident edges: %w", err)
+		}
+		for _, edges := range res.Outgoing {
+			if len(edges) > 0 {
+				return true, nil
+			}
+		}
+		for _, edges := range res.Incoming {
+			if len(edges) > 0 {
+				return true, nil
+			}
+		}
+	}
+	return false, nil
 }
 
 // externalDependentsBySourceInUOW reports, for each of ids, the DIRECT

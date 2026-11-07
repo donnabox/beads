@@ -244,6 +244,11 @@ type CreateRequest struct {
 	// Issue.Priority must be zero when it is set; a request that sets both is
 	// ErrValidation, because the two would disagree about what was asked for.
 	DefaultPriority bool
+	// StoredTimestamps answers CreateResult.Issue exactly as a later read would
+	// show the row, rather than with the sub-second stamps the create echo
+	// restores over DATETIME(0) columns. A caller that derives anything from the
+	// result's content, such as a revision a later guard compares, needs it.
+	StoredTimestamps bool
 }
 
 // DefaultCreatePriority is the priority a create stores when its request sets
@@ -365,6 +370,27 @@ type UpdateRequest struct {
 	// label ignores it. Persistence, not this, is what decides whether an issue
 	// is versioned at all.
 	Provenance string
+	// InTx is a caller's decision about the row as this update's own
+	// transaction reads it, labels included, made before anything is written.
+	// An error it returns refuses the update, unchanged, with nothing written.
+	// It may rewrite attempt, this attempt's own copy of the request, so an edit
+	// that depends on the current value is computed from the state the write
+	// lands on rather than from an earlier read; an empty Patch is then a no-op
+	// that records nothing. It validates like any other request.
+	//
+	// IT RUNS ONCE PER ATTEMPT: a transaction replayed on a serialization
+	// failure calls it again over what that attempt reads, so it must keep no
+	// state of its own beyond the last call's answer.
+	//
+	// A REQUEST CARRYING IT ALWAYS REWRITES row_lock WHEN IT CHANGES ANYTHING,
+	// label-only writes included. That is the rest of what makes such a check
+	// sound: Dolt merges concurrent commits cell by cell and has no row locks,
+	// so two writers that each passed the check on the same state would both
+	// land unless they share a cell (see freshRowLock).
+	//
+	// nil is every caller that predates it, and changes nothing. A transport
+	// that cannot run code inside the server's transaction refuses it.
+	InTx func(current *Issue, attempt *UpdateRequest) error
 }
 
 // CloseRequest describes an issue closure.

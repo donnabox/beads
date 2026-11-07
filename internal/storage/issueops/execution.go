@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
@@ -113,7 +114,9 @@ func ExecuteCreate(ctx context.Context, tx *sql.Tx, request publicops.CreateRequ
 	if err != nil {
 		return publicops.CreateResult{}, nil, err
 	}
-	OverlayCreateTimestamps(hydrated, issue)
+	if !attempt.StoredTimestamps {
+		OverlayCreateTimestamps(hydrated, issue)
+	}
 	return publicops.CreateResult{Issue: hydrated}, tables, nil
 }
 
@@ -180,6 +183,23 @@ func executeUpdate(ctx context.Context, tx *sql.Tx, request publicops.UpdateRequ
 	} else if err := CheckExpectedFieldsInTx(ctx, tx, attempt.IssueID, attempt.ExpectedAssignee, nil); err != nil {
 		return publicops.UpdateResult{}, nil, err
 	}
+	// The caller's own check, over this attempt's read of the row, and the patch
+	// it settled on: everything below sees that patch.
+	if attempt.InTx != nil {
+		current, err := HydrateIssueOperationResult(ctx, tx, attempt.IssueID, false)
+		if err != nil {
+			return publicops.UpdateResult{}, nil, err
+		}
+		if err := attempt.InTx(current, &attempt); err != nil {
+			return publicops.UpdateResult{}, nil, err
+		}
+		if err := ValidateUpdateRequest(attempt); err != nil {
+			return publicops.UpdateResult{}, nil, err
+		}
+		if err := ValidateMetadataPatch(attempt.Patch.Metadata); err != nil {
+			return publicops.UpdateResult{}, nil, err
+		}
+	}
 	if guardTemplate {
 		if err := AuthorizeTemplateUpdate(before, attempt); err != nil {
 			return publicops.UpdateResult{}, nil, err
@@ -197,6 +217,7 @@ func executeUpdate(ctx context.Context, tx *sql.Tx, request publicops.UpdateRequ
 	// label set and edge set rather than whichever write happened to run
 	// first.
 	changedAny := false
+	rowRewritten := false
 	if attempt.Claim {
 		claimed, err := claimIssueInTx(ctx, tx, attempt.IssueID, attempt.Actor, false)
 		if err != nil {
@@ -242,6 +263,7 @@ func executeUpdate(ctx context.Context, tx *sql.Tx, request publicops.UpdateRequ
 		}
 		if updated.Changed {
 			changedAny = true
+			rowRewritten = true
 			issueTable, _, eventTable, _ := WispTableRouting(updated.IsWisp)
 			tables.Add(issueTable, eventTable)
 			if updated.IssueRowsChanged {
@@ -286,6 +308,15 @@ func executeUpdate(ctx context.Context, tx *sql.Tx, request publicops.UpdateRequ
 		}
 		beginsHistory = moved.BeginsHistory()
 	}
+	// UpdateRequest.InTx says why a guarded writer rewrites row_lock even when it
+	// wrote only labels.
+	if attempt.InTx != nil && changedAny && !rowRewritten {
+		if err := remintRowLockInTx(ctx, tx, attempt.IssueID); err != nil {
+			return publicops.UpdateResult{}, nil, err
+		}
+		issueTable, _, _, _ := WispTableRouting(IsActiveWispInTx(ctx, tx, attempt.IssueID))
+		tables.Add(issueTable)
+	}
 	// The one mint for this guarded update, LAST: after the claim, the row
 	// write, the label and parent patches and the persistence move. Nothing
 	// changed means nothing to version (the FR-2 no-op case), and a row that
@@ -309,6 +340,20 @@ func executeUpdate(ctx context.Context, tx *sql.Tx, request publicops.UpdateRequ
 		return publicops.UpdateResult{}, nil, err
 	}
 	return publicops.UpdateResult{Issue: hydrated, Changed: changedAny}, tables, nil
+}
+
+// remintRowLockInTx rewrites row_lock on a row this transaction changed without
+// touching the row itself. UpdateRequest.InTx says why a guarded writer needs it,
+// and the update is what moves updated_at with it.
+func remintRowLockInTx(ctx context.Context, tx DBTX, id string) error {
+	issueTable, _, _, _ := WispTableRouting(IsActiveWispInTx(ctx, tx, id))
+	clause, args := RowLockClause()
+	//nolint:gosec // G201: issueTable comes from WispTableRouting, clause is a fixed fragment.
+	query := fmt.Sprintf("UPDATE %s SET %s, updated_at = ? WHERE id = ?", issueTable, clause)
+	if _, err := tx.ExecContext(ctx, query, append(args, time.Now().UTC(), id)...); err != nil {
+		return fmt.Errorf("rewrite row_lock of %s: %w", id, err)
+	}
+	return nil
 }
 
 // claimAdvancedTheRow reports whether ClaimIssueInTx's CAS represents a real

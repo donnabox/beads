@@ -45,6 +45,18 @@ type DeleteRequest struct {
 	// resolving an ambiguous prefix to a row and then deleting it is the one
 	// place a convenience is not one.
 	IDs []string
+	// InTx is UpdateRequest.InTx's check, over the one row a single-id request
+	// names as the deleting transaction reads it, labels included, after the
+	// existence probe and ExpectedVersion and before the dependents guard. It
+	// requires a single-id request, as ExpectedVersion does, and a request
+	// carrying it runs under the same delete fence.
+	InTx func(current *Issue) error
+	// RefuseIncidentEdges refuses with *IncidentEdgesError, nothing deleted,
+	// while ANY edge is incident on the named row: outgoing or incoming, in
+	// either plane, whatever Cascade and Force say. It requires a single-id
+	// request. The dependents guard below it asks about incoming edges only, and
+	// a forced or cascading delete removes them; this is the stricter question.
+	RefuseIncidentEdges bool
 	// ExpectedVersion is an optimistic-concurrency precondition on the row this
 	// request NAMES: the deletion proceeds only if that row's current
 	// RowVersion — the opaque server-minted row_lock token carried on

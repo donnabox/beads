@@ -90,6 +90,25 @@ func DeleteInTx(ctx context.Context, tx *sql.Tx, req publicops.DeleteRequest) (p
 			return publicops.DeleteResult{}, err
 		}
 	}
+	// The caller's own check, over this attempt's read of the row.
+	if req.InTx != nil {
+		current, err := HydrateIssueOperationResult(ctx, tx, ids[0], false)
+		if err != nil {
+			return publicops.DeleteResult{}, fmt.Errorf("delete: read the guarded row: %w", err)
+		}
+		if err := req.InTx(current); err != nil {
+			return publicops.DeleteResult{}, err
+		}
+	}
+	if req.RefuseIncidentEdges {
+		incident, err := incidentEdgesInTx(ctx, tx, ids)
+		if err != nil {
+			return publicops.DeleteResult{}, err
+		}
+		if incident {
+			return publicops.DeleteResult{}, &publicops.IncidentEdgesError{IssueID: ids[0]}
+		}
+	}
 
 	idSet := make(map[string]bool, len(ids))
 	for _, id := range ids {
@@ -188,6 +207,25 @@ func DeleteInTx(ctx context.Context, tx *sql.Tx, req publicops.DeleteRequest) (p
 	}
 	result.ReferencesUpdated = rewritten
 	return result, nil
+}
+
+// incidentEdgesInTx reports whether any edge touches ids, in either direction and
+// in either plane.
+func incidentEdgesInTx(ctx context.Context, tx DBTX, ids []string) (bool, error) {
+	outgoing, err := GetDependencyRecordsForIssuesInTx(ctx, tx, ids)
+	if err != nil {
+		return false, fmt.Errorf("delete: check incident edges: %w", err)
+	}
+	for _, edges := range outgoing {
+		if len(edges) > 0 {
+			return true, nil
+		}
+	}
+	incoming, err := ExternalDependentsBySourceInTx(ctx, tx, ids, nil)
+	if err != nil {
+		return false, fmt.Errorf("delete: check incident edges: %w", err)
+	}
+	return len(incoming) > 0, nil
 }
 
 // ExternalDependentsBySourceInTx reports, for each of ids, the DIRECT

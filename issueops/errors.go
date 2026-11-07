@@ -415,6 +415,17 @@ func (e *VersionMismatchError) Error() string {
 // Unwrap makes VersionMismatchError match ErrVersionMismatch.
 func (e *VersionMismatchError) Unwrap() error { return ErrVersionMismatch }
 
+// IncidentEdgesError refuses a delete with DeleteRequest.RefuseIncidentEdges: an
+// edge still touches the named row. It names no edge, because the caller it answers
+// may not be entitled to see which.
+type IncidentEdgesError struct {
+	IssueID string
+}
+
+func (e *IncidentEdgesError) Error() string {
+	return "issue " + e.IssueID + " still has incident dependency edges"
+}
+
 // ErrStatusMismatch is returned by UpdateIssueChecked given an ExpectedStatus
 // that no longer matches the issue's current status. The caller's view of the
 // issue was stale; the issue is left untouched. The assignee analog is

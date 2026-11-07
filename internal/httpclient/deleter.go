@@ -67,6 +67,12 @@ func (d *httpDeleter) Delete(ctx context.Context, req issueops.DeleteRequest) (r
 	if err := checkDeleteIDs(req.IDs); err != nil {
 		return issueops.DeleteResult{}, err
 	}
+	if req.InTx != nil {
+		return issueops.DeleteResult{}, refuse(encode.OpDeleteIssues, "W-DeleteRequest.InTx")
+	}
+	if req.RefuseIncidentEdges {
+		return issueops.DeleteResult{}, refuse(encode.OpDeleteIssues, "W-DeleteRequest.RefuseIncidentEdges")
+	}
 	if req.Cascade {
 		if err := d.refuseAWideCascade(ctx); err != nil {
 			return issueops.DeleteResult{}, err

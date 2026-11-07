@@ -240,7 +240,7 @@ func TestCreateRefusesEveryMemberTheWireExcludes(t *testing.T) {
 		sort.Strings(got)
 		want := []string{
 			"Actor", "DefaultPriority", "Dependencies", "ForceIDPrefix", "IDPrefix",
-			"InheritLabelsFromParent", "Issue", "ParentID", "WaitsFor",
+			"InheritLabelsFromParent", "Issue", "ParentID", "StoredTimestamps", "WaitsFor",
 		}
 		if !reflect.DeepEqual(got, want) {
 			t.Errorf("CreateRequest carries %v, want %v.\n"+
