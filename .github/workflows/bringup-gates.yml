@@ -1,0 +1,92 @@
+name: Bringup gates
+
+# Fork-only, like the commit that points upstream's PR workflows at bringup-staging:
+# every rebuild of bringup-staging replays it, and it is never proposed upstream.
+#
+# G2 (CLI surface) holds the rule that bd stays identical for a v0 client and service.
+# It compares a bd built at the PR's merge base with bringup-staging against one built at
+# the PR head; see scripts/bringup-gates/g2_cli_surface.py. To run it by hand:
+#
+#   python3 scripts/bringup-gates/g2_cli_surface.py --base-ref bringup-staging --dolt DOLT --out DIR
+
+on:
+  pull_request:
+    branches: [ bringup-staging ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bringup-gates-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  BD_DISABLE_METRICS: "1"
+  DO_NOT_TRACK: "1"
+  BD_DISABLE_EVENT_FLUSH: "1"
+  DOLT_DISABLE_EVENT_FLUSH: "1"
+  BEADS_DOLT_AUTO_START: "0"
+  BD_NON_INTERACTIVE: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  g2-cli-surface:
+    name: G2 CLI surface
+    # Not Blacksmith: on this fork those jobs sit queued (no runner picks them up), and
+    # ubuntu-latest is what has actually run here.
+    runs-on: ubuntu-latest
+    # About 26 minutes on a laptop once built, and no Linux run has been measured. Running
+    # out of time fails the job; it does not pass it.
+    timeout-minutes: 120
+    steps:
+      # The head itself, not the merge ref, and all of history: the base is a merge base.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: 'go.mod'
+
+      # Before dolt first runs, the installer's version check included.
+      - name: Turn off Dolt metrics under a temporary HOME
+        run: |
+          mkdir -p "$RUNNER_TEMP/g2-home/.dolt"
+          printf '{"metrics.disabled":"true"}' > "$RUNNER_TEMP/g2-home/.dolt/config_global.json"
+
+      - name: Install the pinned Dolt
+        env:
+          HOME: ${{ runner.temp }}/g2-home
+        run: ./scripts/ci/install-dolt.sh
+
+      - name: Install lsof
+        run: command -v lsof || sudo apt-get install -y lsof
+
+      - name: Test the gate itself
+        run: python3 scripts/bringup-gates/g2_test.py
+
+      - name: Compare the merge base with the head
+        env:
+          # bd only serves a workspace under the temp directory the OS names, and the
+          # proof's temporary root goes here too.
+          TMPDIR: ${{ runner.temp }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: >-
+          python3 scripts/bringup-gates/g2_cli_surface.py
+          --base-ref origin/bringup-staging
+          --head "$HEAD_SHA"
+          --dolt "$(command -v dolt)"
+          --out "$RUNNER_TEMP/g2-out"
+          --summary "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the report and the logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: g2-cli-surface
+          path: ${{ runner.temp }}/g2-out/
+          retention-days: 14
+          if-no-files-found: warn

@@ -88,13 +88,19 @@ python3 scripts/bdp-call-parity/wire_proof.py --base BASE_BD --new NEW_BD --dolt
   paths, with and without an auth token file, and a close or reopen reason the base refuses,
   asked by name. Status, headers and body are compared. Any difference fails the run.
 - **Masked, and nothing else:** ports and the temporary root, timestamps, UUIDs (the project
-  id), revision tokens, minted ids numbered by first appearance, cursors, `request_id`,
-  `arrival_seq` (it counts every create so far), `Date`, `Content-Length`
-  (it moves with a masked value), the build hash in `bd version`, and the time in `bd ping`.
+  id), revision tokens, 32-character hashes, minted ids numbered by first appearance, cursors,
+  `request_id`, `X-Request-Id`, `arrival_seq` (it counts every create so far), `*_ms` timings,
+  `Date`, `Content-Length` (it moves with a masked value), the build and commit in `bd version`,
+  each binary's own version number, and the time in `bd ping`.
 - **Verdicts.** `same`; `query-order` (one repeated query value in another order, which is map
   order in the client and differs base against base too, with identical answers and output);
   `unexplained` (anything else). There is no list of tolerated differences. It exits 1 on any
   command that is not one of the first two and on any server answer that differs.
+
+G2 runs this on PRs into `bringup-staging` (`scripts/bringup-gates/g2_cli_surface.py`). It reads
+the comparison files rather than this exit code, because it is stricter on two counts: it allows
+`query-order` only on the commands `g2_exceptions.json` names, and a seed failure or a timeout on
+both sides, which this proof calls `same`, is a run that could not compare.
 
 `bd` behaves the same on both protocols, and both as the base does: a command the base refuses
 over `bd connect` refuses on `--protocol bdp` too, and with the same words.

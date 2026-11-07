@@ -37,6 +37,11 @@ PING_TIME = re.compile(r"\(\d+(?:\.\d+)?m?s\)")
 TIMINGS = re.compile(r'("\w+_ms":\s*)\d+')
 DROPPED_HEADERS = {"date", "content-length", "x-request-id"}
 
+def version_mask(root):
+    """This binary's own version number, as literal text: a version bump is not a change of behaviour."""
+    return [(root.version, "<version>")] if root.version else []
+
+
 class Masker:
     """Everything two independent runs may differ in, applied to raw text."""
 
@@ -138,7 +143,7 @@ class Side:
         os.makedirs(self.client)
         self.stack._git_init(self.client)
         self.extra = [(root.path, "<root>"), (self.recorder.url, "<server>"), (self.stack.url, "<server>"),
-                      (self.recorder.url.split("//")[1], "<server>"), (self.stack.url.split("//")[1], "<server>")]
+                      (self.recorder.url.split("//")[1], "<server>"), (self.stack.url.split("//")[1], "<server>")] + version_mask(root)
         self.connect_record = self.record_connect()
 
     def record_connect(self):
@@ -317,6 +322,8 @@ def compare_clients(base_path, new_path, out):
         if record.get("sidecar") != twin.get("sidecar"):
             verdict, detail = "unexplained", {"sidecar": [record.get("sidecar"), twin.get("sidecar")]}
         results.append({"key": record["key"], "verdict": verdict, "requests": len(record.get("requests", [])), "detail": detail})
+    for key, left in by_key.items():
+        results += [{"key": key, "verdict": "unexplained", "detail": {"missing": "base"}} for _ in left]
     counts = collections.Counter(r["verdict"] for r in results)
     with open(os.path.join(out, "client-comparison.json"), "w") as handle:
         json.dump({"counts": counts, "requests_compared": sum(len(r.get("requests", [])) for r in base), "results": results}, handle, indent=1)
@@ -351,13 +358,13 @@ def raw_request(stack, method, target, headers=None, body=None):
 
 def masked_answer(stack, reply):
     status, headers, raw = reply
-    masker = Masker([(stack.root.path, "<root>"), (stack.url, "<server>"), (stack.url.split("//")[1], "<server>")])
+    masker = Masker([(stack.root.path, "<root>"), (stack.url, "<server>"), (stack.url.split("//")[1], "<server>")] + version_mask(stack.root))
     return {"status": status, "headers": masker.headers(headers), "body": masker.text(raw.decode("utf-8", "replace"))}
 
 
 def lockstep_probe(base, new, label, method, target, body=None, headers=None, results=None):
     answers = [masked_answer(stack, raw_request(stack, method, target, headers, body)) for stack in (base, new)]
-    results.append({"label": label, "method": method, "target": target, "same": answers[0] == answers[1],
+    results.append({"label": label, "method": method, "target": target, "status": answers[0]["status"], "same": answers[0] == answers[1],
                     **({} if answers[0] == answers[1] else {"base": answers[0], "new": answers[1]})})
 
 
@@ -415,6 +422,8 @@ def server_proof(base_bd, new_bd, dolt, out, log):
             states = [Masker([]).text(json.dumps(part_a.state_of(stack), sort_keys=True)) for stack in (base, new)]
             same = answers[0] == answers[1] and states[0] == states[1]
             entry = {"label": f"write {name}: {label}", "same": same}
+            if answers[0]:
+                entry["status"] = answers[0]["status"]
             if not same:
                 entry.update({"base": answers[0], "new": answers[1], "state_same": states[0] == states[1]})
             results.append(entry)
@@ -487,8 +496,10 @@ def main():
     # SIGTERM takes the finally blocks, so a killed run still reaps its daemons.
     signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))
 
+    started = time.time()
+
     def log(message):
-        print(message, flush=True)
+        print(f"[{time.time() - started:5.0f}s] {message}", flush=True)
 
     if args.side:
         client_side(args.new, args.dolt, args.side, args.only, log)

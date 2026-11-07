@@ -74,6 +74,14 @@ class Root:
                        env=self.env, check=True, capture_output=True)
         subprocess.run([dolt, "config", "--global", "--add", "user.email", "parity@example.test"],
                        env=self.env, check=True, capture_output=True)
+        self.version = self._bd_version()
+
+    def _bd_version(self):
+        done = subprocess.run([self.bd, "version", "--json"], cwd=self.home, env=self.env, capture_output=True, text=True)
+        try:
+            return json.loads(done.stdout).get("version") or None
+        except ValueError:
+            return None
 
     def spawn(self, args, cwd, log):
         handle = open(log, "ab")
