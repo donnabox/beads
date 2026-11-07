@@ -219,7 +219,7 @@ func TestE2E_ACommandAnswersTheSameOnBothProtocols(t *testing.T) {
 		{name: "update --claim", args: []string{"update", "$blocked", "--claim", "--json"}},
 		{name: "ready --explain", args: []string{"ready", "--explain", "--json"}},
 		{name: "show --refs", args: []string{"show", "$blocker", "--refs", "--json"}},
-		{name: "stale refuses", args: []string{"stale"}, refuses: "GetStaleIssues"},
+		{name: "stale", args: []string{"stale"}},
 		{name: "kv get", args: []string{"kv", "get", "nothing"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

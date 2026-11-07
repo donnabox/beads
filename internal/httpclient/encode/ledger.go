@@ -1117,20 +1117,32 @@ func commandRows() []Row {
 		return Row{ID: id, Kind: KindRefuse, Command: command, Flag: flag, What: what, Why: why, SpecRow: "D7", PinnedBy: pinned}
 	}
 	return []Row{
-		row("F-ready-explain", "ready", "--explain", "`bd ready --explain` refuses",
-			"it dispatches onto raw GetBlockedIssues/GetIssuesByIDs/GetDependencyCounts/DetectCycles, three of which are on the unsupported allowlist"),
+		{
+			ID: "F-ready-explain", Kind: KindRetired, Command: "ready", Flag: "--explain",
+			What:    "RETIRED — `bd ready --explain` is served",
+			Why:     "raw_reads.go answers the raw reads it dispatches onto, each composed from the operations that can. A read that fails goes to the debug log and the explanation is built without it",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
 		row("F-ready-mol", "ready", "--mol", "`bd ready --mol` refuses",
 			"its molecule subgraph load reaches findHierarchicalChildren, an IDPrefix SearchIssues filter listIssues publishes no parameter for (S-IssueFilter.IDPrefix). GetDependencyRecords and GetDependentsWithMetadata, which the same load also calls, stopped being the blocker once they flipped onto the wire"),
-		row("F-ready-gated", "ready", "--gated", "`bd ready --gated` refuses",
-			"it dispatches onto a filtered SearchIssues shape the bridge cannot express, plus GetDependents"),
+		{
+			ID: "F-ready-gated", Kind: KindRetired, Command: "ready", Flag: "--gated",
+			What:    "RETIRED — `bd ready --gated` is served",
+			Why:     "raw_reads.go answers the raw reads it dispatches onto, each composed from the operations that can, and SearchIssues' listing shape answers its filtered search",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
 		row("F-show-thread", "show", "--thread", "`bd show --thread` refuses",
 			"showMessageThread renders each reply's sender, recipient, body and timestamp off GetDependentsWithMetadata, but that read was flipped onto getIssue's include_dependents parameter, which carries the collectDependents SHALLOW projection (id/status/type/priority/title + edge type only, be-4d36f2). Those fields come back zeroed over http and zero-timestamp replies sort ahead of the root — a silent-wrong degrade the refuse-over-degrade doctrine forbids. Retires with a full-dependent wire shape, a server-side ask"),
 		row("F-show-refs", "show", "--refs", "`bd show --refs` refuses",
 			"showIssueRefs's --json marshals the full GetDependentsWithMetadata rows, but the wire answers the same collectDependents shallow projection, so created_at/assignee/description come back zeroed and the JSON differs from a local workspace. The text render consumes only the shallow fields, but the flag cannot be split from its --json mode, so the whole flag refuses rather than serve a divergent JSON silently"),
 		row("F-show-children", "show", "--children", "`bd show --children` refuses",
 			"showIssueChildren's --json marshals the full GetDependentsWithMetadata rows, the same collectDependents shallow projection as --refs, so created_at/assignee/description come back zeroed over http. `bd children` is NOT this flag: it is a `bd list --parent` listing, served through the reader role (S6c)"),
-		row("F-mol-ready", "mol ready", "", "`bd mol ready` refuses",
-			"it is the same runMolReadyGatedCore body as `bd ready --gated`"),
+		{
+			ID: "F-mol-ready", Kind: KindRetired, Command: "mol ready",
+			What:    "RETIRED — `bd mol ready` is served",
+			Why:     "the same body as `bd ready --gated`",
+			SpecRow: "D7", PinnedBy: refusedFlagMode,
+		},
 		{
 			ID: "F-blocked", Kind: KindRetired, Command: "blocked",
 			What:    "RETIRED — `bd blocked` is SERVED whole",
