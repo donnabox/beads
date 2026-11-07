@@ -369,7 +369,10 @@ def server_proof(base_bd, new_bd, dolt, out, log):
         # One name, so a path in an answer masks to one spelling.
         base = Stack(base_root, "server", journal=True, serve=True)
         new = Stack(new_root, "server", journal=True, serve=True)
-        part_a.seed([base, new], a_cases.READ_SEED, a_cases.READ_BEFORE)
+        # created_at has one-second precision and listings break ties on it. The gap gives
+        # each row its own second on both servers, so a row created at a second's end on
+        # one and its start on the other cannot read as a change of order.
+        part_a.seed([base, new], a_cases.READ_SEED, a_cases.READ_BEFORE, gap=1.1)
         invocation = b'{"arguments":{"id":"sw-fix-r1"}}'
         for method, target in STATIC_PROBES:
             lockstep_probe(base, new, "probe", method, target, results=results)

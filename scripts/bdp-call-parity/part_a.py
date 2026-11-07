@@ -138,8 +138,10 @@ def state_of(stack):
     }
 
 
-def seed(stacks, rows, before):
+def seed(stacks, rows, before, gap=0):
     for row in rows:
+        if gap:
+            time.sleep(gap)
         for stack in stacks:
             reply = call_v0(stack, "issue/create", row)
             if reply.status != 200:
