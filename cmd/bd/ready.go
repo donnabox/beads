@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/steveyegge/beads/internal/debug"
 	"github.com/steveyegge/beads/internal/metrics"
 	"github.com/steveyegge/beads/internal/storage"
 	storageissueops "github.com/steveyegge/beads/internal/storage/issueops"
@@ -512,6 +511,58 @@ func readyTotal(ctx context.Context, activeStore storage.DoltStorage, in readyIn
 	return int(result.Total), nil
 }
 
+// readReadyExplanationDetail is everything --explain reads past the two listings.
+// Each read feeds the explanation, and one built past a failed read reports blank
+// blockers and zero counts as if they were the answer, so a failure here is the
+// command's failure.
+func readReadyExplanationDetail(ctx context.Context, activeStore storage.DoltStorage, readyIssues []*types.Issue, blockedIssues []*types.BlockedIssue) (
+	depCounts map[string]*types.DependencyCounts,
+	allDeps map[string][]*types.Dependency,
+	cycles [][]*types.Issue,
+	blockerMap map[string]*types.Issue,
+	err error,
+) {
+	// Get dependency records for ready issues to find resolved blockers
+	readyIDs := make([]string, len(readyIssues))
+	for i, issue := range readyIssues {
+		readyIDs[i] = issue.ID
+		// bd serve's ready rows carry their edges and a local read's do not; the
+		// explanation reports edges from allDeps below.
+		issue.Dependencies = nil
+	}
+	if depCounts, err = activeStore.GetDependencyCounts(ctx, readyIDs); err != nil {
+		return nil, nil, nil, nil, HandleErrorRespectJSON("failed to get dependency counts: %v", err)
+	}
+	if allDeps, err = activeStore.GetDependencyRecordsForIssues(ctx, readyIDs); err != nil {
+		return nil, nil, nil, nil, HandleErrorRespectJSON("failed to get dependency records: %v", err)
+	}
+
+	// Detect cycles
+	if cycles, err = activeStore.DetectCycles(ctx); err != nil {
+		return nil, nil, nil, nil, HandleErrorRespectJSON("failed to detect cycles: %v", err)
+	}
+
+	// Collect all blocker IDs to batch-fetch blocker details: the blockers
+	// of blocked issues, plus the blocking-dependency targets of the ready
+	// issues, whose status decides whether --explain reports each as
+	// resolved, pinned or open.
+	blockerIDList := explainBlockerIDs(blockedIssues, readyIssues, allDeps)
+
+	// Build ready items with explanations
+	// TODO(batchgetter): unbounded id list; see issueops.BatchGetter's doc and
+	// the importIssueLookup TODO in import_shared.go for why this is not yet
+	// routed through the role.
+	blockerIssues, err := activeStore.GetIssuesByIDs(ctx, blockerIDList)
+	if err != nil {
+		return nil, nil, nil, nil, HandleErrorRespectJSON("failed to get blocker issues: %v", err)
+	}
+	blockerMap = make(map[string]*types.Issue, len(blockerIssues))
+	for _, issue := range blockerIssues {
+		blockerMap[issue.ID] = issue
+	}
+	return depCounts, allDeps, cycles, blockerMap, nil
+}
+
 // buildParentEpicMap builds a map from child issue ID to parent epic title.
 // Only includes parents that are epics.
 func buildParentEpicMap(ctx context.Context, s storage.DoltStorage, issues []*types.Issue) map[string]string {
@@ -619,43 +670,9 @@ func runReadyExplain(_ *cobra.Command) error {
 		return HandleErrorRespectJSON("%v", err)
 	}
 
-	// Get dependency records for ready issues to find resolved blockers
-	readyIDs := make([]string, len(readyIssues))
-	for i, issue := range readyIssues {
-		readyIDs[i] = issue.ID
-	}
-	depCounts, err := activeStore.GetDependencyCounts(ctx, readyIDs)
+	depCounts, allDeps, cycles, blockerMap, err := readReadyExplanationDetail(ctx, activeStore, readyIssues, blockedIssues)
 	if err != nil {
-		debug.Logf("warning: failed to get dependency counts: %v", err)
-	}
-	allDeps, err := activeStore.GetDependencyRecordsForIssues(ctx, readyIDs)
-	if err != nil {
-		debug.Logf("warning: failed to get dependency records: %v", err)
-	}
-
-	// Detect cycles
-	cycles, err := activeStore.DetectCycles(ctx)
-	if err != nil {
-		debug.Logf("warning: failed to detect cycles: %v", err)
-	}
-
-	// Collect all blocker IDs to batch-fetch blocker details: the blockers
-	// of blocked issues, plus the blocking-dependency targets of the ready
-	// issues, whose status decides whether --explain reports each as
-	// resolved, pinned or open.
-	blockerIDList := explainBlockerIDs(blockedIssues, readyIssues, allDeps)
-
-	// Build ready items with explanations
-	// TODO(batchgetter): unbounded id list; see issueops.BatchGetter's doc and
-	// the importIssueLookup TODO in import_shared.go for why this is not yet
-	// routed through the role.
-	blockerIssues, err := activeStore.GetIssuesByIDs(ctx, blockerIDList)
-	if err != nil {
-		debug.Logf("warning: failed to get blocker issues: %v", err)
-	}
-	blockerMap := make(map[string]*types.Issue, len(blockerIssues))
-	for _, issue := range blockerIssues {
-		blockerMap[issue.ID] = issue
+		return err
 	}
 
 	explanation := types.BuildReadyExplanation(readyIssues, blockedIssues, depCounts, allDeps, blockerMap, cycles)

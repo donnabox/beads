@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage"
@@ -75,5 +76,42 @@ func TestGraphAFailedReadIsTheCommandsFailure(t *testing.T) {
 	}
 	if _, err := loadGraphSubgraph(context.Background(), &gapStubStore{}, "t-root"); err != nil {
 		t.Fatalf("with every read answering: %v", err)
+	}
+}
+
+// TestReadyExplainAFailedReadIsTheCommandsFailure pins row D4, on every route: a
+// read that fails went to a debug log, so bd ready --explain exited 0 with blank
+// blockers and zero counts, as if those were the answer.
+func TestReadyExplainAFailedReadIsTheCommandsFailure(t *testing.T) {
+	origJSONOutput := jsonOutput
+	jsonOutput = false
+	t.Cleanup(func() { jsonOutput = origJSONOutput })
+	ready := []*types.Issue{{ID: "t-ready", Dependencies: []*types.Dependency{{IssueID: "t-ready", DependsOnID: "t-other"}}}}
+
+	for read, says := range map[string]string{
+		"GetDependencyCounts":           "failed to get dependency counts",
+		"GetDependencyRecordsForIssues": "failed to get dependency records",
+		"DetectCycles":                  "failed to detect cycles",
+		"GetIssuesByIDs":                "failed to get blocker issues",
+	} {
+		t.Run(read, func(t *testing.T) {
+			var err error
+			stderr := captureStderrDuring(t, func() {
+				_, _, _, _, err = readReadyExplanationDetail(context.Background(), &gapStubStore{failing: read}, ready, nil)
+			})
+			if err == nil {
+				t.Fatal("the read failed and the explanation was built")
+			}
+			if !strings.Contains(stderr+err.Error(), says) {
+				t.Errorf("stderr = %q, err = %v, want %q", stderr, err, says)
+			}
+		})
+	}
+
+	if _, _, _, _, err := readReadyExplanationDetail(context.Background(), &gapStubStore{}, ready, nil); err != nil {
+		t.Fatalf("with every read answering: %v", err)
+	}
+	if ready[0].Dependencies != nil {
+		t.Error("the row's own edges stayed: the explanation reports edges from its own read")
 	}
 }

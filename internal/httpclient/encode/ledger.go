@@ -1120,7 +1120,7 @@ func commandRows() []Row {
 		{
 			ID: "F-ready-explain", Kind: KindRetired, Command: "ready", Flag: "--explain",
 			What:    "RETIRED — `bd ready --explain` is served",
-			Why:     "raw_reads.go answers the raw reads it dispatches onto, each composed from the operations that can. A read that fails goes to the debug log and the explanation is built without it",
+			Why:     "raw_reads.go answers the raw reads it dispatches onto, each composed from the operations that can. A read that fails is the command's failure, since an explanation built past it would report blank blockers and zero counts as the answer",
 			SpecRow: "D7", PinnedBy: refusedFlagMode,
 		},
 		row("F-ready-mol", "ready", "--mol", "`bd ready --mol` refuses",

@@ -3,6 +3,7 @@
 package bdhttp_test
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -53,7 +54,7 @@ func TestE2E_ConnectGapsAreClosed(t *testing.T) {
 			t.Run("D2 ready text shows the parent epic", func(t *testing.T) {
 				epic := strings.TrimSpace(f.mustRun(nil, "create", "annotated epic", "-t", "epic", "--silent").stdout)
 				f.mustRun(nil, "create", "annotated child", "--parent", epic, "--silent")
-				if text := f.mustRun(nil, "ready").stdout; !strings.Contains(text, "annotated epic") {
+				if text := f.mustRun(nil, "ready").stdout; !strings.Contains(text, "annotated child ← annotated epic") {
 					t.Errorf("bd ready lost the parent epic: %s", text)
 				}
 			})
@@ -72,6 +73,42 @@ func TestE2E_ConnectGapsAreClosed(t *testing.T) {
 				out := f.mustRun(nil, "graph", parent, "--json").stdout
 				if !strings.Contains(out, child) {
 					t.Errorf("bd graph %s does not name its dependent %s: %s", parent, child, out)
+				}
+			})
+
+			t.Run("D4 ready --explain reports the blocker", func(t *testing.T) {
+				blocker := f.create("explain blocker")
+				blocked := f.create("explain blocked")
+				f.mustRun(nil, "dep", "add", blocked, blocker)
+				out := f.mustRun(nil, "ready", "--explain", "--json").stdout
+				var explanation struct {
+					Ready []struct {
+						ID             string `json:"id"`
+						DependentCount int    `json:"dependent_count"`
+					} `json:"ready"`
+					Blocked []struct {
+						ID        string `json:"id"`
+						BlockedBy []struct {
+							Title string `json:"title"`
+						} `json:"blocked_by"`
+					} `json:"blocked"`
+				}
+				if err := json.Unmarshal([]byte(out), &explanation); err != nil {
+					t.Fatalf("parse bd ready --explain: %v\n%s", err, out)
+				}
+				counted := false
+				for _, item := range explanation.Ready {
+					counted = counted || (item.ID == blocker && item.DependentCount == 1)
+				}
+				if !counted {
+					t.Errorf("bd ready --explain zeroed the blocker's count: %s", out)
+				}
+				titled := false
+				for _, item := range explanation.Blocked {
+					titled = titled || (item.ID == blocked && len(item.BlockedBy) == 1 && item.BlockedBy[0].Title == "explain blocker")
+				}
+				if !titled {
+					t.Errorf("bd ready --explain lost the blocker's title: %s", out)
 				}
 			})
 			//ROWS
