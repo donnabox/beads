@@ -990,6 +990,29 @@ func TestCoreAuthAndRouting(t *testing.T) {
 		resp, body := coreRequest(t, ts, http.MethodGet, path, credential)
 		wantCoreProblem(t, resp, body, coreCodeNotFound)
 	}
+
+	// A path of several segments outside the v0 and bdp namespaces addresses no
+	// Resource here. It gets the answer any other absent Resource gets, behind the
+	// same gate, not v0's vocabulary.
+	for _, path := range []string{"/a/b", "/provider-kit/x/record", "/a/"} {
+		resp, body := coreRequest(t, ts, http.MethodGet, path, credential)
+		wantCoreProblem(t, resp, body, coreCodeNotFound)
+		bare, bareBody := coreRequest(t, ts, http.MethodGet, path, nil)
+		wantCoreProblem(t, bare, bareBody, coreCodeUnauthenticated)
+		for _, method := range coreRefusedMethods {
+			resp, body := coreRequest(t, ts, method, path, nil)
+			if resp.StatusCode != http.StatusMethodNotAllowed || resp.Header.Get("Allow") != "GET, HEAD" || len(body) != 0 {
+				t.Errorf("%s %s = %d, Allow %q, %d bytes", method, path, resp.StatusCode, resp.Header.Get("Allow"), len(body))
+			}
+		}
+	}
+	// Under a v0 route's first segment it stays v0's.
+	for _, path := range []string{"/v0/a/b", "/healthz/a"} {
+		resp, body := coreRequest(t, ts, http.MethodGet, path, nil)
+		if resp.StatusCode != http.StatusNotFound || !strings.Contains(string(body), string(CodeNotFound)) {
+			t.Errorf("GET %s = %d: %s", path, resp.StatusCode, body)
+		}
+	}
 }
 
 // TestCoreFaultsOffTheWire: a store that is out of reach is Core's temporary
