@@ -287,4 +287,18 @@ func TestE2E_ACommandAnswersTheSameOnBothProtocols(t *testing.T) {
 			}
 		}
 	})
+
+	// C2: --author is an alias of --actor, so two different values refuse and write
+	// nothing, on both.
+	t.Run("--actor and --author with two names refuse on both", func(t *testing.T) {
+		for _, s := range []*side{open(t, httpapi.ProtocolV0), open(t, httpapi.ProtocolBoth, "--protocol", "bdp")} {
+			r := s.f.run(nil, "--actor", "sam", "comments", "add", s.blocked, "must not land", "--author", "lee")
+			if r.code == 0 || !strings.Contains(r.stdout+r.stderr, "alias of --actor") {
+				t.Errorf("exit %d: %s %s", r.code, r.stdout, r.stderr)
+			}
+			if listed := s.f.mustRun(nil, "comments", s.blocked, "--json"); strings.Contains(listed.stdout, "must not land") {
+				t.Errorf("the refused comment was written: %s", listed.stdout)
+			}
+		}
+	})
 }
