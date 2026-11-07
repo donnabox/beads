@@ -131,7 +131,8 @@ func TestNativeRequestsSayWhatV0WouldHaveDone(t *testing.T) {
 				_, err := lifecycle.Create(t.Context(), issueops.CreateRequest{Actor: "sam", Issue: &types.Issue{Title: "t"}})
 				return err
 			},
-			"issue/create", map[string]string{"issue_type": `""`},
+			// The Types rule (callables.md §2) spells v0's issue_type as `type`.
+			"issue/create", map[string]string{"type": `""`},
 		},
 		{
 			"a purge with the protection off, which issue/purge defaults on",

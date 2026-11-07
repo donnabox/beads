@@ -33,6 +33,11 @@ Part A takes a minute, Part B the rest.
   `retry`, content type, and that v0's body is carried verbatim.
 - `callable_cases.py` is the case table. Its `ROUTES`, `ACTOR_MEMBER` and `DEFAULTS` are
   written from the spec, not from `callables_table.go`, so a mistake shows as a difference.
+- **Types** follow the spec's section 2 rule, as `types_rule.py` reads it from the spec
+  rather than from `internal/httpapi/typeref`: a case's v0 arguments are respelled with
+  `type` and Type references before the Callable is invoked, and v0's body is respelled
+  the same way before it is compared. A name with no Type reference is expected to be
+  refused as validation-failed, without v0's body, whatever v0 made of it.
 - **A case's arguments are v0's.** `for_callable` moves its `actor`, or `author` on
   `issue/comment`, to `revisionProvenance`. `with_defaults` fills in, on the v0 side, each
   parameter the case omits that has a service default, because a direct v0 caller has to

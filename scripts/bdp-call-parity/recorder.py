@@ -20,6 +20,7 @@ import urllib.request
 
 import callable_cases as cases
 import part_a
+import types_rule
 
 
 CALL_MOUNT = "/bdp/call/"
@@ -81,7 +82,9 @@ class Recorder:
             entry["arguments"] = sorted(arguments)
             entry["undeclared"] = sorted(set(arguments) - self.declared.get(name, set()))
             entry["actor_in_arguments"] = sorted({"actor", "author"} & set(arguments))
-            entry["left_to_default"] = sorted(set(cases.DEFAULTS.get(name, {})) - set(arguments))
+            scope = self.stack.url + "/"
+            defaults, _ = types_rule.arguments(name, cases.DEFAULTS.get(name, {}), scope)
+            entry["left_to_default"] = sorted(set(defaults) - set(arguments))
             if isinstance(invocation, dict) and invocation.get("revisionProvenance") is not None:
                 entry["provenance"] = invocation["revisionProvenance"]
             if name in cases.ROUTES and (cases.ROUTES[name][0] == "GET" or name == "issue/get-many"):
@@ -89,14 +92,17 @@ class Recorder:
                 v0_headers = {k: v for k, v in headers.items()
                               if k.lower() in ("bd-project-id", "bd-wire-revision", "user-agent", "authorization")}
                 try:
-                    v0_form = part_a.v0_request(name, arguments)
+                    v0_args, _ = types_rule.v0_arguments(name, arguments, scope)
+                    v0_form = part_a.v0_request(name, v0_args)
                     if v0_form is None:
                         # The mount refused it for a missing path argument, before v0.
                         entry["replay_problems"] = [] if status != 200 else ["no path argument, yet answered 200"]
                     else:
                         replay = self.stack.http(v0_form[0], v0_form[1], v0_form[2], headers=v0_headers)
                         entry["replay_status"] = replay.status
-                        entry["replay_problems"] = part_a.compare(name, replay, _Reply(status, raw, reply_headers), same_server=True)
+                        mounted = _Reply(status, raw, reply_headers)
+                        mounted.scope = scope
+                        entry["replay_problems"] = part_a.compare(name, replay, mounted, same_server=True)
                 except OSError as err:
                     entry["replay_problems"] = [f"replay failed: {err}"]
         with self.lock:

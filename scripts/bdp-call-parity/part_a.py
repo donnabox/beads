@@ -6,6 +6,7 @@ import time
 import urllib.parse
 
 import callable_cases as cases
+import types_rule
 from normalize import diff, masked, strict
 from stack import CALLABLE_MEDIA, Stack
 
@@ -53,9 +54,13 @@ def ask_v0(stack, name, args):
 
 
 def ask_callable(stack, name, args, **options):
-    """The Callable, with a case's v0 arguments: the actor goes in revisionProvenance."""
+    """The Callable, with a case's v0 arguments: the actor goes in revisionProvenance, and
+    each Type is spelled by the spec's Types rule (types_rule.py)."""
     rest, provenance = cases.for_callable(name, args)
-    return stack.call(name, rest, provenance=provenance, **options)
+    rest, refused = types_rule.arguments(name, rest, stack.url + "/")
+    reply = stack.call(name, rest, provenance=provenance, **options)
+    reply.types_refused = refused
+    return reply
 
 
 def names_the_actor(reply):
@@ -89,10 +94,22 @@ def expected_problem(v0_reply):
 
 
 def compare(name, v0_reply, call_reply, same_server):
-    """Everything wrong with the Callable's answer, given v0's. Empty means parity."""
+    """Everything wrong with the Callable's answer, given v0's. Empty means parity.
+
+    v0's body is held to the Callable's under the spec's Types rule (types_rule.py).
+    Arguments the rule refuses, a name with no Type reference, never reach v0: the
+    Callable must refuse them as validation-failed, whatever v0 made of the name."""
     problems = []
     clean = strict if same_server else masked
     batch = cases.ROUTES[name][0] != "GET" and name != "issue/get-many"
+    scope = getattr(call_reply, "scope", "")
+    if getattr(call_reply, "types_refused", False):
+        got = call_reply.json or {}
+        if call_reply.status != 422 or got.get("code") != "validation-failed":
+            return [f"a name with no Type reference answered {call_reply.status} {got.get('code')}, want 422 validation-failed"]
+        if not any(str(d.get("instanceLocation", "")).startswith("/arguments/") for d in got.get("diagnostics", [])):
+            return ["the refusal of a name with no Type reference names no argument"]
+        return []
     if v0_reply.status == 200:
         if call_reply.status != 200:
             return [f"v0 answered 200, the Callable {call_reply.status} {call_reply.json.get('code') if call_reply.json else ''}"]
@@ -101,7 +118,8 @@ def compare(name, v0_reply, call_reply, same_server):
         want = {"changed", "result"} if batch else {"result"}
         if set(call_reply.json) != want:
             problems.append(f"envelope members {sorted(call_reply.json)}")
-        problems += [f"result{d}" for d in diff(clean(v0_reply.json), clean(call_reply.json.get("result")))]
+        want_result = types_rule.body(v0_reply.json, scope)
+        problems += [f"result{d}" for d in diff(clean(want_result), clean(call_reply.json.get("result")))]
         return problems
     want = expected_problem(v0_reply)
     if call_reply.status == 200:
@@ -119,7 +137,7 @@ def compare(name, v0_reply, call_reply, same_server):
     if carried is None:
         problems.append("no v0 body carried")
     else:
-        problems += [f"carried{d}" for d in diff(clean(v0_reply.json), clean(carried))]
+        problems += [f"carried{d}" for d in diff(clean(types_rule.body(v0_reply.json, scope)), clean(carried))]
     if want == "validation-failed" and not got.get("diagnostics"):
         problems.append("validation-failed without diagnostics")
     return problems
@@ -173,7 +191,7 @@ def record(name, label, args, v0_reply, call_reply, problems, mode, **more):
 def run_reads(stack, results):
     for name, args, want in cases.read_cases():
         v0_reply = ask_v0(stack, name, args)
-        call_reply = stack.call(name, args)
+        call_reply = ask_callable(stack, name, args)
         problems = compare(name, v0_reply, call_reply, same_server=True)
         if None in args.values():
             # A query has no spelling of null, so the router refuses one before v0 runs.
@@ -345,7 +363,8 @@ def run_v0_spellings(stack, results):
 def run_published_defaults(stack, results):
     """Spec section 4 in the published document: a default, and not required."""
     paths = stack.http("GET", "/bdp/call").json.get("paths", {})
-    for name, defaults in cases.DEFAULTS.items():
+    for name, v0_defaults in cases.DEFAULTS.items():
+        defaults, _ = types_rule.arguments(name, v0_defaults, stack.url + "/")
         content = paths["/bdp/call/" + name]["post"]["requestBody"]["content"]
         arguments = content[next(iter(content))]["schema"]["properties"]["arguments"]
         problems = []

@@ -229,7 +229,10 @@ class Stack:
             body["revisionProvenance"] = provenance
         all_headers = {"Content-Type": CALLABLE_MEDIA}
         all_headers.update(headers or {})
-        return self.http("POST", "/bdp/call/" + name, body, all_headers)
+        reply = self.http("POST", "/bdp/call/" + name, body, all_headers)
+        # The Scope a Scope-local Type is spelled under (callables.md section 2).
+        reply.scope = self.url + "/"
+        return reply
 
 
 class Reply:

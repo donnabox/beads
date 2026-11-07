@@ -103,6 +103,7 @@ ACTOR_OPTIONAL = {"issue/purge", "issue/prune", "issue/delete"}
 RECORDS_NO_ACTOR = ("config/set", "config/unset", "memory/remember", "memory/forget")
 
 # Spec section 4: what the router supplies for an omitted parameter. v0 has none of them.
+# Spelled as v0 spells them; types_rule.py gives the Callable's spelling.
 DEFAULTS = {
     "issue/list": {"sort": "priority"},
     "issue/create": {"issue_type": "task"},
@@ -171,6 +172,9 @@ READ_BEFORE = [
 
 READY_FILTERS = [
     {"assignee": "alice"}, {"unassigned": True}, {"type": "bug"}, {"exclude_type": ["epic"]},
+    # Spec section 2: v0 matches nothing for a name it does not know; that name has no
+    # Type reference, so the Callable refuses it.
+    {"type": "parity-unknown"},
     {"label": ["red"]}, {"label_any": ["red", "blue"]}, {"exclude_label": ["red"]},
     {"label_pattern": "re*"}, {"label_regex": "^r"}, {"priority": 1}, {"parent": "sw-fix-r4"},
     {"metadata_field": ["k=v"]}, {"has_metadata_key": "k"}, {"include_ephemeral": True},
@@ -538,6 +542,9 @@ def write_cases():
             v0_args={"actor": A, "edges": [{"issue_id": "sw-fix-f03", "depends_on_id": "sw-fix-f02", "type": "blocks"}]}, seed=[issue("sw-fix-f03")], changed=True, label="flat, type omitted"),
           W("issue/dep/add", {"actor": A, "source": "sw-fix-f04", "target": "sw-fix-f02", "type": "related"},
             v0_args={"actor": A, "edges": [{"issue_id": "sw-fix-f04", "depends_on_id": "sw-fix-f02", "type": "related"}]}, seed=[issue("sw-fix-f04")], changed=True, label="flat, typed"),
+          # Spec section 2: a kind outside Issue section 2's table is the Scope's own Link Type.
+          W("issue/dep/add", {"actor": A, "source": "sw-fix-f05", "target": "sw-fix-f02", "type": "parity-kind"},
+            v0_args={"actor": A, "edges": [{"issue_id": "sw-fix-f05", "depends_on_id": "sw-fix-f02", "type": "parity-kind"}]}, seed=[issue("sw-fix-f05")], changed=True, label="flat, a kind of the Scope's own"),
           W("issue/dep/add", {"actor": A, "edges": [{"issue_id": "sw-fix-f02", "depends_on_id": "sw-fix-f01", "type": "blocks"}]}, expect="dependency_cycle", changed=False),
           W("issue/dep/add", {"actor": A, "edges": [{"issue_id": "sw-fix-f01", "depends_on_id": "sw-fix-f02", "type": "related"}]}, expect="dependency_exists", changed=False, label="other type on a held edge"),
           W("issue/dep/add", {"actor": A, "edges": [{"issue_id": "sw-fix-f01", "depends_on_id": "sw-fix-none", "type": "blocks"}]}, expect="invalid_argument", changed=False, label="missing target"),
