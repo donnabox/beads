@@ -1,6 +1,9 @@
 package main
 
 import (
+	"github.com/steveyegge/beads/internal/beads"
+	"github.com/steveyegge/beads/internal/configfile"
+	"github.com/steveyegge/beads/internal/httpclient"
 	"github.com/steveyegge/beads/internal/storage"
 )
 
@@ -48,6 +51,17 @@ func reopenProvenance(store storage.DoltStorage, id string) string {
 		return ""
 	}
 	return "bd: reopen " + id
+}
+
+// workspaceIsRemoteBackend reports whether this workspace is attached with `bd
+// connect`, for a command that decides before any store is open.
+func workspaceIsRemoteBackend() bool {
+	beadsDir := beads.FindBeadsDir()
+	if beadsDir == "" {
+		return false
+	}
+	cfg, err := configfile.Load(beadsDir)
+	return err == nil && cfg != nil && cfg.GetBackend() == httpclient.Backend
 }
 
 // storeIsRemoteBackend reports whether s is a pure network client of a remote

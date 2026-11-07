@@ -46,6 +46,11 @@ func TestE2E_ConnectRefusalsSayWhy(t *testing.T) {
 					want: "bd gc is not available over bd connect",
 					not:  []string{"SearchIssues", "searching closed issues"},
 				},
+				{
+					name: "E1 sql", args: []string{"sql", "select 1"},
+					want: "'bd sql' is not available over bd connect: bd serve publishes no SQL surface",
+					not:  []string{"embedded mode"},
+				},
 			} {
 				t.Run(row.name, func(t *testing.T) {
 					r := f.run(nil, row.args...)

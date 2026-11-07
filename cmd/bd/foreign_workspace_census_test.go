@@ -92,6 +92,7 @@ var configfileLoadSites = map[string]string{
 	"backup_auto.go:clientServerShareFilesystem":                       "own",
 	"backup_proxied_server.go:syncProjectIDFromProxiedDB":              "own",
 	"backup_restore.go:syncProjectIDFromDB":                            "own",
+	"remote_backend.go:workspaceIsRemoteBackend":                       "own: reads which backend the discovered workspace selects, opens nothing",
 	"bootstrap.go:var bootstrapCmd":                                    "own: the workspace admission admitted",
 	"bootstrap.go:cloneFromRemoteWithMode":                             "own: the workspace bd bootstrap or bd init clones into",
 	"config_show.go:collectMetadataEntries":                            "own",
