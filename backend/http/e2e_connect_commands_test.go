@@ -99,6 +99,20 @@ func TestE2E_ConnectCommandParity(t *testing.T) {
 					t.Errorf("bd dep unrelate left the edge: %s", out)
 				}
 			})
+			t.Run("B8 defer and undefer write", func(t *testing.T) {
+				id := f.create("defer me")
+				c.counter.reset()
+				f.mustRun(nil, "defer", id, "--until", "2099-01-01T00:00:00Z", "--reason", "later")
+				c.dialed(t, "issue/update", "PATCH /v0/beads/issues/"+id)
+				row := c.show(t, id)
+				if row["status"] != "deferred" || !strings.Contains(row["notes"].(string), "later") || row["defer_until"] == nil {
+					t.Fatalf("after bd defer: %v", row)
+				}
+				f.mustRun(nil, "undefer", id)
+				if row := c.show(t, id); row["status"] != "open" || row["defer_until"] != nil {
+					t.Fatalf("after bd undefer: %v", row)
+				}
+			})
 			//ROWS
 		})
 	}

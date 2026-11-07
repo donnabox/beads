@@ -12,6 +12,7 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
 	"github.com/steveyegge/beads/internal/utils"
+	"github.com/steveyegge/beads/issueops"
 )
 
 // deferUntilFormatHint restates the vocabulary of
@@ -96,40 +97,36 @@ Examples:
 			return HandleErrorWithHint("database not initialized", diagHint())
 		}
 
+		ops, err := writeOps(store)
+		if err != nil {
+			return HandleError("%v", err)
+		}
+		opsCtx, err := issueOpsContext(ctx)
+		if err != nil {
+			return HandleError("%v", err)
+		}
+
 		for _, fullID := range resolvedIDs {
-			updates := map[string]interface{}{
-				"status": string(types.StatusDeferred),
+			// The reason is an append OPERATION rather than a pre-merged value,
+			// for bd note's reason: the role re-reads the row inside the write.
+			patch := issueops.IssuePatch{
+				Status: issueops.Field[types.Status]{Set: true, Value: types.StatusDeferred},
 			}
 			if deferUntil != nil {
-				updates["defer_until"] = *deferUntil
+				patch.DeferUntil = issueops.Field[*time.Time]{Set: true, Value: deferUntil}
 			}
 			if reason != "" {
-				issue, err := store.GetIssue(ctx, fullID)
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Error loading %s: %v\n", fullID, err)
-					continue
-				}
-				if issue == nil {
-					fmt.Fprintf(os.Stderr, "Issue %s not found\n", fullID)
-					continue
-				}
-				notes := issue.Notes
-				if notes != "" {
-					notes += "\n"
-				}
-				updates["notes"] = notes + reason
+				patch.AppendNotes = issueops.Field[string]{Set: true, Value: reason}
 			}
 
-			if err := store.UpdateIssue(ctx, fullID, updates, currentActor()); err != nil {
+			result, err := ops.Update(opsCtx, issueops.UpdateRequest{Actor: currentActor(), IssueID: fullID, Patch: patch})
+			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error deferring %s: %v\n", fullID, err)
 				continue
 			}
 
 			if jsonOutput {
-				issue, _ := store.GetIssue(ctx, fullID)
-				if issue != nil {
-					deferredIssues = append(deferredIssues, issue)
-				}
+				deferredIssues = append(deferredIssues, result.Issue)
 			} else {
 				fmt.Printf("%s Deferred %s\n", ui.RenderAccent("*"), fullID)
 			}
