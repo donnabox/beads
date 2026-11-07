@@ -81,7 +81,7 @@ PROBLEM_STATUS = {
     "revision-mismatch": 409, "callable-error": 409,
 }
 PROBLEM_RETRY = {
-    "identity-taken": "never", "invalid-parameter": "never", "resource-not-found": "after-state-change",
+    "identity-taken": "after-state-change", "invalid-parameter": "never", "resource-not-found": "after-state-change",
     "temporarily-unavailable": "after-delay", "unauthenticated": "after-state-change",
     "validation-failed": "never", "revision-mismatch": "after-state-change",
     "callable-error": "after-state-change",
