@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/steveyegge/beads/internal/httpclient/wire"
 )
 
 // TargetFileName is the per-user, untracked activation sidecar that names the
@@ -21,6 +23,18 @@ const TargetFileName = "http_target.json"
 // ErrNotConnected reports a workspace that selects the http backend but has no
 // activation sidecar, so there is no server to dial.
 var ErrNotConnected = errors.New("no http target configured for this workspace; run `bd connect <url>`")
+
+// Protocol is what a connection speaks to bd serve: `bd connect --protocol`.
+type Protocol = wire.Protocol
+
+// The protocols a connection can speak. The zero value means v0.
+const (
+	ProtocolV0  = wire.ProtocolV0
+	ProtocolBDP = wire.ProtocolBDP
+)
+
+// ParseProtocol reads a saved or typed protocol. "" is v0.
+func ParseProtocol(name string) (Protocol, error) { return wire.ParseProtocol(name) }
 
 // Target is the resolved endpoint for one workspace (design D5).
 type Target struct {
@@ -65,6 +79,9 @@ type Target struct {
 	// but this one, so it must never be installed system-wide or exported via
 	// SSL_CERT_FILE.
 	CAFile string
+	// Protocol is what this connection speaks, from `bd connect --protocol`.
+	// Zero is v0, which is how every sidecar written before the flag existed reads.
+	Protocol Protocol
 }
 
 // String renders the target for error text. A zero Target renders empty, which
@@ -109,6 +126,11 @@ type targetFile struct {
 	// deliberately: this is the one record of what a human typed, and the
 	// JSON key should read that way on disk.
 	AllowPlaintext bool `json:"allow_plaintext,omitempty"`
+	// Protocol mirrors Target.Protocol. v0 is written as its absence, so the
+	// sidecar of a v0 connection is the file it has always been, and an absent one
+	// reads as v0. Not `api`, which names the path major a v0 connection addresses
+	// and has always said v0.
+	Protocol string `json:"protocol,omitempty"`
 }
 
 // TargetPath is the sidecar's location for a workspace.
@@ -150,12 +172,17 @@ func LoadTarget(beadsDir string) (Target, error) {
 	if err := checkCAFileAbsolute(f.CAFile); err != nil {
 		return Target{}, err
 	}
+	protocol, err := ParseProtocol(f.Protocol)
+	if err != nil {
+		return Target{}, fmt.Errorf("%s: %w; re-run `bd connect <url>`", TargetFileName, err)
+	}
 	return Target{
 		BaseURL:                 u,
 		ExpectProjectID:         f.ExpectProjectID,
 		CAFile:                  f.CAFile,
 		PreviousBackend:         f.PreviousBackend,
 		AllowInsecureCredential: f.AllowPlaintext,
+		Protocol:                protocol,
 	}, nil
 }
 
@@ -200,12 +227,19 @@ func SaveTarget(beadsDir string, t Target) error {
 	if err := checkCAFileAbsolute(t.CAFile); err != nil {
 		return err
 	}
+	protocol, err := ParseProtocol(string(t.Protocol))
+	if err != nil {
+		return err
+	}
 	f := targetFile{
 		ExpectProjectID: t.ExpectProjectID,
 		API:             "v0",
 		CAFile:          t.CAFile,
 		PreviousBackend: t.PreviousBackend,
 		AllowPlaintext:  t.AllowInsecureCredential,
+	}
+	if protocol != ProtocolV0 {
+		f.Protocol = string(protocol)
 	}
 	if t.BaseURL != nil {
 		f.URL = t.BaseURL.String()

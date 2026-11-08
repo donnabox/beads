@@ -292,6 +292,7 @@ func DialWith(target Target, creds CredentialProvider, opts DialOptions) (*Conn,
 		HTTPClient:            opts.HTTPClient,
 		UserAgent:             opts.UserAgent,
 		ExpectProjectID:       target.ExpectProjectID,
+		Protocol:              target.Protocol,
 		ResponseHeaderTimeout: headerTimeout,
 		OnStallRetry:          onStall,
 	})

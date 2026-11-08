@@ -41,7 +41,7 @@ func TestServeFlags(t *testing.T) {
 
 	want := []string{
 		"addr", "allow-non-loopback", "allowed-host", "auth-token-file",
-		"insecure-no-auth", "large-apply-ceiling",
+		"insecure-no-auth", "large-apply-ceiling", "protocol",
 	}
 	if strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("bd serve flags = %v, want %v", got, want)
@@ -55,6 +55,7 @@ func TestServeFlags(t *testing.T) {
 		{"insecure-no-auth", "false"},
 		{"allowed-host", "[]"},
 		{"large-apply-ceiling", "5m0s"},
+		{"protocol", "v0"},
 	} {
 		f := serveCmd.Flags().Lookup(tc.flag)
 		if f == nil {
@@ -611,16 +612,19 @@ func withServeFlags(t *testing.T) {
 	token, insecure := serveAuthTokenFile, serveInsecureNoAuth
 	hosts := serveAllowedHosts
 	largeApplyCeiling := serveLargeApplyCeiling
+	protocol := serveProtocol
 	t.Cleanup(func() {
 		serveAddr, serveAllowNonLoopback = addr, nonLoopback
 		serveAuthTokenFile, serveInsecureNoAuth = token, insecure
 		serveAllowedHosts = hosts
 		serveLargeApplyCeiling = largeApplyCeiling
+		serveProtocol = protocol
 	})
 	serveAddr, serveAllowNonLoopback = "127.0.0.1:0", false
 	serveAuthTokenFile, serveInsecureNoAuth = "", false
 	serveAllowedHosts = nil
 	serveLargeApplyCeiling = httpapi.DefaultLargeApplyCeiling
+	serveProtocol = string(httpapi.ProtocolV0)
 }
 
 func serveTokenFile(t *testing.T) string {
@@ -757,6 +761,32 @@ func TestServeEnvFallbackAppliesOnlyWhenTheFlagIsUnset(t *testing.T) {
 
 // TestServeConfigCarriesTheOperatorsChoicesThrough. resolveServeConfig is the
 // only place the flags become a Config, so this is where a field that is
+// --protocol defaults to v0, reaches the server config, and refuses what it does not
+// know before anything looks at the workspace.
+func TestServeProtocolFlag(t *testing.T) {
+	clearServeEnv(t)
+	withServeFlags(t)
+	if def := serveCmd.Flags().Lookup("protocol").DefValue; def != "v0" {
+		t.Errorf("--protocol defaults to %q, want v0", def)
+	}
+	for _, name := range []string{"v0", "bdp", "both"} {
+		serveProtocol = name
+		cfg, err := resolveServeConfig()
+		if err != nil {
+			t.Fatalf("--protocol %s: %v", name, err)
+		}
+		var served httpapi.Config
+		cfg.applyTo(&served)
+		if string(served.Protocol) != name {
+			t.Errorf("--protocol %s reached the server as %q", name, served.Protocol)
+		}
+	}
+	serveProtocol = "v1"
+	if _, err := resolveServeConfig(); err == nil || !strings.Contains(err.Error(), "--protocol") {
+		t.Errorf("--protocol v1: err = %v", err)
+	}
+}
+
 // parsed but never wired would show up.
 func TestServeConfigCarriesTheOperatorsChoicesThrough(t *testing.T) {
 	clearServeEnv(t)

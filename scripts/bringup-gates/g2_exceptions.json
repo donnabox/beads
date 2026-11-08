@@ -1,0 +1,99 @@
+{
+  "about": "What G2 accepts between the merge base and the PR head, and why. Each entry is a decision, not a tolerance: widening this file in a PR fails G2 unless that PR adds a decision record under engdocs/decisions/ with a G2-waives line for gate:exceptions-file-changed. Lines are matched exactly, so a reworded line or a changed default is a difference.",
+  "accepted": [
+    {
+      "id": "protocol-flag",
+      "decided": "Donna Box, G2 brief, 2026-11-06",
+      "reason": "--protocol on bd serve and bd connect is the one addition to the CLI surface the bring-up carries, off by default (default \"v0\"). The default paths stay what they were, which the wire proof checks. Named line by line, in the help text, in the flag inventory, and in the committed command-tree goldens.",
+      "help_lines": {
+        "bd connect": [
+          "--protocol is what this workspace speaks to the server, and is recorded with the",
+          "rest. v0, the default, is the /v0 HTTP surface. bdp invokes /bdp/call instead, which",
+          "needs a bd serve of this release running with --protocol bdp or both. A connect",
+          "states it afresh: reconnecting without the flag goes back to v0.",
+          "",
+          "  bd connect --protocol bdp http://127.0.0.1:8080          # speak BDP to a bd serve --protocol both",
+          "      --protocol string            what this workspace speaks to the server: v0, or bdp for /bdp/call on a bd serve --protocol bdp or both; recorded in the sidecar (default \"v0\")"
+        ],
+        "bd serve": [
+          "",
+          "--protocol picks what answers, on one address. v0, the default, is /v0 alone. bdp",
+          "is the Beads Protocol alone: GET /bdp is Core discovery, GET /bdp/beads and GET",
+          "/bdp/links are the Core reads, and POST /bdp/call/NAME invokes a Callable, which",
+          "runs on its /v0 operation; GET /bdp/call lists them. A /v0 path then answers 404",
+          "protocol_not_served, and the event stream, which has no Callable, is not served.",
+          "both is both. GET /healthz answers in all three. A bd connect has to ask for the",
+          "one the server has: bd connect --protocol bdp talks to /bdp/call.",
+          "  With --protocol bdp or both, GET / and GET /bdp need none either: they hold only",
+          "  this Scope's address and constants.",
+          "      --protocol string                What this server answers: v0, bdp (the Beads Protocol, with /v0 off) or both (default \"v0\")"
+        ]
+      },
+      "flags": {
+        "bd connect": [
+          "--protocol"
+        ],
+        "bd serve": [
+          "--protocol"
+        ]
+      },
+      "golden_lines": {
+        "cmd/bd/testdata/command_tree/help/bd_serve.golden": [
+          "--protocol picks what answers, on one address. v0, the default, is /v0 alone. bdp",
+          "is the Beads Protocol alone: GET /bdp is Core discovery, GET /bdp/beads and GET",
+          "/bdp/links are the Core reads, and POST /bdp/call/NAME invokes a Callable, which",
+          "runs on its /v0 operation; GET /bdp/call lists them. A /v0 path then answers 404",
+          "protocol_not_served, and the event stream, which has no Callable, is not served.",
+          "both is both. GET /healthz answers in all three. A bd connect has to ask for the",
+          "one the server has: bd connect --protocol bdp talks to /bdp/call.",
+          "",
+          "  With --protocol bdp or both, GET / and GET /bdp need none either: they hold only",
+          "  this Scope's address and constants.",
+          "      --protocol string                What this server answers: v0, bdp (the Beads Protocol, with /v0 off) or both (default \"v0\")"
+        ],
+        "cmd/bd/testdata/command_tree/tree.golden": [
+          "    | --protocol is what this workspace speaks to the server, and is recorded with the",
+          "    | rest. v0, the default, is the /v0 HTTP surface. bdp invokes /bdp/call instead, which",
+          "    | needs a bd serve of this release running with --protocol bdp or both. A connect",
+          "    | states it afresh: reconnecting without the flag goes back to v0.",
+          "    |",
+          "    |   bd connect --protocol bdp http://127.0.0.1:8080          # speak BDP to a bd serve --protocol both",
+          "  flag --protocol type=string default=\"v0\" usage=\"what this workspace speaks to the server: v0, or bdp for /bdp/call on a bd serve --protocol bdp or both; recorded in the sidecar\"",
+          "    | --protocol picks what answers, on one address. v0, the default, is /v0 alone. bdp",
+          "    | is the Beads Protocol alone: GET /bdp is Core discovery, GET /bdp/beads and GET",
+          "    | /bdp/links are the Core reads, and POST /bdp/call/NAME invokes a Callable, which",
+          "    | runs on its /v0 operation; GET /bdp/call lists them. A /v0 path then answers 404",
+          "    | protocol_not_served, and the event stream, which has no Callable, is not served.",
+          "    | both is both. GET /healthz answers in all three. A bd connect has to ask for the",
+          "    | one the server has: bd connect --protocol bdp talks to /bdp/call.",
+          "    |",
+          "    |   With --protocol bdp or both, GET / and GET /bdp need none either: they hold only",
+          "    |   this Scope's address and constants.",
+          "  flag --protocol type=string default=\"v0\" usage=\"What this server answers: v0, bdp (the Beads Protocol, with /v0 off) or both\""
+        ]
+      }
+    },
+    {
+      "id": "query-order",
+      "decided": "Donna Box, G2 brief, 2026-11-06",
+      "reason": "One repeated query value in another order, with identical answers and output. wire_proof.py gives any command this verdict (query-order) when everything else about the exchange is equal, and records it as map order in the client that differs base against base too. G2 accepts it only on the commands named here and fails it anywhere else. A run without it is normal.",
+      "query_order_commands": [
+        "list --ready",
+        "list --parent *",
+        "children *"
+      ]
+    },
+    {
+      "id": "build-and-version-strings",
+      "decided": "Donna Box, G2 brief, 2026-11-06",
+      "reason": "A bd at two commits reports two builds, and a release bump a new version number. Handled by masks in wire_proof.py rather than by this file, so these values never reach a comparison: the build and commit in bd version (--json and text), and each binary's own version number as literal text wherever it appears. Nothing is accepted here beyond those strings.",
+      "handled_by": "scripts/bdp-call-parity/wire_proof.py Masker"
+    },
+    {
+      "id": "per-run-values",
+      "decided": "Donna Box, G2 brief, 2026-11-06",
+      "reason": "Values two independent runs must differ in. Handled by masks in wire_proof.py and normalize.py rather than by this file: ports and the temporary root, timestamps, UUIDs (the project id), revision tokens, 32-character hashes, minted ids numbered by first appearance, cursors, request_id, X-Request-Id, arrival_seq, *_ms timings, the time in bd ping, Date, and Content-Length, which moves with a masked value. The README lists them; a new mask belongs in the review of the proof.",
+      "handled_by": "scripts/bdp-call-parity/wire_proof.py Masker"
+    }
+  ]
+}
