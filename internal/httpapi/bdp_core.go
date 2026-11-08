@@ -33,7 +33,7 @@ const (
 	// latest commit that changed a canonical protocol source at or before `bdp.pin`
 	// (Core, Write, Types or Events). It names protocol text, not this build, and it
 	// can differ from the pin itself.
-	coreSpecRevision = "f168d60f1ce5155d03ecb5324e328310c21b8ed0"
+	coreSpecRevision = "3291f58e23f5398733b3991d0c2629a371382e72"
 
 	coreBDPVersion = "0.1"
 	coreProfile    = "core"
