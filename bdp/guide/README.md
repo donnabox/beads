@@ -9,12 +9,14 @@ Build and test the way you always do. The copy of BDP is just there, like any ot
 One thing can happen: a protocol test fails on your change. That test guards what beads promises over the network. A failure means your change altered that promise. Ask yourself one question — did you mean to?
 
 - **No.** It's a side effect. Fix your change until the test passes again.
-- **Yes.** You're deliberately changing what beads sends or accepts. That's allowed, but it's never silent. Say so in your PR — what changed and why — so it's a decision someone chose, not a surprise someone finds later.
+- **Yes.** You're deliberately changing what beads sends or accepts. That's allowed, but it's never silent, and the change has to go home to the BDP repo too — see **When you really do need to change the wire** below. Say so in your PR: what changed and why, so it's a decision someone chose, not a surprise someone finds later.
 
-Two standing rules, and that's all:
+Two rules for everyday work:
 
-- Don't edit the vendored BDP files or the version it's fixed to. That's release management's, not yours.
-- If you think the spec itself is wrong, file it. Don't work around it in the code.
+- Don't edit the vendored BDP files or the pin. For normal changes they're read-only — that's release management's.
+- If you think the spec is wrong, file it. Don't quietly code around it.
+
+**When you really do need to change the wire.** The protocol lives in the BDP repo, so the change has to go home there — it can't live only in beads. Do the work where you are: make the change in beads, including the matching edit to the vendored copy, and in the same move open a paired PR up to the BDP repo's working branch with the protocol part. The two land together, so the copy never drifts from the real spec. This is the one time you touch the vendored files — and only with that BDP PR open. Release management lines the pin back up once BDP takes it in.
 
 ## Cutting a release (the endgame)
 
