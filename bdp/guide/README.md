@@ -47,4 +47,4 @@ That's the whole of it. Everything else about BDP — writing it, testing it, cu
 
 ## The pin
 
-`pin` (next to this file) is one line: the BDP version this repo is built and tested against. It moves forward only. Today it names a commit in the BDP repo; once the spec, wire schema, and conformance suite are vendored into `spec/` here, it becomes the local version of that copy. Only release management changes it.
+The pin (`bdp/pin`, a peer of this guide) is one line: the BDP version this repo is built and tested against. It moves forward only. Today it names a commit in the [canonical BDP repo](https://github.com/gastownhall/bdp); once the spec, wire schema, and conformance suite are vendored into `bdp/spec/`, it becomes the local version of that copy. Only release management changes it.
