@@ -1,0 +1,1136 @@
+{
+  "fixtureVersion": 1,
+  "id": "reference-read-v1",
+  "realization": "bdpbd",
+  "seed": 0,
+  "capabilities": [
+    "public-http",
+    "controlled-read-advertised-limits-v1",
+    "controlled-read-external-endpoint-v1",
+    "controlled-read-pagination-v1",
+    "controlled-read-problem-table-v1",
+    "controlled-read-scope-restore-v1",
+    "controlled-external-type-publisher-v1",
+    "exact-raw-request-target",
+    "reference-read-v1",
+    "reference-read-v1-single-page",
+    "cors-disabled",
+    "unexpected-internal-fault",
+    "alias-absent-v1",
+    "attribution-v1",
+    "content-derived-revisions-v1"
+  ],
+  "bindings": {
+    "bead.demo-a": "demo-a",
+    "bead.demo-b": "demo-b",
+    "bead.demo-c": "demo-c",
+    "link.demo-b-a": "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+    "bead.demo-f": "demo-f",
+    "alias.unknown": "alias/never-created",
+    "bead.absent": "never-created",
+    "http.resource": "demo-a",
+    "http.link": "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+    "http.absent": "http-never-created",
+    "bead-inventory": "bdp/beads",
+    "link-inventory": "bdp/links"
+  },
+  "private": {
+    "internalFaultSentinel": "bdp-private-internal-fault-bdpbd-e69028371d4a"
+  },
+  "bd": {
+    "acceptedBuildIdentities": [
+      {
+        "provenance": "homebrew-local",
+        "versionJson": {
+          "branch": "v1.0.5",
+          "build": "Homebrew",
+          "schema_version": 1,
+          "version": "1.0.5"
+        },
+        "versionText": "bd version 1.0.5 (Homebrew)"
+      },
+      {
+        "provenance": "source-build-hosted-ci",
+        "versionJson": {
+          "build": "dev",
+          "schema_version": 1,
+          "version": "1.0.5"
+        },
+        "versionText": "bd version 1.0.5 (dev)"
+      }
+    ],
+    "actor": "bdp-conformance",
+    "prefix": "demo",
+    "beads": [
+      {
+        "id": "demo-a",
+        "title": "A",
+        "type": "task",
+        "priority": 2,
+        "status": "open",
+        "created_at": "2026-08-08T23:33:31Z"
+      },
+      {
+        "id": "demo-b",
+        "title": "B",
+        "type": "task",
+        "priority": 2,
+        "status": "open",
+        "created_at": "2026-08-08T23:33:32Z"
+      },
+      {
+        "id": "demo-c",
+        "title": "C",
+        "type": "feature",
+        "priority": 2,
+        "status": "closed",
+        "created_at": "2026-08-08T23:33:33Z"
+      },
+      {
+        "id": "demo-d",
+        "title": "D",
+        "type": "task",
+        "priority": 2,
+        "status": "open",
+        "created_at": "2026-08-08T23:33:34Z"
+      },
+      {
+        "id": "demo-e",
+        "title": "E",
+        "type": "bug",
+        "priority": 2,
+        "status": "deferred",
+        "created_at": "2026-08-08T23:33:35Z"
+      },
+      {
+        "id": "demo-f",
+        "title": "F",
+        "type": "decision",
+        "priority": 2,
+        "status": "open",
+        "created_at": "2026-08-08T23:33:36Z"
+      },
+      {
+        "id": "demo-i",
+        "title": "I",
+        "type": "task",
+        "priority": 2,
+        "status": "open",
+        "created_at": "2026-08-08T23:33:37Z"
+      },
+      {
+        "id": "demo-j",
+        "title": "J",
+        "type": "task",
+        "priority": 2,
+        "status": "open",
+        "created_at": "2026-08-08T23:33:38Z"
+      },
+      {
+        "id": "demo-k",
+        "title": "K",
+        "type": "task",
+        "priority": 2,
+        "status": "closed",
+        "created_at": "2026-08-08T23:33:39Z"
+      }
+    ],
+    "links": [
+      {
+        "source": "demo-b",
+        "target": "demo-a",
+        "type": "blocks"
+      },
+      {
+        "source": "demo-a",
+        "target": "demo-c",
+        "type": "blocks"
+      },
+      {
+        "source": "demo-d",
+        "target": "demo-c",
+        "type": "blocks"
+      },
+      {
+        "source": "demo-f",
+        "target": "demo-e",
+        "type": "blocks"
+      },
+      {
+        "source": "demo-e",
+        "target": "demo-f",
+        "type": "related"
+      },
+      {
+        "source": "demo-i",
+        "target": "demo-a",
+        "type": "blocks"
+      },
+      {
+        "source": "demo-i",
+        "target": "demo-c",
+        "type": "blocks"
+      },
+      {
+        "source": "demo-j",
+        "target": "demo-c",
+        "type": "blocks"
+      },
+      {
+        "source": "demo-j",
+        "target": "demo-k",
+        "type": "blocks"
+      }
+    ]
+  },
+  "typeDescriptors": [
+    {
+      "id": "https://work.example/types/tracked-item",
+      "name": "Tracked Item",
+      "describes": "bead",
+      "conformsTo": []
+    },
+    {
+      "id": "https://work.example/types/work-item",
+      "name": "Work Item",
+      "describes": "bead",
+      "conformsTo": ["https://work.example/types/tracked-item"]
+    },
+    {
+      "id": "https://work.example/types/task",
+      "name": "Task",
+      "describes": "bead",
+      "conformsTo": ["https://work.example/types/work-item"]
+    },
+    {
+      "id": "https://work.example/types/bug",
+      "name": "Bug",
+      "describes": "bead",
+      "conformsTo": ["https://work.example/types/work-item"]
+    },
+    {
+      "id": "https://work.example/types/feature",
+      "name": "Feature",
+      "describes": "bead",
+      "conformsTo": ["https://work.example/types/work-item"]
+    },
+    {
+      "id": "https://work.example/types/chore",
+      "name": "Chore",
+      "describes": "bead",
+      "conformsTo": ["https://work.example/types/work-item"]
+    },
+    {
+      "id": "https://work.example/types/epic",
+      "name": "Epic",
+      "describes": "bead",
+      "conformsTo": ["https://work.example/types/work-item"]
+    },
+    {
+      "id": "https://work.example/types/decision",
+      "name": "Decision",
+      "describes": "bead",
+      "conformsTo": []
+    },
+    {
+      "id": "https://work.example/types/relationship",
+      "name": "Relationship",
+      "describes": "link",
+      "conformsTo": [],
+      "source": {
+        "conformsTo": []
+      },
+      "target": {
+        "conformsTo": []
+      }
+    },
+    {
+      "id": "https://work.example/types/dependency",
+      "name": "Dependency",
+      "describes": "link",
+      "conformsTo": ["https://work.example/types/relationship"],
+      "source": {
+        "conformsTo": []
+      },
+      "target": {
+        "conformsTo": []
+      }
+    },
+    {
+      "id": "https://work.example/types/blocks",
+      "name": "Blocks",
+      "describes": "link",
+      "conformsTo": ["https://work.example/types/dependency"],
+      "source": {
+        "conformsTo": []
+      },
+      "target": {
+        "conformsTo": []
+      }
+    },
+    {
+      "id": "https://work.example/types/relates",
+      "name": "Relates",
+      "describes": "link",
+      "conformsTo": [],
+      "source": {
+        "conformsTo": []
+      },
+      "target": {
+        "conformsTo": []
+      }
+    },
+    {
+      "id": "https://work.example/types/cites",
+      "name": "Cites",
+      "describes": "link",
+      "conformsTo": [],
+      "source": {
+        "conformsTo": []
+      },
+      "target": {
+        "conformsTo": []
+      }
+    }
+  ],
+  "oracles": {
+    "external-endpoint": {
+      "input": {
+        "linkIds": ["link_lZPvVbK82Rqr62rXqdkRLHVe1RDnT4b28Cib1e8wJfU"]
+      },
+      "rows": [
+        [
+          "link_lZPvVbK82Rqr62rXqdkRLHVe1RDnT4b28Cib1e8wJfU",
+          "types/related",
+          ["demo-f"],
+          ["external:beads:mol-run-assignee"]
+        ]
+      ],
+      "externalEndpoints": 1,
+      "localSource": 1,
+      "localTarget": 0
+    },
+    "scope-restore": {
+      "input": {
+        "stableId": "demo-a",
+        "deletedId": "demo-f",
+        "restoredScope": "https://scope.example/restored/",
+        "view": "restore-view",
+        "epoch": "restore-epoch"
+      },
+      "evidence": {
+        "mode": "new-scope",
+        "scopeChanged": true,
+        "stableIdentityChanged": true,
+        "deletedStatusAtRestoredScope": 200,
+        "deletedCodeAtRestoredScope": null,
+        "scopeEpochChanged": null,
+        "staleCursorStatus": null,
+        "staleCursorCode": null,
+        "oldStableStatus": 404,
+        "oldDeletedStatus": 404
+      }
+    },
+    "cross-target": {
+      "input": {
+        "relationshipRoles": [
+          {
+            "type": "https://work.example/types/blocks",
+            "role": "blocks"
+          },
+          {
+            "type": "types/related",
+            "role": "relates"
+          }
+        ]
+      },
+      "projection": {
+        "beadStatuses": [
+          ["A", "open", 2],
+          ["B", "open", 2],
+          ["C", "closed", 2],
+          ["D", "open", 2],
+          ["E", "deferred", 2],
+          ["F", "open", 2],
+          ["I", "open", 2],
+          ["J", "open", 2],
+          ["K", "closed", 2]
+        ],
+        "relationships": [
+          ["A", "C", "blocks"],
+          ["B", "A", "blocks"],
+          ["D", "C", "blocks"],
+          ["E", "F", "relates"],
+          ["F", "E", "blocks"],
+          ["I", "A", "blocks"],
+          ["I", "C", "blocks"],
+          ["J", "C", "blocks"],
+          ["J", "K", "blocks"]
+        ]
+      }
+    },
+    "pagination": {
+      "selector": {
+        "input": {
+          "collection": "beads",
+          "selector": "$[?@.properties.status == \"open\" && @.type == \"https://work.example/types/task\"]",
+          "limit": 2,
+          "syntaxSelector": "$[?]",
+          "overLimitSelector": "$[?@.properties.status == \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"]",
+          "selectorLimits": {
+            "bytes": 128,
+            "depth": 16,
+            "nodes": 64
+          },
+          "authorizationExcludedId": "demo-b",
+          "view": "view-a",
+          "epoch": "epoch-a"
+        },
+        "expectedIds": ["demo-a", "demo-d", "demo-i", "demo-j"],
+        "expectedPageSizes": [2, 2]
+      },
+      "collection-snapshot": {
+        "input": {
+          "collection": "beads",
+          "limit": 2,
+          "mutation": {
+            "candidateIds": ["demo-k"],
+            "revision": "conformance-mutated-revision"
+          },
+          "view": "view-a",
+          "epoch": "epoch-a"
+        },
+        "expectedIds": [
+          "demo-a",
+          "demo-b",
+          "demo-c",
+          "demo-d",
+          "demo-e",
+          "demo-f",
+          "demo-i",
+          "demo-j",
+          "demo-k"
+        ],
+        "expectedPageSizes": [2, 2, 2, 2, 1]
+      },
+      "cursor-errors": {
+        "input": {
+          "collection": "beads",
+          "limit": 2,
+          "malformedQuery": {
+            "cursor": "not-issued",
+            "limit": "2"
+          },
+          "clockAdvanceMs": 101,
+          "initialView": "view-a",
+          "foreignView": "view-b",
+          "initialEpoch": "epoch-a",
+          "foreignEpoch": "epoch-b"
+        }
+      },
+      "incident-links": {
+        "input": {
+          "collection": "links",
+          "bead": "demo-a",
+          "direction": "both",
+          "limit": 1,
+          "mutation": {
+            "candidateIds": [
+              "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+              "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+              "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"
+            ],
+            "revision": "conformance-mutated-revision"
+          },
+          "clockAdvanceMs": 101,
+          "view": "view-a",
+          "epoch": "epoch-a"
+        },
+        "expectedCollectionIds": [
+          "link_2QJEMSuujph5KkVrwpNd6eU9iHTSsX9H_XsJSa-_bww",
+          "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+          "link_Ai_hbUZ0SeP7x51uPiUUuMj73f9S6_FlaktWuFDRjfA",
+          "link_CwGjBw2C3BrsZ1-FCZFHCSWbgk6AkbfISd90g2z8LB8",
+          "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+          "link_a_wTVW4j1g5QUm6r4hn70ou3b_BqphIxj7lN_6Bz_GA",
+          "link_dlDGuHWRMPqi0sIvaWVWlZAmhkormJkZdCOszuWkUtY",
+          "link_kyNwW_VIRuTGlRFq-jT74GEQ-DJuZ7anMUx7Tkfzc38",
+          "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"
+        ],
+        "expectedIncidentLinkIds": [
+          "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+          "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+          "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"
+        ],
+        "expectedCollectionPageSizes": [1, 1, 1, 1, 1, 1, 1, 1, 1],
+        "expectedIncidentPageSizes": [1, 1, 1],
+        "publicRequests": 16
+      }
+    },
+    "resources": {
+      "bead.demo-a": {
+        "id": "demo-a",
+        "properties": {
+          "id": "demo-a",
+          "title": "A",
+          "status": "open",
+          "priority": 2,
+          "issue_type": "task",
+          "owner": "bdp-conformance@invalid",
+          "created_at": "2026-08-08T23:33:31Z",
+          "created_by": "bdp-conformance",
+          "updated_at": "2026-08-08T23:33:31Z",
+          "dependencies": [
+            {
+              "issue_id": "demo-a",
+              "depends_on_id": "demo-c",
+              "type": "blocks",
+              "created_at": "2026-08-08T23:33:31Z",
+              "created_by": "bdp-conformance",
+              "metadata": "{}"
+            }
+          ],
+          "dependency_count": 1,
+          "dependent_count": 2,
+          "comment_count": 0
+        }
+      },
+      "link.demo-b-a": {
+        "id": "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+        "source": "demo-b",
+        "target": "demo-a",
+        "properties": {}
+      }
+    },
+    "collections": {
+      "bead-titles": ["A", "B", "C", "D", "E", "F", "I", "J", "K"],
+      "link-records": [
+        [
+          "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+          "https://work.example/types/blocks",
+          "sha256_b2j4_Tk01999M6KIIIhajTHmJS3-1JYQt9reGgMeNkM",
+          "demo-b",
+          "",
+          "demo-a",
+          "",
+          {}
+        ],
+        [
+          "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+          "https://work.example/types/blocks",
+          "sha256_1Tw6-qlTh9jaPZPMS38tq_gDYFzljFTnHG6wL3EgVEw",
+          "demo-a",
+          "",
+          "demo-c",
+          "",
+          {}
+        ],
+        [
+          "link_kyNwW_VIRuTGlRFq-jT74GEQ-DJuZ7anMUx7Tkfzc38",
+          "https://work.example/types/blocks",
+          "sha256_C6iqVVrzmkgWcc6mj2kQdcpWtzdEG8TLzlix3pVsPOc",
+          "demo-d",
+          "",
+          "demo-c",
+          "",
+          {}
+        ],
+        [
+          "link_Ai_hbUZ0SeP7x51uPiUUuMj73f9S6_FlaktWuFDRjfA",
+          "https://work.example/types/blocks",
+          "sha256_x73EloC07-NxgM9-_8w6s4dY_Ydc90PpBpgzE8NrV84",
+          "demo-f",
+          "",
+          "demo-e",
+          "",
+          {}
+        ],
+        [
+          "link_dlDGuHWRMPqi0sIvaWVWlZAmhkormJkZdCOszuWkUtY",
+          "types/related",
+          "sha256_p8wStVvQx8B2m76xAzCl67-jpGgO2-2XSHCBnlhEamI",
+          "demo-e",
+          "",
+          "demo-f",
+          "",
+          {}
+        ],
+        [
+          "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0",
+          "https://work.example/types/blocks",
+          "sha256__QISM-l3Ga--9JDHY-EDIYKMgxXmkVfH9BEwaKx5EFc",
+          "demo-i",
+          "",
+          "demo-a",
+          "",
+          {}
+        ],
+        [
+          "link_CwGjBw2C3BrsZ1-FCZFHCSWbgk6AkbfISd90g2z8LB8",
+          "https://work.example/types/blocks",
+          "sha256_EM5PxojIhSDvx5hZJZYJYBty_e2upiTDtS0cy6UmBjY",
+          "demo-i",
+          "",
+          "demo-c",
+          "",
+          {}
+        ],
+        [
+          "link_2QJEMSuujph5KkVrwpNd6eU9iHTSsX9H_XsJSa-_bww",
+          "https://work.example/types/blocks",
+          "sha256_6pcY1hfH8VexnYxPLW64KGVAK7U_XBwkjvSZtIZt874",
+          "demo-j",
+          "",
+          "demo-c",
+          "",
+          {}
+        ],
+        [
+          "link_a_wTVW4j1g5QUm6r4hn70ou3b_BqphIxj7lN_6Bz_GA",
+          "https://work.example/types/blocks",
+          "sha256_VX41Ll4B-aEX4fAL9gGARlrdmRStzSOxWFA7J_Yfe6g",
+          "demo-j",
+          "",
+          "demo-k",
+          "",
+          {}
+        ]
+      ],
+      "type-ids": [
+        "https://work.example/types/tracked-item",
+        "https://work.example/types/work-item",
+        "https://work.example/types/task",
+        "https://work.example/types/bug",
+        "https://work.example/types/feature",
+        "https://work.example/types/chore",
+        "https://work.example/types/epic",
+        "https://work.example/types/decision",
+        "https://work.example/types/relationship",
+        "https://work.example/types/dependency",
+        "https://work.example/types/blocks",
+        "https://work.example/types/relates",
+        "types/related",
+        "https://work.example/types/cites"
+      ]
+    },
+    "structural-predicates": {
+      "beads-type": ["A", "B", "D", "I", "J", "K"],
+      "beads-type-is-exact": [],
+      "beads-conforms-to-declared-type": ["A", "B", "D", "I", "J", "K"],
+      "beads-conforms-to": ["A", "B", "C", "D", "E", "I", "J", "K"],
+      "beads-predicates-and": [],
+      "links-source-local": ["link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM"],
+      "links-target-absolute": [
+        "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+        "link_kyNwW_VIRuTGlRFq-jT74GEQ-DJuZ7anMUx7Tkfzc38",
+        "link_CwGjBw2C3BrsZ1-FCZFHCSWbgk6AkbfISd90g2z8LB8",
+        "link_2QJEMSuujph5KkVrwpNd6eU9iHTSsX9H_XsJSa-_bww"
+      ],
+      "links-endpoint-or": [
+        "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+        "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+        "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"
+      ],
+      "links-type": [
+        "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+        "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+        "link_kyNwW_VIRuTGlRFq-jT74GEQ-DJuZ7anMUx7Tkfzc38",
+        "link_Ai_hbUZ0SeP7x51uPiUUuMj73f9S6_FlaktWuFDRjfA",
+        "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0",
+        "link_CwGjBw2C3BrsZ1-FCZFHCSWbgk6AkbfISd90g2z8LB8",
+        "link_2QJEMSuujph5KkVrwpNd6eU9iHTSsX9H_XsJSa-_bww",
+        "link_a_wTVW4j1g5QUm6r4hn70ou3b_BqphIxj7lN_6Bz_GA"
+      ],
+      "links-type-is-exact": [],
+      "links-conforms-to-declared-type": [
+        "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+        "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+        "link_kyNwW_VIRuTGlRFq-jT74GEQ-DJuZ7anMUx7Tkfzc38",
+        "link_Ai_hbUZ0SeP7x51uPiUUuMj73f9S6_FlaktWuFDRjfA",
+        "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0",
+        "link_CwGjBw2C3BrsZ1-FCZFHCSWbgk6AkbfISd90g2z8LB8",
+        "link_2QJEMSuujph5KkVrwpNd6eU9iHTSsX9H_XsJSa-_bww",
+        "link_a_wTVW4j1g5QUm6r4hn70ou3b_BqphIxj7lN_6Bz_GA"
+      ],
+      "links-conforms-to": [
+        "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+        "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+        "link_kyNwW_VIRuTGlRFq-jT74GEQ-DJuZ7anMUx7Tkfzc38",
+        "link_Ai_hbUZ0SeP7x51uPiUUuMj73f9S6_FlaktWuFDRjfA",
+        "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0",
+        "link_CwGjBw2C3BrsZ1-FCZFHCSWbgk6AkbfISd90g2z8LB8",
+        "link_2QJEMSuujph5KkVrwpNd6eU9iHTSsX9H_XsJSa-_bww",
+        "link_a_wTVW4j1g5QUm6r4hn70ou3b_BqphIxj7lN_6Bz_GA"
+      ],
+      "links-conforms-to-cross-kind": [],
+      "links-predicates-and": ["link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM"],
+      "links-endpoint-pinned-target": [
+        "link_Ai_hbUZ0SeP7x51uPiUUuMj73f9S6_FlaktWuFDRjfA",
+        "link_dlDGuHWRMPqi0sIvaWVWlZAmhkormJkZdCOszuWkUtY"
+      ]
+    },
+    "incident-links": {
+      "demo-a-inbound": [
+        "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+        "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"
+      ],
+      "demo-a-outbound": ["link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM"],
+      "demo-b-outbound": ["link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM"],
+      "demo-b-inbound": [],
+      "demo-a-both": [
+        "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+        "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+        "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"
+      ],
+      "demo-a-default": [
+        "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM",
+        "link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM",
+        "link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"
+      ]
+    },
+    "ordering": {
+      "beads": [
+        ["demo-a"],
+        ["demo-b"],
+        ["demo-c"],
+        ["demo-d"],
+        ["demo-e"],
+        ["demo-f"],
+        ["demo-i"],
+        ["demo-j"],
+        ["demo-k"]
+      ],
+      "links": [
+        ["link_2QJEMSuujph5KkVrwpNd6eU9iHTSsX9H_XsJSa-_bww"],
+        ["link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM"],
+        ["link_Ai_hbUZ0SeP7x51uPiUUuMj73f9S6_FlaktWuFDRjfA"],
+        ["link_CwGjBw2C3BrsZ1-FCZFHCSWbgk6AkbfISd90g2z8LB8"],
+        ["link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM"],
+        ["link_a_wTVW4j1g5QUm6r4hn70ou3b_BqphIxj7lN_6Bz_GA"],
+        ["link_dlDGuHWRMPqi0sIvaWVWlZAmhkormJkZdCOszuWkUtY"],
+        ["link_kyNwW_VIRuTGlRFq-jT74GEQ-DJuZ7anMUx7Tkfzc38"],
+        ["link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"]
+      ],
+      "order": "canonical-uri",
+      "types": [
+        ["types/related"],
+        ["https://work.example/types/blocks"],
+        ["https://work.example/types/bug"],
+        ["https://work.example/types/chore"],
+        ["https://work.example/types/cites"],
+        ["https://work.example/types/decision"],
+        ["https://work.example/types/dependency"],
+        ["https://work.example/types/epic"],
+        ["https://work.example/types/feature"],
+        ["https://work.example/types/relates"],
+        ["https://work.example/types/relationship"],
+        ["https://work.example/types/task"],
+        ["https://work.example/types/tracked-item"],
+        ["https://work.example/types/work-item"]
+      ],
+      "links-type": [
+        ["link_2QJEMSuujph5KkVrwpNd6eU9iHTSsX9H_XsJSa-_bww"],
+        ["link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM"],
+        ["link_Ai_hbUZ0SeP7x51uPiUUuMj73f9S6_FlaktWuFDRjfA"],
+        ["link_CwGjBw2C3BrsZ1-FCZFHCSWbgk6AkbfISd90g2z8LB8"],
+        ["link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM"],
+        ["link_a_wTVW4j1g5QUm6r4hn70ou3b_BqphIxj7lN_6Bz_GA"],
+        ["link_kyNwW_VIRuTGlRFq-jT74GEQ-DJuZ7anMUx7Tkfzc38"],
+        ["link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"]
+      ],
+      "demo-a-inbound": [
+        ["link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM"],
+        ["link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"]
+      ],
+      "demo-a-outbound": [["link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM"]],
+      "demo-a-both": [
+        ["link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM"],
+        ["link_LDdLtFE2sDBsA6qiWLXh3x5tjgbHHaMygaaUl9QiwsM"],
+        ["link_lJTRv9MkyjeSy2O4qgp9rmKxZhROA3l1dqVKq28DJJ0"]
+      ]
+    },
+    "owned-links": {
+      "input": {
+        "bead": "demo-f"
+      },
+      "ownedLinks": null
+    },
+    "wildcard-descriptors": {
+      "declaration": {
+        "input": {
+          "ids": [
+            "https://work.example/types/wildcard-probe-only",
+            "https://work.example/types/wildcard-probe-mixed",
+            "https://work.example/types/wildcard-probe-link"
+          ]
+        },
+        "descriptors": [
+          {
+            "id": "https://work.example/types/wildcard-probe-only",
+            "name": "only",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 3
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-mixed",
+            "name": "mixed",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 3
+              },
+              "https://work.example/types/cites": {
+                "max": 2
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-link",
+            "name": "link",
+            "describes": "link",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 3
+              }
+            },
+            "source": {
+              "conformsTo": []
+            },
+            "target": {
+              "conformsTo": []
+            }
+          }
+        ],
+        "rows": [
+          {
+            "id": "https://work.example/types/wildcard-probe-only",
+            "outcome": "success",
+            "descriptor": {
+              "id": "https://work.example/types/wildcard-probe-only",
+              "name": "only",
+              "describes": "bead",
+              "conformsTo": [],
+              "ownsOutgoing": {
+                "*": {
+                  "max": 3
+                }
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-mixed",
+            "outcome": "success",
+            "descriptor": {
+              "id": "https://work.example/types/wildcard-probe-mixed",
+              "name": "mixed",
+              "describes": "bead",
+              "conformsTo": [],
+              "ownsOutgoing": {
+                "*": {
+                  "max": 3
+                },
+                "https://work.example/types/cites": {
+                  "max": 2
+                }
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-link",
+            "outcome": "problem",
+            "code": "temporarily-unavailable"
+          }
+        ]
+      },
+      "max-required": {
+        "input": {
+          "ids": [
+            "https://work.example/types/wildcard-probe-missing",
+            "https://work.example/types/wildcard-probe-label",
+            "https://work.example/types/wildcard-probe-unknown",
+            "https://work.example/types/wildcard-probe-zero",
+            "https://work.example/types/wildcard-probe-negative",
+            "https://work.example/types/wildcard-probe-fraction",
+            "https://work.example/types/wildcard-probe-max-valid"
+          ]
+        },
+        "descriptors": [
+          {
+            "id": "https://work.example/types/wildcard-probe-missing",
+            "name": "missing",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {}
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-label",
+            "name": "label",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 3,
+                "label": "no"
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-unknown",
+            "name": "unknown",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 3,
+                "extra": true
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-zero",
+            "name": "zero",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 0
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-negative",
+            "name": "negative",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": -1
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-fraction",
+            "name": "fraction",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 1.5
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-max-valid",
+            "name": "missing",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 4
+              }
+            }
+          }
+        ],
+        "rows": [
+          {
+            "id": "https://work.example/types/wildcard-probe-missing",
+            "outcome": "problem",
+            "code": "temporarily-unavailable"
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-label",
+            "outcome": "problem",
+            "code": "temporarily-unavailable"
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-unknown",
+            "outcome": "problem",
+            "code": "temporarily-unavailable"
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-zero",
+            "outcome": "problem",
+            "code": "temporarily-unavailable"
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-negative",
+            "outcome": "problem",
+            "code": "temporarily-unavailable"
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-fraction",
+            "outcome": "problem",
+            "code": "temporarily-unavailable"
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-max-valid",
+            "outcome": "success",
+            "descriptor": {
+              "id": "https://work.example/types/wildcard-probe-max-valid",
+              "name": "missing",
+              "describes": "bead",
+              "conformsTo": [],
+              "ownsOutgoing": {
+                "*": {
+                  "max": 4
+                }
+              }
+            }
+          }
+        ]
+      },
+      "explicit-max-bounded": {
+        "input": {
+          "ids": [
+            "https://work.example/types/wildcard-probe-below",
+            "https://work.example/types/wildcard-probe-equal",
+            "https://work.example/types/wildcard-probe-above"
+          ]
+        },
+        "descriptors": [
+          {
+            "id": "https://work.example/types/wildcard-probe-below",
+            "name": "below",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 3
+              },
+              "https://work.example/types/cites": {
+                "max": 2
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-equal",
+            "name": "equal",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 3
+              },
+              "https://work.example/types/cites": {
+                "max": 3
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-above",
+            "name": "above",
+            "describes": "bead",
+            "conformsTo": [],
+            "ownsOutgoing": {
+              "*": {
+                "max": 3
+              },
+              "https://work.example/types/cites": {
+                "max": 4
+              }
+            }
+          }
+        ],
+        "rows": [
+          {
+            "id": "https://work.example/types/wildcard-probe-below",
+            "outcome": "success",
+            "descriptor": {
+              "id": "https://work.example/types/wildcard-probe-below",
+              "name": "below",
+              "describes": "bead",
+              "conformsTo": [],
+              "ownsOutgoing": {
+                "*": {
+                  "max": 3
+                },
+                "https://work.example/types/cites": {
+                  "max": 2
+                }
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-equal",
+            "outcome": "success",
+            "descriptor": {
+              "id": "https://work.example/types/wildcard-probe-equal",
+              "name": "equal",
+              "describes": "bead",
+              "conformsTo": [],
+              "ownsOutgoing": {
+                "*": {
+                  "max": 3
+                },
+                "https://work.example/types/cites": {
+                  "max": 3
+                }
+              }
+            }
+          },
+          {
+            "id": "https://work.example/types/wildcard-probe-above",
+            "outcome": "problem",
+            "code": "temporarily-unavailable"
+          }
+        ]
+      }
+    },
+    "ownership-inventory": {
+      "beadsWithOwnership": 0,
+      "input": {
+        "ids": [
+          "https://work.example/types/tracked-item",
+          "https://work.example/types/work-item",
+          "https://work.example/types/task",
+          "https://work.example/types/bug",
+          "https://work.example/types/feature",
+          "https://work.example/types/chore",
+          "https://work.example/types/epic",
+          "https://work.example/types/decision",
+          "https://work.example/types/relationship",
+          "https://work.example/types/dependency",
+          "https://work.example/types/blocks",
+          "https://work.example/types/relates",
+          "https://work.example/types/cites"
+        ]
+      },
+      "resolvedOwnedTypes": 0
+    },
+    "numeric-model": {
+      "declaration": {
+        "name": "bdpbd-projected-resource-v2",
+        "numberModel": "IEEE-754-binary64-ECMAScript-JSON",
+        "source": "packages/adapter-bd/README.md",
+        "description": "bdpbd-projected-resource-v2 uses IEEE-754-binary64-ECMAScript-JSON numbers: native JSON is parsed into JavaScript binary64 values and finite numbers are serialized with ECMAScript JSON.stringify (shortest round-trip form, negative zero as 0). The preimage is the complete projected Resource excluding only its revision member: id, type, common metadata, revisionProvenance when present, properties, and Link endpoints when present. Objects use UTF-16 code-unit lexical key order recursively, arrays retain order, and strings use ECMAScript JSON.stringify escaping. The UTF-8 bytes are SHA-256 hashed and encoded as unpadded base64url with the sha256_ prefix. This local discipline does not claim RFC 8785/I-JSON conformance: the reader has no duplicate-member or lone-surrogate admission guarantee. Adding common metadata to the complete projected Resource changes content-derived revision tokens, including when metadata is empty; existing tokens are historical and must not be relabeled. Moving actor data into revisionProvenance also changes projected record bytes and therefore their content-derived revision tokens; old tokens are not relabeled. This v2 discipline introduces no discovery member. Read observations cover numeric values actually returned by the supported bd projection, not write admission or arbitrary decimal preservation."
+      },
+      "input": {
+        "ids": ["demo-a", "demo-c", "link_9TmuHZn1RUv0EiY9jYyUHZ0GIZ9QpqodDypNEEi5EeM"],
+        "numberModel": "IEEE-754-binary64-ECMAScript-JSON"
+      }
+    },
+    "revisionProvenance": {
+      "bead": {
+        "actor": {
+          "basis": "unknown",
+          "id": "bdp-conformance"
+        }
+      }
+    }
+  },
+  "expectations": {
+    "readyTitles": ["J", "D", "A"],
+    "beadCount": 9,
+    "linkCount": 9,
+    "typeCount": 14
+  }
+}

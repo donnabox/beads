@@ -1,0 +1,30 @@
+{
+  "name": "@bdp/protocol",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist",
+    "schemas"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schemas/bdp-v0.schema.json": {
+      "default": "./schemas/bdp-v0.schema.json"
+    },
+    "./schemas/historical-update-v1.schema.json": {
+      "default": "./schemas/historical-update-v1.schema.json"
+    },
+    "./schemas/bdp-v0.1.schema.json": {
+      "default": "./schemas/bdp-v0.1.schema.json"
+    }
+  },
+  "dependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1"
+  }
+}
