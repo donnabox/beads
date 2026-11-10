@@ -79,8 +79,11 @@ Examples:
 			// statuses shouldn't be clobbered just to clear a stray timestamp.
 			wasDeferred := issue.Status == types.StatusDeferred
 			if !wasDeferred && issue.DeferUntil == nil {
-				fmt.Fprintf(os.Stderr, "%s is not deferred (status: %s)\n", fullID, string(issue.Status))
-				hasError = true
+				// Not deferred and no stray timestamp: a no-op, like reopen on an
+				// open issue. Report it on stderr, but nothing-to-do is a success,
+				// not a per-id failure (C1 carve-out: undefer of a non-deferred
+				// issue stays exit 0, matching reopen-on-open / defer-on-deferred).
+				fmt.Fprintf(os.Stderr, "%s is not deferred (status: %s); nothing to do\n", fullID, string(issue.Status))
 				continue
 			}
 

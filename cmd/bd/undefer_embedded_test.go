@@ -60,32 +60,36 @@ func TestEmbeddedUndefer(t *testing.T) {
 
 	t.Run("undefer_not_deferred", func(t *testing.T) {
 		issue := bdCreate(t, bd, dir, "Undefer not deferred", "--type", "task")
-		// Issue is open, not deferred: undefer says so and the exit says so too.
+		// Open, not deferred: undefer is a no-op, like reopen on an open issue. It
+		// reports "nothing to do" but stays exit 0 (C1 carve-out).
 		cmd := exec.Command(bd, "undefer", issue.ID)
 		cmd.Dir = dir
 		cmd.Env = bdEnv(dir)
 		out, err := cmd.CombinedOutput()
-		if err == nil {
-			t.Errorf("undefer of an issue that is not deferred exited 0: %s", out)
+		if err != nil {
+			t.Errorf("undefer of a not-deferred issue should be a no-op (exit 0): err=%v out=%s", err, out)
 		}
-		if !strings.Contains(string(out), "not deferred") {
-			t.Errorf("expected 'not deferred' message: %s", out)
+		if !strings.Contains(string(out), "not deferred") || !strings.Contains(string(out), "nothing to do") {
+			t.Errorf("expected 'not deferred ... nothing to do' message: %s", out)
 		}
 	})
 
-	t.Run("undefer_one_failure_does_not_stop_the_others", func(t *testing.T) {
+	t.Run("undefer_not_deferred_among_others_is_no_op", func(t *testing.T) {
 		open := bdCreate(t, bd, dir, "Undefer among others, open", "--type", "task")
 		deferred := bdCreate(t, bd, dir, "Undefer among others, deferred", "--type", "task")
 		bdDefer(t, bd, dir, deferred.ID)
+		// The not-deferred id is a no-op, not a failure: the command processes the
+		// other id and exits 0 (C1 carve-out). A *real* per-id failure still exits
+		// nonzero — see defer_exit_code_test.go and proxied_lookup_failure_test.go.
 		cmd := exec.Command(bd, "undefer", open.ID, deferred.ID)
 		cmd.Dir = dir
 		cmd.Env = bdEnv(dir)
 		out, err := cmd.CombinedOutput()
-		if err == nil {
-			t.Errorf("exited 0 with one id failed: %s", out)
+		if err != nil {
+			t.Errorf("a not-deferred id among others should not fail the command (exit 0): err=%v out=%s", err, out)
 		}
 		if got := getIssueStatus(t, bd, dir, deferred.ID); got != "open" {
-			t.Errorf("the other id stayed %s: %s", got, out)
+			t.Errorf("the deferred id should have been undeferred, stayed %s: %s", got, out)
 		}
 	})
 

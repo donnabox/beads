@@ -15,8 +15,9 @@ import (
 )
 
 type deferProxiedResult struct {
-	issues []*types.Issue
-	errs   []string
+	issues  []*types.Issue
+	errs    []string
+	notices []string // no-op messages (e.g. not-deferred): printed, but not a failure
 
 	// wasDeferred tracks, in lockstep with issues, whether each undeferred
 	// issue was actually status=deferred (status flips to open) versus just
@@ -140,7 +141,9 @@ func runUndeferProxiedServer(ctx context.Context, args []string) error {
 			// the full rationale.
 			wasDeferred := issue.Status == types.StatusDeferred
 			if !wasDeferred && issue.DeferUntil == nil {
-				r.errs = append(r.errs, fmt.Sprintf("%s is not deferred (status: %s)", fullID, string(issue.Status)))
+				// No-op, not a per-id failure (C1 carve-out): mirror undefer.go's
+				// embedded route — report it, but stay exit 0.
+				r.notices = append(r.notices, fmt.Sprintf("%s is not deferred (status: %s); nothing to do", fullID, string(issue.Status)))
 				continue
 			}
 
@@ -168,6 +171,9 @@ func runUndeferProxiedServer(ctx context.Context, args []string) error {
 		return HandleErrorRespectJSON("%v", err)
 	}
 
+	for _, n := range res.notices {
+		fmt.Fprintln(os.Stderr, n)
+	}
 	for _, e := range res.errs {
 		fmt.Fprintln(os.Stderr, e)
 	}
