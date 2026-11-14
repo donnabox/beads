@@ -47,6 +47,18 @@ type operation struct {
 // Numeric, Unicode and duplicate-member admission comes from graphops, not
 // encoding/json's lossy defaults. The envelope adds two levels above a value.
 func Parse(raw []byte) (*Patch, error) {
+	return parse(raw, false)
+}
+
+// ParseUpdate admits an ordinary update's operation list, including an explicit
+// empty array. It does not bypass the caller's existence, liveness, revision,
+// authorization or final-state checks. Parse retains its nonempty contract for
+// consumers that have not admitted empty updates.
+func ParseUpdate(raw []byte) (*Patch, error) {
+	return parse(raw, true)
+}
+
+func parse(raw []byte, allowEmpty bool) (*Patch, error) {
 	if len(raw) > MaxInputBytes {
 		return nil, fmt.Errorf("%w: input bytes", ErrLimit)
 	}
@@ -67,7 +79,7 @@ func Parse(raw []byte) (*Patch, error) {
 	if err := json.Unmarshal(canonical, &entries); err != nil {
 		return nil, fmt.Errorf("%w: operation array", ErrInvalid)
 	}
-	if len(entries) == 0 {
+	if len(entries) == 0 && !allowEmpty {
 		return nil, fmt.Errorf("%w: at least one operation is required", ErrInvalid)
 	}
 	if len(entries) > MaxOperations {
@@ -159,7 +171,7 @@ func pointer(path string) ([]string, error) {
 // root (after remove) is separate from JSON null. Only the completed result must
 // be an object; intermediate roots may have another kind or be absent.
 func (p *Patch) Apply(before graphops.Properties) (graphops.Properties, error) {
-	if p == nil || len(p.operations) == 0 {
+	if p == nil || p.operations == nil {
 		return graphops.Properties{}, fmt.Errorf("%w: uninitialized patch", ErrInvalid)
 	}
 	raw := before.Bytes()
