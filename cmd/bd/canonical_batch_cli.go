@@ -223,7 +223,7 @@ func runCanonicalMemberEmission(cmd *cobra.Command, args []string) error {
 	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "scope", "type", "id", "if-revision", "dry-run-mode", "batch-bind", "properties", "metadata", "replace-properties", "replace-metadata", "patch-properties", "patch-metadata", "revision-provenance"); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if cmd == linkCreateCmd {
+	if cmd == linkCreateCmd || cmd == linkUpdateCmd {
 		if err := canonicalExactOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
@@ -262,6 +262,9 @@ func canonicalCompileCRUDMember(cmd *cobra.Command, args []string, scope string)
 		}
 	} else {
 		allowed = append(allowed, "if-revision")
+		if link && !deleted {
+			allowed = append(allowed, "from", "to")
+		}
 	}
 	if deleted {
 		allowed = append(allowed, "force")
@@ -339,6 +342,15 @@ func canonicalCompileCRUDMember(cmd *cobra.Command, args []string, scope string)
 			key = "link"
 		}
 		member[key] = ref
+	}
+	if link && !create && !deleted {
+		endpoints, err := canonicalMutationLinkEndpointEdits(cmd, scope)
+		if err != nil {
+			return nil, err
+		}
+		for name, ref := range endpoints {
+			member[name] = ref
+		}
 	}
 	if deleted {
 		force, _ := cmd.Flags().GetBool("force")
