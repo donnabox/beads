@@ -1,0 +1,13 @@
+{
+  "source": "41bbc5591e2c812445946abe0b9e42ef5727144e",
+  "exitCode": 0,
+  "stdoutSHA256": "66636a7e8993be5e855b36eb77a8f1b22d3f5831601eee78e58aee29939c4bad",
+  "stderrBytes": 0,
+  "findings": [
+    "Medium: docs overclaim cancellation across shared binding admission",
+    "Low: operation context docs overclaim",
+    "Low: joined cancellation message newline",
+    "Low: prefix-specific definite-failure wording"
+  ],
+  "disposition": "Narrow docs for inherited shared limitation; fix local message/cause formatting and prefix wording; shared cause preservation routed to Janet, no shared source edit."
+}

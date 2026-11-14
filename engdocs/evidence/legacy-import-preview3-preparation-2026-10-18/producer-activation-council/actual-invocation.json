@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "-p",
+    "--safe-mode",
+    "--restricted",
+    "--tools",
+    "Read,Grep,Glob",
+    "--strict-mcp-config",
+    "--disable-slash-commands",
+    "--no-session-persistence"
+  ],
+  "start": "2026-10-18T06:42:58.124215+00:00",
+  "cwd": "/Users/dbox/repos/wt/iris/legacy-import-preview3-recovery",
+  "hooksAndCustomizations": "disabled by safe-mode; restricted direct read tools; no model override",
+  "pid": 3769
+}
