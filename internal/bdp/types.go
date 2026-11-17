@@ -117,25 +117,20 @@ type Representation = Resource
 // inception so the type replays identically.
 type Authority = ResourceID
 
-// StorageClass is how a resource is kept. Exactly one field is set.
+// StorageClass is how a resource is kept — a bare tri-state, exactly one of
+// durable, ephemeral, or intrinsic.
 //
-// A scope whose resources are not Durable with Versioned true has no revisions
-// to pin, and so relaxes its write references from pinned to unpinned —
-// advertised through discovery (see UnversionedCapability).
+// Whether prior revisions are retained is no longer a per-resource flag here.
+// Per gastownhall/bdp#398 (GAP 4) versioning became a scope-wide trait,
+// [Capabilities.RevisionModel], advertised through discovery; an unversioned
+// scope relaxes its write references from pinned to unpinned scope-wide.
 type StorageClass struct {
-	// Durable: replicated and exported. Non-nil carries whether prior revisions
-	// are retained and addressable.
-	Durable *DurableClass `json:"durable,omitempty"`
+	// Durable: replicated and exported.
+	Durable bool `json:"durable,omitempty"`
 	// Ephemeral: local and never exported.
 	Ephemeral bool `json:"ephemeral,omitempty"`
 	// Intrinsic: computed by the service, not stored.
 	Intrinsic bool `json:"intrinsic,omitempty"`
-}
-
-// DurableClass carries the parameters of a Durable storage class.
-type DurableClass struct {
-	// Versioned reports whether prior revisions are retained and addressable.
-	Versioned bool `json:"versioned"`
 }
 
 // # Provenance

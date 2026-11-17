@@ -22,23 +22,25 @@
 //
 // A Scope is one opened BDP store. [Scope] gathers the Core primitives into one
 // Go interface — the shape Donna fixed as "à la carte, NOT profiles: ONE trait,
-// get the only required member, every other primitive advertised, not assumed".
+// get plus discovery the required floor, every other primitive advertised, not
+// assumed" (core.lumen §3.3, gastownhall/bdp#398).
 //
 // Go has no default interface methods, so the à-la-carte shape is expressed two
 // ways that agree:
 //
 //   - [Scope.Capabilities] advertises, at runtime, exactly which primitives a
 //     scope offers and the limits on each — the discovery the spec requires so a
-//     caller never guesses.
+//     caller never guesses. On the wire it is itself a get, of the well-known
+//     /sys/capabilities resource, not a distinct primitive.
 //   - A primitive a scope does not offer returns a *[beadserrors.ErrUnsupported]
 //     naming the operation (the same typed refusal the rest of bd's storage
 //     surface uses), so a caller that skips discovery still classifies the
 //     refusal the same way everywhere.
 //
 // [UnimplementedScope] supplies that refusing default for every OPTIONAL
-// primitive. Embed it and you inherit a conformant minimal scope — except Get,
-// which it deliberately does not provide, so the compiler makes every
-// implementer write the one mandatory primitive itself.
+// primitive. Embed it and you inherit a conformant minimal scope — except Get
+// and Capabilities, which it deliberately does not provide, so the compiler
+// makes every implementer write the two mandatory members itself.
 //
 // # Error model
 //

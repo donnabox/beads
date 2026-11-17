@@ -30,18 +30,32 @@ const (
 	PrimitiveCancel    Primitive = "cancel"    // stop a running async call      (full)
 )
 
-// Capabilities is what [Scope.Capabilities] advertises: which primitives a
-// scope offers and the limits on each. Discovery is part of the contract — the
-// spec requires it so a caller never guesses — which is why it is a mandatory
-// member alongside Get rather than a defaulted one.
+// Capabilities is what [Scope.Capabilities] advertises: which primitives a scope
+// offers, the limits on each, and the scope-wide traits. Discovery is part of
+// the contract — the spec requires it so a caller never guesses — which is why
+// it is a mandatory member alongside Get. On the wire it is itself a get, of the
+// well-known /sys/capabilities resource, not a distinct primitive (core.lumen
+// §3.3, gastownhall/bdp#398).
+//
+// The spec partitions the advertisement into per-op core caps, pack caps, and a
+// scope-wide ScopeCapabilities bucket. This condenses the per-op records into
+// Primitives and inlines the scope-wide bucket (StorageClasses, RevisionModel);
+// pack caps are out of this core client's scope.
 type Capabilities struct {
 	// Primitives maps each offered primitive to its advertised limits. Absence
 	// from the map means the primitive is not offered (and faults with
 	// ErrUnsupported). Get is always present.
 	Primitives map[Primitive]PrimitiveCapability
-	// Unversioned reports the scope keeps no revisions, so its writes return
-	// unpinned references (its StorageClass is not Durable{Versioned:true}).
-	Unversioned bool
+	// StorageClasses is the storage classes the scope's resources use — the
+	// spec's scope-wide ScopeCapabilities.storageClasses, a set rendered as a
+	// list here.
+	StorageClasses []StorageClass
+	// RevisionModel is the scope-wide versioning trait
+	// (ScopeCapabilities.revisionModel). An unversioned scope keeps no revisions,
+	// so its writes return unpinned references and every revision-dependent
+	// behavior relaxes scope-wide. Per gastownhall/bdp#398 this replaced the
+	// former per-resource StorageClass.versioned flag.
+	RevisionModel RevisionModel
 }
 
 // Offers reports whether the scope advertises primitive p.
@@ -49,6 +63,26 @@ func (c Capabilities) Offers(p Primitive) bool {
 	_, ok := c.Primitives[p]
 	return ok
 }
+
+// Unversioned reports whether the scope keeps no revisions (its RevisionModel is
+// unversioned) — the convenience predicate for the common branch.
+func (c Capabilities) Unversioned() bool {
+	return c.RevisionModel == RevisionModelUnversioned
+}
+
+// RevisionModel is the scope-wide versioning trait: whether prior revisions are
+// retained and addressable across the whole scope (core.lumen §3.3,
+// ScopeCapabilities.revisionModel; gastownhall/bdp#398). The empty value is
+// unspecified — a scope that advertises discovery always sets it.
+type RevisionModel string
+
+const (
+	// RevisionModelVersioned keeps prior revisions; writes return pinned refs.
+	RevisionModelVersioned RevisionModel = "versioned"
+	// RevisionModelUnversioned keeps only the current revision; writes return
+	// unpinned refs.
+	RevisionModelUnversioned RevisionModel = "unversioned"
+)
 
 // PrimitiveCapability carries the advertised knobs for one primitive. A field
 // is meaningful only for the primitives it applies to (e.g. IfMatch for the
