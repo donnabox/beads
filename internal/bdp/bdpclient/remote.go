@@ -54,15 +54,24 @@ func NewWithClient(base string, client *http.Client) *RemoteScope {
 
 var _ bdp.Scope = (*RemoteScope)(nil)
 
-// Capabilities advertises the primitives this spike client maps.
+// Capabilities advertises the primitives this spike client maps and the
+// scope-wide traits it knows. On the wire the spec reads discovery as a get of
+// the well-known /sys/capabilities resource; this spike returns a STATIC
+// advertisement instead, because the clean-room server does not yet serve that
+// resource in a merged shape. The clean-room store is versioned — writes mint
+// pinned revs — so RevisionModel is versioned. Fetching /sys/capabilities live
+// is the follow-up once the server grows it (see package bdp SPELUNK.md).
 func (c *RemoteScope) Capabilities(context.Context) (bdp.Capabilities, error) {
-	return bdp.Capabilities{Primitives: map[bdp.Primitive]bdp.PrimitiveCapability{
-		bdp.PrimitiveGet:    {},
-		bdp.PrimitiveCreate: {},
-		bdp.PrimitivePut:    {},
-		bdp.PrimitivePatch:  {IfMatch: true},
-		bdp.PrimitiveDelete: {IfMatch: true},
-	}}, nil
+	return bdp.Capabilities{
+		Primitives: map[bdp.Primitive]bdp.PrimitiveCapability{
+			bdp.PrimitiveGet:    {},
+			bdp.PrimitiveCreate: {},
+			bdp.PrimitivePut:    {},
+			bdp.PrimitivePatch:  {IfMatch: true},
+			bdp.PrimitiveDelete: {IfMatch: true},
+		},
+		RevisionModel: bdp.RevisionModelVersioned,
+	}, nil
 }
 
 // Get resolves ref to its representation. GET /{id} (+ ?revision=). The selector
@@ -73,7 +82,7 @@ func (c *RemoteScope) Get(ctx context.Context, ref bdp.ResourceID, _ *bdp.Select
 		return bdp.Representation{}, err
 	}
 	if resp.StatusCode/100 != 2 {
-		return bdp.Representation{}, errorFrom(resp.StatusCode, body, ref)
+		return bdp.Representation{}, errorFrom(resp.StatusCode, body)
 	}
 	var wr wireRepresentation
 	if err := json.Unmarshal(body, &wr); err != nil {
@@ -125,7 +134,7 @@ func (c *RemoteScope) Patch(ctx context.Context, ref bdp.ResourceID, patch bdp.J
 		return bdp.ResourceID{}, err
 	}
 	if resp.StatusCode/100 != 2 {
-		return bdp.ResourceID{}, errorFrom(resp.StatusCode, body, ref)
+		return bdp.ResourceID{}, errorFrom(resp.StatusCode, body)
 	}
 	return writeResult(resp, body, ref)
 }
@@ -141,7 +150,7 @@ func (c *RemoteScope) Delete(ctx context.Context, ref bdp.ResourceID, ifRevision
 		return "", err
 	}
 	if resp.StatusCode/100 != 2 {
-		return "", errorFrom(resp.StatusCode, body, ref)
+		return "", errorFrom(resp.StatusCode, body)
 	}
 	tombstone, err := writeResult(resp, body, ref)
 	if err != nil {
@@ -168,7 +177,7 @@ func (c *RemoteScope) write(ctx context.Context, method, path string, req wireCr
 		return bdp.ResourceID{}, err
 	}
 	if resp.StatusCode/100 != 2 {
-		return bdp.ResourceID{}, errorFrom(resp.StatusCode, body, fallback)
+		return bdp.ResourceID{}, errorFrom(resp.StatusCode, body)
 	}
 	return writeResult(resp, body, fallback)
 }
@@ -206,11 +215,11 @@ func (c *RemoteScope) do(ctx context.Context, method, path string, body []byte, 
 	if setHeaders != nil {
 		setHeaders(req.Header)
 	}
-	resp, err := c.client.Do(req)
+	resp, err := c.client.Do(req) //nolint:gosec // G704: base is the caller-configured store origin, not user-tainted input
 	if err != nil {
 		return nil, nil, fmt.Errorf("bdpclient: transport: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, nil, fmt.Errorf("bdpclient: read body: %w", err)
@@ -228,7 +237,7 @@ func (c *RemoteScope) resourcePath(ref bdp.ResourceID) string {
 
 // errorFrom maps a non-2xx response to a classifiable error: a FaultError
 // carrying the server's Problem, chained to the matching shared sentinel.
-func errorFrom(status int, body []byte, ref bdp.ResourceID) error {
+func errorFrom(status int, body []byte) error {
 	var wp wireProblem
 	_ = json.Unmarshal(body, &wp)
 	problem := wp.toProblem()

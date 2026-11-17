@@ -89,7 +89,7 @@ func (w wireProvenance) toBDP() *bdp.Provenance {
 		Message:     deref(w.Message),
 	}
 	for _, p := range w.Principals {
-		pr.Principals = append(pr.Principals, bdp.Principal(p))
+		pr.Principals = append(pr.Principals, p)
 	}
 	if w.PreviousRevision != nil {
 		pr.PreviousRevision = bdp.Rev(*w.PreviousRevision)

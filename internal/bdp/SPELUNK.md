@@ -127,6 +127,22 @@ spec, and backend/corelib surface attaches as advertised capabilities later.
 These are things the mechanical translation bumped into. None blocked the trait;
 all are worth a ruling.
 
+> **Status (2026-11-17):** Lydia confirmed all five are real. GAP 1 + GAP 4
+> collapsed into one Capabilities/discovery form, now **authored in
+> gastownhall/bdp#398** (`get` + discovery = `get /sys/capabilities` the
+> mandatory floor; every other primitive à-la-carte, un-offered → a typed
+> `capability-not-supported`). That is exactly the hand-rolled shape here — the
+> two-implementer convergence (this Go client + Shelly's Rust) is Lydia's
+> evidence against bdp.md §11's tier language. **#398 also reverses the earlier
+> per-resource versioning ruling to scope-wide** (`ScopeCapabilities.revisionModel`,
+> `versioned|unversioned`; `StorageClass` drops its `versioned` flag). The bd
+> contract was re-aligned to #398 in the commit that carries this note (scope.go
+> `RevisionModel`, `Capabilities.Unversioned()` helper; types.go `StorageClass`
+> is now bare `Durable|Ephemeral|Intrinsic`). The one deferred item: the HTTP
+> client still returns a *static* Capabilities rather than a live
+> `get /sys/capabilities`, pending the clean-room server growing that well-known
+> resource in a merged shape. GAPs 2 and 3 remain open for Donna.
+
 1. **Is there meant to be an in-language aggregation of the primitives?** The
    spec defines `BdpScope` as a *URL* and the primitives as loose `fn`/`command`
    forms; the "one contract a client and backend satisfy" lives only in prose +
@@ -134,6 +150,8 @@ all are worth a ruling.
    be deterministic, the spec needs to say *what gathers the primitives* (a
    `service`/`trait` form? an annotation the generator keys off?). Right now a
    generator has to invent the grouping, exactly as I did by hand.
+   — **Resolved (#398):** `get` + discovery are the named floor; the à-la-carte
+   `Scope` is the aggregation.
 
 2. **`>DB?` markers still open in `core.lumen`** that touch primitive signatures:
    - l.834 — `create`: may it admit a *content* resource (media-type `type` +
@@ -158,3 +176,8 @@ all are worth a ruling.
    BDP-ifies them into the spec." So `Capabilities`/`PrimitiveCapability` here is
    a best-effort condensation; it will need re-alignment once discovery is
    actually in `core.lumen`.
+   — **Resolved (#398):** authored as `CoreCapabilities` (per-op) + `packs` +
+   scope-wide `ScopeCapabilities { storageClasses, revisionModel }`, read by
+   `get /sys/capabilities`. This client condenses the per-op records into
+   `Primitives` and inlines the scope-wide bucket (`StorageClasses`,
+   `RevisionModel`); pack caps are out of the core client's scope.
