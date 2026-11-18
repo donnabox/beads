@@ -20,6 +20,12 @@ import (
 //   - The firewalled payload is `properties` on the wire; core-v0.2 calls it
 //     `body`. Same bytes, different name.
 //   - A write's minted rev rides in a quoted `ETag` response header, not the body.
+//   - The Scope uri arm is carried as the token "web" below. That is an
+//     UNVERIFIED spike assumption read off the clean-room source during M2 — the
+//     green smoke test only exercises local-scope (absent) ids, so the uri arm
+//     has never round-tripped. The ratified decoder ring (core.lumen §1.1) names
+//     the literal "uri"; verify/retarget this token when the uri arm is first
+//     exercised or when targeting a ratified-wire server.
 //
 // Keeping this translation OUT of package bdp is the point: the contract tracks
 // the spec, and a client speaks whatever wire its server speaks.
@@ -35,7 +41,7 @@ func toWireID(r bdp.ResourceID) wireResourceID {
 	w := wireResourceID{ID: r.ID}
 	switch {
 	case r.Namespace.URI:
-		web := "web" // clean-room's token for the non-store namespace
+		web := "web" // spike token for the uri arm (unverified; ratified §1.1 literal is "uri") — see file header
 		w.Scope = &web
 	case r.Namespace.Store != "":
 		s := r.Namespace.Store
@@ -52,7 +58,7 @@ func (w wireResourceID) toBDP() bdp.ResourceID {
 	r := bdp.ResourceID{ID: w.ID}
 	if w.Scope != nil {
 		switch *w.Scope {
-		case "web":
+		case "web": // spike token for the uri arm (unverified; ratified §1.1 literal is "uri")
 			r.Namespace = bdp.Namespace{URI: true}
 		default:
 			r.Namespace = bdp.Namespace{Store: *w.Scope}

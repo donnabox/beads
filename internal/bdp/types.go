@@ -25,26 +25,31 @@ type Rev string
 // split on the wire, so this is an alias, not a distinct type.
 type Digest = Rev
 
-// Namespace selects where an id resolves — the spec's Scope union. It is
-// exactly one of three cases, and the zero value is the common one:
+// Namespace selects where an id resolves — the spec's Scope, "the decoder ring
+// for every id" (core.lumen §1.1). It is exactly one of three readings, and the
+// zero value is the common one:
 //
-//   - zero value: the local (current) BDP store the caller is talking to.
-//   - Store set: another BDP store, named by its URL; the id is relative to it.
+//   - zero value: the local BDP scope — the store the caller is talking to.
+//     This is the spec's `null` arm, which is also what an absent `scope` means
+//     on the wire (absent ≡ null ≡ local).
+//   - Store set: another BDP store, named by its BdpScope URL; the id is
+//     relative to it (the wire URL is that scope URL ⊕ id).
 //   - URI true: NOT a BDP store — the id is itself an absolute URI whose scheme
-//     resolves it (a resource outside any store).
+//     resolves it (the spec's literal "uri" scope).
 //
 // Store and URI are mutually exclusive; a non-empty Store with URI true is
 // malformed.
 type Namespace struct {
-	// Store is the URL of another BDP store the id is relative to. Empty for a
-	// local id or a URI id.
+	// Store is the BdpScope URL of another BDP store the id is relative to.
+	// Empty for a local id or a URI id.
 	Store string
 	// URI reports that the id is an absolute URI resolved outside any store
 	// (the spec's literal "uri" scope).
 	URI bool
 }
 
-// Local reports whether the namespace is the local store (the zero value).
+// Local reports whether the namespace is the local scope (the zero value — the
+// spec's null arm).
 func (n Namespace) Local() bool { return n.Store == "" && !n.URI }
 
 // ResourceID is the identity of a resource: the namespace it lives in, an id
