@@ -256,11 +256,15 @@ type Reply struct {
 // (Fault/Canceled) is open: a reader must tolerate an unrecognized fate, so an
 // unknown arm is reported through Unknown rather than dropped.
 type Outcome struct {
-	// Success carries the operation's declared success value.
+	// Success carries the operation's declared success value (the Result's T).
 	Success json.RawMessage `json:"success,omitempty"`
-	// Failure carries the operation's declared failure (an expected "no").
+	// Failure carries the operation's declared failure — the Result's E, an
+	// expected domain "no". It settles a sync Call as HTTP 409. Call is the only
+	// primitive with a declared failure; a data primitive has none.
 	Failure json.RawMessage `json:"failure,omitempty"`
-	// Fault carries a Problem — the call itself went wrong (not a declared failure).
+	// Fault carries a Problem — an undeclared, non-domain failure (NOT the E):
+	// the call itself went wrong. A Problem is the universal fault channel here
+	// exactly as it is for the data primitives, never a Result's E.
 	Fault *Problem `json:"fault,omitempty"`
 	// Canceled reports the invocation was killed; Reason is optional.
 	Canceled *CanceledOutcome `json:"canceled,omitempty"`

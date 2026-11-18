@@ -6,15 +6,22 @@ import (
 	"github.com/steveyegge/beads/beadserrors"
 )
 
-// The BDP Core error model: a data primitive returns its success value directly
-// and faults with an error. The rich Result/Outcome split (declared success vs
-// declared failure vs fault) belongs to Call alone and rides in [Outcome]; a
-// data primitive has no declared failure.
+// The BDP Core fault model (core.lumen §Problem, normative): every primitive
+// returns its declared value on success or faults with a [Problem]. A fault is
+// delivered out of band — the HTTP non-2xx response (RFC 9457) — and is never
+// part of the declared return type; it is orthogonal to the value. A data
+// primitive has no declared failure at all: a read returns a rep or faults.
 //
-// A fault carries a [Problem] (an RFC 9457 document). So that a caller holding
-// only this contract can classify a fault without parsing a Problem, the common
-// faults are also mapped onto sentinels: a transport returns (or wraps) the
-// matching one, and errors.Is finds it.
+// Only Call additionally carries a declared failure — the operation's own "no",
+// which rides in [Outcome].Failure (the Result's E) and settles a sync call as
+// HTTP 409. That 409 is a declared failure in the Reply body, not a fault; it is
+// distinct from the 409 a data primitive raises (e.g. Create's identity clash),
+// which is an out-of-band Problem like any other fault. A Problem is the
+// universal fault channel, never the E of a Result.
+//
+// So that a caller holding only this contract can classify a fault without
+// parsing a Problem, the common faults are also mapped onto sentinels: a
+// transport returns (or wraps) the matching one, and errors.Is finds it.
 //
 // Two of those sentinels are the domain-neutral ones that already sit beneath
 // every bd leaf ([beadserrors.ErrNotFound], [beadserrors.ErrValidation]). The
@@ -35,14 +42,18 @@ var (
 	// spec's wire code is "revision-mismatch".)
 	ErrRevisionMismatch = errors.New("bdp: revision mismatch")
 	// ErrAlreadyExists is the 409 fault from Create against an id already in use,
-	// or used and retired — an existence conflict, not a declared constraint.
+	// or used and retired — an existence conflict, not a declared constraint. It
+	// is an out-of-band Problem (a data primitive has no declared failure), not
+	// to be confused with the 409 a sync Call returns for a declared failure,
+	// which rides in Outcome.Failure.
 	ErrAlreadyExists = errors.New("bdp: identity taken")
 )
 
 // Problem is an RFC 9457 problem document — what a fault carries, and the body
-// of a failing response from a data primitive. A transport attaches it to the
-// returned error (via [FaultError]) and also maps the fault onto a sentinel
-// above where one fits.
+// of a failing response from a data primitive. It is the universal fault
+// channel, never the E of a Result (a declared failure is [Outcome].Failure).
+// A transport attaches it to the returned error (via [FaultError]) and also maps
+// the fault onto a sentinel above where one fits.
 type Problem struct {
 	// Type is a URI naming the problem kind.
 	Type string `json:"type"`
