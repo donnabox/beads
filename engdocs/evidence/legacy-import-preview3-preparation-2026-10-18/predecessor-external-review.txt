@@ -1,0 +1,145 @@
+All four frozen files match `manifest.json` (`shasum -a 256` verified against source `c8910bd2b`). Findings follow.
+
+---
+
+## HIGH
+
+**`internal/storage/graphstore/legacy_import.go:213` (also `:216-218`; doc `docs/reference/graph-legacy-import.md:43`)**
+
+**Issue.** The freshness inventory is `{9 explicit graph/journal/lease/counter tables} ∪ DeleteCascadeTables(false) ∪ DeleteCascadeTables(true)` + `bd_events_seq` + the `config` memory prefix — 26 planes, which the 27 matrix cases cover exactly 1:1. But `epoch_minted_addresses` (migration `0071`) is in neither set. It is a durable, per-identity allocation registry (`address` PK, `store_id`, `minted_id`, `minted_epoch`), written by `issueops.MintUnderEpochInTx` (`internal/storage/issueops/epoch_cas.go:199`) and read by `StillServesInTx` / `ResolveInTx` / `CurrentAddressForInTx`, with live `embeddeddolt` and `dolt` legs. It has **no FK to `issues`** and migration 0071 states old rows are deliberately retained across epoch bumps, so it survives a complete `DELETE FROM issues` — precisely the scenario the comment at `:211-212` says must never make a workspace fresh again, and precisely the "previous identity/sequence allocations" the doc promises refuse.
+
+**Impact.** A workspace whose issues were minted and then deleted still holds `epoch_minted_addresses` rows keyed on those issue IDs. `requireEmptyLegacyTarget` declares it fresh, import preserves source IDs verbatim, and the pre-existing minted address — recorded under an earlier epoch — now resolves against a newly imported identity. `StillServes`/`Resolve` answer "no longer served / gone reorganization" for a bead that was just created. This is the one allocator plane the two preceding commits in this family (`39c4f95b0` "reject stale native history and allocator state", `c599e6123` "refuse preexisting orphan and legacy data planes") did not close, and it defeats the stated invariant rather than merely degrading a message.
+
+**Fix.** Append `"epoch_minted_addresses"` to the `tables` slice at `:213` (it exists on every initialized workspace — 0071 is a plain main-plane `CREATE TABLE IF NOT EXISTS` ahead of 0072 — so it fails closed correctly), and add a 28th matrix case → 27 planes:
+
+```go
+{"minted-address", "INSERT INTO epoch_minted_addresses(address,store_id,minted_id,minted_epoch,minted_at) VALUES('store:old-b:1','store','old-b',1,'2026-01-01')", "DELETE FROM epoch_minted_addresses WHERE address='store:old-b:1'", "epoch_minted_addresses", false},
+```
+
+Secondary, same family: `store_epoch` is also unchecked. It needs the `bd_events_seq` treatment (`WHERE epoch<>1 OR bumped_at IS NOT NULL`), **not** a plain `COUNT(*)`, because 0067 leaves it empty for lazy seeding and a bare count would wrongly refuse a workspace that only ever read the epoch.
+
+---
+
+## MEDIUM
+
+**`internal/storage/graphstore/legacy_import_test.go:602-605`**
+
+**Issue.** Four refusal fixtures use bare ID `"x"`:
+```
+{"id":"x","title":"x","ephemeral":true}
+{"id":"x","title":"x","no_history":true}
+{"id":"x","title":"x","lease_expires_at":"2099-01-01T00:00:00Z"}
+{"id":"x","title":"x","status":"tombstone"}
+```
+`legacyImportPrefix("x")` → `utils.ExtractIssuePrefix("x")` → `strings.LastIndex` is `-1` → `""`, so all four are refused at `legacy_import.go:336-338` ("requires a nonempty ordinary ID prefix") before reaching the ephemeral/no-history/lease check at `:343-345` or the tombstone check at `:347-348`. The loop asserts only `err == nil` (`:616`), with no sentinel or message check.
+
+**Impact.** Four documented refusal rules (doc `:72-73`) are vacuously covered: deleting lines `343-348` of `legacy_import.go` outright would not fail any test in the repo — `ImportLegacy` has no other test (only `legacy_import_test.go` and `cmd/bd/graph_preview_import.go` reference it). `HeartbeatAt` and `LeaseGrantedNode` have no fixture at all. The sibling lineage fixtures (`bonded_from`, `source_formula`, `source_location`, `storage_class`) correctly use `old-a` and do reach their checks, which makes the four `"x"` rows look covered when they are not.
+
+**Fix.** Change those four IDs to `old-x` (prefix resolves to `old`, `confident` is satisfied by `LastIndex("old-x","-") == len("old")`) so they reach `:343-348`, and assert the sentinel plus the distinguishing substring rather than mere non-nil — e.g. drive them through a table of `{input, wantSubstring}` and check `errors.Is(err, storage.ErrValidation) && strings.Contains(err.Error(), want)`.
+
+Same defect class at **`legacy_import_test.go:598`**: `"depends_on_id":"missing"` is refused at `legacy_import.go:387-389` as cross-prefix routing (`types.ExtractPrefix("old-b")` is `"old-"`, `types.ExtractPrefix("missing")` is `""`), so the in-batch-target rule at `:433-438` ("does not name an Issue in this import", doc `:66`) has no coverage anywhere. Add a same-prefix absent target, e.g. `"depends_on_id":"old-zzz"`.
+
+---
+
+**`internal/storage/graphstore/legacy_import_test.go:323-438` (G4 scope: `legacy_import.go:78, 229, 239, 248`)**
+
+**Issue.** `ErrInvalidStore` is never asserted in the frozen test file. All 27 matrix cases exercise the **occupied** branch (`storage.ErrValidation`, `:232/242/251`); nothing exercises the four **unreadable-plane** branches that G4 is about — the named-plane message plus the `%w`-chained original cause at `:78`, `:229`, `:239`, `:248`.
+
+**Impact.** The whole G4 contract is unverified. Regressing any of those four from `%w` to `%v` for the cause — which is still what the neighbouring `checkBinding` does at `schema.go:201` (`"%w: read binding: %v"`), so the pattern is live in this package — would silently drop the cause chain while every test passed. Dropping a plane name from the message would equally pass. The CLI half of G4 *is* covered (`cmd/bd/graph_preview_assignee_error_test.go:63-74` pins cancellation → `capability_unavailable`/5 ahead of `ErrInvalidStore`, and `ErrOutcomeUnknown` → 6 ahead of both, matching `cmd/bd/graph_preview.go:767-772`); the store half is not.
+
+**Fix.** Add a small test with its **own** disposable store (not the shared matrix store, whose later cases and `legacyImportState` need the schema intact) that makes one native plane unreadable and asserts both links of the chain. Pick a plane `checkBinding` does not pre-probe — `checkBinding` already probes every `graph_preview_*` table and `issue_versions` at `schema.go:213-219`, so use e.g. `wisp_child_counters` or `compaction_snapshots`:
+
+```go
+// RENAME TABLE wisp_child_counters TO wisp_child_counters_hidden
+_, err := s.ImportLegacy(ctx, batch, "importer", dry)
+// want: errors.Is(err, ErrInvalidStore) && strings.Contains(err.Error(), "wisp_child_counters")
+//   AND errors.Is(err, <the driver's table-missing error>) still reachable
+```
+Add the companion case for `:78` by deleting the `issue_prefix` config row and asserting `errors.Is(err, ErrInvalidStore)` plus `errors.Is(err, sql.ErrNoRows)`.
+
+---
+
+**`internal/storage/graphstore/legacy_import.go:199-201`**
+
+**Issue.**
+```go
+if err := checkCurrentReadBytes(ctx, tx); err != nil {
+    return fmt.Errorf("legacy input's stored representation exceeds the current-read budget: %w", err)
+}
+```
+`checkCurrentReadBytes` (`internal/storage/graphstore/collection_read_bounds.go:62-95`) has three distinct failure modes, only one of which is a budget overflow: `ErrLimitExceeded` at `:80`, a raw query error at `:76-78` and `:88-90` (which is where a `context.DeadlineExceeded`/`Canceled` surfaces), and `ErrInvalidStore` at `:92`. All three are relabelled as a size overflow. Every other failure site in this file carefully names its own cause; this one does not.
+
+**Impact.** The CLI gives import a 5-minute budget (`cmd/bd/graph_preview_import.go:45`). A deadline expiry on the final bound check — the last statement before commit, after all staging work — reports `capability_unavailable` exit 5 with the message "legacy input's stored representation exceeds the current-read budget: context deadline exceeded". `ErrLimitExceeded` renders as the *same* code and *same* exit (`cmd/bd/graph_preview.go:765`), so the operator cannot distinguish the two and is actively steered toward shrinking an input that was never oversized. The existing test only pins the genuine-overflow path (`legacy_import_test.go:812-816` asserts `errors.Is(err, ErrLimitExceeded)`), so no case distinguishes the modes.
+
+**Fix.** Attach the budget framing only when it is true:
+```go
+if err := checkCurrentReadBytes(ctx, tx); err != nil {
+    if errors.Is(err, ErrLimitExceeded) {
+        return fmt.Errorf("legacy input's stored representation exceeds the current-read budget: %w", err)
+    }
+    return fmt.Errorf("verify the legacy import's complete current read: %w", err)
+}
+```
+Add a case that cancels at the `import-retained` stage and asserts the error does *not* claim a budget overflow.
+
+---
+
+**`docs/reference/graph-legacy-import.md:82-87` vs `internal/storage/graphstore/legacy_import.go:62`**
+
+**Issue.** The doc promises: "If commit or rollback cleanup is uncertain, import conservatively reports `outcome_unknown` (exit 6)… An unsuccessful rollback, including an already-ended driver transaction, does not provide a verified rollback acknowledgment." Line 62 passes `!dryRun` as `withTx`'s `write` flag, so a dry-run takes the read-only cleanup path: `backend.go:226-230` returns `tx.Rollback()`'s error bare, and the deferred rollback at `:214-222` only joins `ErrOutcomeUnknown` when `write` is true. A dry-run is not read-only — it executes the `config issue_prefix` `UPDATE` (`:80`), every native issue/comment/dependency insert, and every graph catalog/payload/version insert.
+
+**Impact.** A dry-run whose rollback fails (driver-level cancellation at the 5-minute CLI budget is the reachable trigger, since the conn is already dead) returns an unclassified error. `graphStorageError` falls through every case to the `default` branch and renders `graph_not_initialized`, exit 5 — telling the operator the graph isn't initialized while a workspace whose entire contract is "must be empty and fresh" may have just been populated behind an unverified rollback. The two late-context cases (`legacy_import_test.go:483-521`) run `dry=false` only, so no test observes dry-run cleanup classification at all.
+
+**Fix.** Stop encoding "dry-run" as "read-only": separate `withTx`'s commit decision from its cleanup-classification flag (e.g. `withTx(ctx, staged bool, commit bool, fn)`, or have the dry-run path explicitly `errors.Join(ErrOutcomeUnknown, rollbackErr)`), so a rollback-only transaction that staged writes still demands a verified rollback. Extend `legacy_import_test.go:483-521` over `[]bool{false, true}` for `dry` as well as `deadline`.
+
+---
+
+**`internal/storage/graphstore/legacy_import_test.go:440, 582, 631, 731`**
+
+**Issue.** G1's fresh bounded per-case contexts were applied only to the matrix (`:372`, `:407`, with cleanup on an independent `context.WithoutCancel(ctx)` base at `:377`/`:410` — that part is correct, including the LIFO ordering that runs fixture removal before `cancel`). The four sibling store-backed tests all run on the single `ctx` returned by `issueExperimentOptions` (`issues_test.go:27`: one 90s timeout per mode), i.e. exactly the cumulative-budget pattern the comment at `:371` identifies as wrong. `TestLegacyImportAtomicityAndPersistence` then deliberately burns ≥15s of that budget at `:489` (`<-operation.Done()` on a 15s child) *before* its heaviest phase: 11 stage-fault imports, a full apply, `Close`/`OpenExisting`, a post-import `CreateIssue` and two `AddDependency` calls. `legacyImportState` is ~31 `SELECT *` full scans per call (14 tables + `reopenState`'s 2 + `workflowState`'s 15, `workflow_test.go:242`), and `TestLegacyImportValidationRollsBack` makes 18 of them plus 17 imports.
+
+**Impact.** Budget exhaustion does not surface as a timeout — it surfaces as a misattributed assertion from whatever step the expired `ctx` reaches first ("reopen lost data" at `:566`, "repeat import accepted" at `:551`, "post-import dependency" at `:574`), on embedded Dolt where per-transaction cost is highest. Flaky and actively misleading, on both installed engine modes.
+
+**Fix.** Apply the matrix pattern uniformly: in each of the four tests derive `operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second); t.Cleanup(cancel)` per subtest and use it for the import and the snapshots, keeping the outer `ctx` for setup only. Build the deliberate 15s deadline case at `:489` on its own `context.WithoutCancel(ctx)` base so it cannot consume the enclosing budget.
+
+---
+
+## LOW
+
+**`internal/storage/graphstore/legacy_import.go:519-521` (invariant stated at `:299-300`, `:277`)**
+
+**Issue.** `legacyImportStringsValid` breaks on `[]uint8` by design, so `types.Issue.Metadata` (`json.RawMessage`) is never UTF-8-checked. Nothing downstream closes the gap: `json.Marshal`/`Unmarshal` of a `RawMessage` pass bytes ≥ 0x20 through unaltered (the scanner validates structure, not UTF-8), and `graph.CanonicalizeJSON` copies string bytes verbatim (`graphops/laws.go:805-812` default branch, `appendCanonicalString` at `:815-841`) — its only `utf8.Valid` call is `ValidateCanonicalSegment` at `:178`, for path segments. `types.Issue` has no map fields, so `Metadata` is the sole hole.
+
+**Impact.** Narrow: the file route is safe because `legacyimport.Parse` does `utf8.Valid(data)` over the whole input (`internal/legacyimport/jsonl.go:47`). The hole is reachable only through `ImportLegacy`/`ImportLegacyWithPrefix` as a Go API — which is exactly the case the comment at `:299-300` says the pre-clone check exists to guard ("so a direct caller cannot accidentally import replacement text"). Invalid UTF-8 then lands in `issues.metadata` and in the retained graph projection. The UTF-8 fixture table (`legacy_import_test.go:113-123`) covers Title, Description, Labels, Comments and Dependencies but not Metadata.
+
+**Fix.** Validate it explicitly in the per-issue loop, alongside the existing metadata canonicalization at `:368-372`:
+```go
+if !utf8.Valid(issue.Metadata) {
+    return invalid("Issue %s metadata must be UTF-8", issue.ID)
+}
+```
+(or have `legacyImportStringsValid` special-case `json.RawMessage` instead of skipping all `[]byte`). Add a `{ID: "old-a", Title: "Imported", Metadata: json.RawMessage("{\"k\":\"bad\xff\"}")}` row to the table at `:113`.
+
+---
+
+**`internal/storage/graphstore/legacy_import.go:247`**
+
+**Issue.**
+```go
+"SELECT COUNT(*) FROM config WHERE LEFT(`key`,?)=?", utf8.RuneCountInString(kvkeys.MemoryConfigKeyPrefix), kvkeys.MemoryConfigKeyPrefix
+```
+This is correct, but only incidentally. `MemoryConfigKeyPrefix` is `"kv.memory."` (`internal/storage/kvkeys/kvkeys.go`), pure ASCII, so code-point count, byte count and SQL character count all coincide — byte-wise and rune-wise `LEFT` implementations agree, and the boundary behaves (the `ordinary-config` case at `legacy_import_test.go:416` pins it: `LEFT('kv.memoryx.retained',10)` is `'kv.memoryx'`, correctly not a Memory). The Go side also computes a length that `LEFT`'s result is then compared under the column's *collation*, which the Go side knows nothing about.
+
+**Impact.** No live defect, and the ASCII assumption is independently pinned by `kvkeys.TestMemoryConfigKeyPrefix`, so a non-ASCII rename fails loudly elsewhere rather than silently miscounting here. It is a clarity/robustness item: `RuneCountInString` reads as if the mismatch had been reasoned about when the two semantics simply cannot diverge for this constant.
+
+**Fix.** Derive the length engine-side so Go and SQL cannot disagree at all, and drop the parameter:
+```go
+"SELECT COUNT(*) FROM config WHERE LEFT(`key`, CHAR_LENGTH(?)) = ?", kvkeys.MemoryConfigKeyPrefix, kvkeys.MemoryConfigKeyPrefix
+```
+If the computed length is kept, use `len(...)` with a comment naming the ASCII precondition. Optionally add an `ordinary-config` sibling key whose leading bytes overlap the prefix multi-byte-wise, to pin the boundary against either `LEFT` implementation.
+
+---
+
+## Verified clean (no finding)
+
+Checked and found correct, so as not to be mistaken for unreviewed: the 27 cases map 1:1 onto the 26 planes the code actually checks, with no double-count or gap within that set; all 27 contaminating `INSERT`/`UPDATE` statements match the post-migration DDL (every `NOT NULL`-without-default column is supplied — `dependencies.id`/`created_by` after `0043`/`0050` with `depends_on_id` correctly absent, `issue_versions.attribution_status` after `0068`, `leases.granted_node` and `bd_events_journal.actor` defaulted, `wisp_dependencies`' `ck_wisp_dep_one_target` CHECK satisfied, `id` still named `id` after `0037`), and every `orphan: true` flag covers a real FK while every `orphan: false` plane has none; `legacyImportContaminate`'s defer ordering resets `FOREIGN_KEY_CHECKS` before returning the conn, and discards it via `driver.ErrBadConn` if the reset fails; the union of `legacyImportState` + `reopenState` + `workflowState` snapshots all 26 planes plus the writer token and prefix; all 11 injected stage names are reachable with the fixture batch; prefix resolution (longest candidate, lexicographic tie-break, `confident`) gives the asserted answers for every fixture; the memory-path allocation test is exhaustive, including the direct-key/digest-collision and order-independence properties; the comment-collapse refusal is real (`issueops.PersistComments` content-skips an incoming-ID comment at `create.go:1080-1088`, and fills missing IDs in place at `:1067` before `verifyLegacyIssue` reads them); post-import ID allocation cannot collide (`NextCounterIDTx` self-heals via `SeedCounterFromExistingIssuesTx`, hash mode collision-checks); `BUILD.bazel` `srcs` match the directory exactly in both targets and the `deps` cover every import.

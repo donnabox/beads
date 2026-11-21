@@ -1,0 +1,46 @@
+{
+  "id": "R2",
+  "title": "No silent overwrite: of two updates guarded by the same revision the second is refused, and the first writer's bytes survive",
+  "spec": ["#5877 S7", "be-awvi5 step 1"],
+  "state": "pass",
+  "steps": [
+    {
+      "name": "remember-m1",
+      "argv": ["remember", "--stdin", "--id", "beads/r2/m1", "--title", "M1", "--json"],
+      "stdin": {"name": "B1", "text": "original body of M1\n"},
+      "capture": {
+        "V1": {"path": "$.result.version", "kind": "token"},
+        "REV1": {"path": "$.result.revision", "kind": "token"}
+      },
+      "expect": [{"op": "exit", "equals": 0}]
+    },
+    {
+      "name": "update-first",
+      "argv": ["remember", "--stdin", "--update", "beads/r2/m1", "--if-revision", "${REV1}", "--json"],
+      "actor": "writer-a",
+      "stdin": {"name": "B2", "text": "body written by the first writer\n"},
+      "capture": {"V2": {"path": "$.result.memory.version", "kind": "token"}},
+      "expect": [{"op": "exit", "equals": 0}]
+    },
+    {
+      "name": "update-second",
+      "argv": ["remember", "--stdin", "--update", "beads/r2/m1", "--if-revision", "${REV1}", "--json"],
+      "actor": "writer-b",
+      "stdin": {"name": "B3", "text": "body the second writer tried to store\n"},
+      "expect": [
+        {"op": "exit", "equals": 4},
+        {"op": "stderr_code", "equals": "revision_conflict"}
+      ]
+    },
+    {
+      "name": "read-current",
+      "argv": ["recall", "beads/r2/m1"],
+      "expect": [{"op": "exit", "equals": 0}, {"op": "stdout", "equals_input": "B2"}]
+    },
+    {
+      "name": "read-first-writer-version",
+      "argv": ["recall", "beads/r2/m1", "--version", "${V2}"],
+      "expect": [{"op": "exit", "equals": 0}, {"op": "stdout", "equals_input": "B2"}]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "source": "2b1eeaec358713da0d1e1a65b3e8d8cfc891f8de",
+  "tree": "69606e3278a5d2b5b53ebfd37d079a6cdce66e65",
+  "ownerBus": "https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6248351669",
+  "failureSHA256": "2396483c2f97518c63a266ead1eadc2bb3bf55e58e9490dbcc03bfff217e4400",
+  "verifiedRawHashes": {
+    "run.py": "7074d0b7b729972b66edd52546aa772537bb5aea5120c2eb64e39f2c018b8a6b",
+    "run.log": "1a55fb9bc324bd46b1ee64d5ac73b5384c7fed2ad8927ff5c36641ff5be06d8d",
+    "run.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "installed-workflows/result.json": "90ccf49a7a046a7c7c311e1e25cc39cdb09fc82b898553a3043ad0cd45247bc1",
+    "installed-workflows/test.log": "fa7fbd2a64f238f8d68ffe3d8fe2ca3c42e696947f6fac07863571e7d1521f85",
+    "installed-workflows/server.log": "ec817ced5bdc9a0f7771f7ede7300ce03db2a22b5f85f5e5cf9940b0419e92f2",
+    "lower-graphstore/result.json": "47eb2f72b8966e3df2df84806726e7d7451fd5c7cc947d44d1b3b4f216cb45c1",
+    "lower-graphstore/test.log": "125b6fbc8903fef93ac7a2408ba18bd46117beece248d4663f977bbfa8290270",
+    "lower-graphstore/server.log": "60f103b29dee4826ec997d272a67a232c00b396208eb1ce34db2681364cb1180"
+  },
+  "installedWorkflowResult": {
+    "command": [
+      "scripts/test.sh",
+      "-v",
+      "-run",
+      "^(TestGraphPreviewLegacyImportInstalledWorkflow|TestGraphPreviewLegacyImportCompletenessInstalledWorkflow)$",
+      "./cmd/bd"
+    ],
+    "exit": 0,
+    "fail": 0,
+    "missing_engines": [],
+    "missing_top_level": [],
+    "phase": "installed-workflows",
+    "port": 64579,
+    "prebuilt_binaries": [
+      {
+        "path": "/Users/dbox/.local/state/janet/preview3-upstream-catchup-20261015/iris-import-2b-installed-attempt01/installed-workflows/tmp/beads-test-env-geNTng/prebuilt-bd/bd",
+        "sha256": "7b72bad7f932de43dcb8ac2d0582ba54dc7f949378478bf5615f76ec1a7bbb03"
+      }
+    ],
+    "skip": 0,
+    "source_head": "2b1eeaec358713da0d1e1a65b3e8d8cfc891f8de",
+    "source_tree": "69606e3278a5d2b5b53ebfd37d079a6cdce66e65",
+    "test_log_sha256": "fa7fbd2a64f238f8d68ffe3d8fe2ca3c42e696947f6fac07863571e7d1521f85"
+  },
+  "lowerGraphstoreResult": {
+    "command": [
+      "scripts/test.sh",
+      "-v",
+      "-run",
+      "^TestLegacyImport",
+      "./internal/storage/graphstore"
+    ],
+    "exit": 1,
+    "fail": 7,
+    "missing_engines": [],
+    "missing_top_level": [],
+    "phase": "lower-graphstore",
+    "port": 64769,
+    "prebuilt_binaries": [],
+    "skip": 0,
+    "source_head": "2b1eeaec358713da0d1e1a65b3e8d8cfc891f8de",
+    "source_tree": "69606e3278a5d2b5b53ebfd37d079a6cdce66e65",
+    "test_log_sha256": "125b6fbc8903fef93ac7a2408ba18bd46117beece248d4663f977bbfa8290270"
+  },
+  "parserAndMapper": "NOT RUN; owner stopped after mandatory lower failure",
+  "ownedCleanup": "Owner reports both Dolt2.1.8 servers exited/ports64579,64769closed; no Iris runtime inspection or cleanup performed",
+  "currentSuccessorRuntime": "UNRUN; no Iris build/test/generator/check-mode/engine slot",
+  "preflight": "Broad legacy import keyword search exit1/21matches; inspected likely related5635(audit timestamps),5553(cross-repo create),6255(ambient store routing),7651(proxied init identity) metadata/file lists; none touches this test/helper binding contract. No contributor code rewritten or superseded."
+}
