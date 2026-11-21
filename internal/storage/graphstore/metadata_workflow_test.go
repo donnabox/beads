@@ -122,10 +122,126 @@ func TestCommonMetadataPatchValidatesEachRawInput(t *testing.T) {
 		{Merge: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`{"x":1,"x":2}`)}},
 		{Replace: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`{"x":1,"x":2}`)}},
 		{Set: map[string]json.RawMessage{"x": json.RawMessage(`{"a":1,"a":2}`)}, Unset: []string{"x"}},
+		{Operations: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`[{"op":"add","path":"/x","value":{"a":1,"a":2}},{"op":"remove","path":"/x"}]`)}},
 	} {
 		if err := validateCommonMetadataPatch(patch); !errors.Is(err, storage.ErrValidation) {
 			t.Fatalf("raw duplicate metadata patch admitted: %+v, %v", patch, err)
 		}
+	}
+}
+
+func TestOrderedMetadataGraphMutationAtomicity(t *testing.T) {
+	operations := func(raw string) publicops.MetadataPatch {
+		return publicops.MetadataPatch{Operations: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(raw)}}
+	}
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Title: "Plan", Body: "Body"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			issue, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			link, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/work", ExpectedSourceRevision: memory.Revision, Properties: map[string]any{"note": "original"}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			owned := link.Source.(Record)
+			before := workflowState(t, ctx, s)
+			for _, raw := range []string{`[]`, `[{"op":"add","path":"/missing","value":null},{"op":"remove","path":"/missing"}]`} {
+				patch := operations(raw)
+				gotMemory, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/plan", Actor: "editor", ExpectedRevision: owned.Revision, Metadata: patch})
+				if err != nil || gotMemory.Changed || !reflect.DeepEqual(gotMemory.Memory, owned) {
+					t.Fatalf("Memory metadata no-op = %+v, %v", gotMemory, err)
+				}
+				gotIssue, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: issue.Revision, Metadata: patch})
+				if err != nil || gotIssue.Changed || !reflect.DeepEqual(gotIssue.Issue, issue) {
+					t.Fatalf("Issue metadata no-op = %+v, %v", gotIssue, err)
+				}
+				gotLink, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/context", Actor: "editor", ExpectedRevision: link.Link.Revision, ExpectedSourceRevision: owned.Revision, MetadataOnly: true, Metadata: patch})
+				if err != nil || gotLink.Changed || !reflect.DeepEqual(gotLink.Link, link.Link) {
+					t.Fatalf("Link metadata no-op = %+v, %v", gotLink, err)
+				}
+			}
+			empty := operations(`[]`)
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/plan", ExpectedRevision: memory.Revision, Metadata: empty}); !errors.Is(err, ErrConflict) {
+				t.Fatalf("empty Memory update skipped stale guard: %v", err)
+			}
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: "stale", Metadata: empty}); !errors.Is(err, ErrConflict) {
+				t.Fatalf("empty Issue update skipped stale guard: %v", err)
+			}
+			for _, guards := range [][2]string{{"stale", owned.Revision}, {link.Link.Revision, memory.Revision}} {
+				if _, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/context", ExpectedRevision: guards[0], ExpectedSourceRevision: guards[1], MetadataOnly: true, Metadata: empty}); !errors.Is(err, ErrConflict) {
+					t.Fatalf("empty Link update skipped guard %v: %v", guards, err)
+				}
+			}
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/absent", Unconditional: true, Metadata: empty}); !errors.Is(err, ErrNotFound) {
+				t.Fatalf("empty update skipped existence: %v", err)
+			}
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/plan", ExpectedRevision: owned.Revision}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("omitted fields became an empty update: %v", err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("no-op or refusal changed payload, revision, attribution, owned state or events")
+			}
+
+			// Properties and ordered metadata share one transaction. Either side's
+			// invalid final state must leave both the Resource and its owner alone.
+			for _, pair := range [][2]string{
+				{`[{"op":"replace","path":"/body","value":"changed"}]`, `[{"op":"add","path":"/x","value":1},{"op":"remove","path":"/absent"}]`},
+				{`[{"op":"remove","path":"/body"}]`, `[{"op":"add","path":"/x","value":1}]`},
+			} {
+				if _, err := s.PatchMemoryProperties(ctx, MemoryPropertiesPatchRequest{Path: "beads/plan", ExpectedRevision: owned.Revision, Patch: []byte(pair[0]), Metadata: operations(pair[1])}); !errors.Is(err, storage.ErrValidation) {
+					t.Fatalf("invalid combined update = %v", err)
+				}
+			}
+			title := "must roll back"
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: issue.Revision, Title: &title, Metadata: operations(`[{"op":"replace","path":"","value":null}]`)}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("invalid Issue metadata did not refuse sibling title: %v", err)
+			}
+			if _, err := s.PatchLinkProperties(ctx, LinkPropertiesPatchRequest{Path: "links/context", ExpectedRevision: link.Link.Revision, ExpectedSourceRevision: owned.Revision, Patch: []byte(`[{"op":"replace","path":"/note","value":"changed"}]`), Metadata: operations(`[{"op":"remove","path":"/absent"}]`)}); !errors.Is(err, storage.ErrValidation) {
+				t.Fatalf("invalid Link metadata did not refuse sibling note: %v", err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("failed combined update leaked payload, revision or owner change")
+			}
+
+			updated, err := s.PatchMemoryProperties(ctx, MemoryPropertiesPatchRequest{Path: "beads/plan", Actor: "editor", ExpectedRevision: owned.Revision, Patch: []byte(`[{"op":"replace","path":"/body","value":"changed"}]`), Metadata: empty})
+			if err != nil || !updated.Changed || updated.Memory.Properties.Body != "changed" || string(updated.Memory.Metadata) != `{}` {
+				t.Fatalf("effectful properties plus empty metadata = %+v, %v", updated, err)
+			}
+			updatedLink, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/context", Actor: "editor", ExpectedRevision: link.Link.Revision, ExpectedSourceRevision: updated.Memory.Revision, MetadataOnly: true, Metadata: operations(`[{"op":"add","path":"/nested","value":{"list":[1]}},{"op":"add","path":"/nested/list/-","value":2}]`)})
+			if err != nil || !updatedLink.Changed || string(updatedLink.Link.Metadata) != `{"nested":{"list":[1,2]}}` || updatedLink.Source.(Record).Revision == updated.Memory.Revision {
+				t.Fatalf("ordered Link metadata failed owner transition = %+v, %v", updatedLink, err)
+			}
+			updatedIssue, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: issue.Revision, Metadata: operations(`[{"op":"add","path":"/reviewed","value":true}]`)})
+			if err != nil || !updatedIssue.Changed || string(updatedIssue.Issue.Metadata) != `{"reviewed":true}` || updatedIssue.Issue.Revision == issue.Revision {
+				t.Fatalf("ordered Issue metadata did not reach native writer = %+v, %v", updatedIssue, err)
+			}
+
+			deleted, err := s.Create(ctx, CreateRequest{Path: "beads/deleted", Title: "Gone", Body: "Gone"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.DeleteMemory(ctx, MemoryDeleteRequest{Path: "beads/deleted", ExpectedRevision: deleted.Revision}); err != nil {
+				t.Fatal(err)
+			}
+			before = workflowState(t, ctx, s)
+			if _, err := s.PatchMemory(ctx, MemoryPatchRequest{Path: "beads/deleted", Unconditional: true, Metadata: empty}); !errors.Is(err, ErrNotFound) {
+				t.Fatalf("empty update skipped liveness: %v", err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("empty update changed deleted identity")
+			}
+		})
 	}
 }
 

@@ -540,6 +540,10 @@ func operationIssue(ctx context.Context, uw UnitOfWork, id string, issuePlaneOnl
 }
 
 func validationError(err error) error {
+	var unsupported *publicops.ErrUnsupported
+	if errors.As(err, &unsupported) {
+		return err
+	}
 	if errors.Is(err, publicops.ErrValidation) {
 		return err
 	}
@@ -567,6 +571,18 @@ func validateCloseRequest(request publicops.CloseRequest) error {
 }
 
 func validateMetadataPatch(metadata publicops.MetadataPatch) error {
+	// This adapter lowers legacy metadata edits into domain operations. Ordered
+	// Operations has no lowering here yet; even [] must refuse rather than be
+	// discarded and let sibling edits succeed. Both direct and batch updates
+	// reach this admission check before reading or writing their target.
+	if metadata.Operations.Set {
+		// Request shape and exclusivity precede capability admission: malformed
+		// operations remain invalid even when this backend cannot apply them.
+		if err := storageissueops.ValidateMetadataPatch(metadata); err != nil {
+			return err
+		}
+		return &publicops.ErrUnsupported{Op: "Lifecycle.Update.Metadata.Operations", Backend: "unit-of-work"}
+	}
 	if metadata.Replace.Set && (metadata.Merge.Set || len(metadata.Set) > 0 || len(metadata.Unset) > 0) {
 		return fmt.Errorf("metadata replacement cannot combine with incremental edits")
 	}
