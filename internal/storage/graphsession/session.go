@@ -50,7 +50,11 @@ func open(ctx context.Context, e endpoint) (*session, error) {
 		return nil, err
 	}
 	s := &session{target: e, name: lockName(e.base)}
-	c, err := mysql.NewConnector(s.config(e))
+	cfg, err := s.config(e)
+	if err != nil {
+		return nil, err
+	}
+	c, err := mysql.NewConnector(cfg)
 	if err != nil {
 		return nil, err
 	}
