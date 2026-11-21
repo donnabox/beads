@@ -158,6 +158,8 @@ func init() {
 	linkShowCmd.Flags().String("revision", "", "Read retained Link revision N or =TOKEN")
 	linkShowCmd.Flags().String("format", "", "Use graph-json for the complete graph record")
 	for _, command := range []*cobra.Command{linkUpdateCmd} {
+		command.Flags().String("from", "", "Replace the complete source Reference when emitting a canonical batch member")
+		command.Flags().String("to", "", "Replace the complete target Reference when emitting a canonical batch member")
 		command.Flags().SetNormalizeFunc(normalizeHistoricalRevisionFlag)
 		command.Flags().String("from-revision", "", "Compose Link content from retained live revision N or =TOKEN; recover a deleted Link with the same ID")
 		command.Flags().String("source-revision", "", "Re-pin the source to an exact token or current, or unpin with unpinned; owned source pins refuse")
