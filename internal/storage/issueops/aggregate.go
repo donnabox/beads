@@ -333,17 +333,22 @@ func ApplyLabelPatch(ctx context.Context, tx DBTX, current *types.Issue, patch p
 	if !ok {
 		return false, fmt.Errorf("apply labels: transaction must be *sql.Tx")
 	}
+	changed := false
 	for _, label := range stringSetDifference(existing, target) {
-		if err := RemoveLabelInTx(ctx, sqlTx, "", "", current.ID, label, actor); err != nil {
+		removed, err := RemoveLabelInTxWithResult(ctx, sqlTx, "", "", current.ID, label, actor)
+		if err != nil {
 			return false, err
 		}
+		changed = changed || removed
 	}
 	for _, label := range stringSetDifference(target, existing) {
-		if err := AddLabelInTx(ctx, sqlTx, "", "", current.ID, label, actor); err != nil {
+		added, err := AddLabelInTxWithResult(ctx, sqlTx, "", "", current.ID, label, actor)
+		if err != nil {
 			return false, err
 		}
+		changed = changed || added
 	}
-	return true, nil
+	return changed, nil
 }
 
 // ParentPatchResult reports the concrete changes made by ApplyParentPatch.
