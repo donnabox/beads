@@ -271,8 +271,12 @@ func decodeCoreOps(raw json.RawMessage) (map[string]json.RawMessage, error) {
 }
 
 // foldCore maps the decoded op→caps into the typed CoreCapabilities, remapping
-// the wire guard-key names and dropping ops that are not rc2 Core (resolve,
-// apply, evaluate, changes — clean-room/other-profile primitives).
+// the wire guard-key names. The core cap vocabulary is CLOSED to exactly these
+// 11 keys (Lydia's ruling 2026-11-25): get, list, pull, create, put, patch,
+// delete, revisions, export, import, push. Any OTHER key is deliberately dropped
+// and must never be modeled as a core cap: `changes` is a ServiceLinks relation,
+// not a core cap (reading /sys/changes IS `pull`); resolve/apply/evaluate are
+// non-core; call/cancel advertise via the operations surface, not this record.
 func foldCore(ops map[string]json.RawMessage) bdp.CoreCapabilities {
 	var c bdp.CoreCapabilities
 	for op, raw := range ops {
