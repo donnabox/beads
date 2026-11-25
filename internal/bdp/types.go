@@ -108,7 +108,12 @@ type Resource struct {
 	// every revision.
 	CreatedAt string `json:"createdAt,omitempty"`
 	// StorageClass is how the resource is kept (durable, ephemeral, intrinsic).
-	StorageClass *StorageClass `json:"storageClass,omitempty"`
+	StorageClass StorageClass `json:"storageClass,omitempty"`
+	// Retired is true on a tombstone — the final, retired revision a delete mints,
+	// whose Body is null. Absent or false on a live revision. Service-managed
+	// (minted only by delete, read-only to patch): a typed client checks it before
+	// relying on Body (core.lumen §rep @ bdp-core-0.2.3-rc2).
+	Retired bool `json:"retired,omitempty"`
 }
 
 // Representation is the by-value form a read returns — the resolved,
@@ -122,21 +127,26 @@ type Representation = Resource
 // inception so the type replays identically.
 type Authority = ResourceID
 
-// StorageClass is how a resource is kept — a bare tri-state, exactly one of
-// durable, ephemeral, or intrinsic.
+// StorageClass is how a resource is kept — whether it is persisted, not whether
+// it is versioned (that is the scope's RevisionModel). On the wire it is a bare
+// lowercase string, exactly one of "durable", "ephemeral" or "intrinsic"
+// (core.lumen §StorageClass @ bdp-core-0.2.3-rc2; the spec arm names are
+// capitalized but the clean-room wire lowercases them — see bdp-rs
+// bdp-protocol/src/wire.rs).
 //
-// Whether prior revisions are retained is no longer a per-resource flag here.
-// Per gastownhall/bdp#398 (GAP 4) versioning became a scope-wide trait,
-// [Capabilities.RevisionModel], advertised through discovery; an unversioned
-// scope relaxes its write references from pinned to unpinned scope-wide.
-type StorageClass struct {
-	// Durable: replicated and exported.
-	Durable bool `json:"durable,omitempty"`
-	// Ephemeral: local and never exported.
-	Ephemeral bool `json:"ephemeral,omitempty"`
-	// Intrinsic: computed by the service, not stored.
-	Intrinsic bool `json:"intrinsic,omitempty"`
-}
+//   - Durable:   replicated and exported (persisted).
+//   - Ephemeral: local, never exported.
+//   - Intrinsic: computed by the service, not stored (capability beads).
+//
+// Whether prior revisions are retained is orthogonal and scope-wide
+// ([ScopeCapabilities.RevisionModel]), never a property of the resource.
+type StorageClass string
+
+const (
+	StorageClassDurable   StorageClass = "durable"
+	StorageClassEphemeral StorageClass = "ephemeral"
+	StorageClassIntrinsic StorageClass = "intrinsic"
+)
 
 // # Provenance
 
@@ -168,12 +178,27 @@ type Inception string
 const (
 	InceptionCreate  Inception = "create"
 	InceptionImport  Inception = "import"
-	InceptionRevive  Inception = "revive"
 	InceptionUnknown Inception = "unknown"
 )
 
 // Principal is an identity that took part in a change. A role grants no
 // permission; authorization is a separate decision. The principal is opaque at
 // this layer (the spec's fields — id, displayName, roles, basis, authority —
-// ride inside).
+// ride inside); [IdentityBasis] is exposed for a client that decodes one.
 type Principal = json.RawMessage
+
+// IdentityBasis is how a service established a principal's identity — an open
+// union a reader tolerates an unrecognized value of (core.lumen §IdentityBasis
+// @ bdp-core-0.2.3-rc2). It rides inside the opaque [Principal]; it is named
+// here as a typed vocabulary for a client that decodes provenance. `basis` is a
+// required Principal member in rc2, service-assigned — a caller never supplies it.
+type IdentityBasis string
+
+const (
+	// IdentityWriterSupplied: the writer asserted the identity, service unverified.
+	IdentityWriterSupplied IdentityBasis = "writer-supplied"
+	// IdentityChannelAuthenticated: the channel authenticated it on arrival.
+	IdentityChannelAuthenticated IdentityBasis = "channel-authenticated"
+	// IdentityUnknown: the basis is not recorded.
+	IdentityUnknown IdentityBasis = "unknown"
+)

@@ -19,9 +19,7 @@ type minimalScope struct {
 }
 
 func (minimalScope) Capabilities(context.Context) (Capabilities, error) {
-	return Capabilities{Primitives: map[Primitive]PrimitiveCapability{
-		PrimitiveGet: {Selector: true},
-	}}, nil
+	return Capabilities{Core: CoreCapabilities{Get: GetCaps{Selector: true}}}, nil
 }
 
 func (minimalScope) Get(_ context.Context, ref ResourceID, _ *Selector) (Representation, error) {

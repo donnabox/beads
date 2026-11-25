@@ -138,6 +138,17 @@ type PutInput struct {
 	// revision (the HTTP If-Match precondition); a stale value faults with a
 	// revision mismatch and changes nothing.
 	IfRevision Rev `json:"-"`
+	// IfAbsent, when true, applies the write only if no resource exists at the id
+	// (HTTP If-None-Match: *) — create-if-absent; a present id faults
+	// ErrAlreadyExists (409, the same status as a Create collision). A put without
+	// it targets the resource, so a retired target faults 410. (core.lumen §put @
+	// bdp-core-0.2.3-rc2; advertised by PutCaps.IfAbsent.)
+	IfAbsent bool `json:"-"`
+	// Precondition, when set, applies the write only if the current resource
+	// satisfies this flat-AND state filter (HTTP ?precondition=); else faults
+	// precondition-failed (412). It rides the request line, never the body.
+	// (core.lumen §put @ bdp-core-0.2.3-rc2; advertised by PutCaps.Precondition.)
+	Precondition ListFilter `json:"-"`
 }
 
 // JSONPatch is an RFC 6902 JSON Patch document. On patch, its paths are limited
@@ -186,26 +197,49 @@ type RecordConflict struct {
 	Reason string     `json:"reason"`
 }
 
-// PushStrategy controls how Push handles a rejected or re-pushed event — the
-// event analog of ImportStrategy.
-type PushStrategy struct {
-	// Dedup skips an event already appended (idempotent re-push) instead of faulting.
-	Dedup bool `json:"dedup,omitempty"`
-	// DryRun validates and reports, but appends nothing.
-	DryRun bool `json:"dryRun,omitempty"`
+// PushEvent is one event offered to Push. Ordinal, when set, is the
+// pusher-assigned position that makes the append idempotent (keyed); absent, the
+// channel assigns one. Body is the channel's pushSchema payload — any value, not
+// only a record (core.lumen §PushEvent @ bdp-core-0.2.3-rc2).
+type PushEvent struct {
+	Ordinal *Ordinal        `json:"ordinal,omitempty"`
+	Body    json.RawMessage `json:"body"`
 }
 
-// PushReport is what Push reports — counts and any skipped/rejected events.
-type PushReport struct {
-	Pushed    int             `json:"pushed"`
-	Skipped   int             `json:"skipped"`
-	Conflicts []EventConflict `json:"conflicts"`
+// PushAck is what Push returns — the high-water ordinal durably appended, a
+// per-event result, and the backpressure signal. Push is non-blocking: the
+// channel accepts a prefix up to its admission Credit and defers the rest; the
+// pusher holds the deferred tail and re-offers from AcceptedThrough+1 after
+// RetryAfter. A short Results with Credit 0 is normal backpressure, not an
+// error — distinct from limit-exceeded (422), the hard cap (core.lumen §PushAck
+// @ bdp-core-0.2.3-rc2).
+type PushAck struct {
+	AcceptedThrough Ordinal      `json:"acceptedThrough"`
+	Results         []PushResult `json:"results"`
+	Credit          int          `json:"credit"`
+	RetryAfter      int          `json:"retryAfter,omitempty"`
 }
 
-// EventConflict names one rejected pushed event by its ordinal and reason.
-type EventConflict struct {
-	Ordinal Ordinal `json:"ordinal"`
-	Reason  string  `json:"reason"`
+// PushResultKind is the fate of one offered event.
+type PushResultKind string
+
+const (
+	PushAccepted PushResultKind = "accepted" // appended at Ordinal
+	PushDeduped  PushResultKind = "deduped"  // already present (idempotent re-push)
+	PushDeferred PushResultKind = "deferred" // backpressure; re-offer after RetryAfter
+)
+
+// PushResult is the fate of one offered event — the rc2 open union
+// Accepted / Deduped / Deferred; Ordinal is set for Accepted and Deduped
+// (core.lumen §PushResult @ bdp-core-0.2.3-rc2).
+//
+// NOTE: push is not exercised by the clean-room smoke test, so the exact wire
+// tagging/casing of this union is UNVERIFIED against a live server; it is
+// modeled here for contract completeness and verified when push is first built
+// out (Track A).
+type PushResult struct {
+	Kind    PushResultKind `json:"kind"`
+	Ordinal *Ordinal       `json:"ordinal,omitempty"`
 }
 
 // # The call protocol
@@ -250,30 +284,94 @@ type Reply struct {
 	Metadata json.RawMessage `json:"metadata,omitempty"`
 }
 
+// OutcomeKind is the discriminator on the settled result of a Call.
+type OutcomeKind string
+
+const (
+	OutcomeSuccess  OutcomeKind = "success"  // the Result's T, carried under "value"
+	OutcomeFailure  OutcomeKind = "failure"  // the Result's E, carried under "error"
+	OutcomeFault    OutcomeKind = "fault"    // a Problem, carried under "problem"
+	OutcomeCanceled OutcomeKind = "canceled" // killed; optional "reason"
+)
+
 // Outcome is what happened to an invocation — the settled result of a Call, and
-// the one place in Core with a rich result. Exactly one field is set. Only
-// Success means the operation went as intended. The non-domain set
-// (Fault/Canceled) is open: a reader must tolerate an unrecognized fate, so an
-// unknown arm is reported through Unknown rather than dropped.
+// the one place in Core with a rich result. On the wire it is an INTERNALLY
+// TAGGED object: a "kind" discriminator plus that arm's own payload key —
+//
+//	{"kind":"success","value":T} · {"kind":"failure","error":E} ·
+//	{"kind":"fault","problem":P}  · {"kind":"canceled","reason"?:string}
+//
+// so a reader never infers the arm from the HTTP status alone (core.lumen
+// §Outcome @ bdp-core-0.2.3-rc2). The non-domain set (fault·canceled) is an open
+// union, so an unrecognized kind is preserved in Unknown rather than dropped.
+//
+// Only Success means the operation went as intended. Failure is the declared
+// domain "no" — the Result's E, settling a sync Call as HTTP 409. Fault is an
+// undeclared, non-domain failure carrying a Problem — the universal fault
+// channel, never a Result's E.
 type Outcome struct {
-	// Success carries the operation's declared success value (the Result's T).
-	Success json.RawMessage `json:"success,omitempty"`
-	// Failure carries the operation's declared failure — the Result's E, an
-	// expected domain "no". It settles a sync Call as HTTP 409. Call is the only
-	// primitive with a declared failure; a data primitive has none.
-	Failure json.RawMessage `json:"failure,omitempty"`
-	// Fault carries a Problem — an undeclared, non-domain failure (NOT the E):
-	// the call itself went wrong. A Problem is the universal fault channel here
-	// exactly as it is for the data primitives, never a Result's E.
-	Fault *Problem `json:"fault,omitempty"`
-	// Canceled reports the invocation was killed; Reason is optional.
-	Canceled *CanceledOutcome `json:"canceled,omitempty"`
-	// Unknown holds a non-domain fate this translation does not model, so an
-	// evolving outcome set is tolerated rather than lost.
-	Unknown json.RawMessage `json:"-"`
+	// Kind is the settled arm; empty only on a zero Outcome.
+	Kind OutcomeKind
+	// Value is the declared success value (Kind == OutcomeSuccess).
+	Value json.RawMessage
+	// Error is the declared failure value, the Result's E (Kind == OutcomeFailure).
+	Error json.RawMessage
+	// Fault is the Problem of a non-domain failure (Kind == OutcomeFault).
+	Fault *Problem
+	// Reason is the optional cancel reason (Kind == OutcomeCanceled).
+	Reason string
+	// Unknown preserves the raw body of an unrecognized kind, so an evolving
+	// outcome set is tolerated rather than lost.
+	Unknown json.RawMessage
 }
 
-// CanceledOutcome is the payload of a canceled invocation.
-type CanceledOutcome struct {
-	Reason string `json:"reason,omitempty"`
+// wireOutcome is the internally-tagged on-wire form of an [Outcome].
+type wireOutcome struct {
+	Kind    OutcomeKind     `json:"kind"`
+	Value   json.RawMessage `json:"value,omitempty"`
+	Error   json.RawMessage `json:"error,omitempty"`
+	Problem *Problem        `json:"problem,omitempty"`
+	Reason  string          `json:"reason,omitempty"`
+}
+
+// UnmarshalJSON decodes the internally-tagged Outcome, preserving an
+// unrecognized kind verbatim in Unknown.
+func (o *Outcome) UnmarshalJSON(b []byte) error {
+	var w wireOutcome
+	if err := json.Unmarshal(b, &w); err != nil {
+		return err
+	}
+	*o = Outcome{Kind: w.Kind}
+	switch w.Kind {
+	case OutcomeSuccess:
+		o.Value = w.Value
+	case OutcomeFailure:
+		o.Error = w.Error
+	case OutcomeFault:
+		o.Fault = w.Problem
+	case OutcomeCanceled:
+		o.Reason = w.Reason
+	default:
+		o.Unknown = append(json.RawMessage(nil), b...)
+	}
+	return nil
+}
+
+// MarshalJSON writes the internally-tagged Outcome.
+func (o Outcome) MarshalJSON() ([]byte, error) {
+	if o.Unknown != nil && o.Kind == "" {
+		return o.Unknown, nil
+	}
+	w := wireOutcome{Kind: o.Kind}
+	switch o.Kind {
+	case OutcomeSuccess:
+		w.Value = o.Value
+	case OutcomeFailure:
+		w.Error = o.Error
+	case OutcomeFault:
+		w.Problem = o.Fault
+	case OutcomeCanceled:
+		w.Reason = o.Reason
+	}
+	return json.Marshal(w)
 }

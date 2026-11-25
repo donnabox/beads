@@ -2,6 +2,7 @@ package bdp
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/steveyegge/beads/beadserrors"
 )
@@ -30,80 +31,272 @@ const (
 	PrimitiveCancel    Primitive = "cancel"    // stop a running async call      (full)
 )
 
-// Capabilities is what [Scope.Capabilities] advertises: which primitives a scope
-// offers, the limits on each, and the scope-wide traits. Discovery is part of
-// the contract — the spec requires it so a caller never guesses — which is why
-// it is a mandatory member alongside Get. On the wire it is itself a get, of the
-// well-known /sys/capabilities resource, not a distinct primitive (core.lumen
-// §3.3, gastownhall/bdp#398).
+// Capabilities is what [Scope.Capabilities] advertises — read on the wire by a
+// get of the well-known /sys/capabilities resource, not a distinct primitive
+// (core.lumen §Capabilities @ bdp-core-0.2.3-rc2). Discovery is part of the
+// contract — the spec requires it so a caller never guesses — which is why it is
+// a mandatory member alongside Get.
 //
-// The spec partitions the advertisement into per-op core caps, pack caps, and a
-// scope-wide ScopeCapabilities bucket. This condenses the per-op records into
-// Primitives and inlines the scope-wide bucket (StorageClasses, RevisionModel);
-// pack caps are out of this core client's scope.
+// rc2 partitions the advertisement à la carte: the base core package's per-op
+// capabilities (a primitive is offered iff its field is present), the scope-wide
+// traits that are neither per-primitive nor pack-specific, and other packages'
+// capabilities keyed by package path. This mirrors that shape faithfully; Packs
+// is left opaque (this is a core client).
 type Capabilities struct {
-	// Primitives maps each offered primitive to its advertised limits. Absence
-	// from the map means the primitive is not offered (and faults with
-	// ErrUnsupported). Get is always present.
-	Primitives map[Primitive]PrimitiveCapability
-	// StorageClasses is the storage classes the scope's resources use — the
-	// spec's scope-wide ScopeCapabilities.storageClasses, a set rendered as a
-	// list here.
-	StorageClasses []StorageClass
-	// RevisionModel is the scope-wide versioning trait
-	// (ScopeCapabilities.revisionModel). An unversioned scope keeps no revisions,
-	// so its writes return unpinned references and every revision-dependent
-	// behavior relaxes scope-wide. Per gastownhall/bdp#398 this replaced the
-	// former per-resource StorageClass.versioned flag.
-	RevisionModel RevisionModel
+	// Core is the base package's advertised primitives — a primitive is offered
+	// iff its field is present. Get is always present (the floor).
+	Core CoreCapabilities `json:"core"`
+	// Scope is the scope-wide traits (storage classes, revision model, id model).
+	Scope ScopeCapabilities `json:"scope"`
+	// Packs is other packages' capabilities, keyed by package path; opaque here.
+	Packs map[string]json.RawMessage `json:"packs,omitempty"`
 }
 
-// Offers reports whether the scope advertises primitive p.
+// CoreCapabilities is the core package's à-la-carte primitive advertisement: a
+// primitive is offered iff its field is non-nil, and that field carries the
+// primitive's limits. Get is always present — point reads are the floor
+// (core.lumen §CoreCapabilities @ bdp-core-0.2.3-rc2).
+type CoreCapabilities struct {
+	Get       GetCaps        `json:"get"`
+	List      *ListCaps      `json:"list,omitempty"`
+	Pull      *PullCaps      `json:"pull,omitempty"`
+	Create    *CreateCaps    `json:"create,omitempty"`
+	Put       *PutCaps       `json:"put,omitempty"`
+	Patch     *PatchCaps     `json:"patch,omitempty"`
+	Delete    *DeleteCaps    `json:"delete,omitempty"`
+	Revisions *RevisionsCaps `json:"revisions,omitempty"`
+	Export    *ExportCaps    `json:"export,omitempty"`
+	Import    *ImportCaps    `json:"import,omitempty"`
+	Push      *PushCaps      `json:"push,omitempty"`
+}
+
+// ScopeCapabilities is a scope's scope-wide traits — neither per-primitive nor
+// pack-specific (core.lumen §ScopeCapabilities @ bdp-core-0.2.3-rc2). The traits
+// do not combine freely: versioned REQUIRES permanent (a revision chain may not
+// span two resources under one reused id), equivalently reusable REQUIRES
+// unversioned.
+type ScopeCapabilities struct {
+	// StorageClasses is which persistence classes the scope can honor — a set
+	// over Durable/Ephemeral (Intrinsic is universal and never listed).
+	StorageClasses []StorageClass `json:"storageClasses"`
+	// RevisionModel is whether the scope mints revisions, scope-wide.
+	RevisionModel RevisionModel `json:"revisionModel"`
+	// IdModel is whether a retired id is permanently spent, scope-wide.
+	IdModel IdModel `json:"idModel"`
+	// Aliases, when present, signals the scope supports alias resources and the
+	// scope-root overlay. Opaque here.
+	Aliases *AliasCaps `json:"aliases,omitempty"`
+	// BodyFormSpill reports the scope accepts the optional body-form spill for an
+	// over-budget read/write guard; absent/false ⇒ over-budget faults request-too-large.
+	BodyFormSpill bool `json:"bodyFormSpill,omitempty"`
+}
+
+// Offers reports whether the scope advertises primitive p — presence of its
+// core capability. Get is always offered.
 func (c Capabilities) Offers(p Primitive) bool {
-	_, ok := c.Primitives[p]
-	return ok
+	switch p {
+	case PrimitiveGet:
+		return true
+	case PrimitiveList:
+		return c.Core.List != nil
+	case PrimitivePull:
+		return c.Core.Pull != nil
+	case PrimitiveCreate:
+		return c.Core.Create != nil
+	case PrimitivePut:
+		return c.Core.Put != nil
+	case PrimitivePatch:
+		return c.Core.Patch != nil
+	case PrimitiveDelete:
+		return c.Core.Delete != nil
+	case PrimitiveRevisions:
+		return c.Core.Revisions != nil
+	case PrimitiveExport:
+		return c.Core.Export != nil
+	case PrimitiveImport:
+		return c.Core.Import != nil
+	case PrimitivePush:
+		return c.Core.Push != nil
+	default:
+		// call/cancel are not core data primitives advertised here; a caller
+		// learns an operation's availability by resolving it.
+		return false
+	}
 }
 
 // Unversioned reports whether the scope keeps no revisions (its RevisionModel is
 // unversioned) — the convenience predicate for the common branch.
 func (c Capabilities) Unversioned() bool {
-	return c.RevisionModel == RevisionModelUnversioned
+	return c.Scope.RevisionModel == RevisionModelUnversioned
 }
 
-// RevisionModel is the scope-wide versioning trait: whether prior revisions are
-// retained and addressable across the whole scope (core.lumen §3.3,
-// ScopeCapabilities.revisionModel; gastownhall/bdp#398). The empty value is
-// unspecified — a scope that advertises discovery always sets it.
+// RevisionModel is the scope-wide versioning trait (core.lumen §RevisionModel @
+// bdp-core-0.2.3-rc2). versioned ⇒ the scope mints revisions and write refs are
+// pinned; unversioned ⇒ it mints none, rev is absent everywhere, and write refs
+// relax to unpinned scope-wide. The empty value is unspecified — a scope that
+// advertises discovery always states it.
 type RevisionModel string
 
 const (
-	// RevisionModelVersioned keeps prior revisions; writes return pinned refs.
-	RevisionModelVersioned RevisionModel = "versioned"
-	// RevisionModelUnversioned keeps only the current revision; writes return
-	// unpinned refs.
+	RevisionModelVersioned   RevisionModel = "versioned"
 	RevisionModelUnversioned RevisionModel = "unversioned"
 )
 
-// PrimitiveCapability carries the advertised knobs for one primitive. A field
-// is meaningful only for the primitives it applies to (e.g. IfMatch for the
-// conditional writes, Async for call); it is false/zero otherwise. The spec's
-// per-primitive limit records are richer — this condenses the knobs a Core
-// caller branches on.
-type PrimitiveCapability struct {
-	// Selector reports the read honors a projection selector.
-	Selector bool
-	// IfMatch reports the write honors the IfRevision (If-Match) precondition.
-	IfMatch bool
-	// JSONL reports the streaming read offers the bulk JSONL transport.
-	JSONL bool
-	// SSE reports the streaming read offers the live SSE transport.
-	SSE bool
-	// Revisions reports export can emit full revision history.
-	Revisions bool
-	// Async reports call accepts async disposition.
-	Async bool
-	// MaxBatch bounds a batched op (0 = unspecified / unbounded).
-	MaxBatch int
+// IdModel is the scope-wide id model (core.lumen §IdModel @ bdp-core-0.2.3-rc2):
+// whether an id retired by delete is permanently spent or may be minted again.
+// permanent ⇒ a retired id is never reused (an unpinned inbound reference faults
+// 410 Gone). reusable ⇒ a retired id may be re-minted, REQUIRES unversioned, and
+// obliges delete to advertise a precondition guard (no revision exists for
+// If-Match), so a client retrying a delete under reusable has no revision to
+// pin and must guard by state.
+type IdModel string
+
+const (
+	IdModelPermanent IdModel = "permanent"
+	IdModelReusable  IdModel = "reusable"
+)
+
+// GetCaps are the limits advertised for get.
+type GetCaps struct {
+	// Selector reports a select projection is honored on a read.
+	Selector bool `json:"selector"`
+}
+
+// ListCaps are the limits advertised for list.
+type ListCaps struct {
+	// Conditions is the low-bar filter operators the scope supports.
+	Conditions []ConditionKind `json:"conditions"`
+	// Selector reports a select projection is honored.
+	Selector bool `json:"selector"`
+	// Sort reports server-side sort is offered.
+	Sort bool `json:"sort"`
+	// CompactFilter reports the compact ?where= dialect is accepted (on top of
+	// the URL-encoded JSON Filter floor every scope accepts).
+	CompactFilter bool `json:"compactFilter"`
+	// MaxLimit is the maximum page size when capped (0 = uncapped).
+	MaxLimit int `json:"maxLimit,omitempty"`
+}
+
+// ConditionKind is one operator in the low-bar list filter; the richer query
+// language is a pack capability, not core (core.lumen §ConditionKind @ rc2).
+type ConditionKind string
+
+const (
+	ConditionCompare     ConditionKind = "compare"
+	ConditionMatches     ConditionKind = "matches"
+	ConditionHas         ConditionKind = "has"
+	ConditionMissing     ConditionKind = "missing"
+	ConditionContains    ConditionKind = "contains"
+	ConditionContainsAny ConditionKind = "containsAny"
+	ConditionExcludes    ConditionKind = "excludes"
+	ConditionIsType      ConditionKind = "isType"
+)
+
+// PullCaps are the limits advertised for pull (the changefeed and streams).
+type PullCaps struct {
+	// SSE reports live sse transport is offered.
+	SSE bool `json:"sse"`
+	// JSONL reports bulk jsonl transport is offered.
+	JSONL bool `json:"jsonl"`
+	// Filter reports a where filter is honored on the stream.
+	Filter bool `json:"filter"`
+	// Selector reports a select projection is honored on each item.
+	Selector bool `json:"selector"`
+}
+
+// CreateCaps are the limits advertised for create.
+type CreateCaps struct {
+	// ServerAllocatesID reports the server will allocate the id (no requestedId).
+	ServerAllocatesID bool `json:"serverAllocatesId"`
+	// ClientProposedID reports a caller-proposed id (requestedId) is honored.
+	ClientProposedID bool `json:"clientProposedId"`
+}
+
+// PutCaps are the write guards put honors (core.lumen §PutCaps @ rc2).
+type PutCaps struct {
+	// IfRevision reports the If-Match optimistic-concurrency guard is honored.
+	IfRevision bool `json:"ifRevision"`
+	// IfAbsent reports the If-None-Match: * create-if-absent guard is honored.
+	IfAbsent bool `json:"ifAbsent"`
+	// Precondition reports the ?precondition= state guard is honored.
+	Precondition bool `json:"precondition"`
+}
+
+// PatchCaps are the write guards patch honors.
+type PatchCaps struct {
+	IfRevision   bool `json:"ifRevision"`
+	Precondition bool `json:"precondition"`
+}
+
+// DeleteCaps are the write guards delete honors. A reusable scope offering
+// delete MUST set Precondition (it has no revision for If-Match to carry).
+type DeleteCaps struct {
+	IfRevision   bool `json:"ifRevision"`
+	Precondition bool `json:"precondition"`
+}
+
+// RevisionsCaps, present, advertises that prior revisions are addressable
+// (revisions) — offered only by a versioned scope. It carries no limits.
+type RevisionsCaps struct{}
+
+// ExportCaps are the limits advertised for export.
+type ExportCaps struct {
+	// Revisions reports the export can include prior revisions (history), not
+	// only the current state.
+	Revisions bool `json:"revisions"`
+}
+
+// ImportCaps are the limits advertised for import.
+type ImportCaps struct {
+	// HistoryRestore reports importing prior revisions (history restore) is honored.
+	HistoryRestore bool `json:"historyRestore"`
+	// Window is the admission window before backpressure, when bounded; its
+	// presence advertises resumable/backpressured import, absent ⇒ one-shot.
+	Window *int `json:"window,omitempty"`
+}
+
+// PushCaps are the limits advertised for push.
+type PushCaps struct {
+	// MaxBatch is the maximum events accepted in one batch, when capped.
+	MaxBatch *int `json:"maxBatch,omitempty"`
+	// Window is the admission window before backpressure, when bounded.
+	Window *int `json:"window,omitempty"`
+}
+
+// AliasCaps is advertised for aliases — its presence signals alias resources
+// under sys/aliases/ and the scope-root overlay are active. Opaque here.
+type AliasCaps struct{}
+
+// ServiceDescriptor is the bounded discovery signpost returned by GET / (a
+// scope's base URL) — a thin envelope that names the protocol and links to the
+// rest. With get and /sys/capabilities it is the mandatory floor; a client MAY
+// hardcode GET /, GET /sys/capabilities and GET /bdp/openapi (core.lumen
+// §ServiceDescriptor @ bdp-core-0.2.3-rc2).
+type ServiceDescriptor struct {
+	// Version is the BDP protocol version this scope speaks, a full SemVer.
+	Version string `json:"version"`
+	// Revision is the exact spec commit/tag it was built against; diagnostic only.
+	Revision Rev `json:"revision,omitempty"`
+	// Scope is the scope's identity, echoed; absent on a base URL fronting no
+	// single scope.
+	Scope string `json:"scope,omitempty"`
+	// Base is the scope's base URL, echoed so a client can confirm the origin.
+	Base string `json:"base,omitempty"`
+	// Links are typed links to the rest of the service.
+	Links ServiceLinks `json:"links"`
+}
+
+// ServiceLinks is the discovery link set — a relation's absence means the
+// service does not offer it (core.lumen §ServiceLinks @ bdp-core-0.2.3-rc2).
+type ServiceLinks struct {
+	// ServiceDesc is the machine contract (/bdp/openapi), RFC 8631 service-desc.
+	ServiceDesc string `json:"serviceDesc,omitempty"`
+	// ServiceMeta is the scope's live Capabilities (/sys/capabilities), service-meta.
+	ServiceMeta string `json:"serviceMeta,omitempty"`
+	// ServiceDoc is human-readable documentation, service-doc.
+	ServiceDoc string `json:"serviceDoc,omitempty"`
+	// Changes is the scope's changefeed Channel (/sys/changes), BDP extension relation.
+	Changes string `json:"changes,omitempty"`
 }
 
 // Scope is one opened BDP store — the v0.2 Core conformance boundary. A client
@@ -162,17 +355,23 @@ type Scope interface {
 	Put(ctx context.Context, in PutInput) (ResourceID, error)
 
 	// Patch applies a JSON Patch to /body and /metadata and returns the patched
-	// pinned reference. A set ifRevision is the If-Match precondition.
-	Patch(ctx context.Context, ref ResourceID, patch JSONPatch, ifRevision Rev) (ResourceID, error)
+	// pinned reference. Guards ride the request line, never the body: a set
+	// ifRevision is the If-Match guard, a non-empty precondition is the
+	// ?precondition= state guard.
+	Patch(ctx context.Context, ref ResourceID, patch JSONPatch, ifRevision Rev, precondition ListFilter) (ResourceID, error)
 
 	// Delete retires a resource, minting a tombstone revision which it returns
-	// (not a representation). Idempotent. A set ifRevision is the If-Match
-	// precondition.
-	Delete(ctx context.Context, ref ResourceID, ifRevision Rev) (Rev, error)
+	// (not a representation). Idempotent. A set ifRevision is the If-Match guard;
+	// a non-empty precondition is the ?precondition= state guard (the only guard a
+	// reusable scope can offer, since it keeps no revision to pin).
+	Delete(ctx context.Context, ref ResourceID, ifRevision Rev, precondition ListFilter) (Rev, error)
 
-	// Push appends events to a channel in order — the dual of Pull and the
-	// channel analog of Import.
-	Push(ctx context.Context, channel ResourceID, events []ChangeEvent, strategy *PushStrategy) (PushReport, error)
+	// Push appends one or more events to a channel and returns a PushAck — the
+	// high-water ordinal, a per-event result, and the backpressure signal. Push
+	// is non-blocking: the channel accepts a prefix and defers the rest, and the
+	// pusher re-offers the deferred tail. A keyed event (carrying an Ordinal) is
+	// idempotent. The dual of Pull and the channel analog of Import.
+	Push(ctx context.Context, channel ResourceID, events []PushEvent) (PushAck, error)
 
 	// Import is the bulk write path: it replays export records into a namespace
 	// under the given strategy.
@@ -235,16 +434,16 @@ func (u UnimplementedScope) Put(context.Context, PutInput) (ResourceID, error) {
 	return ResourceID{}, u.unsupported("put")
 }
 
-func (u UnimplementedScope) Patch(context.Context, ResourceID, JSONPatch, Rev) (ResourceID, error) {
+func (u UnimplementedScope) Patch(context.Context, ResourceID, JSONPatch, Rev, ListFilter) (ResourceID, error) {
 	return ResourceID{}, u.unsupported("patch")
 }
 
-func (u UnimplementedScope) Delete(context.Context, ResourceID, Rev) (Rev, error) {
+func (u UnimplementedScope) Delete(context.Context, ResourceID, Rev, ListFilter) (Rev, error) {
 	return "", u.unsupported("delete")
 }
 
-func (u UnimplementedScope) Push(context.Context, ResourceID, []ChangeEvent, *PushStrategy) (PushReport, error) {
-	return PushReport{}, u.unsupported("push")
+func (u UnimplementedScope) Push(context.Context, ResourceID, []PushEvent) (PushAck, error) {
+	return PushAck{}, u.unsupported("push")
 }
 
 func (u UnimplementedScope) Import(context.Context, Namespace, []ExportRecord, *ImportStrategy) (ImportReport, error) {

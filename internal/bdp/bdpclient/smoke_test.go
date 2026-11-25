@@ -34,7 +34,7 @@ func TestSmokeAgainstCleanroomServer(t *testing.T) {
 		t.Fatalf("Capabilities: %v", err)
 	}
 	if !caps.Offers(bdp.PrimitiveGet) || !caps.Offers(bdp.PrimitivePut) {
-		t.Fatalf("Capabilities missing get/put: %+v", caps.Primitives)
+		t.Fatalf("Capabilities missing get/put: %+v", caps.Core)
 	}
 
 	note1 := bdp.ResourceID{ID: "note-1"}
@@ -113,7 +113,7 @@ func TestSmokeAgainstCleanroomServer(t *testing.T) {
 	}
 
 	// 7) DELETE note-1 → tombstone rev; then GET → gone.
-	tombstone, err := s.Delete(ctx, note1, "")
+	tombstone, err := s.Delete(ctx, note1, "", nil)
 	if err != nil {
 		t.Fatalf("Delete: %v", err)
 	}

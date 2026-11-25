@@ -63,14 +63,18 @@ var _ bdp.Scope = (*RemoteScope)(nil)
 // is the follow-up once the server grows it (see package bdp SPELUNK.md).
 func (c *RemoteScope) Capabilities(context.Context) (bdp.Capabilities, error) {
 	return bdp.Capabilities{
-		Primitives: map[bdp.Primitive]bdp.PrimitiveCapability{
-			bdp.PrimitiveGet:    {},
-			bdp.PrimitiveCreate: {},
-			bdp.PrimitivePut:    {},
-			bdp.PrimitivePatch:  {IfMatch: true},
-			bdp.PrimitiveDelete: {IfMatch: true},
+		Core: bdp.CoreCapabilities{
+			Get:    bdp.GetCaps{},
+			Create: &bdp.CreateCaps{ClientProposedID: true, ServerAllocatesID: true},
+			Put:    &bdp.PutCaps{IfRevision: true},
+			Patch:  &bdp.PatchCaps{IfRevision: true},
+			Delete: &bdp.DeleteCaps{IfRevision: true},
 		},
-		RevisionModel: bdp.RevisionModelVersioned,
+		Scope: bdp.ScopeCapabilities{
+			StorageClasses: []bdp.StorageClass{bdp.StorageClassDurable},
+			RevisionModel:  bdp.RevisionModelVersioned,
+			IdModel:        bdp.IdModelPermanent,
+		},
 	}, nil
 }
 
@@ -122,8 +126,10 @@ func (c *RemoteScope) Put(ctx context.Context, in bdp.PutInput) (bdp.ResourceID,
 }
 
 // Patch applies a JSON Patch to /body and /metadata (PATCH /{id}) and returns
-// the patched pinned reference.
-func (c *RemoteScope) Patch(ctx context.Context, ref bdp.ResourceID, patch bdp.JSONPatch, ifRevision bdp.Rev) (bdp.ResourceID, error) {
+// the patched pinned reference. The precondition state guard is accepted but not
+// yet sent — the spike server does not parse ?precondition= (wiring it is Track
+// A), matching how the selector is accepted but not projected.
+func (c *RemoteScope) Patch(ctx context.Context, ref bdp.ResourceID, patch bdp.JSONPatch, ifRevision bdp.Rev, _ bdp.ListFilter) (bdp.ResourceID, error) {
 	resp, body, err := c.do(ctx, http.MethodPatch, c.resourcePath(ref), patch, func(h http.Header) {
 		h.Set("Content-Type", "application/json-patch+json")
 		if ifRevision != "" {
@@ -140,7 +146,8 @@ func (c *RemoteScope) Patch(ctx context.Context, ref bdp.ResourceID, patch bdp.J
 }
 
 // Delete retires a resource (DELETE /{id}), returning the tombstone revision.
-func (c *RemoteScope) Delete(ctx context.Context, ref bdp.ResourceID, ifRevision bdp.Rev) (bdp.Rev, error) {
+// The precondition state guard is accepted but not yet sent (see Patch).
+func (c *RemoteScope) Delete(ctx context.Context, ref bdp.ResourceID, ifRevision bdp.Rev, _ bdp.ListFilter) (bdp.Rev, error) {
 	resp, body, err := c.do(ctx, http.MethodDelete, c.resourcePath(ref), nil, func(h http.Header) {
 		if ifRevision != "" {
 			h.Set("If-Match", string(ifRevision))
