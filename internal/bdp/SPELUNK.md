@@ -13,6 +13,48 @@ Translated from the spec, not the Rust.
 
 ---
 
+## Re-aligned to BDP core-0.2.3-rc2 (2026-11-25)
+
+> The contract was first built against `bdp#398` (rc1-era) + merged main. BDP
+> `core-0.2.3-rc2` (tag `bdp-core-0.2.3-rc2` @ commit `acb7aa67`, `core.lumen`
+> 172360 B) is now the pin, and `internal/bdp` was audited against it and
+> rebased onto base `bdp/v0.2.3`. The delta that mattered:
+>
+> - **Capabilities / discovery** — the condensed flat `Primitives` map could not
+>   decode the rc2 `/sys/capabilities` document. Rebuilt to the rc2 nested shape:
+>   `{ core: CoreCapabilities (per-op caps), scope: ScopeCapabilities, packs? }`,
+>   with per-op cap records and the scope-wide bucket
+>   `{ storageClasses, revisionModel, idModel, aliases?, bodyFormSpill? }`. Added
+>   **`IdModel`** (`permanent`|`reusable`) — load-bearing for delete-retry
+>   safety (`reusable` ⇒ `unversioned`, so no revision to pin; delete must guard
+>   by `precondition`). Added `ServiceDescriptor`/`ServiceLinks` (the `GET /`
+>   signpost). `Offers()` now reads per-op presence.
+> - **Outcome (call's result)** — rc2 §Outcome mandates an INTERNALLY-TAGGED wire
+>   form (`{kind:success,value}`/`{kind:failure,error}`/`{kind:fault,problem}`/
+>   `{kind:canceled,reason?}`); the old multi-field struct could not decode it.
+>   Reworked to a kind-tagged `Outcome` with custom `(Un)MarshalJSON`.
+> - **StorageClass** — was a bool struct; the rc2 wire (clean-room
+>   `bdp-protocol/src/wire.rs`) is a bare lowercase string enum
+>   `"durable"`/`"ephemeral"`/`"intrinsic"`. Converted.
+> - **Resource** — added `retired` (tombstone marker; rc2 §rep).
+> - **Write guards** — `put` gained `ifAbsent`; `put`/`patch`/`delete` gained the
+>   `?precondition=` state guard. Added to `PutInput` + the `Patch`/`Delete`
+>   signatures (spike client accepts but does not send `precondition` yet).
+> - **Push** — replaced the stale `PushReport`/`PushStrategy` with the rc2
+>   backpressure shape (`PushEvent`/`PushAck`/`PushResult`: `acceptedThrough` +
+>   `credit` + `deferred`). Wire tagging unverified (push not smoke-tested).
+> - **Inception** — dropped the phantom `revive` value (rc2 is
+>   `create`|`import`|`unknown`). Added `IdentityBasis` vocabulary.
+>
+> **Still opaque / flagged for Track A build-out:** typed changefeed events
+> (`ChangeEnvelope`/`Created`/`Updated`/`Deleted`/`CallEnter`/`CallLeave` —
+> `ChangeEvent` stays `json.RawMessage`); resumable import (`ImportAck`/
+> `ImportResult`); the live `/sys/capabilities` fetch (RemoteScope returns a
+> static advert); the push pump; the alias overlay; selector/filter richness.
+> These are shape-flagged here, not contradicted by the contract.
+
+---
+
 ## The one thing worth saying first
 
 **In the Lumen spec there is no `BdpScope` trait.** `BdpScope` is a *URL type*
@@ -41,11 +83,11 @@ no generator and no match-gate (both explicitly out of scope for now).
 | `trait BdpScope: Send + Sync` | `type Scope interface` | The contract. A client and a backend both satisfy it. |
 | `async fn` everywhere | `ctx context.Context` first param, synchronous return | Go has no `async`; the idiom is a context for cancellation + a blocking call. Matches every existing `internal/storage` signature. |
 | default trait method → `not_implemented()` | embeddable `UnimplementedScope` returning `*ErrUnsupported` | Go has no default interface methods. The gRPC `UnimplementedServer` pattern is the standard analog — and it already matches beads' own "à la carte + typed unsupported" storage surface (`backend/`, `RunUnsupportedContract`). |
-| `capabilities() -> Vec<PrimitiveCapabilities>` | `Capabilities(ctx) (Capabilities, error)` | Discovery is a mandatory member (no default), exactly as in Rust. Condensed the per-op limit *enum-of-structs* into one `PrimitiveCapability` with the knobs a Core caller branches on (Selector, IfMatch, JSONL/SSE, Async, MaxBatch). |
+| `capabilities() -> Vec<PrimitiveCapabilities>` | `Capabilities(ctx) (Capabilities, error)` | Discovery is a mandatory member (no default), exactly as in Rust. Condensed the per-op limit *enum-of-structs* into one `PrimitiveCapability` with the knobs a Core caller branches on (Selector, IfMatch, JSONL/SSE, Async, MaxBatch). **Superseded by rc2** (see the rc2 block above): the condensed form could not decode the rc2 `/sys/capabilities` document, so `Capabilities` was rebuilt to the nested `{core, scope, packs}` shape with per-op cap records + `IdModel`. |
 | `ref<T>` / `rep<T>` with `PhantomData<fn()->T>` | plain `ResourceID` / `Representation`, **no type param** | The spec says `T` is "checker-only and erases on the wire." Go phantom generics buy nothing at runtime and make every call site noisier; dropping `T` is faithful and idiomatic. |
 | `RawJson(Bytes)` zero-copy | `json.RawMessage` | Core does not interpret `body`/`metadata`/events; keep them undecoded. |
 | `enum BdpError { NotFound, RevisionMismatch, … }` | `error` return + sentinels (`ErrNotFound`, `ErrRevisionMismatch`, `ErrAlreadyExists`, `ErrValidation`) + `FaultError{Problem}` | `errors.Is`/`errors.As` is the Go classification idiom. `FaultError` carries the RFC 9457 `Problem` and `Unwrap`s to a sentinel, so one returned value answers both "which fault kind" and "what did the server say." **Confirmed 2026-11-17** against the now-normative fault model (core.lumen §Problem on main): every primitive returns its value or faults with a Problem delivered **out of band** (never in the declared return); a fault is orthogonal to the value; only `call` carries a declared failure (`Outcome.Failure` = the Result's `E`, HTTP 409), and a Problem is the universal fault channel, **never** a Result's `E`. `errors.go`/`Outcome` doc-aligned to that split; one nuance now flagged in-doc: `create`'s 409 is a *fault* (out-of-band Problem), distinct from `call`'s 409 *declared failure* (in the Reply body). Doc-only; no structural drift. |
-| `Result<T,E>` / `Outcome<T,E>` (call's rich result) | `Reply{ Outcome{ Success/Failure/Fault/Canceled/Unknown } }` | Kept to `call` alone, per the spec's error-model ruling. The open non-domain set (fault·canceled) gets an explicit `Unknown json.RawMessage` arm so an evolving outcome set is tolerated, not dropped — the Go stand-in for "a reader MUST tolerate an unrecognized arm." |
+| `Result<T,E>` / `Outcome<T,E>` (call's rich result) | `Reply{ Outcome{ Success/Failure/Fault/Canceled/Unknown } }` | Kept to `call` alone, per the spec's error-model ruling. The open non-domain set (fault·canceled) gets an explicit `Unknown json.RawMessage` arm so an evolving outcome set is tolerated, not dropped — the Go stand-in for "a reader MUST tolerate an unrecognized arm." **Updated for rc2** (see the rc2 block above): rc2 §Outcome mandates an internally-tagged `kind` wire form, so `Outcome` was reworked to a kind-tagged struct with custom `(Un)MarshalJSON` (the `Unknown` arm preserved). |
 | `enum Scope { This, Web, Named }` | `Namespace{ Store string; URI bool }` (zero value = local) | Renamed to free `Scope` for the interface. The common case (local) is the zero value, which reads well in Go. (Rust's `Web` = the spec's `"uri"` arm.) **Confirmed 2026-11-17** against the ratified decoder ring (core.lumen §1.1 on main): the three readings match exactly — zero value = the `null`/absent arm (local), `Store` = a BdpScope URL, `URI` = the literal `"uri"`. The one open item is the wire token for the uri arm (see wire.go: the spike carries it as `"web"`, unverified, never exercised by the smoke test). |
 
 **`fn` vs `command`.** The Lumen surface distinguishes safe reads (`fn get`,
