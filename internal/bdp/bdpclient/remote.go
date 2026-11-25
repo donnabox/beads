@@ -75,7 +75,7 @@ func (c *RemoteScope) Get(ctx context.Context, ref bdp.ResourceID, _ *bdp.Select
 	if resp.StatusCode/100 != 2 {
 		return bdp.Representation{}, errorFrom(resp.StatusCode, body)
 	}
-	var wr wireRepresentation
+	var wr wireRep
 	if err := json.Unmarshal(body, &wr); err != nil {
 		return bdp.Representation{}, fmt.Errorf("bdpclient: bad representation: %w", err)
 	}
@@ -87,31 +87,35 @@ func (c *RemoteScope) Get(ctx context.Context, ref bdp.ResourceID, _ *bdp.Select
 }
 
 // Create admits a new bead and returns its pinned reference. The rc2 create
-// route is POST /-/create under the action fence — bare POST / is not create,
-// and bare GET / is now the ServiceDescriptor (core.lumen §create).
+// route is POST /-/create under the action fence (bare GET / is the
+// ServiceDescriptor); the proposed id rides the query string (?id=), not the
+// body (core.lumen §create).
 func (c *RemoteScope) Create(ctx context.Context, in bdp.CreateInput) (bdp.ResourceID, error) {
-	req := wireCreateRequest{
-		Kind:       kindOf(in.Type),
-		Type:       typeRef(in.Type, in.Authority),
-		Properties: nonEmpty(in.Body),
-		Metadata:   nonEmpty(in.Metadata),
+	path := "/-/create"
+	proposed := proposedID(in.ID)
+	if proposed != "" {
+		path += "?id=" + url.QueryEscape(proposed)
 	}
-	if id := proposedID(in.ID); id != "" {
-		req.ID = &wireResourceID{ID: id}
+	body := wireCreateBody{
+		Authority: authorityRef(in.Authority),
+		Type:      in.Type,
+		Body:      nonEmpty(in.Body),
+		Metadata:  nonEmpty(in.Metadata),
 	}
-	return c.write(ctx, http.MethodPost, "/-/create", req, "", bdp.ResourceID{ID: proposedID(in.ID)})
+	return c.write(ctx, http.MethodPost, path, body, "", bdp.ResourceID{ID: proposed})
 }
 
 // Put is the idempotent full-state write (PUT /{id}) and returns the written
-// pinned reference.
+// pinned reference. The body is exactly the representation; guards ride the
+// request line (core.lumen §put).
 func (c *RemoteScope) Put(ctx context.Context, in bdp.PutInput) (bdp.ResourceID, error) {
-	req := wireCreateRequest{
-		Kind:       kindOf(in.Type),
-		Type:       typeRef(in.Type, in.Authority),
-		Properties: nonEmpty(in.Body),
-		Metadata:   nonEmpty(in.Metadata),
+	body := wireCreateBody{
+		Authority: authorityRef(in.Authority),
+		Type:      in.Type,
+		Body:      nonEmpty(in.Body),
+		Metadata:  nonEmpty(in.Metadata),
 	}
-	return c.write(ctx, http.MethodPut, c.resourcePath(in.Target), req, string(in.IfRevision), in.Target)
+	return c.write(ctx, http.MethodPut, c.resourcePath(in.Target), body, string(in.IfRevision), in.Target)
 }
 
 // Patch applies a JSON Patch to /body and /metadata (PATCH /{id}) and returns
@@ -158,7 +162,7 @@ func (c *RemoteScope) Delete(ctx context.Context, ref bdp.ResourceID, ifRevision
 // --- plumbing ---
 
 // write encodes req as a create/put body, sends it, and decodes the pinned ref.
-func (c *RemoteScope) write(ctx context.Context, method, path string, req wireCreateRequest, ifRevision string, fallback bdp.ResourceID) (bdp.ResourceID, error) {
+func (c *RemoteScope) write(ctx context.Context, method, path string, req wireCreateBody, ifRevision string, fallback bdp.ResourceID) (bdp.ResourceID, error) {
 	payload, err := json.Marshal(req)
 	if err != nil {
 		return bdp.ResourceID{}, fmt.Errorf("bdpclient: marshal request: %w", err)
@@ -258,23 +262,13 @@ func revFromETag(resp *http.Response) bdp.Rev {
 	return bdp.Rev(strings.Trim(resp.Header.Get("ETag"), `"`))
 }
 
-// kindOf derives the wire `kind` (the type's leaf) from a spec type path:
-// "issue/task" → "task", "task" → "task".
-func kindOf(typePath string) string {
-	if i := strings.LastIndex(typePath, "/"); i >= 0 {
-		return typePath[i+1:]
+// authorityRef maps an optional bdp.Authority (a ResourceID) to the wire ref.
+func authorityRef(a *bdp.Authority) *wireResourceID {
+	if a == nil {
+		return nil
 	}
-	return typePath
-}
-
-// typeRef builds the wire type reference. The clean-room models a bead's type as
-// a ref to a type bead (e.g. {"id":"BeadType/task"}); prefer the caller's
-// Authority when given, else synthesize "BeadType/<kind>".
-func typeRef(typePath string, authority *bdp.Authority) wireResourceID {
-	if authority != nil {
-		return toWireID(*authority)
-	}
-	return wireResourceID{ID: "BeadType/" + kindOf(typePath)}
+	w := toWireID(*a)
+	return &w
 }
 
 func proposedID(p bdp.IDProposal) string {

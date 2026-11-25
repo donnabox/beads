@@ -37,6 +37,19 @@ func TestSmokeAgainstCleanroomServer(t *testing.T) {
 		t.Fatalf("Capabilities missing get/put: %+v", caps.Core)
 	}
 
+	// Discover: the full conformance handshake — decode the ServiceDescriptor off
+	// the live server and negotiate its protocol version (0.2.x).
+	desc, dcaps, err := s.Discover(ctx)
+	if err != nil {
+		t.Fatalf("Discover: %v", err)
+	}
+	if desc.Version == "" {
+		t.Error("Discover: ServiceDescriptor carried no protocol version")
+	}
+	if !dcaps.Offers(bdp.PrimitiveGet) {
+		t.Error("Discover: capabilities must offer get (the floor)")
+	}
+
 	note1 := bdp.ResourceID{ID: "note-1"}
 
 	// 1) CREATE note-1 → pinned ref with a minted rev.

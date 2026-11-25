@@ -7,25 +7,21 @@ import (
 )
 
 // This file is the impedance layer between the spec-faithful bdp.Scope types and
-// the clean-room server's wire JSON (pinned at bdp.lumen b555931c), the dual of
-// the Rust clean-room's wire.rs. The wire is a SPIKE that diverges from ratified
-// core-v0.2 in a few places the translations below absorb and document:
+// the clean-room server's wire JSON, the dual of the Rust clean-room's wire.rs.
+// It is aligned to and LIVE-VALIDATED against bdp-cleanroom-v023 @ 5fba7d23 (the
+// rc2 server): the read/write DTOs here are the rc2 §rep / §create shapes, no
+// longer the earlier spike envelope. Notes the layer still carries:
 //
-//   - A representation is EXTERNALLY tagged ({"Bead":{…}} / {"Generic":{…}}).
-//     core-v0.2 discriminates a bead structurally, with no envelope tag — the
-//     clean-room's own wire.rs admits "a conformant decoder wouldn't see this
-//     wrapper". The spike chose it so serde could round-trip raw-JSON bodies.
-//   - A bead carries a top-level `kind` string. In core-v0.2 kind is not stored;
-//     it is the type path's id. The wire `kind` is the type's leaf ("task").
-//   - The firewalled payload is `properties` on the wire; core-v0.2 calls it
-//     `body`. Same bytes, different name.
-//   - A write's minted rev rides in a quoted `ETag` response header, not the body.
+//   - A write's minted rev rides in a quoted `ETag` response header, not the body
+//     (delete's body is also the self-describing { "rev": … }).
 //   - The Scope uri arm is carried as the token "web" below. That is an
-//     UNVERIFIED spike assumption read off the clean-room source during M2 — the
-//     green smoke test only exercises local-scope (absent) ids, so the uri arm
-//     has never round-tripped. The ratified decoder ring (core.lumen §1.1) names
-//     the literal "uri"; verify/retarget this token when the uri arm is first
-//     exercised or when targeting a ratified-wire server.
+//     UNVERIFIED assumption read off the clean-room source — the smoke test only
+//     exercises local-scope (absent) ids, so the uri arm has never round-tripped.
+//     The ratified decoder ring (core.lumen §1.1) names the literal "uri";
+//     verify/retarget when the uri arm is first exercised.
+//
+// (The discovery DTOs — ServiceDescriptor and /sys/capabilities — live in
+// discovery.go, which documents the clean-room-vs-ratified SHAPE GAP it absorbs.)
 //
 // Keeping this translation OUT of package bdp is the point: the contract tracks
 // the spec, and a client speaks whatever wire its server speaks.
@@ -70,13 +66,24 @@ func (w wireResourceID) toBDP() bdp.ResourceID {
 	return r
 }
 
-// wireCreateRequest is the body of create and put: { kind, type, id?, properties?, metadata? }.
-type wireCreateRequest struct {
-	Kind       string          `json:"kind"`
-	Type       wireResourceID  `json:"type"`
-	ID         *wireResourceID `json:"id,omitempty"`
-	Properties json.RawMessage `json:"properties,omitempty"`
-	Metadata   json.RawMessage `json:"metadata,omitempty"`
+// wireCreateBody is the body of both create and put (core.lumen §create/§put at
+// bdp-core-0.2.3-rc2). The clean-room server decodes it with
+// deny_unknown_fields, so it carries EXACTLY these members and nothing else:
+//
+//   - `type` is the type PATH string ("issue/task"), not a ref object.
+//   - `body` is the representation body (the rc2 name; the old spike called it
+//     "properties").
+//   - `authority` is the optional type-naming package ref.
+//
+// The proposed id (create) and the write guards (If-Match / If-None-Match /
+// ?precondition=) ride the request line, NEVER the body — so the body stays
+// exactly the representation. `retired` is service-managed and refused on create,
+// so it is never sent.
+type wireCreateBody struct {
+	Authority *wireResourceID `json:"authority,omitempty"`
+	Type      string          `json:"type"`
+	Body      json.RawMessage `json:"body"`
+	Metadata  json.RawMessage `json:"metadata,omitempty"`
 }
 
 // wireProvenance mirrors the server's provenance block.
@@ -103,62 +110,41 @@ func (w wireProvenance) toBDP() *bdp.Provenance {
 	return pr
 }
 
-// wireRepresentation is the externally-tagged get response.
-type wireRepresentation struct {
-	Bead    *wireBead    `json:"Bead,omitempty"`
-	Generic *wireGeneric `json:"Generic,omitempty"`
-}
-
-type wireBead struct {
-	Kind         string          `json:"kind"`
+// wireRep is the GET response — the rc2 §rep envelope, FLAT (no Bead/Generic
+// wrapper; the old spike wrapped it, which the clean-room's own wire.rs noted "a
+// conformant decoder wouldn't see"). It maps almost 1:1 onto bdp.Resource:
+// `type` is the type PATH string, `body` is the representation body,
+// `storageClass` is a bare lowercase string, and `retired` marks a tombstone.
+type wireRep struct {
 	ID           wireResourceID  `json:"id"`
-	Type         wireResourceID  `json:"type"`
-	StorageClass json.RawMessage `json:"storageClass"`
-	Properties   json.RawMessage `json:"properties"`
-	Metadata     json.RawMessage `json:"metadata"`
-	Provenance   wireProvenance  `json:"provenance"`
-	CreatedAt    string          `json:"createdAt"`
+	Authority    *wireResourceID `json:"authority,omitempty"`
+	Type         string          `json:"type"`
+	Body         json.RawMessage `json:"body"`
+	Metadata     json.RawMessage `json:"metadata,omitempty"`
+	Provenance   *wireProvenance `json:"provenance,omitempty"`
+	CreatedAt    string          `json:"createdAt,omitempty"`
+	StorageClass string          `json:"storageClass,omitempty"`
+	Retired      bool            `json:"retired,omitempty"`
 }
 
-type wireGeneric struct {
-	Kind        string          `json:"kind"`
-	ID          wireResourceID  `json:"id"`
-	ContentType string          `json:"contentType"`
-	Body        json.RawMessage `json:"body"`
-	Provenance  wireProvenance  `json:"provenance"`
-}
-
-// toBDP folds a wire representation back into the spec-faithful Resource.
-// Lossy by design — the friction is the finding (see file header):
-//   - Bead: wire `kind` ("task") is the closest thing to the spec type path, and
-//     the wire `type` ref (the type bead) is carried as Authority; `properties`
-//     becomes Body. storageClass is synthesized by the server and dropped.
-//   - Generic: content type and raw body map straight across.
-func (w wireRepresentation) toBDP() bdp.Representation {
-	switch {
-	case w.Bead != nil:
-		b := w.Bead
-		typeRef := b.Type.toBDP()
-		return bdp.Resource{
-			ID:         b.ID.toBDP(),
-			Authority:  &typeRef,
-			Type:       b.Kind,
-			Body:       nonEmpty(b.Properties),
-			Metadata:   nonEmpty(b.Metadata),
-			Provenance: b.Provenance.toBDP(),
-			CreatedAt:  b.CreatedAt,
-		}
-	case w.Generic != nil:
-		g := w.Generic
-		return bdp.Resource{
-			ID:         g.ID.toBDP(),
-			Type:       g.ContentType,
-			Body:       nonEmpty(g.Body),
-			Provenance: g.Provenance.toBDP(),
-		}
-	default:
-		return bdp.Resource{}
+func (w wireRep) toBDP() bdp.Representation {
+	r := bdp.Resource{
+		ID:           w.ID.toBDP(),
+		Type:         w.Type,
+		Body:         nonEmpty(w.Body),
+		Metadata:     nonEmpty(w.Metadata),
+		CreatedAt:    w.CreatedAt,
+		StorageClass: bdp.StorageClass(w.StorageClass),
+		Retired:      w.Retired,
 	}
+	if w.Authority != nil {
+		a := w.Authority.toBDP()
+		r.Authority = &a
+	}
+	if w.Provenance != nil {
+		r.Provenance = w.Provenance.toBDP()
+	}
+	return r
 }
 
 // wireProblem is the RFC 9457 error body.
