@@ -121,13 +121,21 @@ func majorMinor(v string) (major, minor int, ok bool) {
 
 // --- ServiceDescriptor wire DTO ---
 
+// wireServiceDescriptor is DUAL-FORM (Lydia's ruling 2026-11-25): the ratified
+// core.lumen §ServiceDescriptor shape is canonical — version field `version`,
+// `revision?` for build provenance, and `links` as the named-field object
+// {serviceDesc?, serviceMeta?, serviceDoc?, changes?}. cleanroom-v023 instead
+// emits `bdp` for the version and the RFC 8288 {rel,href} ARRAY (the Link-header
+// mirror) in the body — its acknowledged shape bug, which Shelly will reshape.
+// This decoder accepts BOTH so the client works against the clean-room today and
+// a ratified server; the non-ratified branch is dropped once the reshape lands.
 type wireServiceDescriptor struct {
-	// Bdp is the protocol version (the clean-room wire key is "bdp", not the
-	// spec's "version").
-	Bdp   string     `json:"bdp"`
-	Scope *string    `json:"scope,omitempty"`
-	Base  *string    `json:"base,omitempty"`
-	Links []wireLink `json:"links"`
+	Version  string          `json:"version"` // ratified
+	Bdp      string          `json:"bdp"`     // clean-room fallback
+	Revision string          `json:"revision,omitempty"`
+	Scope    *string         `json:"scope,omitempty"`
+	Base     *string         `json:"base,omitempty"`
+	Links    json.RawMessage `json:"links"` // object (ratified) or array (clean-room)
 }
 
 type wireLink struct {
@@ -136,30 +144,48 @@ type wireLink struct {
 }
 
 func (w wireServiceDescriptor) toBDP() bdp.ServiceDescriptor {
+	version := w.Version
+	if version == "" {
+		version = w.Bdp
+	}
 	return bdp.ServiceDescriptor{
-		Version: w.Bdp,
-		Scope:   deref(w.Scope),
-		Base:    deref(w.Base),
-		Links:   foldLinks(w.Links),
+		Version:  version,
+		Revision: bdp.Rev(w.Revision),
+		Scope:    deref(w.Scope),
+		Base:     deref(w.Base),
+		Links:    foldLinks(w.Links),
 	}
 }
 
-// foldLinks turns the RFC 8288 {rel, href} array into the spec's named-field
-// ServiceLinks object.
-func foldLinks(links []wireLink) bdp.ServiceLinks {
-	var sl bdp.ServiceLinks
-	for _, l := range links {
-		switch l.Rel {
-		case "service-desc":
-			sl.ServiceDesc = l.Href
-		case "service-meta":
-			sl.ServiceMeta = l.Href
-		case "service-doc":
-			sl.ServiceDoc = l.Href
-		case "tag:bdp.dev,2026:rel/changes", "changes":
-			sl.Changes = l.Href
-		}
+// foldLinks accepts both the ratified named-field links object and the
+// clean-room's RFC 8288 {rel, href} array, yielding the contract ServiceLinks.
+func foldLinks(raw json.RawMessage) bdp.ServiceLinks {
+	trimmed := bytes.TrimSpace(raw)
+	if len(trimmed) == 0 {
+		return bdp.ServiceLinks{}
 	}
+	if bytes.HasPrefix(trimmed, []byte("[")) {
+		var arr []wireLink
+		if json.Unmarshal(raw, &arr) != nil {
+			return bdp.ServiceLinks{}
+		}
+		var sl bdp.ServiceLinks
+		for _, l := range arr {
+			switch l.Rel {
+			case "service-desc":
+				sl.ServiceDesc = l.Href
+			case "service-meta":
+				sl.ServiceMeta = l.Href
+			case "service-doc":
+				sl.ServiceDoc = l.Href
+			case "tag:bdp.dev,2026:rel/changes", "changes":
+				sl.Changes = l.Href
+			}
+		}
+		return sl
+	}
+	var sl bdp.ServiceLinks
+	_ = json.Unmarshal(raw, &sl) // ratified named-field object
 	return sl
 }
 
@@ -183,18 +209,28 @@ type wireAliasCaps struct {
 	Indexed bool `json:"indexed"`
 }
 
-// wireGuardCaps covers patch/delete, whose wire keys are the HTTP header names.
+// wireGuardCaps (patch/delete) is DUAL-FORM: the ratified cap name is
+// `ifRevision`; cleanroom-v023 emits the HTTP header name `ifMatch`. Accept both.
 type wireGuardCaps struct {
-	IfMatch      bool `json:"ifMatch"`
+	IfRevision   bool `json:"ifRevision"` // ratified
+	IfMatch      bool `json:"ifMatch"`    // clean-room (If-Match header name)
 	Precondition bool `json:"precondition"`
 }
 
-// wirePutCaps is wireGuardCaps plus the put-only ifNoneMatch (ifAbsent) guard.
+func (w wireGuardCaps) ifRevision() bool { return w.IfRevision || w.IfMatch }
+
+// wirePutCaps adds the put-only create-if-absent guard — ratified `ifAbsent`,
+// clean-room `ifNoneMatch` (If-None-Match). Dual-form like wireGuardCaps.
 type wirePutCaps struct {
+	IfRevision   bool `json:"ifRevision"`
 	IfMatch      bool `json:"ifMatch"`
+	IfAbsent     bool `json:"ifAbsent"`
 	IfNoneMatch  bool `json:"ifNoneMatch"`
 	Precondition bool `json:"precondition"`
 }
+
+func (w wirePutCaps) ifRevision() bool { return w.IfRevision || w.IfMatch }
+func (w wirePutCaps) ifAbsent() bool   { return w.IfAbsent || w.IfNoneMatch }
 
 func (w wireCapabilitiesDoc) toBDP() (bdp.Capabilities, error) {
 	ops, err := decodeCoreOps(w.Core)
@@ -261,17 +297,17 @@ func foldCore(ops map[string]json.RawMessage) bdp.CoreCapabilities {
 		case "put":
 			var v wirePutCaps
 			if json.Unmarshal(raw, &v) == nil {
-				c.Put = &bdp.PutCaps{IfRevision: v.IfMatch, IfAbsent: v.IfNoneMatch, Precondition: v.Precondition}
+				c.Put = &bdp.PutCaps{IfRevision: v.ifRevision(), IfAbsent: v.ifAbsent(), Precondition: v.Precondition}
 			}
 		case "patch":
 			var v wireGuardCaps
 			if json.Unmarshal(raw, &v) == nil {
-				c.Patch = &bdp.PatchCaps{IfRevision: v.IfMatch, Precondition: v.Precondition}
+				c.Patch = &bdp.PatchCaps{IfRevision: v.ifRevision(), Precondition: v.Precondition}
 			}
 		case "delete":
 			var v wireGuardCaps
 			if json.Unmarshal(raw, &v) == nil {
-				c.Delete = &bdp.DeleteCaps{IfRevision: v.IfMatch, Precondition: v.Precondition}
+				c.Delete = &bdp.DeleteCaps{IfRevision: v.ifRevision(), Precondition: v.Precondition}
 			}
 		case "revisions":
 			c.Revisions = &bdp.RevisionsCaps{}

@@ -152,6 +152,49 @@ func TestCapabilitiesRecordForm(t *testing.T) {
 	}
 }
 
+// The decoder must also accept the fully RATIFIED forms (Lydia's 2026-11-25
+// ruling: ratified is canonical, clean-room to be reshaped): ServiceDescriptor
+// with `version` + a named-field `links` OBJECT + `revision`, and capabilities
+// with the semantic guard cap names `ifRevision`/`ifAbsent`.
+func TestDiscoverRatifiedForms(t *testing.T) {
+	const ratifiedDesc = `{
+      "version": "0.2.3",
+      "revision": "acb7aa67",
+      "base": "http://example.test",
+      "links": {"serviceMeta": "/sys/capabilities", "serviceDesc": "/bdp/openapi", "changes": "/sys/changes"}
+    }`
+	const ratifiedCaps = `{
+      "core": {
+        "get": {"selector": false},
+        "put": {"ifRevision": true, "ifAbsent": true, "precondition": false},
+        "delete": {"ifRevision": true, "precondition": true}
+      },
+      "scope": {"storageClasses": ["durable"], "revisionModel": "versioned", "idModel": "permanent"}
+    }`
+	srv := discoveryServer(t, ratifiedDesc, ratifiedCaps)
+	s := bdpclient.New(srv.URL)
+
+	desc, caps, err := s.Discover(context.Background())
+	if err != nil {
+		t.Fatalf("Discover: %v", err)
+	}
+	if desc.Version != "0.2.3" {
+		t.Errorf("Version = %q, want 0.2.3 (ratified `version` key)", desc.Version)
+	}
+	if desc.Revision != "acb7aa67" {
+		t.Errorf("Revision = %q, want acb7aa67", desc.Revision)
+	}
+	if desc.Links.ServiceMeta != "/sys/capabilities" || desc.Links.Changes != "/sys/changes" {
+		t.Errorf("ratified links object did not fold: %+v", desc.Links)
+	}
+	if caps.Core.Put == nil || !caps.Core.Put.IfRevision || !caps.Core.Put.IfAbsent {
+		t.Errorf("ratified guard cap names did not decode: %+v", caps.Core.Put)
+	}
+	if caps.Core.Delete == nil || !caps.Core.Delete.IfRevision || !caps.Core.Delete.Precondition {
+		t.Errorf("ratified delete caps wrong: %+v", caps.Core.Delete)
+	}
+}
+
 // Version negotiation refuses an incompatible minor, and nothing is attached.
 func TestDiscoverRejectsIncompatibleVersion(t *testing.T) {
 	srv := discoveryServer(t, `{"bdp":"0.3.0","links":[]}`, capsArrayForm)
