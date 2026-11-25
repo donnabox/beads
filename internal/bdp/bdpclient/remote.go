@@ -54,28 +54,15 @@ func NewWithClient(base string, client *http.Client) *RemoteScope {
 
 var _ bdp.Scope = (*RemoteScope)(nil)
 
-// Capabilities advertises the primitives this spike client maps and the
-// scope-wide traits it knows. On the wire the spec reads discovery as a get of
-// the well-known /sys/capabilities resource; this spike returns a STATIC
-// advertisement instead, because the clean-room server does not yet serve that
-// resource in a merged shape. The clean-room store is versioned — writes mint
-// pinned revs — so RevisionModel is versioned. Fetching /sys/capabilities live
-// is the follow-up once the server grows it (see package bdp SPELUNK.md).
-func (c *RemoteScope) Capabilities(context.Context) (bdp.Capabilities, error) {
-	return bdp.Capabilities{
-		Core: bdp.CoreCapabilities{
-			Get:    bdp.GetCaps{},
-			Create: &bdp.CreateCaps{ClientProposedID: true, ServerAllocatesID: true},
-			Put:    &bdp.PutCaps{IfRevision: true},
-			Patch:  &bdp.PatchCaps{IfRevision: true},
-			Delete: &bdp.DeleteCaps{IfRevision: true},
-		},
-		Scope: bdp.ScopeCapabilities{
-			StorageClasses: []bdp.StorageClass{bdp.StorageClassDurable},
-			RevisionModel:  bdp.RevisionModelVersioned,
-			IdModel:        bdp.IdModelPermanent,
-		},
-	}, nil
+// Capabilities reads discovery LIVE — a get of the well-known /sys/capabilities
+// resource (core.lumen §Capabilities), decoded through the wire-DTO layer
+// (discovery.go), which absorbs the clean-room's documented shape divergences
+// from the ratified document. A caller reads it once and relies on it: a
+// primitive is offered iff its capability is present. See [RemoteScope.Discover]
+// for the full connect-time conformance handshake (descriptor + negotiation +
+// capabilities).
+func (c *RemoteScope) Capabilities(ctx context.Context) (bdp.Capabilities, error) {
+	return c.fetchCapabilities(ctx)
 }
 
 // Get resolves ref to its representation. GET /{id} (+ ?revision=). The selector
@@ -99,7 +86,9 @@ func (c *RemoteScope) Get(ctx context.Context, ref bdp.ResourceID, _ *bdp.Select
 	return rep, nil
 }
 
-// Create admits a new bead (POST /) and returns its pinned reference.
+// Create admits a new bead and returns its pinned reference. The rc2 create
+// route is POST /-/create under the action fence — bare POST / is not create,
+// and bare GET / is now the ServiceDescriptor (core.lumen §create).
 func (c *RemoteScope) Create(ctx context.Context, in bdp.CreateInput) (bdp.ResourceID, error) {
 	req := wireCreateRequest{
 		Kind:       kindOf(in.Type),
@@ -110,7 +99,7 @@ func (c *RemoteScope) Create(ctx context.Context, in bdp.CreateInput) (bdp.Resou
 	if id := proposedID(in.ID); id != "" {
 		req.ID = &wireResourceID{ID: id}
 	}
-	return c.write(ctx, http.MethodPost, "/", req, "", bdp.ResourceID{ID: proposedID(in.ID)})
+	return c.write(ctx, http.MethodPost, "/-/create", req, "", bdp.ResourceID{ID: proposedID(in.ID)})
 }
 
 // Put is the idempotent full-state write (PUT /{id}) and returns the written

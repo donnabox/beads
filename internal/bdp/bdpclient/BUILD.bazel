@@ -3,6 +3,7 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "bdpclient",
     srcs = [
+        "discovery.go",
         "remote.go",
         "wire.go",
     ],
@@ -13,25 +14,15 @@ go_library(
 
 go_test(
     name = "bdpclient_test",
-    srcs = ["smoke_test.go"],
+    srcs = [
+        "discovery_test.go",
+        "smoke_test.go",
+    ],
     deps = [
         ":bdpclient",
         "//internal/bdp",
     ],
 )
-
-# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
-
-filegroup(
-    name = "go_srcs",
-    srcs = glob(
-        ["**/*.go"],
-        allow_empty = True,
-    ),
-    visibility = ["//:__subpackages__"],
-)
-
-# --- end go_srcs ---
 
 # --- begin repo_files (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
 
