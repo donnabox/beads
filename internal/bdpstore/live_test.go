@@ -109,6 +109,33 @@ func TestBDPStoreCRUDAgainstCleanroom(t *testing.T) {
 		}
 	}
 
+	// Default exclusion: a CLOSED issue is hidden by an unfiltered list and shown
+	// under AllFlag. Closed-ness is read off closedAt, NOT the status string — the
+	// issue below has status "open" but closedAt set, so it must read as closed.
+	closedID := id + "-closed"
+	closedAt := time.Now().UTC()
+	if _, err := lifecycle.Create(ctx, issueops.CreateRequest{
+		Actor: "sheila",
+		Issue: &types.Issue{ID: closedID, Title: "done", Status: types.Status("open"), ClosedAt: &closedAt, IssueType: types.IssueType("task")},
+	}); err != nil {
+		t.Fatalf("Create(closed): %v", err)
+	}
+	defaultList, err := reader.List(ctx, issueops.ListRequest{})
+	if err != nil {
+		t.Fatalf("List(default): %v", err)
+	}
+	if containsIssue(defaultList.Items, closedID) {
+		t.Error("default list should EXCLUDE a closed issue (closedAt set, despite status \"open\")")
+	}
+	allList, err := reader.List(ctx, issueops.ListRequest{AllFlag: true})
+	if err != nil {
+		t.Fatalf("List(AllFlag): %v", err)
+	}
+	if !containsIssue(allList.Items, closedID) {
+		t.Error("AllFlag list should INCLUDE the closed issue")
+	}
+	_, _ = deleter.Delete(ctx, issueops.DeleteRequest{Actor: "sheila", IDs: []string{closedID}})
+
 	// A missing issue maps the BDP fault onto issueops.ErrNotFound.
 	if _, err := reader.Get(ctx, issueops.GetRequest{ID: "absent-" + id}); !errors.Is(err, issueops.ErrNotFound) {
 		t.Errorf("Get missing: err = %v, want ErrNotFound", err)
@@ -125,4 +152,13 @@ func TestBDPStoreCRUDAgainstCleanroom(t *testing.T) {
 	if _, err := reader.Get(ctx, issueops.GetRequest{ID: id}); !errors.Is(err, issueops.ErrNotFound) {
 		t.Errorf("Get after delete: err = %v, want ErrNotFound", err)
 	}
+}
+
+func containsIssue(items []*types.IssueWithCounts, id string) bool {
+	for _, it := range items {
+		if it.ID == id {
+			return true
+		}
+	}
+	return false
 }

@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/steveyegge/beads/beadserrors"
 	"github.com/steveyegge/beads/internal/bdp"
@@ -122,10 +123,9 @@ func (r bdpReader) Ready(context.Context, issueops.ReadyRequest) (issueops.Issue
 // root-addressed Compare on the body ([pushableFilter]); [matchesList] then
 // re-applies the full filter client-side as the authoritative backstop, so the
 // push-down is a pure optimization (it narrows the hydration set) and a comma-OR
-// set — not flat-AND-expressible — is still honored client-side. Slice
-// limitation (documented, not silent): beads' DEFAULT status exclusions are NOT
-// replicated, so an unset Status lists every current resource; full parity waits
-// on the query/ready roles.
+// set — not flat-AND-expressible — is still honored client-side. When no Status
+// filter is given, the DEFAULT exclusion ([matchesList]) shows only open work,
+// read off closedAt/deferUntil per Lydia's ruling (provisional); AllFlag lifts it.
 func (r bdpReader) List(ctx context.Context, req issueops.ListRequest) (issueops.IssuePage, error) {
 	limit := 0
 	if req.Limit != nil {
@@ -159,16 +159,33 @@ func (r bdpReader) List(ctx context.Context, req issueops.ListRequest) (issueops
 	return issueops.IssuePage{Items: items}, nil
 }
 
-// matchesList applies the explicit Status / IssueType filters client-side (each
-// a comma-OR set); an unset filter matches everything.
+// matchesList applies the list filters client-side. An explicit Status /
+// IssueType filter is a comma-OR set. When NO explicit Status filter is given
+// (and not AllFlag), the default exclusion applies — show only OPEN work. Per
+// Lydia's ruling (2026-11-26), "open" is read off closedAt/deferUntil, NOT the
+// free-text status string (a provider label). PROVISIONAL (Donna-to-confirm in
+// the issue pack) and isolated in issueOpen so a flip is a one-liner.
 func matchesList(iss *types.Issue, req issueops.ListRequest) bool {
-	if req.Status != "" && !inCSV(string(iss.Status), req.Status) {
+	if req.Status != "" {
+		if !inCSV(string(iss.Status), req.Status) {
+			return false
+		}
+	} else if !req.AllFlag && !issueOpen(iss, time.Now()) {
 		return false
 	}
 	if req.IssueType != "" && !inCSV(string(iss.IssueType), req.IssueType) {
 		return false
 	}
 	return true
+}
+
+// issueOpen reports whether an issue is open — closedAt unset and not currently
+// deferred. The closed/deferred signal is read off closedAt/deferUntil, not the
+// status string (Lydia's ruling 2026-11-26). PROVISIONAL (Donna-to-confirm).
+func issueOpen(iss *types.Issue, now time.Time) bool {
+	closed := iss.ClosedAt != nil
+	deferred := iss.DeferUntil != nil && iss.DeferUntil.After(now)
+	return !closed && !deferred
 }
 
 func inCSV(val, csv string) bool {
