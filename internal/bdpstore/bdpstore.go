@@ -46,6 +46,10 @@ func (s *Store) IssueLifecycle() (issueops.Lifecycle, error) { return bdpLifecyc
 // Deleter returns the delete role.
 func (s *Store) Deleter() (issueops.Deleter, error) { return bdpDeleter{s}, nil }
 
+// Heartbeater returns the lease-liveness role (mapped onto `call issue/heartbeat`
+// in lifecycle.go).
+func (s *Store) Heartbeater() (issueops.Heartbeater, error) { return bdpHeartbeater{s}, nil }
+
 func (s *Store) unsupported(op string) error {
 	return &beadserrors.ErrUnsupported{Op: op, Backend: "bdp adapter"}
 }

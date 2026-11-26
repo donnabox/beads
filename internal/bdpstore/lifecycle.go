@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/steveyegge/beads/internal/bdp"
 	"github.com/steveyegge/beads/internal/types"
@@ -11,25 +12,24 @@ import (
 )
 
 // This file maps the beads issueops LIFECYCLE state machine onto BDP Core `call`
-// of issue-pack operations — Lydia's ruling (2026-11-26): claim/close/reopen are
-// issue-pack CALLABLES invoked via `call`, NOT patch (the lease/heartbeat fields
-// are serviceManaged = read-only to patch, and claimIssue carries a declared
-// domain refusal patch cannot). A declared failure rides Outcome.failure (409);
-// the client reconstructs the issueops domain error from it.
+// of issue-pack callables — Lydia's ruling (2026-11-26), confirmed against the
+// GENERATED catalog specs/generated/callables/issue.callables.json (vendored at
+// third_party/bdp/spec/issue.callables.json). Dedicated callables are REQUIRED:
+// generic update cannot express claim/heartbeat, because the lease state is
+// serviceManaged (update-forbidden) and claim/heartbeat/close each carry a
+// declared domain refusal a generic update cannot carry — the same reason patch
+// was ruled out.
 //
-// EVERYTHING HERE IS PROVISIONAL and NOT live-validated, flagged to Lydia/Britt:
-//   - The operation element PATHS below are not pinned in core.lumen, the issue
-//     pack, or the clean-room — the vendored issue-package catalog even uses
-//     createBead/updateBead verbs, not these. Isolated so a flip is a one-liner.
-//   - The call argument names and the failure-error schema (the `code`) are
-//     likewise unspecified in-repo; derived from the Go request structs.
-//   - cleanroom-v023 offers NO call at all, so none of this is live-validated —
-//     only mock-server tests. Proving it needs a call-offering, issue-pack
-//     server (cross-track dependency).
+// Pinned paths (each a `call` callable returning rep<Issue> with a declared
+// error). The acting principal rides in provenance, NEVER as a parameter.
+//
+// STILL MOCK-ONLY: cleanroom-v023 offers no `call`, so none of this is
+// live-validated — proving it needs Track B's call-offering, issue-pack server.
 const (
-	opClaimIssue = "issueops/claimIssue"
-	opCloseIssue = "issueops/closeIssue"
-	opReopen     = "issueops/reopenIssue"
+	opClaim     = "issue/claim"     // claimIssue   — ClaimError
+	opClose     = "issue/close"     // closeIssue   — CloseError
+	opReopen    = "issue/reopen"    // reopenIssue
+	opHeartbeat = "issue/heartbeat" // heartbeatIssue — HeartbeatError
 )
 
 // arg builds one named call argument, JSON-encoding v.
@@ -38,17 +38,31 @@ func arg(name string, v any) bdp.Argument {
 	return bdp.Argument{Name: name, Value: b}
 }
 
-// callOp invokes op with args and returns the settled Outcome (a pre-dispatch
-// fault or transport failure comes back as the error).
-func (s *Store) callOp(ctx context.Context, op string, args ...bdp.Argument) (bdp.Outcome, error) {
-	reply, err := s.scope.Call(ctx, bdp.ResourceID{ID: op}, bdp.Request{Arguments: args})
+// actorProvenance carries the acting principal in the request provenance, where
+// the issue-pack callables read the actor from (never a parameter). The
+// principal shape is provisional.
+func actorProvenance(actor string) *bdp.Provenance {
+	if actor == "" {
+		return nil
+	}
+	p, _ := json.Marshal(map[string]string{"id": actor})
+	return &bdp.Provenance{Principals: []bdp.Principal{bdp.Principal(p)}}
+}
+
+// callOp invokes op with the actor in provenance and args, returning the settled
+// Outcome (a pre-dispatch fault / transport failure comes back as the error).
+func (s *Store) callOp(ctx context.Context, op, actor string, args ...bdp.Argument) (bdp.Outcome, error) {
+	reply, err := s.scope.Call(ctx, bdp.ResourceID{ID: op}, bdp.Request{
+		Arguments:  args,
+		Provenance: actorProvenance(actor),
+	})
 	if err != nil {
 		return bdp.Outcome{}, err
 	}
 	return reply.Outcome, nil
 }
 
-// issueFromOutcome decodes a lifecycle call's success value as the post-op Issue.
+// issueFromOutcome decodes a callable's rep<Issue> success value as an Issue.
 func issueFromOutcome(o bdp.Outcome) (*types.Issue, error) {
 	var iss types.Issue
 	if len(o.Value) > 0 {
@@ -59,7 +73,8 @@ func issueFromOutcome(o bdp.Outcome) (*types.Issue, error) {
 	return &iss, nil
 }
 
-// failureCode pulls the provisional `code` discriminator from an Outcome.failure.
+// failureCode pulls the provisional `code` discriminator from an Outcome.failure
+// (the declared error's internal schema is not pinned in the catalog yet).
 func failureCode(o bdp.Outcome) string {
 	var e struct {
 		Code string `json:"code"`
@@ -68,16 +83,13 @@ func failureCode(o bdp.Outcome) string {
 	return e.Code
 }
 
-// Close retires an issue via `call issueops/closeIssue`.
+// Close closes an issue via `call issue/close` (params: issue, closeReason).
 func (l bdpLifecycle) Close(ctx context.Context, req issueops.CloseRequest) (issueops.CloseResult, error) {
-	args := []bdp.Argument{arg("issue", req.IssueID), arg("actor", req.Actor)}
+	args := []bdp.Argument{arg("issue", req.IssueID)}
 	if req.Reason != "" {
-		args = append(args, arg("reason", req.Reason))
+		args = append(args, arg("closeReason", req.Reason))
 	}
-	if req.Force {
-		args = append(args, arg("force", true))
-	}
-	o, err := l.s.callOp(ctx, opCloseIssue, args...)
+	o, err := l.s.callOp(ctx, opClose, req.Actor, args...)
 	if err != nil {
 		return issueops.CloseResult{}, err
 	}
@@ -95,14 +107,14 @@ func (l bdpLifecycle) Close(ctx context.Context, req issueops.CloseRequest) (iss
 	}
 }
 
-// Update maps ONLY the claim state-machine path (Claim) onto `call
-// issueops/claimIssue`. Plain field edits (Patch) are not the state machine and
-// are a separate question (Core put/patch of body fields), left unsupported here.
+// Update maps ONLY the claim state-machine path (Claim) onto `call issue/claim`
+// (param: issue; actor in provenance). Plain field edits (Patch) are not the
+// state machine — a separate Core put/patch question — and stay unsupported.
 func (l bdpLifecycle) Update(ctx context.Context, req issueops.UpdateRequest) (issueops.UpdateResult, error) {
 	if !req.Claim {
 		return issueops.UpdateResult{}, l.s.unsupported("update (non-claim field edit)")
 	}
-	o, err := l.s.callOp(ctx, opClaimIssue, arg("issue", req.IssueID), arg("actor", req.Actor))
+	o, err := l.s.callOp(ctx, opClaim, req.Actor, arg("issue", req.IssueID))
 	if err != nil {
 		return issueops.UpdateResult{}, err
 	}
@@ -120,13 +132,13 @@ func (l bdpLifecycle) Update(ctx context.Context, req issueops.UpdateRequest) (i
 	}
 }
 
-// Reopen moves a closed issue back to open via `call issueops/reopenIssue`.
+// Reopen reopens a closed issue via `call issue/reopen` (params: issue, reason).
 func (l bdpLifecycle) Reopen(ctx context.Context, req issueops.ReopenRequest) (issueops.ReopenResult, error) {
-	args := []bdp.Argument{arg("issue", req.IssueID), arg("actor", req.Actor)}
+	args := []bdp.Argument{arg("issue", req.IssueID)}
 	if req.Reason != "" {
 		args = append(args, arg("reason", req.Reason))
 	}
-	o, err := l.s.callOp(ctx, opReopen, args...)
+	o, err := l.s.callOp(ctx, opReopen, req.Actor, args...)
 	if err != nil {
 		return issueops.ReopenResult{}, err
 	}
@@ -144,9 +156,56 @@ func (l bdpLifecycle) Reopen(ctx context.Context, req issueops.ReopenRequest) (i
 	}
 }
 
-// claimFailure reconstructs the issueops claim refusal from Outcome.failure. The
-// ruling: ClaimError (already-claimed | not-claimable/closed) → 409. The failure
-// `code` schema is provisional.
+// --- Heartbeater (a role of its own, not Lifecycle) ---
+
+type bdpHeartbeater struct{ s *Store }
+
+var _ issueops.Heartbeater = bdpHeartbeater{}
+
+// heartbeatValue is the provisional success shape of `call issue/heartbeat` (its
+// return schema is not pinned in the catalog beyond rep<Issue>).
+type heartbeatValue struct {
+	IssueID        string    `json:"issueId"`
+	Holder         string    `json:"holder"`
+	HeartbeatAt    time.Time `json:"heartbeatAt"`
+	LeaseExpiresAt time.Time `json:"leaseExpiresAt"`
+	Rearmed        bool      `json:"rearmed"`
+}
+
+// Heartbeat proves lease liveness via `call issue/heartbeat` (param: issue).
+func (h bdpHeartbeater) Heartbeat(ctx context.Context, req issueops.HeartbeatRequest) (issueops.HeartbeatResult, error) {
+	o, err := h.s.callOp(ctx, opHeartbeat, req.Actor, arg("issue", req.IssueID))
+	if err != nil {
+		return issueops.HeartbeatResult{}, err
+	}
+	switch o.Kind {
+	case bdp.OutcomeSuccess:
+		var v heartbeatValue
+		if len(o.Value) > 0 {
+			if err := json.Unmarshal(o.Value, &v); err != nil {
+				return issueops.HeartbeatResult{}, fmt.Errorf("bdpstore: decode heartbeat result: %w", err)
+			}
+		}
+		if v.IssueID == "" {
+			v.IssueID = req.IssueID
+		}
+		return issueops.HeartbeatResult{
+			IssueID:        v.IssueID,
+			Holder:         v.Holder,
+			HeartbeatAt:    v.HeartbeatAt,
+			LeaseExpiresAt: v.LeaseExpiresAt,
+			Rearmed:        v.Rearmed,
+		}, nil
+	case bdp.OutcomeFailure:
+		return issueops.HeartbeatResult{}, heartbeatFailure(req.IssueID, o)
+	default:
+		return issueops.HeartbeatResult{}, fmt.Errorf("bdpstore: heartbeatIssue returned a %q outcome", o.Kind)
+	}
+}
+
+// --- declared-failure → issueops domain error reconstruction ---
+
+// claimFailure reconstructs the issueops claim refusal (ClaimError → 409).
 func claimFailure(issueID string, o bdp.Outcome) error {
 	var e struct {
 		Code     string `json:"code"`
@@ -160,8 +219,21 @@ func claimFailure(issueID string, o bdp.Outcome) error {
 	return &issueops.ClaimConflictError{IssueID: issueID, Assignee: e.Assignee, Err: sentinel}
 }
 
-// closeFailure maps a close refusal `code` onto its issueops sentinel (so
-// errors.Is classifies it); the typed-struct detail is dropped at this boundary.
+// heartbeatFailure reconstructs the issueops lease refusal (HeartbeatError → 409).
+func heartbeatFailure(issueID string, o bdp.Outcome) error {
+	var e struct {
+		Code   string `json:"code"`
+		Holder string `json:"holder"`
+	}
+	_ = json.Unmarshal(o.Error, &e)
+	sentinel := issueops.ErrLeaseNotHeld
+	if e.Code == "already-claimed" {
+		sentinel = issueops.ErrAlreadyClaimed
+	}
+	return &issueops.LeaseConflictError{IssueID: issueID, Holder: e.Holder, Err: sentinel}
+}
+
+// closeFailure maps a close refusal `code` onto its issueops sentinel.
 func closeFailure(issueID, code string) error {
 	switch code {
 	case "open-children":
