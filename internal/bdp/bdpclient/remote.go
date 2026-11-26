@@ -66,28 +66,34 @@ func (c *RemoteScope) Capabilities(ctx context.Context) (bdp.Capabilities, error
 	return c.fetchCapabilities(ctx)
 }
 
-// List reads a window of a namespace's current resources — GET /-/list (+ paging
-// query). NOTE: the clean-room's list returns a Page of IDS, not full
-// representations, so the returned Representations carry only their ID (Body
-// empty); a caller that needs the bodies resolves each with Get. Server-side
-// filter push-down is not yet wired, so a non-empty filter faults rather than be
-// silently dropped — filter client-side until push-down lands.
+// List reads a window of a namespace's current resources — GET /-/list, with the
+// filter pushed to the server as the `where=` query and paging as after/limit.
+// NOTE: the clean-room's list returns a Page of IDS, not full representations, so
+// the returned Representations carry only their ID (Body empty); a caller that
+// needs the bodies resolves each with Get. The filter is the flat-AND low bar:
+// each condition is a root-addressed Compare (see toWireConditions); a server
+// that cannot evaluate a condition faults, which surfaces here rather than being
+// silently widened.
 func (c *RemoteScope) List(ctx context.Context, _ bdp.Namespace, where bdp.ListFilter, _ *bdp.Selector, req *bdp.ReadRequest) (bdp.Page[bdp.Representation], error) {
+	var params []string
 	if len(where) > 0 {
-		return bdp.Page[bdp.Representation]{}, fmt.Errorf("bdpclient: list filter push-down not yet implemented; apply the filter client-side")
+		wj, err := json.Marshal(toWireConditions(where))
+		if err != nil {
+			return bdp.Page[bdp.Representation]{}, fmt.Errorf("bdpclient: encode list filter: %w", err)
+		}
+		params = append(params, "where="+queryEscape(string(wj)))
 	}
-	q := url.Values{}
 	if req != nil {
 		if req.After != "" {
-			q.Set("after", string(req.After))
+			params = append(params, "after="+queryEscape(string(req.After)))
 		}
 		if req.Limit > 0 {
-			q.Set("limit", strconv.Itoa(req.Limit))
+			params = append(params, "limit="+strconv.Itoa(req.Limit))
 		}
 	}
 	path := "/-/list"
-	if enc := q.Encode(); enc != "" {
-		path += "?" + enc
+	if len(params) > 0 {
+		path += "?" + strings.Join(params, "&")
 	}
 	resp, body, err := c.do(ctx, http.MethodGet, path, nil, nil)
 	if err != nil {
@@ -270,6 +276,14 @@ func (c *RemoteScope) do(ctx context.Context, method, path string, body []byte, 
 		return nil, nil, fmt.Errorf("bdpclient: read body: %w", err)
 	}
 	return resp, data, nil
+}
+
+// queryEscape percent-encodes a query VALUE with %20 for spaces, per RFC 3986.
+// url.Values.Encode()/url.QueryEscape emit "+" for a space, but the BDP server
+// percent-decodes only (a "+" stays a literal "+"), so a filter value with a
+// space must be %20-encoded or it silently mismatches (or breaks JSON parsing).
+func queryEscape(s string) string {
+	return strings.ReplaceAll(url.QueryEscape(s), "+", "%20")
 }
 
 func (c *RemoteScope) resourcePath(ref bdp.ResourceID) string {

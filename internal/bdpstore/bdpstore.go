@@ -118,17 +118,20 @@ func (r bdpReader) Ready(context.Context, issueops.ReadyRequest) (issueops.Issue
 // List lists the scope's current resources and hydrates each into an Issue. The
 // clean-room's list returns ids only, so each id is resolved with Get.
 //
-// Slice limitations (documented, not silent): server-side filter push-down is
-// not yet wired, so an explicit Status / IssueType filter is applied
-// CLIENT-SIDE here, and beads' DEFAULT status exclusions are NOT replicated — an
-// unset Status lists every current resource. Full filter parity waits on
-// server-side push-down and the query/ready roles.
+// A single-value Status / IssueType filter is PUSHED DOWN to the server as a
+// root-addressed Compare on the body ([pushableFilter]); [matchesList] then
+// re-applies the full filter client-side as the authoritative backstop, so the
+// push-down is a pure optimization (it narrows the hydration set) and a comma-OR
+// set — not flat-AND-expressible — is still honored client-side. Slice
+// limitation (documented, not silent): beads' DEFAULT status exclusions are NOT
+// replicated, so an unset Status lists every current resource; full parity waits
+// on the query/ready roles.
 func (r bdpReader) List(ctx context.Context, req issueops.ListRequest) (issueops.IssuePage, error) {
 	limit := 0
 	if req.Limit != nil {
 		limit = *req.Limit
 	}
-	page, err := r.s.scope.List(ctx, bdp.Namespace{}, nil, nil, nil)
+	page, err := r.s.scope.List(ctx, bdp.Namespace{}, pushableFilter(req), nil, nil)
 	if err != nil {
 		return issueops.IssuePage{}, err
 	}
@@ -175,6 +178,36 @@ func inCSV(val, csv string) bool {
 		}
 	}
 	return false
+}
+
+// pushableFilter is the subset of the list filter expressible as a flat-AND of
+// single-value Compare conditions the BDP server can evaluate (root-addressed
+// body fields). A comma-OR set is not flat-AND-expressible, so it is omitted
+// here and left to the matchesList client-side backstop.
+func pushableFilter(req issueops.ListRequest) bdp.ListFilter {
+	var f bdp.ListFilter
+	if v := singleValue(req.Status); v != "" {
+		f = append(f, bdp.ListCondition{Field: "body/status", Op: "eq", Value: jsonString(v)})
+	}
+	if v := singleValue(req.IssueType); v != "" {
+		f = append(f, bdp.ListCondition{Field: "body/issue_type", Op: "eq", Value: jsonString(v)})
+	}
+	return f
+}
+
+// singleValue returns a trimmed single filter value, or "" when the input is
+// unset or a comma-OR set (not pushable).
+func singleValue(csv string) string {
+	csv = strings.TrimSpace(csv)
+	if csv == "" || strings.Contains(csv, ",") {
+		return ""
+	}
+	return csv
+}
+
+func jsonString(s string) json.RawMessage {
+	b, _ := json.Marshal(s)
+	return b
 }
 
 // --- Lifecycle ---

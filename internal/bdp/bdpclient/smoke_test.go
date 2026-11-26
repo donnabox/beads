@@ -109,6 +109,24 @@ func TestSmokeAgainstCleanroomServer(t *testing.T) {
 		t.Errorf("Put rev = %q, want a fresh rev (!= %q)", putRef.Rev, createRef.Rev)
 	}
 
+	// 4b) LIST with a SERVER-SIDE filter → confirm the clean-room evaluates
+	//     body-field Compare conditions (the push-down finding). After the put,
+	//     note-1's body/title is "hello again".
+	hit, err := s.List(ctx, bdp.Namespace{}, bdp.ListFilter{{Field: "body/title", Op: "eq", Value: json.RawMessage(`"hello again"`)}}, nil, nil)
+	if err != nil {
+		t.Fatalf("List(matching filter): %v", err)
+	}
+	if !containsID(hit.Items, "note-1") {
+		t.Error("server-side filter body/title=\"hello again\" should include note-1")
+	}
+	miss, err := s.List(ctx, bdp.Namespace{}, bdp.ListFilter{{Field: "body/title", Op: "eq", Value: json.RawMessage(`"no-such-title"`)}}, nil, nil)
+	if err != nil {
+		t.Fatalf("List(non-matching filter): %v", err)
+	}
+	if containsID(miss.Items, "note-1") {
+		t.Error("server-side filter should EXCLUDE note-1 for a non-matching title — clean-room is not filtering body fields")
+	}
+
 	// 5) GET a missing resource → ErrNotFound, classifiable with errors.Is.
 	_, err = s.Get(ctx, bdp.ResourceID{ID: "does-not-exist"}, nil)
 	if !errors.Is(err, bdp.ErrNotFound) {
@@ -143,4 +161,13 @@ func TestSmokeAgainstCleanroomServer(t *testing.T) {
 	if err == nil {
 		t.Error("Call should fault (unmapped primitive)")
 	}
+}
+
+func containsID(items []bdp.Representation, id string) bool {
+	for _, it := range items {
+		if it.ID.ID == id {
+			return true
+		}
+	}
+	return false
 }
