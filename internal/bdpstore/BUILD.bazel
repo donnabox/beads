@@ -12,6 +12,7 @@ go_library(
         "//issueops",
     ],
 )
+
 go_test(
     name = "bdpstore_test",
     srcs = ["live_test.go"],
