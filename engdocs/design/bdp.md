@@ -82,10 +82,11 @@ release.
 
 The pin moves only in a pin-bump PR approved by Julian Knutsen.
 
-- **Target.** An annotated bdp tag under `spec/` (for example
-  `spec/sprint1-20261109` or `spec/v0.1`) whose commit is reachable from
+- **Target.** An annotated bdp tag in the `bdp-<pack>-*` checkpoint scheme
+  (for example `bdp-core-0.2.3-rc2`) whose commit is reachable from
   gastownhall/bdp `main`, as `scripts/bdp-vendor.sh` enforces. Never a
-  branch tip, a fork, a lightweight tag or an untagged commit.
+  branch tip, a fork, a lightweight tag, an untagged commit, or an umbrella
+  `bdp-<version>` tag (for example `bdp-0.2.1`) that names no pack.
 - **Forward only.** The new commit descends from the current one on bdp
   `main`. Reverting a bump PR, for example to clear a red main, restores the
   previous pin and is not a backward bump.
@@ -93,11 +94,10 @@ The pin moves only in a pin-bump PR approved by Julian Knutsen.
   checkpoint, and only the beads changes the new checkpoint requires. A
   change to shared code lands first, in its own PR.
 - **specRevision.** The last commit at or before the pinned commit that
-  changed `specs/profiles/core/core.md`, `specs/profiles/write/write.md`,
-  `specs/profiles/types/types.md` or `specs/profiles/events/events.md`.
-  bdp's `scripts/canonical-spec-revision.mjs` computes it the same way: a
-  plain `git log -1` over those four files, not `--first-parent`, so it can
-  be a merge inside a PR branch. It can differ from the pinned commit. The
+  changed `specs/src/core/core.lumen` or `specs/src/bdp.md`. bdp's
+  `scripts/canonical-spec-revision.mjs` computes it the same way: a plain
+  `git log -1` over those two files, not `--first-parent`, so it can be a
+  merge inside a PR branch. It can differ from the pinned commit. The
   vendored copy has no git history to recompute it, so the pin records it.
 - **What changed.** The PR lists the bdp changes between the two checkpoints
   that alter what `bd serve` or `bd connect` sends or accepts.
@@ -133,12 +133,14 @@ specRevision) without bdp's history, so the reviewer of every PR that
 touches `bdp.pin` runs `scripts/bdp-vendor.sh <bdp checkout> <tag> --check`
 against a full, freshly fetched clone of gastownhall/bdp.
 
-The copy holds only files with a named consumer: bdp's `LICENSE`, and the
-core response schema and two current catalogs that BDP's conformance tests
-(a later slice) will read. Until they land, nothing in beads reads the
-schema or the catalogs. A slice that adds a consumer of another bdp file
-adds the path to the script's list, with the consumer beside it, and reruns
-the script at the same pin. bdp's TypeScript, its v0 cumulative matrices,
+The copy holds only files with a named consumer: bdp's `LICENSE`, the
+generated `issue.callables.json` whose issue-lifecycle callable paths
+`internal/bdpstore/lifecycle.go` anchors to (landing with the `bd connect`
+track), and two current catalogs that BDP's conformance tests (a later
+slice) will read. Until those consumers land on `main`, nothing there reads
+the callables or the catalogs. A slice that adds a consumer of another bdp
+file adds the path to the script's list, with the consumer beside it, and
+reruns the script at the same pin. bdp's TypeScript, its v0 cumulative matrices,
 catalogs, development data and fixtures, and spec prose are not vendored:
 nothing in beads runs or reads them, and bdp's own `specs/conformance.md`
 says v0.1 inherits no pass from that matrix. The conformance tests' failure
@@ -146,8 +148,9 @@ messages will link to the spec at the pinned commit instead.
 
 **Re-pinning.** Run `scripts/bdp-vendor.sh <bdp checkout> <tag>` from a
 full (not shallow), freshly fetched clone of gastownhall/bdp, for a new
-annotated `spec/*` tag reachable from bdp `main`. It refuses a lightweight
-or non-`spec/*` tag, a commit not reachable from the checkout's
+annotated `bdp-<pack>-*` tag reachable from bdp `main`. It refuses a
+lightweight or non-`bdp-<pack>-*` tag, a commit not reachable from the
+checkout's
 `origin/main`, and a commit that does not descend from the current pin.
 `scripts/bdp-vendor.sh <bdp checkout> <tag> --check` verifies a tree
 without writing. It compares the tree with what `<tag>` generates and does

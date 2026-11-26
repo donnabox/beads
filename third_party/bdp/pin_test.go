@@ -30,8 +30,8 @@ const hint = "regenerate with scripts/bdp-vendor.sh <bdp checkout> <tag>, or und
 // SPEC_REVISION_RULE there.
 const (
 	pinRepository       = "https://github.com/gastownhall/bdp"
-	pinSpecRevisionRule = "git log -1 --format=%H <commit> -- specs/profiles/core/core.md specs/profiles/write/write.md " +
-		"specs/profiles/types/types.md specs/profiles/events/events.md (bdp scripts/canonical-spec-revision.mjs; not --first-parent)"
+	pinSpecRevisionRule = "git log -1 --format=%H <commit> -- specs/src/core/core.lumen specs/src/bdp.md " +
+		"(bdp scripts/canonical-spec-revision.mjs; not --first-parent)"
 )
 
 // pinKeys are the key/value lines bdp.pin carries, each exactly once and in
@@ -40,6 +40,15 @@ var pinKeys = []string{"repository", "tag", "tag-object", "commit", "spec-revisi
 
 var hex40 = regexp.MustCompile(`^[0-9a-f]{40}$`)
 var hex64 = regexp.MustCompile(`^[0-9a-f]{64}$`)
+
+// isCheckpointTag reports whether tag is in bdp's bdp-<pack>-* checkpoint tag
+// scheme (e.g. bdp-core-0.2.3-rc2), the same set scripts/bdp-vendor.sh's
+// `bdp-*-*` case gate accepts: a "bdp-" prefix followed by a pack segment and
+// at least one more "-". It excludes the umbrella bdp-<version> tags (e.g.
+// bdp-0.2.1), which carry no pack.
+func isCheckpointTag(tag string) bool {
+	return strings.HasPrefix(tag, "bdp-") && strings.Contains(strings.TrimPrefix(tag, "bdp-"), "-")
+}
 
 type pinFile struct {
 	path   string
@@ -124,8 +133,8 @@ func parsePin(data []byte) (*pin, []error) {
 	if v, ok := p.values["lock"]; ok && !hex64.MatchString(v) {
 		errs = append(errs, fmt.Errorf("bdp.pin: lock %q is not a 64-hex sha256", v))
 	}
-	if v, ok := p.values["tag"]; ok && !strings.HasPrefix(v, "spec/") {
-		errs = append(errs, fmt.Errorf("bdp.pin: tag %q is not a bdp checkpoint tag (spec/*)", v))
+	if v, ok := p.values["tag"]; ok && !isCheckpointTag(v) {
+		errs = append(errs, fmt.Errorf("bdp.pin: tag %q is not a bdp checkpoint tag (bdp-<pack>-*)", v))
 	}
 	if v, ok := p.values["repository"]; ok && v != pinRepository {
 		errs = append(errs, fmt.Errorf("bdp.pin: repository %q, want %q", v, pinRepository))
@@ -297,7 +306,7 @@ func writeTree(t *testing.T, files map[string]string) string {
 	dir := t.TempDir()
 	lines := []string{
 		"repository " + pinRepository,
-		"tag spec/test-20260101",
+		"tag bdp-core-test-20260101",
 		"tag-object " + strings.Repeat("a", 40),
 		"commit " + strings.Repeat("b", 40),
 		"spec-revision " + strings.Repeat("c", 40),
@@ -440,8 +449,8 @@ func TestCheckVendoredCatchesHandEdits(t *testing.T) {
 			editFile(t, filepath.Join(dir, "bdp.pin"), func(s string) string { return s + "branch main\n" })
 		}, "unknown key \"branch\""},
 		{"key lines reordered", func(t *testing.T, dir string) {
-			editPin(t, dir, "tag spec/test-20260101\ntag-object "+strings.Repeat("a", 40)+"\n",
-				"tag-object "+strings.Repeat("a", 40)+"\ntag spec/test-20260101\n")
+			editPin(t, dir, "tag bdp-core-test-20260101\ntag-object "+strings.Repeat("a", 40)+"\n",
+				"tag-object "+strings.Repeat("a", 40)+"\ntag bdp-core-test-20260101\n")
 		}, "not in the script's exact format"},
 		{"file lines reordered", func(t *testing.T, dir string) {
 			editFile(t, filepath.Join(dir, "bdp.pin"), func(s string) string {
@@ -455,10 +464,10 @@ func TestCheckVendoredCatchesHandEdits(t *testing.T) {
 			editPin(t, dir, " LICENSE\n", "  LICENSE\n")
 		}, "not in the script's exact format"},
 		{"trailing whitespace on a key line", func(t *testing.T, dir string) {
-			editPin(t, dir, "tag spec/test-20260101\n", "tag spec/test-20260101 \n")
+			editPin(t, dir, "tag bdp-core-test-20260101\n", "tag bdp-core-test-20260101 \n")
 		}, "not in the script's exact format"},
 		{"blank line among the values", func(t *testing.T, dir string) {
-			editPin(t, dir, "tag spec/test-20260101\n", "tag spec/test-20260101\n\n")
+			editPin(t, dir, "tag bdp-core-test-20260101\n", "tag bdp-core-test-20260101\n\n")
 		}, "is not a \"key value\" line"},
 		{"size written +12", func(t *testing.T, dir string) {
 			editFile(t, filepath.Join(dir, "bdp.pin"), func(s string) string {
@@ -478,8 +487,11 @@ func TestCheckVendoredCatchesHandEdits(t *testing.T) {
 		{"wrong rule string", func(t *testing.T, dir string) {
 			editPin(t, dir, "; not --first-parent)", "; --first-parent)")
 		}, "spec-revision-rule"},
-		{"tag not under spec/", func(t *testing.T, dir string) {
-			editPin(t, dir, "tag spec/test-20260101\n", "tag v1\n")
+		{"tag outside the bdp-<pack>-* scheme", func(t *testing.T, dir string) {
+			editPin(t, dir, "tag bdp-core-test-20260101\n", "tag v1\n")
+		}, "not a bdp checkpoint tag"},
+		{"umbrella tag with no pack segment", func(t *testing.T, dir string) {
+			editPin(t, dir, "tag bdp-core-test-20260101\n", "tag bdp-0.2.1\n")
 		}, "not a bdp checkpoint tag"},
 		{"git blob id swapped", func(t *testing.T, dir string) {
 			editPin(t, dir, " "+gitBlobID([]byte("MIT License\n"))+" LICENSE\n", " "+strings.Repeat("e", 40)+" LICENSE\n")

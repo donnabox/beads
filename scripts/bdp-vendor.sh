@@ -21,13 +21,15 @@
 #   BDP_CHECKOUT  a full (not shallow) clone of gastownhall/bdp with its tags
 #                 and an up-to-date origin/main (git -C BDP_CHECKOUT fetch
 #                 --tags origin)
-#   TAG           an annotated tag named spec/*, e.g. spec/sprint1-20261109
+#   TAG           an annotated tag in the bdp-<pack>-* scheme, e.g.
+#                 bdp-core-0.2.3-rc2
 #   --check       regenerate into a temporary directory and exit 1 if
 #                 third_party/bdp/spec/ or bdp.pin differ, or if spec/ holds
 #                 a symlink or an executable file; write nothing
 #
-# Refuses a shallow clone, a missing or lightweight tag, a tag not named
-# spec/*, a commit not reachable from the checkout's origin/main, and (when
+# Refuses a shallow clone, a missing or lightweight tag, a tag not in the
+# bdp-<pack>-* scheme, a commit not reachable from the checkout's
+# origin/main, and (when
 # writing) a commit that does not descend from (or equal) the one the
 # current bdp.pin records, or local refs that disagree with the remote's.
 # --check does not check that direction: it compares the tree with what TAG
@@ -42,10 +44,10 @@ set -euo pipefail
 
 # Every vendored file, with the consumer that justifies it.
 BDP_PATHS=(
-    LICENSE                                                    # MIT notice; license compliance
-    packages/conformance/catalog/current/callables-v1.json     # BDP's conformance tests: the row census
-    packages/conformance/catalog/current/issue-package-v1.json # BDP's conformance tests: the row census
-    specs/profiles/core/bdp-v0.1.schema.json                   # BDP's conformance tests: response admission
+    LICENSE                                                       # MIT notice; license compliance
+    specs/generated/callables/issue.callables.json               # internal/bdpstore/lifecycle.go: issue-lifecycle callable path-mappings
+    packages/conformance/catalog/current/callables-v1.json       # BDP's conformance tests: the row census
+    packages/conformance/catalog/current/issue-package-v1.json   # BDP's conformance tests: the row census
 )
 
 # bdp's specRevision rule (scripts/canonical-spec-revision.mjs): the last
@@ -54,10 +56,8 @@ BDP_PATHS=(
 # canonicalSources must be exactly these, and its git call a plain log -1.
 SPEC_REVISION_SCRIPT=scripts/canonical-spec-revision.mjs
 SPEC_REVISION_SOURCES=(
-    specs/profiles/core/core.md
-    specs/profiles/write/write.md
-    specs/profiles/types/types.md
-    specs/profiles/events/events.md
+    specs/src/core/core.lumen
+    specs/src/bdp.md
 )
 # Keep REPOSITORY and SPEC_REVISION_RULE in step with pinRepository and
 # pinSpecRevisionRule in third_party/bdp/pin_test.go.
@@ -115,8 +115,8 @@ case "$origin_url" in
 esac
 
 case "$TAG" in
-    spec/*) ;;
-    *) die "tag '$TAG' is not a bdp checkpoint tag (spec/*)" ;;
+    bdp-*-*) ;;
+    *) die "tag '$TAG' is not a bdp checkpoint tag (bdp-<pack>-*, e.g. bdp-core-0.2.3-rc2)" ;;
 esac
 bdp_git rev-parse --verify -q "refs/tags/$TAG" >/dev/null ||
     die "no tag '$TAG' in $BDP (git -C $BDP fetch --tags origin)"
