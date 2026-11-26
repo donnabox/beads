@@ -210,6 +210,42 @@ func (c *RemoteScope) Delete(ctx context.Context, ref bdp.ResourceID, ifRevision
 	return tombstone.Rev, nil
 }
 
+// Call invokes an Operation — POST /{operation}/-/call under the action fence.
+// The operation is addressed by its element path (an intrinsic op resolves to
+// that path; the client does not materialize an Operation bead first). A sync
+// 200/201 carries the Outcome; a 409 carries the declared domain failure
+// (Outcome.Failure). A PRE-dispatch fault (unresolvable op, malformed request,
+// unauthorized) is a bare Problem with NO Outcome and surfaces here as an error
+// (core.lumen §call @ bdp-core-0.2.3-rc2).
+//
+// NOTE: no clean-room oracle — cleanroom-v023 answers every call "not offered",
+// so this is built from the spec and exercised only by mock-server tests. It is
+// NOT live-validated; proving it needs a call-offering, issue-pack-serving BDP
+// server (a cross-track dependency).
+func (c *RemoteScope) Call(ctx context.Context, operation bdp.ResourceID, req bdp.Request) (bdp.Reply, error) {
+	payload, err := json.Marshal(req)
+	if err != nil {
+		return bdp.Reply{}, fmt.Errorf("bdpclient: marshal call request: %w", err)
+	}
+	path := "/" + strings.Trim(operation.ID, "/") + "/-/call"
+	resp, body, err := c.do(ctx, http.MethodPost, path, payload, func(h http.Header) {
+		h.Set("Content-Type", "application/json")
+	})
+	if err != nil {
+		return bdp.Reply{}, err
+	}
+	// 2xx (success) and 409 (declared domain failure) both carry a Reply body;
+	// any other non-2xx is a pre-dispatch Problem with no Outcome.
+	if resp.StatusCode/100 == 2 || resp.StatusCode == http.StatusConflict {
+		var reply bdp.Reply
+		if err := json.Unmarshal(body, &reply); err != nil {
+			return bdp.Reply{}, fmt.Errorf("bdpclient: bad call reply: %w", err)
+		}
+		return reply, nil
+	}
+	return bdp.Reply{}, errorFrom(resp.StatusCode, body)
+}
+
 // --- plumbing ---
 
 // write encodes req as a create/put body, sends it, and decodes the pinned ref.

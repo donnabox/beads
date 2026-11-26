@@ -247,17 +247,9 @@ func (l bdpLifecycle) Create(ctx context.Context, req issueops.CreateRequest) (i
 	return issueops.CreateResult{Issue: &out}, nil
 }
 
-func (l bdpLifecycle) Update(context.Context, issueops.UpdateRequest) (issueops.UpdateResult, error) {
-	return issueops.UpdateResult{}, l.s.unsupported("update")
-}
-
-func (l bdpLifecycle) Close(context.Context, issueops.CloseRequest) (issueops.CloseResult, error) {
-	return issueops.CloseResult{}, l.s.unsupported("close")
-}
-
-func (l bdpLifecycle) Reopen(context.Context, issueops.ReopenRequest) (issueops.ReopenResult, error) {
-	return issueops.ReopenResult{}, l.s.unsupported("reopen")
-}
+// Close, Update (claim path) and Reopen are the lifecycle state machine — mapped
+// onto BDP Core `call` of issue-pack operations in lifecycle.go, per Lydia's
+// ruling (not patch).
 
 // --- Deleter ---
 

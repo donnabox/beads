@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "bdpstore",
-    srcs = ["bdpstore.go"],
+    srcs = [
+        "bdpstore.go",
+        "lifecycle.go",
+    ],
     importpath = "github.com/steveyegge/beads/internal/bdpstore",
     visibility = ["//:__subpackages__"],
     deps = [
@@ -15,7 +18,10 @@ go_library(
 
 go_test(
     name = "bdpstore_test",
-    srcs = ["live_test.go"],
+    srcs = [
+        "lifecycle_test.go",
+        "live_test.go",
+    ],
     deps = [
         ":bdpstore",
         "//internal/bdp/bdpclient",

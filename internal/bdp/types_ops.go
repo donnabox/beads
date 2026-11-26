@@ -270,14 +270,15 @@ type Argument struct {
 }
 
 // Reply is what Call returns — flat, no context wrapper. Outcome keeps the
-// domain Result nested; Cause/Frame/Transaction are correlation.
+// domain Result nested; Cause/CallId/Transaction are correlation (core.lumen
+// §Reply @ bdp-core-0.2.3-rc2).
 type Reply struct {
 	// Outcome is what happened — the domain Result or a non-domain fate.
 	Outcome Outcome `json:"outcome"`
 	// Cause is the cause this call ran under (correlation).
 	Cause string `json:"cause"`
-	// Frame is the frame this call ran under (correlation).
-	Frame string `json:"frame"`
+	// CallId is this call's id (correlation).
+	CallId string `json:"callId"`
 	// Transaction is the commit this call belonged to, if any.
 	Transaction string `json:"transaction,omitempty"`
 	// Metadata is an opaque per-reply sidecar.

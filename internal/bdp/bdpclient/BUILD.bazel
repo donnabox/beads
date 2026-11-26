@@ -15,6 +15,7 @@ go_library(
 go_test(
     name = "bdpclient_test",
     srcs = [
+        "call_test.go",
         "discovery_test.go",
         "smoke_test.go",
     ],
