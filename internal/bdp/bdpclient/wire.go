@@ -2,6 +2,7 @@ package bdpclient
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/steveyegge/beads/internal/bdp"
 )
@@ -156,6 +157,40 @@ type wirePage[T any] struct {
 	Items  []T     `json:"items"`
 	Cursor *string `json:"cursor"`
 	Head   bool    `json:"head"`
+}
+
+// wireCondition is the clean-room's kind-tagged list filter condition (the
+// `where=` array). This client emits the Compare kind (the low-bar case bd
+// uses): a root-addressed Field path (core.lumen §1243, e.g. "body/status" →
+// ["body","status"]), a compare Op ("eq"/"ne"/"lt"/"le"/"gt"/"ge"), and the
+// value. The server AND-conjoins the conditions.
+type wireCondition struct {
+	Kind  string          `json:"kind"`
+	Field []string        `json:"field"`
+	Op    string          `json:"op"`
+	Value json.RawMessage `json:"value"`
+}
+
+// toWireConditions lowers a bdp.ListFilter to the clean-room `where=` array.
+func toWireConditions(where bdp.ListFilter) []wireCondition {
+	out := make([]wireCondition, 0, len(where))
+	for _, c := range where {
+		out = append(out, wireCondition{
+			Kind:  "compare",
+			Field: splitFieldPath(c.Field),
+			Op:    c.Op,
+			Value: c.Value,
+		})
+	}
+	return out
+}
+
+func splitFieldPath(p string) []string {
+	p = strings.Trim(p, "/")
+	if p == "" {
+		return nil
+	}
+	return strings.Split(p, "/")
 }
 
 // wireProblem is the RFC 9457 error body.
