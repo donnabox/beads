@@ -80,6 +80,35 @@ func TestBDPStoreCRUDAgainstCleanroom(t *testing.T) {
 		t.Errorf("Status = %q, want open", got.Status)
 	}
 
+	// LIST via the Reader role → the created issue appears (ids hydrated to Issues).
+	listed, err := reader.List(ctx, issueops.ListRequest{})
+	if err != nil {
+		t.Fatalf("List: %v", err)
+	}
+	found := false
+	for _, it := range listed.Items {
+		if it.ID == id {
+			found = true
+			if it.Title != "adapter round-trip" {
+				t.Errorf("listed issue Title = %q, want 'adapter round-trip'", it.Title)
+			}
+		}
+	}
+	if !found {
+		t.Errorf("List omitted the created issue %s (got %d items)", id, len(listed.Items))
+	}
+
+	// A Status filter that does not match drops it (client-side).
+	filtered, err := reader.List(ctx, issueops.ListRequest{Status: "closed"})
+	if err != nil {
+		t.Fatalf("List(status=closed): %v", err)
+	}
+	for _, it := range filtered.Items {
+		if it.ID == id {
+			t.Errorf("status=closed filter should have excluded the open issue %s", id)
+		}
+	}
+
 	// A missing issue maps the BDP fault onto issueops.ErrNotFound.
 	if _, err := reader.Get(ctx, issueops.GetRequest{ID: "absent-" + id}); !errors.Is(err, issueops.ErrNotFound) {
 		t.Errorf("Get missing: err = %v, want ErrNotFound", err)

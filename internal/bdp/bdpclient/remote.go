@@ -22,6 +22,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/steveyegge/beads/internal/bdp"
@@ -63,6 +64,50 @@ var _ bdp.Scope = (*RemoteScope)(nil)
 // capabilities).
 func (c *RemoteScope) Capabilities(ctx context.Context) (bdp.Capabilities, error) {
 	return c.fetchCapabilities(ctx)
+}
+
+// List reads a window of a namespace's current resources — GET /-/list (+ paging
+// query). NOTE: the clean-room's list returns a Page of IDS, not full
+// representations, so the returned Representations carry only their ID (Body
+// empty); a caller that needs the bodies resolves each with Get. Server-side
+// filter push-down is not yet wired, so a non-empty filter faults rather than be
+// silently dropped — filter client-side until push-down lands.
+func (c *RemoteScope) List(ctx context.Context, _ bdp.Namespace, where bdp.ListFilter, _ *bdp.Selector, req *bdp.ReadRequest) (bdp.Page[bdp.Representation], error) {
+	if len(where) > 0 {
+		return bdp.Page[bdp.Representation]{}, fmt.Errorf("bdpclient: list filter push-down not yet implemented; apply the filter client-side")
+	}
+	q := url.Values{}
+	if req != nil {
+		if req.After != "" {
+			q.Set("after", string(req.After))
+		}
+		if req.Limit > 0 {
+			q.Set("limit", strconv.Itoa(req.Limit))
+		}
+	}
+	path := "/-/list"
+	if enc := q.Encode(); enc != "" {
+		path += "?" + enc
+	}
+	resp, body, err := c.do(ctx, http.MethodGet, path, nil, nil)
+	if err != nil {
+		return bdp.Page[bdp.Representation]{}, err
+	}
+	if resp.StatusCode/100 != 2 {
+		return bdp.Page[bdp.Representation]{}, errorFrom(resp.StatusCode, body)
+	}
+	var wp wirePage[wireResourceID]
+	if err := json.Unmarshal(body, &wp); err != nil {
+		return bdp.Page[bdp.Representation]{}, fmt.Errorf("bdpclient: bad list page: %w", err)
+	}
+	page := bdp.Page[bdp.Representation]{Head: wp.Head}
+	for _, it := range wp.Items {
+		page.Items = append(page.Items, bdp.Resource{ID: it.toBDP()})
+	}
+	if wp.Cursor != nil {
+		page.Cursor = bdp.Cursor(*wp.Cursor)
+	}
+	return page, nil
 }
 
 // Get resolves ref to its representation. GET /{id} (+ ?revision=). The selector

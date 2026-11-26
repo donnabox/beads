@@ -20,6 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/steveyegge/beads/beadserrors"
 	"github.com/steveyegge/beads/internal/bdp"
@@ -106,12 +107,74 @@ func (r bdpReader) Get(ctx context.Context, req issueops.GetRequest) (*issueops.
 	return &issueops.IssueDetails{Issue: *iss}, nil
 }
 
+// Ready is "unblocked open work in policy order" — it needs dependency-graph
+// awareness (is_blocked) that BDP Core's flat list cannot express. That is a
+// query-pack capability, not Core, so Ready stays unsupported until that surface
+// exists.
 func (r bdpReader) Ready(context.Context, issueops.ReadyRequest) (issueops.IssuePage, error) {
 	return issueops.IssuePage{}, r.s.unsupported("ready")
 }
 
-func (r bdpReader) List(context.Context, issueops.ListRequest) (issueops.IssuePage, error) {
-	return issueops.IssuePage{}, r.s.unsupported("list")
+// List lists the scope's current resources and hydrates each into an Issue. The
+// clean-room's list returns ids only, so each id is resolved with Get.
+//
+// Slice limitations (documented, not silent): server-side filter push-down is
+// not yet wired, so an explicit Status / IssueType filter is applied
+// CLIENT-SIDE here, and beads' DEFAULT status exclusions are NOT replicated — an
+// unset Status lists every current resource. Full filter parity waits on
+// server-side push-down and the query/ready roles.
+func (r bdpReader) List(ctx context.Context, req issueops.ListRequest) (issueops.IssuePage, error) {
+	limit := 0
+	if req.Limit != nil {
+		limit = *req.Limit
+	}
+	page, err := r.s.scope.List(ctx, bdp.Namespace{}, nil, nil, nil)
+	if err != nil {
+		return issueops.IssuePage{}, err
+	}
+	items := make([]*types.IssueWithCounts, 0, len(page.Items))
+	for _, rep := range page.Items {
+		got, err := r.s.scope.Get(ctx, rep.ID, nil)
+		if err != nil {
+			if errors.Is(err, bdp.ErrNotFound) {
+				continue // raced with a delete between list and hydrate
+			}
+			return issueops.IssuePage{}, err
+		}
+		iss, err := repToIssue(got)
+		if err != nil {
+			return issueops.IssuePage{}, err
+		}
+		if !matchesList(iss, req) {
+			continue
+		}
+		if limit > 0 && len(items) >= limit {
+			return issueops.IssuePage{Items: items, HasMore: true}, nil
+		}
+		items = append(items, &types.IssueWithCounts{Issue: iss})
+	}
+	return issueops.IssuePage{Items: items}, nil
+}
+
+// matchesList applies the explicit Status / IssueType filters client-side (each
+// a comma-OR set); an unset filter matches everything.
+func matchesList(iss *types.Issue, req issueops.ListRequest) bool {
+	if req.Status != "" && !inCSV(string(iss.Status), req.Status) {
+		return false
+	}
+	if req.IssueType != "" && !inCSV(string(iss.IssueType), req.IssueType) {
+		return false
+	}
+	return true
+}
+
+func inCSV(val, csv string) bool {
+	for _, p := range strings.Split(csv, ",") {
+		if strings.EqualFold(strings.TrimSpace(p), val) {
+			return true
+		}
+	}
+	return false
 }
 
 // --- Lifecycle ---

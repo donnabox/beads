@@ -147,6 +147,17 @@ func (w wireRep) toBDP() bdp.Representation {
 	return r
 }
 
+// wirePage is the clean-room's Page envelope for a streaming/snapshot read
+// (core.lumen §Page): items plus the resume cursor (serialized null, not
+// omitted, when there is nothing to resume) and the live-edge marker. For list
+// the item type is wireResourceID — the clean-room's list returns IDS, not full
+// representations.
+type wirePage[T any] struct {
+	Items  []T     `json:"items"`
+	Cursor *string `json:"cursor"`
+	Head   bool    `json:"head"`
+}
+
 // wireProblem is the RFC 9457 error body.
 type wireProblem struct {
 	Type   string  `json:"type"`
