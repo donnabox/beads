@@ -10,13 +10,13 @@
 # PRs that change this file conflict on it. Resolve that by taking
 # main's bdp.pin and rerunning the script; never merge it by hand.
 repository https://github.com/gastownhall/bdp
-tag spec/sprint1-20261109
-tag-object c5ecd9add25ed7489ed3a45e7982be029695589d
-commit 286648546c8439e97631ea05a3748ee695358fbe
-spec-revision 3291f58e23f5398733b3991d0c2629a371382e72
-spec-revision-rule git log -1 --format=%H <commit> -- specs/profiles/core/core.md specs/profiles/write/write.md specs/profiles/types/types.md specs/profiles/events/events.md (bdp scripts/canonical-spec-revision.mjs; not --first-parent)
-lock a87eb934f705790451d1bec32041251d10e934dff4aaa58d6cc9bbd302a7dcd9
+tag bdp-core-0.2.3-rc2
+tag-object 77b48ee69ee5d2f8e64a7adb1341169e9561de48
+commit acb7aa67c7eed7afc0467446aa48b4c33417ecc4
+spec-revision dae0584bcbf645965a589e55e8cdf161a4316cc5
+spec-revision-rule git log -1 --format=%H <commit> -- specs/src/core/core.lumen specs/src/bdp.md (bdp scripts/canonical-spec-revision.mjs; not --first-parent)
+lock d5d5876db1c419829c2bd504df5e710625e37c610fc5959f418eb0ffbf4f49ba
 file 1bc5a9f778e62e7383078d5588aed7296f6e266934de1cb9bff35fc9ee240816 1070 e47e3a488a78d44134ef3fe82d136d68a2cb3d45 LICENSE
-file 3bef1fb14bae15ec94307c09bd03c794a92fbfbc93fc6479c808a38e51655b65 8982 f325b56ed8419189ca3d6a841ec3b8680e22014b packages/conformance/catalog/current/callables-v1.json
-file 63e884c8e4a646a95f58de9795e7d80339025ca4dbefe7a1f5a15e512f5bdcd5 8812 e866414134cec3e44448d29b0a607f364ff9d822 packages/conformance/catalog/current/issue-package-v1.json
-file 0393066b8caef4fcae70a8a5623d11f6d853aed5dad630438fb7447326109d08 247459 1adb96ff54b17a64f737ce36b651e4e8486fbccf specs/profiles/core/bdp-v0.1.schema.json
+file e99f1366a3cc8f86a1992ba6dc1c81ba03d93722a0c437962c45a1d00a365207 9108 fe9b554159b4a68789c979f5e63bffcaeea4dca1 packages/conformance/catalog/current/callables-v1.json
+file 2682e6f1cca41a61e985e43e8bac80c85d44b9aac96fa203d13004859b6d46a5 8871 73b5650901175c97a8b63069bfc8003f5747c248 packages/conformance/catalog/current/issue-package-v1.json
+file f01c5fc180a41f270377c13b37b570372c6a94cc8acd9baf986c8f64de1c8647 13315 93e97dca5e79da72f54823593f53ac147b1d1070 specs/generated/callables/issue.callables.json
