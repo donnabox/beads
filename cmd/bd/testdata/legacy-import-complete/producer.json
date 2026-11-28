@@ -1,0 +1,374 @@
+{
+  "producerSource": "76fde9c9cb0865d430bf12d76fc473490f51128a",
+  "producerSourceTree": "80d2aeb1146a7b3075fbed7a75e31f253032207c",
+  "sourceState": "clean checkout; canonical make install-force build",
+  "binarySHA256": "733b2a93b408ee318560146339c97ab3277f98df6c443c8797b1e6e490a715b3",
+  "producerVersion": "bd version 1.3.0 (76fde9c9cb08: 76fde9c9cb08)\n",
+  "fixtureSHA256": "66ac6ad8816605b084d2daae65911ca4655b17a937184d98a80e142df1e4d23e",
+  "data": "exclusively synthetic disposable workspace; no production inputs",
+  "profile": "completeness",
+  "issuePrefix": "web-app",
+  "receipts": [
+    {
+      "args": [
+        "version",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"build\": \"76fde9c9cb08\",\n  \"commit\": \"76fde9c9cb0865d430bf12d76fc473490f51128a\",\n  \"schema_version\": 1,\n  \"version\": \"1.3.0\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "version"
+      ],
+      "code": 0,
+      "stdout": "bd version 1.3.0 (76fde9c9cb08: 76fde9c9cb08)\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "init",
+        "--prefix",
+        "web-app",
+        "--skip-hooks",
+        "--skip-agents",
+        "--non-interactive"
+      ],
+      "code": 0,
+      "stdout": "  ! Remote has no Dolt data yet; initialized a fresh local database\n  ✓ Configured Dolt remote: origin → git+https://github.com/gastownhall/bdp.git\n  Repository ID: a01c3da5\n  Clone ID: 6f19736f11abcd21\n  ✓ Committed beads files to git\n\n✓ bd initialized successfully!\n\n  Backend: dolt\n  Mode: embedded\n  Database: web_app\n  Issue prefix: web-app\n  Issues will be named: web-app-<hash> (e.g., web-app-a3f2dd)\n\nRun bd quickstart to get started.\n\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "create",
+        "Prerequisite",
+        "--id",
+        "web-app-a1b",
+        "--priority",
+        "0",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"created_at\": \"2026-10-18T06:30:22.4795Z\",\n  \"created_by\": \"fixture-author\",\n  \"id\": \"web-app-a1b\",\n  \"issue_type\": \"task\",\n  \"owner\": \"fixture@example.invalid\",\n  \"priority\": 0,\n  \"schema_version\": 1,\n  \"status\": \"open\",\n  \"title\": \"Prerequisite\",\n  \"updated_at\": \"2026-10-18T06:30:22.4795Z\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "create",
+        "Dependent work — 記憶",
+        "--id",
+        "web-app-b2c",
+        "--description",
+        "Body\nSecond line",
+        "--design",
+        "A design",
+        "--acceptance",
+        "A check",
+        "--notes",
+        "A note",
+        "--labels",
+        "one,two",
+        "--metadata",
+        "{\"custom\":{\"flag\":true},\"list\":[1,\"value\"]}",
+        "--actor",
+        "fixture-author",
+        "--json",
+        "--type",
+        "bug",
+        "--assignee",
+        "fixture-worker",
+        "--estimate",
+        "20",
+        "--external-ref",
+        "gh-fixture-123",
+        "--spec-id",
+        "spec-fixture",
+        "--due",
+        "2099-01-02",
+        "--defer",
+        "2099-01-01",
+        "--mol-type",
+        "swarm"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"acceptance_criteria\": \"A check\",\n  \"assignee\": \"fixture-worker\",\n  \"created_at\": \"2026-10-18T06:30:23.056983Z\",\n  \"created_by\": \"fixture-author\",\n  \"defer_until\": \"2099-01-01T08:00:00Z\",\n  \"description\": \"Body\\nSecond line\",\n  \"design\": \"A design\",\n  \"due_at\": \"2099-01-02T08:00:00Z\",\n  \"estimated_minutes\": 20,\n  \"external_ref\": \"gh-fixture-123\",\n  \"id\": \"web-app-b2c\",\n  \"issue_type\": \"bug\",\n  \"labels\": [\n    \"one\",\n    \"two\"\n  ],\n  \"metadata\": {\n    \"custom\": {\n      \"flag\": true\n    },\n    \"list\": [\n      1,\n      \"value\"\n    ]\n  },\n  \"mol_type\": \"swarm\",\n  \"notes\": \"A note\",\n  \"owner\": \"fixture@example.invalid\",\n  \"priority\": 2,\n  \"schema_version\": 1,\n  \"spec_id\": \"spec-fixture\",\n  \"status\": \"deferred\",\n  \"title\": \"Dependent work — 記憶\",\n  \"updated_at\": \"2026-10-18T06:30:23.056983Z\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "dep",
+        "add",
+        "web-app-b2c",
+        "web-app-a1b",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"depends_on_id\": \"web-app-a1b\",\n  \"issue_id\": \"web-app-b2c\",\n  \"schema_version\": 1,\n  \"status\": \"added\",\n  \"type\": \"blocks\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "comments",
+        "add",
+        "web-app-b2c",
+        "A preserved comment\nSecond line",
+        "--author",
+        "fixture-commenter",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"author\": \"fixture-commenter\",\n  \"created_at\": \"2026-10-18T06:30:23Z\",\n  \"id\": \"689288c5-f340-57c4-83d1-25a59e4b7eec\",\n  \"issue_id\": \"web-app-b2c\",\n  \"schema_version\": 1,\n  \"text\": \"A preserved comment\\nSecond line\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "close",
+        "web-app-a1b",
+        "--reason",
+        "Synthetic completion",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "[\n  {\n    \"id\": \"web-app-a1b\",\n    \"title\": \"Prerequisite\",\n    \"status\": \"closed\",\n    \"priority\": 0,\n    \"issue_type\": \"task\",\n    \"owner\": \"fixture@example.invalid\",\n    \"created_at\": \"2026-10-18T06:30:22Z\",\n    \"created_by\": \"fixture-author\",\n    \"updated_at\": \"2026-10-18T06:30:24Z\",\n    \"closed_at\": \"2026-10-18T06:30:24Z\",\n    \"close_reason\": \"Synthetic completion\"\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Remembered context",
+        "--key",
+        "fixture-key"
+      ],
+      "code": 0,
+      "stdout": "Remembered [fixture-key]: Remembered context\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "create",
+        "Persistent context",
+        "--id",
+        "web-app-abcdef",
+        "--type",
+        "decision",
+        "--status",
+        "pinned",
+        "--labels",
+        "context,記憶",
+        "--metadata",
+        "{\"unicode\":\"記憶\",\"empty\":{},\"number\":0}",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"created_at\": \"2026-10-18T06:30:25.486311Z\",\n  \"created_by\": \"fixture-author\",\n  \"id\": \"web-app-abcdef\",\n  \"issue_type\": \"decision\",\n  \"labels\": [\n    \"context\",\n    \"記憶\"\n  ],\n  \"metadata\": {\n    \"empty\": {},\n    \"number\": 0,\n    \"unicode\": \"記憶\"\n  },\n  \"owner\": \"fixture@example.invalid\",\n  \"priority\": 2,\n  \"schema_version\": 1,\n  \"status\": \"pinned\",\n  \"title\": \"Persistent context\",\n  \"updated_at\": \"2026-10-18T06:30:25.486311Z\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "create",
+        "Operational record",
+        "--id",
+        "web-app-d4e",
+        "--type",
+        "event",
+        "--event-category",
+        "fixture.started",
+        "--event-actor",
+        "fixture-actor",
+        "--event-target",
+        "web-app-b2c",
+        "--event-payload",
+        "{\"synthetic\":true}",
+        "--actor",
+        "fixture-author",
+        "--json"
+      ],
+      "code": 0,
+      "stdout": "{\n  \"actor\": \"fixture-actor\",\n  \"created_at\": \"2026-10-18T06:30:26.1095Z\",\n  \"created_by\": \"fixture-author\",\n  \"event_kind\": \"fixture.started\",\n  \"id\": \"web-app-d4e\",\n  \"issue_type\": \"event\",\n  \"owner\": \"fixture@example.invalid\",\n  \"payload\": \"{\\\"synthetic\\\":true}\",\n  \"priority\": 2,\n  \"schema_version\": 1,\n  \"status\": \"open\",\n  \"target\": \"web-app-b2c\",\n  \"title\": \"Operational record\",\n  \"updated_at\": \"2026-10-18T06:30:26.1095Z\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for has space",
+        "--key",
+        "has space"
+      ],
+      "code": 0,
+      "stdout": "Remembered [has space]: Value for has space\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for has%20space",
+        "--key",
+        "has%20space"
+      ],
+      "code": 0,
+      "stdout": "Remembered [has%20space]: Value for has%20space\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for  leading",
+        "--key",
+        " leading"
+      ],
+      "code": 0,
+      "stdout": "Remembered [ leading]: Value for  leading\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for trailing ",
+        "--key",
+        "trailing "
+      ],
+      "code": 0,
+      "stdout": "Remembered [trailing ]: Value for trailing \n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for 記憶",
+        "--key",
+        "記憶"
+      ],
+      "code": 0,
+      "stdout": "Remembered [記憶]: Value for 記憶\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for %E8%A8%98%E6%86%B6",
+        "--key",
+        "%E8%A8%98%E6%86%B6"
+      ],
+      "code": 0,
+      "stdout": "Remembered [%E8%A8%98%E6%86%B6]: Value for %E8%A8%98%E6%86%B6\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for 100%",
+        "--key",
+        "100%"
+      ],
+      "code": 0,
+      "stdout": "Remembered [100%]: Value for 100%\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for .",
+        "--key",
+        "."
+      ],
+      "code": 0,
+      "stdout": "Remembered [.]: Value for .\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for ..",
+        "--key",
+        ".."
+      ],
+      "code": 0,
+      "stdout": "Remembered [..]: Value for ..\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for path/part",
+        "--key",
+        "path/part"
+      ],
+      "code": 0,
+      "stdout": "Remembered [path/part]: Value for path/part\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for double//separator",
+        "--key",
+        "double//separator"
+      ],
+      "code": 0,
+      "stdout": "Remembered [double//separator]: Value for double//separator\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for back\\slash",
+        "--key",
+        "back\\slash"
+      ],
+      "code": 0,
+      "stdout": "Remembered [back\\slash]: Value for back\\slash\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for tab\tline\nbreak",
+        "--key",
+        "tab\tline\nbreak"
+      ],
+      "code": 0,
+      "stdout": "Remembered [tab\tline\nbreak]: Value for tab\tline break\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "remember",
+        "Value for web-app-a1b",
+        "--key",
+        "web-app-a1b"
+      ],
+      "code": 0,
+      "stdout": "Remembered [web-app-a1b]: Value for web-app-a1b\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "config",
+        "set",
+        "kv.memory.empty-value",
+        ""
+      ],
+      "code": 0,
+      "stdout": "Set kv.memory.empty-value = \n",
+      "stderr": "Warning: \"kv.memory.empty-value\" is not a recognized config key. Did you mean \"ai.memory.empty-value\"?\nRun 'bd config --help' for valid namespaces.\n"
+    },
+    {
+      "args": [
+        "export",
+        "--include-memories"
+      ],
+      "code": 0,
+      "stdout": "{\"_type\":\"issue\",\"id\":\"web-app-a1b\",\"title\":\"Prerequisite\",\"status\":\"closed\",\"priority\":0,\"issue_type\":\"task\",\"owner\":\"fixture@example.invalid\",\"created_at\":\"2026-10-18T06:30:22Z\",\"created_by\":\"fixture-author\",\"updated_at\":\"2026-10-18T06:30:24Z\",\"closed_at\":\"2026-10-18T06:30:24Z\",\"close_reason\":\"Synthetic completion\",\"dependency_count\":0,\"dependent_count\":1,\"comment_count\":0}\n{\"_type\":\"issue\",\"id\":\"web-app-d4e\",\"title\":\"Operational record\",\"status\":\"open\",\"priority\":2,\"issue_type\":\"event\",\"owner\":\"fixture@example.invalid\",\"created_at\":\"2026-10-18T06:30:26Z\",\"created_by\":\"fixture-author\",\"updated_at\":\"2026-10-18T06:30:26Z\",\"event_kind\":\"fixture.started\",\"actor\":\"fixture-actor\",\"target\":\"web-app-b2c\",\"payload\":\"{\\\"synthetic\\\":true}\",\"dependency_count\":0,\"dependent_count\":0,\"comment_count\":0}\n{\"_type\":\"issue\",\"id\":\"web-app-abcdef\",\"title\":\"Persistent context\",\"status\":\"pinned\",\"priority\":2,\"issue_type\":\"decision\",\"owner\":\"fixture@example.invalid\",\"created_at\":\"2026-10-18T06:30:25Z\",\"created_by\":\"fixture-author\",\"updated_at\":\"2026-10-18T06:30:25Z\",\"metadata\":{\"empty\":{},\"number\":0,\"unicode\":\"記憶\"},\"labels\":[\"context\",\"記憶\"],\"dependency_count\":0,\"dependent_count\":0,\"comment_count\":0}\n{\"_type\":\"issue\",\"id\":\"web-app-b2c\",\"title\":\"Dependent work — 記憶\",\"description\":\"Body\\nSecond line\",\"design\":\"A design\",\"acceptance_criteria\":\"A check\",\"notes\":\"A note\",\"spec_id\":\"spec-fixture\",\"status\":\"deferred\",\"priority\":2,\"issue_type\":\"bug\",\"assignee\":\"fixture-worker\",\"owner\":\"fixture@example.invalid\",\"estimated_minutes\":20,\"created_at\":\"2026-10-18T06:30:23Z\",\"created_by\":\"fixture-author\",\"updated_at\":\"2026-10-18T06:30:23Z\",\"due_at\":\"2099-01-02T08:00:00Z\",\"defer_until\":\"2099-01-01T08:00:00Z\",\"external_ref\":\"gh-fixture-123\",\"metadata\":{\"list\":[1,\"value\"],\"custom\":{\"flag\":true}},\"labels\":[\"one\",\"two\"],\"dependencies\":[{\"issue_id\":\"web-app-b2c\",\"depends_on_id\":\"web-app-a1b\",\"type\":\"blocks\",\"created_at\":\"2026-10-18T06:30:24Z\",\"created_by\":\"fixture-author\",\"metadata\":\"{}\"}],\"comments\":[{\"id\":\"689288c5-f340-57c4-83d1-25a59e4b7eec\",\"issue_id\":\"web-app-b2c\",\"author\":\"fixture-commenter\",\"text\":\"A preserved comment\\nSecond line\",\"created_at\":\"2026-10-18T06:30:23Z\"}],\"mol_type\":\"swarm\",\"dependency_count\":1,\"dependent_count\":0,\"comment_count\":1}\n{\"_type\":\"memory\",\"key\":\" leading\",\"value\":\"Value for  leading\"}\n{\"_type\":\"memory\",\"key\":\"%E8%A8%98%E6%86%B6\",\"value\":\"Value for %E8%A8%98%E6%86%B6\"}\n{\"_type\":\"memory\",\"key\":\".\",\"value\":\"Value for .\"}\n{\"_type\":\"memory\",\"key\":\"..\",\"value\":\"Value for ..\"}\n{\"_type\":\"memory\",\"key\":\"100%\",\"value\":\"Value for 100%\"}\n{\"_type\":\"memory\",\"key\":\"back\\\\slash\",\"value\":\"Value for back\\\\slash\"}\n{\"_type\":\"memory\",\"key\":\"double//separator\",\"value\":\"Value for double//separator\"}\n{\"_type\":\"memory\",\"key\":\"empty-value\",\"value\":\"\"}\n{\"_type\":\"memory\",\"key\":\"fixture-key\",\"value\":\"Remembered context\"}\n{\"_type\":\"memory\",\"key\":\"has space\",\"value\":\"Value for has space\"}\n{\"_type\":\"memory\",\"key\":\"has%20space\",\"value\":\"Value for has%20space\"}\n{\"_type\":\"memory\",\"key\":\"path/part\",\"value\":\"Value for path/part\"}\n{\"_type\":\"memory\",\"key\":\"tab\\tline\\nbreak\",\"value\":\"Value for tab\\tline\\nbreak\"}\n{\"_type\":\"memory\",\"key\":\"trailing \",\"value\":\"Value for trailing \"}\n{\"_type\":\"memory\",\"key\":\"web-app-a1b\",\"value\":\"Value for web-app-a1b\"}\n{\"_type\":\"memory\",\"key\":\"記憶\",\"value\":\"Value for 記憶\"}\n",
+      "stderr": ""
+    }
+  ]
+}

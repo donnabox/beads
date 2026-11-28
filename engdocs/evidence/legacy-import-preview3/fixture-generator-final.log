@@ -1,0 +1,18 @@
+test_changed_binary_refused_without_publication (__main__.GeneratorTests.test_changed_binary_refused_without_publication) ... ok
+test_changed_source_refused_without_publication (__main__.GeneratorTests.test_changed_source_refused_without_publication) ... ok
+test_conflicting_build_refused_despite_matching_vcs_commit (__main__.GeneratorTests.test_conflicting_build_refused_despite_matching_vcs_commit) ... ok
+test_empty_directory_file_and_dangling_symlink_refused (__main__.GeneratorTests.test_empty_directory_file_and_dangling_symlink_refused) ... ok
+test_existing_output_refused_before_any_invocation (__main__.GeneratorTests.test_existing_output_refused_before_any_invocation) ... ok
+test_export_failure_publishes_nothing (__main__.GeneratorTests.test_export_failure_publishes_nothing) ... ok
+test_mismatch_never_initializes_or_exports (__main__.GeneratorTests.test_mismatch_never_initializes_or_exports) ... ok
+test_missing_or_short_build_identity_refused (__main__.GeneratorTests.test_missing_or_short_build_identity_refused) ... ok
+test_old_canonical_build_identity_supported (__main__.GeneratorTests.test_old_canonical_build_identity_supported) ... ok
+test_output_appearing_during_generation_is_preserved (__main__.GeneratorTests.test_output_appearing_during_generation_is_preserved) ... ok
+test_receipt_write_failure_cleans_staged_fixture (__main__.GeneratorTests.test_receipt_write_failure_cleans_staged_fixture) ... ok
+test_rename_failure_cleans_staged_pair (__main__.GeneratorTests.test_rename_failure_cleans_staged_pair) ... ok
+test_success_pair_hashes_and_receipts (__main__.GeneratorTests.test_success_pair_hashes_and_receipts) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.032s
+
+OK

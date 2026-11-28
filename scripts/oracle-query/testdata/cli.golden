@@ -1,0 +1,38 @@
+== row exists
+exit: 0
+stdout:
+{
+  "id": "x-1",
+  "status": "open",
+  "title": "Widget, deluxe"
+}
+dolt argv:
+sql
+-q
+SELECT * FROM issues AS OF '0123456789abcdefghijklmnopqrstuv' WHERE id = 'x-1'
+-r
+csv
+
+== row missing
+exit: 0
+stdout:
+null
+dolt argv:
+sql
+-q
+SELECT * FROM issues AS OF '0123456789abcdefghijklmnopqrstuv' WHERE id = 'x-1'
+-r
+csv
+
+== missing flags
+exit: 2
+stdout:
+stderr:
+usage: oracle-query -dir=<clone-dir> -ref=<commit-hash> -issue=<issue-id>
+dolt argv:
+
+== invalid ref
+exit: 1
+stdout:
+dolt argv:
+
