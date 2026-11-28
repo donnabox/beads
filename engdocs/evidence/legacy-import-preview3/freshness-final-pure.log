@@ -1,0 +1,31 @@
+Running: go test -p 4 -parallel 4 -timeout 25m -v -run ^(TestLegacyImportPrefixAdmission|TestLegacyImportLabelSetAndInternalState|TestLegacyImportCommentBudgetAndOriginalUTF8|TestLegacyImportMemoryPaths|TestLegacyImportCommentVerification)$ -count 1 ./internal/storage/graphstore
+Skipping: 
+
+=== RUN   TestLegacyImportPrefixAdmission
+=== RUN   TestLegacyImportPrefixAdmission/web-app-123
+=== RUN   TestLegacyImportPrefixAdmission/web-app-a1b
+=== RUN   TestLegacyImportPrefixAdmission/web-app-abc
+=== RUN   TestLegacyImportPrefixAdmission/web-app-123.1.2
+=== RUN   TestLegacyImportPrefixAdmission/web-app-123,web-api-456
+=== RUN   TestLegacyImportPrefixAdmission/web-app-
+=== RUN   TestLegacyImportPrefixAdmission/missing
+=== RUN   TestLegacyImportPrefixAdmission/-123
+--- PASS: TestLegacyImportPrefixAdmission (0.00s)
+    --- PASS: TestLegacyImportPrefixAdmission/web-app-123 (0.00s)
+    --- PASS: TestLegacyImportPrefixAdmission/web-app-a1b (0.00s)
+    --- PASS: TestLegacyImportPrefixAdmission/web-app-abc (0.00s)
+    --- PASS: TestLegacyImportPrefixAdmission/web-app-123.1.2 (0.00s)
+    --- PASS: TestLegacyImportPrefixAdmission/web-app-123,web-api-456 (0.00s)
+    --- PASS: TestLegacyImportPrefixAdmission/web-app- (0.00s)
+    --- PASS: TestLegacyImportPrefixAdmission/missing (0.00s)
+    --- PASS: TestLegacyImportPrefixAdmission/-123 (0.00s)
+=== RUN   TestLegacyImportLabelSetAndInternalState
+--- PASS: TestLegacyImportLabelSetAndInternalState (0.00s)
+=== RUN   TestLegacyImportCommentBudgetAndOriginalUTF8
+--- PASS: TestLegacyImportCommentBudgetAndOriginalUTF8 (0.00s)
+=== RUN   TestLegacyImportMemoryPaths
+--- PASS: TestLegacyImportMemoryPaths (0.00s)
+=== RUN   TestLegacyImportCommentVerification
+--- PASS: TestLegacyImportCommentVerification (0.00s)
+PASS
+ok  	github.com/steveyegge/beads/internal/storage/graphstore	0.949s
