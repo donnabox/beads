@@ -71,7 +71,7 @@ func admitCanonicalAuthoring(cmd *cobra.Command) (bool, error) {
 	canonicalBatchRetry = nil
 	if canonicalBatchSelected(cmd) {
 		if err := canonicalBatchScalars(cmd); err != nil {
-			return true, graphFailure("invalid_selector", err.Error(), 2)
+			return true, canonicalMutationArgumentFailure(err)
 		}
 	}
 	if cmd == batchCmd && cmd.Flags().Changed("retry-file") {
@@ -220,11 +220,15 @@ func canonicalObjectEdit(cmd *cobra.Command, plane string, create bool, input *c
 }
 
 func runCanonicalMemberEmission(cmd *cobra.Command, args []string) error {
-	if err := canonicalScalarOccurrences(cmd, os.Args[1:], "scope", "type", "id", "if-revision", "dry-run-mode", "batch-bind", "properties", "metadata", "replace-properties", "replace-metadata", "patch-properties", "patch-metadata", "revision-provenance"); err != nil {
+	argv, err := canonicalMutationInvocationArgs(cmd)
+	if err != nil {
+		return canonicalMutationArgumentFailure(err)
+	}
+	if err := canonicalScalarOccurrences(cmd, argv, "scope", "type", "id", "if-revision", "dry-run-mode", "batch-bind", "properties", "metadata", "replace-properties", "replace-metadata", "patch-properties", "patch-metadata", "revision-provenance"); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if cmd == linkCreateCmd {
-		if err := canonicalExactOccurrences(cmd, os.Args[1:], "from", "to"); err != nil {
+	if cmd == linkCreateCmd || cmd == linkUpdateCmd {
+		if err := canonicalExactOccurrences(cmd, argv, "from", "to"); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
@@ -262,6 +266,9 @@ func canonicalCompileCRUDMember(cmd *cobra.Command, args []string, scope string)
 		}
 	} else {
 		allowed = append(allowed, "if-revision")
+		if link && !deleted {
+			allowed = append(allowed, "from", "to")
+		}
 	}
 	if deleted {
 		allowed = append(allowed, "force")
@@ -340,6 +347,15 @@ func canonicalCompileCRUDMember(cmd *cobra.Command, args []string, scope string)
 		}
 		member[key] = ref
 	}
+	if link && !create && !deleted {
+		endpoints, err := canonicalMutationLinkEndpointEdits(cmd, scope)
+		if err != nil {
+			return nil, err
+		}
+		for name, ref := range endpoints {
+			member[name] = ref
+		}
+	}
 	if deleted {
 		force, _ := cmd.Flags().GetBool("force")
 		if !force {
@@ -390,7 +406,7 @@ func canonicalCompileCRUDMember(cmd *cobra.Command, args []string, scope string)
 
 func runCanonicalBatch(cmd *cobra.Command) error {
 	if err := canonicalBatchScalars(cmd); err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
+		return canonicalMutationArgumentFailure(err)
 	}
 	if canonicalBatchRetry != nil {
 		batch, err := canonicalbatch.Compile(canonicalBatchRetry.Request, canonicalbatch.Options{Format: "json", Scope: canonicalBatchRetry.Scope})
@@ -455,7 +471,11 @@ func runCanonicalBatch(cmd *cobra.Command) error {
 }
 
 func canonicalBatchScalars(cmd *cobra.Command) error {
-	return canonicalScalarOccurrences(cmd, os.Args[1:], "scope", "input-format", "batch-version", "file", "dry-run-mode", "idempotency-key", "retry-file", "actor")
+	argv, err := canonicalMutationInvocationArgs(cmd)
+	if err != nil {
+		return err
+	}
+	return canonicalScalarOccurrences(cmd, argv, "scope", "input-format", "batch-version", "file", "dry-run-mode", "idempotency-key", "retry-file", "actor")
 }
 
 func canonicalAuthoringFlags(cmd *cobra.Command, names ...string) error {
