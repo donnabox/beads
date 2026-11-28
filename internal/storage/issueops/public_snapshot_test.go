@@ -46,7 +46,12 @@ func TestCloneIssueOperationRequestsDeepCopyMutableFields(t *testing.T) {
 	update.Patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: &now}
 	update.Patch.DeferUntil = publicops.Field[*time.Time]{Set: true, Value: &now}
 	update.Patch.Waiters = publicops.Field[[]string]{Set: true, Value: []string{"waiter"}}
+	update.Patch.Metadata.Operations = publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`[{"op":"add","path":"/nested","value":{"x":1}}]`)}
 	updateClone := CloneUpdateRequest(update)
+	updateClone.Patch.Metadata.Operations.Value[0] = '{'
+	if !updateClone.Patch.Metadata.Operations.Set || string(update.Patch.Metadata.Operations.Value) != `[{"op":"add","path":"/nested","value":{"x":1}}]` {
+		t.Fatal("CloneUpdateRequest() lost Operations presence or shared its bytes")
+	}
 	updateClone.Patch.Waiters.Value[0] = "changed"
 	if update.Patch.Waiters.Value[0] != "waiter" {
 		t.Fatal("CloneUpdateRequest() shares the caller's Waiters list")
@@ -95,6 +100,7 @@ func TestIssueOperationCloneFunctionsKeepFrozenRequestFields(t *testing.T) {
 	assertFieldValueMutable(t, reflect.TypeOf(publicops.Field[[]string]{}), "LabelPatch.Replace")
 	assertFieldValueMutable(t, reflect.TypeOf(publicops.Field[json.RawMessage]{}), "MetadataPatch.Replace")
 	assertFieldValueMutable(t, reflect.TypeOf(publicops.Field[json.RawMessage]{}), "MetadataPatch.Merge")
+	assertFieldValueMutable(t, reflect.TypeOf(publicops.Field[json.RawMessage]{}), "MetadataPatch.Operations")
 	assertFieldValueMutable(t, reflect.TypeOf(publicops.Field[*int]{}), "IssuePatch.EstimatedMinutes")
 	assertFieldValueMutable(t, reflect.TypeOf(publicops.Field[*string]{}), "IssuePatch.ExternalRef")
 	assertFieldValueMutable(t, reflect.TypeOf(publicops.Field[*time.Time]{}), "IssuePatch.DueAt")

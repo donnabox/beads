@@ -8,6 +8,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
@@ -140,6 +142,14 @@ func ValidateUpdateRequest(request publicops.UpdateRequest) error {
 
 // ValidateMetadataPatch checks mutually exclusive metadata edits.
 func ValidateMetadataPatch(patch publicops.MetadataPatch) error {
+	if patch.Operations.Set {
+		if patch.Replace.Set || patch.Merge.Set || len(patch.Set) > 0 || len(patch.Unset) > 0 {
+			return fmt.Errorf("%w: cannot combine ordered metadata operations with other metadata edits", storage.ErrValidation)
+		}
+		if _, err := graphpatch.ParseUpdate(patch.Operations.Value); err != nil {
+			return fmt.Errorf("%w: metadata operations: %w", storage.ErrValidation, err)
+		}
+	}
 	if patch.Replace.Set && (patch.Merge.Set || len(patch.Set) > 0 || len(patch.Unset) > 0) {
 		return fmt.Errorf("%w: cannot combine metadata replacement with incremental metadata edits", storage.ErrValidation)
 	}
@@ -284,6 +294,12 @@ func AuthorizeTemplateUpdate(before *types.Issue, request publicops.UpdateReques
 
 // ApplyMetadataPatch returns the canonical metadata value and whether it changes.
 func ApplyMetadataPatch(current json.RawMessage, patch publicops.MetadataPatch) (json.RawMessage, bool, error) {
+	if patch.Operations.Set {
+		if err := ValidateMetadataPatch(patch); err != nil {
+			return nil, false, err
+		}
+		return applyMetadataOperations(current, patch.Operations.Value)
+	}
 	if !patch.Replace.Set && !patch.Merge.Set && len(patch.Set) == 0 && len(patch.Unset) == 0 {
 		return current, false, nil
 	}
@@ -357,6 +373,32 @@ func ApplyMetadataPatch(current json.RawMessage, patch publicops.MetadataPatch) 
 		return nil, false, fmt.Errorf("%w: compare metadata: %v", storage.ErrValidation, err)
 	}
 	return next, changed, nil
+}
+
+// Resolve ordered edits against the caller's checked, in-transaction snapshot.
+// Intermediate values are private to the evaluator. Validation and comparison
+// use the final object, so a cancelling edit produces no durable write.
+func applyMetadataOperations(current, raw json.RawMessage) (json.RawMessage, bool, error) {
+	if len(current) == 0 || string(current) == "null" {
+		current = json.RawMessage(`{}`)
+	}
+	before, err := graphops.NewProperties(current)
+	if err != nil {
+		return nil, false, fmt.Errorf("%w: current metadata: %w", storage.ErrValidation, err)
+	}
+	operations, err := graphpatch.ParseUpdate(raw)
+	if err != nil {
+		return nil, false, fmt.Errorf("%w: metadata operations: %w", storage.ErrValidation, err)
+	}
+	after, err := operations.Apply(before)
+	if err != nil {
+		return nil, false, fmt.Errorf("%w: metadata operations: %w", storage.ErrValidation, err)
+	}
+	next := json.RawMessage(after.Bytes())
+	if err := ValidateMetadataIfConfigured(next); err != nil {
+		return nil, false, err
+	}
+	return next, !before.Equal(after), nil
 }
 
 func metadataChanged(current, next json.RawMessage) (bool, error) {
