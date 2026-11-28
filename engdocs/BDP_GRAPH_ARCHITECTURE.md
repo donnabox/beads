@@ -1,7 +1,7 @@
 # BDP graph store — architecture and design
 
-**Status:** Draft v16 (W-arch) — A1–A9 and decisions D1–D2 (plan rulings 13–14) ruled 2026-09-07; A10 ruled 2026-09-08; P0 current-wire completion open — feat/bead-graph
-**Date:** 2026-09-10 (v15: 2026-09-09; v14: 2026-09-02)
+**Status:** Draft v17 (W-arch) — A1–A9 and decisions D1–D2 (plan rulings 13–14) ruled 2026-09-07; A10 ruled 2026-09-08; P0 current-wire completion open — feat/bead-graph
+**Date:** 2026-09-12 (v16: 2026-09-10; v15: 2026-09-09; v14: 2026-09-02)
 **Companion:** `BDP_BEAD_GRAPH_PLAN.md` (the plan and its rulings, 1–14) and
 `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (the detailed CLI and storage-interface
 changes). This document is the *shape*: what the pieces are, where they live,
@@ -20,15 +20,19 @@ Revision v16: 2026-09-10 formal-review correction carries the already-ruled A10
 into §2b and refreshes current dependency status. It does not clear the
 reviewer/owner merge gate.
 
+Revision v17: 2026-09-12 records the P0 Read adoption and merged BDP
+Transactional/History dependencies consistently with the owning plan; no new
+contract pin, migration slot or runtime capability is selected.
+
 <a id="current-dependency-alignment-2026-09-09"></a>
 
-## Current dependency alignment (2026-09-09, refreshed 2026-09-10)
+## Current dependency alignment (2026-09-09, refreshed 2026-09-12)
 
 [Plan §0a](BDP_BEAD_GRAPH_PLAN.md#0a-current-bdp-and-versioned-beads-alignment-2026-09-09)
-contains the 2026-09-09 source record and the 2026-09-10 current refresh for
-BDP #19/#20, Jim's merged
-Phase 1 and current Phase 0/2, and the approved History direction awaiting
-upstream normative materialization. The role split remains: graphops is the
+contains the historical source records and the 2026-09-12 current refresh:
+BDP #19/#20 and History #30 wire/spec are merged; Jim's Phase 1 is merged
+and Phase 0/2 remain open. History realization and provider mapping remain
+separate from the completed upstream normative materialization. The role split remains: graphops is the
 graph domain, Jim's writer owns Issue history, and BDP wire DTOs own protocol
 representations. No Issue projection or C-lane substrate change is selected.
 
@@ -45,9 +49,10 @@ initial eight-table P1 scope does not prescribe future tables or another
 accessor widening; any necessary addition honors frozen migrations and A8's
 source-break policy. P1 need not await the full P3 design.
 
-P0's old wire pin and historical tests must stay labelled as such until the
-reviewed re-pin, narrow erased-pointer port and applicable successor checks
-are complete. [Plan §7's owner gates](BDP_BEAD_GRAPH_PLAN.md#current-wire-and-profile-adoption-gates-2026-09-09)
+P0 adopted the Read foundation at `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`;
+plan §0 records its exact pins and dated contract checks, including the narrow
+erased-pointer port. The original pin and tests remain historical. Later
+wire adoption and applicable successor checks remain explicit gates. [Plan §7's owner gates](BDP_BEAD_GRAPH_PLAN.md#current-wire-and-profile-adoption-gates-2026-09-09)
 assign P0 contract/parity work and P2 serving proof, including shared response
 negotiation and applicable conditionals. P3 separately records its reviewed
 write-profile pin and evidence exit; RU need not await TX-only runtime.
